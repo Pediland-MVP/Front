@@ -2,42 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+/* :root {
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
   }
-}
+} */
 
 body {
-  color: rgb(var(--foreground-rgb));
-  font-family: 'AnjomanMaxVF' !important;
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  font-family: "AnjomanMaxVF";
 }
 
 @layer base {
   @font-face {
-    font-family: 'AnjomanMaxVF';
-    src: url('/fonts/AnjomanMaxVF.woff') format('woff-variations'),
-    url('/fonts/AnjomanMaxVF.woff') format('woff');
+    font-family: "AnjomanMaxVF";
+    src: url("/fonts/AnjomanMaxVF.woff") format("woff-variations"),
+      url("/fonts/AnjomanMaxVF.woff") format("woff");
     font-weight: 100 1000;
     font-display: fallback;
   }

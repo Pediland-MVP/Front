@@ -10,7 +10,7 @@ export default function SubLayout({
 }) {
   return (
     <NextUIProvider>
-      <div className="bg-white h-screen max-h-screen text-black">
+      <div className="h-screen max-h-screen">
         {children}
       </div>
     </NextUIProvider>
