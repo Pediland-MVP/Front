@@ -22,11 +22,13 @@ import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from '@/components/ui/loadingSpinner';
 import AuthHeader from "../components/auth.header";
+import TextDivider from "@/components/ui/textDivider";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false)
+  const [loginWith, setLoginWith] = useState<'mobile' | 'google'>()
 
   const formSchema = z.object({
     emailOrMobile: z.string({message: 'شماره همراه الزامیست'}).min(1, "شماره همراه را وارد کنید"),
@@ -41,6 +43,7 @@ export default function Login() {
   const router = useRouter()
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoginWith('mobile')
     setIsLoading(true)
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signIn`, {
       method: "POST",
@@ -72,8 +75,13 @@ export default function Login() {
         variant: 'destructive',
       })
     })
-    .finally(() => setIsLoading(false))
-    
+    .finally(() => setIsLoading(false)) 
+  }
+
+  const loginWithGoogle = () => {
+    setLoginWith('google')
+    setIsLoading(true)
+    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/google/login`)
   }
 
   return (
@@ -90,7 +98,7 @@ export default function Login() {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="mb-5 space-y-2"
+                className=" space-y-2"
               >
                 <FormField
                   control={form.control}
@@ -154,21 +162,27 @@ export default function Login() {
                 >
                   ورود با شماره همراه
                   {
-                    isLoading ? <LoadingSpinner className="mr-1" size={20}/> : null
+                    loginWith === 'mobile' && isLoading ? <LoadingSpinner className="mr-1" size={20}/> : null
                   }
                 </Button>
               </form>
             </Form>
 
+            <TextDivider size="lg"><p>یا با گوگل وارد شوید</p></TextDivider>
+
             {/* <Divider className="my-6 bg-gray-100" /> */}
             <Button
-              className="pr-4"
+              onClick={loginWithGoogle}
+              className="w-full"
               color="primary"
               size="lg"
+              variant={'outline'}
               disabled={isLoading}
             >
               ورود با اکانت گوگل
-              <GoogleLogo weight="bold" size={20} className="mr-1" />
+              {
+                    loginWith === 'google' && isLoading ? <LoadingSpinner className="mr-1" size={20}/> : <GoogleLogo weight="bold" size={20} className="mr-1" />
+              }
             </Button>
           </div>
         </div>
