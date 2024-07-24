@@ -94,7 +94,7 @@ export default function Login() {
             <Lock size={32} />
             <h1 className="text-xl font-semibold">ورود به حساب کاربری</h1>
           </div>
-          <p className="text-sm text-gray-600 mb-6">حساب کاربری دارید؟ <Link className="text-black" href='/auth/signup'>وارد شوید</Link></p>
+          <p className="text-sm text-gray-600 mb-6">حساب کاربری ندارید؟ <Link className="text-black" href='/auth/signup'>از اینجا ثبت نام کنید</Link></p>
           <div className="_form">
             <Form {...form}>
               <form
