@@ -1,12 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 
-import { Eye, EyeSlash, GoogleLogo, Lock, Spinner } from "@phosphor-icons/react";
+import { Eye, EyeSlash, GoogleLogo, Lock } from "@phosphor-icons/react";
 // import AuthHeader from "../layout/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -16,8 +15,8 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { REGEX_MOBILE } from "@/app/utils/regex";
-import {zodResolver} from '@hookform/resolvers/zod'
+import { REGEX_PASSWORD } from "@/app/utils/regex";
+import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from '@/components/ui/loadingSpinner';
@@ -32,7 +31,7 @@ export default function Login() {
 
   const formSchema = z.object({
     emailOrMobile: z.string({message: 'شماره همراه الزامیست'}).min(1, "شماره همراه را وارد کنید"),
-    password: z.string({message: 'پسورد الزامیست'}).regex(REGEX_MOBILE, 'پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد')
+    password: z.string({message: 'پسورد الزامیست'}).regex(REGEX_PASSWORD, 'پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد')
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
