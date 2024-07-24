@@ -90,10 +90,11 @@ export default function Login() {
 
       <div className="container max-w-6xl flex items-center justify-center h-full">
         <div className="text-center w-full sm:w-1/3 mx-auto px-3 sm:px-0">
-          <div className="_heading flex items-center justify-center gap-2 mb-6">
+          <div className="_heading flex items-center justify-center gap-2">
             <Lock size={32} />
             <h1 className="text-xl font-semibold">ورود به حساب کاربری</h1>
           </div>
+          <p className="text-sm text-gray-600 mb-6">حساب کاربری دارید؟ <Link className="text-black" href='/auth/signup'>وارد شوید</Link></p>
           <div className="_form">
             <Form {...form}>
               <form
@@ -148,7 +149,7 @@ export default function Login() {
                 />
                 <div className="flex col-span-4">
                   <Link
-                    href={"/auth/reset"}
+                    href={"/auth/resetPassword"}
                     className="col-span-4 text-sm text-gray-400 hover:text-gray-700 font-light duration-300"
                   >
                     رمز عبورم را فراموش کردم.
