@@ -1,5 +1,4 @@
 import { cookies } from "next/headers"
-import Image from "next/image"
 
 import { Mail } from "@/app/(Console)/console/components/mail"
 import { accounts, mails } from "@/app/(Console)/console/data"
@@ -12,24 +11,7 @@ export default function MailPage() {
   const defaultCollapsed = collapsed ? JSON.parse(collapsed.value) : undefined
 
   return (
-    <>
-      <div className="md:hidden">
-        <Image
-          src="/examples/mail-dark.png"
-          width={1280}
-          height={727}
-          alt="Mail"
-          className="hidden dark:block"
-        />
-        <Image
-          src="/examples/mail-light.png"
-          width={1280}
-          height={727}
-          alt="Mail"
-          className="block dark:hidden"
-        />
-      </div>
-      <div className="hidden flex-col md:flex">
+  
         <Mail
           accounts={accounts}
           mails={mails}
@@ -37,7 +19,6 @@ export default function MailPage() {
           defaultCollapsed={defaultCollapsed}
           navCollapsedSize={4}
         />
-      </div>
-    </>
+      
   )
 }
