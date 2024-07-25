@@ -17,7 +17,8 @@ interface NavProps {
     title: string
     label?: string
     icon: LucideIcon
-    variant: "default" | "ghost"
+    variant: "default" | "ghost",
+    href: string
   }[]
 }
 
@@ -57,7 +58,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
           ) : (
             <Link
               key={index}
-              href="#"
+              href={link.href}
               className={cn(
                 buttonVariants({ variant: link.variant, size: "sm" }),
                 link.variant === "default" &&
@@ -65,12 +66,12 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 "justify-start"
               )}
             >
-              <link.icon className="mr-2 h-4 w-4" />
+              <link.icon className="ml-2 h-4 w-4" />
               {link.title}
               {link.label && (
                 <span
                   className={cn(
-                    "ml-auto",
+                    "mr-auto",
                     link.variant === "default" &&
                       "text-background dark:text-white"
                   )}

@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" dir="ltr">
+    <html lang="fa" dir="rtl">
       <body className={inter.className}>
         {children}
         <Toaster/>
