@@ -1,102 +1,31 @@
-"use client"
+'use client'
 
-import * as React from "react"
-
-import { Chat, User } from '@phosphor-icons/react'
-
-import { cn } from "@/lib/utils"
+import * as React from "react";2
+import { Chat, User } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/registry/new-york/ui/resizable"
-import { Separator } from "@/registry/new-york/ui/separator"
-import { TooltipProvider } from "@/registry/new-york/ui/tooltip"
-import { AccountSwitcher } from "@/app/(Console)/console/components/account-switcher"
-import { Nav } from "@/app/(Console)/console/components/nav"
-import { NextUIProvider } from "@nextui-org/react"
-import { accounts } from "@/app/(Console)/console/data"
+} from "@/registry/new-york/ui/resizable";
+import { Separator } from "@/registry/new-york/ui/separator";
+import { TooltipProvider } from "@/registry/new-york/ui/tooltip";
+import { AccountSwitcher } from "@/app/(Console)/console/components/account-switcher";
+import { Nav } from "@/app/(Console)/console/components/nav";
+import { NextUIProvider } from "@nextui-org/react";
+import { accounts } from "@/app/(Console)/console/data";
+import { useState } from 'react';
+import PanelLayout from "./console/components/panelLayout";
 
-
-
-export default function Page({
-  children
-}: {children: React.ReactNode}) {
-
-  
-  const defaultLayout = [20, 32, 48], defaultCollapsed = false, navCollapsedSize = 4;
-
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed)
-  
+export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <NextUIProvider className="bg-white h-screen max-h-screen text-black">
       <TooltipProvider delayDuration={0}>
-        <ResizablePanelGroup
-          direction="horizontal"
-          onLayout={(sizes: number[]) => {
-            document.cookie = `react-resizable-panels:layout:mail=${JSON.stringify(
-              sizes
-            )}`
-          }}
-          className="h-full max-h-[800px] items-stretch"
-        >
-          <ResizablePanel
-            defaultSize={defaultLayout[0]}
-            collapsedSize={navCollapsedSize}
-            collapsible={true}
-            minSize={15}
-            maxSize={20}
-            onCollapse={() => {
-              setIsCollapsed(true)
-              document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-                true
-              )}`
-            }}
-            onResize={() => {
-              setIsCollapsed(false)
-              document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-                false
-              )}`
-            }}
-            className={cn(
-              isCollapsed &&
-                "min-w-[50px] transition-all duration-300 ease-in-out"
-            )}
-          >
-            <div
-              className={cn(
-                "flex h-[52px] items-center justify-center",
-                isCollapsed ? "h-[52px]" : "px-2"
-              )}
-            >
-              <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
-            </div>
-            <Separator />
-            <Nav
-              isCollapsed={isCollapsed}
-              links={[
-                {
-                  title: "پیام‌ها",
-                  label: "128",
-                  icon: Chat,
-                  variant: "default",
-                  href: '/account'
-                },
-                {
-                  title: "اکانت‌ها",
-                  label: "9",
-                  icon: User,
-                  variant: "ghost",
-                  href: '/console/accounts'
-                },
-              ]}
-            />
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          { children }
-        </ResizablePanelGroup>
+        <PanelLayout>
+          {children}
+        </PanelLayout>
       </TooltipProvider>
     </NextUIProvider>
-  )
+  );
 }

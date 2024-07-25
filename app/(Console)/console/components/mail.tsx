@@ -2,27 +2,14 @@
 
 import * as React from "react";
 import {
-  AlertCircle,
-  Archive,
-  ArchiveX,
-  File,
-  Inbox,
-  MessagesSquare,
-  Search,
-  Send,
-  ShoppingCart,
-  Trash2,
-  Users2,
+  Search
 } from "lucide-react";
 
-import { Chat, User } from "@phosphor-icons/react";
 
-import { cn } from "@/lib/utils";
 import { Input } from "@/registry/new-york/ui/input";
 import {
   ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
+  ResizablePanel
 } from "@/registry/new-york/ui/resizable";
 import { Separator } from "@/registry/new-york/ui/separator";
 import {
@@ -31,13 +18,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/registry/new-york/ui/tabs";
-import { TooltipProvider } from "@/registry/new-york/ui/tooltip";
-import { AccountSwitcher } from "@/app/(Console)/console/components/account-switcher";
-import { MailDisplay } from "@/app/(Console)/console/components/mail-display";
 import { MailList } from "@/app/(Console)/console/components/mail-list";
-import { Nav } from "@/app/(Console)/console/components/nav";
 import { type Mail } from "@/app/(Console)/console/data";
-import { useMail } from "@/app/(Console)/console/use-mail";
 
 interface MailProps {
   accounts: {
@@ -56,9 +38,6 @@ export function Mail({
   defaultLayout = [20, 32, 48],
   defaultCollapsed = false,
 }: MailProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
-  const [mail] = useMail();
-
   return (
     <>
       <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
