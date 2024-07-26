@@ -42,9 +42,9 @@ export default function AccountPage() {
     <ResizablePanel
       defaultSize={80}
       minSize={30}
-      className="px-4"
+      // className="px-4"
     >
-      <div className="flex justify-start items-center px-4 py-2">
+      <div className="flex justify-start items-center h-14 px-4">
         <h1 className="text-xl font-bold">اکانت های کاربری</h1>
       </div>
       <Separator className="mb-6" />

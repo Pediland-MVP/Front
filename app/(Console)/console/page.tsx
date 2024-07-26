@@ -14,7 +14,6 @@ import {
   TabsTrigger,
 } from "@/registry/new-york/ui/tabs";
 import { MailList } from "@/app/(Console)/console/components/mail-list";
-import { useCookies } from "react-cookie";
 
 export default function MailPage() {
   return (
