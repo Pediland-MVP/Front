@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/hooks/swr/fetcher";
-import { Card } from "@/registry/new-york/ui/card";
 import { ResizablePanel } from "@/registry/new-york/ui/resizable";
 import { Separator } from "@/registry/new-york/ui/separator";
 import { InstagramNamespace } from "@/types/instagram";
@@ -11,8 +10,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { DrawerDialogDemo } from "./selectInstagram";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export default function AccountPage() {
+
+  const searchParams = useSearchParams()
+  const isFromFacebook: boolean = !!searchParams.get('facebookAccountId')
+  
+
   const {
     data: instagramPages,
     isLoading: isInstagramPagesLoading,
@@ -24,6 +30,8 @@ export default function AccountPage() {
       refreshInterval: 0,
     }
   );
+
+  const filteredInstagramPages = isFromFacebook ? instagramPages?.filter(page => page.facebookAccountId === searchParams.get('facebookAccountId') && !page.instagramId) : instagramPages;
 
   const [openSelectInstagramDialog, setOpenSelectInstagramDialog] =
     useState<boolean>(false);
@@ -37,7 +45,7 @@ export default function AccountPage() {
       className="px-4"
     >
       <div className="flex justify-start items-center px-4 py-2">
-        <h1 className="text-xl font-bold">حساب های کاربری</h1>
+        <h1 className="text-xl font-bold">اکانت های کاربری</h1>
       </div>
       <Separator className="mb-6" />
 
@@ -67,26 +75,42 @@ export default function AccountPage() {
             </Skeleton>
           ))}
 
-        {instagramPages
-          ?.filter((account) => !account.instagramId)
-          .map((instagram) => {
+        {filteredInstagramPages
+          // ?.filter((account) => !account.instagramId)
+          ?.map((instagram) => {
             return (
               <div
                 key={instagram.id}
                 className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
               >
-                <InstagramLogo size={70} />
+                {instagram.profilePictureUrl ? (
+                  <Image
+                    className="rounded-full"
+                    src={instagram.profilePictureUrl}
+                    width={70}
+                    height={70}
+                    alt={instagram.name}
+                  />
+                ) : (
+                  <InstagramLogo size={70} />
+                )}
                 <p>{instagram.name}</p>
                 <p>{instagram.username}</p>
-                <Button
-                  onClick={() => {
-                    setOpenSelectInstagramDialog(true);
-                    setFacebookAccountId(instagram.facebookAccountId);
-                  }}
-                  variant={"outline"}
-                >
-                  اتصال به حساب
-                </Button>
+                {instagram.instagramId ? (
+                  <Link href={`https://instagram.com/${instagram.username}`} target="_blank">
+                    <Button variant={"outline"}>دیدن اکانت</Button>
+                  </Link>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setOpenSelectInstagramDialog(true);
+                      setFacebookAccountId(instagram.facebookAccountId);
+                    }}
+                    variant={"outline"}
+                  >
+                    اتصال به اکانت
+                  </Button>
+                )}
               </div>
             );
           })}
