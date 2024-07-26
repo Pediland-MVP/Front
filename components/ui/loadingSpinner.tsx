@@ -5,7 +5,7 @@ import { FC } from "react";
 
 
 export interface LoadingSpinner {
-    size: number;
+    size?: 'sm' | 'md' | 'lg' | number;
     className?: string;
     weight?: IconWeight
 }

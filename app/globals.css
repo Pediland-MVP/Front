@@ -17,7 +17,7 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  color: black;
   font-family: "AnjomanMaxVF" !important;
   background: linear-gradient(
       to bottom,

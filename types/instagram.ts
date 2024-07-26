@@ -1,5 +1,3 @@
-
-
 export namespace InstagramNamespace {
   export interface Account {
     id: string;
@@ -17,7 +15,18 @@ export namespace InstagramNamespace {
     profilePictureUrl: string | null;
   }
 
+  export interface Page {
+    name: string;
+    username: string;
+    followers_count: number;
+    follows_count: number;
+    profile_picture_url?: string;
+    biography: string;
+    id: string;
+  }
+
   export interface GET {
-    Accounts: Account[]
+    Accounts: Account[];
+    Pages: Page[]
   }
 }

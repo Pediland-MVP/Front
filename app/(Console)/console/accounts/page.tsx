@@ -8,8 +8,9 @@ import { Separator } from "@/registry/new-york/ui/separator";
 import { InstagramNamespace } from "@/types/instagram";
 import { InstagramLogo, Plus } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { DrawerDialogDemo } from "./selectInstagram";
 
 export default function AccountPage() {
   const {
@@ -23,6 +24,10 @@ export default function AccountPage() {
       refreshInterval: 0,
     }
   );
+
+  const [openSelectInstagramDialog, setOpenSelectInstagramDialog] =
+    useState<boolean>(false);
+  const [facebookAccountId, setFacebookAccountId] = useState<string>();
 
   const defaultLayout = [20, 32, 48];
   return (
@@ -48,29 +53,49 @@ export default function AccountPage() {
         </Link>
       </div>
 
-
       <div className="flex justify-start items-start flex-wrap gap-4 w-full">
-        {isInstagramPagesLoading && Array.from({length: 10}).map((_, index) => (
-          <Skeleton key={index} className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg ">
-            <Skeleton className="w-20 h-20" />
-            <Skeleton className="w-20 h-4" />
-            <Skeleton className="w-20 h-4" />
-            <Skeleton className="w-20 h-8 rounded" />
-          </Skeleton>
-        ))}
+        {isInstagramPagesLoading &&
+          Array.from({ length: 10 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
+            >
+              <Skeleton className="w-20 h-20" />
+              <Skeleton className="w-20 h-4" />
+              <Skeleton className="w-20 h-4" />
+              <Skeleton className="w-20 h-8 rounded" />
+            </Skeleton>
+          ))}
 
         {instagramPages
           ?.filter((account) => !account.instagramId)
           .map((instagram) => {
             return (
-              <div key={instagram.id} className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg ">
+              <div
+                key={instagram.id}
+                className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
+              >
                 <InstagramLogo size={70} />
                 <p>{instagram.name}</p>
                 <p>{instagram.username}</p>
-                <Button variant={"outline"}>اتصال به حساب</Button>
+                <Button
+                  onClick={() => {
+                    setOpenSelectInstagramDialog(true);
+                    setFacebookAccountId(instagram.facebookAccountId);
+                  }}
+                  variant={"outline"}
+                >
+                  اتصال به حساب
+                </Button>
               </div>
             );
           })}
+
+        <DrawerDialogDemo
+          facebookAccountId={facebookAccountId!}
+          open={openSelectInstagramDialog}
+          setOpen={setOpenSelectInstagramDialog}
+        />
       </div>
     </ResizablePanel>
     //   <ResizableHandle withHandle />
