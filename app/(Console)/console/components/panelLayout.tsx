@@ -49,7 +49,8 @@ const PanelLayout = ({children}: {children: React.ReactNode}) => {
           )}`;
         }}
         className={cn(
-          isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out"
+          isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out",
+          'hidden md:block'
         )}
       >
         <div
