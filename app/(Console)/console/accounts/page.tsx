@@ -40,7 +40,7 @@ export default function AccountPage() {
   const defaultLayout = [20, 32, 48];
   return (
     <ResizablePanel
-      defaultSize={defaultLayout[1]}
+      defaultSize={80}
       minSize={30}
       className="px-4"
     >

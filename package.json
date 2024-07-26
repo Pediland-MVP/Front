@@ -39,6 +39,7 @@
     "negotiator": "^0.6.3",
     "next": "14.2.4",
     "react": "^18",
+    "react-cookie": "^7.2.0",
     "react-day-picker": "^9.0.4",
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",

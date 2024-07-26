@@ -1,13 +1,10 @@
-
-import { cookies } from "next/headers";
+"use client";
 import { mails } from "@/app/(Console)/console/data";
-import {
-  Search
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/registry/new-york/ui/input";
 import {
   ResizableHandle,
-  ResizablePanel
+  ResizablePanel,
 } from "@/registry/new-york/ui/resizable";
 import { Separator } from "@/registry/new-york/ui/separator";
 import {
@@ -17,14 +14,12 @@ import {
   TabsTrigger,
 } from "@/registry/new-york/ui/tabs";
 import { MailList } from "@/app/(Console)/console/components/mail-list";
+import { useCookies } from "react-cookie";
 
 export default function MailPage() {
-  const layout = cookies().get("react-resizable-panels:layout:mail")
-  const defaultLayout = layout ? JSON.parse(layout.value) : undefined
-
   return (
     <>
-      <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
+      <ResizablePanel defaultSize={80} minSize={30}>
         <Tabs defaultValue="all">
           <div className="flex items-center px-4 py-2">
             <h1 className="text-xl font-bold">Inbox</h1>
