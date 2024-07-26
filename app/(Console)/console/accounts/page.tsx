@@ -31,7 +31,7 @@ export default function AccountPage() {
     }
   );
 
-  const filteredInstagramPages = isFromFacebook ? instagramPages?.filter(page => page.facebookAccountId === searchParams.get('facebookAccountId') && !page.instagramId) : instagramPages;
+  const filteredInstagramPages = isFromFacebook ? instagramPages?.filter(page => page.facebookAccountId === searchParams.get('facebookAccountId') && !page.instagramId) : instagramPages?.filter((account) => account.instagramId);
 
   const [openSelectInstagramDialog, setOpenSelectInstagramDialog] =
     useState<boolean>(false);
@@ -76,7 +76,6 @@ export default function AccountPage() {
           ))}
 
         {filteredInstagramPages
-          // ?.filter((account) => !account.instagramId)
           ?.map((instagram) => {
             return (
               <div
