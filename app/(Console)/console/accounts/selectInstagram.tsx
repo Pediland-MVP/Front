@@ -33,6 +33,7 @@ import Image from "next/image";
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { sleep } from "@/app/utils/sleep";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type DrawerDialogDemoProps = {
   open: boolean;
@@ -143,6 +144,19 @@ function SelectPagesForm({ className, facebookAccountId }: {className?: string, 
   return (
     <form className={cn(className)}>
         <div className="flex justify-cent items-center gap-x-4 w-full mb-4">
+        {
+            isInstagramPagesLoading && Array.from({ length: 2}).map((_, index) => (
+                <Skeleton
+                key={index}
+                className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
+              >
+                <Skeleton className="w-20 h-20" />
+                <Skeleton className="w-20 h-4" />
+                <Skeleton className="w-20 h-4" />
+                <Skeleton className="w-20 h-8 rounded" />
+              </Skeleton>
+            ))
+        }
         {Array.isArray(instagramPages) && instagramPages?.map((instagram) => {
             return (
             <div
