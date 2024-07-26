@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from "react";2
+import * as React from "react";
 import { Chat, User } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import {
@@ -9,13 +9,10 @@ import {
   ResizablePanelGroup,
 } from "@/registry/new-york/ui/resizable";
 import { Separator } from "@/registry/new-york/ui/separator";
-import { TooltipProvider } from "@/registry/new-york/ui/tooltip";
 import { AccountSwitcher } from "@/app/(Console)/console/components/account-switcher";
 import { Nav } from "@/app/(Console)/console/components/nav";
-import { NextUIProvider } from "@nextui-org/react";
 import { accounts } from "@/app/(Console)/console/data";
 import { useState } from 'react';
-
 
 const PanelLayout = ({children}: {children: React.ReactNode}) => {
   const defaultLayout = [20, 32, 48],
@@ -72,7 +69,7 @@ const PanelLayout = ({children}: {children: React.ReactNode}) => {
               label: "128",
               icon: Chat,
               variant: "default",
-              href: "/account",
+              href: "/console",
             },
             {
               title: "اکانت‌ها",
