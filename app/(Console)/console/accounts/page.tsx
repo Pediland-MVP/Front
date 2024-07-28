@@ -72,24 +72,24 @@ export default function AccountPage() {
       </div>
       <Separator className="mb-6" />
 
-      <div className="mb-6 px-4">
+      <div className="w-full mb-6 px-4">
         <Link
           target="_blank"
           href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectFB`}
         >
-          <Button className="gap-x-1">
+          <Button className="gap-x-1 w-full lg:w-auto">
             <Plus size={15} />
             افزودن اکانت
           </Button>
         </Link>
       </div>
 
-      <div className="flex justify-start items-start flex-wrap gap-4 w-full px-4">
+      <div className="flex justify-start items-start flex-wrap gap-4 px-4 w-full">
         {isInstagramPagesLoading &&
           Array.from({ length: 10 }).map((_, index) => (
             <Skeleton
               key={index}
-              className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
+              className="flex flex-col gap-y-2 justify-center items-center w-full lg:w-52 h-52 border rounded-lg "
             >
               <Skeleton className="w-20 h-20" />
               <Skeleton className="w-20 h-4" />
@@ -103,7 +103,7 @@ export default function AccountPage() {
             return (
               <div
                 key={instagram.id}
-                className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
+                className="flex flex-col gap-y-2 justify-center items-center w-full lg:w-52 h-52 border rounded-lg "
               >
                 {instagram.profilePictureUrl ? (
                   <Image
