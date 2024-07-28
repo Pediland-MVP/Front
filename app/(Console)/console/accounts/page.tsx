@@ -12,9 +12,12 @@ import useSWR from "swr";
 import { DrawerDialogDemo } from "./selectInstagram";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
 
+  const router = useRouter()
   const searchParams = useSearchParams()
   const isFromFacebook: boolean = !!searchParams.get('facebookAccountId')
   
@@ -33,11 +36,31 @@ export default function AccountPage() {
 
   const filteredInstagramPages = isFromFacebook ? instagramPages?.filter(page => page.facebookAccountId === searchParams.get('facebookAccountId') && !page.instagramId) : instagramPages?.filter((account) => account.instagramId);
 
+  useEffect(() => {
+    if (isFromFacebook) {
+      if (filteredInstagramPages?.length === 0) {
+        toast({
+          title: 'خطایی پیش آمد',
+          description: 'لطفا دوباره امتحان کنید'
+        })
+        router.push('/console/accounts')
+        return
+      }
+      setOpenSelectInstagramDialog(true)
+    }
+  }, [filteredInstagramPages])
+
   const [openSelectInstagramDialog, setOpenSelectInstagramDialog] =
     useState<boolean>(false);
   const [facebookAccountId, setFacebookAccountId] = useState<string>();
 
-  const defaultLayout = [20, 32, 48];
+  useEffect(() => {
+    if (isFromFacebook) {
+      setFacebookAccountId(searchParams.get('facebookAccountId')!)
+    }
+  }, [filteredInstagramPages])
+
+
   return (
     <ResizablePanel
       defaultSize={80}
@@ -49,7 +72,7 @@ export default function AccountPage() {
       </div>
       <Separator className="mb-6" />
 
-      <div className="mb-6">
+      <div className="mb-6 px-4">
         <Link
           target="_blank"
           href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectFB`}
@@ -61,7 +84,7 @@ export default function AccountPage() {
         </Link>
       </div>
 
-      <div className="flex justify-start items-start flex-wrap gap-4 w-full">
+      <div className="flex justify-start items-start flex-wrap gap-4 w-full px-4">
         {isInstagramPagesLoading &&
           Array.from({ length: 10 }).map((_, index) => (
             <Skeleton
