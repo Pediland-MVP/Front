@@ -1,3 +1,4 @@
+'use client'
 import { toast } from "@/components/ui/use-toast";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { InstagramNamespace } from "@/types/instagram";
@@ -31,7 +32,7 @@ const ChatsList: FC = () => {
                             <Image src={chat.profilePic} alt={chat.firstname} width={70} height={70} className="rounded-full" />
                             <div>
                                 <div>{chat.firstname} {chat.lastname && chat.lastname}</div>
-                                <div className='truncate text-gray-500'>{chat.messages.text}</div>
+                                <div className='truncate text-gray-500 w-[40ch]'>{chat.messages.text}</div>
                             </div>
                         </div>
                     )
