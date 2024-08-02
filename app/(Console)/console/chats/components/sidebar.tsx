@@ -83,7 +83,7 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
         </div>
       )}
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {links.map((link, index) =>
+        {chats?.items.map((chat, index) =>
           isCollapsed ? (
             <TooltipProvider key={index}>
               <Tooltip key={index} delayDuration={0}>
@@ -91,29 +91,29 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
                   <Link
                     href="#"
                     className={cn(
-                      buttonVariants({ variant: link.variant, size: "icon" }),
+                      buttonVariants({ variant: 'ghost', size: "icon" }),
                       "h-11 w-11 md:h-16 md:w-16",
-                      link.variant === "grey" &&
-                        "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                      // link.variant === "grey" &&
+                      //   "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                     )}
                   >
                     <Avatar className="flex justify-center items-center">
                       <AvatarImage
-                        src={link.avatar}
-                        alt={link.avatar}
+                        src={chat.profilePic}
+                        alt={chat.firstname}
                         width={6}
                         height={6}
                         className="w-10 h-10 "
                       />
                     </Avatar>{" "}
-                    <span className="sr-only">{link.name}</span>
+                    <span className="sr-only">{chat.firstname} {chat.lastname && chat.lastname}</span>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent
                   side="right"
                   className="flex items-center gap-4"
                 >
-                  {link.name}
+                  {chat.firstname} {chat.lastname && chat.lastname}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -122,25 +122,24 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
               key={index}
               href="#"
               className={cn(
-                buttonVariants({ variant: link.variant, size: "lg" }),
-                link.variant === "grey" &&
-                  "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
+                buttonVariants({ variant: 'ghost', size: "lg" }),
+                // link.variant === "grey" &&
+                //   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
                 "justify-start gap-4 py-10"
               )}
             >
               <Image
-                  src={link.avatar}
-                  alt={link.avatar}
+                  src={chat.profilePic}
+                  alt={chat.firstname}
                   width={60}
                   height={60}
-                  // className="w-32 h-32"
+                  className="rounded-full"
               />
               <div className="flex flex-col max-w-28">
-                <span>{link.name}</span>
-                {link.messages.length > 0 && (
+                <span>{chat.firstname} {chat.lastname && chat.lastname}</span>
+                {chat.messages && (
                   <span className="text-zinc-300 text-xs truncate ">
-                    {link.messages[link.messages.length - 1].name.split(" ")[0]}
-                    : {link.messages[link.messages.length - 1].message}
+                    {chat.messages?.text}
                   </span>
                 )}
               </div>
