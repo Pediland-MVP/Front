@@ -62,6 +62,6 @@ export interface Messages {
   text: string;
   attachment: null;
   sendDate: Date;
-  from: "instagram" | "facebook";
+  from: "instagram" | "lead";
 }
 

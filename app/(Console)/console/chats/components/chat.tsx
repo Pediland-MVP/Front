@@ -42,27 +42,21 @@ export function Chat({ leadId }: ChatProps) {
     fetcher
   );
 
-  console.log(lead);
-  console.log(messages);
-
-  // const [messagesState, setMessages] = React.useState<Message[]>(
-  //   messages ?? []
-  // );
-
-  // const sendMessage = (newMessage: Message) => {
-  //   setMessages([...messagesState, newMessage]);
-  // };
+  const sendMessage = (newMessage: Message) => {
+    console.log('New Message');
+    
+    // setMessages([...messagesState, newMessage]);
+  };
 
   return (
     <div className="flex flex-col justify-between w-full h-full">
       <ChatTopbar lead={lead} />
-{/* 
       <ChatList
-        messages={messagesState}
-        selectedUser={selectedUser}
+        messages={messages}
+        lead={lead}
         sendMessage={sendMessage}
         isMobile={isMobile}
-      /> */}
+      />
     </div>
   );
 }

@@ -4,17 +4,19 @@ import React, { useRef } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ChatBottombar from "./chatBottombar";
 import { AnimatePresence, motion } from "framer-motion";
+import { leadNamespace } from "@/types/lead";
+import { InstagramNamespace } from "@/types/instagram";
 
 interface ChatScreenProps {
-  messages?: Message[];
-  selectedUser: UserData;
+  messages?: InstagramNamespace.GET["Conversation"];
+  lead?: leadNamespace.GET['One'];
   sendMessage: (newMessage: Message) => void;
   isMobile: boolean;
 }
 
 export function ChatList({
   messages,
-  selectedUser,
+  lead,
   sendMessage,
   isMobile
 }: ChatScreenProps) {
@@ -27,6 +29,10 @@ export function ChatList({
     }
   }, [messages]);
 
+  if (!lead) {
+    return <div>Loading</div>
+  }
+
   return (
     <div className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col">
       <div
@@ -34,7 +40,7 @@ export function ChatList({
         className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col"
       >
         <AnimatePresence>
-          {messages?.map((message, index) => (
+          {messages?.items?.map((message, index) => (
             <motion.div
               key={index}
               layout
@@ -46,7 +52,7 @@ export function ChatList({
                 layout: {
                   type: "spring",
                   bounce: 0.3,
-                  duration: messages.indexOf(message) * 0.05 + 0.2,
+                  duration: messages.items.indexOf(message) * 0.05 + 0.2,
                 },
               }}
               style={{
@@ -55,28 +61,28 @@ export function ChatList({
               }}
               className={cn(
                 "flex flex-col gap-2 p-4 whitespace-pre-wrap",
-                message.name !== selectedUser.name ? "items-end" : "items-start"
+                message.from === 'lead' ? "items-end" : "items-start"
               )}
             >
               <div className="flex gap-3 items-center">
-                {message.name === selectedUser.name && (
+                {message.from === 'lead' && (
                   <Avatar className="flex justify-center items-center">
                     <AvatarImage
-                      src={message.avatar}
-                      alt={message.name}
+                      src={lead.profilePic}
+                      alt={lead.profilePic}
                       width={6}
                       height={6}
                     />
                   </Avatar>
                 )}
                 <span className=" bg-accent p-3 rounded-md max-w-xs">
-                  {message.message}
+                  {message.text}
                 </span>
-                {message.name !== selectedUser.name && (
+                {message.from !== 'lead' && (
                   <Avatar className="flex justify-center items-center">
                     <AvatarImage
-                      src={message.avatar}
-                      alt={message.name}
+                      src={lead.instagram.profilePictureUrl}
+                      alt={lead.instagram.firstname}
                       width={6}
                       height={6}
                     />
