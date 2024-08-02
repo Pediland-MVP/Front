@@ -73,7 +73,7 @@ const Layout = ({children}: {children: React.ReactNode}) => {
                   title: "پیام‌ها",
                   icon: Chat,
                   variant: "default",
-                  href: "/console",
+                  href: "/console/chats",
                 },
                 {
                   title: "اکانت‌ها",

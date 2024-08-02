@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Message } from "./data";
+import Image from "next/image";
+import { InstagramNamespace } from '@/types/instagram';
+import useSWR from "swr";
+import { useEffect } from "react";
+import { fetcher } from "@/hooks/swr/fetcher";
+import { toast } from "@/components/ui/use-toast";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -26,6 +32,21 @@ interface SidebarProps {
 }
 
 export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
+
+  const {data: chats, isLoading: isChatsLoading, error: chatsError} = useSWR<InstagramNamespace.GET['AllMessages']>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations?page=1&limit=100&messageLimit=1`, fetcher)
+
+
+  useEffect(() => {
+      
+      if (!chatsError) return;
+
+      toast({
+          title: 'خطایی رخ داده است',
+          variant: 'destructive'
+      })
+      
+  }, [chatsError])
+
   return (
     <div
       data-collapsed={isCollapsed}
@@ -34,7 +55,7 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
       {!isCollapsed && (
         <div className="flex justify-between p-2 items-center">
           <div className="flex gap-2 items-center text-2xl">
-            <p className="font-medium">Chats</p>
+            <p className="font-medium">پیام‌ها</p>
             <span className="text-zinc-300">({links.length})</span>
           </div>
 
@@ -104,18 +125,16 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
                 buttonVariants({ variant: link.variant, size: "lg" }),
                 link.variant === "grey" &&
                   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
-                "justify-start gap-4"
+                "justify-start gap-4 py-10"
               )}
             >
-              <Avatar className="flex justify-center items-center">
-                <AvatarImage
+              <Image
                   src={link.avatar}
                   alt={link.avatar}
-                  width={6}
-                  height={6}
-                  className="w-10 h-10 "
-                />
-              </Avatar>
+                  width={60}
+                  height={60}
+                  // className="w-32 h-32"
+              />
               <div className="flex flex-col max-w-28">
                 <span>{link.name}</span>
                 {link.messages.length > 0 && (
