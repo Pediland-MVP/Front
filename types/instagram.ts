@@ -1,3 +1,5 @@
+import { Meta } from "./meta";
+
 export namespace InstagramNamespace {
   export interface Account {
     id: string;
@@ -28,11 +30,17 @@ export namespace InstagramNamespace {
   export interface GET {
     Accounts: Account[];
     Pages: Page[];
-    AllMessages: AllMessages;
+    Conversations: Conversations;
+    Conversation: Conversation;
   }
 }
 
-export interface AllMessages {
+export interface Conversation {
+  items: Messages[];
+  meta: Meta;
+}
+
+export interface Conversations {
   items: Item[];
   meta: Meta;
 }
@@ -54,13 +62,6 @@ export interface Messages {
   text: string;
   attachment: null;
   sendDate: Date;
-  from: string;
+  from: "instagram" | "facebook";
 }
 
-export interface Meta {
-  currentPage: number;
-  itemCount: number;
-  itemsPerPage: number;
-  totalItems: number;
-  totalPages: number;
-}

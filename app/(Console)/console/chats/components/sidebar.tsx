@@ -120,7 +120,7 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
           ) : (
             <Link
               key={index}
-              href="#"
+              href={`/console/chats/${chat.id}`}
               className={cn(
                 buttonVariants({ variant: 'ghost', size: "lg" }),
                 // link.variant === "grey" &&

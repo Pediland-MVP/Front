@@ -11,14 +11,17 @@ import { cn } from "@/lib/utils";
 
 import { Chat } from "./chat";
 import { Sidebar } from "./sidebar";
+import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 
 interface ChatLayoutProps {
+  children: React.ReactNode;
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
 }
 
 export function ChatLayout({
+  children,
   defaultLayout = [320, 480],
   defaultCollapsed = false,
   navCollapsedSize,
@@ -30,6 +33,7 @@ export function ChatLayout({
   useEffect(() => {
     const checkScreenWidth = () => {
       setIsMobile(window.innerWidth <= 768);
+      sessionStorage.setItem(SessionStorageKeys.IS_MOBILE, 'true')
     };
 
     // Initial check
@@ -81,13 +85,8 @@ export function ChatLayout({
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-        <Chat
-          messages={selectedUser.messages}
-          selectedUser={selectedUser}
-          isMobile={isMobile}
-        />
-      </ResizablePanel>
+      
+      {children}
     </>
   );
 }
