@@ -31,22 +31,6 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
           <span className="text-xs">{lead.instagram && 'کاربر اینستاگرام'}</span>
         </div>
       </div>
-{/* 
-      <div>
-        {TopbarIcons.map((icon, index) => (
-          <Link
-            key={index}
-            href="#"
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "h-9 w-9",
-              "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-            )}
-          >
-            <icon.icon size={20} className="text-muted-foreground" />
-          </Link>
-        ))}
-      </div> */}
     </div>
   );
 }
