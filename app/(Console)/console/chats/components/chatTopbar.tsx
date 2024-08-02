@@ -1,8 +1,5 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Info, Phone, Video } from "lucide-react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { leadNamespace } from "@/types/lead";
 
 interface ChatTopbarProps {
@@ -34,7 +31,7 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
           <span className="text-xs">{lead.instagram && 'کاربر اینستاگرام'}</span>
         </div>
       </div>
-
+{/* 
       <div>
         {TopbarIcons.map((icon, index) => (
           <Link
@@ -49,7 +46,7 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
             <icon.icon size={20} className="text-muted-foreground" />
           </Link>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
