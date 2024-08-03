@@ -10,14 +10,12 @@ import { InstagramNamespace } from "@/types/instagram";
 interface ChatScreenProps {
   messages?: InstagramNamespace.GET["Conversation"];
   lead?: leadNamespace.GET['One'];
-  sendMessage: (newMessage: Message) => void;
   isMobile: boolean;
 }
 
 export function ChatList({
   messages,
   lead,
-  sendMessage,
   isMobile
 }: ChatScreenProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -65,6 +63,9 @@ export function ChatList({
               )}
             >
               <div className="flex gap-3 items-center">
+                <span className=" bg-accent p-3 rounded-md max-w-xs">
+                  {message.text}
+                </span>
                 {message.from === 'lead' && (
                   <Avatar className="flex justify-center items-center">
                     <AvatarImage
@@ -75,9 +76,6 @@ export function ChatList({
                     />
                   </Avatar>
                 )}
-                <span className=" bg-accent p-3 rounded-md max-w-xs">
-                  {message.text}
-                </span>
                 {message.from !== 'lead' && (
                   <Avatar className="flex justify-center items-center">
                     <AvatarImage
@@ -93,7 +91,7 @@ export function ChatList({
           ))}
         </AnimatePresence>
       </div>
-      <ChatBottombar sendMessage={sendMessage} isMobile={isMobile}/>
+      <ChatBottombar isMobile={isMobile}/>
     </div>
   );
 }

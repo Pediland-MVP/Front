@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { InstagramNamespace } from "@/types/instagram";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { leadNamespace } from "@/types/lead";
+import useCurrentLead from "@/store/currentLead.store";
 
 interface ChatProps {
   leadId: string;
@@ -22,6 +23,8 @@ export function Chat({ leadId }: ChatProps) {
       : setIsMobile(false);
   }, []);
 
+  const { setCurrentLead } = useCurrentLead()
+
   const {
     data: lead,
     isLoading: isLeadLoading,
@@ -30,6 +33,14 @@ export function Chat({ leadId }: ChatProps) {
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/${leadId}?limit=20&page=1`,
     fetcher
   );
+
+
+
+  useEffect(() => {
+    if (lead) {
+      setCurrentLead(lead)
+    }
+  }, [lead])
 
   const {
     data: messages,
@@ -42,11 +53,8 @@ export function Chat({ leadId }: ChatProps) {
     fetcher
   );
 
-  const sendMessage = (newMessage: Message) => {
-    console.log('New Message');
-    
-    // setMessages([...messagesState, newMessage]);
-  };
+  
+
 
   return (
     <div className="flex flex-col justify-between w-full h-full">
@@ -54,7 +62,6 @@ export function Chat({ leadId }: ChatProps) {
       <ChatList
         messages={messages}
         lead={lead}
-        sendMessage={sendMessage}
         isMobile={isMobile}
       />
     </div>

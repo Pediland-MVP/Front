@@ -1,11 +1,7 @@
 import {
   FileImage,
   Mic,
-  Paperclip,
-  PlusCircle,
-  SendHorizontal,
-  Smile,
-  ThumbsUp,
+  Paperclip, SendHorizontal, ThumbsUp
 } from "lucide-react";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
@@ -20,20 +16,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import useSendMessage from "@/hooks/useSendMessage";
+import { useParams } from "next/navigation";
+import useCurrentLead from "@/store/currentLead.store";
+import { toast } from "@/components/ui/use-toast";
+
+
+
 
 interface ChatBottombarProps {
-  sendMessage: (newMessage: Message) => void;
   isMobile: boolean;
 }
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
 export default function ChatBottombar({
-  sendMessage,
   isMobile,
 }: ChatBottombarProps) {
+
+  const { currentLead } = useCurrentLead()
+
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const params: {chatId: string} = useParams()
+  
+
+  const { sendMessage, isMessageSendLoading } = useSendMessage()
+
+
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
@@ -46,11 +57,34 @@ export default function ChatBottombar({
       avatar: loggedInUserData.avatar,
       message: "👍",
     };
-    sendMessage(newMessage);
+
+    if (!currentLead) {
+      return toast({
+        variant: "destructive",
+        title: "خطا در ارسال پیام",
+      })
+    }
+
+    console.log('sendMessage');
+    
+
+    sendMessage({
+      instagramId: currentLead?.instagram.id,
+      leadId: currentLead?.id,
+      text: newMessage.message,
+    });
     setMessage("");
   };
 
   const handleSend = () => {
+
+    if (!currentLead) {
+      return toast({
+        variant: "destructive",
+        title: "خطا در ارسال پیام",
+      })
+    }
+    
     if (message.trim()) {
       const newMessage: Message = {
         id: message.length + 1,
@@ -58,7 +92,11 @@ export default function ChatBottombar({
         avatar: loggedInUserData.avatar,
         message: message.trim(),
       };
-      sendMessage(newMessage);
+      sendMessage({
+        instagramId: currentLead?.instagram.id,
+        leadId: currentLead?.id,
+        text: newMessage.message,
+      });
       setMessage("");
 
       if (inputRef.current) {
@@ -203,9 +241,9 @@ export default function ChatBottombar({
             onChange={handleInputChange}
             name="message"
             placeholder="Aa"
-            className=" w-full border rounded-full flex flex-col items-center justify-center h-9 resize-none overflow-hidden bg-background"
+            className="w-full border rounded-full flex flex-col items-center justify-center resize-none overflow-hidden bg-background"
           ></Textarea>
-          <div className="absolute right-2 bottom-0.5  ">
+          <div className="absolute left-2 top-1/2 transform -translate-y-1/2  ">
             <EmojiPicker
               onChange={(value) => {
                 setMessage(message + value);
