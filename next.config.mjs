@@ -11,7 +11,16 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname : '**.cdninstagram.com'
-            }
+            },
+            {
+                protocol: 'https',
+                hostname: 'pcfcdn.kommo.com',
+              },
+              {
+                protocol: 'https',
+                hostname: '              miro.medium.com',
+              },
+            
         ]
     }
 
