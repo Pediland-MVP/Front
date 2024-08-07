@@ -38,18 +38,18 @@ export default function ExplainUser() {
         height={40}
         className="hidden md:block xl:hidden"
       />
-      <div className="md:hidden flex gap-4 mt-4">
+      <div className="md:hidden flex mt-4">
         <Image
           src={Customer}
           alt="happy customer"
-          width={200}
+          width={180}
           height={40}
           className="block md:hidden"
         />
         <Image
           src={happyCustomer}
           alt="happy customer"
-          width={200}
+          width={190}
           height={40}
           className="block md:hidden"
         />
