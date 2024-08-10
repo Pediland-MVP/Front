@@ -12,7 +12,7 @@ export default function ExplainApp() {
             src={screenShot1}
             alt="Story Image"
             layout="fill"
-            className=" md:rounded-[2rem] rounded-[1rem] xl:pl-[3.5rem] xl:pt-[3.5rem] md:pl-[2rem] md:pt-[2rem] pt-[1rem] pl-[1rem] bg-yellow-100 "
+            className="rounded-[1rem] xl:pl-[3.5rem] xl:pt-[3.5rem] md:pl-[2rem] md:pt-[2rem] pt-[1rem] pl-[1rem] bg-yellow-100 "
             objectFit=""
             objectPosition="center"
           />

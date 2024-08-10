@@ -38,18 +38,18 @@ export default function ExplainUser() {
         height={40}
         className="hidden md:block xl:hidden"
       />
-      <div className="md:hidden flex mt-4">
+      <div className="md:hidden flex justify-center items-center mt-4">
         <Image
           src={Customer}
           alt="happy customer"
-          width={180}
+          width={260}
           height={40}
           className="block md:hidden"
         />
         <Image
           src={happyCustomer}
           alt="happy customer"
-          width={190}
+          width={260}
           height={40}
           className="block md:hidden"
         />
