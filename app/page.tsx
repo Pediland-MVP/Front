@@ -50,11 +50,11 @@ export default function Home() {
         text="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گراف و مجله در"
         title="تولید سادگی نامفهوم"
       />
-      <div className="mt-32">
+      <div className="md:mt-24 mt-12">
         <ExplainMore2 />
       </div>
       <Prices />
-      <div className="mt-32">
+      <div className="">
         <ExplainMore2 />
       </div>
       <UserComments />

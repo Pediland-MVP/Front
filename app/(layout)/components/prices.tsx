@@ -17,7 +17,7 @@ import {
 
 export default function Prices() {
   return (
-    <div className="w-full max-w-[90rem] mx-auto md:px-16 px-4 ">
+    <div className="w-full max-w-[90rem] mx-auto md:px-16 px-4 mb-16 md:mb-24">
       <Tabs
         defaultValue="monthly"
         className="w-full flex flex-col items-center text-right"

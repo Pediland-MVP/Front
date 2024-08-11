@@ -64,7 +64,7 @@ function Header() {
         <div className="flex w-full">
           {showMenu && (
             <ul
-              className={`flex flex-col  h-[92vh] px-4 py-4 gap-4 font-light absolute right-0 left-0 top-[4.2rem] z-20 bg-white`}
+              className={`flex flex-col  h-auto px-4 py-4 gap-4 font-light absolute right-0 left-0 top-[4.2rem] z-20 bg-white`}
             >
               <li>
                 <a href="/features" className="hover:text-gray-500">

@@ -17,7 +17,7 @@ interface ExplainFeaturesProps {
   const ExplainFeatures: React.FC<ExplainFeaturesProps> = ({flex, bg,picCoverSize, picCoverBg, srcPic, title, text }) => {
     
   return (
-    <div className={`flex justify-center items-center mb-8 md:px-16 px-4 text-blueKommo `}>
+    <div className={`flex justify-center items-center mb-4 md:mb-6 md:px-16 px-4 text-blueKommo `}>
       <div className={`w-full max-w-[80rem] ${bg} rounded-2xl py-6 px-4 md:px-8 xl:px-12`}>
         <div className={`flex w-full  flex-col-reverse  ${flex} items-center lg:gap-8 `}>
           <div className="sm:w-1/2 w-full m-auto flex flex-col pt-4 gap-4 md:pt-0  xl:w-1/2 l md:px-8">

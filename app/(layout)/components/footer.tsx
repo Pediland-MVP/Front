@@ -1,64 +1,222 @@
-"use client"
-import React from 'react';
-import { FacebookLogo, TwitterLogo, InstagramLogo, LinkedinLogo } from '@phosphor-icons/react';
+"use client";
+import React from "react";
+import {
+  FacebookLogo,
+  TwitterLogo,
+  InstagramLogo,
+  LinkedinLogo,
+} from "@phosphor-icons/react";
 
 export default function Footer() {
   return (
-    <div className="mt-32">
+    <div className="md:mt-24 mt-16">
+      {/* Footer */}
+      <footer className="bg-blueKommo mt-auto pt-8 rounded-t-2xl px-4 md:px-8">
+        <div className="container mx-auto rounded-t-xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 pb-8 justify-items-center mx-auto">
+            {/* First Column */}
+            <div>
+              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+                شرکت
+              </h3>
+              <ul className="leading-8 md:leading-[2.5rem]">
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    درباره ما
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    فرصت‌های شغلی
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    رسانه‌ها
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    بلاگ
+                  </a>
+                </li>
+              </ul>
+            </div>
+            {/* Second Column */}
+            <div>
+              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+                پشتیبانی
+              </h3>
+              <ul className="leading-8 md:leading-[2.5rem]">
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    مرکز کمک
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    تماس با ما
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    سوالات متداول
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    قوانین
+                  </a>
+                </li>
+              </ul>
+            </div>
+            {/* Third Column */}
+            <div>
+              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+                خدمات
+              </h3>
+              <ul className="leading-8 md:leading-[2.5rem]">
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    مشاوره
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    فروش
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    بازاریابی
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    خدمات مشتریان
+                  </a>
+                </li>
+              </ul>
+            </div>
+            {/* Fourth Column*/}
 
-      {/* فوتر */}
-      <footer className='bg-blueKommo mt-auto pt-8 rounded-t-2xl '>
-        <div className='container mx-auto bg-white rounded-t-xl py-8'>
-          <div className='grid grid-cols-1 md:grid-cols-4'>
-            {/* ستون اول */}
             <div>
-              <h3 className='text-xl font-semibold mb-4 text-blueKommo'>شرکت</h3>
-              <ul className='leading-[2rem]'>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>درباره ما</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>فرصت‌های شغلی</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>رسانه‌ها</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>بلاگ</a></li>
+              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+                پشتیبانی
+              </h3>
+              <ul className="leading-8 md:leading-[2.5rem]">
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    مرکز کمک
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    تماس با ما
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    سوالات متداول
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-gray-100 hover:text-gray-400 text-sm "
+                  >
+                    قوانین
+                  </a>
+                </li>
               </ul>
-            </div>
-            {/* ستون دوم */}
-            <div>
-              <h3 className='text-xl font-semibold mb-4 text-blueKommo'>پشتیبانی</h3>
-              <ul className='leading-[2rem]'>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>مرکز کمک</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>تماس با ما</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>سوالات متداول</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>سیاست حفظ حریم خصوصی</a></li>
-              </ul>
-            </div>
-            {/* ستون سوم */}
-            <div>
-              <h3 className='text-xl font-semibold mb-4 text-blueKommo'>خدمات</h3>
-              <ul className='leading-[2rem]'>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>مشاوره</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>فروش</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>بازاریابی</a></li>
-                <li><a href="#" className='text-gray-600 hover:text-gray-900'>خدمات مشتریان</a></li>
-              </ul>
-            </div>
-            {/* ستون چهارم (شبکه‌های اجتماعی) */}
-            <div>
-              <h3 className='text-xl font-semibold mb-4 text-blueKommo'>ما را دنبال کنید</h3>
-              <div className='flex gap-4'>
-                <a href="#" aria-label="Facebook" className='text-blueKommo hover:text-purple-700'>
-                  <FacebookLogo size={32} />
-                </a>
-                <a href="#" aria-label="Twitter" className='text-blueKommo hover:text-purple-700'>
-                  <TwitterLogo size={32} />
-                </a>
-                <a href="#" aria-label="Instagram" className='text-blueKommo hover:text-purple-700'>
-                  <InstagramLogo size={32} />
-                </a>
-                <a href="#" aria-label="LinkedIn" className='text-blueKommo hover:text-purple-700'>
-                  <LinkedinLogo size={32} />
-                </a>
-              </div>
             </div>
           </div>
+
+
+          <div className="border-b text-center pb-8">
+            <h3 className="text-lg md:text-xlfont-semibold mb-4 text-white">
+              ما را دنبال کنید
+            </h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="#"
+                aria-label="Facebook"
+                className="text-white hover:text-purple-700"
+              >
+                <FacebookLogo size={28} />
+              </a>
+              <a
+                href="#"
+                aria-label="Twitter"
+                className="text-white hover:text-purple-700"
+              >
+                <TwitterLogo size={28} />
+              </a>
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="text-white hover:text-purple-700"
+              >
+                <InstagramLogo size={28} />
+              </a>
+              <a
+                href="#"
+                aria-label="LinkedIn"
+                className="text-white hover:text-purple-700"
+              >
+                <LinkedinLogo size={28} />
+              </a>
+            </div>
+          </div>
+          <h4 className="text-center m-auto py-4 text-white text-xs md:text-sm font-light">
+            کلیه حقوق برای سایت محفوظ بوده و هرگونه کپی برداری غیرمجاز
+            می‌باشد.
+          </h4>
         </div>
       </footer>
     </div>
