@@ -62,7 +62,6 @@ export default function Home() {
         <ExplainMore2 />
       </div> */}
 
-      <Footer/>
     </>
   );
 }

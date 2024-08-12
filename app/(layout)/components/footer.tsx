@@ -16,14 +16,14 @@ export default function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 pb-8 justify-items-center mx-auto">
             {/* First Column */}
             <div>
-              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+              <h3 className="text-sm md:text-md font-semibold mb-4 text-white">
                 شرکت
               </h3>
-              <ul className="leading-8 md:leading-[2.5rem]">
+              <ul className="leading-8 md:leading-[2.5rem] text-xs">
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     درباره ما
                   </a>
@@ -31,7 +31,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     فرصت‌های شغلی
                   </a>
@@ -39,7 +39,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     رسانه‌ها
                   </a>
@@ -47,7 +47,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     بلاگ
                   </a>
@@ -56,14 +56,14 @@ export default function Footer() {
             </div>
             {/* Second Column */}
             <div>
-              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+              <h3 className="text-sm md:text-md font-semibold mb-4 text-white">
                 پشتیبانی
               </h3>
-              <ul className="leading-8 md:leading-[2.5rem]">
+              <ul className="leading-8 md:leading-[2.5rem] text-xs">
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     مرکز کمک
                   </a>
@@ -71,7 +71,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     تماس با ما
                   </a>
@@ -79,7 +79,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     سوالات متداول
                   </a>
@@ -87,7 +87,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     قوانین
                   </a>
@@ -96,14 +96,14 @@ export default function Footer() {
             </div>
             {/* Third Column */}
             <div>
-              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+              <h3 className="text-sm md:text-md font-semibold mb-4 text-white">
                 خدمات
               </h3>
-              <ul className="leading-8 md:leading-[2.5rem]">
+              <ul className="leading-8 md:leading-[2.5rem] text-xs">
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     مشاوره
                   </a>
@@ -111,7 +111,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     فروش
                   </a>
@@ -119,7 +119,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     بازاریابی
                   </a>
@@ -127,7 +127,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     خدمات مشتریان
                   </a>
@@ -137,14 +137,14 @@ export default function Footer() {
             {/* Fourth Column*/}
 
             <div>
-              <h3 className="text-lg md:text-xl font-semibold mb-4 text-white">
+              <h3 className="text-sm md:text-md font-semibold mb-4 text-white">
                 پشتیبانی
               </h3>
-              <ul className="leading-8 md:leading-[2.5rem]">
+              <ul className="leading-8 md:leading-[2.5rem] text-xs">
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     مرکز کمک
                   </a>
@@ -152,7 +152,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     تماس با ما
                   </a>
@@ -160,7 +160,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     سوالات متداول
                   </a>
@@ -168,7 +168,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-100 hover:text-gray-400 text-sm "
+                    className="text-gray-100 hover:text-gray-400  "
                   >
                     قوانین
                   </a>
@@ -179,7 +179,7 @@ export default function Footer() {
 
 
           <div className="border-b text-center pb-8">
-            <h3 className="text-lg md:text-xlfont-semibold mb-4 text-white">
+            <h3 className="text-sm md:text-mdfont-semibold mb-4 text-white">
               ما را دنبال کنید
             </h3>
             <div className="flex flex-wrap justify-center gap-4">
@@ -213,7 +213,7 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          <h4 className="text-center m-auto py-4 text-white text-xs md:text-sm font-light">
+          <h4 className="text-center m-auto py-4 text-white text-xs md: font-light">
             کلیه حقوق برای سایت محفوظ بوده و هرگونه کپی برداری غیرمجاز
             می‌باشد.
           </h4>

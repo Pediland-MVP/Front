@@ -5,7 +5,7 @@ export default function ExplainApp3() {
   return (
     <div className="max-w-[86rem] w-full md:mb-24 mb-12 mx-auto md:px-[3rem]">
       <div className="flex flex-col w-full xl:flex-row items-center lg:items-start px-4 gap-8">
-        <div className="relative w-full xl:w-1/2 h-0 xl:pb-[35%] md:pb-[40%] pb-[70%] px-[%] rounded-[2rem] pl-[3.5rem] pt-[3.5rem]  bg-yellow-200">
+        <div className="relative w-full xl:w-1/2 h-0 xl:pb-[35%] md:pb-[45%] pb-[70%] px-[%] rounded-[2rem] pl-[3.5rem] pt-[3.5rem]  bg-yellow-200">
           {" "}
           {/* For 600x400 aspect ratio */}
           <Image
