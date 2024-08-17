@@ -1,27 +1,45 @@
 import { styles } from "@/registry/styles";
 import React from "react";
-import Header from "./layout/header";
 import HeroSection from "./(layout)/components/heroSection";
 import ExplainApp from "./(layout)/components/explainApp";
-import ExplainApp2 from "./(layout)/components/explainApp2";
-import ExplainApp3 from "./(layout)/components/explainApp3";
 import ExplainMore from "./(layout)/components/explainMore";
 import ExplainMore2 from "./(layout)/components/explainMore2";
 import ExplainFeatures from "./(layout)/components/explainFeatures";
 import screenShot1 from "../public/kommo-profile.png";
 import Prices from "./(layout)/components/prices";
 import { UserComments } from "./(layout)/components/userComments";
-import Footer from "./(layout)/components/footer";
-// import { UserComments } from "./(layout)/components/userComments";
-// import UserComments  from "./(layout)/components/userComments";
+import screenShotExplain from "../public/profile-ui-kommo.png";
+
 export default function Home() {
   return (
     <>
       <HeroSection />
       <ExplainMore />
-      <ExplainApp />
-      <ExplainApp2 />
-      <ExplainApp3 />
+      <ExplainApp
+        title={`لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ`}
+        text="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با
+            استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در
+            ستون و سطرآنچنان که لازم است"
+        srcPic={screenShotExplain}
+        picCoverSize="xl:pl-[3.5rem] xl:pt-[3.5rem] md:pl-[2rem] md:pt-[2rem] pt-[1rem] pl-[1rem] bg-yellow-100 "
+      />
+      <ExplainApp
+        flex="flex-col xl:flex-row-reverse"
+        title={`لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ`}
+        text="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با
+            استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در
+            ستون و سطرآنچنان که لازم است"
+        srcPic={screenShotExplain}
+        picCoverSize="xl:pr-[3.5rem] xl:pt-[3.5rem] md:pr-[2rem] md:pt-[2rem] pt-[1rem] pr-[1rem] bg-pink-200 "
+      />
+      <ExplainApp
+        title={`لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ`}
+        text="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با
+            استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در
+            ستون و سطرآنچنان که لازم است"
+        srcPic={screenShotExplain}
+        picCoverSize="xl:pr-[3.5rem] xl:pb-[3.5rem] md:pr-[2rem] md:pb-[2rem] pb-[1rem] pr-[1rem] bg-blue-200 "
+      />
       <ExplainMore2 />
       <ExplainFeatures
         flex="sm:flex-row"
@@ -61,7 +79,6 @@ export default function Home() {
       {/* <div className="mt-32">
         <ExplainMore2 />
       </div> */}
-
     </>
   );
 }

@@ -5,9 +5,10 @@ export default function ExplainApp2() {
   return (
     <div className="max-w-[86rem] w-full sm:mb-[6rem] mb-14 mx-auto md:px-14">
       <div className="flex flex-col-reverse  w-full xl:flex-row items-center lg:items-start px-4 gap-8">
-      <div className="w-full m-auto flex flex-col gap-4 xl:w-1/2 l md:px-8">
+        <div className="w-full m-auto flex flex-col gap-4 xl:w-1/2 l md:px-8">
           <h1 className="text-2xl font-semibold">
-            لورم ایپسوم متن ساختگی با<br className="hidden xl:block"/> تولید سادگی نامفهوم از صنعت چاپ
+            لورم ایپسوم متن ساختگی با
+            <br className="hidden xl:block" /> تولید سادگی نامفهوم از صنعت چاپ
           </h1>
           <p className="text-md mb-4 text-gray-700">
             لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با
@@ -22,12 +23,11 @@ export default function ExplainApp2() {
             src={screenShot1}
             alt="Story Image"
             layout="fill"
-            className="rounded-[1rem] w-auto  xl:pr-[3.5rem] xl:pt-[3.5rem] md:pr-[2rem] md:pt-[2rem] pt-[1rem] pr-[1rem] bg-pink-200 "
+            className={`rounded-[1rem] w-auto ${picCoverSize}`}
             // objectFit="cover"
             objectPosition="center"
           />
         </div>
- 
       </div>
     </div>
   );
