@@ -33,7 +33,7 @@ interface SidebarProps {
 
 export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
 
-  const {data: chats, isLoading: isChatsLoading, error: chatsError} = useSWR<InstagramNamespace.GET['AllMessages']>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations?page=1&limit=100&messageLimit=1`, fetcher)
+  const {data: chats, isLoading: isChatsLoading, error: chatsError} = useSWR<InstagramNamespace.GET['Conversations']>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations?page=1&limit=100&messageLimit=1`, fetcher)
 
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
         </div>
       )}
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {chats?.items.map((chat, index) =>
+        {chats?.items?.map((chat, index) =>
           isCollapsed ? (
             <TooltipProvider key={index}>
               <Tooltip key={index} delayDuration={0}>

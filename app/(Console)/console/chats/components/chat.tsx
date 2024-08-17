@@ -42,16 +42,6 @@ export function Chat({ leadId }: ChatProps) {
     }
   }, [lead])
 
-  const {
-    data: messages,
-    isLoading: isMessagesLoading,
-    error: messagesError,
-  } = useSWR<InstagramNamespace.GET["Conversation"]>(
-    lead?.id
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations/${leadId}?limit=20&page=1`
-      : null,
-    fetcher
-  );
 
   
 
@@ -60,7 +50,6 @@ export function Chat({ leadId }: ChatProps) {
     <div className="flex flex-col justify-between w-full h-full">
       <ChatTopbar lead={lead} />
       <ChatList
-        messages={messages}
         lead={lead}
         isMobile={isMobile}
       />
