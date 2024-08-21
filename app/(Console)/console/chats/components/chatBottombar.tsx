@@ -20,18 +20,24 @@ import useSendMessage from "@/hooks/useSendMessage";
 import { useParams } from "next/navigation";
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
+import { Messages } from "@/types/instagram";
+import { SendingMessageType } from "./sendingMessage";
 
 
 
 
 interface ChatBottombarProps {
   isMobile: boolean;
+  setSendingMessages: React.Dispatch<React.SetStateAction<SendingMessageType[]>>
+  sendingMessages: SendingMessageType[]
 }
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
 export default function ChatBottombar({
   isMobile,
+  sendingMessages,
+  setSendingMessages
 }: ChatBottombarProps) {
 
   const { currentLead } = useCurrentLead()
@@ -76,7 +82,7 @@ export default function ChatBottombar({
     setMessage("");
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
 
     if (!currentLead) {
       return toast({
@@ -92,11 +98,17 @@ export default function ChatBottombar({
         avatar: loggedInUserData.avatar,
         message: message.trim(),
       };
-      sendMessage({
+      const res = sendMessage({
         instagramId: currentLead?.instagram.id,
         leadId: currentLead?.id,
         text: newMessage.message,
       });
+
+      console.log(await res);
+      
+
+      setSendingMessages((prev) => [...prev, { text: newMessage.message, isLoading: true }])      
+
       setMessage("");
 
       if (inputRef.current) {
