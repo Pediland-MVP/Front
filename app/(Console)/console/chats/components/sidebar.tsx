@@ -14,10 +14,8 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Message } from "./data";
 import Image from "next/image";
 import { InstagramNamespace } from '@/types/instagram';
-import useSWR from "swr";
-import { useEffect } from "react";
-import { fetcher } from "@/hooks/swr/fetcher";
-import { toast } from "@/components/ui/use-toast";
+import { memo, useEffect, useState } from "react";
+import { socket } from "@/app/utils/socket";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -31,21 +29,24 @@ interface SidebarProps {
   isMobile: boolean;
 }
 
-export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
+function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
 
-  const {data: chats, isLoading: isChatsLoading, error: chatsError} = useSWR<InstagramNamespace.GET['Conversations']>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations?page=1&limit=100&messageLimit=1`, fetcher)
-
+  const [conversations, setConversations] = useState<InstagramNamespace.GET['Conversations']>()
 
   useEffect(() => {
-      
-      if (!chatsError) return;
 
-      toast({
-          title: 'خطایی رخ داده است',
-          variant: 'destructive'
-      })
-      
-  }, [chatsError])
+    if (!socket.connected) return;
+    
+    socket.emit('conversations')
+
+    socket.on('conversations', (conversations) => {
+      setConversations(JSON.parse(conversations))
+    })
+
+    return () => {
+      socket.off('conversations')
+    }
+  }, [])
 
   return (
     <div
@@ -83,7 +84,7 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
         </div>
       )}
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {chats?.items?.map((chat, index) =>
+        {conversations?.items?.map((chat, index) =>
           isCollapsed ? (
             <TooltipProvider key={index}>
               <Tooltip key={index} delayDuration={0}>
@@ -150,3 +151,5 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
     </div>
   );
 }
+
+export default memo(Sidebar)

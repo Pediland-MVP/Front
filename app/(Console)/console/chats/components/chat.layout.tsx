@@ -4,13 +4,11 @@ import { userData } from "./data";
 import React, { useEffect, useState } from "react";
 import {
   ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
+  ResizablePanel
 } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 
-import { Chat } from "./chat";
-import { Sidebar } from "./sidebar";
+import Sidebar from "./sidebar";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 
 interface ChatLayoutProps {
@@ -47,7 +45,7 @@ export function ChatLayout({
       window.removeEventListener("resize", checkScreenWidth);
     };
   }, []);
-
+  
   return (
     <>
       <ResizablePanel
