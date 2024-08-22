@@ -30,8 +30,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
   const [hasMore, setHasMore] = React.useState(true);
 
   useEffect(() => {
-
-    if (!lead?.id) return;
     socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
     socket.on(WsMessages.CONVERSATION, (conversationStr) => {
@@ -45,8 +43,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
   }, [lead]);
 
   useEffect(() => {
-
-    if (!lead?.id) return;
     socket.on(WsMessages.NEW_MESSAGE, (data) => {
 
       console.log(JSON.parse(data));
@@ -56,12 +52,21 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
 
   }, [lead])
 
+  useEffect(() => {
+    socket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
+      const message: Messages & {digest: number} = JSON.parse(messageStr)
+      setSendingMessages((old) => old.filter((m) => m.digest !== message.digest))
+      console.log(message);
+      setMessagesList((old) => [message, ...old]);
+    })
+  }, [lead])
+
   const next = () => {
     socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id, page: page+1, after: btoa(messagesList[0].sendDate) })
     setPage((old) => old+1)
   }
 
-  if (!lead) {
+  if (!lead?.id) {
     return <div>Loading</div>;
   }
 
@@ -95,12 +100,15 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
             }} // Keep the messages at the bottom
           >
             {messagesList?.map((message, index) => (
-              <Message
-                message={message}
-                key={message.id}
-                lead={lead}
-                messagesList={messagesList}
-              />
+              <div key={index} >
+                <p>{message.sendDate} {message.id}</p>
+                <Message
+                  message={message}
+                  key={message.id}
+                  lead={lead}
+                  messagesList={messagesList}
+                />
+              </div>
             ))}
           </InfiniteScroll>
         </div>

@@ -22,7 +22,8 @@ import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
 import { Messages } from "@/types/instagram";
 import { SendingMessageType } from "./sendingMessage";
-
+import { WsMessages } from "@/ws.messages";
+import { socket } from "@/app/utils/socket";
 
 
 
@@ -92,22 +93,15 @@ export default function ChatBottombar({
     }
     
     if (message.trim()) {
-      const newMessage: Message = {
-        id: message.length + 1,
-        name: loggedInUserData.name,
-        avatar: loggedInUserData.avatar,
-        message: message.trim(),
-      };
-      const res = sendMessage({
+      const newMessage = {
         instagramId: currentLead?.instagram.id,
         leadId: currentLead?.id,
-        text: newMessage.message,
-      });
+        text: message.trim(),
+      }
+      const digest = (Math.floor(Math.random()) * 10000) + Date.now()
+      socket.emit(WsMessages.SEND_MESSAGE, {...newMessage, digest})
 
-      console.log(await res);
-      
-
-      setSendingMessages((prev) => [...prev, { text: newMessage.message, isLoading: true }])      
+      setSendingMessages((prev) => [...prev, { text: newMessage.text, isLoading: true, digest }])
 
       setMessage("");
 

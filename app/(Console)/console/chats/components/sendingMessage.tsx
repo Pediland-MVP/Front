@@ -3,7 +3,7 @@ import { AvatarImage } from "@radix-ui/react-avatar";
 import { motion } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
 
-export type SendingMessageType = { text: string; isLoading: boolean };
+export type SendingMessageType = { text: string; isLoading: boolean, digest: number };
 
 export type SendingMessageProps = {
   message: SendingMessageType;
