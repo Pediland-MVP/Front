@@ -1,17 +1,15 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import React, { useEffect, useRef, useState } from "react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ChatBottombar from "./chatBottombar";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
 import { InstagramNamespace, Messages } from "@/types/instagram";
-import { fetcher } from "@/hooks/swr/fetcher";
-import useSWR, { mutate } from "swr";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Message from "./message";
 import SendingMessage, { SendingMessageType } from "./sendingMessage";
+import { socket } from "@/app/utils/socket";
+import { WsMessages } from "@/ws.messages";
 
 interface ChatScreenProps {
   lead?: leadNamespace.GET["One"];
@@ -27,63 +25,41 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
     []
   );
 
-  useEffect(() => {
-    console.log(messagesList, messagesList.length);
-  }, [messagesList]);
-
   const [lastPageRecived, setLastPageRecived] = useState<number>();
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
 
-  useEffect(() => console.log(hasMore), [hasMore]);
+  useEffect(() => {
 
-  const {
-    data: messages,
-    isLoading: isMessagesLoading,
-    error: messagesError,
-    mutate: mutateMessages,
-  } = useSWR<InstagramNamespace.GET["Conversation"]>(
-    lead?.id
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations/${lead.id}?limit=${limit}&page=${page}`
-      : null,
-    fetcher
-  );
+    if (!lead?.id) return;
+    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
+
+    socket.on(WsMessages.CONVERSATION, (conversationStr) => {
+      const conversation: InstagramNamespace.GET['Conversation'] = JSON.parse(conversationStr)
+      if (conversation.items.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      setMessagesList((old) => [...old, ...conversation.items]);
+    });
+  }, [lead]);
 
   useEffect(() => {
-    if (!messages) return;
-    if (messages.items.length === 0) {
-      setHasMore(false);
-      return;
-    }
-    if (messages.meta.currentPage === lastPageRecived) return;
-    setLastPageRecived(messages.meta.currentPage);
-    setMessagesList((prevMessages) => [...prevMessages, ...messages.items]);
-  }, [messages, lastPageRecived]);
 
-  const checkHasMore = () => {
-    if (!messages?.items.length || messages!.items.length < limit) {
-      setHasMore(false);
-    } else {
-      setHasMore(true);
-    }
-  };
+    if (!lead?.id) return;
+    socket.on(WsMessages.NEW_MESSAGE, (data) => {
 
-  const next = async () => {
-    setPage((prev) => prev + 1);
-    await mutate(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations/${
-        lead?.id
-      }?limit=${limit}&page=${page + 1}`
-    );
-    checkHasMore();
-  };
+      console.log(JSON.parse(data));
+      
+      setMessagesList((old) => [JSON.parse(data), ...old]);
+    })
 
-  // useEffect(() => {
-  //   if (messagesContainerRef.current) {
-  //     messagesContainerRef.current.scrollTop =
-  //       messagesContainerRef.current.scrollHeight;
-  //   }
-  // }, [messagesList]);
+  }, [lead])
+
+  const next = () => {
+    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id, page: page+1, after: btoa(messagesList[0].sendDate) })
+    setPage((old) => old+1)
+  }
 
   if (!lead) {
     return <div>Loading</div>;
@@ -121,7 +97,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
             {messagesList?.map((message, index) => (
               <Message
                 message={message}
-                key={index}
+                key={message.id}
                 lead={lead}
                 messagesList={messagesList}
               />
