@@ -9,7 +9,7 @@ import useSWR from "swr";
 
 const ChatsList: FC = () => {
 
-    const {data: chats, isLoading: isChatsLoading, error: chatsError} = useSWR<InstagramNamespace.GET['AllMessages']>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations?page=1&limit=100&messageLimit=1`, fetcher)
+    const {data: chats, isLoading: isChatsLoading, error: chatsError} = useSWR<InstagramNamespace.GET['Conversations']>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/message/conversations?page=1&limit=100&messageLimit=1`, fetcher)
 
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const ChatsList: FC = () => {
     return (
         <div className="w-full flex justify-center items-center  p-4">
             {
-                Array.isArray(chats?.items) && chats.items.map((chat, index) => {
+                Array.isArray(chats?.items) && chats.items?.map((chat, index) => {
                     return (
                         <div key={chat.id} className="w-full p-4 rounded-md select-none cursor-pointer hover:bg-gray-100/50 duration-100 flex justify-start items-center gap-x-2">
                             <Image src={chat.profilePic} alt={chat.firstname} width={70} height={70} className="rounded-full" />

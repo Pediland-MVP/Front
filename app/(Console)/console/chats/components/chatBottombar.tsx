@@ -1,7 +1,9 @@
 import {
   FileImage,
   Mic,
-  Paperclip, SendHorizontal, ThumbsUp
+  Paperclip,
+  SendHorizontal,
+  ThumbsUp,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
@@ -16,35 +18,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import useSendMessage from "@/hooks/useSendMessage";
-import { useParams } from "next/navigation";
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
-
-
-
+import { WsMessages } from "@/ws.messages";
+import { socket } from "@/app/utils/socket";
+import { IMessage } from "./message";
 
 interface ChatBottombarProps {
   isMobile: boolean;
+  setMessagesList: React.Dispatch<React.SetStateAction<IMessage[]>>;
+  messagesList: IMessage[];
 }
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
 export default function ChatBottombar({
   isMobile,
+  setMessagesList,
+  messagesList,
 }: ChatBottombarProps) {
-
-  const { currentLead } = useCurrentLead()
+  const { currentLead } = useCurrentLead();
 
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  const params: {chatId: string} = useParams()
-  
-
-  const { sendMessage, isMessageSendLoading } = useSendMessage()
-
-
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
@@ -62,41 +58,30 @@ export default function ChatBottombar({
       return toast({
         variant: "destructive",
         title: "خطا در ارسال پیام",
-      })
+      });
     }
 
-    console.log('sendMessage');
-    
 
-    sendMessage({
-      instagramId: currentLead?.instagram.id,
-      leadId: currentLead?.id,
-      text: newMessage.message,
-    });
     setMessage("");
   };
 
-  const handleSend = () => {
-
+  const handleSend = async () => {
     if (!currentLead) {
       return toast({
         variant: "destructive",
         title: "خطا در ارسال پیام",
-      })
+      });
     }
-    
+
     if (message.trim()) {
-      const newMessage: Message = {
-        id: message.length + 1,
-        name: loggedInUserData.name,
-        avatar: loggedInUserData.avatar,
-        message: message.trim(),
-      };
-      sendMessage({
+      const newMessage = {
         instagramId: currentLead?.instagram.id,
         leadId: currentLead?.id,
-        text: newMessage.message,
-      });
+        text: message.trim(),
+      };
+      const digest = Math.floor(Math.random()) * 10000 + Date.now();
+      socket.emit(WsMessages.SEND_MESSAGE, { ...newMessage, digest });
+
       setMessage("");
 
       if (inputRef.current) {

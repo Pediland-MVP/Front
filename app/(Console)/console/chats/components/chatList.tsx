@@ -1,97 +1,129 @@
-import { Message, UserData } from "./data";
-import { cn } from "@/lib/utils";
-import React, { useRef } from "react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import ChatBottombar from "./chatBottombar";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
-import { InstagramNamespace } from "@/types/instagram";
+import { InstagramNamespace, Messages } from "@/types/instagram";
+import InfiniteScroll from "react-infinite-scroll-component";
+import Message, { IMessage } from "./message";
+import SendingMessage, { SendingMessageType } from "./sendingMessage";
+import { socket } from "@/app/utils/socket";
+import { WsMessages } from "@/ws.messages";
 
 interface ChatScreenProps {
-  messages?: InstagramNamespace.GET["Conversation"];
-  lead?: leadNamespace.GET['One'];
+  lead?: leadNamespace.GET["One"];
   isMobile: boolean;
 }
 
-export function ChatList({
-  messages,
-  lead,
-  isMobile
-}: ChatScreenProps) {
+
+export function ChatList({ lead, isMobile }: ChatScreenProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
+  const limit = 13;
+  const [messagesList, setMessagesList] = useState<IMessage[]>([]);
+  const [sendingMessages, setSendingMessages] = useState<SendingMessageType[]>(
+    []
+  );
+  const [page, setPage] = React.useState(1);
+  const [hasMore, setHasMore] = React.useState(true);
 
-  if (!lead) {
-    return <div>Loading</div>
+
+  useEffect(() => {
+    console.log(messagesList);
+    
+  }, [messagesList])
+  
+  let isListenersSet = false
+
+  useEffect(() => {
+
+    if (isListenersSet) return
+    isListenersSet = true;
+
+    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
+
+    socket.on(WsMessages.CONVERSATION, (conversationStr) => {
+      const conversation: InstagramNamespace.GET['Conversation'] = JSON.parse(conversationStr)
+      if (conversation.items.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      setMessagesList((old) => [...old, ...conversation.items]);
+    });
+
+    socket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
+      const message: Messages & {digest: number} = JSON.parse(messageStr)
+      setMessagesList((old) => [message, ...old]);
+    })
+
+    socket.on(WsMessages.NEW_MESSAGE, (data) => {
+  
+      console.log(JSON.parse(data));
+      
+      setMessagesList((old) => [JSON.parse(data), ...old]);
+    })
+
+    return () => {
+      socket.off(WsMessages.CONVERSATION);
+      socket.off(WsMessages.MESSAGE_SENT);
+      socket.off(WsMessages.NEW_MESSAGE);
+    }
+  }, [lead]);
+
+  const next = () => {
+    const lastMessage = messagesList.find(m => m?.sendDate)?.sendDate
+    if (!lastMessage) return;
+    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id, page: page+1, after: btoa(lastMessage) })
+    setPage((old) => old+1)
+  }
+
+  if (!lead?.id) {
+    return <div>Loading</div>;
   }
 
   return (
     <div className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col">
-      <div
-        ref={messagesContainerRef}
-        className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col"
-      >
-        <AnimatePresence>
-          {messages?.items?.map((message, index) => (
-            <motion.div
-              key={index}
-              layout
-              initial={{ opacity: 0, scale: 1, y: 50, x: 0 }}
-              animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-              exit={{ opacity: 0, scale: 1, y: 1, x: 0 }}
-              transition={{
-                opacity: { duration: 0.1 },
-                layout: {
-                  type: "spring",
-                  bounce: 0.3,
-                  duration: messages.items.indexOf(message) * 0.05 + 0.2,
-                },
-              }}
-              style={{
-                originX: 0.5,
-                originY: 0.5,
-              }}
-              className={cn(
-                "flex flex-col gap-2 p-4 whitespace-pre-wrap",
-                message.from === 'lead' ? "items-end" : "items-start"
-              )}
-            >
-              <div className="flex gap-3 items-center">
-                <span className=" bg-accent p-3 rounded-md max-w-xs">
-                  {message.text}
-                </span>
-                {message.from === 'lead' && (
-                  <Avatar className="flex justify-center items-center">
-                    <AvatarImage
-                      src={lead.profilePic}
-                      alt={lead.profilePic}
-                      width={6}
-                      height={6}
-                    />
-                  </Avatar>
-                )}
-                {message.from !== 'lead' && (
-                  <Avatar className="flex justify-center items-center">
-                    <AvatarImage
-                      src={lead.instagram.profilePictureUrl}
-                      alt={lead.instagram.firstname}
-                      width={6}
-                      height={6}
-                    />
-                  </Avatar>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-      <ChatBottombar isMobile={isMobile}/>
+      <AnimatePresence>
+        <div
+          id="chat-container"
+          ref={messagesContainerRef}
+          className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col-reverse"
+        >
+          <InfiniteScroll
+            dataLength={messagesList.length} // Length of the messages array
+            next={next} // Function to fetch more data
+            hasMore={hasMore} // Boolean to indicate whether more data is available
+            loader={<h4>Loading...</h4>} // A spinner or loading component
+            inverse={true} // To load items in reverse order (top down)
+            endMessage={
+              <p className="text-sm text-center mt-2 text-gray-500">
+                <p>دیگه پیامی نیست!</p>
+              </p>
+            }
+            scrollableTarget="chat-container" // The ID of the scrollable div
+            style={{
+              display: "flex",
+              flexDirection: "column-reverse",
+              overflowY: "hidden",
+            }} // Keep the messages at the bottom
+          >
+            {messagesList?.map((message, index) => (
+                <Message
+                  message={message}
+                  key={message.id}
+                  lead={lead}
+                  messagesList={messagesList}
+                />
+            ))}
+          </InfiniteScroll>
+        </div>
+      </AnimatePresence>
+      <ChatBottombar
+        setMessagesList={setMessagesList}
+        messagesList={messagesList}
+        isMobile={isMobile}
+      />
     </div>
   );
 }
