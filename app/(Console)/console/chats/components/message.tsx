@@ -1,13 +1,24 @@
-import { Messages } from "@/types/instagram";
 import { leadNamespace } from "@/types/lead";
 import { cn, Avatar } from "@nextui-org/react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { motion } from "framer-motion";
 
 
+export interface IMessage {
+  from: "instagram" | "lead";
+  text: string;
+  id?: string;
+  createDate?: Date;
+  updateDate?: Date;
+  messageId?: string;
+  attachment?: null;
+  sendDate?: string;
+  digest?: number
+}
+
 export type MessageProps = {
-    message: Messages,
-    messagesList: Messages[],
+    message: IMessage,
+    messagesList: IMessage[],
     lead: leadNamespace.Lead
 }
 export default function Message({ message, messagesList, lead }: MessageProps) {
@@ -33,7 +44,7 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
         }}
         className={cn(
           "flex flex-col gap-2 p-4 whitespace-pre-wrap",
-          message.from === "lead" ? "items-end" : "items-start"
+          message.from === "lead" ? "items-end" : "items-start",
         )}
       >
         <div className="flex gap-3 items-center">

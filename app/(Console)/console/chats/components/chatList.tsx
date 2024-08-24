@@ -6,7 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
 import { InstagramNamespace, Messages } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Message from "./message";
+import Message, { IMessage } from "./message";
 import SendingMessage, { SendingMessageType } from "./sendingMessage";
 import { socket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
@@ -16,20 +16,31 @@ interface ChatScreenProps {
   isMobile: boolean;
 }
 
+
 export function ChatList({ lead, isMobile }: ChatScreenProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const limit = 13;
-  const [messagesList, setMessagesList] = useState<Messages[]>([]);
+  const [messagesList, setMessagesList] = useState<IMessage[]>([]);
   const [sendingMessages, setSendingMessages] = useState<SendingMessageType[]>(
     []
   );
-
-  const [lastPageRecived, setLastPageRecived] = useState<number>();
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
 
+
   useEffect(() => {
+    console.log(messagesList);
+    
+  }, [messagesList])
+  
+  let isListenersSet = false
+
+  useEffect(() => {
+
+    if (isListenersSet) return
+    isListenersSet = true;
+
     socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
     socket.on(WsMessages.CONVERSATION, (conversationStr) => {
@@ -40,29 +51,30 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
       }
       setMessagesList((old) => [...old, ...conversation.items]);
     });
-  }, [lead]);
 
-  useEffect(() => {
+    socket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
+      const message: Messages & {digest: number} = JSON.parse(messageStr)
+      setMessagesList((old) => [message, ...old]);
+    })
+
     socket.on(WsMessages.NEW_MESSAGE, (data) => {
-
+  
       console.log(JSON.parse(data));
       
       setMessagesList((old) => [JSON.parse(data), ...old]);
     })
 
-  }, [lead])
-
-  useEffect(() => {
-    socket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
-      const message: Messages & {digest: number} = JSON.parse(messageStr)
-      setSendingMessages((old) => old.filter((m) => m.digest !== message.digest))
-      console.log(message);
-      setMessagesList((old) => [message, ...old]);
-    })
-  }, [lead])
+    return () => {
+      socket.off(WsMessages.CONVERSATION);
+      socket.off(WsMessages.MESSAGE_SENT);
+      socket.off(WsMessages.NEW_MESSAGE);
+    }
+  }, [lead]);
 
   const next = () => {
-    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id, page: page+1, after: btoa(messagesList[0].sendDate) })
+    const lastMessage = messagesList.find(m => m?.sendDate)?.sendDate
+    if (!lastMessage) return;
+    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id, page: page+1, after: btoa(lastMessage) })
     setPage((old) => old+1)
   }
 
@@ -78,9 +90,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
           ref={messagesContainerRef}
           className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col-reverse"
         >
-          {sendingMessages?.map((message, index) => (
-            <SendingMessage message={message} lead={lead} key={index} />
-          ))}
           <InfiniteScroll
             dataLength={messagesList.length} // Length of the messages array
             next={next} // Function to fetch more data
@@ -100,22 +109,19 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
             }} // Keep the messages at the bottom
           >
             {messagesList?.map((message, index) => (
-              <div key={index} >
-                <p>{message.sendDate} {message.id}</p>
                 <Message
                   message={message}
                   key={message.id}
                   lead={lead}
                   messagesList={messagesList}
                 />
-              </div>
             ))}
           </InfiniteScroll>
         </div>
       </AnimatePresence>
       <ChatBottombar
-        setSendingMessages={setSendingMessages}
-        sendingMessages={sendingMessages}
+        setMessagesList={setMessagesList}
+        messagesList={messagesList}
         isMobile={isMobile}
       />
     </div>
