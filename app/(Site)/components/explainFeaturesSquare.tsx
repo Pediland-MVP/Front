@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import pipline from "../../../public/kommo-profile.png";
+import pipline from "@/public/kommo-profile.png";
 import Image, { StaticImageData } from "next/image";
 import { ArrowArcRight, ArrowLeft } from "@phosphor-icons/react";
 interface ExplainFeaturesProps {

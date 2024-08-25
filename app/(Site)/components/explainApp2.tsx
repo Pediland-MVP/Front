@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import screenShot1 from "../../../public/kommo-profile.png";
+import screenShot1 from "@/public/kommo-profile.png";
 export default function ExplainApp2() {
   return (
     <div className="max-w-[86rem] w-full sm:mb-[6rem] mb-14 mx-auto md:px-14">

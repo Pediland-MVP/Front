@@ -1,6 +1,6 @@
 import Image, { StaticImageData } from "next/image";
 import React from "react";
-import screenShot1 from "../../../public/profile-ui-kommo.png";
+import screenShot1 from "@/public/profile-ui-kommo.png";
 
 interface ExplainProps {
   srcPic: string | StaticImageData;

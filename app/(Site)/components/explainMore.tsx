@@ -1,6 +1,6 @@
 import React from "react";
-import happyCustomer from "../../../public/kommo-happy-client.png";
-import Customer from "../../../public/kommo-enterpreneur.png";
+import happyCustomer from "@/public/kommo-happy-client.png";
+import Customer from "@/public/kommo-enterpreneur.png";
 
 import Image from "next/image";
 export default function ExplainUser() {

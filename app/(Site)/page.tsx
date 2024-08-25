@@ -1,14 +1,14 @@
 import { styles } from "@/registry/styles";
 import React from "react";
-import HeroSection from "./(layout)/components/heroSection";
-import ExplainApp from "./(layout)/components/explainApp";
-import ExplainMore from "./(layout)/components/explainMore";
-import ExplainMore2 from "./(layout)/components/explainMore2";
-import ExplainFeatures from "./(layout)/components/explainFeatures";
-import screenShot1 from "../public/kommo-profile.png";
-import Prices from "./(layout)/components/prices";
-import { UserComments } from "./(layout)/components/userComments";
-import screenShotExplain from "../public/profile-ui-kommo.png";
+import HeroSection from "./components/heroSection";
+import ExplainApp from "./components/explainApp";
+import ExplainMore from "./components/explainMore";
+import ExplainMore2 from "./components/explainMore2";
+import ExplainFeatures from "./components/explainFeatures";
+import screenShot1 from "@/public/kommo-profile.png";
+import Prices from "./components/prices";
+import { UserComments } from "./components/userComments";
+import screenShotExplain from "@/public/profile-ui-kommo.png";
 
 export default function Home() {
   return (

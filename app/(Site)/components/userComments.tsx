@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/registry/new-york/ui/carousel";
 // import ExplainFeatures from "@/components/ExplainFeatures";
-import kommoProfile from "../../../public/kommo-profile.png"; // Example static image
+import kommoProfile from "@/public/kommo-profile.png"; // Example static image
 import UserCommentsCard from "./userCommentsCard";
 
 export function UserComments() {

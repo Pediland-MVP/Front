@@ -1,7 +1,7 @@
 import { CaretLeft, EnvelopeSimple } from "@phosphor-icons/react";
 import React from "react";
 import ExplainFeatures from "./explainFeaturesSmall";
-import screenShotExplain from "../../../public/profile-ui-kommo.png";
+import screenShotExplain from "@/public/profile-ui-kommo.png";
 
 interface megaMenuXlProps {
   title1: string;

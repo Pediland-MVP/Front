@@ -17,7 +17,7 @@ import {
 } from "@phosphor-icons/react";
 import React from "react";
 import { useState } from "react";
-import MegaMenuXl from "../(layout)/components/megaMenuXl";
+import MegaMenuXl from "../(Site)/components/megaMenuXl";
 import Link from "next/link";
 
 function Header() {
