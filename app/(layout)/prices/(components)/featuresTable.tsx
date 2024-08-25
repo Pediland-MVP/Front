@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/registry/new-york/ui/accordion";
+} from "@/components/ui/accordion";
 import { Check } from "@phosphor-icons/react/dist/ssr";
 import { X } from "@phosphor-icons/react";
 

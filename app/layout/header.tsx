@@ -6,7 +6,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/registry/new-york/ui/accordion";
+} from "@/components/ui/accordion";
 import {
   CaretDown,
   CaretLeft,
