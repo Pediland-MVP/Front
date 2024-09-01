@@ -11,10 +11,9 @@ const ChatsLayout: FC<ChatsLayout> = ({children}) => {
     const layout = cookies().get("react-resizable-panels:layout");
     const defaultLayout = layout ? JSON.parse(layout.value) : undefined;
     return (
-        <div className="flex">
-            <ChatLayout  defaultLayout={defaultLayout} navCollapsedSize={8} >
+        <div className="w-full bg-">
                 {children}
-            </ChatLayout>
+        
         </div>
     )
 
