@@ -38,7 +38,7 @@ export default function AccountPage() {
           page.facebookAccountId === searchParams.get("facebookAccountId") &&
           !page.instagramId
       )
-    : instagramPages?.filter((account) => account.instagramId);
+    : !!instagramPages?.length ? instagramPages.filter((account) => account.instagramId) : null
 
   useEffect(() => {
     if (isFromFacebook) {
