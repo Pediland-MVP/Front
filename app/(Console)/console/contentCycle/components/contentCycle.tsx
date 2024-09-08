@@ -185,26 +185,26 @@ export default function ContentCycle() {
                     onClick={() => deleteCondition(condition.id)}
                   />
                 )}
+                <Button
+                  onClick={addCondition}
+                  variant="ghost"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <PlusCircle size={24} />
+                  <span className="text-sm font-semibold text-blue-600">
+                    افزودن شرط جدید
+                  </span>
+                </Button>
               </div>
             ))}
-          </div>
-
-          {/* Add button to add more conditions */}
-          <div
-            className="flex items-center gap-4 cursor-pointer"
-            onClick={addCondition}
-          >
-            <Plus size={24} />
-            <span className="text-sm font-semibold text-blue-600">
-              افزودن شرط جدید
-            </span>
+            {/* Add button to add more conditions */}
           </div>
 
           {/* Message input & post select */}
           <div className="space-y-4">
             {postAndMessage.map((postMessage, index) => (
               <div key={postMessage.id} className="space-y-4">
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-4 items-center">
                   <Button
                     className="flex gap-2"
                     variant={"outline"}
@@ -214,6 +214,17 @@ export default function ContentCycle() {
                       <PlusCircle size={15} />
                     </span>
                     انتخاب پست
+                  </Button>
+                  {/* Add button to add more post and message */}
+                  <Button
+                    variant="ghost"
+                    onClick={addPostAndMessage}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <PlusCircle size={24} />
+                    <span className="text-sm font-semibold text-blue-600">
+                      افزودن
+                    </span>
                   </Button>
 
                   {postAndMessage.length > 1 && (
@@ -231,7 +242,7 @@ export default function ContentCycle() {
                   control={control}
                   render={({ field }) => (
                     <textarea
-                      className="w-2/4 border px-3 py-2 rounded-xl"
+                      className="w-4/5 border px-3 py-2 rounded-xl"
                       placeholder="پیام خود را وارد کنید"
                       {...field}
                     />
@@ -239,40 +250,37 @@ export default function ContentCycle() {
                 />
 
                 {/* Select Time (1-24 hours) */}
-                <Controller
-                  name={`postAndMessage.${index}.time`}
-                  control={control}
-                  render={({ field }) => (
-                    <Select {...field} dir="rtl" onValueChange={field.onChange}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="انتخاب ساعت" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>
-                            انتخاب ساعت ارسال بعد از پست اول
-                          </SelectLabel>
-                          {Array.from({ length: 24 }, (_, i) => (
-                            <SelectItem key={i + 1} value={String(i + 1)}>
-                              {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
+                {postAndMessage[index].id > 1 && (
+                  <Controller
+                    name={`postAndMessage.${index}.time`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        dir="rtl"
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="انتخاب ساعت" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>
+                              انتخاب ساعت ارسال بعد از پست اول
+                            </SelectLabel>
+                            {Array.from({ length: 24 }, (_, i) => (
+                              <SelectItem key={i + 1} value={String(i + 1)}>
+                                {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                )}
               </div>
             ))}
-          </div>
-
-          {/* Add button to add more post and message */}
-          <div
-            className="flex items-center gap-4 cursor-pointer"
-            onClick={addPostAndMessage}
-          >
-            <Plus size={24} />
-            <span className="text-sm font-semibold text-blue-600">افزودن</span>
           </div>
 
           {/* Checkbox options */}
