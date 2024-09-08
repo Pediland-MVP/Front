@@ -10,7 +10,7 @@ import { AccountSwitcher } from "@/app/(Console)/console/components/account-swit
 import { Nav } from "@/app/(Console)/console/components/nav";
 import { accounts } from "@/app/(Console)/console/data";
 import { useState } from "react";
-import { ChatCircleText, ChatsCircle, Gauge, PaperPlaneTilt } from "@phosphor-icons/react/dist/ssr";
+import { ChatCircleText, ChatsCircle, Gauge, PaperPlaneTilt, Robot } from "@phosphor-icons/react/dist/ssr";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const defaultCollapsed = false;
@@ -19,7 +19,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     // <NextUIProvider className="bg-white h-full rounded-xl text-black">
     // <TooltipProvider delayDuration={0}>
-    <div className="flex h-full w-full ">
+    <div className="flex w-full ">
       <div>
         {/* <div className="flex h-[52px] items-center justify-center">
               <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
@@ -53,12 +53,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 variant: "ghost",
                 href: "/console/accounts",
               },
-              // {
-              //   title: "اکانت‌ها",
-              //   icon: User,
-              //   variant: "ghost",
-              //   href: "/console/accounts",
-              // },
+              {
+                title: "چرخه محتوا",
+                icon: Robot,
+                variant: "ghost",
+                href: "/console/contentCycle",
+              },
             ]}
           />
         </div>

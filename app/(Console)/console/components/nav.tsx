@@ -21,7 +21,7 @@ export function Nav({ links }: NavProps) {
 
   return (
     <div
-      className="absolute z-50 px-[.5rem] py-4 shadow-md bg-white rounded-xl h-[96.8%] group flex flex-col transition-all duration-300"
+      className="fixed z-50 px-[.5rem] py-4 shadow-md bg-white rounded-xl h-[96.5%] group flex flex-col transition-all duration-300"
       style={{ width: "56px" }}
       onMouseEnter={(e) => (e.currentTarget.style.width = "220px")}
       onMouseLeave={(e) => {(e.currentTarget.style.width = "56px") }}
@@ -40,7 +40,7 @@ export function Nav({ links }: NavProps) {
         </span>
       </div>
 
-      <nav className="flex flex-col gap-6">
+      <nav className="flex flex-col gap-8">
         {links.map((link, index) => (
           <Link
             key={index}

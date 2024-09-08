@@ -48,6 +48,7 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
       socket.off("conversations");
     };
   }, []);
+console.log(activeTab);
 
   return (
     <div
