@@ -23,7 +23,10 @@ import { Button } from "@/registry/new-york/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ModalPost from "./ModalPost";
 import ContentCycleLeads from "./contentCycleLeads";
-import { useContentStore } from "@/store/contentCycleStore";
+import {
+  useContentStore,
+  useCurrentTextAreaValue,
+} from "@/store/contentCycleStore";
 import SwitchOfForm from "./switchOfForm";
 import ConditionWordForm from "./conditionWordForm";
 import CheckBoxOptionForm from "./checkBoxOptionForm";
@@ -32,6 +35,8 @@ import { Textarea } from "@/registry/new-york/ui/textarea";
 
 export default function ContentCycle() {
   const { adminContentCycle, setAdminContentCycle } = useContentStore();
+  const { currentTextAreaValue, setCurrentTextAreaValue } =
+    useCurrentTextAreaValue();
   const [postAndMessage, setPostAndMessage] = useState([{ id: 1 }]);
   const [newButton, setNewButton] = useState([{ id: 1 }]);
   const [test, setTest] = useState("");
@@ -46,6 +51,7 @@ export default function ContentCycle() {
     control,
     handleSubmit,
     watch,
+    unregister,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
@@ -65,12 +71,12 @@ export default function ContentCycle() {
   });
 
   console.log("ERROR", errors);
-  // console.log([...adminContentCycle]);
-  const data = [...adminContentCycle, test];
 
   // Submit handler
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
+    setAdminContentCycle([...adminContentCycle, test]);
+    setCurrentTextAreaValue("");
   };
 
   // Add a new postAndMessage section
@@ -80,8 +86,15 @@ export default function ContentCycle() {
   const addNewButton = () => {
     setNewButton([...newButton, { id: Date.now() }]);
   };
-  const deletePostAndMessage = (id: number) => {
+  const deletePostAndMessage = (id: number, index: number) => {
     setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
+    unregister(`postAndMessage.${index}.message`);
+    unregister(`postAndMessage.${index}.button`);
+    unregister(`postAndMessage.${index}.time`);
+
+    setAdminContentCycle([""]);
+    setCurrentTextAreaValue("");
+    setTest("");
   };
 
   return (
@@ -137,6 +150,8 @@ export default function ContentCycle() {
                         onClick={() => {
                           addPostAndMessage();
                           setTest("");
+                          setAdminContentCycle([...adminContentCycle, test]);
+                          setCurrentTextAreaValue(null);
                         }}
                         className="flex items-center gap-2 cursor-pointer"
                       >
@@ -149,7 +164,9 @@ export default function ContentCycle() {
                         <Trash
                           size={24}
                           className="text-red-600 cursor-pointer"
-                          onClick={() => deletePostAndMessage(postMessage.id)}
+                          onClick={() =>
+                            deletePostAndMessage(postMessage.id, index)
+                          }
                         />
                       )}
                     </div>
@@ -170,19 +187,21 @@ export default function ContentCycle() {
                               // value={test}
                               onChange={(e) => {
                                 const newValue = e.target.value;
+                                setTest(newValue);
+                                setCurrentTextAreaValue(newValue);
                                 field.onChange([newValue]);
                               }}
                             />
                           )}
                         />
-                        <Button
+                        {/* <Button
                           onClick={() => {
                             setAdminContentCycle([...adminContentCycle, test]);
                             setTest("");
                           }}
                         >
                           ایجاد
-                        </Button>
+                        </Button> */}
                       </div>
 
                       {/* add new button */}

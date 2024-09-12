@@ -12,10 +12,15 @@ import {
   Phone,
   VideoCamera,
 } from "@phosphor-icons/react/dist/ssr";
-import { useContentStore } from "@/store/contentCycleStore";
+import {
+  useContentStore,
+  useCurrentTextAreaValue,
+} from "@/store/contentCycleStore";
 
 export default function InstaDirectUi() {
   const { adminContentCycle } = useContentStore();
+  const { currentTextAreaValue, setCurrentTextAreaValue } =
+    useCurrentTextAreaValue();
   // console.log(adminContentCycle);
 
   return (
@@ -59,11 +64,12 @@ export default function InstaDirectUi() {
         {/* Message input area */}
         <div className="relative flex items-center gap-4 rounded-[3rem]">
           <Textarea
+            value={currentTextAreaValue}
             placeholder="message ..."
             className="flex-1 border pl-[3rem] rounded-full"
             dir="ltr"
           />
-          <div className="absolute left-2 bg-[#] rounded-full p-1">
+          <div className="absolute left-2 bg-blue-500 rounded-full p-1">
             <Camera size={26} color="#232223" />
           </div>
         </div>
