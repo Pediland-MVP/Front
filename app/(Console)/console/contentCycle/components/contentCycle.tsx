@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input } from "@/registry/new-york/ui/input";
-import { Label } from "@/registry/new-york/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,38 +18,28 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/registry/new-york/ui/tabs";
-import { Switch } from "@/registry/new-york/ui/switch";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { Button } from "@/registry/new-york/ui/button";
-import { Checkbox } from "@/registry/new-york/ui/checkbox";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import ModalPost from "./ModalPost";
-import Table1 from "../../sendAll/component/table";
 import ContentCycleLeads from "./contentCycleLeads";
+import { useContentStore } from "@/store/contentCycleStore";
+import SwitchOfForm from "./switchOfForm";
+import ConditionWordForm from "./conditionWordForm";
+import CheckBoxOptionForm from "./checkBoxOptionForm";
+import { useFormSchema } from "../formSchema/useFormSchema";
+import { Textarea } from "@/registry/new-york/ui/textarea";
 
 export default function ContentCycle() {
-  const [conditions, setConditions] = useState([{ id: 1 }]);
+  const { adminContentCycle, setAdminContentCycle } = useContentStore();
   const [postAndMessage, setPostAndMessage] = useState([{ id: 1 }]);
+  const [newButton, setNewButton] = useState([{ id: 1 }]);
+  const [test, setTest] = useState("");
+  const [titleBtn, setTitleBtn] = useState("");
+  const [textBtn, setTextBtn] = useState("");
 
   // Validation schema using Zod
-  const formSchema = z.object({
-    conditions: z.array(
-      z.object({
-        type: z.string(),
-        value: z.string(),
-      })
-    ),
-    postAndMessage: z.array(
-      z.object({
-        message: z.string(),
-        time: z.string(), // Ensure time is selected
-      })
-    ),
-    checkboxes: z.array(z.string()).optional(),
-    direct: z.boolean(),
-    post: z.boolean(),
-  });
+  const formSchema = useFormSchema();
 
   // Initialize form with react-hook-form and zod validation
   const {
@@ -62,43 +51,38 @@ export default function ContentCycle() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       conditions: [{ type: "", value: "" }],
-      postAndMessage: [{ message: "", time: "" }],
+      postAndMessage: [
+        {
+          message: [""],
+          time: "",
+          button: [{ btnTitle: [""], btnText: [""] }],
+        },
+      ],
       checkboxes: [],
       direct: false,
       post: false,
     },
   });
 
-  console.log(errors);
+  console.log("ERROR", errors);
+  // console.log([...adminContentCycle]);
+  const data = [...adminContentCycle, test];
 
   // Submit handler
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
   };
 
-  // Add a new condition
-  const addCondition = () => {
-    setConditions([...conditions, { id: Date.now() }]);
-  };
-
-  // Delete a condition
-  const deleteCondition = (id: number) => {
-    setConditions(conditions.filter((condition) => condition.id !== id));
-  };
-
   // Add a new postAndMessage section
   const addPostAndMessage = () => {
     setPostAndMessage([...postAndMessage, { id: Date.now() }]);
   };
-
+  const addNewButton = () => {
+    setNewButton([...newButton, { id: Date.now() }]);
+  };
   const deletePostAndMessage = (id: number) => {
     setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
   };
-
-  const items = [
-    { id: "if-follow", label: "ارسال پاسخ به شرط فالو داشتن صفحه" },
-    { id: "like-direct", label: "پیام‌های دایرکت لایک شوند" },
-  ];
 
   return (
     <div className="pr-[21rem] min-h-screen mb-[40rem] w-full">
@@ -118,107 +102,13 @@ export default function ContentCycle() {
               onSubmit={handleSubmit(onSubmit)}
               className="px-8 py-6 text-lg h-full space-y-8"
             >
-              {/* Adjust the height of the form */}
-              <p>اگر کاربر شما در</p>
-              <div className="flex gap-4">
-                <div className="flex gap-2 items-center">
-                  <Controller
-                    name="direct"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex gap-2 items-center">
-                        <Switch
-                          dir="ltr"
-                          id="direct"
-                          checked={field.value}
-                          onCheckedChange={(checked) => field.onChange(checked)}
-                        />
-                        <Label htmlFor="direct">دایرکت</Label>
-                      </div>
-                    )}
-                  />
-                </div>
-                <div className="flex gap-2 items-center">
-                  <Controller
-                    name="post"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex gap-2 items-center">
-                        <Switch
-                          dir="ltr"
-                          id="post"
-                          checked={field.value}
-                          onCheckedChange={(checked) => field.onChange(checked)}
-                        />
-                        <Label htmlFor="post">کامنت (پست یا لایو)</Label>
-                      </div>
-                    )}
-                  />
-                </div>
-              </div>
-              <p>کلمه یا جمله ای</p>
+              {/* switch of form  COMPONENT*/}
 
-              {/* Scrollable container for conditions */}
-              <div className=" space-y-4">
-                {conditions.map((condition, index) => (
-                  <div key={condition.id} className="flex gap-4 items-center">
-                    <Controller
-                      name={`conditions.${index}.type`}
-                      control={control}
-                      render={({ field }) => (
-                        <Select
-                          {...field}
-                          dir="rtl"
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="برابر" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectItem value="equal">برابر</SelectItem>
-                              <SelectItem value="contains">شامل</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    <span className="text-sm">با</span>
-                    <Controller
-                      name={`conditions.${index}.value`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          className="max-w-[15rem]"
-                          type="text"
-                          placeholder="مقدار"
-                        />
-                      )}
-                    />
+              <SwitchOfForm control={control} />
 
-                    {/* Delete Icon */}
-                    {conditions.length > 1 && (
-                      <Trash
-                        size={24}
-                        className="text-red-600 cursor-pointer"
-                        onClick={() => deleteCondition(condition.id)}
-                      />
-                    )}
-                    <Button
-                      onClick={addCondition}
-                      variant="ghost"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <PlusCircle size={24} />
-                      <span className="text-sm font-semibold text-blue-600">
-                        افزودن شرط جدید
-                      </span>
-                    </Button>
-                  </div>
-                ))}
-                {/* Add button to add more conditions */}
-              </div>
+              {/* condition word COMPONENT*/}
+
+              <ConditionWordForm control={control} />
 
               {/* Message input & post select */}
 
@@ -235,7 +125,7 @@ export default function ContentCycle() {
                           >
                             انتخاب پست
                             <span>
-                              <PlusCircle size={15} />
+                              <PlusCircle size={19} />
                             </span>
                           </Button>
                         </DialogTrigger>
@@ -244,12 +134,15 @@ export default function ContentCycle() {
                       {/* Add button to add more post and message */}
                       <Button
                         variant="ghost"
-                        onClick={addPostAndMessage}
+                        onClick={() => {
+                          addPostAndMessage();
+                          setTest("");
+                        }}
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <PlusCircle size={24} />
                         <span className="text-sm font-semibold text-blue-600">
-                          افزودن
+                          افزودن پیام(پست یا دکمه) جدید با تایمر
                         </span>
                       </Button>
                       {postAndMessage.length > 1 && (
@@ -261,83 +154,139 @@ export default function ContentCycle() {
                       )}
                     </div>
                     {/* Message Input */}
-                    <Controller
-                      name={`postAndMessage.${index}.message`}
-                      control={control}
-                      render={({ field }) => (
-                        <textarea
-                          className="w-4/5 border px-3 py-2 rounded-xl"
-                          placeholder="پیام خود را وارد کنید"
-                          {...field}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2 items-center">
+                        <Controller
+                          key={index}
+                          name={`postAndMessage.${index}.message`}
+                          control={control}
+                          render={({ field }) => (
+                            <Textarea
+                              key={index}
+                              className="w-4/5 border px-3 py-2 rounded-xl"
+                              placeholder="پیام خود را وارد کنید"
+                              {...field}
+                              value={test}
+                              onChange={(e) => {
+                                const newValue = e.target.value;
+                                setTest(newValue);
+                                field.onChange([...adminContentCycle, test]);
+                              }}
+                            />
+                          )}
                         />
-                      )}
-                    />
+                        <Button
+                          onClick={() => {
+                            setAdminContentCycle([...adminContentCycle, test]);
+                            setTest("");
+                          }}
+                        >
+                          ایجاد
+                        </Button>
+                      </div>
+
+                      {/* add new button */}
+                      <div className="flex flex-col gap-2">
+                        {newButton.map((button, btnIndex) => (
+                          <div key={button.id} className="flex gap-2">
+                            <Controller
+                              name={`postAndMessage.${index}.button.${btnIndex}.btnTitle`} // Correct index
+                              control={control}
+                              render={({ field }) => (
+                                <Input
+                                  {...field}
+                                  placeholder="نام دکمه"
+                                  className="w-1/4"
+                                  onChange={(e) => {
+                                    const newValue = e.target.value;
+                                    setTitleBtn(newValue);
+                                    field.onChange([
+                                      ...adminContentCycle,
+                                      titleBtn,
+                                    ]);
+                                  }}
+                                />
+                              )}
+                            />
+
+                            <Controller
+                              name={`postAndMessage.${index}.button.${btnIndex}.btnText`}
+                              control={control}
+                              render={({ field }) => (
+                                <Input
+                                  {...field}
+                                  placeholder="متن دکمه"
+                                  className="w-1/4"
+                                  onChange={(e) => {
+                                    const newValue = e.target.value;
+                                    setTextBtn(newValue);
+                                    field.onChange([
+                                      ...adminContentCycle,
+                                      textBtn,
+                                    ]);
+                                  }}
+                                />
+                              )}
+                            />
+                          </div>
+                        ))}
+
+                        <div>
+                          <Button
+                            variant={"outline"}
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => addNewButton()}
+                          >
+                            <PlusCircle size={19} />
+                            <span className="text-sm font-semibold ">
+                              افزودن دکمه
+                            </span>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Select Time (1-24 hours) */}
-                    {postAndMessage[index].id > 1 && (
-                      <Controller
-                        name={`postAndMessage.${index}.time`}
-                        control={control}
-                        render={({ field }) => (
-                          <Select
-                            {...field}
-                            dir="rtl"
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="انتخاب ساعت" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>
-                                  انتخاب ساعت ارسال بعد از پست اول
-                                </SelectLabel>
-                                {Array.from({ length: 24 }, (_, i) => (
-                                  <SelectItem key={i + 1} value={String(i + 1)}>
-                                    {i + 1}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                    )}
+                    {postAndMessage.length > 1 &&
+                      postAndMessage[index].id > 1 && (
+                        <Controller
+                          name={`postAndMessage.${index}.time`}
+                          control={control}
+                          render={({ field }) => (
+                            <Select
+                              {...field}
+                              dir="rtl"
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="انتخاب ساعت" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>
+                                    انتخاب ساعت ارسال بعد از پست اول
+                                  </SelectLabel>
+                                  {Array.from({ length: 24 }, (_, i) => (
+                                    <SelectItem
+                                      key={i + 1}
+                                      value={String(i + 1)}
+                                    >
+                                      {i + 1}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      )}
                   </div>
                 ))}
               </div>
 
-              {/* Checkbox options */}
-              <div>
-                {items.map((item) => (
-                  <Controller
-                    key={item.id}
-                    name="checkboxes"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex items-center py-2 gap-2">
-                        <Checkbox
-                          onCheckedChange={(checked) => {
-                            return checked
-                              ? field.onChange([...field.value, item.id])
-                              : field.onChange(
-                                  field.value.filter(
-                                    (value) => value !== item.id
-                                  )
-                                );
-                          }}
-                        />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {item.label}
-                        </label>
-                      </div>
-                    )}
-                  />
-                ))}
-              </div>
+              {/* Checkbox options COMPONENT */}
+
+              <CheckBoxOptionForm control={control} />
 
               {/* Submit button */}
               <Button className="bg-blue-600" type="submit">

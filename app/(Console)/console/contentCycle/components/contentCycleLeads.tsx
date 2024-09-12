@@ -28,18 +28,24 @@ import {
 } from "@/registry/new-york/ui/dropdown-menu";
 import { ArrowUp, Eye } from "@phosphor-icons/react";
 import Image from "next/image";
-
+type Lead = {
+  profile: string;
+  name: string;
+  username: string;
+  messages: number;
+  lastSeen: string;
+};
 export default function ContentCycleLeads() {
   const [search, setSearch] = useState("");
-  const [sortColumn, setSortColumn] = useState("messages");
+  const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState("desc");
-  const [selectedLeads, setSelectedLeads] = useState([]);
+  const [selectedLeads, setSelectedLeads] = useState<any[]>([]);
 
   const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
     setSearch(e.target.value);
   };
 
-  const handleSort = (column: SetStateAction<string>) => {
+  const handleSort = (column: keyof Lead) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -48,7 +54,7 @@ export default function ContentCycleLeads() {
     }
   };
 
-  const handleSelect = (lead) => {
+  const handleSelect = (lead: any) => {
     if (selectedLeads.includes(lead)) {
       setSelectedLeads(selectedLeads.filter((item) => item !== lead));
     } else {
@@ -56,7 +62,7 @@ export default function ContentCycleLeads() {
     }
   };
 
-  const filteredLeads = useMemo(() => {
+  const filteredLeads: Lead[] = useMemo(() => {
     return [
       {
         profile: "https://github.com/shadcn.png",
@@ -119,7 +125,9 @@ export default function ContentCycleLeads() {
             onChange={handleSearch}
             className="flex-1 mr-4"
           />
-          <div className="relative"> {/* Ensure dropdown stays in place */}
+          <div className="relative">
+            {" "}
+            {/* Ensure dropdown stays in place */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -131,17 +139,17 @@ export default function ContentCycleLeads() {
                   {sortColumn === "messages" ? "پیام‌ها" : "نام"}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-auto">
+              <DropdownMenuContent align="end" className="w-[200px]">
                 <DropdownMenuRadioGroup value={sortColumn}>
                   <DropdownMenuRadioItem
                     value="name"
-                    onClick={() => handleSort("name")}
+                    // onClick={() => handleSort("name")}
                   >
                     نام
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem
                     value="messages"
-                    onClick={() => handleSort("messages")}
+                    // onClick={() => handleSort("messages")}
                   >
                     پیام‌ها
                   </DropdownMenuRadioItem>
