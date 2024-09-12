@@ -166,11 +166,11 @@ export default function ContentCycle() {
                               className="w-4/5 border px-3 py-2 rounded-xl"
                               placeholder="پیام خود را وارد کنید"
                               {...field}
-                              value={test}
+                              value={field.value}
+                              // value={test}
                               onChange={(e) => {
                                 const newValue = e.target.value;
-                                setTest(newValue);
-                                field.onChange([...adminContentCycle, test]);
+                                field.onChange([newValue]);
                               }}
                             />
                           )}
@@ -197,13 +197,11 @@ export default function ContentCycle() {
                                   {...field}
                                   placeholder="نام دکمه"
                                   className="w-1/4"
+                                  value={field.value}
                                   onChange={(e) => {
                                     const newValue = e.target.value;
                                     setTitleBtn(newValue);
-                                    field.onChange([
-                                      ...adminContentCycle,
-                                      titleBtn,
-                                    ]);
+                                    field.onChange([newValue]);
                                   }}
                                 />
                               )}
@@ -217,13 +215,11 @@ export default function ContentCycle() {
                                   {...field}
                                   placeholder="متن دکمه"
                                   className="w-1/4"
+                                  value={field.value}
                                   onChange={(e) => {
                                     const newValue = e.target.value;
                                     setTextBtn(newValue);
-                                    field.onChange([
-                                      ...adminContentCycle,
-                                      textBtn,
-                                    ]);
+                                    field.onChange([newValue]);
                                   }}
                                 />
                               )}
