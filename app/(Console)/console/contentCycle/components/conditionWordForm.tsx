@@ -12,7 +12,7 @@ import {
 import { Input } from "@/registry/new-york/ui/input";
 import { PlusCircle, Trash } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/registry/new-york/ui/button";
-export default function ConditionWordForm({ control }: any) {
+export default function ConditionWordForm({ control, remove }: any) {
   const [conditions, setConditions] = useState([{ id: 1 }]);
 
   const addCondition = () => {
@@ -20,8 +20,9 @@ export default function ConditionWordForm({ control }: any) {
   };
 
   // Delete a condition
-  const deleteCondition = (id: number) => {
+  const deleteCondition = (id: number, index: number) => {
     setConditions(conditions.filter((condition) => condition.id !== id));
+    remove(index);
   };
 
   return (
@@ -66,7 +67,7 @@ export default function ConditionWordForm({ control }: any) {
               <Trash
                 size={24}
                 className="text-red-600 cursor-pointer"
-                onClick={() => deleteCondition(condition.id)}
+                onClick={() => deleteCondition(condition.id, index)}
               />
             )}
             <Button

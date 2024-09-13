@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Input } from "@/registry/new-york/ui/input";
 import {
   Select,
@@ -70,6 +70,22 @@ export default function ContentCycle() {
     },
   });
 
+  const {
+    fields: postAndMessageFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "postAndMessage", // The name should match the field in your defaultValues
+  });
+  const {
+    fields: conditions,
+    append: appendConditions,
+    remove: removeConditions,
+  } = useFieldArray({
+    control,
+    name: "conditions", // The name should match the field in your defaultValues
+  });
   console.log("ERROR", errors);
 
   // Submit handler
@@ -82,15 +98,22 @@ export default function ContentCycle() {
   // Add a new postAndMessage section
   const addPostAndMessage = () => {
     setPostAndMessage([...postAndMessage, { id: Date.now() }]);
+    // append({
+    //   message: [""],
+    //   time: "",
+    //   button: [{ btnTitle: [""], btnText: [""] }],
+    // });
   };
   const addNewButton = () => {
     setNewButton([...newButton, { id: Date.now() }]);
   };
+  const deleteNewButton = (id: number, index: number) => {
+    setNewButton(newButton.filter((btn) => btn.id !== id));
+    remove(index);
+  }
   const deletePostAndMessage = (id: number, index: number) => {
     setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
-    unregister(`postAndMessage.${index}.message`);
-    unregister(`postAndMessage.${index}.button`);
-    unregister(`postAndMessage.${index}.time`);
+    remove(index);
 
     setAdminContentCycle([""]);
     setCurrentTextAreaValue("");
@@ -99,12 +122,14 @@ export default function ContentCycle() {
 
   return (
     <div className="pr-[21rem] min-h-screen mb-[40rem] w-full">
-      <Tabs defaultValue="account" className="w-full">
+      <Tabs defaultValue="contentCycle" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
+          <TabsTrigger value="contentCycle">چرخه محتوا</TabsTrigger>
+          <TabsTrigger value="password" className="text-md font-semibold">
+            نمیدونم
+          </TabsTrigger>
         </TabsList>
-        <TabsContent dir="rtl" value="account">
+        <TabsContent dir="rtl" value="contentCycle">
           <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl shadow-md mb-[10rem]">
             <h1 className="text-2xl font-bold px-6 py-8 border-b">
               محتوای انتخابی
@@ -121,10 +146,10 @@ export default function ContentCycle() {
 
               {/* condition word COMPONENT*/}
 
-              <ConditionWordForm control={control} />
+              <ConditionWordForm control={control} remove={removeConditions} />
 
               {/* Message input & post select */}
-
+              <p>را ارسال کند پیام زیر برایش ارسال شود</p>
               <div className="space-y-4">
                 {postAndMessage.map((postMessage, index) => (
                   <div key={postMessage.id} className="space-y-4">
@@ -243,10 +268,16 @@ export default function ContentCycle() {
                                 />
                               )}
                             />
+
+                            {newButton.length > 1 && (
+                              <Button onClick={() => deleteNewButton(button.id)} iconOnly variant={"ghost"}>
+                                <Trash size={19} color="red" />
+                              </Button>
+                            )}
                           </div>
                         ))}
 
-                        <div>
+                        <div className="flex gap-2">
                           <Button
                             variant={"outline"}
                             className="flex items-center gap-2 cursor-pointer"
