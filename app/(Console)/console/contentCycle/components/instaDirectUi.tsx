@@ -46,7 +46,7 @@ export default function InstaDirectUi() {
         {/* Messages area */}
         <div className="flex-grow flex flex-col justify-end mb-4">
           {adminContentCycle.length > 0 &&
-            adminContentCycle.map(
+            adminContentCycle?.map(
               (value, index) =>
                 value && ( // Only render if the value is truthy
                   <div

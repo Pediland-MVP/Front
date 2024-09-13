@@ -40,6 +40,8 @@ export default function ContentCycle() {
   const [postAndMessage, setPostAndMessage] = useState([{ id: 1 }]);
   const [newButton, setNewButton] = useState([{ id: 1 }]);
   const [test, setTest] = useState("");
+  const [test2, setTest2] = useState();
+
   const [titleBtn, setTitleBtn] = useState("");
   const [textBtn, setTextBtn] = useState("");
 
@@ -86,7 +88,7 @@ export default function ContentCycle() {
     control,
     name: "conditions", // The name should match the field in your defaultValues
   });
-  console.log("ERROR", errors);
+  // console.log("ERROR", errors);
 
   // Submit handler
   const onSubmit = (data: any) => {
@@ -110,12 +112,12 @@ export default function ContentCycle() {
   const deleteNewButton = (id: number, index: number) => {
     setNewButton(newButton.filter((btn) => btn.id !== id));
     remove(index);
-  }
+  };
   const deletePostAndMessage = (id: number, index: number) => {
     setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
     remove(index);
 
-    setAdminContentCycle([""]);
+    setAdminContentCycle(adminContentCycle.filter((_, i) => i !== index));
     setCurrentTextAreaValue("");
     setTest("");
   };
@@ -176,7 +178,7 @@ export default function ContentCycle() {
                           addPostAndMessage();
                           setTest("");
                           setAdminContentCycle([...adminContentCycle, test]);
-                          setCurrentTextAreaValue(null);
+                          setCurrentTextAreaValue("");
                         }}
                         className="flex items-center gap-2 cursor-pointer"
                       >
@@ -213,20 +215,12 @@ export default function ContentCycle() {
                               onChange={(e) => {
                                 const newValue = e.target.value;
                                 setTest(newValue);
-                                setCurrentTextAreaValue(newValue);
+                                setCurrentTextAreaValue(e.target.value);
                                 field.onChange([newValue]);
                               }}
                             />
                           )}
                         />
-                        {/* <Button
-                          onClick={() => {
-                            setAdminContentCycle([...adminContentCycle, test]);
-                            setTest("");
-                          }}
-                        >
-                          ایجاد
-                        </Button> */}
                       </div>
 
                       {/* add new button */}
@@ -270,7 +264,13 @@ export default function ContentCycle() {
                             />
 
                             {newButton.length > 1 && (
-                              <Button onClick={() => deleteNewButton(button.id)} iconOnly variant={"ghost"}>
+                              <Button
+                                onClick={() =>
+                                  deleteNewButton(button.id, index)
+                                }
+                                iconOnly
+                                variant={"ghost"}
+                              >
                                 <Trash size={19} color="red" />
                               </Button>
                             )}
@@ -279,6 +279,7 @@ export default function ContentCycle() {
 
                         <div className="flex gap-2">
                           <Button
+                            type="button"
                             variant={"outline"}
                             className="flex items-center gap-2 cursor-pointer"
                             onClick={() => addNewButton()}

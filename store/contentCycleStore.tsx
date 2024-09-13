@@ -13,8 +13,8 @@
 import { create } from "zustand";
 
 interface ContentStore {
-  adminContentCycle: string[];
-  setAdminContentCycle: (content: string[]) => void;
+  adminContentCycle: any[];
+  setAdminContentCycle: (content: any[]) => void;
 }
 
 export const useContentStore = create<ContentStore>((set) => ({
