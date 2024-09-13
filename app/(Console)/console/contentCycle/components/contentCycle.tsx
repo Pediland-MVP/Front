@@ -38,7 +38,7 @@ export default function ContentCycle() {
   const { currentTextAreaValue, setCurrentTextAreaValue } =
     useCurrentTextAreaValue();
   const [postAndMessage, setPostAndMessage] = useState<any[]>([
-    { id: 1, buttons: [] },
+    { id: 1, buttons: [] , message: [""], time: "" },
   ]);
   // const [newButton, setNewButton] = useState([{ id: 1 }]);
   const [test, setTest] = useState("");
@@ -276,7 +276,7 @@ export default function ContentCycle() {
                                 variant="ghost"
                                 iconOnly
                                 onClick={() =>
-                                  deleteNewButton(index, button.id)
+                                  deleteNewButton(button.id, index)
                                 }
                               >
                                 <Trash size={19} color="red" />
