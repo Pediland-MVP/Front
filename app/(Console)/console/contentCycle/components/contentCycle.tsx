@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Key, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Input } from "@/registry/new-york/ui/input";
 import {
@@ -37,10 +37,11 @@ export default function ContentCycle() {
   const { adminContentCycle, setAdminContentCycle } = useContentStore();
   const { currentTextAreaValue, setCurrentTextAreaValue } =
     useCurrentTextAreaValue();
-  const [postAndMessage, setPostAndMessage] = useState([{ id: 1 }]);
-  const [newButton, setNewButton] = useState([{ id: 1 }]);
+  const [postAndMessage, setPostAndMessage] = useState<any[]>([
+    { id: 1, buttons: [] },
+  ]);
+  // const [newButton, setNewButton] = useState([{ id: 1 }]);
   const [test, setTest] = useState("");
-  const [test2, setTest2] = useState();
 
   const [titleBtn, setTitleBtn] = useState("");
   const [textBtn, setTextBtn] = useState("");
@@ -52,8 +53,6 @@ export default function ContentCycle() {
   const {
     control,
     handleSubmit,
-    watch,
-    unregister,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
@@ -72,19 +71,11 @@ export default function ContentCycle() {
     },
   });
 
-  const {
-    fields: postAndMessageFields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { fields: postAndMessageFields, remove } = useFieldArray({
     control,
     name: "postAndMessage", // The name should match the field in your defaultValues
   });
-  const {
-    fields: conditions,
-    append: appendConditions,
-    remove: removeConditions,
-  } = useFieldArray({
+  const { fields: conditions, remove: removeConditions } = useFieldArray({
     control,
     name: "conditions", // The name should match the field in your defaultValues
   });
@@ -100,23 +91,40 @@ export default function ContentCycle() {
   // Add a new postAndMessage section
   const addPostAndMessage = () => {
     setPostAndMessage([...postAndMessage, { id: Date.now() }]);
-    // append({
-    //   message: [""],
-    //   time: "",
-    //   button: [{ btnTitle: [""], btnText: [""] }],
-    // });
   };
-  const addNewButton = () => {
-    setNewButton([...newButton, { id: Date.now() }]);
+  const addNewButton = (postMessageIndex: number) => {
+    setPostAndMessage((prev) =>
+      prev.map((postMessage, index) =>
+        index === postMessageIndex
+          ? {
+              ...postMessage,
+              buttons: postMessage.buttons
+                ? [...postMessage.buttons, { id: Date.now() }]
+                : [{ id: Date.now() }], // Initialize buttons if undefined
+            }
+          : postMessage
+      )
+    );
   };
-  const deleteNewButton = (id: number, index: number) => {
-    setNewButton(newButton.filter((btn) => btn.id !== id));
+
+  const deleteNewButton = (buttonId: number, index: number) => {
+    setPostAndMessage((prev) =>
+      prev.map((postMessage, i) =>
+        i === index
+          ? {
+              ...postMessage,
+              buttons: postMessage.buttons.filter(
+                (btn: { id: number }) => btn.id !== buttonId
+              ),
+            }
+          : postMessage
+      )
+    );
     remove(index);
   };
   const deletePostAndMessage = (id: number, index: number) => {
     setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
     remove(index);
-
     setAdminContentCycle(adminContentCycle.filter((_, i) => i !== index));
     setCurrentTextAreaValue("");
     setTest("");
@@ -178,6 +186,8 @@ export default function ContentCycle() {
                           addPostAndMessage();
                           setTest("");
                           setAdminContentCycle([...adminContentCycle, test]);
+                          console.log("adminContentCycle", adminContentCycle);
+
                           setCurrentTextAreaValue("");
                         }}
                         className="flex items-center gap-2 cursor-pointer"
@@ -225,10 +235,10 @@ export default function ContentCycle() {
 
                       {/* add new button */}
                       <div className="flex flex-col gap-2">
-                        {newButton.map((button, btnIndex) => (
+                        {postMessage.buttons?.map((button: any, i: number) => (
                           <div key={button.id} className="flex gap-2">
                             <Controller
-                              name={`postAndMessage.${index}.button.${btnIndex}.btnTitle`} // Correct index
+                              name={`postAndMessage.${index}.button.${i}.btnTitle`}
                               control={control}
                               render={({ field }) => (
                                 <Input
@@ -244,16 +254,14 @@ export default function ContentCycle() {
                                 />
                               )}
                             />
-
                             <Controller
-                              name={`postAndMessage.${index}.button.${btnIndex}.btnText`}
+                              name={`postAndMessage.${index}.button.${i}.btnText`}
                               control={control}
                               render={({ field }) => (
                                 <Input
-                                  {...field}
                                   placeholder="متن دکمه"
                                   className="w-1/4"
-                                  value={field.value}
+                                  {...field}
                                   onChange={(e) => {
                                     const newValue = e.target.value;
                                     setTextBtn(newValue);
@@ -262,14 +270,14 @@ export default function ContentCycle() {
                                 />
                               )}
                             />
-
-                            {newButton.length > 1 && (
+                            {postMessage.buttons.length > 1 && (
                               <Button
-                                onClick={() =>
-                                  deleteNewButton(button.id, index)
-                                }
+                                type="button"
+                                variant="ghost"
                                 iconOnly
-                                variant={"ghost"}
+                                onClick={() =>
+                                  deleteNewButton(index, button.id)
+                                }
                               >
                                 <Trash size={19} color="red" />
                               </Button>
@@ -282,7 +290,7 @@ export default function ContentCycle() {
                             type="button"
                             variant={"outline"}
                             className="flex items-center gap-2 cursor-pointer"
-                            onClick={() => addNewButton()}
+                            onClick={() => addNewButton(index)}
                           >
                             <PlusCircle size={19} />
                             <span className="text-sm font-semibold ">
