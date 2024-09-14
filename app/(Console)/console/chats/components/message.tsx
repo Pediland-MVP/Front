@@ -47,12 +47,12 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
           message.from === "lead" ? "items-end" : "items-start",
         )}
       >
-        <div className="flex gap-3 items-center">
-          <span className=" bg-accent p-3 rounded-md max-w-xs">
+        <div className=" relative flex flex-ro gap-3 items-center">
+          <span className=" mr-14 bg-accent p-3 rounded-md max-w-xs">
             {message.text}
           </span>
           {message.from === "lead" && (
-            <Avatar className="flex justify-center items-center">
+            <Avatar className="flex justify-center  items-center">
               <AvatarImage
                 src={lead.profilePic}
                 alt={lead.profilePic}
@@ -62,7 +62,7 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
             </Avatar>
           )}
           {message.from !== "lead" && (
-            <Avatar className="flex justify-center items-center">
+            <Avatar className="flex absolute justify-center items-center">
               <AvatarImage
                 src={lead.instagram.profilePictureUrl}
                 alt={lead.instagram.firstname}

@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/hooks/swr/fetcher";
-import { ResizablePanel } from "@/registry/new-york/ui/resizable";
+// import { ResizablePanel } from "@/registry/new-york/ui/resizable";
 import { Separator } from "@/registry/new-york/ui/separator";
 import { InstagramNamespace } from "@/types/instagram";
 import { InstagramLogo, Plus } from "@phosphor-icons/react";
@@ -16,11 +16,9 @@ import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
-
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const isFromFacebook: boolean = !!searchParams.get('facebookAccountId')
-  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");
 
   const {
     data: instagramPages,
@@ -34,21 +32,27 @@ export default function AccountPage() {
     }
   );
 
-  const filteredInstagramPages = isFromFacebook ? instagramPages?.filter(page => page.facebookAccountId === searchParams.get('facebookAccountId') && !page.instagramId) : instagramPages?.filter((account) => account.instagramId);
+  const filteredInstagramPages = isFromFacebook
+    ? instagramPages?.filter(
+        (page) =>
+          page.facebookAccountId === searchParams.get("facebookAccountId") &&
+          !page.instagramId
+      )
+    : !!instagramPages?.length ? instagramPages.filter((account) => account.instagramId) : null
 
   useEffect(() => {
     if (isFromFacebook) {
       if (filteredInstagramPages?.length === 0) {
         toast({
-          title: 'خطایی پیش آمد',
-          description: 'لطفا دوباره امتحان کنید'
-        })
-        router.push('/console/accounts')
-        return
+          title: "خطایی پیش آمد",
+          description: "لطفا دوباره امتحان کنید",
+        });
+        router.push("/console/accounts");
+        return;
       }
-      setOpenSelectInstagramDialog(true)
+      setOpenSelectInstagramDialog(true);
     }
-  }, [filteredInstagramPages])
+  }, [filteredInstagramPages]);
 
   const [openSelectInstagramDialog, setOpenSelectInstagramDialog] =
     useState<boolean>(false);
@@ -56,17 +60,12 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (isFromFacebook) {
-      setFacebookAccountId(searchParams.get('facebookAccountId')!)
+      setFacebookAccountId(searchParams.get("facebookAccountId")!);
     }
-  }, [filteredInstagramPages])
-
+  }, [filteredInstagramPages]);
 
   return (
-    <ResizablePanel
-      defaultSize={80}
-      minSize={30}
-      // className="px-4"
-    >
+    <>
       <div className="flex justify-start items-center h-14 px-4">
         <h1 className="text-xl font-bold">اکانت های کاربری</h1>
       </div>
@@ -98,44 +97,46 @@ export default function AccountPage() {
             </Skeleton>
           ))}
 
-        {filteredInstagramPages
-          ?.map((instagram) => {
-            return (
-              <div
-                key={instagram.id}
-                className="flex flex-col gap-y-2 justify-center items-center w-full lg:w-52 h-52 border rounded-lg "
-              >
-                {instagram.profilePictureUrl ? (
-                  <Image
-                    className="rounded-full"
-                    src={instagram.profilePictureUrl}
-                    width={70}
-                    height={70}
-                    alt={instagram.name}
-                  />
-                ) : (
-                  <InstagramLogo size={70} />
-                )}
-                <p>{instagram.name}</p>
-                <p>{instagram.username}</p>
-                {instagram.instagramId ? (
-                  <Link href={`https://instagram.com/${instagram.username}`} target="_blank">
-                    <Button variant={"outline"}>دیدن اکانت</Button>
-                  </Link>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setOpenSelectInstagramDialog(true);
-                      setFacebookAccountId(instagram.facebookAccountId);
-                    }}
-                    variant={"outline"}
-                  >
-                    اتصال به اکانت
-                  </Button>
-                )}
-              </div>
-            );
-          })}
+        {filteredInstagramPages?.map((instagram) => {
+          return (
+            <div
+              key={instagram.id}
+              className="flex flex-col gap-y-2 justify-center items-center w-full lg:w-52 h-52 border rounded-lg "
+            >
+              {instagram.profilePictureUrl ? (
+                <Image
+                  className="rounded-full"
+                  src={instagram.profilePictureUrl}
+                  width={70}
+                  height={70}
+                  alt={instagram.name}
+                />
+              ) : (
+                <InstagramLogo size={70} />
+              )}
+              <p>{instagram.name}</p>
+              <p>{instagram.username}</p>
+              {instagram.instagramId ? (
+                <Link
+                  href={`https://instagram.com/${instagram.username}`}
+                  target="_blank"
+                >
+                  <Button variant={"outline"}>دیدن اکانت</Button>
+                </Link>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setOpenSelectInstagramDialog(true);
+                    setFacebookAccountId(instagram.facebookAccountId);
+                  }}
+                  variant={"outline"}
+                >
+                  اتصال به اکانت
+                </Button>
+              )}
+            </div>
+          );
+        })}
 
         <DrawerDialogDemo
           facebookAccountId={facebookAccountId!}
@@ -143,7 +144,14 @@ export default function AccountPage() {
           setOpen={setOpenSelectInstagramDialog}
         />
       </div>
-    </ResizablePanel>
+    </>
+    // <ResizablePanel
+    //   defaultSize={80}
+    //   minSize={30}
+    //   // className="px-4"
+    // >
+
+    // </ResizablePanel>
     //   <ResizableHandle withHandle />
   );
 }

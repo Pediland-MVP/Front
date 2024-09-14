@@ -1,0 +1,34 @@
+import {Tabs , TabsContent, TabsList, TabsTrigger } from "@/registry/new-york/ui/TabOverRide";
+import { useTabStore } from "@/store/tabActiveStore";
+
+export function SideBarTab() {
+  const { activeTab, setActiveTab } = useTabStore();
+
+  return (
+    <Tabs className="w-full bg-blue-50" defaultValue="chat bg-blue-50">
+      <TabsList className="flex w-full bg-blue-50">
+        <TabsTrigger
+          value="comment"
+          onClick={() => setActiveTab("comment")}
+          className={`w-full text-center ${activeTab === "comment" ? "bg-none" : "bg-none"}`}
+        >
+          کامنت ها
+        </TabsTrigger>
+        <TabsTrigger
+          value="direct"
+          onClick={() => setActiveTab("direct")}
+          className={`w-full bg-none text-center ${activeTab === "direct" ? "" : ""}`}
+        >
+          دایرکت ها
+        </TabsTrigger>
+        <TabsTrigger
+          value="chat"
+          onClick={() => setActiveTab("chat")}
+          className={`w-full text-center ${activeTab === "chat" ? "bg-" : ""}`}
+        >
+          پیام ها
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
+}

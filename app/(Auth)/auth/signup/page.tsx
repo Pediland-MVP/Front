@@ -130,7 +130,7 @@ export default function Signup() {
 
   return (
     <main className="_signup pt-14 sm:pt-0 h-full relative">
-      <AuthHeader />
+      {/* <AuthHeader /> */}
       <div className="container max-w-6xl flex items-center justify-center h-full">
         <div className="text-center w-full sm:w-1/3 mx-auto px-3 sm:px-0">
           <div className="_heading flex items-center justify-center gap-2">

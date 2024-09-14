@@ -1,88 +1,82 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { LucideIcon } from "lucide-react"
-
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/registry/default/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/registry/new-york/ui/tooltip"
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { IconProps, MetaLogo } from "@phosphor-icons/react";
+import { usePathname } from "next/navigation";
 
 interface NavProps {
-  isCollapsed: boolean
   links: {
-    title: string
-    label?: string
-    icon: LucideIcon
-    variant: "default" | "ghost",
-    href: string
-  }[]
+    title: string;
+    label?: string;
+    icon: React.ElementType<IconProps>; // Adjusted to work with Phosphor icons
+    variant: "default" | "ghost";
+    href: string;
+  }[];
 }
 
-export function Nav({ links, isCollapsed }: NavProps) {
+export function Nav({ links }: NavProps) {
+  const pathName = usePathname();
+  const currentPath = pathName.split("/")[2];
+
   return (
     <div
-      data-collapsed={isCollapsed}
-      className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
+      className="fixed z-50 px-[.5rem] py-4 shadow-md bg-white rounded-xl h-[96.5%] group flex flex-col transition-all duration-300"
+      style={{ width: "56px" }}
+      onMouseEnter={(e) => (e.currentTarget.style.width = "220px")}
+      onMouseLeave={(e) => {(e.currentTarget.style.width = "56px") }}
     >
-      <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {links.map((link, index) =>
-          isCollapsed ? (
-            <Tooltip key={index} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({ variant: link.variant, size: "icon" }),
-                    "h-9 w-9",
-                    link.variant === "default" &&
-                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                  )}
-                >
-                  <link.icon className="h-4 w-4" />
-                  <span className="sr-only">{link.title}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="flex items-center gap-4">
-                {link.title}
-                {link.label && (
-                  <span className="ml-auto text-muted-foreground">
-                    {link.label}
-                  </span>
-                )}
-              </TooltipContent>
-            </Tooltip>
-          ) : (
-            <Link
-              key={index}
-              href={link.href}
+      <div className="flex items-center font-semibold pb-12 w-full">
+        <div className="">
+          <MetaLogo size={32} weight="bold" />
+        </div>
+        <span
+          className={cn(
+            "whitespace-nowrap mx-[.75rem] transition-all duration-300 text-bold",
+            "max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100 text-semibold"
+          )}
+        >
+          تبدیل
+        </span>
+      </div>
+
+      <nav className="flex flex-col gap-8">
+        {links.map((link, index) => (
+          <Link
+            key={index}
+            href={link.href}
+            className="flex items-center transition-all duration-300 px-1  hover:bg-gray-100 rounded-lg"
+          >
+            <div className="">
+              {currentPath === link.href.split("/")[2] ? (
+                <link.icon size={32} color="red" weight="duotone" />
+              ) : (
+                <link.icon size={32} />
+              )}
+            </div>
+            {/* Icon size adjusted to Phosphor's design */}
+            <span
               className={cn(
-                buttonVariants({ variant: link.variant, size: "sm" }),
-                link.variant === "default" &&
-                  "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
-                "justify-start"
+                "whitespace-nowrap overflow-hidden transition-all duration-300 ",
+                " opacity-0 px-[.75rem] group-hover:max-w-full group-hover:opacity-100"
               )}
             >
-              <link.icon className="ml-2 h-4 w-4" />
               {link.title}
-              {link.label && (
-                <span
-                  className={cn(
-                    "mr-auto",
-                    link.variant === "default" &&
-                      "text-background dark:text-white"
-                  )}
-                >
-                  {link.label}
-                </span>
-              )}
-            </Link>
-          )
-        )}
+            </span>
+            {link.label && (
+              <span
+                className={cn(
+                  "ml-auto text-muted-foreground transition-all duration-300 ",
+                  "max-w-0 opacity-0  group-hover:max-w-full group-hover:opacity-100"
+                )}
+                style={{ transitionDelay: "0.2s" }}
+              >
+                {link.label}
+              </span>
+            )}
+          </Link>
+        ))}
       </nav>
     </div>
-  )
+  );
 }

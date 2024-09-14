@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import AuthHeader from "./auth/components/auth.header";
 
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,9 +17,13 @@ export default function ConsoleLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${inter.className} bg-blue-50 h-screen w-full p-4`}>
-        {children}
-        <Toaster/>
+     <body className={`${inter.className} relative min-h-screen`}>
+     <AuthHeader/>
+
+        <div className="transform mx-auto  translate-y-1/2">
+          {children}
+        </div>
+        <Toaster />
       </body>
     </html>
   );

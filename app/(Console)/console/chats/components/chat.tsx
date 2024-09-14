@@ -1,14 +1,14 @@
 "use client";
-import { Message, UserData } from "./data";
 import ChatTopbar from "./chatTopbar";
 import { ChatList } from "./chatList";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 import useSWR from "swr";
-import { InstagramNamespace } from "@/types/instagram";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { leadNamespace } from "@/types/lead";
 import useCurrentLead from "@/store/currentLead.store";
+import { ChatAlert } from "./chatAlert";
+import { useTabStore } from "@/store/tabActiveStore";
 
 interface ChatProps {
   leadId: string;
@@ -16,14 +16,14 @@ interface ChatProps {
 
 export function Chat({ leadId }: ChatProps) {
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
+const {activeTab}=useTabStore()
   useEffect(() => {
     sessionStorage.getItem(SessionStorageKeys.IS_MOBILE) === "true"
       ? setIsMobile(true)
       : setIsMobile(false);
   }, []);
 
-  const { setCurrentLead } = useCurrentLead()
+  const { setCurrentLead } = useCurrentLead();
 
   const {
     data: lead,
@@ -34,25 +34,27 @@ export function Chat({ leadId }: ChatProps) {
     fetcher
   );
 
-
-
   useEffect(() => {
     if (lead) {
-      setCurrentLead(lead)
+      setCurrentLead(lead);
     }
-  }, [lead])
 
+  }, [lead]);
 
-  
 
 
   return (
-    <div className="flex flex-col justify-between w-full h-full">
-      <ChatTopbar lead={lead} />
-      <ChatList
-        lead={lead}
-        isMobile={isMobile}
-      />
-    </div>
+ <>
+      {activeTab === "chat" && (
+        <div className="flex rounded-xl flex-col max-h-[97vh] overflow-y-auto justify-between w-full">
+          <ChatAlert />
+          <div className="flex rounded-t-xl flex-col  min-h-[90vh] bg-white">
+            <ChatTopbar lead={lead} />
+            <ChatList lead={lead} isMobile={isMobile} />
+          </div>
+        </div>
+      )}
+    </>
+  
   );
 }

@@ -17,11 +17,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "              miro.medium.com",
+        hostname: "miro.medium.com",
       },
       {
         protocol: "https",
-        hostname: "      img.icons8.com",
+        hostname: "github.com",
       },
     ],
   },

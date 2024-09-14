@@ -228,7 +228,7 @@ export default function ChatBottombar({
             placeholder="Aa"
             className="w-full border rounded-full flex flex-col items-center justify-center resize-none overflow-hidden bg-background"
           ></Textarea>
-          <div className="absolute left-2 top-1/2 transform -translate-y-1/2  ">
+          <div className="absolute left-3 top-1/3 ">
             <EmojiPicker
               onChange={(value) => {
                 setMessage(message + value);
