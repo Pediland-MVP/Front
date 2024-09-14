@@ -93,10 +93,4 @@ body {
     font-weight: 100 1000;
     font-display: fallback;
   }
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
