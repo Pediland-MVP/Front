@@ -46,7 +46,7 @@ export default function InstaDirectUi() {
 
         {/* Messages area */}
         <div className="flex-grow flex flex-col justify-end mb-4">
-          {/* {adminContentCycle.length > 0 &&
+          {adminContentCycle.length > 0 &&
             adminContentCycle?.map(
               (value, index) =>
                 value && ( // Only render if the value is truthy
@@ -56,16 +56,15 @@ export default function InstaDirectUi() {
                   >
                     <div className="py-3 px-6 rounded-[2rem] max-w-[70%] bg-gray-200 break-words">
                       {value}
-                    </div> <div className="flex justify-end gap-2">
-            <Button variant="secondary" className="rounded-2xl">دکمه</Button>
-           
-            </div>
+                    </div>{" "}
+                    {/* <div className="flex justify-end gap-2">
+                      <Button variant="secondary" className="rounded-2xl">
+                        دکمه
+                      </Button>
+                    </div> */}
                   </div>
                 )
-
-            )} */}
-
-           
+            )}
         </div>
 
         {/* Message input area */}
