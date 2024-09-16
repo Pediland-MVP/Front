@@ -131,7 +131,7 @@ export default function ContentCycle() {
   };
 
   return (
-    <div className="pr-[21rem] min-h-screen mb-[40rem] w-full">
+    <div className="min-h-screen w-full">
       <Tabs defaultValue="contentCycle" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="contentCycle">چرخه محتوا</TabsTrigger>
@@ -274,7 +274,7 @@ export default function ContentCycle() {
                               <Button
                                 type="button"
                                 variant="ghost"
-                                iconOnly
+                                // iconOnly
                                 onClick={() =>
                                   deleteNewButton(button.id, index)
                                 }

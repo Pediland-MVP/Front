@@ -22,7 +22,7 @@ export function Nav({ links }: NavProps) {
 
   return (
     <div
-      className="fixed h-[calc(100vh-2rem)] z-50 px-2 py-4 shadow bg-white rounded-xl group flex flex-col transition-all duration-300"
+      className="fixed h-[calc(100vh-2rem)] overflow-hidden z-50 px-2 py-4 shadow bg-white rounded-xl group flex flex-col transition-all duration-300"
       style={{ width: "56px" }}
       onMouseEnter={(e) => (e.currentTarget.style.width = "220px")}
       onMouseLeave={(e) => { (e.currentTarget.style.width = "56px") }}
@@ -36,9 +36,7 @@ export function Nav({ links }: NavProps) {
           className="w-[40px] h-[20px]"
           priority
         />
-        <span
-          className="mx-2 transition-all duration-300 font-bold text-lg max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100"
-        >
+        <span className="mx-2 transition-all duration-300 font-bold text-lg max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100">
           تـبـدیـل
         </span>
       </div>
@@ -57,7 +55,6 @@ export function Nav({ links }: NavProps) {
                   <link.icon size={30} weight="light" />
                 )}
               </div>
-              {/* Icon size adjusted to Phosphor's design */}
               <span className="whitespace-nowrap overflow-hidden transition-all duration-300 opacity-0 px-3 group-hover:max-w-full group-hover:opacity-100">
                 {link.title}
               </span>

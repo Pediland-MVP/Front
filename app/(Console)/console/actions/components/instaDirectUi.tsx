@@ -16,7 +16,7 @@ import {
   useContentStore,
   useCurrentTextAreaValue,
 } from "@/store/contentCycleStore";
-import { Button } from "@/registry/new-york/ui/button";
+import { Button } from "@/registry/default/ui/button";
 
 export default function InstaDirectUi() {
   const { adminContentCycle } = useContentStore();
@@ -25,7 +25,7 @@ export default function InstaDirectUi() {
   // console.log(adminContentCycle);
 
   return (
-    <div className="w-full h-full flex bg-white rounded-2xl shadow-md px-4 py-4">
+    <div className="w-full h-full flex">
       {/* Main chat area */}
       <div className="flex flex-col w-full">
         {/* Chat header */}
@@ -46,26 +46,24 @@ export default function InstaDirectUi() {
 
         {/* Messages area */}
         <div className="flex-grow flex flex-col justify-end mb-4">
-          {/* {adminContentCycle.length > 0 &&
+          {adminContentCycle.length > 0 &&
             adminContentCycle?.map(
               (value, index) =>
                 value && ( // Only render if the value is truthy
                   <div
                     key={index}
-                    className="flex flex-col justify-end items-end gap-4  py-2"
+                    className="flex flex-col justify-end items-end gap-4 py-2"
                   >
                     <div className="py-3 px-6 rounded-[2rem] max-w-[70%] bg-gray-200 break-words">
                       {value}
                     </div> <div className="flex justify-end gap-2">
-            <Button variant="secondary" className="rounded-2xl">دکمه</Button>
-           
-            </div>
+                      <Button variant="secondary" className="rounded-2xl">دکمه</Button>
+                    </div>
                   </div>
                 )
+            )}
 
-            )} */}
 
-           
         </div>
 
         {/* Message input area */}
