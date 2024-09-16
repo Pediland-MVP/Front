@@ -6,7 +6,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import AuthHeader from "../components/auth.header";
 import TextDivider from "@/components/ui/textDivider";
 import { Eye, EyeSlash, GoogleLogo } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
@@ -53,12 +52,12 @@ export default function Signup() {
     defaultValues:
       process.env.NODE_ENV === "development"
         ? {
-            firstname: "Test",
-            lastname: "TestUser",
-            mobile: "09210246947",
-            password: "123Sina@",
-            confirmPassword: "123Sina@",
-          }
+          firstname: "Test",
+          lastname: "TestUser",
+          mobile: "09210246947",
+          password: "123Sina@",
+          confirmPassword: "123Sina@",
+        }
         : undefined,
   });
 
@@ -88,7 +87,7 @@ export default function Signup() {
               action: (
                 <ToastAction
                   altText="وارد شوید"
-                  onClick={() => router.push("/auth/login")}
+                  onClick={() => router.push("/auth/signin")}
                 >
                   {" "}
                   ورود{" "}
@@ -129,119 +128,117 @@ export default function Signup() {
   };
 
   return (
-    <main className="_signup pt-14 sm:pt-0 h-full relative">
-      {/* <AuthHeader /> */}
-      <div className="container max-w-6xl flex items-center justify-center h-full">
-        <div className="text-center w-full sm:w-1/3 mx-auto px-3 sm:px-0">
-          <div className="_heading flex items-center justify-center gap-2">
-            <GoogleLogo size={32} />
-            <h1 className="text-xl font-semibold">ثبت نام کاربر جدید</h1>
-          </div>
-          <p className="text-sm text-gray-600 mb-6">
-            حساب کاربری دارید؟{" "}
-            <Link className="text-black" href="/auth/login">
-              وارد شوید
-            </Link>
-          </p>
-          <div className="_form">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className=" space-y-2"
-              >
-                <Input
-                  {...form.register("firstname")}
-                  placeholder="نام"
-                  className="col-span-4"
-                />
-                <Input
-                  {...form.register("lastname")}
-                  placeholder="نام خانوادگی"
-                  className="col-span-4"
-                />
-                <FormField
-                  control={form.control}
-                  name="mobile"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="شماره همراه"
-                          className="col-span-4"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          className="col-span-4"
-                          placeholder="رمز عبور"
-                          type={isVisible ? "text" : "password"}
-                          startContent={
-                            <button
-                              className="focus:outline-none flex justify-center items-center"
-                              type="button"
-                              onClick={toggleVisibility}
-                            >
-                              {isVisible ? (
-                                <Eye size={22} className="text-gray-400" />
-                              ) : (
-                                <EyeSlash size={22} className="text-gray-400" />
-                              )}
-                            </button>
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Input
-                  {...form.register("confirmPassword")}
-                  type={isVisible ? "text" : "password"}
-                  placeholder="تکرار رمز عبور"
-                  className="col-span-4"
-                />
+    <main className="_signup h-full">
+      <div className="container max-w-6xl px-6 sm:px-0 h-full">
+        <div className="_wrap flex items-center justify-center h-full">
+          <div className="_content text-center w-full sm:w-1/3 mx-auto">
+            <div className="_header mb-6 flex flex-col gap-2">
+              <h1 className="text-2xl font-semibold">ثبت نام کاربر جدید</h1>
+              <p className="text-sm text-gray-400">حساب کاربری دارید؟ <Link className="text-gray-400 hover:text-black" href='/auth/signin'>از اینجا وارد شوید</Link></p>
+            </div>
+            <div className="_form">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="grid grid-cols-4 gap-2"
+                >
+                  <Input
+                    {...form.register("firstname")}
+                    placeholder="نام"
+                    wrapperClassName="col-span-2"
+                  />
+                  <Input
+                    {...form.register("lastname")}
+                    placeholder="نام خانوادگی"
+                    wrapperClassName="col-span-2"
+                  />
+                  <FormField
+                    control={form.control}
+                    name="mobile"
+                    render={({ field }) => (
+                      <FormItem className="col-span-4">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="شماره همراه"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem className="col-span-4">
+                        <FormControl>
+                          <Input
+                            placeholder="رمز عبور"
+                            type={isVisible ? "text" : "password"}
+                            startContent={
+                              <button
+                                className="focus:outline-none flex justify-center items-center"
+                                type="button"
+                                onClick={toggleVisibility}
+                              >
+                                {isVisible ? (
+                                  <Eye size={22} className="text-gray-400" />
+                                ) : (
+                                  <EyeSlash size={22} className="text-gray-400" />
+                                )}
+                              </button>
+                            }
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Input
+                    {...form.register("confirmPassword")}
+                    type={isVisible ? "text" : "password"}
+                    placeholder="تکرار رمز عبور"
+                    wrapperClassName="col-span-4"
+                  />
+                  <Button
+                    type="submit"
+                    className="col-span-4 text-white mt-1"
+                    color="success"
+                    disabled={isLoading}
+                  >
+                    ثبت نام
+                    {isLoading && loginWith === "mobile" && (
+                      <LoadingSpinner className="mr-1" size={20} />
+                    )}
+                  </Button>
+                </form>
+              </Form>
+
+              <TextDivider size="lg">یا</TextDivider>
+
+              <div className="grid grid-cols-4 gap-2">
                 <Button
-                  type="submit"
-                  className="w-full text-white"
-                  color="success"
+                  onClick={signUpWithGoogle}
+                  className="col-span-2"
+                  variant="outline"
                   disabled={isLoading}
                 >
-                  ثبت نام
-                  {isLoading && loginWith === "mobile" && (
-                    <LoadingSpinner className="mr-1" size={20} />
-                  )}
+                  {loginWith === 'google' && isLoading ? <LoadingSpinner className="ml-1" size={22} /> : ""}
+                  ادامه با اکانت گوگل
                 </Button>
-              </form>
-            </Form>
-            <TextDivider size="lg">
-              <p>یا با گوگل وارد شوید</p>
-            </TextDivider>
-            <Button
-              onClick={signUpWithGoogle}
-              className="w-full"
-              color="primary"
-              size="lg"
-              variant={"outline"}
-              disabled={isLoading}
-            >
-              ورود با اکانت گوگل
-              {loginWith === "google" && isLoading ? (
-                <LoadingSpinner className="mr-1" size={20} />
-              ) : (
-                <GoogleLogo weight="bold" size={20} className="mr-1" />
-              )}
-            </Button>
+                <Button
+                  onClick={signUpWithGoogle}
+                  className="col-span-2"
+                  variant="outline"
+                  disabled={isLoading}
+                >
+                  {loginWith === 'google' && isLoading ? <LoadingSpinner className="ml-1" size={22} /> : ""}
+                  ادامه با اکانت فیس بوک
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -2,8 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
-import { Lock, UserCirclePlus } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import { Keyhole, UserCirclePlus } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,30 +17,14 @@ export default function AuthButtons() {
 
   return (
     <div className="_back flex items-center gap-1 text-gray-400 hover:text-gray-700 duration-300">
-      {currentPath === "/auth/login" && (
-        <Button
-          as={Link}
-          href="/auth/signup"
-          className="pr-4"
-          variant="light"
-          size="lg"
-          radius="full"
-          startContent={<UserCirclePlus size={20} />}
-        >
-          ثبت نام
+      {currentPath === "/auth/signin" && (
+        <Button asChild variant="ghost">
+          <Link href="/auth/signup"><UserCirclePlus size={24} weight="light" className="ml-2" />ثبت نام</Link>
         </Button>
       )}
       {(currentPath === "/auth/signup" || currentPath === "/auth/reset") && (
-        <Button
-          as={Link}
-          href="/auth/login"
-          className="pr-4"
-          variant="light"
-          size="lg"
-          radius="full"
-          startContent={<Lock size={20} />}
-        >
-          ورود
+        <Button asChild variant="ghost">
+          <Link href="/auth/signin"><Keyhole size={24} weight="light" className="ml-2" />حساب کاربری</Link>
         </Button>
       )}
     </div>

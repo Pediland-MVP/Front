@@ -52,7 +52,7 @@ function Header() {
               </a>
 
               <div className="hidden sm:flex xl:hidden gap-8 xl:border-b">
-                <Link href="/auth/login">
+                <Link href="/auth/signin">
                   <Button variant="outline">ورود</Button>
                 </Link>
                 <Link href="/auth/signup">
@@ -92,7 +92,7 @@ function Header() {
                 </li>
               </ul>
               <div className="flex gap-8">
-                <Link href="/auth/login">
+                <Link href="/auth/signin">
                   <Button variant="outline">ورود</Button>
                 </Link>
                 <Link href="/auth/signup">
@@ -162,7 +162,7 @@ function Header() {
                     تماس با ما
                   </div>
                 </a>
-                <Link href="/auth/login">
+                <Link href="/auth/signin">
                   <Button variant="outline" className="border-blueKommo">
                     ورود
                   </Button>

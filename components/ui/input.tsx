@@ -5,17 +5,18 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   startContent?: React.ReactElement;
   endContent?: React.ReactElement;
+  wrapperClassName?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, startContent, endContent, ...props }, ref) => {
+  ({ className, type, startContent, endContent, wrapperClassName, ...props }, ref) => {
     const StartContent = startContent;
     const EndContent = endContent;
 
     return (
-      <div className="w-full relative">
+      <div className={cn("w-full relative", wrapperClassName)}>
         {StartContent && (
-          <div className="absolute left-1.5 top-1/2 transform -translate-y-1/2">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
             {StartContent}
           </div>
         )}
