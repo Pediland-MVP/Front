@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { IconProps, MetaLogo } from "@phosphor-icons/react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 interface NavProps {
   links: {
@@ -21,60 +22,58 @@ export function Nav({ links }: NavProps) {
 
   return (
     <div
-      className="fixed z-50 px-[.5rem] py-4 shadow-md bg-white rounded-xl h-[96.5%] group flex flex-col transition-all duration-300"
+      className="fixed h-[calc(100vh-2rem)] z-50 px-2 py-4 shadow bg-white rounded-xl group flex flex-col transition-all duration-300"
       style={{ width: "56px" }}
       onMouseEnter={(e) => (e.currentTarget.style.width = "220px")}
-      onMouseLeave={(e) => {(e.currentTarget.style.width = "56px") }}
+      onMouseLeave={(e) => { (e.currentTarget.style.width = "56px") }}
     >
-      <div className="flex items-center font-semibold pb-12 w-full">
-        <div className="">
-          <MetaLogo size={32} weight="bold" />
-        </div>
+      <div className="_logo flex items-center pb-10">
+        <Image
+          src="/images/tabdeal-logo.svg"
+          alt="Logo"
+          width={40}
+          height={20}
+          className="w-[40px] h-[20px]"
+          priority
+        />
         <span
-          className={cn(
-            "whitespace-nowrap mx-[.75rem] transition-all duration-300 text-bold",
-            "max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100 text-semibold"
-          )}
+          className="mx-2 transition-all duration-300 font-bold text-lg max-w-0 opacity-0 group-hover:max-w-full group-hover:opacity-100"
         >
-          تبدیل
+          تـبـدیـل
         </span>
       </div>
 
-      <nav className="flex flex-col gap-8">
+      <nav className="flex flex-col justify-center gap-1">
         {links.map((link, index) => (
-          <Link
-            key={index}
-            href={link.href}
-            className="flex items-center transition-all duration-300 px-1  hover:bg-gray-100 rounded-lg"
-          >
-            <div className="">
-              {currentPath === link.href.split("/")[2] ? (
-                <link.icon size={32} color="red" weight="duotone" />
-              ) : (
-                <link.icon size={32} />
-              )}
-            </div>
-            {/* Icon size adjusted to Phosphor's design */}
-            <span
-              className={cn(
-                "whitespace-nowrap overflow-hidden transition-all duration-300 ",
-                " opacity-0 px-[.75rem] group-hover:max-w-full group-hover:opacity-100"
-              )}
+          <div key={index}>
+            <Link
+              href={link.href}
+              className="flex items-center duration-0 hover:text-red-700 hover:bg-red-50 py-2"
             >
-              {link.title}
-            </span>
-            {link.label && (
-              <span
-                className={cn(
-                  "ml-auto text-muted-foreground transition-all duration-300 ",
-                  "max-w-0 opacity-0  group-hover:max-w-full group-hover:opacity-100"
+              <div className="flex justify-center px-1">
+                {currentPath === link.href.split("/")[2] ? (
+                  <link.icon size={30} className="text-red-700" weight="duotone" />
+                ) : (
+                  <link.icon size={30} weight="light" />
                 )}
-                style={{ transitionDelay: "0.2s" }}
-              >
-                {link.label}
+              </div>
+              {/* Icon size adjusted to Phosphor's design */}
+              <span className="whitespace-nowrap overflow-hidden transition-all duration-300 opacity-0 px-3 group-hover:max-w-full group-hover:opacity-100">
+                {link.title}
               </span>
-            )}
-          </Link>
+              {link.label && (
+                <span
+                  className={cn(
+                    "ml-auto text-muted-foreground transition-all duration-300 ",
+                    "max-w-0 opacity-0  group-hover:max-w-full group-hover:opacity-100"
+                  )}
+                  style={{ transitionDelay: "0.2s" }}
+                >
+                  {link.label}
+                </span>
+              )}
+            </Link>
+          </div>
         ))}
       </nav>
     </div>

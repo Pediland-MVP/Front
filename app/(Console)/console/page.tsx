@@ -1,10 +1,6 @@
-
-
 const ConsolePage = () => {
     return (
-        <div>
-            Console
-        </div>
+        <div>صفحه اول</div>
     )
 }
 
