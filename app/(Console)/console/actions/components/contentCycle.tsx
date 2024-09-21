@@ -187,7 +187,7 @@ export default function ContentCycle() {
                       >
                         <PlusCircle size={24} />
                         <span className="text-sm font-semibold text-blue-600">
-                          افزودن پیام(پست یا دکمه) جدید با تایمر
+                          افزودن محتوا
                         </span>
                       </Button>
                       {postAndMessage.length > 1 && (
@@ -227,40 +227,6 @@ export default function ContentCycle() {
                       </div>
                     </div>
 
-                    {/* Select Time (1-24 hours) */}
-                    {postAndMessage.length > 1 &&
-                      postAndMessage[index].id > 1 && (
-                        <Controller
-                          name={`postAndMessage.${index}.time`}
-                          control={control}
-                          render={({ field }) => (
-                            <Select
-                              {...field}
-                              dir="rtl"
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="انتخاب ساعت" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>
-                                    انتخاب ساعت ارسال بعد از پست اول
-                                  </SelectLabel>
-                                  {Array.from({ length: 24 }, (_, i) => (
-                                    <SelectItem
-                                      key={i + 1}
-                                      value={String(i + 1)}
-                                    >
-                                      {i + 1}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          )}
-                        />
-                      )}
                   </div>
                 ))}
               </div>
