@@ -1,28 +1,11 @@
 "use client";
-import { Key, useState } from "react";
+import { useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { Input } from "@/registry/new-york/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectLabel,
-  SelectValue,
-} from "@/registry/new-york/ui/select";
 import { Dialog, DialogTrigger } from "@/registry/new-york/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/registry/new-york/ui/tabs";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { Button } from "@/registry/new-york/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ModalPost from "./ModalPost";
-import ContentCycleLeads from "./contentCycleLeads";
 import {
   useContentStore,
   useCurrentTextAreaValue,
@@ -42,10 +25,6 @@ export default function ContentCycle() {
   ]);
   // const [newButton, setNewButton] = useState([{ id: 1 }]);
   const [test, setTest] = useState("");
-
-  const [titleBtn, setTitleBtn] = useState("");
-  const [textBtn, setTextBtn] = useState("");
-
   // Validation schema using Zod
   const formSchema = useFormSchema();
 
@@ -107,21 +86,6 @@ export default function ContentCycle() {
     );
   };
 
-  const deleteNewButton = (buttonId: number, index: number) => {
-    setPostAndMessage((prev) =>
-      prev.map((postMessage, i) =>
-        i === index
-          ? {
-              ...postMessage,
-              buttons: postMessage.buttons.filter(
-                (btn: { id: number }) => btn.id !== buttonId
-              ),
-            }
-          : postMessage
-      )
-    );
-    remove(index);
-  };
   const deletePostAndMessage = (id: number, index: number) => {
     setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
     remove(index);
@@ -129,6 +93,9 @@ export default function ContentCycle() {
     setCurrentTextAreaValue("");
     setTest("");
   };
+
+
+
 
   return (
     <div className="min-h-screen w-full">
