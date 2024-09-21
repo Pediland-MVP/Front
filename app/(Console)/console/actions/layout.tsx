@@ -17,7 +17,7 @@ const ChatsLayout: FC<ChatsLayoutProps> = ({ children }) => {
     {
       title: "چرخه محتوا",
       icon: Recycle,
-      key: "/console/actions/contentCycle",
+      key: "/console/actions/content-cycle",
     },
   ];
 
