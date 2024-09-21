@@ -132,15 +132,8 @@ export default function ContentCycle() {
 
   return (
     <div className="min-h-screen w-full">
-      <Tabs defaultValue="contentCycle" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="contentCycle">چرخه محتوا</TabsTrigger>
-          <TabsTrigger value="password" className="text-md font-semibold">
-            نمیدونم
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent dir="rtl" value="contentCycle">
-          <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl shadow-md mb-[10rem]">
+
+          <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl  mb-[10rem]">
             <h1 className="text-2xl font-bold px-6 py-8 border-b">
               محتوای انتخابی
             </h1>
@@ -232,73 +225,6 @@ export default function ContentCycle() {
                           )}
                         />
                       </div>
-
-                      {/* add new button */}
-                      <div className="flex flex-col gap-2">
-                        {postMessage.buttons?.map((button: any, i: number) => (
-                          <div key={button.id} className="flex gap-2">
-                            <Controller
-                              name={`postAndMessage.${index}.button.${i}.btnTitle`}
-                              control={control}
-                              render={({ field }) => (
-                                <Input
-                                  {...field}
-                                  placeholder="نام دکمه"
-                                  className="w-1/4"
-                                  value={field.value}
-                                  onChange={(e) => {
-                                    const newValue = e.target.value;
-                                    setTitleBtn(newValue);
-                                    field.onChange([newValue]);
-                                  }}
-                                />
-                              )}
-                            />
-                            <Controller
-                              name={`postAndMessage.${index}.button.${i}.btnText`}
-                              control={control}
-                              render={({ field }) => (
-                                <Input
-                                  placeholder="متن دکمه"
-                                  className="w-1/4"
-                                  {...field}
-                                  onChange={(e) => {
-                                    const newValue = e.target.value;
-                                    setTextBtn(newValue);
-                                    field.onChange([newValue]);
-                                  }}
-                                />
-                              )}
-                            />
-                            {postMessage.buttons.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                // iconOnly
-                                onClick={() =>
-                                  deleteNewButton(button.id, index)
-                                }
-                              >
-                                <Trash size={19} color="red" />
-                              </Button>
-                            )}
-                          </div>
-                        ))}
-
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant={"outline"}
-                            className="flex items-center gap-2 cursor-pointer"
-                            onClick={() => addNewButton(index)}
-                          >
-                            <PlusCircle size={19} />
-                            <span className="text-sm font-semibold ">
-                              افزودن دکمه
-                            </span>
-                          </Button>
-                        </div>
-                      </div>
                     </div>
 
                     {/* Select Time (1-24 hours) */}
@@ -349,11 +275,6 @@ export default function ContentCycle() {
               </Button>
             </form>
           </div>
-        </TabsContent>
-        <TabsContent dir="rtl" value="password">
-          <ContentCycleLeads />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
