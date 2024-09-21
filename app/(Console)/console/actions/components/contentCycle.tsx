@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Dialog, DialogTrigger } from "@/registry/new-york/ui/dialog";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
@@ -15,8 +15,9 @@ import ConditionWordForm from "./conditionWordForm";
 import CheckBoxOptionForm from "./checkBoxOptionForm";
 import { useFormSchema } from "../formSchema/useFormSchema";
 import { Textarea } from "@/registry/new-york/ui/textarea";
-
 export default function ContentCycle() {
+
+
   const { adminContentCycle, setAdminContentCycle } = useContentStore();
   const { currentTextAreaValue, setCurrentTextAreaValue } =
     useCurrentTextAreaValue();
