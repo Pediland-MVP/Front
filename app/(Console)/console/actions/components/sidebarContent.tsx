@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { IconProps } from "@phosphor-icons/react";
+import Link from "next/link";
 
 type SidebarItem = {
   title: string;
@@ -23,15 +24,16 @@ export default function SidebarContent({
     <div className="_sidebar">
       <ul className="space-y-2">
         {items.map((item) => (
-          <li
-            key={item.key}
-            className={`p-2 rounded flex items-center gap-2 cursor-pointer ${selectedItem === item.key ? "bg-blue-50 text-blue-700" : "text-gray-700"
-              }`}
-            onClick={() => onSelect(item.key)}
-          >
-            <item.icon size={22} weight="light" />
-            {item.title}
-          </li>
+          <Link href={item.key}>
+            <li
+              key={item.key}
+              className={`p-2 rounded flex items-center gap-2 cursor-pointer ${selectedItem === item.key ? "bg-blue-50 text-blue-700" : "text-gray-700"
+                }`}
+            >
+              <item.icon size={22} weight="light" />
+              {item.title}
+            </li>
+          </Link>
         ))}
       </ul>
     </div>

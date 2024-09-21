@@ -12,12 +12,12 @@ const ChatsLayout: FC<ChatsLayoutProps> = ({ children }) => {
     {
       title: "تکمیل اطلاعات کاربر",
       icon: UserCirclePlus,
-      key: "user-management",
+      key: "/console/actions/userManagement",
     },
     {
       title: "چرخه محتوا",
       icon: Recycle,
-      key: "content-cycle",
+      key: "/console/actions/contentCycle",
     },
   ];
 
