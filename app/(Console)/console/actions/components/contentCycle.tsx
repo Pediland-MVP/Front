@@ -40,6 +40,7 @@ const Draggable = dynamic(
 );
 ``;
 import { v4 as uuid } from "uuid";
+import InstagramPostsDialog from "./instagramPosts.dialog";
 
 export default function ContentCycle() {
   const { adminContentCycle, setAdminContentCycle } = useContentStore();
@@ -140,6 +141,14 @@ export default function ContentCycle() {
     setPostAndMessage(postAndMessage.filter((item) => item.id !== id));
   };
 
+  const fetchPosts = async ({ pageParam = "" }) => {
+    const res = await fetch(`http://localhost:3001/v1/medias/posts?after=${pageParam}`);
+    return res.json();
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+  
+
   return (
     <div className="min-h-screen w-full">
       <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl  mb-[10rem]">
@@ -184,16 +193,19 @@ export default function ContentCycle() {
                           ref={provided.innerRef}
                         >
                           <div className="flex">
-                            <Button
+
+                            <InstagramPostsDialog/>
+                            {/* <Button
                               className="flex gap-2"
                               variant="outline"
                               type="button"
                             >
+                              
                               انتخاب پست
                               <span>
                                 <PlusCircle size={19} />
                               </span>
-                            </Button>
+                            </Button> */}
                             <Button
                               variant="ghost"
                               onClick={addPostAndMessage}
