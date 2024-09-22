@@ -119,7 +119,7 @@ export default function ContentCycle() {
   //   setTest("");
   // };
   const [postAndMessage, setPostAndMessage] = useState([
-    { id: uuid(), message: '' },
+    { id: uuid(), message: "" },
   ]);
 
   const handleDragEnd = (result: any) => {
@@ -133,11 +133,11 @@ export default function ContentCycle() {
   };
 
   const addPostAndMessage = () => {
-    setPostAndMessage([...postAndMessage, { id: uuid(), message: '' }]);
+    setPostAndMessage([...postAndMessage, { id: uuid(), message: "" }]);
   };
 
   const deletePostAndMessage = (id: any) => {
-    setPostAndMessage(postAndMessage.filter(item => item.id !== id));
+    setPostAndMessage(postAndMessage.filter((item) => item.id !== id));
   };
 
   return (
@@ -163,75 +163,83 @@ export default function ContentCycle() {
           {/* Message input & post select */}
           <p>را ارسال کند پیام زیر برایش ارسال شود</p>
           <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="ROOT">
-        {(dprovided) => (
-          <div
-            className="space-y-4"
-            {...dprovided.droppableProps}
-            ref={dprovided.innerRef}
-          >
-            {postAndMessage.map((postMessage, index) => (
-              <Draggable key={postMessage.id} draggableId={postMessage.id} index={index}>
-                {(provided) => (
-                  <div
-                    className="space-y-4"
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    ref={provided.innerRef}
-                  >
-                    <div className="flex">
-                      <Button
-                        className="flex gap-2"
-                        variant="outline"
-                        type="button"
-                      >
-                        انتخاب پست
-                        <span>
-                          <PlusCircle size={19} />
-                        </span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={addPostAndMessage}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <PlusCircle size={24} />
-                        <span className="text-sm font-semibold text-blue-600">
-                          افزودن محتوا
-                        </span>
-                      </Button>
-                      {postAndMessage.length > 1 && (
-                        <Trash
-                          size={24}
-                          className="text-red-600 cursor-pointer"
-                          onClick={() => deletePostAndMessage(postMessage.id)}
-                        />
+            <Droppable droppableId="ROOT">
+              {(dprovided) => (
+                <div
+                  className="space-y-4"
+                  {...dprovided.droppableProps}
+                  ref={dprovided.innerRef}
+                >
+                  {postAndMessage.map((postMessage, index) => (
+                    <Draggable
+                      key={postMessage.id}
+                      draggableId={postMessage.id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          className="space-y-4"
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}
+                        >
+                          <div className="flex">
+                            <Button
+                              className="flex gap-2"
+                              variant="outline"
+                              type="button"
+                            >
+                              انتخاب پست
+                              <span>
+                                <PlusCircle size={19} />
+                              </span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={addPostAndMessage}
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
+                              <PlusCircle size={24} />
+                              <span className="text-sm font-semibold text-blue-600">
+                                افزودن محتوا
+                              </span>
+                            </Button>
+                            {postAndMessage.length > 1 && (
+                              <Trash
+                                size={24}
+                                className="text-red-600 cursor-pointer"
+                                onClick={() =>
+                                  deletePostAndMessage(postMessage.id)
+                                }
+                              />
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <textarea
+                              className="w-4/5 border px-3 py-2 rounded-xl"
+                              placeholder="پیام خود را وارد کنید"
+                              value={postMessage.message}
+                              onChange={(e) => {
+                                const newMessage = e.target.value;
+                                setPostAndMessage((prev) =>
+                                  prev.map((item, i) =>
+                                    i === index
+                                      ? { ...item, message: newMessage }
+                                      : item
+                                  )
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
                       )}
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <textarea
-                        className="w-4/5 border px-3 py-2 rounded-xl"
-                        placeholder="پیام خود را وارد کنید"
-                        value={postMessage.message}
-                        onChange={(e) => {
-                          const newMessage = e.target.value;
-                          setPostAndMessage((prev) =>
-                            prev.map((item, i) =>
-                              i === index ? { ...item, message: newMessage } : item
-                            )
-                          );
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {dprovided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+                    </Draggable>
+                  ))}
+                  {dprovided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
 
           {/* Checkbox options COMPONENT */}
 
