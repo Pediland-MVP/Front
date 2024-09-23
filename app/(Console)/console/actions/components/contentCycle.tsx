@@ -14,8 +14,15 @@ import SwitchOfForm from "./switchOfForm";
 import ConditionWordForm from "./conditionWordForm";
 import CheckBoxOptionForm from "./checkBoxOptionForm";
 import { useFormSchema } from "../formSchema/useFormSchema";
-import { Textarea } from "@/registry/new-york/ui/textarea";
 import dynamic from "next/dynamic";
+
+export const CONTENTCYCLE_EVENTS = {
+  SelectPost: "selectPost",
+};
+
+export type SelectPostEventPayload = {
+  postId: string;
+};
 
 const DragDropContext = dynamic(
   () =>
@@ -41,8 +48,10 @@ const Draggable = dynamic(
 ``;
 import { v4 as uuid } from "uuid";
 import InstagramPostsDialog from "./instagramPosts.dialog";
+import EE from "@/lib/ee";
 
 export default function ContentCycle() {
+  const [selectedPostId, setSelectedPostId] = useState<string>();
   const { adminContentCycle, setAdminContentCycle } = useContentStore();
   const { currentTextAreaValue, setCurrentTextAreaValue } =
     useCurrentTextAreaValue();
@@ -142,12 +151,27 @@ export default function ContentCycle() {
   };
 
   const fetchPosts = async ({ pageParam = "" }) => {
-    const res = await fetch(`http://localhost:3001/v1/medias/posts?after=${pageParam}`);
+    const res = await fetch(
+      `http://localhost:3001/v1/medias/posts?after=${pageParam}`
+    );
     return res.json();
   };
 
   const [isOpen, setIsOpen] = useState(false);
-  
+
+  useEffect(() => {
+    EE.addListener(
+      CONTENTCYCLE_EVENTS.SelectPost as string,
+      (data: SelectPostEventPayload) => {
+        setSelectedPostId(data.postId);
+      }
+    );
+    return () => {
+      EE.removeListener(CONTENTCYCLE_EVENTS.SelectPost);
+    };
+  }, []);
+
+  useEffect(() => console.log(selectedPostId));
 
   return (
     <div className="min-h-screen w-full">
@@ -171,6 +195,16 @@ export default function ContentCycle() {
 
           {/* Message input & post select */}
           <p>را ارسال کند پیام زیر برایش ارسال شود</p>
+          <Button
+            variant="ghost"
+            onClick={addPostAndMessage}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <PlusCircle size={24} />
+            <span className="text-sm font-semibold text-blue-600">
+              افزودن محتوا
+            </span>
+          </Button>
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="ROOT">
               {(dprovided) => (
@@ -193,18 +227,7 @@ export default function ContentCycle() {
                           ref={provided.innerRef}
                         >
                           <div className="flex">
-
-                            <InstagramPostsDialog/>
-                            <Button
-                              variant="ghost"
-                              onClick={addPostAndMessage}
-                              className="flex items-center gap-2 cursor-pointer"
-                            >
-                              <PlusCircle size={24} />
-                              <span className="text-sm font-semibold text-blue-600">
-                                افزودن محتوا
-                              </span>
-                            </Button>
+                            <InstagramPostsDialog />
                             {postAndMessage.length > 1 && (
                               <Trash
                                 size={24}

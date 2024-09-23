@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, MouseEventHandler, MouseEvent } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import InfiniteScroll from 'react-infinite-scroll-component';
+import EE from "@/lib/ee";
+import { SelectPostEventPayload } from "./contentCycle";
 
 const PAGE_SIZE = 9;
 
@@ -55,6 +57,13 @@ const InstagramPostsDialog = () => {
     }
   }, [isOpen]);
 
+  const selectPost = (e: MouseEvent<HTMLDivElement>) => {
+
+    const postId = e.currentTarget.dataset.postid;
+    EE.emit('selectPost', { postId } as SelectPostEventPayload)
+
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -77,8 +86,8 @@ const InstagramPostsDialog = () => {
         >
           <div className="grid grid-cols-3 gap-4" id="scrollableDiv" style={{ maxHeight: "60vh", overflowY: "auto" }}>
             {Array.isArray(posts) && posts.map((post) => (
-              <div key={post.id} className="col-span-1">
-                <div className="relative w-full h-56 hover:opacity-70">
+              <div key={post.id} className="col-span-1" data-postid={post.id} onClick={selectPost}>
+                <div className="relative w-full h-56">
                   <Image
                     className="rounded-sm"
                     src={post.media_type === "VIDEO" ? post.thumbnail_url : post.media_url}
