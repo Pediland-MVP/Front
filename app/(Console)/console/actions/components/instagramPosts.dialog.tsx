@@ -1,6 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect, ChangeEvent, MouseEventHandler, MouseEvent } from "react";
+import {
+  useState,
+  useEffect,
+  ChangeEvent,
+  MouseEventHandler,
+  MouseEvent,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +20,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from "react-infinite-scroll-component";
 import EE from "@/lib/ee";
-import { SelectPostEventPayload } from "./contentCycle";
+import { ContentType, SelectPostEventPayload } from "./contentCycle";
+import { Skeleton } from "@/components/ui/skeleton";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 const PAGE_SIZE = 9;
 
-const InstagramPostsDialog = () => {
+export type InstagramPostsDialogProps = {
+  contentId: string;
+  setContents: Dispatch<SetStateAction<ContentType[]>>;
+};
+
+const InstagramPostsDialog = ({
+  contentId,
+  setContents,
+}: InstagramPostsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [coverURL, setCoverURL] = useState("");
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
@@ -31,11 +50,11 @@ const InstagramPostsDialog = () => {
       const url = afterCursor
         ? `http://localhost:3001/v1/medias/posts?after=${afterCursor}`
         : `http://localhost:3001/v1/medias/posts`;
-      const response = await fetch(url, { credentials: 'include' });
+      const response = await fetch(url, { credentials: "include" });
       const data = await response.json();
 
       if (!response.ok) {
-        console.error('Error fetching posts:', response.statusText);
+        console.error("Error fetching posts:", response.statusText);
         return;
       }
 
@@ -43,7 +62,7 @@ const InstagramPostsDialog = () => {
       setHasMore(data.media.data.length === PAGE_SIZE);
       setAfter(data.media.paging.cursors.after || null);
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
     } finally {
       setIsLoading(false);
     }
@@ -58,16 +77,35 @@ const InstagramPostsDialog = () => {
   }, [isOpen]);
 
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
-
     const postId = e.currentTarget.dataset.postid;
-    EE.emit('selectPost', { postId } as SelectPostEventPayload)
+    const postURL = e.currentTarget.dataset.posturl;
+    setCoverURL(postURL!);
 
-  }
+    setContents((contents) => {
+      const content = contents.findIndex((content) => content.id === contentId);
+      if (content !== -1) {
+        const newContents = [...contents];
+        newContents[content].postId = postId;
+        return newContents;
+      }
+      return contents;
+    });
+    setIsOpen(false);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">انتخاب پست</Button>
+        {coverURL ? (
+          <div className="relative w-48 h-48 rounded-lg overflow-hidden" >
+            <Image src={coverURL} alt="cover" fill />
+            <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
+              <Button className="text-white">تعویض پست</Button>
+            </div>
+          </div>
+        ) : (
+          <Button variant="outline">انتخاب پست</Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
@@ -80,24 +118,47 @@ const InstagramPostsDialog = () => {
           dataLength={posts.length}
           next={() => fetchPosts(after)}
           hasMore={hasMore}
-          loader={<p>در حال بارگذاری...</p>}
+          loader={<></>}
           endMessage={<p>پست دیگری موجود نیست.</p>}
           scrollableTarget="scrollableDiv"
         >
-          <div className="grid grid-cols-3 gap-4" id="scrollableDiv" style={{ maxHeight: "60vh", overflowY: "auto" }}>
-            {Array.isArray(posts) && posts.map((post) => (
-              <div key={post.id} className="col-span-1" data-postid={post.id} onClick={selectPost}>
-                <div className="relative w-full h-56">
-                  <Image
-                    className="rounded-sm"
-                    src={post.media_type === "VIDEO" ? post.thumbnail_url : post.media_url}
-                    alt={post.caption || "Instagram Post"}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-              </div>
-            ))}
+          <div
+            className="w-full grid grid-cols-3 gap-4"
+            id="scrollableDiv"
+            style={{ maxHeight: "60vh", overflowY: "auto" }}
+          >
+            {!posts.length
+              ? Array.from({ length: 9 }).map((_, index) => (
+                  <div key={index} className="col-span-1">
+                    <Skeleton className="relative w-full h-56" />
+                  </div>
+                ))
+              : Array.isArray(posts) &&
+                posts.map((post) => (
+                  <div
+                    className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
+                    key={post.id}
+                    data-postid={post.id}
+                    data-posturl={
+                      post.media_type === "VIDEO"
+                        ? post.thumbnail_url
+                        : post.media_url
+                    }
+                    onClick={selectPost}
+                  >
+                    <Image
+                      src={
+                        post.media_type === "VIDEO"
+                          ? post.thumbnail_url
+                          : post.media_url
+                      }
+                      alt={post.caption || "Instagram Post"}
+                      layout="fill"
+                      objectFit="cover"
+                      className="hover:opacity-80 duration-150"
+                    />
+                  </div>
+                ))}
           </div>
         </InfiniteScroll>
         <DialogFooter>

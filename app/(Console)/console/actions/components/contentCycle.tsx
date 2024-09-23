@@ -1,11 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
-import { Dialog, DialogTrigger } from "@/registry/new-york/ui/dialog";
+import { useForm, useFieldArray } from "react-hook-form";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { Button } from "@/registry/new-york/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ModalPost from "./ModalPost";
 import {
   useContentStore,
   useCurrentTextAreaValue,
@@ -15,6 +13,15 @@ import ConditionWordForm from "./conditionWordForm";
 import CheckBoxOptionForm from "./checkBoxOptionForm";
 import { useFormSchema } from "../formSchema/useFormSchema";
 import dynamic from "next/dynamic";
+import { v4 as uuid } from "uuid";
+import InstagramPostsDialog from "./instagramPosts.dialog";
+import EE from "@/lib/ee";
+
+export type ContentType = {
+  id: string;
+  message?: string
+  postId?: string
+}
 
 export const CONTENTCYCLE_EVENTS = {
   SelectPost: "selectPost",
@@ -46,16 +53,13 @@ const Draggable = dynamic(
   { ssr: false }
 );
 ``;
-import { v4 as uuid } from "uuid";
-import InstagramPostsDialog from "./instagramPosts.dialog";
-import EE from "@/lib/ee";
 
 export default function ContentCycle() {
   const [selectedPostId, setSelectedPostId] = useState<string>();
   const { adminContentCycle, setAdminContentCycle } = useContentStore();
   const { currentTextAreaValue, setCurrentTextAreaValue } =
     useCurrentTextAreaValue();
-  // const [postAndMessage, setPostAndMessage] = useState<any[]>([
+  // const [contents, setContents] = useState<any[]>([
   //   { id: 1, buttons: [], message: [""], time: "" },
   // ]);
   // const [newButton, setNewButton] = useState([{ id: 1 }]);
@@ -72,7 +76,7 @@ export default function ContentCycle() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       conditions: [{ type: "", value: "" }],
-      postAndMessage: [
+      contents: [
         {
           message: [""],
           time: "",
@@ -87,7 +91,7 @@ export default function ContentCycle() {
 
   const { fields: postAndMessageFields, remove } = useFieldArray({
     control,
-    name: "postAndMessage", // The name should match the field in your defaultValues
+    name: "contents", // The name should match the field in your defaultValues
   });
   const { fields: conditions, remove: removeConditions } = useFieldArray({
     control,
@@ -102,52 +106,58 @@ export default function ContentCycle() {
     setCurrentTextAreaValue("");
   };
 
-  // Add a new postAndMessage section
+  // Add a new contents section
   // const addPostAndMessage = () => {
-  //   setPostAndMessage([...postAndMessage, { id: Date.now() }]);
+  //   setContents([...contents, { id: Date.now() }]);
   // };
   // const addNewButton = (postMessageIndex: number) => {
-  //   setPostAndMessage((prev) =>
-  //     prev.map((postMessage, index) =>
+  //   setContents((prev) =>
+  //     prev.map((content, index) =>
   //       index === postMessageIndex
   //         ? {
-  //             ...postMessage,
-  //             buttons: postMessage.buttons
-  //               ? [...postMessage.buttons, { id: Date.now() }]
+  //             ...content,
+  //             buttons: content.buttons
+  //               ? [...content.buttons, { id: Date.now() }]
   //               : [{ id: Date.now() }], // Initialize buttons if undefined
   //           }
-  //         : postMessage
+  //         : content
   //     )
   //   );
   // };
 
   // const deletePostAndMessage = (id: number, index: number) => {
-  //   setPostAndMessage(postAndMessage.filter((pm) => pm.id !== id));
+  //   setContents(contents.filter((pm) => pm.id !== id));
   //   remove(index);
   //   setAdminContentCycle(adminContentCycle.filter((_, i) => i !== index));
   //   setCurrentTextAreaValue("");
   //   setTest("");
   // };
-  const [postAndMessage, setPostAndMessage] = useState([
-    { id: uuid(), message: "" },
+  const [contents, setContents] = useState<ContentType[]>([
+    { id: uuid(), message: "", postId: "" },
   ]);
+
+  useEffect(() => {
+    console.log(contents);
+    
+  }, [contents])
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
-
-    const items = Array.from(postAndMessage);
+    console.log('result', result);
+    
+    const items = Array.from(contents);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    setPostAndMessage(items);
+    setContents(items);
   };
 
   const addPostAndMessage = () => {
-    setPostAndMessage([...postAndMessage, { id: uuid(), message: "" }]);
+    setContents([...contents, { id: uuid(), message: "" }]);
   };
 
   const deletePostAndMessage = (id: any) => {
-    setPostAndMessage(postAndMessage.filter((item) => item.id !== id));
+    setContents(contents.filter((item) => item.id !== id));
   };
 
   const fetchPosts = async ({ pageParam = "" }) => {
@@ -213,10 +223,10 @@ export default function ContentCycle() {
                   {...dprovided.droppableProps}
                   ref={dprovided.innerRef}
                 >
-                  {postAndMessage.map((postMessage, index) => (
+                  {contents.map((content, index) => (
                     <Draggable
-                      key={postMessage.id}
-                      draggableId={postMessage.id}
+                      key={content.id}
+                      draggableId={content.id}
                       index={index}
                     >
                       {(provided) => (
@@ -227,13 +237,13 @@ export default function ContentCycle() {
                           ref={provided.innerRef}
                         >
                           <div className="flex">
-                            <InstagramPostsDialog />
-                            {postAndMessage.length > 1 && (
+                            <InstagramPostsDialog setContents={setContents} contentId={content.id} />
+                            {contents.length > 1 && (
                               <Trash
                                 size={24}
                                 className="text-red-600 cursor-pointer"
                                 onClick={() =>
-                                  deletePostAndMessage(postMessage.id)
+                                  deletePostAndMessage(content.id)
                                 }
                               />
                             )}
@@ -242,10 +252,10 @@ export default function ContentCycle() {
                             <textarea
                               className="w-4/5 border px-3 py-2 rounded-xl"
                               placeholder="پیام خود را وارد کنید"
-                              value={postMessage.message}
+                              value={content.message}
                               onChange={(e) => {
                                 const newMessage = e.target.value;
-                                setPostAndMessage((prev) =>
+                                setContents((prev) =>
                                   prev.map((item, i) =>
                                     i === index
                                       ? { ...item, message: newMessage }
