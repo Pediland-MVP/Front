@@ -195,17 +195,6 @@ export default function ContentCycle() {
                           <div className="flex">
 
                             <InstagramPostsDialog/>
-                            {/* <Button
-                              className="flex gap-2"
-                              variant="outline"
-                              type="button"
-                            >
-                              
-                              انتخاب پست
-                              <span>
-                                <PlusCircle size={19} />
-                              </span>
-                            </Button> */}
                             <Button
                               variant="ghost"
                               onClick={addPostAndMessage}
