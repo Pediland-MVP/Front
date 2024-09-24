@@ -148,8 +148,7 @@ export default function ContentCycle() {
     remove: removeConditions,
     append: appendConditions,
     update: updateConditions,
-    swap: swapConditions,
-    mov
+    swap: swapConditions
   } = useFieldArray({
     control: form.control,
     name: "conditions", // The name should match the field in your defaultValues
@@ -158,23 +157,12 @@ export default function ContentCycle() {
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
-    console.log('Swap', result.source);
-    
-    // swapContents(result.source.index, result.destination.index);
     moveContents(result.source.index, result.destination.index);
-    // if (!result.destination) return;
-    // console.log("result", result);
-
-    // const items = Array.from(contents);
-    // const [reorderedItem] = items.splice(result.source.index, 1);
-    // items.splice(result.destination.index, 0, reorderedItem);
-
-    // setContents(items);
   };
 
 
   const onSubmit = (values: z.infer<typeof contentCycleFormSchema>) => {
-    console.log(form.getValues());
+    console.log(form.getValues())
   }
 
   useEffect(() => {
@@ -333,31 +321,31 @@ export default function ContentCycle() {
                       >
                         {(provided) => (
                           <div
-                            className="space-y-4 border-[1.2px] p-2 rounded-2xl"
+                            className="space-y-4 border-[1.2px] p-2 rounded-2xl flex gap-x-4"
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             ref={provided.innerRef}
                           >
-                            <div className="flex">
+                            <div className="relative flex justify-center items-center w-48">
                               <InstagramPostsDialog
                                 index={index}
                                 form={form}
                               />
-                              {contents.length > 1 && (
+                              {contentsField.length > 1 && (
                                 <Trash
                                   size={24}
-                                  className="text-red-600 cursor-pointer"
+                                  className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
                                   onClick={() => removeContents(index)}
                                 />
                               )}
                             </div>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 w-full">
                               <Controller
                                 name={`contents.${index}.message`}
                                 control={form.control}
                                 render={({ field }) => (
                                   <Textarea
-                                    className="w-4/5 border px-3 py-2 rounded-xl"
+                                    className="w-full border px-3 py-2 rounded-xl"
                                     placeholder="پیام خود را وارد کنید"
                                     {...field}
                                   />
@@ -369,7 +357,7 @@ export default function ContentCycle() {
                                 control={form.control}
                                 render={({ field }) => (
                                   <Textarea
-                                    className="w-4/5 border px-3 py-2 rounded-xl"
+                                    className="w-full border px-3 py-2 rounded-xl"
                                     placeholder="پیام کسب اجازه: آیا مایل به ادامه هستید؟..."
                                     {...field}
                                   />
