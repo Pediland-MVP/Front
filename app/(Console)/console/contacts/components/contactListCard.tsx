@@ -2,7 +2,6 @@
 
 import { useState, useMemo, SetStateAction } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -13,8 +12,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell } from "@/components/ui/table";
 import Image from "next/image";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ArrowUp } from "@phosphor-icons/react";
+import Link from "next/link";
 type Lead = {
     profile: string;
     name: string;
@@ -179,7 +177,7 @@ export default function ContactListCard() {
                 />
             </div>
 
-            <div className="_contact-list h-[calc(100%-48px)] max-h-[calc(100%-48px)]">
+            <div className="_contact-list h-[calc(100%-44px)] max-h-[calc(100%-44px)]">
                 <Table className="scroll h-full max-h-full">
                     <TableHeader>
                         <TableRow>
@@ -234,22 +232,26 @@ export default function ContactListCard() {
                                 </TableCell>
 
                                 <TableCell>
-                                    <Image
-                                        src={lead.profile}
-                                        alt={`${lead.name} profile`}
-                                        width={32}
-                                        height={32}
-                                        className="rounded-full"
-                                    />
+                                    <Link href={'/console/contacts/item'}>
+                                        <Image
+                                            src={lead.profile}
+                                            alt={`${lead.name} profile`}
+                                            width={32}
+                                            height={32}
+                                            className="rounded-full"
+                                        />
+                                    </Link>
                                 </TableCell>
 
                                 <TableCell>
-                                    <div className="flex flex-col">
-                                        <div className="font-medium">{lead.name}</div>
-                                        <div className="text-xs text-gray-500 font-light text-right" dir="ltr">
-                                            {lead.username}
+                                    <Link href={'/console/contacts/item'}>
+                                        <div className="flex flex-col">
+                                            <div className="font-medium">{lead.name}</div>
+                                            <div className="text-xs text-gray-500 font-light text-right" dir="ltr">
+                                                {lead.username}
+                                            </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </TableCell>
 
                             </TableRow>

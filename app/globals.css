@@ -129,21 +129,25 @@ table.scroll tbody {
 }
 
 /* سفارشی سازی نوار اسکرول */
-table.scroll tbody::-webkit-scrollbar {
+table.scroll tbody::-webkit-scrollbar,
+._wrap::-webkit-scrollbar {
   width: 9px;
 }
 
-table.scroll tbody::-webkit-scrollbar-track {
+table.scroll tbody::-webkit-scrollbar-track,
+._wrap::-webkit-scrollbar-track {
   background: #fff;
 }
 
-table.scroll tbody::-webkit-scrollbar-thumb {
+table.scroll tbody::-webkit-scrollbar-thumb,
+._wrap::-webkit-scrollbar-thumb {
   background-color: #ddd;
   border-radius: 0px;
   border-right: 6px solid #fff;
 }
 
-table.scroll tbody::-webkit-scrollbar-thumb:hover {
+table.scroll tbody::-webkit-scrollbar-thumb:hover,
+._wrap::-webkit-scrollbar-thumb:hover {
   background-color: #000;
   /* تغییر رنگ هنگام قرار گرفتن نشانگر ماوس روی اسکرول */
 }

@@ -9,8 +9,8 @@ type ContactLayoutProps = {
 const ContactLayout: FC<ContactLayoutProps> = ({ children }) => {
     return (
         <div className="flex gap-4">
-            <div className="h-[calc(100vh-2rem)] w-1/5 bg-white shadow rounded-2xl px-2 py-3">
-                <div className="_title font-semibold px-1 h-8 border-b border-dashed mb-2">
+            <div className="h-[calc(100vh-2rem)] w-1/5 bg-white shadow rounded-2xl px-2 py-4">
+                <div className="_title font-semibold h-8 border-b border-dashed mb-2 text-center">
                     <h1>ارتباطات</h1>
                 </div>
                 <ContactListCard />
