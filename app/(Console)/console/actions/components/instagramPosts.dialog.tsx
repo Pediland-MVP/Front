@@ -2,12 +2,7 @@
 
 import {
   useState,
-  useEffect,
-  ChangeEvent,
-  MouseEventHandler,
-  MouseEvent,
-  Dispatch,
-  SetStateAction,
+  useEffect, MouseEvent
 } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -21,21 +16,38 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import InfiniteScroll from "react-infinite-scroll-component";
-import EE from "@/lib/ee";
-import { ContentType, SelectPostEventPayload } from "./contentCycle";
 import { Skeleton } from "@/components/ui/skeleton";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { UseFormReturn } from "react-hook-form";
 
 const PAGE_SIZE = 9;
 
+type ContentCycleFormType = UseFormReturn<{
+  conditions: {
+      value: string;
+      type: string;
+      id?: string | null | undefined;
+  }[];
+  contents: {
+      message: string;
+      postId: string;
+      consent: string;
+  }[];
+  isDirect: boolean;
+  isComment: boolean;
+  checkboxes?: string[] | undefined;
+}, any, undefined>
+
+
 export type InstagramPostsDialogProps = {
-  contentId: string;
-  setContents: Dispatch<SetStateAction<ContentType[]>>;
+  form: ContentCycleFormType
+  index: number
 };
 
+
+
 const InstagramPostsDialog = ({
-  contentId,
-  setContents,
+  form,
+  index
 }: InstagramPostsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
@@ -77,19 +89,10 @@ const InstagramPostsDialog = ({
   }, [isOpen]);
 
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
-    const postId = e.currentTarget.dataset.postid;
+    const postId = e.currentTarget.dataset.postid!;
     const postURL = e.currentTarget.dataset.posturl;
+    form.setValue(`contents.${index}.postId`, postId);
     setCoverURL(postURL!);
-
-    setContents((contents) => {
-      const content = contents.findIndex((content) => content.id === contentId);
-      if (content !== -1) {
-        const newContents = [...contents];
-        newContents[content].postId = postId;
-        return newContents;
-      }
-      return contents;
-    });
     setIsOpen(false);
   };
 

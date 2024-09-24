@@ -23,7 +23,7 @@ export default function CheckBoxOptionForm({ control }: any) {
                     return checked
                       ? field.onChange([...field.value, item.id])
                       : field.onChange(
-                          field.value.filter((value) => value !== item.id)
+                          field.value.filter((value: any) => value !== item.id)
                         );
                   }}
                 />
