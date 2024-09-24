@@ -24,7 +24,7 @@ body {
       transparent,
       rgb(var(--background-end-rgb))
     ) */
-    /* rgb(var(--background-start-rgb)); */
+  /* rgb(var(--background-start-rgb)); */
 }
 
 @layer utilities {
@@ -99,10 +99,51 @@ body {
     font-weight: 100 1000;
     font-display: fallback;
   }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+/* Table with body scroll */
+table.scroll thead {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+table.scroll tr {
+  display: block;
+}
+
+table.scroll tbody {
+  display: block;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+/* سفارشی سازی نوار اسکرول */
+table.scroll tbody::-webkit-scrollbar {
+  width: 9px;
+}
+
+table.scroll tbody::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+table.scroll tbody::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 0px;
+  border-right: 6px solid #fff;
+}
+
+table.scroll tbody::-webkit-scrollbar-thumb:hover {
+  background-color: #000;
+  /* تغییر رنگ هنگام قرار گرفتن نشانگر ماوس روی اسکرول */
 }
