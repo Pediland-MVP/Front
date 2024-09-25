@@ -21,25 +21,9 @@ import { UseFormReturn } from "react-hook-form";
 
 const PAGE_SIZE = 9;
 
-type ContentCycleFormType = UseFormReturn<{
-  conditions: {
-      value: string;
-      type: string;
-      id?: string | null | undefined;
-  }[];
-  contents: {
-      message: string;
-      postId: string;
-      consent: string;
-  }[];
-  isDirect: boolean;
-  isComment: boolean;
-  checkboxes?: string[] | undefined;
-}, any, undefined>
-
 
 export type InstagramPostsDialogProps = {
-  form: ContentCycleFormType
+  form: any
   index: number
 };
 

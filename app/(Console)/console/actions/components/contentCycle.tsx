@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FormEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { Button } from "@/registry/new-york/ui/button";
@@ -8,17 +8,18 @@ import {
   useContentStore,
   useCurrentTextAreaValue,
 } from "@/store/contentCycleStore";
-import SwitchOfForm from "./switchOfForm";
-import ConditionWordForm from "./conditionWordForm";
-import CheckBoxOptionForm from "./checkBoxOptionForm";
-import { useFormSchema } from "../formSchema/useFormSchema";
 import dynamic from "next/dynamic";
 import { v4 as uuid } from "uuid";
 import InstagramPostsDialog from "./instagramPosts.dialog";
 import { z } from "zod";
-import { Form, FormField, FormLabel } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type ContentType = {
   id: string;
@@ -109,26 +111,31 @@ export default function ContentCycle() {
       z.object({
         message: z.string(),
         postId: z.string(),
-        consent: z.string()
+        consent: z.string(),
       })
     ),
-    checkboxes: z.array(z.string()).optional(),
     isDirect: z.boolean(),
     isComment: z.boolean(),
+    lastMessage: z.string(),
+    justFollowers: z.boolean(),
+    likeDirect: z.boolean(),
+    followMessage: z.string(),
+    followCheckMessage: z.string(),
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
-      conditions: [{ type: "", value: "", id: uuid() }],
+      conditions: [{ type: "equal", value: "", id: uuid() }],
       contents: [
         {
           message: "",
         },
       ],
-      checkboxes: [],
       isDirect: false,
       isComment: false,
+      justFollowers: false,
+      likeDirect: false,
     },
   });
 
@@ -148,27 +155,24 @@ export default function ContentCycle() {
     remove: removeConditions,
     append: appendConditions,
     update: updateConditions,
-    swap: swapConditions
+    swap: swapConditions,
   } = useFieldArray({
     control: form.control,
     name: "conditions", // The name should match the field in your defaultValues
   });
-
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
     moveContents(result.source.index, result.destination.index);
   };
 
-
   const onSubmit = (values: z.infer<typeof contentCycleFormSchema>) => {
-    console.log(form.getValues())
-  }
+    console.log(form.getValues());
+  };
 
   useEffect(() => {
     console.log(form.getValues());
-    
-  }, )
+  });
 
   return (
     <div className="min-h-screen w-full">
@@ -179,7 +183,10 @@ export default function ContentCycle() {
 
         {/* Form wrapper */}
         <Form {...form}>
-          <form  onSubmit={form.handleSubmit(onSubmit)} className="px-8 py-6 text-lg h-full space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="px-8 py-6 text-lg h-full space-y-8"
+          >
             {/* switch of form  COMPONENT*/}
 
             <div className="space-y-8">
@@ -215,7 +222,7 @@ export default function ContentCycle() {
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
-                        <FormLabel htmlFor="direct">دایرکت</FormLabel>
+                        <FormLabel htmlFor="direct">کامنت</FormLabel>
                       </div>
                     )}
                   ></FormField>
@@ -233,6 +240,7 @@ export default function ContentCycle() {
                     <Controller
                       name={`conditions.${index}.type`}
                       control={form.control}
+                      defaultValue="equal"
                       render={({ field }) => (
                         <Select
                           {...field}
@@ -296,7 +304,7 @@ export default function ContentCycle() {
             <Button
               variant="ghost"
               onClick={() =>
-                appendContents({ message: "", postId: "", consent: '' })
+                appendContents({ message: "", postId: "", consent: "" })
               }
               className="flex items-center gap-2 cursor-pointer"
             >
@@ -327,10 +335,7 @@ export default function ContentCycle() {
                             ref={provided.innerRef}
                           >
                             <div className="relative flex justify-center items-center w-48">
-                              <InstagramPostsDialog
-                                index={index}
-                                form={form}
-                              />
+                              <InstagramPostsDialog index={index} form={form} />
                               {contentsField.length > 1 && (
                                 <Trash
                                   size={24}
@@ -376,7 +381,78 @@ export default function ContentCycle() {
 
             {/* Checkbox options COMPONENT */}
 
-            <CheckBoxOptionForm control={form.control} />
+            <FormField
+              control={form.control}
+              name="justFollowers"
+              render={({ field }) => (
+                <FormItem className="flex justify-start items-center gap-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="">
+                    ارسال به شرط فالو داشتن صفحه
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
+            {
+              form.getValues().justFollowers && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="followMessage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="">
+                          متن پیام
+                        </FormLabel>
+                        <p className="text-sm mb-1">با فعال کردن این گزینه، پیام مشخص شده در صورتی ارسال می‌شود که کاربر، صفحه شما را دنبال (فالو) کرده باشد در غیر این صورت پیام زیر نمایش داده می‌شود.</p>
+                        <FormControl>
+                          <Input placeholder="لطفا برای ادامه صفحه ما را فالو کنید ..." {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="followCheckMessage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="">
+                          متن دکمه بررسی مجدد
+                        </FormLabel>
+                          <FormControl>
+                            <Input placeholder="فالو کردم" {...field} />
+                          </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )
+            }
+
+            <FormField
+              control={form.control}
+              name="likeDirect"
+              render={({ field }) => (
+                <FormItem className="flex justify-start items-center gap-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="">
+                    لایک کردن پیام‌های دایرکت
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
 
             {/* Submit button */}
             <Button className="bg-blue-600" type="submit">
