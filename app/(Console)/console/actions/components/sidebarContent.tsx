@@ -1,12 +1,13 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { IconProps } from "@phosphor-icons/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type SidebarItem = {
   title: string;
   icon: React.ElementType<IconProps>; // Adjusted to work with Phosphor icons
-  key: string;
+  path: string;
 };
 
 type SidebarContentProps = {
@@ -20,14 +21,16 @@ export default function SidebarContent({
   selectedItem,
   onSelect,
 }: SidebarContentProps) {
+  const pathname = usePathname()
+
   return (
     <div className="_sidebar">
       <ul className="space-y-2">
         {items.map((item) => (
-          <Link href={item.key}>
+          <Link href={item.path}>
             <li
-              key={item.key}
-              className={`p-2 rounded flex items-center gap-2 cursor-pointer ${selectedItem === item.key ? "bg-blue-50 text-blue-700" : "text-gray-700"
+              key={item.path}
+              className={`p-2 rounded flex items-center gap-2 cursor-pointer ${pathname === item.path ? "bg-blue-50 text-blue-700" : "text-gray-700"
                 }`}
             >
               <item.icon size={22} weight="light" />
