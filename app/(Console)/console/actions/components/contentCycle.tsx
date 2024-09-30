@@ -18,6 +18,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -28,9 +29,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import ErrorMessage from "@/components/ui/errorMessage";
+import { toast, useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import LoadingButton from "@/components/ui/loading-button";
+import * as _ from "lodash";
 
 export type ContentType = {
   id: string;
@@ -58,84 +64,83 @@ const DragDropContext = dynamic(
     import("react-beautiful-dnd").then((mod) => {
       return mod.DragDropContext;
     }),
-  { ssr: false }
+  { ssr: false },
 );
 const Droppable = dynamic(
   () =>
     import("react-beautiful-dnd").then((mod) => {
       return mod.Droppable;
     }),
-  { ssr: false }
+  { ssr: false },
 );
 const Draggable = dynamic(
   () =>
     import("react-beautiful-dnd").then((mod) => {
       return mod.Draggable;
     }),
-  { ssr: false }
+  { ssr: false },
 );
 ``;
 
 export default function ContentCycle() {
-  const [selectedPostId, setSelectedPostId] = useState<string>();
-  const { adminContentCycle, setAdminContentCycle } = useContentStore();
-  const { currentTextAreaValue, setCurrentTextAreaValue } =
-    useCurrentTextAreaValue();
-  // console.log("ERROR", errors);
-
-  const [contents, setContents] = useState<ContentType[]>([
-    { id: uuid(), message: "", postId: "" },
-  ]);
-
-  useEffect(() => {
-    console.log(contents);
-  }, [contents]);
-
-  const addPostAndMessage = () => {
-    setContents([...contents, { id: uuid(), message: "" }]);
-  };
-
-  const deletePostAndMessage = (id: any) => {
-    setContents(contents.filter((item) => item.id !== id));
-  };
+  const { toast } = useToast();
+  const router = useRouter();
 
   const contentCycleFormSchema = z.object({
-    conditions: z.array(
-      z.object({
-        type: z.string(),
-        value: z.string(),
-        id: z.string().optional().nullable(),
-      })
-    ),
-    contents: z.array(
-      z.object({
-        message: z.string(),
-        postId: z.string(),
-        consent: z.string(),
-      })
-    ),
+    conditions: z
+      .array(
+        z.object({
+          type: z.string().min(1, "نوع شرط الزامی است"),
+          value: z.string().min(1, "مقدار شرط الزامی است"),
+          id: z.string().optional().nullable(),
+        }),
+      )
+      .min(1, "حداقل یک شرط الزامی است"),
+    contents: z
+      .array(
+        z.object({
+          text: z.string().min(1, "پیام الزامی است"),
+          postId: z.string().min(1, "انتخاب پست الزامی است"),
+          consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
+        }),
+      )
+      .min(2, "حداقل دو محتوا الزامی است"),
     isDirect: z.boolean(),
     isComment: z.boolean(),
-    lastMessage: z.string(),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
-    followMessage: z.string(),
-    followCheckMessage: z.string(),
+    followMessage: z.string().optional(),
+    followCheckMessage: z.string().optional(),
+    ctaText: z.string().min(1, "متن مرحله پایانی اجباری است"),
+    class: z.string(),
+    commentStartText: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
-      conditions: [{ type: "equal", value: "", id: uuid() }],
+      conditions: [{ type: "EQUAL", value: "", id: uuid() }],
       contents: [
         {
-          message: "",
+          text: "",
+          postId: "",
+          consentText: "",
+        },
+        {
+          text: "",
+          postId: "",
+          consentText: "",
         },
       ],
-      isDirect: false,
+      isDirect: true,
       isComment: false,
       justFollowers: false,
+      followCheckMessage: "",
+      followMessage: "",
       likeDirect: false,
+      ctaText: "",
+      class: "content_cycle",
+      commentStartText: "",
     },
   });
 
@@ -148,7 +153,7 @@ export default function ContentCycle() {
     move: moveContents,
   } = useFieldArray({
     control: form.control,
-    name: "contents", // The name should match the field in your defaultValues
+    name: "contents",
   });
   const {
     fields: conditionsField,
@@ -158,7 +163,7 @@ export default function ContentCycle() {
     swap: swapConditions,
   } = useFieldArray({
     control: form.control,
-    name: "conditions", // The name should match the field in your defaultValues
+    name: "conditions",
   });
 
   const handleDragEnd = (result: any) => {
@@ -166,14 +171,82 @@ export default function ContentCycle() {
     moveContents(result.source.index, result.destination.index);
   };
 
-  const onSubmit = (values: z.infer<typeof contentCycleFormSchema>) => {
-    console.log(form.getValues());
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
+    // Validate Optionals
+    let haveError: boolean = false;
+    if (!values.isComment && !values.isDirect) {
+      form.setError("isDirect", {
+        message: "باید حداقل یکی از حالت‌های کامنت و دایرکت روشن باشد",
+      });
+      form.setFocus("isDirect");
+      haveError = true;
+    }
+
+    if (values.isComment && !values.commentStartText) {
+      form.setError("commentStartText", {
+        message: "در حالت کامنت، پیام درخواست شروع ضروری است",
+      });
+      form.setFocus("commentStartText");
+      haveError = true;
+    }
+
+    if (values.justFollowers) {
+      if (!values.followMessage) {
+        form.setError("followMessage", {
+          message: "متن درخواست فالو در این حالت اجباری است",
+        });
+        form.setFocus("followMessage");
+        haveError = true;
+      }
+      if (!values.followCheckMessage) {
+        form.setError("followCheckMessage", {
+          message: "متن دکمه بررسی مجدد در این حالت اجباری است",
+        });
+        form.setFocus("followCheckMessage");
+        haveError = true;
+      }
+    }
+
+    if (haveError) {
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+
+    const result = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/actions/contentCycle`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // Delete Empty values
+        body: JSON.stringify(
+          _.omitBy(values, (value: any) =>
+            typeof value === "boolean" ? false : _.isEmpty(value),
+          ),
+        ),
+        credentials: "include",
+      },
+    );
+
+    if (!result.ok) {
+      toast({
+        title: "خطایی رخ داد",
+        description: "لطفا مجددا امتحان کنید",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    toast({ title: "با موفقیت ساخته شد" });
+    router.push("/console/actions/content-cycle");
+    console.log(await result.json());
+    setIsLoading(false);
   };
-
-  useEffect(() => {
-    console.log(form.getValues());
-  });
-
   return (
     <div className="min-h-screen w-full">
       <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl  mb-[10rem]">
@@ -199,6 +272,7 @@ export default function ContentCycle() {
                     name="isDirect"
                     render={({ field }) => (
                       <div className="flex gap-2 items-center">
+                        <FormMessage />
                         <Switch
                           dir="ltr"
                           id="direct"
@@ -230,6 +304,23 @@ export default function ContentCycle() {
               </div>
             </div>
 
+            {form.getValues().isComment && (
+              <FormField
+                control={form.control}
+                name="commentStartText"
+                render={({ field, fieldState: { error } }) => (
+                  <div>
+                    <FormLabel> پیام درخواست شروع </FormLabel>
+                    <Textarea
+                      {...field}
+                      placeholder="لطفا برای شروع فرایند روی دکمه شروع بزنید..."
+                    ></Textarea>
+                    {error && <FormMessage> {error.message} </FormMessage>}
+                  </div>
+                )}
+              ></FormField>
+            )}
+
             {/* condition word COMPONENT*/}
 
             <div>
@@ -240,36 +331,44 @@ export default function ContentCycle() {
                     <Controller
                       name={`conditions.${index}.type`}
                       control={form.control}
-                      defaultValue="equal"
-                      render={({ field }) => (
-                        <Select
-                          {...field}
-                          dir="rtl"
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="برابر" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectItem value="equal">برابر</SelectItem>
-                              <SelectItem value="contains">شامل</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
+                      defaultValue="EQUAL"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <Select
+                            {...field}
+                            dir="rtl"
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="برابر" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectItem value="EQUAL">برابر</SelectItem>
+                                <SelectItem value="INCLUDE">شامل</SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          {error && <FormMessage>{error.message}</FormMessage>}
+                        </FormItem>
                       )}
                     />
                     <span className="text-sm">با</span>
                     <Controller
                       name={`conditions.${index}.value`}
                       control={form.control}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          className="max-w-[15rem]"
-                          type="text"
-                          placeholder="مقدار"
-                        />
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <Input
+                            {...field}
+                            className="max-w-[15rem]"
+                            type="text"
+                            placeholder="مقدار"
+                          />
+                          {/* {error && (
+                            <FormMessage> {error.message} </FormMessage>
+                          )} */}
+                        </FormItem>
                       )}
                     />
 
@@ -299,12 +398,21 @@ export default function ContentCycle() {
               </div>
             </div>
 
+            {form?.formState?.errors?.conditions?.map &&
+              form.formState.errors.conditions.map((state, index) => {
+                return (
+                  <ErrorMessage key={index}>
+                    {state?.value?.message}
+                  </ErrorMessage>
+                );
+              })}
+
             {/* Message input & post select */}
             <p>را ارسال کند پیام زیر برایش ارسال شود</p>
             <Button
               variant="ghost"
               onClick={() =>
-                appendContents({ message: "", postId: "", consent: "" })
+                appendContents({ text: "", postId: "", consentText: "" })
               }
               className="flex items-center gap-2 cursor-pointer"
             >
@@ -336,7 +444,7 @@ export default function ContentCycle() {
                           >
                             <div className="relative flex justify-center items-center w-48">
                               <InstagramPostsDialog index={index} form={form} />
-                              {contentsField.length > 1 && (
+                              {contentsField.length > 2 && (
                                 <Trash
                                   size={24}
                                   className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
@@ -346,26 +454,42 @@ export default function ContentCycle() {
                             </div>
                             <div className="flex flex-col gap-2 w-full">
                               <Controller
-                                name={`contents.${index}.message`}
+                                name={`contents.${index}.text`}
                                 control={form.control}
-                                render={({ field }) => (
-                                  <Textarea
-                                    className="w-full border px-3 py-2 rounded-xl"
-                                    placeholder="پیام خود را وارد کنید"
-                                    {...field}
-                                  />
+                                render={({ field, fieldState: { error } }) => (
+                                  <FormItem>
+                                    <Textarea
+                                      className="w-full border px-3 py-2 rounded-xl"
+                                      placeholder="پیام خود را وارد کنید"
+                                      {...field}
+                                    />
+                                    {error && (
+                                      <FormMessage>
+                                        {" "}
+                                        {error.message}{" "}
+                                      </FormMessage>
+                                    )}
+                                  </FormItem>
                                 )}
                               />
 
                               <Controller
-                                name={`contents.${index}.consent`}
+                                name={`contents.${index}.consentText`}
                                 control={form.control}
-                                render={({ field }) => (
-                                  <Textarea
-                                    className="w-full border px-3 py-2 rounded-xl"
-                                    placeholder="پیام کسب اجازه: آیا مایل به ادامه هستید؟..."
-                                    {...field}
-                                  />
+                                render={({ field, fieldState: { error } }) => (
+                                  <FormItem>
+                                    <Textarea
+                                      className="w-full border px-3 py-2 rounded-xl"
+                                      placeholder="پیام کسب اجازه: آیا مایل به ادامه هستید؟..."
+                                      {...field}
+                                    />
+                                    {error && (
+                                      <FormMessage>
+                                        {" "}
+                                        {error.message}{" "}
+                                      </FormMessage>
+                                    )}
+                                  </FormItem>
                                 )}
                               />
                             </div>
@@ -379,85 +503,109 @@ export default function ContentCycle() {
               </Droppable>
             </DragDropContext>
 
+            <FormField
+              name="ctaText"
+              control={form.control}
+              render={({ field, fieldState: { error } }) => {
+                return (
+                  <div>
+                    <FormLabel>متن مرحله پایانی</FormLabel>
+                    <Textarea
+                      {...field}
+                      placeholder="خیلی ممنون که چرخه رو کامل کردید..."
+                    />
+                    {error && <FormMessage> {error.message} </FormMessage>}
+                  </div>
+                );
+              }}
+            ></FormField>
+
             {/* Checkbox options COMPONENT */}
 
             <FormField
               control={form.control}
               name="justFollowers"
               render={({ field }) => (
-                <FormItem className="flex justify-start items-center gap-x-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="">
-                    ارسال به شرط فالو داشتن صفحه
-                  </FormLabel>
+                <FormItem className="flex flex-col justify-start gap-y-2">
+                  <div className="flex items-center gap-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="">
+                      ارسال به شرط فالو داشتن صفحه
+                    </FormLabel>
+                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
-            {
-              form.getValues().justFollowers && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="followMessage"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="">
-                          متن پیام
-                        </FormLabel>
-                        <p className="text-sm mb-1">با فعال کردن این گزینه، پیام مشخص شده در صورتی ارسال می‌شود که کاربر، صفحه شما را دنبال (فالو) کرده باشد در غیر این صورت پیام زیر نمایش داده می‌شود.</p>
-                        <FormControl>
-                          <Input placeholder="لطفا برای ادامه صفحه ما را فالو کنید ..." {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+            {form.getValues().justFollowers && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="followMessage"
+                  render={({ field, fieldState: { error } }) => (
+                    <FormItem>
+                      <FormLabel className="">متن پیام</FormLabel>
+                      <p className="text-sm mb-1">
+                        با فعال کردن این گزینه، پیام مشخص شده در صورتی ارسال
+                        می‌شود که کاربر، صفحه شما را دنبال (فالو) کرده باشد در
+                        غیر این صورت پیام زیر نمایش داده می‌شود.
+                      </p>
+                      <FormControl>
+                        <Input
+                          placeholder="لطفا برای ادامه صفحه ما را فالو کنید ..."
+                          {...field}
+                        />
+                      </FormControl>
+                      {error && <FormMessage> {error.message} </FormMessage>}
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="followCheckMessage"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="">
-                          متن دکمه بررسی مجدد
-                        </FormLabel>
-                          <FormControl>
-                            <Input placeholder="فالو کردم" {...field} />
-                          </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </>
-              )
-            }
+                <FormField
+                  control={form.control}
+                  name="followCheckMessage"
+                  render={({ field, fieldState: { error } }) => (
+                    <FormItem>
+                      <FormLabel className="">متن دکمه بررسی مجدد</FormLabel>
+                      <FormControl>
+                        <Input placeholder="فالو کردم" {...field} />
+                      </FormControl>
+                      {error && <FormMessage> {error.message} </FormMessage>}
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <FormField
               control={form.control}
               name="likeDirect"
               render={({ field }) => (
-                <FormItem className="flex justify-start items-center gap-x-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="">
-                    لایک کردن پیام‌های دایرکت
-                  </FormLabel>
+                <FormItem className="flex flex-col justify-start gap-y-2">
+                  <div className="flex items-center gap-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="">
+                      لایک کردن پیام‌های دایرکت
+                    </FormLabel>
+                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
 
             {/* Submit button */}
-            <Button className="bg-blue-600" type="submit">
-              ایجاد
-            </Button>
+            <LoadingButton isLoading={isLoading}>ایجاد</LoadingButton>
           </form>
         </Form>
       </div>
