@@ -21,6 +21,7 @@ import {
 import { Loader2, Pencil, Trash2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
+import Link from 'next/link'
 
 type ContentCycle = {
   id: string
@@ -81,11 +82,6 @@ export default function ContentCycleTable() {
   useEffect(() => {
     fetchData()
   }, [])
-
-  const handleEdit = (id: string) => {
-    console.log('Edit item with id:', id)
-    // Implement edit functionality
-  }
 
   const handleDeleteClick = (id: string) => {
     setItemToDelete(id)
@@ -151,10 +147,12 @@ export default function ContentCycleTable() {
                         <TableCell className="text-right">{getFirstValidMessage(item.messages)}</TableCell>
                         <TableCell>
                           <div className="flex justify-end space-x-2 space-x-reverse">
-                            <Button variant="outline" size="sm" onClick={() => handleEdit(item.id)}>
-                              <Pencil className="h-4 w-4 ml-2" />
-                              ویرایش
-                            </Button>
+                            <Link href={`/console/actions/content-cycle/${item.id}`}>
+                                <Button variant="outline" size="sm">
+                                <Pencil className="h-4 w-4 ml-2" />
+                                ویرایش
+                                </Button>
+                            </Link>
                             <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(item.id)}>
                               <Trash2 className="h-4 w-4 ml-2" />
                               حذف
