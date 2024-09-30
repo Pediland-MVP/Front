@@ -54,6 +54,10 @@ export default function ContentCycleTable() {
   const [currentPage, setCurrentPage] = useState(1)
 
   const fetchData = async (page: number = 1, limit: number = 10) => {
+    if (currentPage === data?.meta?.totalPages || currentPage === 0) {
+        // Last page and first page
+        return
+    }
     setIsLoading(true)
     setError(null)
     try {
