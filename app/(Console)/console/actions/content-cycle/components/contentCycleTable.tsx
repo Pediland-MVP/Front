@@ -1,27 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Loader2, Pencil, Trash2 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
+import { Loader2, Pencil, Trash2, ChevronRight, ChevronLeft } from "lucide-react"
 import Link from 'next/link'
+import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
 
 type ContentCycle = {
   id: string
@@ -117,89 +101,71 @@ export default function ContentCycleTable() {
   }
 
   return (
-    <div className="container mx-auto py-10 rtl" dir="rtl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-right">جدول چرخه محتوا</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin" />
+    <div className="rtl bg-white rounded-lg p-7" dir="rtl">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-500">{error}</div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">مقدار شرط</TableHead>
+                  <TableHead className="text-right">پیام اول</TableHead>
+                  <TableHead className="text-right">عملیات</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.items.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="text-right">{item.conditions[0]?.value || 'موجود نیست'}</TableCell>
+                    <TableCell className="text-right">{getFirstValidMessage(item.messages)}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end space-x-2 space-x-reverse">
+                        <Link href={`/console/actions/content-cycle/${item.id}`}>
+                          <Button variant="ghost" size="sm">
+                            <Pencil className="h-4 w-4 ml-2" />
+                            ویرایش
+                          </Button>
+                        </Link>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(item.id)}>
+                          <Trash2 className="h-4 w-4 ml-2" />
+                          حذف
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          {data?.meta && (
+            <div className="flex justify-between items-center mt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => fetchData(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronRight className="h-4 w-4 ml-2" />
+                قبلی
+              </Button>
+              <span>صفحه {currentPage} از {data.meta.totalPages}</span>
+              <Button 
+                variant="outline" 
+                onClick={() => fetchData(currentPage + 1)}
+                disabled={currentPage === data.meta.totalPages}
+              >
+                بعدی
+                <ChevronLeft className="h-4 w-4 mr-2" />
+              </Button>
             </div>
-          ) : error ? (
-            <div className="text-center text-red-500">{error}</div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-right">مقدار شرط</TableHead>
-                      <TableHead className="text-right">پیام اول</TableHead>
-                      <TableHead className="text-right">عملیات</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data?.items.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="text-right">{item.conditions[0]?.value || 'موجود نیست'}</TableCell>
-                        <TableCell className="text-right">{getFirstValidMessage(item.messages)}</TableCell>
-                        <TableCell>
-                          <div className="flex justify-end space-x-2 space-x-reverse">
-                            <Link href={`/console/actions/content-cycle/${item.id}`}>
-                                <Button variant="outline" size="sm">
-                                <Pencil className="h-4 w-4 ml-2" />
-                                ویرایش
-                                </Button>
-                            </Link>
-                            <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(item.id)}>
-                              <Trash2 className="h-4 w-4 ml-2" />
-                              حذف
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              {data?.meta && (
-                <Pagination className="mt-4 flex justify-center">
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => fetchData(currentPage - 1)}
-                        isActive={currentPage !== 1}
-                      >
-                        قبلی
-                      </PaginationPrevious>
-                    </PaginationItem>
-                    {[...Array(data.meta.totalPages)].map((_, index) => (
-                      <PaginationItem key={index}>
-                        <PaginationLink 
-                          onClick={() => fetchData(index + 1)}
-                          isActive={currentPage === index + 1}
-                        >
-                          {index + 1}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => fetchData(currentPage + 1)}
-                        isActive={currentPage !== data.meta.totalPages}
-                      >
-                        بعدی
-                      </PaginationNext>
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              )}
-            </>
           )}
-        </CardContent>
-      </Card>
+        </>
+      )}
       <DeleteConfirmationDialog
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}
