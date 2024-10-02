@@ -7,7 +7,7 @@ import { Separator } from "@/registry/new-york/ui/separator";
 import { InstagramNamespace } from "@/types/instagram";
 import { InstagramLogo, Plus } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import useSWR from "swr";
 import { DrawerDialogDemo } from "./selectInstagram";
 import Image from "next/image";
@@ -65,7 +65,7 @@ export default function AccountPage() {
   }, [filteredInstagramPages]);
 
   return (
-    <>
+    <Suspense>
       <div className="flex justify-start items-center h-14 px-4">
         <h1 className="text-xl font-bold">اکانت های کاربری</h1>
       </div>
@@ -144,7 +144,7 @@ export default function AccountPage() {
           setOpen={setOpenSelectInstagramDialog}
         />
       </div>
-    </>
+    </Suspense>
     // <ResizablePanel
     //   defaultSize={80}
     //   minSize={30}

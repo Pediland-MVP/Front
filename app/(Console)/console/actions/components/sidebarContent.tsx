@@ -29,7 +29,7 @@ export default function SidebarContent({
         {items.map((item) => (
           <Link key={item.path} href={item.path}>
             <li
-              className={`p-2 rounded flex items-center gap-2 cursor-pointer ${pathname === item.path ? "bg-blue-50 text-blue-700" : "text-gray-700"
+              className={`p-2 rounded flex items-center gap-2 cursor-pointer ${pathname.startsWith(item.path) ? "bg-blue-50 text-blue-700" : "text-gray-700"
                 }`}
             >
               <item.icon size={22} weight="light" />

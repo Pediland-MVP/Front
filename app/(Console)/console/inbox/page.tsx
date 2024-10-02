@@ -1,11 +1,7 @@
 // import { ResizablePanel } from "@/components/ui/resizable";
 import { cookies } from "next/headers";
 
-export default function ChatsPage({
-  defaultlayout,
-}: {
-  defaultlayout: number[];
-}) {
+export default function ChatsPage() {
   const layout = cookies().get("react-resizable-panels:layout");
   const defaultLayout = layout ? JSON.parse(layout.value) : [0, 80];
 
