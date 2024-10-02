@@ -4,11 +4,6 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { Button } from "@/registry/new-york/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useContentStore,
-  useCurrentTextAreaValue,
-} from "@/store/contentCycleStore";
-import dynamic from "next/dynamic";
 import { v4 as uuid } from "uuid";
 import InstagramPostsDialog from "./instagramPosts.dialog";
 import { z } from "zod";
@@ -33,10 +28,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import ErrorMessage from "@/components/ui/errorMessage";
-import { toast, useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import LoadingButton from "@/components/ui/loading-button";
 import * as _ from "lodash";
+import { DragDropContext, Droppable, Draggable } from "@/components/client/dnd";
+
 
 export type ContentType = {
   id: string;
@@ -59,30 +56,15 @@ export type SelectPostEventPayload = {
   postId: string;
 };
 
-const DragDropContext = dynamic(
-  () =>
-    import("react-beautiful-dnd").then((mod) => {
-      return mod.DragDropContext;
-    }),
-  { ssr: false },
-);
-const Droppable = dynamic(
-  () =>
-    import("react-beautiful-dnd").then((mod) => {
-      return mod.Droppable;
-    }),
-  { ssr: false },
-);
-const Draggable = dynamic(
-  () =>
-    import("react-beautiful-dnd").then((mod) => {
-      return mod.Draggable;
-    }),
-  { ssr: false },
-);
-``;
+type ContentCycleProps = {
+  id?: string;
+}
 
-export default function ContentCycle() {
+export default function ContentCycle({id}: ContentCycleProps) {
+
+
+
+
   const { toast } = useToast();
   const router = useRouter();
 
@@ -143,6 +125,40 @@ export default function ContentCycle() {
       commentStartText: "",
     },
   });
+
+  useEffect(() => {
+    if (!id) return;
+    
+    const fetchData = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/actions/contentCycle/${id}`, {
+        credentials: 'include',
+        method: 'GET'
+      })
+
+      if (!response.ok) {
+        console.error("Error in fetching contentCycle data", response.json());
+        
+        toast({
+          title: "خطا",
+          description: "مشکلی پیش آمده است",
+          variant: "destructive",
+        });
+        router.push('/console/actions/content-cycle')
+        return;
+      }
+
+      form.reset(await response.json());
+
+    }
+
+    fetchData()
+
+  }, [id])
+  
+  useEffect(() => {
+    console.log(form.getValues());
+    
+  })
 
   const {
     fields: contentsField,
@@ -247,6 +263,8 @@ export default function ContentCycle() {
     console.log(await result.json());
     setIsLoading(false);
   };
+
+
   return (
     <div className="min-h-screen w-full">
       <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl  mb-[10rem]">
@@ -373,7 +391,7 @@ export default function ContentCycle() {
                     />
 
                     {/* Delete Icon */}
-                    {form.getValues().conditions.length > 1 && (
+                    {form.getValues().conditions?.length > 1 && (
                       <Trash
                         size={24}
                         className="text-red-600 cursor-pointer"

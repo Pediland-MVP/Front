@@ -1,3 +1,5 @@
-'use client'
-import { DragDropContext, Draggable , Droppable } from 'react-beautiful-dnd'
-export { DragDropContext, Draggable , Droppable }
+"use client";
+
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+export { DragDropContext, Droppable, Draggable };

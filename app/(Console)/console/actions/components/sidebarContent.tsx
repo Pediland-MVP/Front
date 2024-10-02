@@ -27,9 +27,8 @@ export default function SidebarContent({
     <div className="_sidebar">
       <ul className="space-y-2">
         {items.map((item) => (
-          <Link href={item.path}>
+          <Link key={item.path} href={item.path}>
             <li
-              key={item.path}
               className={`p-2 rounded flex items-center gap-2 cursor-pointer ${pathname === item.path ? "bg-blue-50 text-blue-700" : "text-gray-700"
                 }`}
             >
