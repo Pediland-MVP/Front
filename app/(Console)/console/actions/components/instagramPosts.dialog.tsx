@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UseFormReturn } from "react-hook-form";
 import ErrorMessage from "@/components/ui/errorMessage";
 
 const PAGE_SIZE = 9;
@@ -22,15 +21,16 @@ const PAGE_SIZE = 9;
 export type InstagramPostsDialogProps = {
   form: any;
   index: number;
+  updateContents: any,
+  contents: any
 };
 
-const InstagramPostsDialog = ({ form, index }: InstagramPostsDialogProps) => {
+const InstagramPostsDialog = ({ form, index, updateContents, contents }: InstagramPostsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [coverURL, setCoverURL] = useState("");
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
@@ -66,18 +66,19 @@ const InstagramPostsDialog = ({ form, index }: InstagramPostsDialogProps) => {
 
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const postId = e.currentTarget.dataset.postid!;
-    const postURL = e.currentTarget.dataset.posturl;
-    form.setValue(`contents.${index}.postId`, postId);
-    setCoverURL(postURL!);
+    const mediaUrl = e.currentTarget.dataset.mediaUrl;
+    updateContents(index, {postId, mediaUrl})
+    // form.setValue(`contents.${index}.postId`, postId);
+    // form.setValue(`contents.${index}.mediaUrl`, mediaUrl)
     setIsOpen(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {coverURL ? (
+        {contents[index].mediaUrl ? (
           <div className="relative w-48 h-48 rounded-lg overflow-hidden">
-            <Image src={coverURL} alt="cover" fill />
+            <Image src={contents[index].mediaUrl} alt="cover" fill />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
               <Button className="text-white">تعویض پست</Button>
             </div>
@@ -125,7 +126,7 @@ const InstagramPostsDialog = ({ form, index }: InstagramPostsDialogProps) => {
                     className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
                     key={post.id}
                     data-postid={post.id}
-                    data-posturl={
+                    data-mediaUrl={
                       post.media_type === "VIDEO"
                         ? post.thumbnail_url
                         : post.media_url

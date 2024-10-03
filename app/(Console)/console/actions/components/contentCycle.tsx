@@ -83,6 +83,7 @@ export default function ContentCycle({id}: ContentCycleProps) {
         z.object({
           text: z.string().min(1, "پیام الزامی است"),
           postId: z.string().min(1, "انتخاب پست الزامی است"),
+          postUrl: z.string().optional(),
           consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
         }),
       )
@@ -181,6 +182,8 @@ export default function ContentCycle({id}: ContentCycleProps) {
     control: form.control,
     name: "conditions",
   });
+
+
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -461,7 +464,7 @@ export default function ContentCycle({id}: ContentCycleProps) {
                             ref={provided.innerRef}
                           >
                             <div className="relative flex justify-center items-center w-48">
-                              <InstagramPostsDialog index={index} form={form} />
+                              <InstagramPostsDialog index={index} updateContents={updateContents} form={form} contents={contentsField} />
                               {contentsField.length > 2 && (
                                 <Trash
                                   size={24}
