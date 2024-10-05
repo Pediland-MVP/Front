@@ -66,8 +66,8 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
 
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const postId = e.currentTarget.dataset.postid!;
-    const mediaUrl = e.currentTarget.dataset.mediaUrl;
-    updateContents(index, {postId, mediaUrl})
+    const mediaUrl = e.currentTarget.dataset.mediaurl;
+    updateContents(index, {...contents[index], postId, mediaUrl})
     // form.setValue(`contents.${index}.postId`, postId);
     // form.setValue(`contents.${index}.mediaUrl`, mediaUrl)
     setIsOpen(false);
@@ -126,7 +126,7 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
                     className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
                     key={post.id}
                     data-postid={post.id}
-                    data-mediaUrl={
+                    data-mediaurl={
                       post.media_type === "VIDEO"
                         ? post.thumbnail_url
                         : post.media_url
