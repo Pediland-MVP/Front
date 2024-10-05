@@ -81,7 +81,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         z.object({
           text: z.string().min(1, "پیام الزامی است"),
           postId: z.string().min(1, "انتخاب پست الزامی است"),
-          postUrl: z.string().optional(),
+          mediaUrl: z.string().optional(),
+          messageId: z.string().optional(),
           consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
         })
       )
