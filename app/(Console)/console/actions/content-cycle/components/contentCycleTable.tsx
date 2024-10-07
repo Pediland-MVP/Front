@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Pencil, Trash2, ChevronRight, ChevronLeft } from "lucide-react"
 import Link from 'next/link'
 import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
+import { toast } from '@/components/ui/use-toast'
 
 type ContentCycle = {
   id: string
@@ -35,8 +36,8 @@ export default function ContentCycleTable() {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
 
-  const fetchData = async (page: number = 1, limit: number = 10) => {
-    if (currentPage === data?.meta?.totalPages || currentPage === 0) {
+  const fetchData = async (page: number = 1, limit: number = 10, force: boolean = false) => {
+    if ((currentPage === data?.meta?.totalPages || currentPage === 0) && !force) {
         // Last page and first page
         return
     }
@@ -71,12 +72,28 @@ export default function ContentCycleTable() {
 
   const handleDeleteConfirm = async () => {
     if (itemToDelete) {
+      console.log('itemToDelete', itemToDelete);
+      
       setIsLoading(true)
       try {
-        // Implement actual delete API call here
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulating API call
-        console.log('Deleted item with id:', itemToDelete)
-        await fetchData(currentPage) // Refresh data after deletion
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/${itemToDelete}`, {
+          method: "DELETE",
+          credentials: 'include'
+        })
+
+        if (!res.ok) {
+          toast({
+            title: 'خطا',
+            description: 'مشکلی پیش آمده است',
+            variant: 'destructive'
+          })
+          return;
+        }
+
+        toast({
+          title: 'حذف شد',
+        })
+        await fetchData(currentPage, undefined, true) // Refresh data after deletion
       } catch (error) {
         setError('خطا در حذف مورد. لطفاً دوباره تلاش کنید.')
         console.error('Error deleting item:', error)
