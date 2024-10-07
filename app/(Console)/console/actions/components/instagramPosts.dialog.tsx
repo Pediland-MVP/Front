@@ -67,7 +67,10 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const postId = e.currentTarget.dataset.postid!;
     const mediaUrl = e.currentTarget.dataset.mediaurl;
-    updateContents(index, {...contents[index], postId, mediaUrl})
+    console.log('media',postId, mediaUrl);
+    console.log(`value before update`, form?.getValues()?.contents?.[index]);
+  
+    updateContents(index, {...contents[index], instagramMedia: {mediaUrl, mediaId: postId}})
     // form.setValue(`contents.${index}.postId`, postId);
     // form.setValue(`contents.${index}.mediaUrl`, mediaUrl)
     setIsOpen(false);
@@ -76,11 +79,11 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {contents[index].mediaUrl ? (
+        {contents[index].instagramMedia?.mediaUrl ? (
           <div className="relative w-48 h-48 rounded-lg overflow-hidden">
-            <Image src={contents[index].mediaUrl} alt="cover" fill />
+            <Image src={contents[index].instagramMedia.mediaUrl} alt="cover" fill />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
-              <Button className="text-white">تعویض پست</Button>
+              <Button type="button" className="text-white">تعویض پست</Button>
             </div>
           </div>
         ) : (

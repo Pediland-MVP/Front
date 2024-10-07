@@ -4,7 +4,6 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { Button } from "@/registry/new-york/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuid } from "uuid";
 import InstagramPostsDialog from "./instagramPosts.dialog";
 import { z } from "zod";
 import {
@@ -61,7 +60,7 @@ type ContentCycleProps = {
 };
 
 export default function ContentCycle({ id }: ContentCycleProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(id ? true : false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -72,7 +71,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         z.object({
           type: z.string().min(1, "نوع شرط الزامی است"),
           value: z.string().min(1, "مقدار شرط الزامی است"),
-          id: z.string().optional().nullable(),
+          id: z.string(),
+          conditionId: z.string().optional().nullable()
         })
       )
       .min(1, "حداقل یک شرط الزامی است"),
@@ -80,9 +80,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       .array(
         z.object({
           text: z.string().min(1, "پیام الزامی است"),
-          postId: z.string().min(1, "انتخاب پست الزامی است"),
-          mediaUrl: z.string().optional(),
-          messageId: z.string().optional(),
+          instagramMedia: z.object({
+            mediaUrl: z.string().optional().nullable(),
+            mediaId: z.string().min(1, 'انتخاب پست الزامی است')
+          }),
+          id: z.string().optional().nullable(),
           consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
         })
       )
@@ -91,26 +93,29 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     isComment: z.boolean(),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
-    followMessage: z.string().optional(),
-    followCheckMessage: z.string().optional(),
-    ctaText: z.string().min(1, "متن مرحله پایانی اجباری است"),
-    class: z.string(),
-    commentStartText: z.string().optional(),
+    followMessage: z.string().optional().nullable(),
+    followCheckMessage: z.string().optional().nullable(),
+    cta: z.string().min(1, "متن مرحله پایانی اجباری است"),
+    commentStartText: z.string().optional().nullable(),
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
-      conditions: [{ type: "EQUAL", value: "", id: uuid() }],
+      conditions: [{ type: "EQUAL", value: "", id: "" }],
       contents: [
         {
           text: "",
-          postId: "",
+          instagramMedia: {
+            mediaId: ""
+          },
           consentText: "",
         },
         {
           text: "",
-          postId: "",
+          instagramMedia: {
+            mediaId: ""
+          },
           consentText: "",
         },
       ],
@@ -120,18 +125,19 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       followCheckMessage: "",
       followMessage: "",
       likeDirect: false,
-      ctaText: "",
-      class: "content_cycle",
+      cta: "",
       commentStartText: "",
     },
   });
 
   useEffect(() => {
+    console.log('id', id);
+    
     if (!id) return;
     setIsLoading(true);
     const fetchData = async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/actions/contentCycle/${id}`,
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/${id}`,
         {
           credentials: "include",
           method: "GET",
@@ -156,9 +162,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     fetchData().finally(() => setIsLoading(false));
   }, [id]);
 
-  useEffect(() => {
-    console.log(form.getValues());
-  });
 
   const {
     fields: contentsField,
@@ -170,6 +173,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   } = useFieldArray({
     control: form.control,
     name: "contents",
+    keyName: '_xid'
   });
   const {
     fields: conditionsField,
@@ -180,6 +184,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   } = useFieldArray({
     control: form.control,
     name: "conditions",
+    keyName: "_xid"
   });
 
   const handleDragEnd = (result: any) => {
@@ -188,6 +193,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   };
 
   const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
+    console.log('Submiting');
+    
     // Validate Optionals
     let haveError: boolean = false;
     if (!values.isComment && !values.isDirect) {
@@ -230,9 +237,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     setIsSubmitting(true);
 
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/actions/contentCycle`,
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${id ? `/${id}` : ''}`,
       {
-        method: "POST",
+        method: id ? "PATCH" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -261,6 +268,19 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     console.log(await result.json());
     setIsSubmitting(false);
   };
+
+  useEffect(() => {
+    console.log(form.getValues());
+    console.log(form.formState.errors);
+    
+  }, [form.watch('contents')])
+
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     console.log('form', form.getValues());
+  //   }, 500)
+  // }, [])
+
 
   return (
     <div className="min-h-screen w-full">
@@ -333,6 +353,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                       <FormLabel> پیام درخواست شروع </FormLabel>
                       <Textarea
                         {...field}
+                        value={field.value ?? ""}
                         placeholder="لطفا برای شروع فرایند روی دکمه شروع بزنید..."
                       ></Textarea>
                       {error && <FormMessage> {error.message} </FormMessage>}
@@ -404,7 +425,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                       )}
                       <Button
                         onClick={() =>
-                          appendConditions({ type: "", value: "", id: uuid() })
+                          appendConditions({ type: "EQUAL", value: "", id: '' })
                         }
                         variant="ghost"
                         className="flex items-center gap-2 cursor-pointer"
@@ -434,7 +455,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               <Button
                 variant="ghost"
                 onClick={() =>
-                  appendContents({ text: "", postId: "", consentText: "" })
+                  appendContents({ text: "", instagramMedia: {mediaId: ""}, consentText: "" })
                 }
                 className="flex items-center gap-2 cursor-pointer"
               >
@@ -454,7 +475,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                       {contentsField.map((content, index) => (
                         <Draggable
                           key={content.id}
-                          draggableId={content.id}
+                          draggableId={content._xid}
                           index={index}
                         >
                           {(provided) => (
@@ -537,7 +558,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               </DragDropContext>
 
               <FormField
-                name="ctaText"
+                name="cta"
                 control={form.control}
                 render={({ field, fieldState: { error } }) => {
                   return (
@@ -593,6 +614,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                           <Input
                             placeholder="لطفا برای ادامه صفحه ما را فالو کنید ..."
                             {...field}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         {error && <FormMessage> {error.message} </FormMessage>}
@@ -607,7 +629,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                       <FormItem>
                         <FormLabel className="">متن دکمه بررسی مجدد</FormLabel>
                         <FormControl>
-                          <Input placeholder="فالو کردم" {...field} />
+                          <Input placeholder="فالو کردم" {...field} value={field.value ?? ""} />
                         </FormControl>
                         {error && <FormMessage> {error.message} </FormMessage>}
                       </FormItem>

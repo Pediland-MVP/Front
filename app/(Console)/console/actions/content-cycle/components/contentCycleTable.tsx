@@ -10,12 +10,9 @@ import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
 type ContentCycle = {
   id: string
   conditions: Array<{ type: string; value: string }>
-  messages: Array<{
+  contents: Array<{
     id: string
     text: string | null
-    priority: number
-    isConsent: boolean
-    isCta: boolean
   }>
 }
 
@@ -46,7 +43,7 @@ export default function ContentCycleTable() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch(`http://localhost:3001/v1/actions/contentCycle?page=${page}&limit=${limit}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle?page=${page}&limit=${limit}`, {
         credentials: "include",
       })
       if (!response.ok) {
@@ -96,9 +93,7 @@ export default function ContentCycleTable() {
     setItemToDelete(null)
   }
 
-  const getFirstValidMessage = (messages: ContentCycle['messages']) => {
-    return messages.find(msg => msg.priority === 1 && msg.text && !msg.isConsent && !msg.isCta)?.text || 'موجود نیست'
-  }
+
 
   return (
     <div className="rtl bg-white rounded-lg p-7" dir="rtl">
@@ -123,7 +118,7 @@ export default function ContentCycleTable() {
                 {data?.items.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="text-right">{item.conditions[0]?.value || 'موجود نیست'}</TableCell>
-                    <TableCell className="text-right">{getFirstValidMessage(item.messages)}</TableCell>
+                    <TableCell className="text-right">{item.contents[0]?.text || 'موجود نیست'}</TableCell>
                     <TableCell>
                       <div className="flex justify-end space-x-2 space-x-reverse">
                         <Link href={`/console/actions/content-cycle/${item.id}`}>
