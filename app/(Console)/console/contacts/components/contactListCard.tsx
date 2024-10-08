@@ -13,6 +13,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell } from "@/components/ui/table";
 import Image from "next/image";
 import Link from "next/link";
+import { PenNibStraight } from "@phosphor-icons/react/dist/ssr";
+import { Pencil, Trash } from "@phosphor-icons/react";
 type Lead = {
     profile: string;
     name: string;
@@ -58,30 +60,9 @@ export default function ContactListCard() {
             },
             {
                 profile: "https://github.com/shadcn.png",
-                name: "فاطمه سلیمانی",
-                username: "@fatemehsoleimani",
-                messages: 78,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "مریم احمدی",
-                username: "@nazi",
-                messages: 52,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "محمد عمرانی",
-                username: "@michael_johnson",
-                messages: 32,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "احسان فقیهی",
-                username: "@emily_martinez",
-                messages: 18,
+                name: "سینا پیرانی",
+                username: "@sina_pirani",
+                messages: 125,
                 lastSeen: "2h ago",
             },
             {
@@ -93,65 +74,9 @@ export default function ContactListCard() {
             },
             {
                 profile: "https://github.com/shadcn.png",
-                name: "فاطمه سلیمانی",
-                username: "@fatemehsoleimani",
-                messages: 78,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "مریم احمدی",
-                username: "@nazi",
-                messages: 52,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "محمد عمرانی",
-                username: "@michael_johnson",
-                messages: 32,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "احسان فقیهی",
-                username: "@emily_martinez",
-                messages: 18,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
                 name: "سینا پیرانی",
                 username: "@sina_pirani",
                 messages: 125,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "فاطمه سلیمانی",
-                username: "@fatemehsoleimani",
-                messages: 78,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "مریم احمدی",
-                username: "@nazi",
-                messages: 52,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "محمد عمرانی",
-                username: "@michael_johnson",
-                messages: 32,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "احسان فقیهی",
-                username: "@emily_martinez",
-                messages: 18,
                 lastSeen: "2h ago",
             },
         ]
@@ -181,7 +106,7 @@ export default function ContactListCard() {
                 <Table className="scroll h-full max-h-full">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-7 text-right">
+                            <TableHead className="text-right w-[5%]">
                                 <Checkbox
                                     checked={selectedLeads.length === filteredLeads.length}
                                     onCheckedChange={(checked) => {
@@ -193,10 +118,12 @@ export default function ContactListCard() {
                                     }}
                                 />
                             </TableHead>
-                            <TableHead className="w-10"></TableHead>
+                            <TableHead className="w-[15%] text-center">
+                                تصویر
+                            </TableHead>
                             <TableHead
                                 onClick={() => handleSort("name")}
-                                className="cursor-pointer text-right hover:text-black"
+                                className="cursor-pointer text-center hover:text-black w-[25%]"
                             >
                                 نام کاربر
                                 {sortColumn === "name" && (
@@ -205,17 +132,42 @@ export default function ContactListCard() {
                                     </span>
                                 )}
                             </TableHead>
-                            {/* <TableHead
-                                className="cursor-pointer text-right"
-                                onClick={() => handleSort("messages")}
+                            <TableHead
+                                className="cursor-pointer text-center hover:text-black w-[25%]"
+                                onClick={() => handleSort("username")}
                             >
-                                پیام‌ها
-                                {sortColumn === "messages" && (
-                                    <span className="ml-2">
+                                آیدی اینستاگرام
+                                {sortColumn === "username" && (
+                                    <span className="mr-2">
                                         {sortDirection === "asc" ? "\u2191" : "\u2193"}
                                     </span>
                                 )}
-                            </TableHead> */}
+                            </TableHead>
+                            <TableHead
+                                className="cursor-pointer text-center hover:text-black w-[10%]"
+                                onClick={() => handleSort("messages")}
+                            >
+                                تعداد پیام
+                                {sortColumn === "messages" && (
+                                    <span className="mr-2">
+                                        {sortDirection === "asc" ? "\u2191" : "\u2193"}
+                                    </span>
+                                )}
+                            </TableHead>
+                            <TableHead
+                                className="cursor-pointer text-center hover:text-black w-[10%]"
+                                onClick={() => handleSort("lastSeen")}
+                            >
+                                آخرین خوانش
+                                {sortColumn === "lastSeen" && (
+                                    <span className="mr-2">
+                                        {sortDirection === "asc" ? "\u2191" : "\u2193"}
+                                    </span>
+                                )}
+                            </TableHead>
+                            <TableHead className="text-center w-[10%]">
+                                عملیات
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className="h-[calc(100%-40px)] max-h-[calc(100%-40px)]">
@@ -224,15 +176,15 @@ export default function ContactListCard() {
                                 key={index}
                                 className={selectedLeads.includes(lead) ? "bg-muted" : ""}
                             >
-                                <TableCell>
+                                <TableCell className="w-[5%]">
                                     <Checkbox
                                         checked={selectedLeads.includes(lead)}
                                         onCheckedChange={() => handleSelect(lead)}
                                     />
                                 </TableCell>
 
-                                <TableCell>
-                                    <Link href={'/console/contacts/item'}>
+                                <TableCell className="w-[15%]">
+                                    <Link className="flex justify-center" href={'/console/contacts/item'}>
                                         <Image
                                             src={lead.profile}
                                             alt={`${lead.name} profile`}
@@ -243,17 +195,24 @@ export default function ContactListCard() {
                                     </Link>
                                 </TableCell>
 
-                                <TableCell>
+                                <TableCell className="w-[25%] text-center">
                                     <Link href={'/console/contacts/item'}>
-                                        <div className="flex flex-col">
-                                            <div className="font-medium">{lead.name}</div>
-                                            <div className="text-xs text-gray-500 font-light text-right" dir="ltr">
-                                                {lead.username}
-                                            </div>
-                                        </div>
+                                        {lead.name}
                                     </Link>
                                 </TableCell>
 
+                                <TableCell className="w-[25%] text-center"><span dir="ltr">{lead.username}</span></TableCell>
+
+                                <TableCell className="w-[10%] text-center">{lead.messages}</TableCell>
+
+                                <TableCell className="w-[10%] text-center">{lead.lastSeen}</TableCell>
+
+                                <TableCell className="w-[10%] text-center">
+                                    <div className="flex gap-2 justify-center">
+                                        <Pencil size={20} weight="light" className="text-gray-600 hover:text-green-700 cursor-pointer" />
+                                        <Trash size={20} weight="light" className="text-gray-600 hover:text-red-700 cursor-pointer" />
+                                    </div>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

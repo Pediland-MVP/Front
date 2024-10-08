@@ -119,11 +119,12 @@ table.scroll thead {
 }
 
 table.scroll tr {
-  display: block;
+  display: table;
+  width: 100%;
 }
 
 table.scroll tbody {
-  display: block;
+  display: initial;
   overflow-y: scroll;
   width: 100%;
 }
