@@ -30,7 +30,7 @@ const {activeTab}=useTabStore()
     isLoading: isLeadLoading,
     error: leadError,
   } = useSWR<leadNamespace.GET["One"]>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/${leadId}?limit=20&page=1`,
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/${leadId}?leadInstagram=true`,
     fetcher
   );
 
@@ -38,6 +38,9 @@ const {activeTab}=useTabStore()
     if (lead) {
       setCurrentLead(lead);
     }
+
+    console.log(`Current lead`, lead);
+    
 
   }, [lead]);
 

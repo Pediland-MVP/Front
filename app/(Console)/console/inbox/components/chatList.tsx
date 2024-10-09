@@ -38,7 +38,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
     if (isListenersSet) return;
     isListenersSet = true;
 
-    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
+    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id});
 
     socket.on(WsMessages.CONVERSATION, (conversationStr) => {
       const conversation: InstagramNamespace.GET["Conversation"] =
