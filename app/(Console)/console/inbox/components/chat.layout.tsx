@@ -2,26 +2,18 @@
 
 import { userData } from "./data";
 import React, { useEffect, useState } from "react";
-import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
-import { cn } from "@/lib/utils";
 
 import Sidebar from "./sidebar";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 
 interface ChatLayoutProps {
   children: React.ReactNode;
-  defaultLayout: number[] | undefined;
-  defaultCollapsed?: boolean;
-  navCollapsedSize: number;
 }
 
 export function ChatLayout({
   children,
-  defaultLayout = [320, 480],
-  defaultCollapsed = false,
-  navCollapsedSize,
 }: ChatLayoutProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState(userData[0]);
   const [isMobile, setIsMobile] = useState(false);
 

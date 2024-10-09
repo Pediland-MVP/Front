@@ -81,13 +81,16 @@ console.log(activeTab);
                         )}
                       >
                         <Avatar className="flex justify-center items-center">
-                          <AvatarImage
-                            src={chat.profilePic}
-                            alt={chat.firstname}
-                            width={6}
-                            height={6}
-                            className="w-10 h-10 "
-                          />
+                          {/* {
+                            chat.profilePic && 
+                            <AvatarImage
+                              src={chat.profilePic}
+                              alt={chat.firstname}
+                              width={6}
+                              height={6}
+                              className="w-10 h-10 "
+                            />
+                          } */}
                         </Avatar>{" "}
                         <span className="sr-only">
                           {chat.firstname} {chat.lastname && chat.lastname}
@@ -106,7 +109,7 @@ console.log(activeTab);
             ) : (
               <Link
                 key={index}
-                href={`/console/chats/${chat.id}`}
+                href={`/console/inbox/${chat.id}`}
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "lg" }),
                   // link.variant === "grey" &&
@@ -114,13 +117,13 @@ console.log(activeTab);
                   "justify-start gap-4 pt-10 pb-8"
                 )}
               >
-                <Image
+                {/* <Image
                   src={chat.profilePic}
                   alt={chat.firstname}
                   width={60}
                   height={60}
                   className="rounded-full"
-                />
+                /> */}
                 <div className="flex flex-col max-w-28">
                   <span>
                     {chat.firstname} {chat.lastname && chat.lastname}
