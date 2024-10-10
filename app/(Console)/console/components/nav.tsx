@@ -22,12 +22,11 @@ export function Nav({ links }: NavProps) {
 
   return (
     <div
-      className="fixed h-[calc(100vh-2rem)] overflow-hidden z-50 px-2 py-4 shadow bg-white rounded-xl group flex flex-col transition-all duration-300"
-      style={{ width: "56px" }}
+      className="fixed h-[calc(100vh-2rem)] overflow-hidden z-50 px-2 py-3 shadow bg-white rounded-xl group flex flex-col transition-all duration-300" style={{ width: "56px" }}
       onMouseEnter={(e) => (e.currentTarget.style.width = "220px")}
       onMouseLeave={(e) => { (e.currentTarget.style.width = "56px") }}
     >
-      <div className="_logo flex items-center pb-10">
+      <div className="_logo flex items-center pb-9">
         <Image
           src="/images/tabdeal-logo.svg"
           alt="Logo"

@@ -13,7 +13,7 @@ export default function ConsoleLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
-      <body className="bg-blue-50 h-screen p-4">
+      <body className="bg-blue-50 h-screen overflow-hidden">
         {children}
         <Toaster />
       </body>

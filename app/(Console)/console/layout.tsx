@@ -6,7 +6,7 @@ import { AddressBookTabs, ChatCircleText, HouseSimple, Lightning, Question, Slid
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="_wrap flex w-full ">
+    <div className="_wrap flex w-full p-4">
       <div className="_navigation h-full z-50">
         <Nav
           links={[
