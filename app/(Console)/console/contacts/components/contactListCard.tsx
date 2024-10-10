@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -17,6 +17,7 @@ import { Pagination } from "./pagination";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";
 import ContactListSkeleton from "./contactListSkeleton";
+import useDebounce from "@/hooks/useDebounce";
 
 type Lead = {
   profile: string;
@@ -27,13 +28,15 @@ type Lead = {
 };
 
 export default function ContactListCard() {
-  const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [limit, setLimit] = useState<number>(10);
   // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
   const [page, setPage] = useState<number>(1);
+  const searchTimeout = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [search, setSearch] = useState("");
+  const debouncedSearchTerm = useDebounce(search, 500);
 
   const {
     data: contactsData,
@@ -41,7 +44,7 @@ export default function ContactListCard() {
     isLoading: isContactsLoading,
     mutate: fetchContacts,
   } = useSWRImmutable<ContactNamespace.GET>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts?page=${page}&limit=${limit}`,
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
     fetcher
   );
   const contacts = contactsData?.items || [];
@@ -54,10 +57,6 @@ export default function ContactListCard() {
   const onPageSizeChange = (value: number) => {
     setLimit(value);
   }
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
 
   const handleSort = (column: keyof Lead) => {
     setSortColumn(column);
@@ -79,8 +78,8 @@ export default function ContactListCard() {
           type="search"
           placeholder="جستجو ..."
           value={search}
-          onChange={handleSearch}
-          className="flex-1"
+          onChange={e => setSearch(e.target.value)}
+          className="flex-1 max-w-[20%]"
         />
       </div>
 
