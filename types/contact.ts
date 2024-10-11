@@ -1,27 +1,29 @@
 
 export namespace ContactNamespace {
     export interface GET {
-        items: Contact[];
+        items: ContactItem[];
         meta:  Meta;
     }
-    export interface Contact {
-        lead:              Lead;
-        id:                string;
-        createDate:        Date;
-        updateDate:        Date;
-        firstname:         null;
-        lastname:          null;
-        mobile:            null;
-        email:             null;
-        country:           null;
-        city:              null;
-        gender:            null;
-        birthDate:         null;
-        messagesCount:     string;
-        latestMessageDate: Date;
-    }
+
+    export type Contact = Omit<ContactItem, 'messagesCount' | 'latestMessageDate'>
     
-    export type Contacts = Contact[]
+    export type Contacts = ContactItem[]
+}
+interface ContactItem {
+    lead:              Lead;
+    id:                string;
+    createDate:        string;
+    updateDate:        string;
+    firstname:         string | null;
+    lastname:          string | null;
+    mobile:            string | null;
+    email:             string | null;
+    country:           string | null;
+    city:              string | null;
+    gender:            "male" | "female" | "other" | null;
+    birthDate:         string | null;
+    messagesCount:     string;
+    latestMessageDate: string;
 }
 
 export interface Lead {
