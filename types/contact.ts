@@ -24,6 +24,7 @@ interface ContactItem {
     birthDate:         string | null;
     messagesCount:     string;
     latestMessageDate: string;
+    username: string;
 }
 
 export interface Lead {

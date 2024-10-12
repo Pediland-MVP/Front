@@ -186,7 +186,7 @@ export default function ContactListCard() {
                     </Link>
                   </TableCell>
                   <TableCell className="w-[25%] text-center">
-                    <span dir="ltr">{contact.lead?.firstname}</span>
+                    <span dir="ltr">{contact.username}</span>
                   </TableCell>
                   <TableCell className="w-[10%] text-center">
                     {contact.messagesCount}
