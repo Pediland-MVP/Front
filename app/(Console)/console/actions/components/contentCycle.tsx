@@ -59,6 +59,11 @@ type ContentCycleProps = {
   id?: string;
 };
 
+/**
+ *
+ * @param {id} Object This param is optional and specify the component is for Update or Create`
+ * @returns
+ */
 export default function ContentCycle({ id }: ContentCycleProps) {
   const [isLoading, setIsLoading] = useState<boolean>(id ? true : false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -72,7 +77,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           type: z.string().min(1, "نوع شرط الزامی است"),
           value: z.string().min(1, "مقدار شرط الزامی است"),
           id: z.string(),
-          conditionId: z.string().optional().nullable()
+          conditionId: z.string().optional().nullable(),
         })
       )
       .min(1, "حداقل یک شرط الزامی است"),
@@ -82,7 +87,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           text: z.string().min(1, "پیام الزامی است"),
           instagramMedia: z.object({
             mediaUrl: z.string().optional().nullable(),
-            mediaId: z.string().min(1, 'انتخاب پست الزامی است')
+            mediaId: z.string().min(1, "انتخاب پست الزامی است"),
           }),
           id: z.string().optional().nullable(),
           consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
@@ -97,6 +102,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     followCheckMessage: z.string().optional().nullable(),
     cta: z.string().min(1, "متن مرحله پایانی اجباری است"),
     commentStartText: z.string().optional().nullable(),
+    getUserData: z.object({
+      type: z.enum(["email", "mobile"]),
+      text: z.string(),
+      enabled: z.boolean(),
+    }).optional(),
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
@@ -107,14 +117,14 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         {
           text: "",
           instagramMedia: {
-            mediaId: ""
+            mediaId: "",
           },
           consentText: "",
         },
         {
           text: "",
           instagramMedia: {
-            mediaId: ""
+            mediaId: "",
           },
           consentText: "",
         },
@@ -131,8 +141,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   });
 
   useEffect(() => {
-    console.log('id', id);
-    
+    console.log("id", id);
+
     if (!id) return;
     setIsLoading(true);
     const fetchData = async () => {
@@ -162,7 +172,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     fetchData().finally(() => setIsLoading(false));
   }, [id]);
 
-
   const {
     fields: contentsField,
     remove: removeContents,
@@ -173,7 +182,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   } = useFieldArray({
     control: form.control,
     name: "contents",
-    keyName: '_xid'
+    keyName: "_xid",
   });
   const {
     fields: conditionsField,
@@ -184,7 +193,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   } = useFieldArray({
     control: form.control,
     name: "conditions",
-    keyName: "_xid"
+    keyName: "_xid",
   });
 
   const handleDragEnd = (result: any) => {
@@ -193,8 +202,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   };
 
   const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
-    console.log('Submiting');
-    
+    console.log("Submiting");
+
     // Validate Optionals
     let haveError: boolean = false;
     if (!values.isComment && !values.isDirect) {
@@ -237,7 +246,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     setIsSubmitting(true);
 
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${id ? `/${id}` : ''}`,
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${
+        id ? `/${id}` : ""
+      }`,
       {
         method: id ? "PATCH" : "POST",
         headers: {
@@ -272,15 +283,13 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   useEffect(() => {
     console.log(form.getValues());
     console.log(form.formState.errors);
-    
-  }, [form.watch('contents')])
+  }, [form.watch("contents")]);
 
   // useEffect(() => {
   //   setInterval(() => {
   //     console.log('form', form.getValues());
   //   }, 500)
   // }, [])
-
 
   return (
     <div className="min-h-screen w-full">
@@ -425,7 +434,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                       )}
                       <Button
                         onClick={() =>
-                          appendConditions({ type: "EQUAL", value: "", id: '' })
+                          appendConditions({ type: "EQUAL", value: "", id: "" })
                         }
                         variant="ghost"
                         className="flex items-center gap-2 cursor-pointer"
@@ -455,7 +464,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               <Button
                 variant="ghost"
                 onClick={() =>
-                  appendContents({ text: "", instagramMedia: {mediaId: ""}, consentText: "" })
+                  appendContents({
+                    text: "",
+                    instagramMedia: { mediaId: "" },
+                    consentText: "",
+                  })
                 }
                 className="flex items-center gap-2 cursor-pointer"
               >
@@ -583,7 +596,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   <FormItem className="flex flex-col justify-start gap-y-2">
                     <div className="flex items-center gap-x-2">
                       <FormControl>
-                        <Checkbox
+                        <Switch
+                          dir="ltr"
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -629,7 +643,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                       <FormItem>
                         <FormLabel className="">متن دکمه بررسی مجدد</FormLabel>
                         <FormControl>
-                          <Input placeholder="فالو کردم" {...field} value={field.value ?? ""} />
+                          <Input
+                            placeholder="فالو کردم"
+                            {...field}
+                            value={field.value ?? ""}
+                          />
                         </FormControl>
                         {error && <FormMessage> {error.message} </FormMessage>}
                       </FormItem>
@@ -640,12 +658,85 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
               <FormField
                 control={form.control}
+                name="getUserData.enabled"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col justify-start gap-y-2">
+                    <div className="flex items-center gap-x-2">
+                      <FormControl>
+                        <Switch
+                          dir="ltr"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="">دریافت اطلاعات کاربر</FormLabel>
+                    </div>
+                    {field.value && (
+                      <div className="mt-2">
+                        <FormField
+                          control={form.control}
+                          name="getUserData.type"
+                          render={({ field: selectField }) => (
+                            <FormItem>
+                              <FormLabel className="">
+                                انتخاب نوع اطلاعات
+                              </FormLabel>
+                              <FormControl>
+                                <Select
+                                  {...selectField}
+                                  dir="rtl"
+                                  onValueChange={selectField.onChange}
+                                >
+                                  <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="انتخاب کنید" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectItem value="email" defaultChecked>
+                                        ایمیل
+                                      </SelectItem>
+                                      <SelectItem value="mobile">
+                                        شماره موبایل
+                                      </SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="getUserData.text"
+                          render={({ field: textField }) => (
+                            <FormItem>
+                              <FormLabel className="">متن سوال</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder={`لطفا شماره موبایل خود را وارد کنید`}
+                                  {...textField}
+                                  value={textField.value ?? ""}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="likeDirect"
                 render={({ field }) => (
                   <FormItem className="flex flex-col justify-start gap-y-2">
                     <div className="flex items-center gap-x-2">
                       <FormControl>
-                        <Checkbox
+                        <Switch
+                          dir="ltr"
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
