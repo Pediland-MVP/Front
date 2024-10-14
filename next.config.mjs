@@ -26,6 +26,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'github.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'koochaa-cdn.s3.eu-central-1.amazonaws.com'
       }
     ],
   },

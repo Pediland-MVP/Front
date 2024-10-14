@@ -1,0 +1,138 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import { ChevronRight, ChevronLeft, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import useSWRImmutable from "swr/immutable";
+import { ProductNamespace } from "@/types/product";
+import useDebounce from "@/hooks/useDebounce";
+import { fetcher } from "@/hooks/swr/fetcher";
+import EditProduct from "./product.dialog";
+import { DateObject } from "react-multi-date-picker";
+// import * as DateObject from 'date-fns-jalali'
+import persian from 'react-date-object/calendars/persian';
+import persian_fa from 'react-date-object/locales/persian_fa';
+
+interface ContentItem {
+  id: number;
+  title: string;
+  status: string;
+  createdAt: string;
+  image: string;
+}
+
+export default function ProductListTable() {
+  const [limit, setLimit] = useState<number>(10);
+  // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
+  const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+  const debouncedSearchTerm = useDebounce(search, 500);
+  const [open, setOpen] = useState<boolean>(false);
+  const [productId, setProductId] = useState<string>("");
+
+  const {
+    data: productsData,
+    error: productsError,
+    isLoading: isProductsLoading,
+    mutate: fetchproducts,
+  } = useSWRImmutable<ProductNamespace.GET>(
+    `${
+      process.env.NEXT_PUBLIC_BACK_API_URL
+    }/products?page=${page}&limit=${limit}${
+      search ? `&search=${debouncedSearchTerm}` : ""
+    }`,
+    fetcher
+  );
+  const products = productsData?.items || [];
+  const productsMeta = productsData?.meta || undefined;
+
+  const handleEdit = (item: ContentItem) => {
+    // setEditingItem({ ...item })
+  };
+
+  const handleSave = () => {};
+
+  const handleDelete = (id: number) => {};
+
+  return (
+    <div className="container mx-auto p-4 bg-white" dir="rtl">
+      <EditProduct  productId={productId} open={open} setOpen={setOpen} />
+      <h1 className="text-2xl font-bold mb-4 text-right">لیست محتوا</h1>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-right">تصویر</TableHead>
+            <TableHead className="text-right">عنوان</TableHead>
+            {/* <TableHead className="text-right">وضعیت</TableHead> */}
+            <TableHead className="text-right">تاریخ ایجاد</TableHead>
+            <TableHead className="text-right">اقدامات</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {products.map((product) => (
+            <TableRow key={product.id}>
+              <TableCell>
+                <Image
+                  src={product.images?.[0]?.url}
+                  alt={product.name}
+                  width={50}
+                  height={50}
+                  className="rounded-full"
+                />
+              </TableCell>
+              <TableCell>{product.name}</TableCell>
+              <TableCell>{new DateObject(product.createDate).setCalendar(persian).setLocale(persian_fa).format('YYYY/MM/DD')}</TableCell>
+              <TableCell>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setOpen(true);
+                      setProductId(product.id);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+        >
+          <ChevronRight className="h-4 w-4 ml-2" />
+          قبلی
+        </Button>
+        <span>
+          صفحه {page} از {productsMeta?.totalPages}
+        </span>
+        <Button
+          onClick={() =>
+            setPage((prev) => Math.min(prev + 1, productsMeta?.totalPages || 1))
+          }
+          disabled={page === productsMeta?.totalPages}
+        >
+          بعدی
+          <ChevronLeft className="h-4 w-4 mr-2" />
+        </Button>
+      </div>
+    </div>
+  );
+}
