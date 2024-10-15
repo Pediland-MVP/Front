@@ -2,7 +2,7 @@ import { log } from "console";
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";
 import ContentCycle from "../../components/contentCycle";
-import InstaDirectUi from "../../components/instaDirectUi";
+import InstaDirectUi from "@/components/global/instaDirectUi";
 
 type ContentCycleEditPageProps = {
   params: {
@@ -22,7 +22,7 @@ export default function ContentCycleEditPage({
         <ContentCycle id={id} />
       </div>
       <div className="w-1/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <InstaDirectUi />
+        <InstaDirectUi/>
       </div>
     </div>
   );

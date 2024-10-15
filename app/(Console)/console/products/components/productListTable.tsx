@@ -66,7 +66,6 @@ export default function ProductListTable() {
   return (
     <div className="container mx-auto p-4 bg-white" dir="rtl">
       <EditProduct  productId={productId} open={open} setOpen={setOpen} />
-      <h1 className="text-2xl font-bold mb-4 text-right">لیست محتوا</h1>
       <Table>
         <TableHeader>
           <TableRow>

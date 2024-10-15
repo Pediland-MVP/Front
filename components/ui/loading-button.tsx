@@ -1,14 +1,19 @@
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import React from "react";
 
-type LoadingProps = {
+interface LoadingProps extends ButtonProps {
   isLoading: boolean;
   children: React.ReactNode;
-};
-export default function LoadingButton({ isLoading, children }: LoadingProps) {
+}
+export default function LoadingButton({
+  isLoading,
+  children,
+  ...props
+}: LoadingProps) {
   return (
     <Button
+      {...props}
       className="bg-blue-600 duration-150 transition-[with]"
       type="submit"
     >
