@@ -1,7 +1,7 @@
 "use client";
 
 import InstaDirectUi from "@/components/global/instaDirectUi";
-import ProductForm from "./components/prodcut.form";
+import ProductForm from "../components/product.form";
 
 export default function Page() {
   return (

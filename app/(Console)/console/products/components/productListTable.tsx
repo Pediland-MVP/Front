@@ -12,15 +12,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import useDebounce from "@/hooks/useDebounce";
 import { fetcher } from "@/hooks/swr/fetcher";
 import EditProduct from "./product.dialog";
 import { DateObject } from "react-multi-date-picker";
 // import * as DateObject from 'date-fns-jalali'
-import persian from 'react-date-object/calendars/persian';
-import persian_fa from 'react-date-object/locales/persian_fa';
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import { useRouter } from "next/navigation";
+import useSWR from "swr";
 
 interface ContentItem {
   id: number;
@@ -44,13 +45,16 @@ export default function ProductListTable() {
     error: productsError,
     isLoading: isProductsLoading,
     mutate: fetchproducts,
-  } = useSWRImmutable<ProductNamespace.GET>(
+  } = useSWR<ProductNamespace.GET>(
     `${
       process.env.NEXT_PUBLIC_BACK_API_URL
     }/products?page=${page}&limit=${limit}${
       search ? `&search=${debouncedSearchTerm}` : ""
     }`,
-    fetcher
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    },
   );
   const products = productsData?.items || [];
   const productsMeta = productsData?.meta || undefined;
@@ -59,19 +63,17 @@ export default function ProductListTable() {
     // setEditingItem({ ...item })
   };
 
-  const handleSave = () => {};
-
-  const handleDelete = (id: number) => {};
+  const router = useRouter();
 
   return (
     <div className="container mx-auto p-4 bg-white" dir="rtl">
-      <EditProduct  productId={productId} open={open} setOpen={setOpen} />
+      <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="text-right">تصویر</TableHead>
             <TableHead className="text-right">عنوان</TableHead>
-            {/* <TableHead className="text-right">وضعیت</TableHead> */}
+            <TableHead className="text-right">قیمت</TableHead>
             <TableHead className="text-right">تاریخ ایجاد</TableHead>
             <TableHead className="text-right">اقدامات</TableHead>
           </TableRow>
@@ -82,22 +84,27 @@ export default function ProductListTable() {
               <TableCell>
                 <Image
                   src={product.images?.[0]?.url}
-                  alt={product.name}
+                  alt={product.title}
                   width={50}
                   height={50}
-                  className="rounded-full"
+                  className="rounded-sm"
                 />
               </TableCell>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{new DateObject(product.createDate).setCalendar(persian).setLocale(persian_fa).format('YYYY/MM/DD')}</TableCell>
+              <TableCell>{product.title}</TableCell>
+              <TableCell>{product.price.toLocaleString()}</TableCell>
+              <TableCell>
+                {new DateObject(product.createDate)
+                  .setCalendar(persian)
+                  .setLocale(persian_fa)
+                  .format("YYYY/MM/DD")}
+              </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-2">
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={() => {
-                      setOpen(true);
-                      setProductId(product.id);
+                      router.push(`/console/products/${product.id}`);
                     }}
                   >
                     <Pencil className="h-4 w-4" />

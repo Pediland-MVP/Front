@@ -12,9 +12,8 @@ export interface ProductItem {
     id:          string;
     createDate:  string;
     updateDate:  string;
-    name:        string;
+    title:        string;
     price:       number;
-    quantity:    number;
     description: string;
     images:      Image[];
 }

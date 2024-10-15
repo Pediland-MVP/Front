@@ -1,173 +1,238 @@
-import React, { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
-import ProductSkeleton from "./product.skeleton";
+"use client";
 
-const UpdateProductSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  quantity: z.number().min(0, "Quantity must be a positive number"),
-  price: z.string().min(1, "Price is required"),
-  description: z.string().min(1, "Description is required"),
-  imageId: z.string().min(1, "Image ID is required"),
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+import { FileUpload } from "@/components/file-upload";
+import axios from "axios";
+import { UploadNamespace } from "@/types/upload";
+import { useRouter } from "next/navigation";
+import LoadingButton from "@/components/ui/loading-button";
+import { ProductNamespace } from "@/types/product";
+import { mutate } from "swr";
+
+const formSchema = z.object({
+  title: z
+    .string({
+      message: "تایتل ضروری است",
+    })
+    .min(1, {
+      message: "تایتل ضروری است",
+    }),
+  price: z
+    .number({
+      message: "قیمت نمیتواند کمتر از صفر باشد",
+    })
+    .min(0, {
+      message: "قیمت نمیتواند کمتر از صفر باشد",
+    }),
+  description: z
+    .string({
+      message: "توضیحات باید حداقل ۵ کاراکتر باشد",
+    })
+    .min(5, {
+      message: "توضیحات باید حداقل ۵ کاراکتر باشد",
+    }),
+  imageId: z
+    .number({ message: "تصویر محصول را آپلود کنید" })
+    .min(1, "تصویر محصول را آپلود کنید"),
 });
 
-type UpdateProductFormData = z.infer<typeof UpdateProductSchema>;
-
 export type ProductFormProps = {
-  productId: string;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-};
+  shouldBeEdit?: ProductNamespace.Product
+}
 
-const ProductForm: React.FC<ProductFormProps> = ({ productId, open, setOpen }) => {
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-  const [product, setProduct] = useState<UpdateProductFormData | null>(null);
-  const [productError, setProductError] = useState<Error | null>(null);
-  const [isProductLoading, setIsProductLoading] = useState(true);
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = useForm<UpdateProductFormData>({
-    resolver: zodResolver(UpdateProductSchema),
+export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ...shouldBeEdit,
+      imageId: shouldBeEdit?.images?.[0].id || undefined,
+    }
   });
 
-  const fetchProduct = async () => {
-    setIsProductLoading(true);
-    setProduct(null);
-    setProductError(null);
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${productId}`,
-        { credentials: 'include' }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch product");
-      }
-
-      const data = await response.json();
-      setProduct(data);
-    } catch (error) {
-      setProductError(error as Error);
-    } finally {
-      setIsProductLoading(false);
+  useEffect(() => {
+    if (form.formState?.errors?.imageId) {
+      toast({
+        title: "تصویر محصول را آپلود کنید",
+        variant: "destructive",
+      });
     }
-  };
+  }, [form.formState.errors]);
 
-  useEffect(() => {
-    fetchProduct();
-    return () => {
-      setProduct(null);
-      reset();
-    };
-  }, []);
+  const router = useRouter();
 
-  useEffect(() => {
-    if (!product || !open || isProductLoading) return;
-    reset(product);
-  }, [product, open, isProductLoading]);
-
-  const onSubmit = async (values: UpdateProductFormData) => {
-    setIsSubmitLoading(true);
+  const [isLoading, setLoading] = useState(false);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${productId}`,
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
         {
-          method: "PUT",
+          method: shouldBeEdit ? 'PUT' : 'POST',
           body: JSON.stringify(values),
-          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update product");
+        toast({
+          title: "خطایی رخ داد",
+          variant: "destructive",
+        });
+        return;
       }
 
       toast({
-        title: "Product updated successfully",
+        title: "محصول با موفقیت اضافه شد",
       });
-      setOpen(false);
+
+      await mutate(key => typeof key === 'string' && key.includes("products"))
+      router.push("/console/products");
     } catch (error) {
       toast({
-        title: "Error updating product",
-        description: (error as Error).message,
+        title: "اتصال خود را چک کنید",
+        variant: "destructive",
       });
     } finally {
-      setIsSubmitLoading(false);
+      setLoading(false);
     }
-  };
-
-  if (isProductLoading || !product) {
-    return <ProductSkeleton />;
   }
 
+
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [images, setImages] = useState<string[]>(shouldBeEdit?.images?.[0].url ? [shouldBeEdit?.images?.[0].url] : []);
+  const handleFileUpload = async (files: File[]) => {
+    const file = files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    try {
+      const response = await axios.post<UploadNamespace.POST["Image"]>(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/image`,
+        formData,
+        {
+          signal,
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              console.log(`Upload Progress: ${percentCompleted}%`);
+              setUploadProgress(percentCompleted);
+            } else {
+              console.log(`Loaded ${progressEvent.loaded} bytes`);
+            }
+          },
+          withCredentials: true,
+        }
+      );
+      form.setValue("imageId", response.data.id);
+      setImages([response.data.url]);
+      setUploadProgress(null);
+    } catch (error) {
+      setUploadProgress(null);
+      console.error(error);
+    }
+    console.log(files);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <Label htmlFor="title">Title</Label>
-        <Input id="title" {...register("title")} />
-        {errors.title && (
-          <p className="text-sm text-red-500">{errors.title.message}</p>
-        )}
+    <div className="flex flex-col md:flex-row gap-8">
+      <div className="flex-1 p-6">
+        <h2 className="text-2xl font-bold mb-4">جزئیات محصول</h2>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>عنوان</FormLabel>
+                  <FormControl>
+                    <Input placeholder="عنوان محصول" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    عنوان محصول خود را وارد کنید.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>قیمت</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="۰.۰۰"
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    قیمت محصول خود را وارد کنید.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>توضیحات</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="محصول خود را توصیف کنید..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    توضیحات دقیقی از محصول خود ارائه دهید.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <LoadingButton isLoading={isLoading} type="submit">ثبت</LoadingButton>
+          </form>
+        </Form>
       </div>
-
-      <div>
-        <Label htmlFor="quantity">Quantity</Label>
-        <Input
-          id="quantity"
-          type="number"
-          {...register("quantity", { valueAsNumber: true })}
-        />
-        {errors.quantity && (
-          <p className="text-sm text-red-500">{errors.quantity.message}</p>
-        )}
+      <div className="flex-1 p-6">
+        <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 rounded-lg">
+          <FileUpload
+            images={images}
+            accept="image/*"
+            onChange={handleFileUpload}
+          />
+        </div>
       </div>
-
-      <div>
-        <Label htmlFor="price">Price</Label>
-        <Input id="price" {...register("price")} />
-        {errors.price && (
-          <p className="text-sm text-red-500">{errors.price.message}</p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea id="description" {...register("description")} />
-        {errors.description && (
-          <p className="text-sm text-red-500">{errors.description.message}</p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="imageId">Image ID</Label>
-        <Input id="imageId" {...register("imageId")} />
-        {errors.imageId && (
-          <p className="text-sm text-red-500">{errors.imageId.message}</p>
-        )}
-      </div>
-
-      <Button type="submit" className="w-full">
-        Save Changes
-        {isSubmitLoading && <LoadingSpinner className="ml-2" size={20} />}
-      </Button>
-    </form>
+    </div>
   );
-};
-
-export default ProductForm;
+}
