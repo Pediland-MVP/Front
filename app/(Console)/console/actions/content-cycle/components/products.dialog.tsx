@@ -15,42 +15,46 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { ProductNamespace } from "@/types/product";
 
 const PAGE_SIZE = 9;
 
-export type InstagramPostsDialogProps = {
+export type InstagramProductsDialogProps = {
   form: any;
   index: number;
-  updateContents: any,
-  contents: any
+  updateProducts: any;
+  productsField: any;
 };
 
-const InstagramPostsDialog = ({ form, index, updateContents, contents }: InstagramPostsDialogProps) => {
+const ProductsDialog = ({
+  form,
+  index,
+  updateProducts,
+  productsField,
+}: InstagramProductsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductNamespace.Products>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [after, setAfter] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchPosts = async (afterCursor: string | null = null) => {
+  const fetchProducts = async (pageNumber: number = 1) => {
     setIsLoading(true);
     try {
-      const url = afterCursor
-        ? `http://localhost:3001/v1/medias/posts?after=${afterCursor}`
-        : `http://localhost:3001/v1/medias/posts`;
+      const url = `http://localhost:3001/v1/products?page=${pageNumber}&limit=${PAGE_SIZE}`;
       const response = await fetch(url, { credentials: "include" });
-      const data = await response.json();
+      const data: ProductNamespace.GET = await response.json();
 
       if (!response.ok) {
-        console.error("Error fetching posts:", response.statusText);
+        console.error("Error fetching products:", response.statusText);
         return;
       }
 
-      setPosts((prevPosts) => [...prevPosts, ...data.media.data]);
-      setHasMore(data.media.data.length === PAGE_SIZE);
-      setAfter(data.media.paging.cursors.after || null);
+      setProducts((prevProducts) => [...prevProducts, ...data.items]);
+      setHasMore(data.meta.totalPages === PAGE_SIZE);
+      setPage((prevPage) => prevPage + 1);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error fetching products:", error);
     } finally {
       setIsLoading(false);
     }
@@ -58,40 +62,45 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
 
   useEffect(() => {
     if (isOpen) {
-      setPosts([]);
-      setAfter(null);
-      fetchPosts();
+      setProducts([]);
+      setPage(1);
+      fetchProducts();
     }
   }, [isOpen]);
 
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
-    const postId = e.currentTarget.dataset.postid!;
-    const mediaUrl = e.currentTarget.dataset.mediaurl;
-    console.log('media',postId, mediaUrl);
-    console.log(`value before update`, form?.getValues()?.contents?.[index]);
-  
-    updateContents(index, {...contents[index], instagramMedia: {mediaUrl, mediaId: postId}})
-    // form.setValue(`contents.${index}.postId`, postId);
-    // form.setValue(`contents.${index}.mediaUrl`, mediaUrl)
+    const productId = e.currentTarget.dataset.productid!;
+    const url = e.currentTarget.dataset.url;
+
+    updateProducts(index, {
+      id: productId,
+      images: [{url}],
+    });
     setIsOpen(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {contents[index].instagramMedia?.mediaUrl ? (
+        {productsField[index]?.id ? (
           <div className="relative w-48 h-48 rounded-lg overflow-hidden">
-            <Image src={contents[index].instagramMedia.mediaUrl} alt="cover" fill />
+            <Image
+              src={productsField[index]?.images?.[0]?.url}
+              alt="cover"
+              fill
+            />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
-              <Button type="button" className="text-white">تعویض پست</Button>
+              <Button type="button" className="text-white">
+                تعویض محصول
+              </Button>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-y-2">
-            <Button type="button" variant="outline">انتخاب پست</Button>
-            {form?.formState?.errors?.contents?.[index]?.postId && (
+            <Button type="button" variant="outline">انتخاب محصول</Button>
+            {form?.formState?.errors?.productsField?.[index]?.postId && (
               <ErrorMessage>
-                {form.formState.errors.contents[index].postId.message}
+                {form.formState.errors.productsField[index].postId.message}
               </ErrorMessage>
             )}
           </div>
@@ -99,14 +108,12 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
       </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>انتخاب پست</DialogTitle>
-          <DialogDescription>
-            آخرین پست‌های اینستاگرام خود را مشاهده کنید.
-          </DialogDescription>
+          <DialogTitle>انتخاب محصول</DialogTitle>
+          <DialogDescription>یک محصول انتخاب کنید</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
-          dataLength={posts.length}
-          next={() => fetchPosts(after)}
+          dataLength={products.length}
+          next={() => fetchProducts(page)}
           hasMore={hasMore}
           loader={<></>}
           endMessage={<p>پست دیگری موجود نیست.</p>}
@@ -117,36 +124,32 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
             id="scrollableDiv"
             style={{ maxHeight: "60vh", overflowY: "auto" }}
           >
-            {!posts.length
+            {!products.length
               ? Array.from({ length: 9 }).map((_, index) => (
                   <div key={index} className="col-span-1">
                     <Skeleton className="relative w-full h-56" />
                   </div>
                 ))
-              : Array.isArray(posts) &&
-                posts.map((post) => (
+              : Array.isArray(products) &&
+                products.map((product) => (
                   <div
                     className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
-                    key={post.id}
-                    data-postid={post.id}
-                    data-mediaurl={
-                      post.media_type === "VIDEO"
-                        ? post.thumbnail_url
-                        : post.media_url
-                    }
+                    key={product.id}
+                    data-url={product.images[0].url}
+                    data-productid={product.id}
                     onClick={selectPost}
                   >
                     <Image
-                      src={
-                        post.media_type === "VIDEO"
-                          ? post.thumbnail_url
-                          : post.media_url
-                      }
-                      alt={post.caption || "Instagram Post"}
+                      src={product.images[0].url}
+                      alt={product.title|| "Instagram Post"}
                       layout="fill"
                       objectFit="cover"
                       className="hover:opacity-80 duration-150"
                     />
+                    <div className="absolute inset-x-0 bottom-0 px-2 py-1 bg-black bg-opacity-50">
+                      <div className="text-white text-sm font-bold">{product.title}</div>
+                      <div className="text-white text-sm">{product.price} تومان</div>
+                    </div>
                   </div>
                 ))}
           </div>
@@ -159,4 +162,5 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
   );
 };
 
-export default InstagramPostsDialog;
+export default ProductsDialog;
+

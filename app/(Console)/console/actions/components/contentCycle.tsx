@@ -25,15 +25,40 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import LoadingButton from "@/components/ui/loading-button";
 import * as _ from "lodash";
-import { DragDropContext, Droppable, Draggable } from "@/components/client/dnd";
+
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 
+import dynamic from "next/dynamic";
+import ProductsDialog from "../content-cycle/components/products.dialog";
+import { v4 } from "uuid";
+
+const DragDropContext = dynamic(
+  () =>
+    import("react-beautiful-dnd").then((mod) => {
+      return mod.DragDropContext;
+    }),
+  { ssr: false }
+);
+const Droppable = dynamic(
+  () =>
+    import("react-beautiful-dnd").then((mod) => {
+      return mod.Droppable;
+    }),
+  { ssr: false }
+);
+const Draggable = dynamic(
+  () =>
+    import("react-beautiful-dnd").then((mod) => {
+      return mod.Draggable;
+    }),
+  { ssr: false }
+);
+1;
 export type ContentType = {
   id: string;
   message?: string;
@@ -91,9 +116,18 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           }),
           id: z.string().optional().nullable(),
           consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
+          _xid: z.string().optional().nullable(),
         })
       )
       .min(2, "حداقل دو محتوا الزامی است"),
+    products: z.array(
+      z.object({
+        id: z.string().optional().nullable(),
+        images: z.array(z.object({url: z.string().optional().nullable(), id: z.string().optional().nullable()})).optional().nullable(),
+        _xid: z.string().optional().nullable(),
+      })
+    ),
+    isProductsEnabled: z.boolean(),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     justFollowers: z.boolean(),
@@ -102,11 +136,13 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     followCheckMessage: z.string().optional().nullable(),
     cta: z.string().min(1, "متن مرحله پایانی اجباری است"),
     commentStartText: z.string().optional().nullable(),
-    getUserData: z.object({
-      type: z.enum(["email", "mobile"]),
-      text: z.string(),
-      enabled: z.boolean(),
-    }).optional(),
+    getUserData: z
+      .object({
+        type: z.enum(["email", "mobile"]),
+        text: z.string(),
+        enabled: z.boolean(),
+      })
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
@@ -120,6 +156,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
             mediaId: "",
           },
           consentText: "",
+          // _xid: uuid()
         },
         {
           text: "",
@@ -127,8 +164,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
             mediaId: "",
           },
           consentText: "",
+          // _xid: uuid()
         },
       ],
+      products: [],
       isDirect: true,
       isComment: false,
       justFollowers: false,
@@ -140,9 +179,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     },
   });
 
-  useEffect(() => {
-    console.log("id", id);
 
+  useEffect(() => {
     if (!id) return;
     setIsLoading(true);
     const fetchData = async () => {
@@ -166,7 +204,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         return;
       }
 
-      form.reset(await response.json());
+      const contentCycle = await response.json()
+      form.reset({...contentCycle, ...contentCycle.products?.length > 0 && { isProductsEnabled: true }});
     };
 
     fetchData().finally(() => setIsLoading(false));
@@ -196,14 +235,30 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     keyName: "_xid",
   });
 
-  const handleDragEnd = (result: any) => {
+  const {
+    fields: productsField,
+    remove: removeProducts,
+    append: appendProducts,
+    update: updateProducts,
+    swap: swapProducts,
+    move: moveProducts,
+  } = useFieldArray({
+    control: form.control,
+    name: "products",
+    keyName: "_xid",
+  });
+
+  const handleContentsDragEnd = (result: any) => {
     if (!result.destination) return;
     moveContents(result.source.index, result.destination.index);
   };
 
-  const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
-    console.log("Submiting");
+  const handleProductsDragEnd = (result: any) => {
+    if (!result.destination) return;
+    moveProducts(result.source.index, result.destination.index);
+  };
 
+  const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
     // Validate Optionals
     let haveError: boolean = false;
     if (!values.isComment && !values.isDirect) {
@@ -239,6 +294,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       }
     }
 
+    const productsIds = values.products.map((p) => p.id);
+
     if (haveError) {
       setIsSubmitting(false);
       return;
@@ -255,11 +312,12 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           "Content-Type": "application/json",
         },
         // Delete Empty values
-        body: JSON.stringify(
-          _.omitBy(values, (value: any) =>
+        body: JSON.stringify({
+          ..._.omitBy(values, (value: any) =>
             typeof value === "boolean" ? false : _.isEmpty(value)
-          )
-        ),
+          ),
+          productsIds
+        }),
         credentials: "include",
       }
     );
@@ -276,20 +334,13 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
     toast({ title: "با موفقیت ساخته شد" });
     router.push("/console/actions/content-cycle");
-    console.log(await result.json());
     setIsSubmitting(false);
   };
 
   useEffect(() => {
     console.log(form.getValues());
     console.log(form.formState.errors);
-  }, [form.watch("contents")]);
-
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     console.log('form', form.getValues());
-  //   }, 500)
-  // }, [])
+  }, [form.watch()]);
 
   return (
     <div className="min-h-screen w-full">
@@ -437,6 +488,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                           appendConditions({ type: "EQUAL", value: "", id: "" })
                         }
                         variant="ghost"
+                        type="button"
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <PlusCircle size={24} />
@@ -470,6 +522,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                     consentText: "",
                   })
                 }
+                type="button"
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <PlusCircle size={24} />
@@ -477,93 +530,97 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   افزودن محتوا
                 </span>
               </Button>
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="ROOT">
+              <DragDropContext onDragEnd={handleContentsDragEnd}>
+                <Droppable droppableId="contents">
                   {(dprovided) => (
                     <div
-                      className="space-y-4"
                       {...dprovided.droppableProps}
+                      className="space-y-4"
                       ref={dprovided.innerRef}
                     >
-                      {contentsField.map((content, index) => (
-                        <Draggable
-                          key={content.id}
-                          draggableId={content._xid}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <div
-                              className="space-y-4 border-[1.2px] p-2 rounded-2xl flex gap-x-4"
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              ref={provided.innerRef}
-                            >
-                              <div className="relative flex justify-center items-center w-48">
-                                <InstagramPostsDialog
-                                  index={index}
-                                  updateContents={updateContents}
-                                  form={form}
-                                  contents={contentsField}
-                                />
-                                {contentsField.length > 2 && (
-                                  <Trash
-                                    size={24}
-                                    className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
-                                    onClick={() => removeContents(index)}
-                                  />
-                                )}
-                              </div>
-                              <div className="flex flex-col gap-2 w-full">
-                                <Controller
-                                  name={`contents.${index}.text`}
-                                  control={form.control}
-                                  render={({
-                                    field,
-                                    fieldState: { error },
-                                  }) => (
-                                    <FormItem>
-                                      <Textarea
-                                        className="w-full border px-3 py-2 rounded-xl"
-                                        placeholder="پیام خود را وارد کنید"
-                                        {...field}
+                      {contentsField.map((content, index) => {
+                        return (
+                          <Draggable
+                            key={content.id}
+                            draggableId={content._xid}
+                            index={index}
+                          >
+                            {(provided) => {
+                              return (
+                                <div
+                                  className="space-y-4 border-[1.2px] p-2 rounded-2xl flex gap-x-4"
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  ref={provided.innerRef}
+                                >
+                                  <div className="relative flex justify-center items-center w-48">
+                                    <InstagramPostsDialog
+                                      index={index}
+                                      updateContents={updateContents}
+                                      form={form}
+                                      contents={contentsField}
+                                    />
+                                    {contentsField.length > 2 && (
+                                      <Trash
+                                        size={24}
+                                        className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
+                                        onClick={() => removeContents(index)}
                                       />
-                                      {error && (
-                                        <FormMessage>
-                                          {" "}
-                                          {error.message}{" "}
-                                        </FormMessage>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-col gap-2 w-full">
+                                    <Controller
+                                      name={`contents.${index}.text`}
+                                      control={form.control}
+                                      render={({
+                                        field,
+                                        fieldState: { error },
+                                      }) => (
+                                        <FormItem>
+                                          <Textarea
+                                            className="w-full border px-3 py-2 rounded-xl"
+                                            placeholder="پیام خود را وارد کنید"
+                                            {...field}
+                                          />
+                                          {error && (
+                                            <FormMessage>
+                                              {" "}
+                                              {error.message}{" "}
+                                            </FormMessage>
+                                          )}
+                                        </FormItem>
                                       )}
-                                    </FormItem>
-                                  )}
-                                />
+                                    />
 
-                                <Controller
-                                  name={`contents.${index}.consentText`}
-                                  control={form.control}
-                                  render={({
-                                    field,
-                                    fieldState: { error },
-                                  }) => (
-                                    <FormItem>
-                                      <Textarea
-                                        className="w-full border px-3 py-2 rounded-xl"
-                                        placeholder="پیام کسب اجازه: آیا مایل به ادامه هستید؟..."
-                                        {...field}
-                                      />
-                                      {error && (
-                                        <FormMessage>
-                                          {" "}
-                                          {error.message}{" "}
-                                        </FormMessage>
+                                    <Controller
+                                      name={`contents.${index}.consentText`}
+                                      control={form.control}
+                                      render={({
+                                        field,
+                                        fieldState: { error },
+                                      }) => (
+                                        <FormItem>
+                                          <Textarea
+                                            className="w-full border px-3 py-2 rounded-xl"
+                                            placeholder="پیام کسب اجازه: آیا مایل به ادامه هستید؟..."
+                                            {...field}
+                                          />
+                                          {error && (
+                                            <FormMessage>
+                                              {" "}
+                                              {error.message}{" "}
+                                            </FormMessage>
+                                          )}
+                                        </FormItem>
                                       )}
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            }}
+                          </Draggable>
+                        );
+                      })}
                       {dprovided.placeholder}
                     </div>
                   )}
@@ -655,6 +712,104 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   />
                 </>
               )}
+
+              <FormField
+                control={form.control}
+                name="isProductsEnabled"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="flex flex-col justify-start gap-y-4">
+                      <div className="flex items-center gap-x-2 mb-2">
+                        <FormControl>
+                          <Switch
+                            dir="ltr"
+                            checked={field.value}
+                            onCheckedChange={(e) => {
+                              if (e) {
+                                if (form.getValues().products?.length === 0) {
+                                  appendProducts({});
+                                }
+                              }
+                              return field.onChange(e);
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="">
+                          ارسال کاتالوگ محصولات
+                        </FormLabel>
+                      </div>
+                      {field.value && (
+                        <div>
+                          <Button
+                            variant="ghost"
+                            type="button"
+                            onClick={() => appendProducts({})}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            <PlusCircle size={24} />
+                            <span className="text-sm font-semibold text-blue-600">
+                              افزودن محصول
+                            </span>
+                          </Button>
+                          <DragDropContext onDragEnd={handleProductsDragEnd}>
+                            <Droppable droppableId="products">
+                              {(dprovided) => (
+                                <div
+                                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                                  style={{
+                                    gridTemplateRows:
+                                      "repeat(auto-fill, minmax(200px, 1fr))",
+                                  }}
+                                  {...dprovided.droppableProps}
+                                  ref={dprovided.innerRef}
+                                >
+                                  {productsField.map((product, index) => (
+                                    <Draggable
+                                      key={product._xid}
+                                      draggableId={product._xid}
+                                      index={index}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          className="flex flex-col justify-center items-center gap-x-4 p-2 rounded-2xl border-[1.2px]"
+                                          style={{ aspectRatio: "1/1" }}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          ref={provided.innerRef}
+                                        >
+                                          <div className="relative flex justify-center items-center">
+                                            <ProductsDialog
+                                              index={index}
+                                              productsField={productsField}
+                                              updateProducts={updateProducts}
+                                              form={form}
+                                            />
+                                            {productsField.length > 2 && (
+                                              <Trash
+                                                size={24}
+                                                className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
+                                                onClick={() =>
+                                                  removeProducts(index)
+                                                }
+                                              />
+                                            )}
+                                          </div>
+                                          <div className="flex flex-col gap-2 w-full"></div>
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {dprovided.placeholder}
+                                </div>
+                              )}
+                            </Droppable>
+                          </DragDropContext>
+                        </div>
+                      )}
+                    </FormItem>
+                  );
+                }}
+              ></FormField>
 
               <FormField
                 control={form.control}

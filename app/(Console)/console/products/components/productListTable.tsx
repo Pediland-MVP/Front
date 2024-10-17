@@ -21,7 +21,9 @@ import { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
+import { ProductDeleteDialog } from "./product.delete";
+import { toast } from "@/components/ui/use-toast";
 
 interface ContentItem {
   id: number;
@@ -39,6 +41,8 @@ export default function ProductListTable() {
   const debouncedSearchTerm = useDebounce(search, 500);
   const [open, setOpen] = useState<boolean>(false);
   const [productId, setProductId] = useState<string>("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   const {
     data: productsData,
@@ -64,6 +68,50 @@ export default function ProductListTable() {
   };
 
   const router = useRouter();
+
+  const handleDeleteClick = (id: string) => {
+    setItemToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (itemToDelete) {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${itemToDelete}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          },
+        );
+
+        if (!res.ok) {
+          toast({
+            title: "خطا",
+            description: "مشکلی پیش آمده است",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: "حذف شد",
+        });
+        await mutate(
+          (key) => typeof key === "string" && key.includes("products"),
+        );
+      } catch (error) {
+        console.error("Error deleting item:", error);
+      } finally {
+        setDeleteDialogOpen(false);
+        setItemToDelete(null);
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto p-4 bg-white" dir="rtl">
@@ -109,8 +157,12 @@ export default function ProductListTable() {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon">
-                    <Trash2 className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteClick(product.id)}
+                  >
+                    <Trash2 className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
               </TableCell>
@@ -139,6 +191,12 @@ export default function ProductListTable() {
           <ChevronLeft className="h-4 w-4 mr-2" />
         </Button>
       </div>
+      <ProductDeleteDialog
+        isOpen={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        itemId={itemToDelete || ""}
+      />
     </div>
   );
 }

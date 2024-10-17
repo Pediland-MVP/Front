@@ -52,8 +52,8 @@ const formSchema = z.object({
 });
 
 export type ProductFormProps = {
-  shouldBeEdit?: ProductNamespace.Product
-}
+  shouldBeEdit?: ProductNamespace.Product;
+};
 
 export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,7 +61,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     defaultValues: {
       ...shouldBeEdit,
       imageId: shouldBeEdit?.images?.[0].id || undefined,
-    }
+    },
   });
 
   useEffect(() => {
@@ -82,13 +82,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
         {
-          method: shouldBeEdit ? 'PUT' : 'POST',
+          method: shouldBeEdit ? "PUT" : "POST",
           body: JSON.stringify(values),
           headers: {
             "Content-Type": "application/json",
           },
           credentials: "include",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -103,7 +103,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         title: "محصول با موفقیت اضافه شد",
       });
 
-      await mutate(key => typeof key === 'string' && key.includes("products"))
+      await mutate(
+        (key) => typeof key === "string" && key.includes("products"),
+      );
       router.push("/console/products");
     } catch (error) {
       toast({
@@ -115,10 +117,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
   }
 
-
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [images, setImages] = useState<string[]>(shouldBeEdit?.images?.[0].url ? [shouldBeEdit?.images?.[0].url] : []);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [images, setImages] = useState<string[]>(
+    shouldBeEdit?.images?.[0].url ? [shouldBeEdit?.images?.[0].url] : [],
+  );
   const handleFileUpload = async (files: File[]) => {
+    setIsUploading(true);
     const file = files[0];
     const formData = new FormData();
     formData.append("image", file);
@@ -135,7 +140,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
+                (progressEvent.loaded * 100) / progressEvent.total,
               );
               console.log(`Upload Progress: ${percentCompleted}%`);
               setUploadProgress(percentCompleted);
@@ -144,16 +149,17 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             }
           },
           withCredentials: true,
-        }
+        },
       );
       form.setValue("imageId", response.data.id);
       setImages([response.data.url]);
-      setUploadProgress(null);
     } catch (error) {
-      setUploadProgress(null);
       console.error(error);
+    } finally {
+      setUploadProgress(0);
+      setIsUploading(false);
+      setLoading(false);
     }
-    console.log(files);
   };
 
   return (
@@ -220,7 +226,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 </FormItem>
               )}
             />
-            <LoadingButton isLoading={isLoading} type="submit">ثبت</LoadingButton>
+            <LoadingButton isLoading={isLoading} type="submit">
+              ثبت
+            </LoadingButton>
           </form>
         </Form>
       </div>
@@ -230,6 +238,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             images={images}
             accept="image/*"
             onChange={handleFileUpload}
+            progress={uploadProgress}
+            isUploading={isUploading}
           />
         </div>
       </div>
