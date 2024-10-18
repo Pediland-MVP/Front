@@ -29,16 +29,18 @@ export default function AccountPage() {
     fetcher,
     {
       refreshInterval: 0,
-    }
+    },
   );
 
   const filteredInstagramPages = isFromFacebook
     ? instagramPages?.filter(
         (page) =>
           page.facebookAccountId === searchParams.get("facebookAccountId") &&
-          !page.instagramId
+          !page.instagramId,
       )
-    : !!instagramPages?.length ? instagramPages.filter((account) => account.instagramId) : null
+    : !!instagramPages?.length
+      ? instagramPages.filter((account) => account.instagramId)
+      : null;
 
   useEffect(() => {
     if (isFromFacebook) {
@@ -72,15 +74,18 @@ export default function AccountPage() {
       <Separator className="mb-6" />
 
       <div className="w-full mb-6 px-4">
-        <Link
-          target="_blank"
-          href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectFB`}
+        <Button
+          onClick={() =>
+            router.push(
+              `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`,
+            )
+          }
+          className="gap-x-1 w-full lg:w-auto"
+          disabled={(filteredInstagramPages?.length || 0) > 0}
         >
-          <Button className="gap-x-1 w-full lg:w-auto">
-            <Plus size={15} />
-            افزودن اکانت
-          </Button>
-        </Link>
+          <Plus size={15} />
+          افزودن اکانت
+        </Button>
       </div>
 
       <div className="flex justify-start items-start flex-wrap gap-4 px-4 w-full">
