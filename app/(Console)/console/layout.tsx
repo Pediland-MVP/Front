@@ -2,7 +2,17 @@
 
 import * as React from "react";
 import { Nav } from "@/app/(Console)/console/components/nav";
-import { AddressBookTabs, ChatCircleText, HouseSimple, Lightning, Question, Sliders, Storefront, Wallet } from "@phosphor-icons/react/dist/ssr";
+import {
+  AddressBookTabs,
+  ChatCircleText,
+  HouseSimple,
+  Lightning,
+  Question,
+  Sliders,
+  Storefront,
+  User,
+  Wallet,
+} from "@phosphor-icons/react/dist/ssr";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -36,23 +46,30 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               href: "/console/actions",
             },
             {
-              title: 'محصولات',
+              title: "محصولات",
               icon: Storefront,
               variant: "ghost",
               href: "/console/products",
             },
+            // {
+            //   title: "مالی",
+            //   icon: Wallet,
+            //   variant: "ghost",
+            //   href: "/console/accounts",
+            // },
+            // {
+            //   title: "تنظیمات",
+            //   icon: Sliders,
+            //   variant: "ghost",
+            //   href: "/console/settings",
+            // },
             {
-              title: "مالی",
-              icon: Wallet,
+              title: "مدیریت حساب‌ها",
+              icon: User,
               variant: "ghost",
               href: "/console/accounts",
             },
             {
-              title: "تنظیمات",
-              icon: Sliders,
-              variant: "ghost",
-              href: "/console/settings",
-            }, {
               title: "پشتیبانی",
               icon: Question,
               variant: "ghost",
