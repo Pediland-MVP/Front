@@ -123,7 +123,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     products: z.array(
       z.object({
         id: z.string().optional().nullable(),
-        images: z.array(z.object({url: z.string().optional().nullable(), id: z.string().optional().nullable()})).optional().nullable(),
+        images: z.array(z.object({url: z.string().optional().nullable(), id: z.number().optional().nullable()})).optional().nullable(),
         _xid: z.string().optional().nullable(),
       })
     ),
