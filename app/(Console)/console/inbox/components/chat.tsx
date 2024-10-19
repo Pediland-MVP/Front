@@ -7,7 +7,6 @@ import useSWR from "swr";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { leadNamespace } from "@/types/lead";
 import useCurrentLead from "@/store/currentLead.store";
-import { ChatAlert } from "./chatAlert";
 import { useTabStore } from "@/store/tabActiveStore";
 
 interface ChatProps {
@@ -50,7 +49,6 @@ const {activeTab}=useTabStore()
  <>
       {activeTab === "chat" && (
         <div className="flex rounded-xl flex-col max-h-[97vh] overflow-y-auto justify-between w-full">
-          <ChatAlert />
           <div className="flex rounded-t-xl flex-col  min-h-[90vh] bg-white">
             <ChatTopbar lead={lead} />
             <ChatList lead={lead} isMobile={isMobile} />
