@@ -17,6 +17,7 @@ import { memo, useEffect, useState } from "react";
 import { socket } from "@/app/utils/socket";
 import { SideBarTab } from "./sideBarTap";
 import { useTabStore } from "@/store/tabActiveStore";
+import { User } from "@phosphor-icons/react/dist/ssr";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -77,13 +78,25 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
                 "justify-start gap-4 pt-10 pb-8"
               )}
             >
-              <Image
-                src={chat.leadInstagram?.profilePicture?.url}
-                alt={chat.firstname}
-                width={60}
-                height={60}
-                className="rounded-full"
-              />
+              {
+                chat.leadInstagram?.profilePicture?.url ? (
+                  <Image
+                    src={chat.leadInstagram?.profilePicture?.url}
+                    alt={chat.firstname}
+                    width={60}
+                    height={60}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <Image
+                  src={'/images/profile.png'}
+                  alt={chat.firstname}
+                  width={60}
+                  height={60}
+                  className="rounded-full"
+                />
+                )
+              }
               <div className="flex flex-col max-w-28">
                 <span>
                   {chat.firstname} {chat.lastname && chat.lastname}
