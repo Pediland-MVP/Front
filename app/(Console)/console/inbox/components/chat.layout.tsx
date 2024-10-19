@@ -37,7 +37,7 @@ export function ChatLayout({
 
   return (
     <>
-      <div className="w-full flex mr-4">
+      <div className="w-full flex h-full justify-center items-center gap-x-2 mr-4">
         <div className="w-2/6">
           <Sidebar
             isCollapsed={isCollapsed || isMobile}

@@ -45,23 +45,39 @@ export interface Conversations {
   meta: Meta;
 }
 export interface Item {
-  id: string;
-  createDate: Date;
-  updateDate: Date;
-  firstname: string;
-  lastname: null;
-  profilePic: string;
-  messages: Messages;
+  id:            string;
+  createDate:    Date;
+  updateDate:    Date;
+  firstname:     string;
+  lastname:      null;
+  profilePic:    string;
+  leadInstagram: LeadInstagram;
+  messages:      Messages;
+}
+
+export interface LeadInstagram {
+  id:             string;
+  profilePicture: ProfilePicture;
+}
+
+export interface ProfilePicture {
+  id:  number;
+  url: string;
 }
 
 export interface Messages {
-  id: string;
-  createDate: Date;
-  updateDate: Date;
-  messageId: string;
-  text: string;
-  attachment: null;
-  sendDate: string;
+  id:          string;
+  createDate:  Date;
+  updateDate:  Date;
+  messageId:   string;
+  attachment:  null;
+  sendDate:    Date;
   from: "instagram" | "lead";
+
+  postId:      null;
+  text:        string;
+  messageType: string;
+  
 }
+
 

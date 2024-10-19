@@ -36,7 +36,9 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
     useState<InstagramNamespace.GET["Conversations"]>();
 
   useEffect(() => {
-    if (!socket.connected) return;
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     socket.emit("conversations");
 
@@ -48,95 +50,52 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
       socket.off("conversations");
     };
   }, []);
-console.log(activeTab);
+  console.log(activeTab);
 
   return (
     <div
       data-collapsed={isCollapsed}
-      className="relative w-full group flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2 "
+      className="relative w-full group flex flex-col max-h-[97vh] min-h-[97vh] gap-4 p-2 data-[collapsed=true]:p-2 bg-white rounded-xl"
     >
       {!isCollapsed && (
         <div className="flex justify-between p-2 items-center">
-          <div className="flex w-full gap-2 items-center text-2xl border-b  pb-2">
+          <div className="flex w-full gap-2 items-center text-2xl  pb-2">
             <SideBarTab />
           </div>
         </div>
       )}
       {activeTab === "chat" && (
         <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-          {conversations?.items?.map((chat, index) =>
-            isCollapsed ? (
-              <div key={index} className="border-b">
-                {" "}
-                <TooltipProvider>
-                  <Tooltip key={index} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="#"
-                        className={cn(
-                          buttonVariants({ variant: "ghost", size: "icon" }),
-                          "h-11 w-11 md:h-16 md:w-16"
-                          // link.variant === "grey" &&
-                          //   "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                        )}
-                      >
-                        <Avatar className="flex justify-center items-center">
-                          {/* {
-                            chat.profilePic && 
-                            <AvatarImage
-                              src={chat.profilePic}
-                              alt={chat.firstname}
-                              width={6}
-                              height={6}
-                              className="w-10 h-10 "
-                            />
-                          } */}
-                        </Avatar>{" "}
-                        <span className="sr-only">
-                          {chat.firstname} {chat.lastname && chat.lastname}
-                        </span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="right"
-                      className="flex items-center gap-4"
-                    >
-                      {chat.firstname} {chat.lastname && chat.lastname}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            ) : (
+          {conversations?.items?.map((chat, index) => (
               <Link
-                key={index}
-                href={`/console/inbox/${chat.id}`}
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "lg" }),
-                  // link.variant === "grey" &&
-                  //   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
-                  "justify-start gap-4 pt-10 pb-8"
-                )}
-              >
-                {/* <Image
-                  src={chat.profilePic}
-                  alt={chat.firstname}
-                  width={60}
-                  height={60}
-                  className="rounded-full"
-                /> */}
-                <div className="flex flex-col max-w-28">
-                  <span>
-                    {chat.firstname} {chat.lastname && chat.lastname}
+              key={index}
+              href={`/console/inbox/${chat.id}`}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "lg" }),
+                // link.variant === "grey" &&
+                //   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
+                "justify-start gap-4 pt-10 pb-8"
+              )}
+            >
+              <Image
+                src={chat.leadInstagram?.profilePicture?.url}
+                alt={chat.firstname}
+                width={60}
+                height={60}
+                className="rounded-full"
+              />
+              <div className="flex flex-col max-w-28">
+                <span>
+                  {chat.firstname} {chat.lastname && chat.lastname}
+                </span>
+                {chat.messages && (
+                  <span className="text-zinc-300 text-xs truncate ">
+                    {chat.messages?.text}
                   </span>
-                  {chat.messages && (
-                    <span className="text-zinc-300 text-xs truncate ">
-                      {chat.messages?.text}
-                    </span>
-                  )}
-                </div>
-              </Link>
-            )
-          )}
+                )}
+              </div>
+            </Link>
+          ))}
         </nav>
       )}
     </div>
