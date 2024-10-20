@@ -41,8 +41,8 @@ const InstagramPostsDialog = ({
     setIsLoading(true);
     try {
       const url = afterCursor
-        ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/v1/medias/posts?after=${afterCursor}`
-        : `${process.env.NEXT_PUBLIC_BACK_API_URL}/v1/medias/posts`;
+        ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/medias/posts?after=${afterCursor}`
+        : `${process.env.NEXT_PUBLIC_BACK_API_URL}/medias/posts`;
       const response = await fetch(url, { credentials: "include" });
       const data = await response.json();
 
