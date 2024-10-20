@@ -111,7 +111,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         z.object({
           text: z.string().min(1, "پیام الزامی است"),
           instagramMedia: z.object({
-            mediaUrl: z.string().optional().nullable(),
+            image: z.object({
+              url: z.string().optional().nullable(),
+              id: z.number().optional().nullable(),
+            }).nullable().optional(),
             mediaId: z.string().min(1, "انتخاب پست الزامی است"),
           }),
           id: z.string().optional().nullable(),
