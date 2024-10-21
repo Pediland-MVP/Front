@@ -127,7 +127,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         _xid: z.string().optional().nullable(),
       })
     ),
-    isProductsEnabled: z.boolean(),
+    isProductsEnabled: z.boolean().nullable().optional(),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     justFollowers: z.boolean(),
@@ -729,7 +729,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                         <FormControl>
                           <Switch
                             dir="ltr"
-                            checked={field.value}
+                            checked={!!field.value}
                             onCheckedChange={(e) => {
                               if (e) {
                                 if (form.getValues().products?.length === 0) {
