@@ -41,7 +41,7 @@ const ProductsDialog = ({
   const fetchProducts = async (pageNumber: number = 1) => {
     setIsLoading(true);
     try {
-      const url = `http://localhost:3001/v1/products?page=${pageNumber}&limit=${PAGE_SIZE}`;
+      const url = `${process.env.BACK_API_URL}/products?page=${pageNumber}&limit=${PAGE_SIZE}`;
       const response = await fetch(url, { credentials: "include" });
       const data: ProductNamespace.GET = await response.json();
 
