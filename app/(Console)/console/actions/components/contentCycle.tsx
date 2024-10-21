@@ -138,11 +138,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     commentStartText: z.string().optional().nullable(),
     getUserData: z
       .object({
-        type: z.enum(["email", "mobile"]),
-        text: z.string(),
+        type: z.enum(["email", "mobile"]).optional().nullable(),
+        text: z.string().optional().nullable(),
         enabled: z.boolean(),
       })
-      .optional(),
+      .optional()
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
@@ -168,6 +168,12 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         },
       ],
       products: [],
+      isProductsEnabled: false,
+      getUserData: {
+        enabled: false,
+        text: '',
+        type: 'email'
+      },
       isDirect: true,
       isComment: false,
       justFollowers: false,
@@ -839,6 +845,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                               <FormControl>
                                 <Select
                                   {...selectField}
+                                  value={selectField.value ?? "email"}
                                   dir="rtl"
                                   onValueChange={selectField.onChange}
                                 >
