@@ -322,7 +322,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           ..._.omitBy(values, (value: any) =>
             typeof value === "boolean" ? false : _.isEmpty(value)
           ),
-          productsIds
+          ...values.isProductsEnabled && { productsIds }
         }),
         credentials: "include",
       }
