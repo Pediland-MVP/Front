@@ -41,18 +41,18 @@ export default function Accounts() {
     fetcher,
     {
       refreshInterval: 0,
-    }
+    },
   );
 
   const filteredInstagramPages = isFromFacebook
     ? instagramPages?.filter(
         (page) =>
           page.facebookAccountId === searchParams.get("facebookAccountId") &&
-          !page.instagramId
+          !page.instagramId,
       )
     : !!instagramPages?.length
-    ? instagramPages.filter((account) => account.instagramId)
-    : null;
+      ? instagramPages.filter((account) => account.instagramId)
+      : null;
 
   useEffect(() => {
     if (isFromFacebook) {
@@ -80,14 +80,18 @@ export default function Accounts() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${id}`, {
-        method: 'DELETE',
-      });
-      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
       if (!response.ok) {
         toast({
-          title: 'خطایی پیش امد'
-        })
+          title: "خطایی پیش امد",
+        });
       }
 
       toast({
@@ -116,7 +120,7 @@ export default function Accounts() {
         <Button
           onClick={() =>
             router.push(
-              `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`
+              `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`,
             )
           }
           className="gap-x-1 w-full lg:w-auto"
@@ -189,12 +193,15 @@ export default function Accounts() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>آیا مطمئن هستید؟</AlertDialogTitle>
                       <AlertDialogDescription>
-                        این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.
+                        این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف
+                        خواهد شد.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>انصراف</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(instagram.id)}>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(instagram.id)}
+                      >
                         حذف
                       </AlertDialogAction>
                     </AlertDialogFooter>
