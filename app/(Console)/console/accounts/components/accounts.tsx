@@ -1,11 +1,11 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/hooks/swr/fetcher";
-// import { ResizablePanel } from "@/registry/new-york/ui/resizable";
 import { Separator } from "@/registry/new-york/ui/separator";
 import { InstagramNamespace } from "@/types/instagram";
-import { InstagramLogo, Plus } from "@phosphor-icons/react";
+import { InstagramLogo, Plus, Trash } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -14,6 +14,17 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Accounts() {
   const router = useRouter();
@@ -24,6 +35,7 @@ export default function Accounts() {
     data: instagramPages,
     isLoading: isInstagramPagesLoading,
     error: instagramPagesError,
+    mutate,
   } = useSWR<InstagramNamespace.GET["Accounts"]>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
     fetcher,
@@ -65,6 +77,33 @@ export default function Accounts() {
       setFacebookAccountId(searchParams.get("facebookAccountId")!);
     }
   }, [filteredInstagramPages]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        toast({
+          title: 'خطایی پیش امد'
+        })
+      }
+
+      toast({
+        title: "حذف موفق",
+        description: "اکانت با موفقیت حذف شد",
+      });
+
+      mutate(); // Refresh the data
+    } catch (error) {
+      toast({
+        title: "خطا در حذف",
+        description: "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <>
@@ -121,24 +160,47 @@ export default function Accounts() {
               )}
               <p>{instagram.name}</p>
               <p>{instagram.username}</p>
-              {instagram.instagramId ? (
-                <Link
-                  href={`https://instagram.com/${instagram.username}`}
-                  target="_blank"
-                >
-                  <Button variant={"outline"}>دیدن اکانت</Button>
-                </Link>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setOpenSelectInstagramDialog(true);
-                    setFacebookAccountId(instagram.facebookAccountId);
-                  }}
-                  variant={"outline"}
-                >
-                  اتصال به اکانت
-                </Button>
-              )}
+              <div className="flex gap-2">
+                {instagram.instagramId ? (
+                  <Link
+                    href={`https://instagram.com/${instagram.username}`}
+                    target="_blank"
+                  >
+                    <Button variant={"outline"}>دیدن اکانت</Button>
+                  </Link>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setOpenSelectInstagramDialog(true);
+                      setFacebookAccountId(instagram.facebookAccountId);
+                    }}
+                    variant={"outline"}
+                  >
+                    اتصال به اکانت
+                  </Button>
+                )}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="icon">
+                      <Trash size={16} />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>آیا مطمئن هستید؟</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>انصراف</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(instagram.id)}>
+                        حذف
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           );
         })}
