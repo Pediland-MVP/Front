@@ -42,21 +42,21 @@ const DragDropContext = dynamic(
     import("react-beautiful-dnd").then((mod) => {
       return mod.DragDropContext;
     }),
-  { ssr: false }
+  { ssr: false },
 );
 const Droppable = dynamic(
   () =>
     import("react-beautiful-dnd").then((mod) => {
       return mod.Droppable;
     }),
-  { ssr: false }
+  { ssr: false },
 );
 const Draggable = dynamic(
   () =>
     import("react-beautiful-dnd").then((mod) => {
       return mod.Draggable;
     }),
-  { ssr: false }
+  { ssr: false },
 );
 1;
 export type ContentType = {
@@ -103,29 +103,37 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           value: z.string().min(1, "مقدار شرط الزامی است"),
           id: z.string(),
           conditionId: z.string().optional().nullable(),
-        })
+        }),
       )
       .min(1, "حداقل یک شرط الزامی است"),
     contents: z
       .array(
         z.object({
           text: z.string().min(1, "پیام الزامی است"),
-          instagramMedia: z.object({
+          instagramPost: z.object({
             mediaUrl: z.string().optional().nullable(),
             mediaId: z.string().min(1, "انتخاب پست الزامی است"),
           }),
           id: z.string().optional().nullable(),
           consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
           _xid: z.string().optional().nullable(),
-        })
+        }),
       )
       .min(2, "حداقل دو محتوا الزامی است"),
     products: z.array(
       z.object({
         id: z.string().optional().nullable(),
-        images: z.array(z.object({url: z.string().optional().nullable(), id: z.number().optional().nullable()})).optional().nullable(),
+        images: z
+          .array(
+            z.object({
+              url: z.string().optional().nullable(),
+              id: z.number().optional().nullable(),
+            }),
+          )
+          .optional()
+          .nullable(),
         _xid: z.string().optional().nullable(),
-      })
+      }),
     ),
     isProductsEnabled: z.boolean().nullable().optional(),
     isDirect: z.boolean(),
@@ -142,7 +150,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         text: z.string().optional().nullable(),
         enabled: z.boolean(),
       })
-      .optional()
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
@@ -152,7 +160,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       contents: [
         {
           text: "",
-          instagramMedia: {
+          instagramPost: {
             mediaId: "",
           },
           consentText: "",
@@ -160,7 +168,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         },
         {
           text: "",
-          instagramMedia: {
+          instagramPost: {
             mediaId: "",
           },
           consentText: "",
@@ -171,8 +179,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       isProductsEnabled: false,
       getUserData: {
         enabled: false,
-        text: '',
-        type: 'email'
+        text: "",
+        type: "email",
       },
       isDirect: true,
       isComment: false,
@@ -185,7 +193,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     },
   });
 
-
   useEffect(() => {
     if (!id) return;
     setIsLoading(true);
@@ -195,7 +202,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         {
           credentials: "include",
           method: "GET",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -210,8 +217,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         return;
       }
 
-      const contentCycle = await response.json()
-      form.reset({...contentCycle, ...contentCycle.products?.length > 0 && { isProductsEnabled: true }});
+      const contentCycle = await response.json();
+      form.reset({
+        ...contentCycle,
+        ...(contentCycle.products?.length > 0 && { isProductsEnabled: true }),
+      });
     };
 
     fetchData().finally(() => setIsLoading(false));
@@ -320,12 +330,12 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         // Delete Empty values
         body: JSON.stringify({
           ..._.omitBy(values, (value: any) =>
-            typeof value === "boolean" ? false : _.isEmpty(value)
+            typeof value === "boolean" ? false : _.isEmpty(value),
           ),
-          ...values.isProductsEnabled && { productsIds }
+          ...(values.isProductsEnabled && { productsIds }),
         }),
         credentials: "include",
-      }
+      },
     );
 
     if (!result.ok) {
@@ -524,7 +534,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                 onClick={() =>
                   appendContents({
                     text: "",
-                    instagramMedia: { mediaId: "" },
+                    instagramPost: { mediaId: "" },
                     consentText: "",
                   })
                 }

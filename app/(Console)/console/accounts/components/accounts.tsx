@@ -91,7 +91,9 @@ export default function Accounts() {
       if (!response.ok) {
         toast({
           title: "خطایی پیش امد",
+          variant: "destructive",
         });
+        return;
       }
 
       toast({

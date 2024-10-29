@@ -21,11 +21,16 @@ const PAGE_SIZE = 9;
 export type InstagramPostsDialogProps = {
   form: any;
   index: number;
-  updateContents: any,
-  contents: any
+  updateContents: any;
+  contents: any;
 };
 
-const InstagramPostsDialog = ({ form, index, updateContents, contents }: InstagramPostsDialogProps) => {
+const InstagramPostsDialog = ({
+  form,
+  index,
+  updateContents,
+  contents,
+}: InstagramPostsDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -36,8 +41,8 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
     setIsLoading(true);
     try {
       const url = afterCursor
-        ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/medias/posts?after=${afterCursor}`
-        : `${process.env.NEXT_PUBLIC_BACK_API_URL}/medias/posts`;
+        ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure?after=${afterCursor}`
+        : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`;
       const response = await fetch(url, { credentials: "include" });
       const data = await response.json();
 
@@ -67,26 +72,37 @@ const InstagramPostsDialog = ({ form, index, updateContents, contents }: Instagr
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const postId = e.currentTarget.dataset.postid!;
     const mediaUrl = e.currentTarget.dataset.mediaurl;
-    console.log('media',postId, mediaUrl);
+    console.log("media", postId, mediaUrl);
     console.log(`value before update`, form?.getValues()?.contents?.[index]);
 
-    updateContents(index, {...form?.getValues()?.contents?.[index], instagramMedia: {mediaUrl, mediaId: postId}})
+    updateContents(index, {
+      ...form?.getValues()?.contents?.[index],
+      instagramPost: { mediaUrl, mediaId: postId },
+    });
     setIsOpen(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {contents[index].instagramMedia?.mediaUrl ? (
+        {contents[index].instagramPost?.mediaUrl ? (
           <div className="relative w-48 h-48 rounded-lg overflow-hidden">
-            <Image src={contents[index].instagramMedia.mediaUrl} alt="cover" fill />
+            <Image
+              src={contents[index].instagramPost.mediaUrl}
+              alt="cover"
+              fill
+            />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
-              <Button type="button" className="text-white">تعویض پست</Button>
+              <Button type="button" className="text-white">
+                تعویض پست
+              </Button>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-y-2">
-            <Button type="button" variant="outline">انتخاب پست</Button>
+            <Button type="button" variant="outline">
+              انتخاب پست
+            </Button>
             {form?.formState?.errors?.contents?.[index]?.postId && (
               <ErrorMessage>
                 {form.formState.errors.contents[index].postId.message}
