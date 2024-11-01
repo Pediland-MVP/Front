@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-} from "@radix-ui/react-select";
+} from "@/components/ui/select";
 import { Trash, PlusCircle } from "@phosphor-icons/react";
 import {
   Control,

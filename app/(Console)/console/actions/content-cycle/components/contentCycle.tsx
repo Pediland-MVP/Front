@@ -332,6 +332,13 @@ export default function ContentCycle({ id }: ContentCycleProps) {
             >
               <Trigger control={form.control} getValues={form.getValues} />
 
+              <JustFollowers
+                control={form.control}
+                getValues={form.getValues}
+              />
+
+              <LikeDirect control={form.control} />
+
               <Conditions
                 control={form.control}
                 getValues={form.getValues}
@@ -346,10 +353,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
               <Cta control={form.control} />
 
-              <JustFollowers
-                control={form.control}
-                getValues={form.getValues}
-              />
 
               <Catalogue
                 control={form.control}
@@ -358,8 +361,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               />
 
               <GetUserData control={form.control} />
-
-              <LikeDirect control={form.control} />
 
               {/* Submit button */}
               <LoadingButton isLoading={isSubmitting}>ایجاد</LoadingButton>
