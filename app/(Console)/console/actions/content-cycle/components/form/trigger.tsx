@@ -1,0 +1,76 @@
+import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
+import { Control, UseFormGetValues } from "react-hook-form";
+import { contentCycleFormSchema } from "../contentCycle";
+import { z } from "zod";
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from "@/components/ui/textarea";
+
+type TriggerProps = {
+  control: Control<z.infer<typeof contentCycleFormSchema>>;
+  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
+};
+
+export default function Trigger({ control, getValues }: TriggerProps) {
+  return (
+    <>
+      <div className="space-y-8">
+        <p>اگر کاربر شما در</p>
+        <div className="flex gap-4">
+          <div className="flex gap-2 items-center">
+            <FormField
+              control={control}
+              name="isDirect"
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <FormMessage />
+                  <Switch
+                    dir="ltr"
+                    id="direct"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <FormLabel htmlFor="direct">دایرکت</FormLabel>
+                </div>
+              )}
+            ></FormField>
+          </div>
+          <div className="flex gap-2 items-center">
+            <FormField
+              control={control}
+              name="isComment"
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Switch
+                    dir="ltr"
+                    id="direct"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <FormLabel htmlFor="direct">کامنت</FormLabel>
+                </div>
+              )}
+            ></FormField>
+          </div>
+        </div>
+      </div>
+
+      {getValues().isComment && (
+        <FormField
+          control={control}
+          name="commentStartText"
+          render={({ field, fieldState: { error } }) => (
+            <div>
+              <FormLabel> پیام درخواست شروع </FormLabel>
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                placeholder="لطفا برای شروع فرایند روی دکمه شروع بزنید..."
+              ></Textarea>
+              {error && <FormMessage> {error.message} </FormMessage>}
+            </div>
+          )}
+        ></FormField>
+      )}
+    </>
+  );
+}

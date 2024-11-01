@@ -15,18 +15,23 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { Control, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
+import { z } from "zod";
+import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
 
 const PAGE_SIZE = 9;
 
 export type InstagramPostsDialogProps = {
-  form: any;
+  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
+  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
   index: number;
   updateContents: any;
   contents: any;
 };
 
 const InstagramPostsDialog = ({
-  form,
+  getValues,
+  formState,
   index,
   updateContents,
   contents,
@@ -73,10 +78,10 @@ const InstagramPostsDialog = ({
     const postId = e.currentTarget.dataset.postid!;
     const mediaUrl = e.currentTarget.dataset.mediaurl;
     console.log("media", postId, mediaUrl);
-    console.log(`value before update`, form?.getValues()?.contents?.[index]);
+    console.log(`value before update`, getValues()?.contents?.[index]);
 
     updateContents(index, {
-      ...form?.getValues()?.contents?.[index],
+      ...getValues()?.contents?.[index],
       instagramPost: { mediaUrl, mediaId: postId },
     });
     setIsOpen(false);
@@ -103,9 +108,9 @@ const InstagramPostsDialog = ({
             <Button type="button" variant="outline">
               انتخاب پست
             </Button>
-            {form?.formState?.errors?.contents?.[index]?.postId && (
+            {formState?.errors?.contents?.[index]?.id && (
               <ErrorMessage>
-                {form.formState.errors.contents[index].postId.message}
+                {formState.errors.contents[index].id.message}
               </ErrorMessage>
             )}
           </div>

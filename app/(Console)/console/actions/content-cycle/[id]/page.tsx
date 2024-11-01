@@ -1,7 +1,7 @@
 import { log } from "console";
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";
-import ContentCycle from "../../components/contentCycle";
+import ContentCycle from "../components/contentCycle";
 import InstaDirectUi from "@/components/global/instaDirectUi";
 
 type ContentCycleEditPageProps = {

@@ -1,5 +1,5 @@
 import React from "react";
-import ContentCycle from "@/app/(Console)/console/actions/components/contentCycle";
+import ContentCycle from "@/app/(Console)/console/actions/content-cycle/components/contentCycle";
 import InstaDirectUi from "@/components/global/instaDirectUi";
 
 export default function page() {

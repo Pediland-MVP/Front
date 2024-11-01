@@ -1,0 +1,37 @@
+import { FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { Control } from "react-hook-form";
+import { z } from "zod";
+import { contentCycleFormSchema } from "../contentCycle";
+
+type LikeDirectProps = {
+    control: Control<z.infer<typeof contentCycleFormSchema>>;
+  };
+
+export default function LikeDirect({ control }: LikeDirectProps) {
+
+    return (
+        <FormField
+        control={control}
+        name="likeDirect"
+        render={({ field }) => (
+          <FormItem className="flex flex-col justify-start gap-y-2">
+            <div className="flex items-center gap-x-2">
+              <FormControl>
+                <Switch
+                  dir="ltr"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel className="">
+                لایک کردن پیام‌های دایرکت
+              </FormLabel>
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
+
+}

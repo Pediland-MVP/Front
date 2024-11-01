@@ -16,18 +16,21 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { ProductNamespace } from "@/types/product";
+import { UseFormStateReturn } from "react-hook-form";
+import { z } from "zod";
+import { contentCycleFormSchema } from "./contentCycle";
 
 const PAGE_SIZE = 9;
 
 export type InstagramProductsDialogProps = {
-  form: any;
+  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
   index: number;
   updateProducts: any;
   productsField: any;
 };
 
 const ProductsDialog = ({
-  form,
+  formState,
   index,
   updateProducts,
   productsField,
@@ -98,9 +101,9 @@ const ProductsDialog = ({
         ) : (
           <div className="flex flex-col gap-y-2">
             <Button type="button" variant="outline">انتخاب محصول</Button>
-            {form?.formState?.errors?.productsField?.[index]?.postId && (
+            {formState?.errors?.products?.[index]?.id && (
               <ErrorMessage>
-                {form.formState.errors.productsField[index].postId.message}
+                {formState.errors.products?.[index].id.message}
               </ErrorMessage>
             )}
           </div>
