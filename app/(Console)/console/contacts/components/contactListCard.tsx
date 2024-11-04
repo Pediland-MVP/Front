@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,9 +38,9 @@ export default function ContactListCard() {
   // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  const debouncedSearchTerm = useDebounce(search, 500); 
-  const [open, setOpen] = useState<boolean>(false)
-  const [contactId, setContactId] = useState<string>("")
+  const debouncedSearchTerm = useDebounce(search, 500);
+  const [open, setOpen] = useState<boolean>(false);
+  const [contactId, setContactId] = useState<string>("");
 
   const {
     data: contactsData,
@@ -58,7 +60,7 @@ export default function ContactListCard() {
 
   const onPageSizeChange = (value: number) => {
     setLimit(value);
-  }
+  };
 
   const handleSort = (column: keyof Lead) => {
     setSortColumn(column);
@@ -72,21 +74,21 @@ export default function ContactListCard() {
         : [...prev, contactId]
     );
   };
-  
+
   return (
-    <div className="flex flex-col gap-2 h-[calc(100%-40px)] max-h-[calc(100%-40px)]">
+    <div className="_table p-4 rounded-xl shadow bg-white">
       <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
       <div>
         <Input
           type="search"
           placeholder="جستجو ..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           className="flex-1 max-w-[20%]"
         />
       </div>
 
-      <div className="h-screen max-h-[calc(100%-44px)] overflow-auto">
+      <div className="max-h-[calc(100%-44px)] overflow-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -197,7 +199,10 @@ export default function ContactListCard() {
                         size={20}
                         weight="light"
                         className="text-gray-600 hover:text-green-700 cursor-pointer"
-                        onClick={() => {setOpen(true); setContactId(contact.id)}}
+                        onClick={() => {
+                          setOpen(true);
+                          setContactId(contact.id);
+                        }}
                       />
                     </div>
                   </TableCell>

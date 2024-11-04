@@ -114,7 +114,7 @@ export default function ProductListTable() {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-white" dir="rtl">
+    <div className="_table p-4 rounded-xl shadow bg-white">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <Table>
         <TableHeader>
