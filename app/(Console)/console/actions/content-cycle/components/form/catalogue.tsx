@@ -1,11 +1,29 @@
+'use client'
+import React from 'react';
+import { 
+  DndContext, 
+  closestCenter, 
+  KeyboardSensor, 
+  PointerSensor, 
+  useSensor, 
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import { 
+  arrayMove, 
+  sortableKeyboardCoordinates, 
+  rectSortingStrategy, 
+  SortableContext,
+  useSortable 
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   FormField,
   FormItem,
   FormControl,
   FormLabel,
 } from "@/components/ui/form";
-import { PlusCircle, Trash } from "@phosphor-icons/react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { PlusCircle, Trash, ArrowsOutCardinal } from "@phosphor-icons/react";
 import ProductsDialog from "../products.dialog";
 import {
   Control,
@@ -17,6 +35,70 @@ import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+
+type SortableItemProps = {
+  id: string;
+  index: number;
+  productsField: any[];
+  removeProducts: (index: number) => void;
+  updateProducts: (index: number, value: any) => void;
+  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
+};
+
+function SortableItem({
+  id, 
+  index, 
+  productsField, 
+  removeProducts, 
+  updateProducts,
+  formState
+}: SortableItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style}
+      className="flex flex-col justify-center items-center gap-x-4 p-2 rounded-2xl border-[1.2px] relative"
+    >
+      <div className="absolute top-2 left-2">
+        <ArrowsOutCardinal 
+          {...attributes} 
+          {...listeners} 
+          size={24} 
+          className="text-gray-400 cursor-move" 
+        />
+      </div>
+      <div className="relative flex justify-center items-center">
+        <ProductsDialog
+          index={index}
+          productsField={productsField}
+          updateProducts={updateProducts}
+          formState={formState}
+        />
+        {productsField.length > 2 && (
+          <Trash
+            size={24}
+            className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
+            onClick={() => removeProducts(index)}
+          />
+        )}
+      </div>
+      <div className="flex flex-col gap-2 w-full"></div>
+    </div>
+  );
+}
 
 type CatalogueProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -34,7 +116,6 @@ export default function Catalogue({
     remove: removeProducts,
     append: appendProducts,
     update: updateProducts,
-    swap: swapProducts,
     move: moveProducts,
   } = useFieldArray({
     control: control,
@@ -42,9 +123,22 @@ export default function Catalogue({
     keyName: "_xid",
   });
 
-  const handleProductsDragEnd = (result: any) => {
-    if (!result.destination) return;
-    moveProducts(result.source.index, result.destination.index);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = productsField.findIndex(item => item._xid === active.id);
+      const newIndex = productsField.findIndex(item => item._xid === over?.id);
+
+      moveProducts(oldIndex, newIndex);
+    }
   };
 
   return (
@@ -85,63 +179,42 @@ export default function Catalogue({
                       افزودن محصول
                     </span>
                   </Button>
-                  <DragDropContext onDragEnd={handleProductsDragEnd}>
-                    <Droppable droppableId="products">
-                      {(dprovided) => (
-                        <div
-                          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                          style={{
-                            gridTemplateRows:
-                              "repeat(auto-fill, minmax(200px, 1fr))",
-                          }}
-                          {...dprovided.droppableProps}
-                          ref={dprovided.innerRef}
-                        >
-                          {productsField.map((product, index) => (
-                            <Draggable
-                              key={product._xid}
-                              draggableId={product._xid}
-                              index={index}
-                            >
-                              {(provided) => (
-                                <div
-                                  className="flex flex-col justify-center items-center gap-x-4 p-2 rounded-2xl border-[1.2px]"
-                                  style={{ aspectRatio: "1/1" }}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  ref={provided.innerRef}
-                                >
-                                  <div className="relative flex justify-center items-center">
-                                    <ProductsDialog
-                                      index={index}
-                                      productsField={productsField}
-                                      updateProducts={updateProducts}
-                                      formState={formState}
-                                    />
-                                    {productsField.length > 2 && (
-                                      <Trash
-                                        size={24}
-                                        className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
-                                        onClick={() => removeProducts(index)}
-                                      />
-                                    )}
-                                  </div>
-                                  <div className="flex flex-col gap-2 w-full"></div>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {dprovided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                  </DragDropContext>
+                  <DndContext 
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext 
+                      items={productsField.map(item => item._xid)} 
+                      strategy={rectSortingStrategy}
+                    >
+                      <div
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                        style={{
+                          gridTemplateRows:
+                            "repeat(auto-fill, minmax(200px, 1fr))",
+                        }}
+                      >
+                        {productsField.map((product, index) => (
+                          <SortableItem
+                            key={product._xid}
+                            id={product._xid}
+                            index={index}
+                            productsField={productsField}
+                            removeProducts={removeProducts}
+                            updateProducts={updateProducts}
+                            formState={formState}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 </div>
               )}
             </FormItem>
           );
         }}
-      ></FormField>
+      />
     </>
   );
 }

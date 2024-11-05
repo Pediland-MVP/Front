@@ -37,29 +37,8 @@ import Cta from "./form/cta";
 import Catalogue from "./form/catalogue";
 import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
+import Questions from "./form/questions";
 
-const DragDropContext = dynamic(
-  () =>
-    import("react-beautiful-dnd").then((mod) => {
-      return mod.DragDropContext;
-    }),
-  { ssr: false }
-);
-const Droppable = dynamic(
-  () =>
-    import("react-beautiful-dnd").then((mod) => {
-      return mod.Droppable;
-    }),
-  { ssr: false }
-);
-const Draggable = dynamic(
-  () =>
-    import("react-beautiful-dnd").then((mod) => {
-      return mod.Draggable;
-    }),
-  { ssr: false }
-);
-1;
 export type ContentType = {
   id: string;
   message?: string;
@@ -96,20 +75,25 @@ export const contentCycleFormSchema = z.object({
       })
     )
     .min(1, "حداقل یک شرط الزامی است"),
-  contents: z
-    .array(
-      z.object({
-        text: z.string().min(1, "پیام الزامی است"),
-        instagramPost: z.object({
-          mediaUrl: z.string().optional().nullable(),
-          mediaId: z.string().min(1, "انتخاب پست الزامی است"),
-        }),
-        id: z.string().optional().nullable(),
-        consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
-        _xid: z.string().optional().nullable(),
-      })
-    )
-    .min(2, "حداقل دو محتوا الزامی است"),
+  questions: z.array(
+    z.object({
+      text: z.string(),
+      id: z.string().optional().nullable(),
+      _xid: z.string().optional().nullable(),
+    })
+  ),
+  contents: z.array(
+    z.object({
+      text: z.string().min(1, "پیام الزامی است"),
+      instagramPost: z.object({
+        mediaUrl: z.string().optional().nullable(),
+        mediaId: z.string().min(1, "انتخاب پست الزامی است"),
+      }),
+      id: z.string().optional().nullable(),
+      consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
+      _xid: z.string().optional().nullable(),
+    })
+  ),
   products: z.array(
     z.object({
       id: z.string().optional().nullable(),
@@ -158,24 +142,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
       conditions: [{ type: "EQUAL", value: "", id: "" }],
-      contents: [
-        {
-          text: "",
-          instagramPost: {
-            mediaId: "",
-          },
-          consentText: "",
-          // _xid: uuid()
-        },
-        {
-          text: "",
-          instagramPost: {
-            mediaId: "",
-          },
-          consentText: "",
-          // _xid: uuid()
-        },
-      ],
+      questions: [],
+      contents: [],
       products: [],
       isProductsEnabled: false,
       getUserData: {
@@ -283,9 +251,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         },
         // Delete Empty values
         body: JSON.stringify({
-          ..._.omitBy(values, (value: any) =>
-            typeof value === "boolean" ? false : _.isEmpty(value)
-          ),
+          // ..._.omitBy(values, (value: any) =>
+          //   typeof value === "boolean" ? false : Array.isArray(value) ? false : _.isEmpty(value)
+          // ),
+          ...values,
           ...(values.isProductsEnabled && { productsIds }),
         }),
         credentials: "include",
@@ -345,6 +314,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                 formState={form.formState}
               />
 
+              <Questions control={form.control} />
+
               <Contents
                 control={form.control}
                 getValues={form.getValues}
@@ -352,7 +323,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               />
 
               <Cta control={form.control} />
-
 
               <Catalogue
                 control={form.control}
