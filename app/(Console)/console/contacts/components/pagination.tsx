@@ -7,7 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+} from "@radix-ui/react-icons";
 
 interface DataTablePaginationProps {
   currentPage: number;
@@ -29,33 +34,9 @@ export function Pagination({
   const pageSizeOptions = [10, 20, 30, 40, 50];
 
   return (
-    <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
-      <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
-        تعداد آیتم‌ها: {totalItems}
-      </div>
-      <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
-        <div className="flex items-center space-x-2">
-          <p className="whitespace-nowrap text-sm font-medium ml-2">تعداد</p>
-          <Select
-            value={`${pageSize}`}
-            onValueChange={(value) => onPageSizeChange(Number(value))}
-          >
-            <SelectTrigger className="h-8 w-[4.5rem]">
-              <SelectValue placeholder={pageSize} />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {pageSizeOptions.map((size) => (
-                <SelectItem key={size} value={`${size}`}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center justify-center text-sm font-medium">
-          صفحه {totalPages} از {currentPage}
-        </div>
-        <div className="flex items-center space-x-2">
+    <div className="_pagination flex items-center justify-between gap-4 mt-5 border-t pt-3">
+      <div className="_navigation flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Button
             aria-label="Go to first page"
             variant="outline"
@@ -95,6 +76,36 @@ export function Pagination({
           >
             <DoubleArrowLeftIcon className="size-4" aria-hidden="true" />
           </Button>
+        </div>
+        <div className="flex items-center justify-center gap-1 text-gray-500 text-sm">
+          <span>صفحه</span>
+          {totalPages}
+          <span>از</span>
+          {currentPage}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end gap-8 flex-1 text-gray-500 text-sm">
+        <div>
+          <span>تعداد آیتم‌ها:</span> {totalItems}
+        </div>
+        <div className="flex items-center gap-2">
+          <span>نمایش</span>
+          <Select
+            value={`${pageSize}`}
+            onValueChange={(value) => onPageSizeChange(Number(value))}
+          >
+            <SelectTrigger className="h-8 w-[4.5rem]">
+              <SelectValue placeholder={pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {pageSizeOptions.map((size) => (
+                <SelectItem key={size} value={`${size}`}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@ export function Nav({ links }: NavProps) {
   const currentPath = pathName.split("/")[2];
 
   return (
-    <div className="_navigation py-5 shadow bg-white rounded-xl group flex flex-col transition-all duration-300 gap-12 h-full">
+    <div className="_navigation py-5 shadow bg-white group flex flex-col transition-all duration-300 gap-5 h-full">
       <div className="_logo flex items-center gap-3 px-4">
         <Image
           src="/images/tabdeal-logo.svg"
