@@ -9,6 +9,7 @@ import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
 import { toast } from '@/components/ui/use-toast'
 
 type ContentCycle = {
+  title: string
   id: string
   conditions: Array<{ type: string; value: string }>
   contents: Array<{
@@ -126,6 +127,7 @@ export default function ContentCycleTable() {
             <Table>
               <TableHeader>
                 <TableRow>
+                <TableHead className="text-right">عنوان</TableHead>
                   <TableHead className="text-right">مقدار شرط</TableHead>
                   <TableHead className="text-right">پیام اول</TableHead>
                   <TableHead className="text-right">عملیات</TableHead>
@@ -134,6 +136,7 @@ export default function ContentCycleTable() {
               <TableBody>
                 {data?.items.map((item) => (
                   <TableRow key={item.id}>
+                    <TableCell className="text-right">{item.title}</TableCell>
                     <TableCell className="text-right">{item.conditions[0]?.value || 'موجود نیست'}</TableCell>
                     <TableCell className="text-right">{item.contents[0]?.text || 'موجود نیست'}</TableCell>
                     <TableCell>
