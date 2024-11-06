@@ -1,34 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { PlusCircle, Trash } from "@phosphor-icons/react";
-import { Button } from "@/registry/new-york/ui/button";
+import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
-import InstagramPostsDialog from "../../components/instagramPosts.dialog";
 import { z } from "zod";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
 
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import ErrorMessage from "@/components/ui/errorMessage";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import LoadingButton from "@/components/ui/loading-button";
-import * as _ from "lodash";
 
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 
-import dynamic from "next/dynamic";
-import ProductsDialog from "./products.dialog";
-import { v4 } from "uuid";
 import JustFollowers from "./form/justFollowers";
 import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
@@ -38,6 +22,7 @@ import Catalogue from "./form/catalogue";
 import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
 import Questions from "./form/questions";
+import ContentCycleTitle from "./form/title";
 
 export type ContentType = {
   id: string;
@@ -65,6 +50,7 @@ type ContentCycleProps = {
 };
 
 export const contentCycleFormSchema = z.object({
+  title: z.string().min(1, 'عنوان الزامی است'),
   conditions: z
     .array(
       z.object({
@@ -141,6 +127,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
+      title: "",
       conditions: [{ type: "EQUAL", value: "", id: "" }],
       questions: [],
       contents: [],
@@ -299,6 +286,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               onSubmit={form.handleSubmit(onSubmit)}
               className="px-8 py-6 text-lg h-full space-y-8"
             >
+
+              <ContentCycleTitle control={form.control} />
+
               <Trigger control={form.control} getValues={form.getValues} />
 
               <JustFollowers
