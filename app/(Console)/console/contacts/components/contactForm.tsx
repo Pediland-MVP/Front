@@ -2,23 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -35,9 +18,7 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import DateObject from "react-date-object";
 import persian_fa from "react-date-object/locales/persian_fa";
-import useSWRImmutable from "swr/immutable";
 import { ContactNamespace } from "@/types/contact";
-import { fetcher } from "@/hooks/swr/fetcher";
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import ContactSkeleton from "./contactSkeleton";
@@ -51,16 +32,18 @@ export type ContactFormProps = {
 
 
 const UpdateContactSchema = z.object({
-    firstname: z.string().optional().nullable(),
-    lastname: z.string().optional().nullable(),
-    mobile: z.string().optional().nullable(),
-    email: z.string().optional().nullable(),
-    country: z.string().optional().nullable(),
-    city: z.string().optional().nullable(),
-    gender: z.string().optional().nullable(),
-    birthDate: z.string().optional().nullable(),
-  });
-  
+  firstname: z.string().optional().nullable(),
+  lastname: z.string().optional().nullable(),
+  mobile: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  country: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
+  birthDate: z.string().optional().nullable(),
+  postalcode: z.string().optional().nullable(), // added postalcode
+  address: z.string().optional().nullable(), // added address
+});
+
   type UpdateContactFormData = z.infer<typeof UpdateContactSchema>;
   
 export default function ContactForm({ contactId, open, setOpen }: ContactFormProps) {
@@ -248,6 +231,31 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
           )}
         </div>
       </div>
+      <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
+  <div>
+    <Label htmlFor="postalcode" className="text-right">
+      کد پستی
+    </Label>
+    <Input id="postalcode" {...register("postalcode")} className="col-span-3" />
+    {errors.postalcode && (
+      <p className="col-span-4 text-sm text-red-500">
+        {errors.postalcode.message}
+      </p>
+    )}
+  </div>
+  <div>
+    <Label htmlFor="address" className="text-right">
+      آدرس
+    </Label>
+    <Input id="address" {...register("address")} className="col-span-3" />
+    {errors.address && (
+      <p className="col-span-4 text-sm text-red-500">
+        {errors.address.message}
+      </p>
+    )}
+  </div>
+</div>
+
 
       <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
         <div className="w-full">
