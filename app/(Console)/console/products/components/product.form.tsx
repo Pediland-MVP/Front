@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,8 @@ import { useRouter } from "next/navigation";
 import LoadingButton from "@/components/ui/loading-button";
 import { ProductNamespace } from "@/types/product";
 import { mutate } from "swr";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   title: z
@@ -49,6 +51,7 @@ const formSchema = z.object({
   imageId: z
     .number({ message: "تصویر محصول را آپلود کنید" })
     .min(1, "تصویر محصول را آپلود کنید"),
+  isDigital: z.boolean(),
 });
 
 export type ProductFormProps = {
@@ -59,6 +62,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      isDigital: false,
       ...shouldBeEdit,
       imageId: shouldBeEdit?.images?.[0].id || undefined,
     },
@@ -80,7 +84,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${
+          shouldBeEdit ? `/${shouldBeEdit.id}` : ""
+        }`,
         {
           method: shouldBeEdit ? "PUT" : "POST",
           body: JSON.stringify(values),
@@ -88,7 +94,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             "Content-Type": "application/json",
           },
           credentials: "include",
-        },
+        }
       );
 
       if (!response.ok) {
@@ -104,7 +110,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       });
 
       await mutate(
-        (key) => typeof key === "string" && key.includes("products"),
+        (key) => typeof key === "string" && key.includes("products")
       );
       router.push("/console/products");
     } catch (error) {
@@ -120,7 +126,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [images, setImages] = useState<string[]>(
-    shouldBeEdit?.images?.[0].url ? [shouldBeEdit?.images?.[0].url] : [],
+    shouldBeEdit?.images?.[0].url ? [shouldBeEdit?.images?.[0].url] : []
   );
   const handleFileUpload = async (files: File[]) => {
     setIsUploading(true);
@@ -140,7 +146,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total,
+                (progressEvent.loaded * 100) / progressEvent.total
               );
               console.log(`Upload Progress: ${percentCompleted}%`);
               setUploadProgress(percentCompleted);
@@ -149,7 +155,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             }
           },
           withCredentials: true,
-        },
+        }
       );
       form.setValue("imageId", response.data.id);
       setImages([response.data.url]);
@@ -205,6 +211,21 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
+              )}
+            />
+            <Controller
+              name="isDigital"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Switch
+                    dir="ltr"
+                    id="direct"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">دیجیتال</Label>
+                </div>
               )}
             />
             <FormField
