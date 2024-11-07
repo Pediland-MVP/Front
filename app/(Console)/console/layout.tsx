@@ -5,6 +5,7 @@ import { Nav } from "@/app/(Console)/console/components/nav";
 import {
   AddressBookTabs,
   ChatCircleText,
+  Chats,
   HouseSimple,
   Lightning,
   Question,
@@ -34,11 +35,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             },
             {
               title: "صندوق پیام‌ها",
-              icon: ChatCircleText,
+              icon: Chats,
               variant: "default",
               href: "/console/inbox",
             },
-
+            {
+              title: "کامنت‌ها",
+              icon: ChatCircleText,
+              variant: "default",
+              href: "/console/comments",
+            },
             {
               title: "اقدامات",
               icon: Lightning,

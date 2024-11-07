@@ -70,7 +70,7 @@ export default function CommentFooter({commentId, mutateComments}: {commentId: s
       <form onSubmit={handleSubmit(onSubmitForm)} className="flex w-full gap-2">
         <Textarea
           {...register('text', { required: true })}
-          placeholder="Add a reply..."
+          placeholder="ریپلای..."
           className="flex-1 min-h-[60px]"
           onKeyDown={handleKeyDown}
         />

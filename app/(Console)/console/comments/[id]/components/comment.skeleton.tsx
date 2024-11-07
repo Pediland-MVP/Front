@@ -64,7 +64,7 @@ export default function CommentSkeleton() {
               <Smile className="w-5 h-5" />
             </Button>
             <Input
-              placeholder="Add a reply..."
+              placeholder="ریپلای"
               disabled
               className="flex-1"
             />
