@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { commentsSocket } from "@/app/utils/socket"
 import { CommentsNamespace } from "@/types/comments"
+import { useParams } from "next/navigation"
 
 interface CommentsListProps {
   isCollapsed: boolean
@@ -15,6 +16,9 @@ interface CommentsListProps {
 }
 
 function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
+
+  const { id: SelectedCommentId } = useParams()  
+
   const [comments, setComments] = useState<CommentsNamespace.Comments>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -95,7 +99,8 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
               href={`/console/comments/${comment.id}`}
               className={cn(
                 buttonVariants({ variant: "ghost", size: "lg" }),
-                "justify-start gap-4 pt-10 pb-8"
+                "justify-start gap-4 pt-10 pb-8",
+                comment.id === SelectedCommentId && 'bg-zinc-100'
               )}
               ref={index === comments.length - 1 ? lastCommentElementRef : null}
             >

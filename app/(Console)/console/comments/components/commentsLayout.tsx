@@ -1,7 +1,6 @@
 "use client";
 
-
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 import CommentsList from "./commentsList";
@@ -10,9 +9,7 @@ interface ChatLayoutProps {
   children: React.ReactNode;
 }
 
-export function CommentsLayout({
-  children,
-}: ChatLayoutProps) {
+export function CommentsLayout({ children }: ChatLayoutProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -38,10 +35,12 @@ export function CommentsLayout({
     <>
       <div className="w-full flex h-full justify-center items-center gap-x-2 mr-4">
         <div className="w-2/6">
-          <CommentsList
-            isCollapsed={isCollapsed || isMobile}
-            isMobile={isMobile}
-          />
+          <Suspense>
+            <CommentsList
+              isCollapsed={isCollapsed || isMobile}
+              isMobile={isMobile}
+            />
+          </Suspense>
         </div>
 
         {children}
