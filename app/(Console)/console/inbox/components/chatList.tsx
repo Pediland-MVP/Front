@@ -8,7 +8,7 @@ import { InstagramNamespace, Messages } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Message, { IMessage } from "./message";
 import { SendingMessageType } from "./sendingMessage";
-import { socket } from "@/app/utils/socket";
+import { messagesSocket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 
@@ -38,9 +38,9 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
     if (isListenersSet) return;
     isListenersSet = true;
 
-    socket.emit(WsMessages.CONVERSATION, { leadId: lead?.id});
+    messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id});
 
-    socket.on(WsMessages.CONVERSATION, (conversationStr) => {
+    messagesSocket.on(WsMessages.CONVERSATION, (conversationStr) => {
       const conversation: InstagramNamespace.GET["Conversation"] =
         JSON.parse(conversationStr);
       if (conversation.items.length === 0) {
@@ -50,28 +50,28 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
       setMessagesList((old) => [...old, ...conversation.items]);
     });
 
-    socket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
+    messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
       const message: Messages & { digest: number } = JSON.parse(messageStr);
       setMessagesList((old) => [message, ...old]);
     });
 
-    socket.on(WsMessages.NEW_MESSAGE, (data) => {
+    messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
       console.log(JSON.parse(data));
 
       setMessagesList((old) => [JSON.parse(data), ...old]);
     });
 
     return () => {
-      socket.off(WsMessages.CONVERSATION);
-      socket.off(WsMessages.MESSAGE_SENT);
-      socket.off(WsMessages.NEW_MESSAGE);
+      messagesSocket.off(WsMessages.CONVERSATION);
+      messagesSocket.off(WsMessages.MESSAGE_SENT);
+      messagesSocket.off(WsMessages.NEW_MESSAGE);
     };
   }, [lead]);
 
   const next = () => {
     const lastMessage = messagesList.find((m) => m?.sendDate)?.sendDate;
     if (!lastMessage) return;
-    socket.emit(WsMessages.CONVERSATION, {
+    messagesSocket.emit(WsMessages.CONVERSATION, {
       leadId: lead?.id,
       page: page + 1,
       after: btoa(lastMessage),

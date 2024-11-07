@@ -3,13 +3,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Message } from "./data";
 import Image from "next/image";
 import { InstagramNamespace } from "@/types/instagram";
@@ -17,7 +10,6 @@ import { memo, useEffect, useState } from "react";
 import { socket } from "@/app/utils/socket";
 import { SideBarTab } from "./sideBarTap";
 import { useTabStore } from "@/store/tabActiveStore";
-import { User } from "@phosphor-icons/react/dist/ssr";
 
 interface SidebarProps {
   isCollapsed: boolean;
