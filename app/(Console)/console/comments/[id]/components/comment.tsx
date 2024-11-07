@@ -11,6 +11,7 @@ import useSWR from 'swr'
 import { fetcher } from '@/hooks/swr/fetcher'
 import CommentSkeleton from './comment.skeleton'
 import CommentError from './comment.error'
+import CommentFooter from "./comment.footer"
 
 interface ProfilePicture {
   url: string
@@ -61,18 +62,11 @@ function formatTimestamp(timestamp: string): string {
 }
 
 export default function Component({id}: {id: string}) {
-  const [replyText, setReplyText] = useState("")
   const { data: comment, error, isLoading } = useSWR<Comment>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/${id}?includeReplies=true`,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
-
-  const handleSubmitReply = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle reply submission
-    setReplyText("")
-  }
 
   if (isLoading) return <CommentSkeleton />
   if (error) return <CommentError />
@@ -125,27 +119,9 @@ export default function Component({id}: {id: string}) {
             </div>
           </ScrollArea>
         </CardContent>
-        <CardFooter className="border-t p-4">
-          <form onSubmit={handleSubmitReply} className="flex w-full gap-2">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              size="icon"
-              className="shrink-0"
-            >
-              <Smile className="w-5 h-5" />
-            </Button>
-            <Input
-              placeholder="Add a reply..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              className="flex-1"
-            />
-            <Button type="submit" size="icon" className="shrink-0">
-              <Send className="w-4 h-4" />
-            </Button>
-          </form>
-        </CardFooter>
+
+        <CommentFooter commentId={id}/>
+
       </Card>
     </div>
   )
