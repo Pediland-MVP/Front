@@ -7,6 +7,8 @@ import { CardFooter } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/use-toast'
+import { mutate } from 'swr'
+import EE from '@/lib/ee'
 
 interface FormData {
   text: string
@@ -22,7 +24,7 @@ const useCtrlEnterSubmit = (handleSubmit: () => void) => {
   return handleKeyDown
 }
 
-export default function CommentFooter({commentId}: {commentId: string}) {
+export default function CommentFooter({commentId, mutateComments}: {commentId: string, mutateComments: any}) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { register, handleSubmit, reset } = useForm<FormData>()
 
@@ -49,6 +51,10 @@ export default function CommentFooter({commentId}: {commentId: string}) {
         })
         return
     }
+
+    EE.emit('reply.sent', await response.json())
+
+    await mutateComments()
 
     toast({
         title: 'ثبت شد'

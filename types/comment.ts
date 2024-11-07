@@ -8,7 +8,11 @@ export namespace CommentsNamespace {
       export type Comments = CommentItem[]
 
       export type Comment = CommentItem
+
+
 }
+
+
 export interface CommentItem {
     id:            string;
     createDate:    Date;

@@ -6,7 +6,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { commentsSocket } from "@/app/utils/socket"
-import { CommentsNamespace } from "@/types/comments"
+import { CommentsNamespace } from "@/types/comment"
 import { useParams } from "next/navigation"
 
 interface CommentsListProps {
@@ -106,13 +106,13 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
             >
               <Image
                 src={comment.leadInstagram?.profilePicture.url || "/images/profile.png"}
-                alt={comment.leadInstagram.name}
+                alt={comment.leadInstagram?.name}
                 width={60}
                 height={60}
                 className="rounded-full"
               />
               <div className="flex flex-col max-w-28">
-                <span>{comment.leadInstagram.name}</span>
+                <span>{comment.leadInstagram?.name}</span>
                 <span className="text-zinc-300 text-xs truncate">
                   {comment.text}
                 </span>
