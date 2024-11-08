@@ -25,13 +25,13 @@ const ChatsLayout: FC<ChatsLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex gap-4">
-      <div className="h-[calc(100vh-2rem)] w-1/5 bg-white shadow rounded-2xl px-2 py-3">
+      {/* <div className="h-[calc(100vh-2rem)] w-1/5 bg-white shadow rounded-2xl px-2 py-3">
         <SidebarContent
           items={sideBarItems}
           selectedItem={selectedItem}
           onSelect={setSelectedItem}
         />
-      </div>
+      </div> */}
 
       <div className="flex-grow">
         {children}

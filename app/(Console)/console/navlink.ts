@@ -30,7 +30,7 @@ export const navLinks = [
     {
         title: "اتوماسیون",
         icon: Lightning,
-        href: "/console/actions",
+        href: "/console/actions/content-cycle",
     },
     {
         title: "محصولات",
