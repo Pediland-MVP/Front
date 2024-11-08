@@ -8,7 +8,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="_wrap flex w-full h-full">
       <Nav links={navLinks} />
-      <main className="w-full px-12 py-4">{children}</main>
+      <main className="w-full px-20 py-10">{children}</main>
     </div>
   );
 };

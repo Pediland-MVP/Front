@@ -1,7 +1,5 @@
 const ConsolePage = () => {
-    return (
-        <div>صفحه اول</div>
-    )
-}
+  return <div>صفحه اول</div>;
+};
 
-export default ConsolePage
+export default ConsolePage;

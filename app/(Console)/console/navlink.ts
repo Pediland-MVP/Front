@@ -38,19 +38,9 @@ export const navLinks = [
         href: "/console/products",
     },
     {
-        title: "مالی",
-        icon: Wallet,
-        href: "/console/accounts",
-    },
-    {
         title: "تنظیمات",
         icon: Sliders,
         href: "/console/settings",
-    },
-    {
-        title: "مدیریت حساب‌ها",
-        icon: User,
-        href: "/console/accounts",
     },
     {
         title: "پشتیبانی",

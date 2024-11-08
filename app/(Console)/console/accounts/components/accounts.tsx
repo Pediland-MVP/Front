@@ -41,14 +41,14 @@ export default function Accounts() {
     fetcher,
     {
       refreshInterval: 0,
-    },
+    }
   );
 
   const filteredInstagramPages = isFromFacebook
     ? instagramPages?.filter(
         (page) =>
           page.facebookAccountId === searchParams.get("facebookAccountId") &&
-          !page.instagramId,
+          !page.instagramId
       )
     : !!instagramPages?.length
       ? instagramPages.filter((account) => account.instagramId)
@@ -85,7 +85,7 @@ export default function Accounts() {
         {
           method: "DELETE",
           credentials: "include",
-        },
+        }
       );
 
       if (!response.ok) {
@@ -113,66 +113,61 @@ export default function Accounts() {
 
   return (
     <>
-      <div className="flex justify-start items-center h-14 px-4">
-        <h1 className="text-xl font-bold">اکانت های کاربری</h1>
-      </div>
-      <Separator className="mb-6" />
-
-      <div className="w-full mb-6 px-4">
+      {/* <div className="w-full mb-6 px-4">
         <Button
-          onClick={() =>
-            router.push(
-              `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`,
-            )
-          }
-          className="gap-x-1 w-full lg:w-auto"
+          className=""
           disabled={(filteredInstagramPages?.length || 0) > 0}
-        >
-          <Plus size={15} />
-          افزودن اکانت
-        </Button>
-      </div>
+        ></Button>
+      </div> */}
 
-      <div className="flex justify-start items-start flex-wrap gap-4 px-4 w-full">
-        {isInstagramPagesLoading &&
-          Array.from({ length: 10 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className="flex flex-col gap-y-2 justify-center items-center w-full lg:w-52 h-52 border rounded-lg "
-            >
-              <Skeleton className="w-20 h-20" />
-              <Skeleton className="w-20 h-4" />
-              <Skeleton className="w-20 h-4" />
-              <Skeleton className="w-20 h-8 rounded" />
-            </Skeleton>
-          ))}
+      {isInstagramPagesLoading &&
+        Array.from({ length: 10 }).map((_, index) => (
+          <Skeleton
+            key={index}
+            className="flex flex-col gap-4 justify-center items-center w-full h-52 border rounded-lg "
+          >
+            <Skeleton className="w-20 h-20" />
+            <Skeleton className="w-20 h-4" />
+            <Skeleton className="w-20 h-4" />
+            <Skeleton className="w-20 h-8 rounded" />
+          </Skeleton>
+        ))}
 
-        {filteredInstagramPages?.map((instagram) => {
-          return (
-            <div
-              key={instagram.id}
-              className="flex flex-col gap-y-2 justify-center items-center w-full lg:w-52 h-52 border rounded-lg "
-            >
-              {instagram.profilePictureUrl ? (
-                <Image
-                  className="rounded-full"
-                  src={instagram.profilePictureUrl}
-                  width={70}
-                  height={70}
-                  alt={instagram.name}
-                />
-              ) : (
-                <InstagramLogo size={70} />
-              )}
-              <p>{instagram.name}</p>
-              <p>{instagram.username}</p>
+      {filteredInstagramPages?.map((instagram) => {
+        return (
+          <div
+            key={instagram.id}
+            className="_card bg-white shadow-md rounded-lg"
+          >
+            <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
+              <div>
+                {instagram.profilePictureUrl ? (
+                  <Image
+                    className="rounded-full"
+                    src={instagram.profilePictureUrl}
+                    width={75}
+                    height={75}
+                    alt={instagram.name}
+                  />
+                ) : (
+                  <InstagramLogo size={75} />
+                )}
+              </div>
+
+              <div className="flex flex-col justify-center items-center">
+                <span>{instagram.name}</span>
+                <span className="text-[15px] text-gray-500">
+                  {instagram.username}@
+                </span>
+              </div>
+
               <div className="flex gap-2">
                 {instagram.instagramId ? (
                   <Link
                     href={`https://instagram.com/${instagram.username}`}
                     target="_blank"
                   >
-                    <Button variant={"outline"}>دیدن اکانت</Button>
+                    <Button variant={"outline"}>مشاهده اکانت</Button>
                   </Link>
                 ) : (
                   <Button
@@ -185,10 +180,11 @@ export default function Accounts() {
                     اتصال به اکانت
                   </Button>
                 )}
+
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" size="icon">
-                      <Trash size={16} />
+                      <Trash size={20} />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -211,14 +207,33 @@ export default function Accounts() {
                 </AlertDialog>
               </div>
             </div>
-          );
-        })}
+          </div>
+        );
+      })}
 
-        <DrawerDialogDemo
-          facebookAccountId={facebookAccountId!}
-          open={openSelectInstagramDialog}
-          setOpen={setOpenSelectInstagramDialog}
-        />
+      <DrawerDialogDemo
+        facebookAccountId={facebookAccountId!}
+        open={openSelectInstagramDialog}
+        setOpen={setOpenSelectInstagramDialog}
+      />
+
+      <div className="_card bg-white hover:shadow-md rounded-lg duration-300">
+        <div
+          className="flex flex-col items-center justify-center gap-3 p-5 group h-full hover:cursor-pointer"
+          onClick={() =>
+            router.push(
+              `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`
+            )
+          }
+        >
+          <Plus
+            size={28}
+            className="text-gray-400 group-hover:text-black duration-300"
+          />
+          <span className="font-medium text-gray-400 group-hover:text-black duration-300">
+            افزودن اکانت
+          </span>
+        </div>
       </div>
     </>
   );
