@@ -1,10 +1,12 @@
 import { Chat } from "../components/chat";
 
 export default async function ChatPage({
-  params: { chatId },
+  params,
 }: {
-  params: { chatId: string };
+  params: Promise<{ chatId: string }>;
 }) {
+
+  const { chatId } = await params
 
   return (
     <div className="w-full">

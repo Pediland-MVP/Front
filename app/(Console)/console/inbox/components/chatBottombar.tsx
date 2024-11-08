@@ -21,8 +21,8 @@ import {
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
 import { WsMessages } from "@/ws.messages";
-import { socket } from "@/app/utils/socket";
 import { IMessage } from "./message";
+import { messagesSocket } from "@/app/utils/socket";
 
 interface ChatBottombarProps {
   isMobile: boolean;
@@ -80,7 +80,7 @@ export default function ChatBottombar({
         text: message.trim(),
       };
       const digest = Math.floor(Math.random()) * 10000 + Date.now();
-      socket.emit(WsMessages.SEND_MESSAGE, { ...newMessage, digest });
+      messagesSocket.emit(WsMessages.SEND_MESSAGE, { ...newMessage, digest });
 
       setMessage("");
 

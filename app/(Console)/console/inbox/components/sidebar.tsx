@@ -7,9 +7,9 @@ import { Message } from "./data";
 import Image from "next/image";
 import { InstagramNamespace } from "@/types/instagram";
 import { memo, useEffect, useState } from "react";
-import { socket } from "@/app/utils/socket";
 import { SideBarTab } from "./sideBarTap";
 import { useTabStore } from "@/store/tabActiveStore";
+import { messagesSocket } from "@/app/utils/socket";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -29,18 +29,18 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
     useState<InstagramNamespace.GET["Conversations"]>();
 
   useEffect(() => {
-    if (!socket.connected) {
-      socket.connect();
+    if (!messagesSocket.connected) {
+      messagesSocket.connect();
     }
 
-    socket.emit("conversations");
+    messagesSocket.emit("conversations");
 
-    socket.on("conversations", (conversations) => {
+    messagesSocket.on("conversations", (conversations) => {
       setConversations(JSON.parse(conversations));
     });
 
     return () => {
-      socket.off("conversations");
+      messagesSocket.off("conversations");
     };
   }, []);
   console.log(activeTab);
