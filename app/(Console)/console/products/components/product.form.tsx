@@ -34,6 +34,7 @@ const formSchema = z.object({
     .min(1, {
       message: "تایتل ضروری است",
     }),
+  status: z.boolean(),
   price: z
     .number({
       message: "قیمت نمیتواند کمتر از صفر باشد",
@@ -63,6 +64,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       isDigital: false,
+      status: true,
       ...shouldBeEdit,
       imageId: shouldBeEdit?.images?.[0].id || undefined,
     },
@@ -188,6 +190,21 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
+              )}
+            />
+            <Controller
+              name="status"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Switch
+                    dir="ltr"
+                    id="direct"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">وضعیت</Label>
+                </div>
               )}
             />
             <FormField
