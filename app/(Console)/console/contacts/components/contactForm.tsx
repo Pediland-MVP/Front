@@ -24,12 +24,10 @@ import LoadingSpinner from "@/components/ui/loadingSpinner";
 import ContactSkeleton from "./contactSkeleton";
 
 export type ContactFormProps = {
-    contactId: string
-    open: boolean
-    setOpen: (open: boolean) => void;
-
-}
-
+  contactId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};
 
 const UpdateContactSchema = z.object({
   firstname: z.string().optional().nullable(),
@@ -44,114 +42,116 @@ const UpdateContactSchema = z.object({
   address: z.string().optional().nullable(), // added address
 });
 
-  type UpdateContactFormData = z.infer<typeof UpdateContactSchema>;
-  
-export default function ContactForm({ contactId, open, setOpen }: ContactFormProps) {
+type UpdateContactFormData = z.infer<typeof UpdateContactSchema>;
 
+export default function ContactForm({
+  contactId,
+  open,
+  setOpen,
+}: ContactFormProps) {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
-    const [contact, setContact] = useState<ContactNamespace.Contact | null>(null);
-    const [contactError, setContactError] = useState<Error | null>(null);
-    const [isContactLoading, setIsContactLoading] = useState(true);
+  const [contact, setContact] = useState<ContactNamespace.Contact | null>(null);
+  const [contactError, setContactError] = useState<Error | null>(null);
+  const [isContactLoading, setIsContactLoading] = useState(true);
 
-    const fetchContact = async () => {
-      setIsContactLoading(true);
-      setContact(null);
-      setContactError(null);
+  const fetchContact = async () => {
+    setIsContactLoading(true);
+    setContact(null);
+    setContactError(null);
 
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts/${contactId}`,
-          {
-            credentials: 'include'
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch contact");
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts/${contactId}`,
+        {
+          credentials: "include",
         }
+      );
 
-        const data = (await response.json()) as ContactNamespace.Contact;
-        setContact(data);
-      } catch (error) {
-        setContactError(error as Error);
-      } finally {
-        setIsContactLoading(false);
+      if (!response.ok) {
+        throw new Error("Failed to fetch contact");
       }
-    };
-    
-      const {
-        register,
-        handleSubmit,
-        control,
-        formState: { errors },
-        ...form
-      } = useForm<UpdateContactFormData>({
-        resolver: zodResolver(UpdateContactSchema),
-      });
-    
-      useEffect(() => {
-        fetchContact();
-        return () => {
-            setContact(null)
-            form.reset()
-        }
-      }, []);
-    
-    //   useEffect(() => {
-    //     console.log('Contact', form.getValues());
-    //   }, [form.watch()]);
-    
-      useEffect(() => {
-        if (!contact || open === false || isContactLoading)
-          return;
-        console.log("Data Set");
-        form.reset({
-          ...contact,
-          ...(contact.birthDate && {
-            birthDate: new Date(contact.birthDate).getTime().toString(),
-          }),
-        });
-      }, [contact]);
-    
-      const onDateChange = (e: any) => {
-        console.log(e);
-      };
-    
-      const onSubmit = async (values: UpdateContactFormData) => {
-        setIsSubmitLoading(true);
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts/${contactId}`,
-          {
-            method: "PUT",
-            body: JSON.stringify(values),
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setIsSubmitLoading(false);
-        if (!response.ok) {
-          toast({
-            title: "خطا در آپدیت اطلاعات",
-          });
-          return;
-        }
-        toast({
-          title: "آپدیت شد",
-        });
-        setOpen(false);
-      };
-    
-    if (isContactLoading || !contact) {
-        return (<ContactSkeleton/>)
-    }
 
-    return(
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
-        <div>
+      const data = (await response.json()) as ContactNamespace.Contact;
+      setContact(data);
+    } catch (error) {
+      setContactError(error as Error);
+    } finally {
+      setIsContactLoading(false);
+    }
+  };
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+    ...form
+  } = useForm<UpdateContactFormData>({
+    resolver: zodResolver(UpdateContactSchema),
+  });
+
+  useEffect(() => {
+    fetchContact();
+    return () => {
+      setContact(null);
+      form.reset();
+    };
+  }, []);
+
+  //   useEffect(() => {
+  //     console.log('Contact', form.getValues());
+  //   }, [form.watch()]);
+
+  useEffect(() => {
+    if (!contact || open === false || isContactLoading) return;
+    console.log("Data Set");
+    form.reset({
+      ...contact,
+      ...(contact.birthDate && {
+        birthDate: new Date(contact.birthDate).getTime().toString(),
+      }),
+    });
+  }, [contact]);
+
+  const onDateChange = (e: any) => {
+    console.log(e);
+  };
+
+  const onSubmit = async (values: UpdateContactFormData) => {
+    setIsSubmitLoading(true);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts/${contactId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(values),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setIsSubmitLoading(false);
+    if (!response.ok) {
+      toast({
+        title: "خطا در آپدیت اطلاعات",
+      });
+      return;
+    }
+    toast({
+      title: "آپدیت شد",
+    });
+    setOpen(false);
+  };
+
+  if (isContactLoading || !contact) {
+    return <ContactSkeleton />;
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="grid grid-cols-4 gap-4">
+        <div className="col-span-2">
           <Label htmlFor="firstname" className="text-right">
             نام
           </Label>
@@ -166,7 +166,8 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-        <div>
+
+        <div className="col-span-2">
           <Label htmlFor="lastname" className="text-right">
             نام خانوادگی
           </Label>
@@ -181,10 +182,8 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-      </div>
 
-      <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
-        <div>
+        <div className="col-span-2">
           <Label htmlFor="mobile" className="text-right">
             موبایل
           </Label>
@@ -195,7 +194,8 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-        <div>
+
+        <div className="col-span-2">
           <Label htmlFor="email" className="text-right">
             ایمیل
           </Label>
@@ -206,9 +206,8 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-      </div>
-      <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
-        <div>
+
+        <div className="col-span-2">
           <Label htmlFor="country" className="text-right">
             کشور
           </Label>
@@ -219,7 +218,8 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-        <div>
+
+        <div className="col-span-2">
           <Label htmlFor="city" className="text-right">
             شهر
           </Label>
@@ -230,35 +230,36 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-      </div>
-      <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
-  <div>
-    <Label htmlFor="postalcode" className="text-right">
-      کد پستی
-    </Label>
-    <Input id="postalcode" {...register("postalcode")} className="col-span-3" />
-    {errors.postalcode && (
-      <p className="col-span-4 text-sm text-red-500">
-        {errors.postalcode.message}
-      </p>
-    )}
-  </div>
-  <div>
-    <Label htmlFor="address" className="text-right">
-      آدرس
-    </Label>
-    <Input id="address" {...register("address")} className="col-span-3" />
-    {errors.address && (
-      <p className="col-span-4 text-sm text-red-500">
-        {errors.address.message}
-      </p>
-    )}
-  </div>
-</div>
 
+        <div className="col-span-2">
+          <Label htmlFor="postalcode" className="text-right">
+            کد پستی
+          </Label>
+          <Input
+            id="postalcode"
+            {...register("postalcode")}
+            className="col-span-3"
+          />
+          {errors.postalcode && (
+            <p className="col-span-4 text-sm text-red-500">
+              {errors.postalcode.message}
+            </p>
+          )}
+        </div>
 
-      <div className="flex justify-center items-center gap-x-2 flex-col md:flex-row">
-        <div className="w-full">
+        <div className="col-span-2">
+          <Label htmlFor="address" className="text-right">
+            آدرس
+          </Label>
+          <Input id="address" {...register("address")} className="col-span-3" />
+          {errors.address && (
+            <p className="col-span-4 text-sm text-red-500">
+              {errors.address.message}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-2">
           <Label htmlFor="gender" className="text-right">
             جنسیت
           </Label>
@@ -266,26 +267,33 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             name="gender"
             control={control}
             render={({ field }) => {
-                console.log('gender', field.value, typeof field.value, field.value === '');
-                if (field.value === undefined) {
-                    return <></>
-                }
+              console.log(
+                "gender",
+                field.value,
+                typeof field.value,
+                field.value === ""
+              );
+              if (field.value === undefined) {
+                return <></>;
+              }
               return (
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value!}
-                value={field.value!}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="انتخاب جنسیت" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">مرد</SelectItem>
-                  <SelectItem value="female">زن</SelectItem>
-                  <SelectItem value="other">سایر</SelectItem>
-                </SelectContent>
-              </Select>
-            )}}
+                <Select
+                  dir="rtl"
+                  onValueChange={field.onChange}
+                  defaultValue={field.value!}
+                  value={field.value!}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="انتخاب جنسیت" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="female">زن</SelectItem>
+                    <SelectItem value="male">مرد</SelectItem>
+                    <SelectItem value="other">سایر</SelectItem>
+                  </SelectContent>
+                </Select>
+              );
+            }}
           />
           {errors.gender && (
             <p className="col-span-4 text-sm text-red-500">
@@ -293,8 +301,9 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             </p>
           )}
         </div>
-        <div className="w-full">
-          <Label htmlFor="birthDate" className="text-right">
+
+        <div className="col-span-2">
+          <Label htmlFor="birthDate" className="text-right mb-3">
             تاریخ تولد
           </Label>
           <Controller
@@ -308,6 +317,8 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
             }) => (
               <>
                 <DatePicker
+                  containerClassName="w-full"
+                  style={{ width: "100%" }}
                   value={
                     value
                       ? new DateObject(+value)
@@ -340,9 +351,11 @@ export default function ContactForm({ contactId, open, setOpen }: ContactFormPro
           )}
         </div>
       </div>
+
       <Button type="submit" className="w-full">
-        ذخیره تغییرات
+        ذخیره
         {isSubmitLoading && <LoadingSpinner className="mr-1" size={20} />}
       </Button>
     </form>
-  )};
+  );
+}

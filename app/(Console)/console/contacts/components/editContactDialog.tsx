@@ -75,12 +75,10 @@ export default function EditContact({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent dir="rtl" className="sm:max-w-[560px]">
+      <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>ویرایش مخاطب</DialogTitle>
-          <DialogDescription>
-            از اینجا میتونی مخاطب رو ویرایش کنی
-          </DialogDescription>
+          <DialogTitle>ویرایش اطلاعات</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         {<ContactForm contactId={contactId} open={open} setOpen={setOpen} />}
       </DialogContent>
