@@ -95,20 +95,7 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="text-center w-[2%]">
-                <Checkbox
-                  checked={selectedLeads.length === contacts.length}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      // setSelectedLeads(contacts?.map((lead) => lead));
-                    } else {
-                      setSelectedLeads([]);
-                    }
-                  }}
-                />
-              </TableHead>
-
-              <TableHead className="w-[10%] text-center">تصویر</TableHead>
+              <TableHead className="w-[7%] text-center">تصویر</TableHead>
 
               <TableHead
                 onClick={() => handleSort("name")}
@@ -146,7 +133,7 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
                 )}
               </TableHead>
 
-              <TableHead className="w-[22%] _space"></TableHead>
+              <TableHead className="w-[27%] _space"></TableHead>
 
               <TableHead className="text-center w-[7%]">عملیات</TableHead>
             </TableRow>
@@ -163,13 +150,6 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
                     selectedLeads.includes(contact.id) ? "bg-muted" : ""
                   }
                 >
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedLeads.includes(contact.id)}
-                      onCheckedChange={() => handleSelect(contact.id)}
-                    />
-                  </TableCell>
-
                   <TableCell>
                     <Link
                       className="flex justify-center"
@@ -194,7 +174,7 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
                   </TableCell>
 
                   <TableCell className="">
-                    <Link href={"/console/contacts/item"}>
+                    <Link href={"/console/contacts/item"} className="hover:text-pink-700">
                       {contact.firstname && contact.lastname
                         ? `${contact.firstname} ${contact.lastname}`
                         : contact.lead?.firstname}
@@ -216,7 +196,7 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
                       <Pencil
                         size={20}
                         weight="light"
-                        className="text-gray-600 hover:text-green-700 cursor-pointer"
+                        className="text-gray-500 hover:text-pink-700 cursor-pointer"
                         onClick={() => {
                           setOpen(true);
                           setContactId(contact.id);
@@ -229,7 +209,7 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
             )}
           </TableBody>
         </Table>
-        
+
         <Pagination
           currentPage={page}
           onPageChange={onPageChange}
