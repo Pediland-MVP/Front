@@ -64,8 +64,8 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
           {message.from !== "lead" && (
             <Avatar className="flex absolute justify-center items-center">
               <AvatarImage
-                src={lead.instagram.profilePictureUrl}
-                alt={lead.instagram.firstname}
+                src={lead.instagram?.profilePictureUrl}
+                alt={lead.instagram?.firstname}
                 width={6}
                 height={6}
               />

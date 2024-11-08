@@ -1,7 +1,7 @@
 "use client"
 import { FC, useState } from "react";
 import SidebarContent from "./components/sidebarContent";
-import { ArrowsClockwise, Recycle, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
+import { Recycle, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 
 type ChatsLayoutProps = {
   children: React.ReactNode;
@@ -12,16 +12,16 @@ const ChatsLayout: FC<ChatsLayoutProps> = ({ children }) => {
     {
       title: "تکمیل اطلاعات کاربر",
       icon: UserCirclePlus,
-      key: "/console/actions/userManagement",
+      path: "/console/actions/userManagement",
     },
     {
       title: "چرخه محتوا",
       icon: Recycle,
-      key: "/console/actions/content-cycle",
+      path: "/console/actions/content-cycle",
     },
   ];
 
-  const [selectedItem, setSelectedItem] = useState(sideBarItems[0].key);
+  const [selectedItem, setSelectedItem] = useState(sideBarItems[0].path);
 
   return (
     <div className="flex gap-4">

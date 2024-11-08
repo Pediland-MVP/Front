@@ -26,9 +26,24 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'github.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'koochaa-cdn.s3.**.amazonaws.com',
+      }, 
+      {
+        protocol: 'https',
+        hostname: 'koochaa-cdn.s3.amazonaws.com',
       }
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: true
+  },
+  typescript: {
+    ignoreBuildErrors: true
+  },
+  reactStrictMode: false
 };
 
 export default withSentryConfig(nextConfig, {

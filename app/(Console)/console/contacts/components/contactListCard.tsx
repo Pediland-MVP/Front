@@ -1,223 +1,241 @@
 "use client";
 
-import { useState, useMemo, SetStateAction } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+  Table,
+  TableBody,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableHead,
+} from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TableCell } from "@/components/ui/table";
-import Image from "next/image";
 import Link from "next/link";
-import { PenNibStraight } from "@phosphor-icons/react/dist/ssr";
-import { Pencil, Trash } from "@phosphor-icons/react";
+import { Pencil } from "@phosphor-icons/react";
+import { ContactNamespace } from "@/types/contact";
+import ImageWithFallback from "@/components/ui/imageWithCallback";
+import { Pagination } from "./pagination";
+import useSWRImmutable from "swr/immutable";
+import { fetcher } from "@/hooks/swr/fetcher";
+import ContactListSkeleton from "./contactListSkeleton";
+import useDebounce from "@/hooks/useDebounce";
+import EditContactDialog from "./editContactDialog";
+
 type Lead = {
-    profile: string;
-    name: string;
-    username: string;
-    messages: number;
-    lastSeen: string;
+  profile: string;
+  name: string;
+  username: string;
+  messages: number;
+  lastSeen: string;
 };
+
 export default function ContactListCard() {
-    const [search, setSearch] = useState("");
-    const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
-    const [sortDirection, setSortDirection] = useState("desc");
-    const [selectedLeads, setSelectedLeads] = useState<any[]>([]);
+  const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [limit, setLimit] = useState<number>(10);
+  // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
+  const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+  const debouncedSearchTerm = useDebounce(search, 500);
+  const [open, setOpen] = useState<boolean>(false);
+  const [contactId, setContactId] = useState<string>("");
 
-    const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
-        setSearch(e.target.value);
-    };
+  const {
+    data: contactsData,
+    error: contactsError,
+    isLoading: isContactsLoading,
+    mutate: fetchContacts,
+  } = useSWRImmutable<ContactNamespace.GET>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
+    fetcher
+  );
+  const contacts = contactsData?.items || [];
+  const contactsMeta = contactsData?.meta || undefined;
 
-    const handleSort = (column: keyof Lead) => {
-        if (sortColumn === column) {
-            setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-        } else {
-            setSortColumn(column);
-            setSortDirection("asc");
-        }
-    };
+  const onPageChange = (value: number) => {
+    setPage(value);
+  };
 
-    const handleSelect = (lead: any) => {
-        if (selectedLeads.includes(lead)) {
-            setSelectedLeads(selectedLeads.filter((item) => item !== lead));
-        } else {
-            setSelectedLeads([...selectedLeads, lead]);
-        }
-    };
+  const onPageSizeChange = (value: number) => {
+    setLimit(value);
+  };
 
-    const filteredLeads: Lead[] = useMemo(() => {
-        return [
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "سینا پیرانی",
-                username: "@sina_pirani",
-                messages: 125,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "سینا پیرانی",
-                username: "@sina_pirani",
-                messages: 125,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "سینا پیرانی",
-                username: "@sina_pirani",
-                messages: 125,
-                lastSeen: "2h ago",
-            },
-            {
-                profile: "https://github.com/shadcn.png",
-                name: "سینا پیرانی",
-                username: "@sina_pirani",
-                messages: 125,
-                lastSeen: "2h ago",
-            },
-        ]
-            .filter((lead) => lead.name.toLowerCase().includes(search.toLowerCase()))
-            .sort((a, b) => {
-                if (a[sortColumn] < b[sortColumn])
-                    return sortDirection === "asc" ? -1 : 1;
-                if (a[sortColumn] > b[sortColumn])
-                    return sortDirection === "asc" ? 1 : -1;
-                return 0;
-            });
-    }, [search, sortColumn, sortDirection]);
+  const handleSort = (column: keyof Lead) => {
+    setSortColumn(column);
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
 
-    return (
-        <div className="_wrap flex flex-col gap-2 h-[calc(100%-40px)] max-h-[calc(100%-40px)]">
-            <div className="_filterSection">
-                <Input
-                    type="search"
-                    placeholder="جستجو ..."
-                    value={search}
-                    onChange={handleSearch}
-                    className="flex-1"
-                />
-            </div>
-
-            <div className="_contact-list h-[calc(100%-44px)] max-h-[calc(100%-44px)]">
-                <Table className="scroll h-full max-h-full">
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="text-right w-[5%]">
-                                <Checkbox
-                                    checked={selectedLeads.length === filteredLeads.length}
-                                    onCheckedChange={(checked) => {
-                                        if (checked) {
-                                            setSelectedLeads(filteredLeads?.map((lead) => lead));
-                                        } else {
-                                            setSelectedLeads([]);
-                                        }
-                                    }}
-                                />
-                            </TableHead>
-                            <TableHead className="w-[15%] text-center">
-                                تصویر
-                            </TableHead>
-                            <TableHead
-                                onClick={() => handleSort("name")}
-                                className="cursor-pointer text-center hover:text-black w-[25%]"
-                            >
-                                نام کاربر
-                                {sortColumn === "name" && (
-                                    <span className="mr-2">
-                                        {sortDirection === "asc" ? "\u2191" : "\u2193"}
-                                    </span>
-                                )}
-                            </TableHead>
-                            <TableHead
-                                className="cursor-pointer text-center hover:text-black w-[25%]"
-                                onClick={() => handleSort("username")}
-                            >
-                                آیدی اینستاگرام
-                                {sortColumn === "username" && (
-                                    <span className="mr-2">
-                                        {sortDirection === "asc" ? "\u2191" : "\u2193"}
-                                    </span>
-                                )}
-                            </TableHead>
-                            <TableHead
-                                className="cursor-pointer text-center hover:text-black w-[10%]"
-                                onClick={() => handleSort("messages")}
-                            >
-                                تعداد پیام
-                                {sortColumn === "messages" && (
-                                    <span className="mr-2">
-                                        {sortDirection === "asc" ? "\u2191" : "\u2193"}
-                                    </span>
-                                )}
-                            </TableHead>
-                            <TableHead
-                                className="cursor-pointer text-center hover:text-black w-[10%]"
-                                onClick={() => handleSort("lastSeen")}
-                            >
-                                آخرین خوانش
-                                {sortColumn === "lastSeen" && (
-                                    <span className="mr-2">
-                                        {sortDirection === "asc" ? "\u2191" : "\u2193"}
-                                    </span>
-                                )}
-                            </TableHead>
-                            <TableHead className="text-center w-[10%]">
-                                عملیات
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody className="h-[calc(100%-40px)] max-h-[calc(100%-40px)]">
-                        {filteredLeads.map((lead, index) => (
-                            <TableRow
-                                key={index}
-                                className={selectedLeads.includes(lead) ? "bg-muted" : ""}
-                            >
-                                <TableCell className="w-[5%]">
-                                    <Checkbox
-                                        checked={selectedLeads.includes(lead)}
-                                        onCheckedChange={() => handleSelect(lead)}
-                                    />
-                                </TableCell>
-
-                                <TableCell className="w-[15%]">
-                                    <Link className="flex justify-center" href={'/console/contacts/item'}>
-                                        <Image
-                                            src={lead.profile}
-                                            alt={`${lead.name} profile`}
-                                            width={32}
-                                            height={32}
-                                            className="rounded-full"
-                                        />
-                                    </Link>
-                                </TableCell>
-
-                                <TableCell className="w-[25%] text-center">
-                                    <Link href={'/console/contacts/item'}>
-                                        {lead.name}
-                                    </Link>
-                                </TableCell>
-
-                                <TableCell className="w-[25%] text-center"><span dir="ltr">{lead.username}</span></TableCell>
-
-                                <TableCell className="w-[10%] text-center">{lead.messages}</TableCell>
-
-                                <TableCell className="w-[10%] text-center">{lead.lastSeen}</TableCell>
-
-                                <TableCell className="w-[10%] text-center">
-                                    <div className="flex gap-2 justify-center">
-                                        <Pencil size={20} weight="light" className="text-gray-600 hover:text-green-700 cursor-pointer" />
-                                        <Trash size={20} weight="light" className="text-gray-600 hover:text-red-700 cursor-pointer" />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-        </div>
+  const handleSelect = (contactId: string) => {
+    setSelectedLeads((prev) =>
+      prev.includes(contactId)
+        ? prev.filter((id) => id !== contactId)
+        : [...prev, contactId]
     );
+  };
+
+  return (
+    <div className="_table rounded-lg shadow bg-white">
+      <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
+      {/* <div>
+        <Input
+          type="search"
+          placeholder="جستجو ..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 max-w-[20%]"
+        />
+      </div> */}
+
+      <div className="max-h-[calc(100%-44px)] overflow-auto p-4">
+        <Table>
+          <TableHeader className="bg-gray-50">
+            <TableRow>
+              <TableHead className="text-center w-[2%]">
+                <Checkbox
+                  checked={selectedLeads.length === contacts.length}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      // setSelectedLeads(contacts?.map((lead) => lead));
+                    } else {
+                      setSelectedLeads([]);
+                    }
+                  }}
+                />
+              </TableHead>
+
+              <TableHead className="w-[10%] text-center">تصویر</TableHead>
+
+              <TableHead
+                onClick={() => handleSort("name")}
+                className="cursor-pointer text-right hover:text-black w-[25%]"
+              >
+                نام کاربر
+                {sortColumn === "name" && (
+                  <span className="mr-2">
+                    {sortDirection === "asc" ? "\u2191" : "\u2193"}
+                  </span>
+                )}
+              </TableHead>
+
+              <TableHead
+                className="cursor-pointer text-center hover:text-black w-[25%]"
+                onClick={() => handleSort("username")}
+              >
+                آیدی اینستاگرام
+                {sortColumn === "username" && (
+                  <span className="mr-2">
+                    {sortDirection === "asc" ? "\u2191" : "\u2193"}
+                  </span>
+                )}
+              </TableHead>
+
+              <TableHead
+                className="cursor-pointer text-center hover:text-black w-[8%]"
+                onClick={() => handleSort("messages")}
+              >
+                تعداد پیام
+                {sortColumn === "messages" && (
+                  <span className="mr-2">
+                    {sortDirection === "asc" ? "\u2191" : "\u2193"}
+                  </span>
+                )}
+              </TableHead>
+
+              <TableHead className="w-[22%] _space"></TableHead>
+
+              <TableHead className="text-center w-[7%]">عملیات</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody id="scrollableDiv">
+            {isContactsLoading ? (
+              <ContactListSkeleton rowCount={limit} />
+            ) : (
+              contacts.map((contact) => (
+                <TableRow
+                  key={contact.id}
+                  className={
+                    selectedLeads.includes(contact.id) ? "bg-muted" : ""
+                  }
+                >
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedLeads.includes(contact.id)}
+                      onCheckedChange={() => handleSelect(contact.id)}
+                    />
+                  </TableCell>
+
+                  <TableCell>
+                    <Link
+                      className="flex justify-center"
+                      href={"/console/contacts/item"}
+                    >
+                      <ImageWithFallback
+                        src={
+                          contact.lead?.profilePic ??
+                          "https://github.com/shadcn.png"
+                        }
+                        fallbackSrc="https://github.com/shadcn.png"
+                        alt={`${
+                          contact.firstname && contact.lastname
+                            ? `${contact.firstname} ${contact.lastname}`
+                            : contact.lead?.firstname
+                        } profile`}
+                        width={38}
+                        height={38}
+                        className="rounded-full"
+                      />
+                    </Link>
+                  </TableCell>
+
+                  <TableCell className="">
+                    <Link href={"/console/contacts/item"}>
+                      {contact.firstname && contact.lastname
+                        ? `${contact.firstname} ${contact.lastname}`
+                        : contact.lead?.firstname}
+                    </Link>
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    <span dir="ltr">{contact.username}</span>
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {contact.messagesCount}
+                  </TableCell>
+
+                  <TableCell className="_space"></TableCell>
+
+                  <TableCell className="text-center">
+                    <div className="flex gap-2 justify-center">
+                      <Pencil
+                        size={20}
+                        weight="light"
+                        className="text-gray-600 hover:text-green-700 cursor-pointer"
+                        onClick={() => {
+                          setOpen(true);
+                          setContactId(contact.id);
+                        }}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+        
+        <Pagination
+          currentPage={page}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          pageSize={limit}
+          totalItems={contactsMeta?.totalItems || limit}
+          totalPages={contactsMeta?.totalPages || 1}
+        />
+      </div>
+    </div>
+  );
 }

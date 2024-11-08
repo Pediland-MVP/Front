@@ -41,8 +41,8 @@ export default function SendingMessage({ message, lead }: SendingMessageProps) {
 
         <Avatar className="flex justify-center items-center">
           <AvatarImage
-            src={lead.instagram.profilePictureUrl}
-            alt={lead.instagram.firstname}
+            src={lead.instagram?.profilePictureUrl}
+            alt={lead.instagram?.firstname}
             width={6}
             height={6}
           />

@@ -1,16 +1,20 @@
-import React from "react";
-import ContentCycle from "../components/contentCycle";
-import InstaDirectUi from "../components/instaDirectUi";
+import ContentCycleTable from "./components/contentCycleTable";
+import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
-export default function page() {
-  return (
-    <div className="h-full flex gap-4">
-      <div className="w-2/3 overflow-y-scroll h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <ContentCycle />
-      </div>
-      <div className="w-1/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <InstaDirectUi />
-      </div>
-    </div>
-  );
+export default function ContentCyclePage() {
+    return (
+        <div className="container mx-auto py-10 rtl" dir="rtl">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold">چرخه محتوا</h1>
+                <Link href="/console/actions/content-cycle/add">
+                    <Button>
+                        <Plus className="mr-2 h-4 w-4" /> افزودن چرخه جدید
+                    </Button>
+                </Link>
+            </div>
+            <ContentCycleTable />
+        </div>
+    )
 }

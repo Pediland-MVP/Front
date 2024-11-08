@@ -75,7 +75,7 @@ export default function ChatBottombar({
 
     if (message.trim()) {
       const newMessage = {
-        instagramId: currentLead?.instagram.id,
+        // instagramId: currentLead?.instagram.id,
         leadId: currentLead?.id,
         text: message.trim(),
       };

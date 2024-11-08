@@ -5,8 +5,8 @@ export function SideBarTab() {
   const { activeTab, setActiveTab } = useTabStore();
 
   return (
-    <Tabs className="w-full bg-blue-50" defaultValue="chat bg-blue-50">
-      <TabsList className="flex w-full bg-blue-50">
+    <Tabs className="w-full " defaultValue="chat ">
+      <TabsList className="flex w-full ">
         <TabsTrigger
           value="comment"
           onClick={() => setActiveTab("comment")}
