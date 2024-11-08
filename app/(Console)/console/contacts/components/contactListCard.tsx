@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -30,14 +29,18 @@ type Lead = {
   lastSeen: string;
 };
 
-export default function ContactListCard() {
+type ContactListCardProps = {
+  search: string,
+  setSearch: React.Dispatch<React.SetStateAction<string>>,
+}
+
+export default function ContactListCard({ search, setSearch }: ContactListCardProps) {
   const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [limit, setLimit] = useState<number>(10);
   // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
   const [page, setPage] = useState<number>(1);
-  const [search, setSearch] = useState("");
   const debouncedSearchTerm = useDebounce(search, 500);
   const [open, setOpen] = useState<boolean>(false);
   const [contactId, setContactId] = useState<string>("");

@@ -1,11 +1,12 @@
-import React from "react";
+'use client'
+import { useState } from "react";
 import ContactListCard from "./components/contactListCard";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input";
 
 export default function page() {
+
+  const [search, setSearch] = useState<string>("")
+
   return (
     <div className="_products">
       <div className="_header flex justify-between items-center mb-5">
@@ -15,13 +16,13 @@ export default function page() {
           <Input
             type="search"
             placeholder="جستجو ..."
-            // value={search}
-            // onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="flex-1"
           />
         </div>
       </div>
-      <ContactListCard />
+      <ContactListCard search={search} setSearch={setSearch} />
     </div>
   );
 }
