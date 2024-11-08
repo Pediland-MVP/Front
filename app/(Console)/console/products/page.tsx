@@ -6,14 +6,17 @@ import ProductListTable from "./components/productListTable";
 
 export default function Page() {
   return (
-    <div className="container mx-auto py-10 rtl" dir="rtl">
-      <div className="flex justify-between items-center mb-6">
+    <div className="_products">
+      <div className="_header flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">لیست محصولات</h1>
-        <Link href="/console/products/add">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> افزودن محصول جدید
-          </Button>
-        </Link>
+
+        <div className="_buttons">
+          <Link href="/console/products/add">
+            <Button>
+              افزودن محصول جدید <Plus className="mr-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </div>
       <ProductListTable />
     </div>

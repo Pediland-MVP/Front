@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,9 +38,9 @@ export default function ContactListCard() {
   // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  const debouncedSearchTerm = useDebounce(search, 500); 
-  const [open, setOpen] = useState<boolean>(false)
-  const [contactId, setContactId] = useState<string>("")
+  const debouncedSearchTerm = useDebounce(search, 500);
+  const [open, setOpen] = useState<boolean>(false);
+  const [contactId, setContactId] = useState<string>("");
 
   const {
     data: contactsData,
@@ -58,7 +60,7 @@ export default function ContactListCard() {
 
   const onPageSizeChange = (value: number) => {
     setLimit(value);
-  }
+  };
 
   const handleSort = (column: keyof Lead) => {
     setSortColumn(column);
@@ -72,25 +74,25 @@ export default function ContactListCard() {
         : [...prev, contactId]
     );
   };
-  
+
   return (
-    <div className="flex flex-col gap-2 h-[calc(100%-40px)] max-h-[calc(100%-40px)]">
+    <div className="_table rounded-lg shadow bg-white">
       <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
-      <div>
+      {/* <div>
         <Input
           type="search"
           placeholder="جستجو ..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           className="flex-1 max-w-[20%]"
         />
-      </div>
+      </div> */}
 
-      <div className="h-screen max-h-[calc(100%-44px)] overflow-auto">
+      <div className="max-h-[calc(100%-44px)] overflow-auto p-4">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="text-right w-[5%]">
+              <TableHead className="text-center w-[2%]">
                 <Checkbox
                   checked={selectedLeads.length === contacts.length}
                   onCheckedChange={(checked) => {
@@ -102,10 +104,12 @@ export default function ContactListCard() {
                   }}
                 />
               </TableHead>
-              <TableHead className="w-[15%] text-center">تصویر</TableHead>
+
+              <TableHead className="w-[10%] text-center">تصویر</TableHead>
+
               <TableHead
                 onClick={() => handleSort("name")}
-                className="cursor-pointer text-center hover:text-black w-[25%]"
+                className="cursor-pointer text-right hover:text-black w-[25%]"
               >
                 نام کاربر
                 {sortColumn === "name" && (
@@ -114,6 +118,7 @@ export default function ContactListCard() {
                   </span>
                 )}
               </TableHead>
+
               <TableHead
                 className="cursor-pointer text-center hover:text-black w-[25%]"
                 onClick={() => handleSort("username")}
@@ -125,8 +130,9 @@ export default function ContactListCard() {
                   </span>
                 )}
               </TableHead>
+
               <TableHead
-                className="cursor-pointer text-center hover:text-black w-[10%]"
+                className="cursor-pointer text-center hover:text-black w-[8%]"
                 onClick={() => handleSort("messages")}
               >
                 تعداد پیام
@@ -136,9 +142,13 @@ export default function ContactListCard() {
                   </span>
                 )}
               </TableHead>
-              <TableHead className="text-center w-[10%]">عملیات</TableHead>
+
+              <TableHead className="w-[22%] _space"></TableHead>
+
+              <TableHead className="text-center w-[7%]">عملیات</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody id="scrollableDiv">
             {isContactsLoading ? (
               <ContactListSkeleton rowCount={limit} />
@@ -150,13 +160,14 @@ export default function ContactListCard() {
                     selectedLeads.includes(contact.id) ? "bg-muted" : ""
                   }
                 >
-                  <TableCell className="w-[5%]">
+                  <TableCell>
                     <Checkbox
                       checked={selectedLeads.includes(contact.id)}
                       onCheckedChange={() => handleSelect(contact.id)}
                     />
                   </TableCell>
-                  <TableCell className="w-[15%]">
+
+                  <TableCell>
                     <Link
                       className="flex justify-center"
                       href={"/console/contacts/item"}
@@ -178,26 +189,35 @@ export default function ContactListCard() {
                       />
                     </Link>
                   </TableCell>
-                  <TableCell className="w-[25%] text-center">
+
+                  <TableCell className="">
                     <Link href={"/console/contacts/item"}>
                       {contact.firstname && contact.lastname
                         ? `${contact.firstname} ${contact.lastname}`
                         : contact.lead?.firstname}
                     </Link>
                   </TableCell>
-                  <TableCell className="w-[25%] text-center">
+
+                  <TableCell className="text-center">
                     <span dir="ltr">{contact.username}</span>
                   </TableCell>
-                  <TableCell className="w-[10%] text-center">
+
+                  <TableCell className="text-center">
                     {contact.messagesCount}
                   </TableCell>
-                  <TableCell className="w-[10%] text-center">
+
+                  <TableCell className="_space"></TableCell>
+
+                  <TableCell className="text-center">
                     <div className="flex gap-2 justify-center">
                       <Pencil
                         size={20}
                         weight="light"
                         className="text-gray-600 hover:text-green-700 cursor-pointer"
-                        onClick={() => {setOpen(true); setContactId(contact.id)}}
+                        onClick={() => {
+                          setOpen(true);
+                          setContactId(contact.id);
+                        }}
                       />
                     </div>
                   </TableCell>
@@ -206,6 +226,7 @@ export default function ContactListCard() {
             )}
           </TableBody>
         </Table>
+        
         <Pagination
           currentPage={page}
           onPageChange={onPageChange}
