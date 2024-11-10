@@ -34,6 +34,7 @@ const formSchema = z.object({
     .min(1, {
       message: "تایتل ضروری است",
     }),
+  status: z.boolean(),
   price: z
     .number({
       message: "قیمت نمیتواند کمتر از صفر باشد",
@@ -41,6 +42,9 @@ const formSchema = z.object({
     .min(0, {
       message: "قیمت نمیتواند کمتر از صفر باشد",
     }),
+  isInfinite: z.boolean(),
+  quantity: z
+    .number().optional(),
   description: z
     .string({
       message: "توضیحات باید حداقل ۵ کاراکتر باشد",
@@ -52,6 +56,17 @@ const formSchema = z.object({
     .number({ message: "تصویر محصول را آپلود کنید" })
     .min(1, "تصویر محصول را آپلود کنید"),
   isDigital: z.boolean(),
+}).superRefine(
+  (data, ctx) => {
+  if (!data.isInfinite && !data.quantity) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "تعداد نمیتواند کمتر از صفر باشد",
+      path: ["quantity"],
+      fatal: true,
+    });
+    return z.NEVER
+  }
 });
 
 export type ProductFormProps = {
@@ -63,6 +78,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       isDigital: false,
+      status: true,
+      isInfinite: false,
       ...shouldBeEdit,
       imageId: shouldBeEdit?.images?.[0].id || undefined,
     },
@@ -81,11 +98,18 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   const [isLoading, setLoading] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
+    if (!values.isInfinite && !values.quantity) {
+      form.setError("quantity", {
+        message: "تعداد نمیتواند کمتر از صفر باشد",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${
-          shouldBeEdit ? `/${shouldBeEdit.id}` : ""
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""
         }`,
         {
           method: shouldBeEdit ? "PUT" : "POST",
@@ -190,12 +214,27 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 </FormItem>
               )}
             />
+            <Controller
+              name="status"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Switch
+                    dir="ltr"
+                    id="status"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">وضعیت</Label>
+                </div>
+              )}
+            />
             <FormField
               control={form.control}
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>قیمت</FormLabel>
+                  <FormLabel>قیمت (تومان)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -211,6 +250,45 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>تعداد</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="۰.۰۰"
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
+                      disabled={form.getValues().isInfinite}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    قیمت محصول خود را وارد کنید.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Controller
+              name="isInfinite"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Switch
+                    dir="ltr"
+                    id="isinfinite"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">تعداد بینهایت</Label>
+                </div>
               )}
             />
             <Controller
