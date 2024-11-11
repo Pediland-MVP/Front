@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Message } from "./data";
 import Image from "next/image";
 import { InstagramNamespace } from "@/types/instagram";
 import { memo, useEffect, useState } from "react";
@@ -11,17 +10,11 @@ import { messagesSocket } from "@/app/utils/socket";
 
 interface SidebarProps {
   isCollapsed: boolean;
-  links: {
-    name: string;
-    messages: Message[];
-    avatar: string;
-    variant: any;
-  }[];
   onClick?: () => void;
   isMobile: boolean;
 }
 
-function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
+function ChatsList({ isCollapsed, isMobile }: SidebarProps) {
   const [conversations, setConversations] =
     useState<InstagramNamespace.GET["Conversations"]>();
 
@@ -95,4 +88,4 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
   );
 }
 
-export default memo(Sidebar);
+export default memo(ChatsList);
