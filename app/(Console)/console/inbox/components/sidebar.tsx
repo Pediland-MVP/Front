@@ -7,8 +7,6 @@ import { Message } from "./data";
 import Image from "next/image";
 import { InstagramNamespace } from "@/types/instagram";
 import { memo, useEffect, useState } from "react";
-import { SideBarTab } from "./sideBarTap";
-import { useTabStore } from "@/store/tabActiveStore";
 import { messagesSocket } from "@/app/utils/socket";
 
 interface SidebarProps {
@@ -24,7 +22,6 @@ interface SidebarProps {
 }
 
 function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
-  const { activeTab } = useTabStore();
   const [conversations, setConversations] =
     useState<InstagramNamespace.GET["Conversations"]>();
 
@@ -43,21 +40,13 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
       messagesSocket.off("conversations");
     };
   }, []);
-  console.log(activeTab);
 
   return (
     <div
       data-collapsed={isCollapsed}
       className="relative w-full group flex flex-col max-h-[97vh] min-h-[97vh] gap-4 p-2 data-[collapsed=true]:p-2 bg-white rounded-xl"
     >
-      {!isCollapsed && (
-        <div className="flex justify-between p-2 items-center">
-          <div className="flex w-full gap-2 items-center text-2xl  pb-2">
-            <SideBarTab />
-          </div>
-        </div>
-      )}
-      {activeTab === "chat" && (
+      
         <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
           {conversations?.items?.map((chat, index) => (
               <Link
@@ -102,7 +91,6 @@ function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
             </Link>
           ))}
         </nav>
-      )}
     </div>
   );
 }
