@@ -42,7 +42,7 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
       setError(null)
       commentsSocket.emit("comments", { 
         page: page.current,
-        limit: 5
+        limit: 20
       })
     }, 2000)
   }, [])
