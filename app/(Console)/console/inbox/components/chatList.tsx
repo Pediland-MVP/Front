@@ -7,7 +7,6 @@ import { leadNamespace } from "@/types/lead";
 import { InstagramNamespace, Messages } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Message, { IMessage } from "./message";
-import { SendingMessageType } from "./sendingMessage";
 import { messagesSocket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
@@ -22,9 +21,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
 
   const limit = 13;
   const [messagesList, setMessagesList] = useState<IMessage[]>([]);
-  const [sendingMessages, setSendingMessages] = useState<SendingMessageType[]>(
-    []
-  );
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
 
