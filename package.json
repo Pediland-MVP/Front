@@ -47,7 +47,9 @@
     "framer-motion": "^11.2.13",
     "input-otp": "^1.4.1",
     "jalaali-react-date-picker": "^1.0.18",
+    "jose": "^5.9.6",
     "jotai": "^2.9.1",
+    "jsonwebtoken": "^9.0.2",
     "log4js": "^6.9.1",
     "log4js-json-layout": "^2.2.3",
     "lucide-react": "^0.414.0",
@@ -73,6 +75,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/negotiator": "^0.6.3",
     "@types/node": "^20",
     "@types/react": "^18",

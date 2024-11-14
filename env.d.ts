@@ -6,6 +6,7 @@ declare global {
       NEXT_PUBLIC_WS_MESSAGE: string;
       NEXT_PUBLIC_WS_COMMENTS: string;
       NEXT_PUBLIC_DL_URL: string;
+      JWT_SECRET: string;
     }
   }
 }
