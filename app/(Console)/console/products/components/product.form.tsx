@@ -20,7 +20,7 @@ import { FileUpload } from "@/components/file-upload";
 import axios from "axios";
 import { UploadNamespace } from "@/types/upload";
 import { useRouter } from "next/navigation";
-import LoadingButton from "@/components/ui/loading-button";
+import LoadingButton from "@/components/ui/button-loading";
 import { ProductNamespace } from "@/types/product";
 import { mutate } from "swr";
 import { Switch } from "@/components/ui/switch";

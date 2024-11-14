@@ -45,6 +45,7 @@
     "embla-carousel-react": "^8.1.8",
     "eventemitter3": "^5.0.1",
     "framer-motion": "^11.2.13",
+    "input-otp": "^1.4.1",
     "jalaali-react-date-picker": "^1.0.18",
     "jotai": "^2.9.1",
     "log4js": "^6.9.1",

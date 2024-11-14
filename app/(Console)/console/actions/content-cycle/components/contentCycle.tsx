@@ -9,7 +9,7 @@ import {
 
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import LoadingButton from "@/components/ui/loading-button";
+import LoadingButton from "@/components/ui/button-loading";
 
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 

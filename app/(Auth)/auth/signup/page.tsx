@@ -105,11 +105,7 @@ export default function Signup() {
           });
           return;
         }
-        toast({
-          title: "ثبت نام شما موفق بود",
-          description: "به حساب کاربری خود خوش آمدید",
-        });
-        router.push("/console");
+        router.push("/auth/verify");
       })
       .catch((e) => {
         console.error(e);
