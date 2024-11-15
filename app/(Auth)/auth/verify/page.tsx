@@ -53,24 +53,35 @@ export default function VerifyOTP() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/verifyOtp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-        body: JSON.stringify(values),
-      })
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/verifyOtp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(values),
+        }
+      );
 
       if (!res.ok) {
         if (res.status === 429) {
           toast({
-            title: 'لطفا ۲ دقیقه بعد امتحان کنید',
+            title: "لطفا ۲ دقیقه بعد امتحان کنید",
             variant: "destructive",
           });
           return;
         }
+
+        if (res.status === 409) {
+          toast({
+            title: "شما قبلا تایید شده اید",
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
           title: "خطا",
           description: "کد تایید نامعتبر است",
@@ -84,7 +95,6 @@ export default function VerifyOTP() {
         description: "به حساب کاربری خود خوش آمدید",
       });
       router.push("/console");
-
     } catch (error) {
       console.error(error);
       toast({
@@ -97,9 +107,36 @@ export default function VerifyOTP() {
     }
   };
 
+  const resendHandler = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/resendOtp`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) {
+      if (res.status === 429) {
+        toast({
+          title: "لطفا به مدت ۲ دقیقه صبر کنید",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (res.status === 409) {
+        toast({
+          title: "شما قبلا تایید شده اید",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const otpCompleted = () => {
     form.handleSubmit(onSubmit)();
-  }
+  };
 
   return (
     <main className=" h-full">
@@ -155,12 +192,12 @@ export default function VerifyOTP() {
               </form>
             </Form>
             <div className="mt-4">
-              <Link
-                href="/auth/resend-otp"
-                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300"
+              <p
+                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer"
+                onClick={resendHandler}
               >
                 ارسال مجدد کد
-              </Link>
+              </p>
             </div>
           </div>
         </div>
