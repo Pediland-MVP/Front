@@ -5,7 +5,7 @@ import * as jose from 'jose'
 export async function middleware(request: NextRequest) {
     const token = request.cookies.get('token')
     if (!token) {
-        return NextResponse.rewrite(new URL('/auth/signin', request.url))
+        return NextResponse.redirect(new URL('/auth/signin', request.url))
     }
 
     try {
@@ -14,11 +14,16 @@ export async function middleware(request: NextRequest) {
         console.log('jwt', jwt);
         
         if (!jwt) {
-            return NextResponse.rewrite(new URL('/auth/signin', request.url))
+            return NextResponse.redirect(new URL('/auth/signin', request.url))
         }
+
+        if (!jwt.payload.isVerified) {
+            return NextResponse.redirect(new URL('/auth/verify?fromSignIn=true', request.url))
+        }
+
         return NextResponse.next()
     } catch (error) {
-        return NextResponse.rewrite(new URL('/auth/signin', request.url))
+        return NextResponse.redirect(new URL('/auth/signin', request.url))
     }
 }
 
