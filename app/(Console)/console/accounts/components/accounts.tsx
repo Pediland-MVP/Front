@@ -135,10 +135,7 @@ export default function Accounts() {
 
       {filteredInstagramPages?.map((instagram) => {
         return (
-          <div
-            key={instagram.id}
-            className="_card bg-white shadow-md rounded-lg"
-          >
+          <div key={instagram.id} className="_card bg-white shadow rounded-lg">
             <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
               <div>
                 {instagram.profilePictureUrl ? (
@@ -217,7 +214,7 @@ export default function Accounts() {
         setOpen={setOpenSelectInstagramDialog}
       />
 
-      <div className="_card bg-white hover:shadow-md rounded-lg duration-300">
+      {/* <div className="_card bg-white hover:shadow rounded-lg duration-300">
         <div
           className="flex flex-col items-center justify-center gap-3 p-5 group h-full hover:cursor-pointer"
           onClick={() =>
@@ -234,7 +231,7 @@ export default function Accounts() {
             افزودن اکانت
           </span>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
