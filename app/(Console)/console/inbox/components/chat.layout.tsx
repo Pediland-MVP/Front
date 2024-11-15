@@ -1,9 +1,8 @@
 "use client";
 
-import { userData } from "./data";
 import React, { useEffect, useState } from "react";
 
-import Sidebar from "./sidebar";
+import ChatsList from "./chatsList";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 
 interface ChatLayoutProps {
@@ -14,7 +13,6 @@ export function ChatLayout({
   children,
 }: ChatLayoutProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
-  const [selectedUser, setSelectedUser] = React.useState(userData[0]);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -39,14 +37,8 @@ export function ChatLayout({
     <>
       <div className="w-full flex h-full justify-center items-center gap-x-2 mr-4">
         <div className="w-2/6">
-          <Sidebar
+          <ChatsList
             isCollapsed={isCollapsed || isMobile}
-            links={userData.map((user) => ({
-              name: user.name,
-              messages: user.messages ?? [],
-              avatar: user.avatar,
-              variant: selectedUser.name === user.name ? "grey" : "ghost",
-            }))}
             isMobile={isMobile}
           />
         </div>

@@ -105,11 +105,7 @@ export default function Signup() {
           });
           return;
         }
-        toast({
-          title: "ثبت نام شما موفق بود",
-          description: "به حساب کاربری خود خوش آمدید",
-        });
-        router.push("/console");
+        router.push("/auth/verify");
       })
       .catch((e) => {
         console.error(e);
@@ -219,7 +215,7 @@ export default function Signup() {
 
               <TextDivider size="lg">یا</TextDivider>
 
-              <div className="grid grid-cols-4 gap-2">
+              <div className="w-full">
                 <Button
                   onClick={signUpWithGoogle}
                   className="col-span-2"
@@ -228,15 +224,6 @@ export default function Signup() {
                 >
                   {loginWith === 'google' && isLoading ? <LoadingSpinner className="ml-1" size={22} /> : ""}
                   ادامه با اکانت گوگل
-                </Button>
-                <Button
-                  onClick={signUpWithGoogle}
-                  className="col-span-2"
-                  variant="outline"
-                  disabled={isLoading}
-                >
-                  {loginWith === 'google' && isLoading ? <LoadingSpinner className="ml-1" size={22} /> : ""}
-                  ادامه با اکانت فیس بوک
                 </Button>
               </div>
             </div>

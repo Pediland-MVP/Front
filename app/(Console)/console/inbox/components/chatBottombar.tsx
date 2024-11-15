@@ -10,7 +10,6 @@ import React, { useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Message, loggedInUserData } from "./data";
 import { Textarea } from "@/components/ui/textarea";
 import { EmojiPicker } from "./emojiPicker";
 import {
@@ -47,13 +46,6 @@ export default function ChatBottombar({
   };
 
   const handleThumbsUp = () => {
-    const newMessage: Message = {
-      id: message.length + 1,
-      name: loggedInUserData.name,
-      avatar: loggedInUserData.avatar,
-      message: "👍",
-    };
-
     if (!currentLead) {
       return toast({
         variant: "destructive",

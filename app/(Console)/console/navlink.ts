@@ -1,6 +1,7 @@
 // navLinks.ts
 import {
     AddressBookTabs,
+    Chat,
     ChatCircleText,
     HouseSimple,
     Lightning,
@@ -26,6 +27,11 @@ export const navLinks = [
         title: "صندوق پیام‌ها",
         icon: ChatCircleText,
         href: "/console/inbox",
+    },
+    {
+        title: "کامنت‌ها",
+        icon: Chat,
+        href: "/console/comments",
     },
     {
         title: "اتوماسیون",
