@@ -85,7 +85,7 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
     
   }, [page])
 
-  if (true) {
+  if (comments.length && isLoading) {
     return <CommentsSkeleton/>
   }
 
