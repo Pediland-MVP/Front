@@ -18,6 +18,8 @@ import { Mailbox } from "@phosphor-icons/react";
 import QuestionAnswerDialog from "./questionAnswer.dialog";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -96,7 +98,9 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                           src={item.leadInstagram.profilePicture?.url}
                           alt="User"
                         />
-                        <AvatarFallback>{item.leadInstagram.username[0]}</AvatarFallback>
+                        <AvatarFallback>
+                          {item.leadInstagram.username[0]}
+                        </AvatarFallback>
                       </Avatar>
                     </TableCell>
                     <TableCell className="text-right">
@@ -119,7 +123,16 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center space-x-2">
-                        <QuestionAnswerDialog questionId={item.id} leadInstagram={item.leadInstagram}/>
+                        <QuestionAnswerDialog
+                          questionId={item.id}
+                          leadInstagram={item.leadInstagram}
+                        />
+                        <Link href={`/console/inbox/${item.leadInstagram.lead.id}`}>
+                          <Button variant="ghost" size="sm">
+                            <ChatCircleText className="h-4 w-4 ml-2" />
+                            دیدن چت
+                          </Button>
+                        </Link>
                       </div>
                     </TableCell>
                   </TableRow>

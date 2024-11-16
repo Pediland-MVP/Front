@@ -34,6 +34,9 @@ export interface LeadInstagram {
   profilePicture: {
     url?: string;
   };
+  lead: {
+    id: string
+  }
 }
 
 export enum Name {
