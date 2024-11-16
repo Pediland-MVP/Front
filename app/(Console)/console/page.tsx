@@ -20,6 +20,7 @@ import { StatsNamespace } from "@/types/stats";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import moment from 'moment-jalaali';
 import DashboardSkeleton from "./components/dashboard.skeleton";
+import LeadsGrowsChart from "./components/leadsGrows.chart";
 
 export default function Dashboard() {
   const {
@@ -102,29 +103,7 @@ export default function Dashboard() {
             <CardTitle>رشد تعداد مخاطبین</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <ChartContainer
-              config={{
-                leads: {
-                  label: "Leads",
-                  color: "hsl(var(--chart-1))",
-                },
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stats?.eachMonthLeadGrows}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="monthName" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="count"
-                    stroke="var(--color-leads)"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            <LeadsGrowsChart stats={stats} />
           </CardContent>
         </Card>
         <Card className="col-span-3">
