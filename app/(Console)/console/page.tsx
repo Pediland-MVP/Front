@@ -19,6 +19,7 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import { StatsNamespace } from "@/types/stats";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import moment from 'moment-jalaali';
+import DashboardSkeleton from "./components/dashboard.skeleton";
 
 export default function Dashboard() {
   const {
@@ -31,7 +32,7 @@ export default function Dashboard() {
   );
 
   if (isStatsLoading) {
-    return <div>Loading...</div>;
+    return <DashboardSkeleton/>
   }
 
   return (
