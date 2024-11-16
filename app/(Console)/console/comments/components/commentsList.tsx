@@ -9,6 +9,7 @@ import { commentsSocket } from "@/app/utils/socket"
 import { CommentsNamespace } from "@/types/comment"
 import { useParams } from "next/navigation"
 import InfiniteScroll from "react-infinite-scroll-component"
+import CommentsSkeleton from "./comments.skeleton"
 
 interface CommentsListProps {
   isCollapsed: boolean
@@ -84,8 +85,8 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
     
   }, [page])
 
-  if (!comments.length && isLoading) {
-    return <div>Loading</div>
+  if (comments.length && isLoading) {
+    return <CommentsSkeleton/>
   }
 
   return (

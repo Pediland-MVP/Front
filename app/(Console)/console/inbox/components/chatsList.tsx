@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { messagesSocket } from "@/app/utils/socket"
 import { InstagramNamespace, Conversations, Item } from "@/types/instagram"
 import InfiniteScroll from "react-infinite-scroll-component"
+import ChatsListSkeleton from "./chatsList.skeleton"
 
 interface ChatsListProps {
   isCollapsed: boolean
@@ -65,10 +66,6 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
   }, [])
 
   useEffect(() => {
-    if (!messagesSocket.connected) {
-      messagesSocket.connect()
-    }
-
     messagesSocket.on("conversations", handleConversations)
     messagesSocket.on("conversation.created", handleNewConversation)
     fetchConversations()
@@ -80,7 +77,7 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
   }, [])
 
   if (!conversations.length && isLoading) {
-    return <div>Loading</div>
+    return <ChatsListSkeleton/>
   }
 
   return (
