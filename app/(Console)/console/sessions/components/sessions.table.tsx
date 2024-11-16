@@ -16,6 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { SessionNamespace } from "@/types/session";
 import { Mailbox } from "@phosphor-icons/react";
 import QuestionAnswerDialog from "./questionAnswer.dialog";
+import { Avatar } from "@/components/ui/avatar";
+import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -74,6 +76,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-right">شناسه</TableHead>
+                  <TableHead className="text-right">پروفایل</TableHead>
                   <TableHead className="text-right">
                     نام کاربری اینستاگرام
                   </TableHead>
@@ -87,6 +90,15 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                 {data?.items.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="text-right">{item.id}</TableCell>
+                    <TableCell className="text-right">
+                      <Avatar>
+                        <AvatarImage
+                          src={item.leadInstagram.profilePicture?.url}
+                          alt="User"
+                        />
+                        <AvatarFallback>{item.leadInstagram.username[0]}</AvatarFallback>
+                      </Avatar>
+                    </TableCell>
                     <TableCell className="text-right">
                       {item.leadInstagram.username}
                     </TableCell>
@@ -107,7 +119,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center space-x-2">
-                        <QuestionAnswerDialog questionId={item.id}/>
+                        <QuestionAnswerDialog questionId={item.id} leadInstagram={item.leadInstagram}/>
                       </div>
                     </TableCell>
                   </TableRow>

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useMediaQuery } from "@react-hook/media-query";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -18,9 +18,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type QuestionAndAnswerProps = {
     questionId: number
+    leadInstagram: SessionNamespace.Sessions['items'][0]['leadInstagram']
 }
 
-export default function QuestionAndAnswerDialog({questionId}:QuestionAndAnswerProps) {
+export default function QuestionAndAnswerDialog({questionId, leadInstagram}:QuestionAndAnswerProps) {
   const [open, setOpen] = React.useState(false);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
@@ -56,13 +57,13 @@ export default function QuestionAndAnswerDialog({questionId}:QuestionAndAnswerPr
   const ChatContent = () => (
     <Card className="border-0 shadow-none">
       <CardHeader className="flex flex-row items-center">
-        <div className="flex items-center space-x-4">
+        <div className="flex gap-x-2 items-center space-x-4">
           <Avatar>
-            <AvatarImage src="/placeholder.svg" alt="User" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarImage src={leadInstagram.profilePicture?.url} alt="User" />
+            <AvatarFallback>{leadInstagram.username[0]}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-medium leading-none">Session</p>
+            <p className="text-sm font-medium leading-none">{leadInstagram.username}</p>
             <p className="text-sm text-muted-foreground">#{sessionData!.id}</p>
           </div>
         </div>
@@ -100,7 +101,10 @@ export default function QuestionAndAnswerDialog({questionId}:QuestionAndAnswerPr
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button variant="outline">View Chat</Button>
+        <Button variant="ghost" size="sm">
+          <Mailbox className="h-4 w-4 ml-2" />
+          جواب‌ها
+        </Button>
         </DrawerTrigger>
         <DrawerContent>
           <div className="mt-4 mx-4">
@@ -133,6 +137,7 @@ export default function QuestionAndAnswerDialog({questionId}:QuestionAndAnswerPr
             <ChatContent />
           )
         }
+        
       </DialogContent>
     </Dialog>
   );
