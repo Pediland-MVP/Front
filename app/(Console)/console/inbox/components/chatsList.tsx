@@ -9,6 +9,7 @@ import { messagesSocket } from "@/app/utils/socket"
 import { InstagramNamespace, Conversations, Item } from "@/types/instagram"
 import InfiniteScroll from "react-infinite-scroll-component"
 import ChatsListSkeleton from "./chatsList.skeleton"
+import { useParams } from "next/navigation"
 
 interface ChatsListProps {
   isCollapsed: boolean
@@ -23,6 +24,7 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(0)
   const limit = 15
+  const selectedChatId = useParams().chatId
 
   const fetchConversations = useCallback(() => {
     setIsLoading(true)
@@ -104,7 +106,8 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
                 href={`/console/inbox/${chat.id}`}
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "lg" }),
-                  "justify-start gap-4 pt-10 pb-8"
+                  "justify-start gap-4 pt-10 pb-8",
+                  chat.id=== selectedChatId && "bg-zinc-100"
                 )}
               >
                 <Image
