@@ -7,6 +7,7 @@ import { Loader2, Pencil, Trash2, ChevronRight, ChevronLeft } from "lucide-react
 import Link from 'next/link'
 import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
 import { toast } from '@/components/ui/use-toast'
+import { Mailbox } from '@phosphor-icons/react'
 
 type ContentCycle = {
   title: string
@@ -141,6 +142,12 @@ export default function ContentCycleTable() {
                     <TableCell className="text-right">{item.contents[0]?.text || 'موجود نیست'}</TableCell>
                     <TableCell>
                       <div className="flex justify-end space-x-2 space-x-reverse">
+                      <Link href={`/console/sessions?contentCycleId=${item.id}`}>
+                          <Button variant="ghost" size="sm">
+                            <Mailbox className="h-4 w-4 ml-2" />
+                            جواب‌ها
+                          </Button>
+                        </Link>
                         <Link href={`/console/actions/content-cycle/${item.id}`}>
                           <Button variant="ghost" size="sm">
                             <Pencil className="h-4 w-4 ml-2" />
