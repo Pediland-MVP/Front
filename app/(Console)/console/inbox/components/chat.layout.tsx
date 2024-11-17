@@ -9,9 +9,7 @@ interface ChatLayoutProps {
   children: React.ReactNode;
 }
 
-export function ChatLayout({
-  children,
-}: ChatLayoutProps) {
+export function ChatLayout({ children }: ChatLayoutProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -34,17 +32,12 @@ export function ChatLayout({
   }, []);
 
   return (
-    <>
-      <div className="w-full flex h-full justify-center items-center gap-x-2 mr-4">
-        <div className="w-2/6">
-          <ChatsList
-            isCollapsed={isCollapsed || isMobile}
-            isMobile={isMobile}
-          />
-        </div>
-
-        {children}
+    <div className="_chat-layout flex gap-5 overflow-auto">
+      <div className="w-1/3">
+        <ChatsList isCollapsed={isCollapsed || isMobile} isMobile={isMobile} />
       </div>
-    </>
+
+      {children}
+    </div>
   );
 }

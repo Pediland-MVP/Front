@@ -53,7 +53,6 @@ export default function ChatBottombar({
       });
     }
 
-
     setMessage("");
   };
 
@@ -95,48 +94,87 @@ export default function ChatBottombar({
   };
 
   return (
-    <div className="p-2 flex justify-between w-full items-center gap-2">
-      <div className="flex">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Link
-              href="#"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "icon" }),
-                "h-9 w-9",
-                "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-              )}
-            >
-              {message.trim() ? (
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon" }),
-                    "h-9 w-9",
-                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
-                  )}
-                  onClick={handleSend}
-                >
-                  <SendHorizontal size={20} className="text-muted-foreground" />
-                </Link>
+    <div className="_bottom-bar p-3">
+      <div className="_wrapper w-full flex items-center">
+        <div className="_emoji">
+          <EmojiPicker
+            onChange={(value) => {
+              setMessage(message + value);
+              if (inputRef.current) {
+                inputRef.current.focus();
+              }
+            }}
+          />
+        </div>
+        <div className="_like ml-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Link
+                href="#"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "h-8 w-8",
+                  "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                )}
+              >
+                {message.trim() ? (
+                  <Link
+                    href="#"
+                    className={cn(
+                      buttonVariants({ variant: "ghost", size: "icon" }),
+                      "h-9 w-9",
+                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
+                    )}
+                    onClick={handleSend}
+                  >
+                    <SendHorizontal
+                      size={20}
+                      className="text-muted-foreground"
+                    />
+                  </Link>
+                ) : (
+                  <Link
+                    href="#"
+                    className={cn(
+                      buttonVariants({ variant: "ghost", size: "icon" }),
+                      "h-9 w-9",
+                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
+                    )}
+                    onClick={handleThumbsUp}
+                  >
+                    <ThumbsUp size={20} className="text-muted-foreground" />
+                  </Link>
+                )}
+              </Link>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-full p-2">
+              {message.trim() || isMobile ? (
+                <div className="flex gap-2">
+                  <Link
+                    href="#"
+                    className={cn(
+                      buttonVariants({ variant: "ghost", size: "icon" }),
+                      "h-9 w-9",
+                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                    )}
+                  >
+                    <Mic size={20} className="text-muted-foreground" />
+                  </Link>
+                  {BottombarIcons.map((icon, index) => (
+                    <Link
+                      key={index}
+                      href="#"
+                      className={cn(
+                        buttonVariants({ variant: "ghost", size: "icon" }),
+                        "h-9 w-9",
+                        "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                      )}
+                    >
+                      <icon.icon size={20} className="text-muted-foreground" />
+                    </Link>
+                  ))}
+                </div>
               ) : (
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon" }),
-                    "h-9 w-9",
-                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
-                  )}
-                  onClick={handleThumbsUp}
-                >
-                  <ThumbsUp size={20} className="text-muted-foreground" />
-                </Link>
-              )}
-            </Link>
-          </PopoverTrigger>
-          <PopoverContent side="top" className="w-full p-2">
-            {message.trim() || isMobile ? (
-              <div className="flex gap-2">
                 <Link
                   href="#"
                   className={cn(
@@ -147,91 +185,57 @@ export default function ChatBottombar({
                 >
                   <Mic size={20} className="text-muted-foreground" />
                 </Link>
-                {BottombarIcons.map((icon, index) => (
-                  <Link
-                    key={index}
-                    href="#"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "h-9 w-9",
-                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                    )}
-                  >
-                    <icon.icon size={20} className="text-muted-foreground" />
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <Link
-                href="#"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "icon" }),
-                  "h-9 w-9",
-                  "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                )}
-              >
-                <Mic size={20} className="text-muted-foreground" />
-              </Link>
-            )}
-          </PopoverContent>
-        </Popover>
-        {!message.trim() && !isMobile && (
-          <div className="flex">
-            {BottombarIcons.map((icon, index) => (
-              <Link
-                key={index}
-                href="#"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "icon" }),
-                  "h-9 w-9",
-                  "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                )}
-              >
-                <icon.icon size={20} className="text-muted-foreground" />
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+              )}
+            </PopoverContent>
+          </Popover>
+          {!message.trim() && !isMobile && (
+            <div className="flex">
+              {BottombarIcons.map((icon, index) => (
+                <Link
+                  key={index}
+                  href="#"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon" }),
+                    "h-9 w-9",
+                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                  )}
+                >
+                  <icon.icon size={20} className="text-muted-foreground" />
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <AnimatePresence initial={false}>
-        <motion.div
-          key="input"
-          className="w-full relative"
-          layout
-          initial={{ opacity: 0, scale: 1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1 }}
-          transition={{
-            opacity: { duration: 0.05 },
-            layout: {
-              type: "spring",
-              bounce: 0.15,
-            },
-          }}
-        >
-          <Textarea
-            autoComplete="off"
-            value={message}
-            ref={inputRef}
-            onKeyDown={handleKeyPress}
-            onChange={handleInputChange}
-            name="message"
-            placeholder="Aa"
-            className="w-full border rounded-full flex flex-col items-center justify-center resize-none overflow-hidden bg-background"
-          ></Textarea>
-          <div className="absolute left-3 top-1/3 ">
-            <EmojiPicker
-              onChange={(value) => {
-                setMessage(message + value);
-                if (inputRef.current) {
-                  inputRef.current.focus();
-                }
-              }}
-            />
-          </div>
-        </motion.div>
-      </AnimatePresence>
+        <AnimatePresence initial={false}>
+          <motion.div
+            key="input"
+            className="w-full relative"
+            layout
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{
+              opacity: { duration: 0.05 },
+              layout: {
+                type: "spring",
+                bounce: 0.15,
+              },
+            }}
+          >
+            <Textarea
+              autoComplete="off"
+              value={message}
+              ref={inputRef}
+              onKeyDown={handleKeyPress}
+              onChange={handleInputChange}
+              name="message"
+              placeholder="متن پیام"
+              className="w-full resize-none"
+            ></Textarea>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

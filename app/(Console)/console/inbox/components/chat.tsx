@@ -8,6 +8,8 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import { leadNamespace } from "@/types/lead";
 import useCurrentLead from "@/store/currentLead.store";
 import { useTabStore } from "@/store/tabActiveStore";
+import ChatBottombar from "./chatBottombar";
+import { IMessage } from "./message";
 
 interface ChatProps {
   leadId: string;
@@ -15,7 +17,7 @@ interface ChatProps {
 
 export function Chat({ leadId }: ChatProps) {
   const [isMobile, setIsMobile] = useState<boolean>(false);
-const {activeTab}=useTabStore()
+  const { activeTab } = useTabStore();
   useEffect(() => {
     sessionStorage.getItem(SessionStorageKeys.IS_MOBILE) === "true"
       ? setIsMobile(true)
@@ -23,6 +25,8 @@ const {activeTab}=useTabStore()
   }, []);
 
   const { setCurrentLead } = useCurrentLead();
+
+  const [messagesList, setMessagesList] = useState<IMessage[]>([]);
 
   const {
     data: lead,
@@ -39,23 +43,21 @@ const {activeTab}=useTabStore()
     }
 
     console.log(`Current lead`, lead);
-    
-
   }, [lead]);
 
-
-
   return (
- <>
+    <>
       {activeTab === "chat" && (
-        <div className="flex rounded-xl flex-col max-h-[97vh] overflow-y-auto justify-between w-full">
-          <div className="flex rounded-t-xl flex-col  min-h-[90vh] bg-white">
-            <ChatTopbar lead={lead} />
-            <ChatList lead={lead} isMobile={isMobile} />
-          </div>
+        <div className="flex flex-col rounded-lg bg-white shadow mb-2 overflow-y-auto max-h-[calc(100vh-138px)]">
+          <ChatTopbar lead={lead} />
+          <ChatList lead={lead} isMobile={isMobile} />
+          <ChatBottombar
+            setMessagesList={setMessagesList}
+            messagesList={messagesList}
+            isMobile={isMobile}
+          />
         </div>
       )}
     </>
-  
   );
 }

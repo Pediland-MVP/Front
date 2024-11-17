@@ -24,7 +24,7 @@ export const navLinks = [
         href: "/console/contacts",
     },
     {
-        title: "صندوق پیام‌ها",
+        title: "دایرکت‌ها",
         icon: ChatCircleText,
         href: "/console/inbox",
     },

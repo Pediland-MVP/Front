@@ -5,12 +5,7 @@ export default async function ChatPage({
 }: {
   params: Promise<{ chatId: string }>;
 }) {
+  const { chatId } = await params;
 
-  const { chatId } = await params
-
-  return (
-    <div className="w-full">
-      <Chat leadId={chatId} />
-    </div>
-  );
+  return <Chat leadId={chatId} />;
 }

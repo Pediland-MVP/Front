@@ -33,7 +33,6 @@ body {
   }
 }
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -94,7 +93,8 @@ body {
 @layer base {
   @font-face {
     font-family: "AnjomanMaxVF";
-    src: url("/fonts/AnjomanMaxVF.woff") format("woff-variations"),
+    src:
+      url("/fonts/AnjomanMaxVF.woff") format("woff-variations"),
       url("/fonts/AnjomanMaxVF.woff") format("woff");
     font-weight: 100 1000;
     font-display: fallback;
@@ -108,7 +108,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
 
 /* Table with body scroll */
 table.scroll thead {
