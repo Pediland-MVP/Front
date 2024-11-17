@@ -8,12 +8,12 @@ export default function Page() {
   return (
     <div className="_products">
       <div className="_header flex justify-between items-center mb-5 h-9">
-        <h1 className="text-xl font-bold">لیست محصولات</h1>
+        <h1 className="text-xl font-bold">لیست کالاها / خدمات</h1>
 
         <div className="_tools">
           <Link href="/console/products/add">
             <Button>
-              افزودن محصول <Plus className="mr-2 h-4 w-4" />
+              افزودن <Plus className="mr-2 h-4 w-4" />
             </Button>
           </Link>
         </div>

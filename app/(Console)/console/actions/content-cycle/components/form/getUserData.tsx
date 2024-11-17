@@ -40,7 +40,7 @@ export default function GetUserData({ control }: GetUserDataProps) {
             <FormLabel className="">دریافت اطلاعات کاربر</FormLabel>
           </div>
           {field.value && (
-            <div className="mt-2">
+            <div className="space-y-1">
               <FormField
                 control={control}
                 name="getUserData.type"

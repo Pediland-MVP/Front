@@ -13,13 +13,13 @@ const SettingsPage = () => {
         <div className="_card bg-white shadow border-2 border-white hover:border-pink-500 rounded-lg duration-300">
           <Link
             href="/console/accounts"
-            className="flex flex-col items-center gap-3 p-12 group"
+            className="flex flex-col items-center gap-3 p-10 group"
           >
             <UserGear
-              size={42}
+              size={40}
               className="text-gray-400 group-hover:text-black duration-300"
             />
-            <span className="text-lg font-semibold text-gray-400 group-hover:text-black duration-300">
+            <span className="font-semibold text-gray-400 group-hover:text-black duration-300">
               مدیریت اکانت‌ها
             </span>
           </Link>

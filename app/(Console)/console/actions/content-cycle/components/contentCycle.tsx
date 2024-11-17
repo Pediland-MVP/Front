@@ -1,11 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  Form
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
@@ -50,7 +48,7 @@ type ContentCycleProps = {
 };
 
 export const contentCycleFormSchema = z.object({
-  title: z.string().min(1, 'عنوان الزامی است'),
+  title: z.string().min(1, "عنوان الزامی است"),
   conditions: z
     .array(
       z.object({
@@ -269,24 +267,19 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   }, [form.watch()]);
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="bg-white shadow rounded-lg">
       {isLoading ? (
         <div className="min-h-screen w-full flex justify-center items-center">
           <LoadingSpinner className="h-20 w-20 text-gray-500" />
         </div>
       ) : (
-        <div className="w-full min-h-[91.5vh]  bg-white rounded-2xl  mb-[10rem]">
-          <h1 className="text-2xl font-bold px-6 py-8 border-b">
-            محتوای انتخابی
-          </h1>
-
+        <div className="w-full h-[calc(100vh-136px)] _wrap overflow-auto">
           {/* Form wrapper */}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="px-8 py-6 text-lg h-full space-y-8"
+              className="p-6 space-y-5"
             >
-
               <ContentCycleTitle control={form.control} />
 
               <Trigger control={form.control} getValues={form.getValues} />

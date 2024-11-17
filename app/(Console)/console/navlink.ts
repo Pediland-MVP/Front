@@ -39,7 +39,7 @@ export const navLinks = [
         href: "/console/actions/content-cycle",
     },
     {
-        title: "محصولات",
+        title: "کالاها / خدمات",
         icon: Storefront,
         href: "/console/products",
     },
@@ -48,9 +48,9 @@ export const navLinks = [
         icon: Sliders,
         href: "/console/settings",
     },
-    {
-        title: "پشتیبانی",
-        icon: Question,
-        href: "/console/support",
-    },
+    // {
+    //     title: "پشتیبانی",
+    //     icon: Question,
+    //     href: "/console/support",
+    // },
 ];

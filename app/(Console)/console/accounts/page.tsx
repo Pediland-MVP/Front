@@ -15,7 +15,7 @@ export default function AccountPage() {
         <div className="_tools">
           <Link href="/console/products/add">
             <Button>
-              افزودن اکانت <Plus className="mr-2 h-4 w-4" />
+              افزودن <Plus className="mr-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
