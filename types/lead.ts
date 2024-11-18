@@ -21,7 +21,9 @@ export namespace leadNamespace  {
         updateDate:              Date;
         name:                    string;
         username:                string;
-        profile_pic:             string;
+        profilePicture:          {
+            url?: string;
+        };
         is_verified_user:        boolean;
         follower_count:          number;
         is_user_follow_business: boolean;

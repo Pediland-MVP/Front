@@ -45,17 +45,6 @@ export default function ChatBottombar({
     setMessage(event.target.value);
   };
 
-  const handleThumbsUp = () => {
-    if (!currentLead) {
-      return toast({
-        variant: "destructive",
-        title: "خطا در ارسال پیام",
-      });
-    }
-
-    setMessage("");
-  };
-
   const handleSend = async () => {
     if (!currentLead) {
       return toast({
@@ -117,34 +106,17 @@ export default function ChatBottombar({
                   "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                 )}
               >
-                {message.trim() ? (
-                  <Link
-                    href="#"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "h-9 w-9",
-                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
-                    )}
-                    onClick={handleSend}
-                  >
-                    <SendHorizontal
-                      size={20}
-                      className="text-muted-foreground"
-                    />
-                  </Link>
-                ) : (
-                  <Link
-                    href="#"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "h-9 w-9",
-                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
-                    )}
-                    onClick={handleThumbsUp}
-                  >
-                    <ThumbsUp size={20} className="text-muted-foreground" />
-                  </Link>
-                )}
+                <Link
+                  href="#"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon" }),
+                    "h-9 w-9",
+                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
+                  )}
+                  onClick={handleSend}
+                >
+                  <SendHorizontal size={20} className="text-muted-foreground" />
+                </Link>
               </Link>
             </PopoverTrigger>
             <PopoverContent side="top" className="w-full p-2">

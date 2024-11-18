@@ -3,12 +3,11 @@
 import { memo, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { messagesSocket } from "@/app/utils/socket";
-import { InstagramNamespace, Conversations, Item } from "@/types/instagram";
+import { Conversations, Item } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ChatsListSkeleton from "./chatsList.skeleton";
+import { useParams } from "next/navigation";
 
 interface ChatsListProps {
   isCollapsed: boolean;
@@ -88,7 +87,7 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
     <div
       data-collapsed={isCollapsed}
       id="chats-container"
-      className="_chat-list bg-white group rounded-lg shadow overflow-y-auto p-4 pl-2 max-h-[calc(100%-51px)] _wrap"
+      className="_chat-list bg-white group rounded-lg shadow overflow-y-auto p-4 pl-2 max-h-[calc(100%-51px)] h-[calc(100%-8px)] min-h-[calc(100%-8px)] _wrap"
     >
       <InfiniteScroll
         dataLength={conversations.length}

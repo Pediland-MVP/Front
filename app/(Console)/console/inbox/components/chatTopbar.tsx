@@ -24,7 +24,7 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
       <div className="flex  items-center gap-2">
         <Avatar className="flex justify-center items-center bg-gray-400">
           <AvatarImage
-            src={lead.leadInstagram.profile_pic}            
+            src={lead.leadInstagram.profilePicture.url}            
             alt={lead.firstname}
             width={6}
             height={6}

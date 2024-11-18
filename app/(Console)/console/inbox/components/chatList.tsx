@@ -45,11 +45,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
       setMessagesList((old) => [...old, ...conversation.items]);
     });
 
-    messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
-      const message: Messages & { digest: number } = JSON.parse(messageStr);
-      setMessagesList((old) => [message, ...old]);
-    });
-
     messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
       console.log(JSON.parse(data));
 
@@ -58,7 +53,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
 
     return () => {
       messagesSocket.off(WsMessages.CONVERSATION);
-      messagesSocket.off(WsMessages.MESSAGE_SENT);
       messagesSocket.off(WsMessages.NEW_MESSAGE);
     };
   }, [lead]);
