@@ -20,9 +20,9 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
   }
 
   return (
-    <div className="w-full bg-white h-20 rounded-t-2xl flex p-4 justify-between items-center border-b">
+    <div className="w-full bg-white rounded-t-2xl flex p-4 justify-between items-center border-b">
       <div className="flex  items-center gap-2">
-        <Avatar className="flex justify-center items-center ">
+        <Avatar className="flex justify-center items-center bg-gray-400">
           <AvatarImage
             src={lead.leadInstagram.profile_pic}            
             alt={lead.firstname}

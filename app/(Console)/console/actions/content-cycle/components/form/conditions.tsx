@@ -47,7 +47,7 @@ export default function Conditions({
 
   return (
     <>
-      <div>
+      <div className="space-y-1">
         <p>کلمه یا جمله ای</p>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
@@ -127,7 +127,7 @@ export default function Conditions({
         })}
 
       {/* Message input & post select */}
-      <p>را ارسال کند پیام زیر برایش ارسال شود</p>
+      <p>را ارسال کند پیام زیر برایش ارسال شود.</p>
     </>
   );
 }

@@ -5,13 +5,13 @@ import ProductForm from "../components/product.form";
 
 export default function Page() {
   return (
-    <div className="h-full flex gap-4">
-      <div className="w-2/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <ProductForm />
+    <div className="_products">
+      <div className="_header flex justify-between items-center mb-5 h-9">
+        <h1 className="text-xl font-bold">جزئیات کالا / خدمت</h1>
+
+        <div className="_tools"></div>
       </div>
-      <div className="w-1/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <InstaDirectUi />
-      </div>
+      <ProductForm />
     </div>
   );
 }

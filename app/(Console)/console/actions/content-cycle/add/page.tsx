@@ -4,13 +4,13 @@ import InstaDirectUi from "@/components/global/instaDirectUi";
 
 export default function page() {
   return (
-    <div className="h-full flex gap-4">
-      <div className="w-2/3 overflow-y-scroll h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <ContentCycle />
+    <div className="_automation">
+      <div className="_header flex justify-between items-center mb-5 h-9">
+        <h1 className="text-xl font-bold">جزئیات اتوماسیون</h1>
+
+        <div className="_tools"></div>
       </div>
-      <div className="w-1/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-        <InstaDirectUi />
-      </div>
+      <ContentCycle />
     </div>
   );
 }

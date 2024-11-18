@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import ChatBottombar from "./chatBottombar";
 import { AnimatePresence } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
 import { InstagramNamespace, Messages } from "@/types/instagram";
@@ -34,7 +33,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
     if (isListenersSet) return;
     isListenersSet = true;
 
-    messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id});
+    messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
     messagesSocket.on(WsMessages.CONVERSATION, (conversationStr) => {
       const conversation: InstagramNamespace.GET["Conversation"] =
@@ -85,47 +84,40 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
   }
 
   return (
-    <div className="w-full bg-white overflow-y-auto overflow-x-hidden h-full flex flex-col">
-      <AnimatePresence>
-        <div
-          id="chat-container"
-          ref={messagesContainerRef}
-          className="w-full overflow-y-auto overflow-x-hidden h-[10%] flex flex-col-reverse"
+    <AnimatePresence>
+      <div
+        id="chat-container"
+        ref={messagesContainerRef}
+        className="w-full overflow-y-auto overflow-x-hidden flex flex-col-reverse _wrap"
+      >
+        <InfiniteScroll
+          dataLength={messagesList.length} // Length of the messages array
+          next={next} // Function to fetch more data
+          hasMore={hasMore} // Boolean to indicate whether more data is available
+          loader={<LoadingSpinner className="w-6 h-6  mx-auto" />} // A spinner or loading component
+          inverse={true} // To load items in reverse order (top down)
+          endMessage={
+            <p className="text-sm text-center mt-2 text-gray-500">
+              <p>دیگه پیامی نیست!</p>
+            </p>
+          }
+          scrollableTarget="chat-container" // The ID of the scrollable div
+          style={{
+            display: "flex",
+            flexDirection: "column-reverse",
+            overflowY: "hidden",
+          }} // Keep the messages at the bottom
         >
-          <InfiniteScroll
-            dataLength={messagesList.length} // Length of the messages array
-            next={next} // Function to fetch more data
-            hasMore={hasMore} // Boolean to indicate whether more data is available
-            loader={<LoadingSpinner className="w-6 h-6  mx-auto" />} // A spinner or loading component
-            inverse={true} // To load items in reverse order (top down)
-            endMessage={
-              <p className="text-sm text-center mt-2 text-gray-500">
-                <p>دیگه پیامی نیست!</p>
-              </p>
-            }
-            scrollableTarget="chat-container" // The ID of the scrollable div
-            style={{
-              display: "flex",
-              flexDirection: "column-reverse",
-              overflowY: "hidden",
-            }} // Keep the messages at the bottom
-          >
-            {messagesList?.map((message, index) => (
-              <Message
-                message={message}
-                key={message.id}
-                lead={lead}
-                messagesList={messagesList}
-              />
-            ))}
-          </InfiniteScroll>
-        </div>
-      </AnimatePresence>
-      <ChatBottombar
-        setMessagesList={setMessagesList}
-        messagesList={messagesList}
-        isMobile={isMobile}
-      />
-    </div>
+          {messagesList?.map((message, index) => (
+            <Message
+              message={message}
+              key={message.id}
+              lead={lead}
+              messagesList={messagesList}
+            />
+          ))}
+        </InfiniteScroll>
+      </div>
+    </AnimatePresence>
   );
 }

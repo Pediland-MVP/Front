@@ -56,7 +56,7 @@ export function Nav({ links }: NavProps) {
                 )}
               </div>
               <span
-                className={`_text font-medium pl-6 whitespace-nowrap`}
+                className={`_text font-medium pl-10 whitespace-nowrap`}
               >
                 {link.title}
               </span>

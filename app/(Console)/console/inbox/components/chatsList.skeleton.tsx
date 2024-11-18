@@ -1,23 +1,21 @@
-'use client'
+"use client";
 
-import { memo } from "react"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { memo } from "react";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChatsListSkeletonProps {
-  isCollapsed: boolean
-  isMobile: boolean
+  isCollapsed: boolean;
+  isMobile: boolean;
 }
 
 function ChatsListSkeleton() {
   return (
-    <div
-      className="relative w-full group flex flex-col max-h-[97vh] min-h-[97vh] bg-white rounded-xl"
-    >
+    <div className="relative w-full group flex flex-col bg-white rounded-lg shadow">
       <div
         id="chats-container"
-        className="overflow-y-auto h-[calc(97vh-2rem)] p-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 transition-colors duration-200"
+        className="overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 transition-colors duration-200"
       >
         <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
           {[...Array(10)].map((_, index) => (
@@ -38,7 +36,7 @@ function ChatsListSkeleton() {
         </nav>
       </div>
     </div>
-  )
+  );
 }
 
-export default memo(ChatsListSkeleton)
+export default memo(ChatsListSkeleton);

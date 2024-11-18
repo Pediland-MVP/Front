@@ -15,7 +15,7 @@ export default function Cta({ control }: CtaProps) {
       control={control}
       render={({ field, fieldState: { error } }) => {
         return (
-          <div>
+          <div className="space-y-1">
             <FormLabel>متن مرحله پایانی</FormLabel>
             <Textarea
               {...field}

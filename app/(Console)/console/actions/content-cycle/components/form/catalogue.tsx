@@ -167,7 +167,7 @@ export default function Catalogue({
                 <FormLabel className="">ارسال کاتالوگ محصولات</FormLabel>
               </div>
               {field.value && (
-                <div>
+                <div className='space-y-1'>
                   <Button
                     variant="ghost"
                     type="button"

@@ -2,7 +2,7 @@ import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
 import { Control, UseFormGetValues } from "react-hook-form";
 import { contentCycleFormSchema } from "../contentCycle";
 import { z } from "zod";
-import { Switch } from '@/components/ui/switch'
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 type TriggerProps = {
@@ -13,44 +13,40 @@ type TriggerProps = {
 export default function Trigger({ control, getValues }: TriggerProps) {
   return (
     <>
-      <div className="space-y-8">
+      <div className="_trigger gap-4 flex items-center">
         <p>اگر کاربر شما در</p>
-        <div className="flex gap-4">
-          <div className="flex gap-2 items-center">
-            <FormField
-              control={control}
-              name="isDirect"
-              render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <FormMessage />
-                  <Switch
-                    dir="ltr"
-                    id="direct"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                  <FormLabel htmlFor="direct">دایرکت</FormLabel>
-                </div>
-              )}
-            ></FormField>
-          </div>
-          <div className="flex gap-2 items-center">
-            <FormField
-              control={control}
-              name="isComment"
-              render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Switch
-                    dir="ltr"
-                    id="direct"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                  <FormLabel htmlFor="direct">کامنت</FormLabel>
-                </div>
-              )}
-            ></FormField>
-          </div>
+        <div className="flex gap-6 items-center">
+          <FormField
+            control={control}
+            name="isDirect"
+            render={({ field }) => (
+              <div className="flex gap-2 items-center">
+                <FormMessage />
+                <Switch
+                  dir="ltr"
+                  id="direct"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+                <FormLabel htmlFor="direct">دایرکت</FormLabel>
+              </div>
+            )}
+          ></FormField>
+          <FormField
+            control={control}
+            name="isComment"
+            render={({ field }) => (
+              <div className="flex gap-2 items-center">
+                <Switch
+                  dir="ltr"
+                  id="direct"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+                <FormLabel htmlFor="direct">کامنت</FormLabel>
+              </div>
+            )}
+          ></FormField>
         </div>
       </div>
 
@@ -59,7 +55,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
           control={control}
           name="commentStartText"
           render={({ field, fieldState: { error } }) => (
-            <div>
+            <div className="space-y-1">
               <FormLabel> پیام درخواست شروع </FormLabel>
               <Textarea
                 {...field}

@@ -26,48 +26,48 @@ import { mutate } from "swr";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-const formSchema = z.object({
-  title: z
-    .string({
-      message: "تایتل ضروری است",
-    })
-    .min(1, {
-      message: "تایتل ضروری است",
-    }),
-  status: z.boolean(),
-  price: z
-    .number({
-      message: "قیمت نمیتواند کمتر از صفر باشد",
-    })
-    .min(0, {
-      message: "قیمت نمیتواند کمتر از صفر باشد",
-    }),
-  isInfinite: z.boolean(),
-  quantity: z
-    .number().optional(),
-  description: z
-    .string({
-      message: "توضیحات باید حداقل ۵ کاراکتر باشد",
-    })
-    .min(5, {
-      message: "توضیحات باید حداقل ۵ کاراکتر باشد",
-    }),
-  imageId: z
-    .number({ message: "تصویر محصول را آپلود کنید" })
-    .min(1, "تصویر محصول را آپلود کنید"),
-  isDigital: z.boolean(),
-}).superRefine(
-  (data, ctx) => {
-  if (!data.isInfinite && !data.quantity) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "تعداد نمیتواند کمتر از صفر باشد",
-      path: ["quantity"],
-      fatal: true,
-    });
-    return z.NEVER
-  }
-});
+const formSchema = z
+  .object({
+    title: z
+      .string({
+        message: "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
+      })
+      .min(1, {
+        message: "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
+      }),
+    status: z.boolean(),
+    price: z
+      .number({
+        message: "قیمت نمی‌تواند کمتر از صفر باشد.",
+      })
+      .min(0, {
+        message: "قیمت نمی‌تواند کمتر از صفر باشد.",
+      }),
+    isInfinite: z.boolean(),
+    quantity: z.number().optional(),
+    description: z
+      .string({
+        message: "توضیحات باید حداقل 5 کاراکتر باشد.",
+      })
+      .min(5, {
+        message: "توضیحات باید حداقل 5 کاراکتر باشد.",
+      }),
+    imageId: z
+      .number({ message: "تصویر محصول را آپلود کنید" })
+      .min(1, "تصویر محصول را آپلود کنید"),
+    isDigital: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.isInfinite && !data.quantity) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "تعداد نمیتواند کمتر از صفر باشد",
+        path: ["quantity"],
+        fatal: true,
+      });
+      return z.NEVER;
+    }
+  });
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -88,7 +88,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   useEffect(() => {
     if (form.formState?.errors?.imageId) {
       toast({
-        title: "تصویر محصول را آپلود کنید",
+        title: "تصویر کالا یا خدمت را آپلود کنید.",
         variant: "destructive",
       });
     }
@@ -98,7 +98,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   const [isLoading, setLoading] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
     if (!values.isInfinite && !values.quantity) {
       form.setError("quantity", {
         message: "تعداد نمیتواند کمتر از صفر باشد",
@@ -109,7 +108,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${
+          shouldBeEdit ? `/${shouldBeEdit.id}` : ""
         }`,
         {
           method: shouldBeEdit ? "PUT" : "POST",
@@ -193,9 +193,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-8">
+    <div className="bg-white shadow rounded-xl flex flex-col md:flex-row gap-8">
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bold mb-4">جزئیات محصول</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -205,11 +204,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 <FormItem>
                   <FormLabel>عنوان</FormLabel>
                   <FormControl>
-                    <Input placeholder="عنوان محصول" {...field} />
+                    <Input placeholder="عنوان کالا / خدمت" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    عنوان محصول خود را وارد کنید.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -225,7 +221,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <Label htmlFor="direct">وضعیت</Label>
+                  <Label htmlFor="direct">غیرفعال</Label>
                 </div>
               )}
             />
@@ -245,9 +241,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       }
                     />
                   </FormControl>
-                  <FormDescription>
-                    قیمت محصول خود را وارد کنید.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -269,9 +262,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       disabled={form.getValues().isInfinite}
                     />
                   </FormControl>
-                  <FormDescription>
-                    قیمت محصول خود را وارد کنید.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -287,7 +277,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <Label htmlFor="direct">تعداد بینهایت</Label>
+                  <Label htmlFor="direct">تعداد نامحدود</Label>
                 </div>
               )}
             />
@@ -302,7 +292,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <Label htmlFor="direct">دیجیتال</Label>
+                  <Label htmlFor="direct">کالای فیزیکی</Label>
                 </div>
               )}
             />
@@ -314,19 +304,17 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   <FormLabel>توضیحات</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="محصول خود را توصیف کنید..."
+                      placeholder="کالا یا خدمت خود را توصیف کنید..."
+                      rows={5}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    توضیحات دقیقی از محصول خود ارائه دهید.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <LoadingButton isLoading={isLoading} type="submit">
-              ثبت
+              ثبت کالا یا خدمت
             </LoadingButton>
           </form>
         </Form>
