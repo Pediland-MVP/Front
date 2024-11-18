@@ -3,7 +3,7 @@ import type { MiddlewareConfig, NextRequest } from "next/server";
 import * as jose from "jose";
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token2");
+  const token = request.cookies.get("token");
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
   const isConsolePage = request.nextUrl.pathname.startsWith('/console')
