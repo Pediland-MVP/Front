@@ -1,10 +1,3 @@
-import {
-  FileImage,
-  Mic,
-  Paperclip,
-  SendHorizontal,
-  ThumbsUp,
-} from "lucide-react";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,16 +5,12 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 import { EmojiPicker } from "./emojiPicker";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
 import { WsMessages } from "@/ws.messages";
 import { IMessage } from "./message";
 import { messagesSocket } from "@/app/utils/socket";
+import { PaperPlaneRight } from "@phosphor-icons/react/dist/ssr";
 
 interface ChatBottombarProps {
   isMobile: boolean;
@@ -29,7 +18,6 @@ interface ChatBottombarProps {
   messagesList: IMessage[];
 }
 
-export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
 export default function ChatBottombar({
   isMobile,
@@ -96,87 +84,17 @@ export default function ChatBottombar({
           />
         </div>
         <div className="_like ml-3">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Link
-                href="#"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "icon" }),
-                  "h-8 w-8",
-                  "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                )}
-              >
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon" }),
-                    "h-9 w-9",
-                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
-                  )}
-                  onClick={handleSend}
-                >
-                  <SendHorizontal size={20} className="text-muted-foreground" />
-                </Link>
-              </Link>
-            </PopoverTrigger>
-            <PopoverContent side="top" className="w-full p-2">
-              {message.trim() || isMobile ? (
-                <div className="flex gap-2">
-                  <Link
-                    href="#"
-                    className={cn(
-                      buttonVariants({ variant: "ghost", size: "icon" }),
-                      "h-9 w-9",
-                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                    )}
-                  >
-                    <Mic size={20} className="text-muted-foreground" />
-                  </Link>
-                  {BottombarIcons.map((icon, index) => (
-                    <Link
-                      key={index}
-                      href="#"
-                      className={cn(
-                        buttonVariants({ variant: "ghost", size: "icon" }),
-                        "h-9 w-9",
-                        "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                      )}
-                    >
-                      <icon.icon size={20} className="text-muted-foreground" />
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon" }),
-                    "h-9 w-9",
-                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                  )}
-                >
-                  <Mic size={20} className="text-muted-foreground" />
-                </Link>
-              )}
-            </PopoverContent>
-          </Popover>
-          {!message.trim() && !isMobile && (
-            <div className="flex">
-              {BottombarIcons.map((icon, index) => (
-                <Link
-                  key={index}
-                  href="#"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "icon" }),
-                    "h-9 w-9",
-                    "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
-                  )}
-                >
-                  <icon.icon size={20} className="text-muted-foreground" />
-                </Link>
-              ))}
-            </div>
-          )}
+          <Link
+            href={"#"}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon" }),
+              "h-9 w-9",
+              "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
+            )}
+            onClick={handleSend}
+          >
+            <PaperPlaneRight size={20} className="text-muted-foreground" />
+          </Link>
         </div>
 
         <AnimatePresence initial={false}>

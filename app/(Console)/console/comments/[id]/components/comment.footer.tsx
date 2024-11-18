@@ -1,83 +1,149 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Send } from 'lucide-react'
-import { CardFooter } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/use-toast'
-import { mutate } from 'swr'
-import EE from '@/lib/ee'
+import { useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { CardFooter } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import { EmojiPicker } from "../../../inbox/components/emojiPicker";
+import { PaperPlaneRight } from "@phosphor-icons/react";
+import { FormField, Form } from "@/components/ui/form";
 
-interface FormData {
-  text: string
+const formSchema = z.object({
+  text: z.string().min(1, "نظر خود را وارد کنید"),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+interface RedesignedCommentFooterProps {
+  commentId: string;
+  mutateComments: () => Promise<void>;
+  isMobile?: boolean;
 }
 
-const useCtrlEnterSubmit = (handleSubmit: () => void) => {
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.ctrlKey && event.key === 'Enter') {
-      event.preventDefault()
-      handleSubmit()
+export default function RedesignedCommentFooter({
+  commentId,
+  mutateComments,
+  isMobile = false,
+}: RedesignedCommentFooterProps) {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      text: "",
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/reply/${commentId}`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const json = await response.json();
+        json.message.forEach((m: string) => {
+          toast({
+            title: m,
+            variant: "destructive",
+          });
+        });
+        return;
+      }
+
+      await mutateComments();
+      toast({ title: "ثبت شد" });
+      form.reset();
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      toast({
+        title: "خطا در ارسال نظر",
+        variant: "destructive",
+      });
     }
-  }
-  return handleKeyDown
-}
+  };
 
-export default function CommentFooter({commentId, mutateComments}: {commentId: string, mutateComments: any}) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { register, handleSubmit, reset } = useForm<FormData>()
-
-  const onSubmitForm = async (data: FormData) => {
-    setIsSubmitting(true)
-    setIsSubmitting(false)
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/reply/${commentId}`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-    })
-
-    if (!response.ok) {
-        const json = await response.json()
-        json.message.map((m: string) => {
-            toast({
-                title: m,
-                variant: 'destructive'
-            })
-        })
-        return
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      form.handleSubmit(onSubmit)();
     }
-
-    EE.emit('reply.sent', await response.json())
-
-    await mutateComments()
-
-    toast({
-        title: 'ثبت شد'
-    })
-
-    reset()
-  }
-
-  const handleKeyDown = useCtrlEnterSubmit(handleSubmit(onSubmitForm))
+    if (event.key === "Enter" && event.shiftKey) {
+      event.preventDefault();
+      const currentText = form.getValues("text");
+      form.setValue("text", currentText + "\n");
+    }
+  };
 
   return (
-    <CardFooter className="border-t p-4">
-      <form onSubmit={handleSubmit(onSubmitForm)} className="flex w-full gap-2">
-        <Textarea
-          {...register('text', { required: true })}
-          placeholder="ریپلای..."
-          className="flex-1 min-h-[60px]"
-          onKeyDown={handleKeyDown}
-        />
-        <Button type="submit" size="icon" className="shrink-0" disabled={isSubmitting}>
-          <Send className="w-4 h-4" />
-        </Button>
-      </form>
+    <CardFooter className="border-t p-3">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full flex items-center"
+        >
+          <EmojiPicker
+            onChange={(value) => {
+              const currentText = form.getValues("text");
+              form.setValue("text", currentText + value);
+              inputRef.current?.focus();
+            }}
+          />
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 shrink-0"
+            disabled={form.formState.isSubmitting}
+          >
+            <PaperPlaneRight size={20} className="text-muted-foreground" />
+          </Button>
+          <AnimatePresence initial={false}>
+            <motion.div
+              key="input"
+              className="w-full relative mx-2"
+              layout
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1 }}
+              transition={{
+                opacity: { duration: 0.05 },
+                layout: {
+                  type: "spring",
+                  bounce: 0.15,
+                },
+              }}
+            >
+              <FormField
+                control={form.control}
+                name="text"
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    ref={inputRef}
+                    placeholder="ریپلای..."
+                    className="w-full resize-none min-h-[60px]"
+                    onKeyDown={handleKeyPress}
+                    autoComplete="off"
+                  />
+                )}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </form>
+      </Form>
     </CardFooter>
-  )
+  );
 }

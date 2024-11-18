@@ -100,13 +100,13 @@ export default function Component({ id }: { id: string }) {
   if (!comment) return null;
 
   return (
-    <div className="flex w-full min-h-screen bg-background">
+    <div className="flex w-full h-full bg-background">
       <Card className="flex-1 border-0 rounded-none">
         <CardHeader className="border-b">
           <h1 className="text-xl font-semibold">کامنت‌ها</h1>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[calc(100vh-12rem)]">
+          <ScrollArea className="h-full">
             <div className="p-4 space-y-4">
               {/* Parent Comment */}
               <div className="space-y-4">
