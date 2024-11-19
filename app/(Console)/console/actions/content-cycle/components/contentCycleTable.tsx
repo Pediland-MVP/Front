@@ -138,7 +138,7 @@ export default function ContentCycleTable() {
   };
 
   return (
-    <div className="rtl bg-white rounded-lg shadow p-4" dir="rtl">
+    <div className="rtl" dir="rtl">
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin" />

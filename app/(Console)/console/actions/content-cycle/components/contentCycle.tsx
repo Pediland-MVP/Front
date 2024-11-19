@@ -267,7 +267,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   }, [form.watch()]);
 
   return (
-    <div className="bg-white shadow rounded-lg">
+    <div className="_add-automation">
       {isLoading ? (
         <div className="min-h-screen w-full flex justify-center items-center">
           <LoadingSpinner className="h-20 w-20 text-gray-500" />
@@ -278,7 +278,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="p-6 space-y-5"
+              className="p-4 space-y-5"
             >
               <ContentCycleTitle control={form.control} />
 

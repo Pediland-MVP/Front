@@ -30,11 +30,14 @@ type Lead = {
 };
 
 type ContactListCardProps = {
-  search: string,
-  setSearch: React.Dispatch<React.SetStateAction<string>>,
-}
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+};
 
-export default function ContactListCard({ search, setSearch }: ContactListCardProps) {
+export default function ContactListCard({
+  search,
+  setSearch,
+}: ContactListCardProps) {
   const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -79,19 +82,9 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
   };
 
   return (
-    <div className="_table rounded-lg shadow bg-white">
+    <div className="_table">
       <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
-      {/* <div>
-        <Input
-          type="search"
-          placeholder="جستجو ..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 max-w-[20%]"
-        />
-      </div> */}
-
-      <div className="max-h-[calc(100%-44px)] overflow-auto p-4">
+      <div className="max-h-[calc(100%-44px)] overflow-auto">
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
@@ -174,7 +167,10 @@ export default function ContactListCard({ search, setSearch }: ContactListCardPr
                   </TableCell>
 
                   <TableCell className="">
-                    <Link href={"/console/contacts/item"} className="hover:text-pink-700">
+                    <Link
+                      href={"/console/contacts/item"}
+                      className="hover:text-pink-700"
+                    >
                       {contact.firstname && contact.lastname
                         ? `${contact.firstname} ${contact.lastname}`
                         : contact.lead?.firstname}
