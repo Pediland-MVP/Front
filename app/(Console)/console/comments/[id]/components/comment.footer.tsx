@@ -22,7 +22,7 @@ type FormData = z.infer<typeof formSchema>;
 
 interface RedesignedCommentFooterProps {
   commentId: string;
-  mutateComments: KeyedMutator;
+  mutateComments: KeyedMutator<any>;
   isMobile?: boolean;
 }
 
