@@ -1,24 +1,12 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid, ResponsiveContainer
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import { Package, Users, FileText, TrendingUp } from "lucide-react";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { StatsNamespace } from "@/types/stats";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import moment from 'moment-jalaali';
+import moment from "moment-jalaali";
 import DashboardSkeleton from "./components/dashboard.skeleton";
 import LeadsGrowsChart from "./components/leadsGrows.chart";
 
@@ -33,21 +21,11 @@ export default function Dashboard() {
   );
 
   if (isStatsLoading) {
-    return <DashboardSkeleton/>
+    return <DashboardSkeleton />;
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">داشبرد</h2>
-      </div>
-      {/* <Tabs defaultValue="overview" className="space-y-4"> */}
-      {/* <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics" disabled>Analytics</TabsTrigger>
-          <TabsTrigger value="reports" disabled>Reports</TabsTrigger>
-        </TabsList> */}
-      {/* <TabsContent value="overview" className="space-y-4"> */}
+    <div className="_dashboard space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -112,24 +90,32 @@ export default function Dashboard() {
             <CardContent>
               <div className="space-y-2 mt-9">
                 {stats?.recentSessions.map((session) => (
-                  <div key={session.id} className="flex items-center border rounded-lg p-5 cursor-pointer">
+                  <div
+                    key={session.id}
+                    className="flex items-center border rounded-lg p-5 cursor-pointer"
+                  >
                     <Avatar className="h-9 w-9">
                       <AvatarImage
                         src={session.leadInstagram.profilePicture?.url}
                         alt={session.leadInstagram?.name}
                       />
-                      <AvatarFallback>{session.leadInstagram.name?.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {session.leadInstagram.name?.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="mr-4 space-y-1">
                       <p className="text-sm font-medium leading-none">
                         {session.leadInstagram?.name}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {session.leadInstagram.username} • {session.contentCycle.title}
+                        {session.leadInstagram.username} •{" "}
+                        {session.contentCycle.title}
                       </p>
                     </div>
                     <div className="mr-auto text-sm text-muted-foreground">
-                      {moment(session.updateDate).format('HH:MM  jYYYY/jMM/jDD')}
+                      {moment(session.updateDate).format(
+                        "HH:MM  jYYYY/jMM/jDD"
+                      )}
                     </div>
                   </div>
                 ))}

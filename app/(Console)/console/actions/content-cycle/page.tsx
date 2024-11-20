@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 export default function ContentCyclePage() {
   return (
     <div className="_automation">
-      <div className="_header flex justify-between items-center mb-5 h-9">
+      <div className="_header flex justify-between items-center mb-4 h-9">
         <h1 className="text-xl font-bold">لیست اتوماسیون</h1>
 
         <div className="_tools">

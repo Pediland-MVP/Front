@@ -193,8 +193,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   };
 
   return (
-    <div className="bg-white shadow rounded-xl flex flex-col md:flex-row gap-8">
-      <div className="flex-1 p-6">
+    <div className="bg-white flex flex-col md:flex-row gap-8">
+      <div className="flex-1 p-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField

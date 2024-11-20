@@ -9,7 +9,7 @@ import Accounts from "./components/accounts";
 export default function AccountPage() {
   return (
     <div className="_accounts">
-      <div className="_header flex justify-between items-center mb-5 h-9">
+      <div className="_header flex justify-between items-center mb-4 h-9">
         <h1 className="text-xl font-bold">مدیریت اکانت‌ها</h1>
 
         <div className="_tools">
