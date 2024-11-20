@@ -3,28 +3,22 @@
 import * as React from "react";
 
 import {
-  AddressBookTabs,
-  Command,
-  ChatCircleText,
+  AddressBookTabs, ChatCircleText,
   HouseSimple,
   Lifebuoy,
   Lightning,
   Note,
   Sliders,
-  Infinity,
+  Infinity
 } from "@phosphor-icons/react/dist/ssr";
 
 import { NavMain } from "./nav-main";
-import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarHeader
 } from "@/components/theme/ui/sidebar";
 
 const data = {
