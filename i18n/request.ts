@@ -1,12 +1,46 @@
 import {getRequestConfig} from 'next-intl/server';
+import { cookies, headers } from 'next/headers';
+import parser from 'accept-language-parser'
+import logger from '@/app/utils/logger';
  
 export default getRequestConfig(async () => {
-  // Provide a static locale, fetch a user setting,
-  // read from `cookies()`, `headers()`, etc.
-  const locale = 'en';
+
+  const cookiesStore = await cookies()
+  const header = await headers()
+
+
+  const locale = cookiesStore.get('NEXT_LOCALE')?.value
+  logger.debug("Locale of token", locale)
+  
+  const acceptLanguageHeader = header.get('Accept-Language')
+    let acceptLanguage: parser.Language[] = []
+    if (acceptLanguageHeader) {
+      acceptLanguage = parser.parse(acceptLanguageHeader)
+    }
+
+  if (acceptLanguage.length > 0) {
+    logger.debug("Accept-Language", acceptLanguage[0].code)
+  }
+
+
+  if (locale) {
+    return {
+      locale,
+      messages: (await import(`../messages/${locale}.json`)).default
+    };
+  }
+  
+  if (acceptLanguage.length > 0) {
+    const language = acceptLanguage[0].code
+    return {
+      locale: language,
+      messages: (await import(`../messages/${language}.json`)).default
+    };
+  }
+
  
   return {
-    locale,
-    messages: (await import(`../../messages/${locale}.json`)).default
+    locale: 'fa',
+    messages: (await import(`../messages/${'fa'}.json`)).default
   };
 });

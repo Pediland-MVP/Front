@@ -1,4 +1,8 @@
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from 'next-intl/plugin';
+ 
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -46,7 +50,9 @@ const nextConfig = {
   reactStrictMode: false
 };
 
-export default withSentryConfig(nextConfig, {
+const withNextIntlConfig = withNextIntl(nextConfig);
+
+export default withSentryConfig(withNextIntlConfig, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
