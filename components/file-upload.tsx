@@ -2,9 +2,11 @@ import { cn } from "@/lib/utils";
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
-import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import AnimatedCircularProgressBar from "./ui/animated-circular-progress-bar";
+
+import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
+
 import { useTranslations } from "next-intl";
 
 const mainVariant = {
@@ -73,7 +75,7 @@ export const FileUpload = ({
   });
 
   return (
-    <div className="w-full relative" {...getRootProps()}>
+    <div className="bg-white border-2 hover:border-primary rounded-lg mt-1 duration-300 relative" {...getRootProps()}>
       {isUploading && (
         <AnimatedCircularProgressBar
           className="w-10 h-10 text-xs font-sans absolute right-5 top-5"
@@ -101,10 +103,7 @@ export const FileUpload = ({
           <GridPattern />
         </div>
         <div className="flex flex-col items-center justify-center">
-          <p className="relative z-20  font-bold text-neutral-700 dark:text-neutral-300 text-base">
-            {t('title')}
-          </p>
-          <p className="relative z-20  font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2">
+          <p className="relative z-20 text-neutral-400 dark:text-neutral-400 text-sm font-light text-center">
             {t('description')}
           </p>
           <div className="relative w-full mt-10 max-w-xl mx-auto">
@@ -117,7 +116,7 @@ export const FileUpload = ({
                   layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
                   className={cn(
                     "relative overflow-hidden z-40 bg-white dark:bg-neutral-900 flex flex-col items-start justify-start md:h-24 p-4 mt-4 w-full mx-auto rounded-md",
-                    "shadow-sm",
+                    "shadow-sm"
                   )}
                 >
                   <div className="flex justify-between w-full items-center gap-4">
@@ -158,11 +157,11 @@ export const FileUpload = ({
                 transition={{
                   type: "spring",
                   stiffness: 300,
-                  damping: 20,
+                  damping: 10,
                 }}
                 className={cn(
                   "relative group-hover/file:shadow-2xl z-40 bg-white dark:bg-neutral-900 flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md",
-                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]",
+                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]"
                 )}
               >
                 {isDragActive ? (
@@ -172,10 +171,10 @@ export const FileUpload = ({
                     className="text-neutral-600 flex flex-col items-center"
                   >
                     {t('dropIt')}
-                    <UploadSimple className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
+                    <UploadSimple size={28} className="text-neutral-600 dark:text-neutral-400" />
                   </motion.p>
                 ) : (
-                  <UploadSimple className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
+                  <UploadSimple size={28} className="text-neutral-600 dark:text-neutral-300" />
                 )}
               </motion.div>
             )}
@@ -183,7 +182,7 @@ export const FileUpload = ({
             {!files.length && (
               <motion.div
                 variants={secondaryVariant}
-                className="absolute opacity-0 border border-dashed border-sky-400 inset-0 z-30 bg-transparent flex items-center justify-center h-32 mt-4 w-full max-w-[8rem] mx-auto rounded-md"
+                className="absolute opacity-0 border border-gray-200 inset-0 z-30 bg-transparent flex items-center justify-center mt-4 w-full max-w-[8rem] mx-auto rounded-md"
               ></motion.div>
             )}
           </div>
@@ -211,7 +210,7 @@ export function GridPattern() {
               }`}
             />
           );
-        }),
+        })
       )}
     </div>
   );

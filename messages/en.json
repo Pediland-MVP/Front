@@ -235,7 +235,8 @@
             "physicalProduct": "Physical product",
             "description": "Description",
             "describeProduct": "Describe your product...",
-            "submitProduct": "Submit product"
+            "submitProduct": "Submit product",
+            "uploadImage": "Upload Image"
         },
         "List": {
             "image": "Image",

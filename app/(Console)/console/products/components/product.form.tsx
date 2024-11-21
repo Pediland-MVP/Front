@@ -5,12 +5,17 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { UploadNamespace } from "@/types/upload";
+import { useRouter } from "next/navigation";
+import { ProductNamespace } from "@/types/product";
+import { mutate } from "swr";
+
+import { Input } from "@/components/theme/ui/input";
+import { Textarea } from "@/components/theme/ui/textarea";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -18,12 +23,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { FileUpload } from "@/components/file-upload";
-import axios from "axios";
-import { UploadNamespace } from "@/types/upload";
-import { useRouter } from "next/navigation";
 import LoadingButton from "@/components/ui/button-loading";
-import { ProductNamespace } from "@/types/product";
-import { mutate } from "swr";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
@@ -195,143 +195,141 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   };
 
   return (
-    <div className="bg-white flex flex-col md:flex-row gap-8">
-      <div className="flex-1 p-4">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('title')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('productTitle')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              name="status"
-              control={form.control}
-              render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Switch
-                    dir="ltr"
-                    id="status"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <Label htmlFor="direct">{t('inactive')}</Label>
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('price')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="۰.۰۰"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('quantity')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="۰.۰۰"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                      disabled={form.getValues().isInfinite}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              name="isInfinite"
-              control={form.control}
-              render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Switch
-                    dir="ltr"
-                    id="isinfinite"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <Label htmlFor="direct">{t('unlimitedQuantity')}</Label>
-                </div>
-              )}
-            />
-            <Controller
-              name="isDigital"
-              control={form.control}
-              render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Switch
-                    dir="ltr"
-                    id="direct"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <Label htmlFor="direct">{t('physicalProduct')}</Label>
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('description')}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t('describeProduct')}
-                      rows={5}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <LoadingButton isLoading={isLoading} type="submit">
-              {t('submitProduct')}
-            </LoadingButton>
-          </form>
-        </Form>
-      </div>
-      <div className="flex-1 p-6">
-        <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 rounded-lg">
-          <FileUpload
-            images={images}
-            accept="image/*"
-            onChange={handleFileUpload}
-            progress={uploadProgress}
-            isUploading={isUploading}
+    <div className="bg-stone-50 sm:w-1/3 border rounded-lg shadow p-4 sm:p-6">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid gap-4"
+        >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('title')}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t('productTitle')}{...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-      </div>
+          <Controller
+            name="status"
+            control={form.control}
+            render={({ field }) => (
+              <div className="flex gap-2 items-center">
+                <Switch
+                  dir="ltr"
+                  id="status"
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
+                <Label htmlFor="direct">{t('inactive')}</Label>
+              </div>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('price')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="۰.۰۰"
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('quantity')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="۰.۰۰"
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    disabled={form.getValues().isInfinite}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Controller
+            name="isInfinite"
+            control={form.control}
+            render={({ field }) => (
+              <div className="flex gap-2 items-center">
+                <Switch
+                  dir="ltr"
+                  id="isinfinite"
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
+                <Label htmlFor="direct">{t('unlimitedQuantity')}</Label>
+              </div>
+            )}
+          />
+          <Controller
+            name="isDigital"
+            control={form.control}
+            render={({ field }) => (
+              <div className="flex gap-2 items-center">
+                <Switch
+                  dir="ltr"
+                  id="direct"
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
+                <Label htmlFor="direct">{t('physicalProduct')}</Label>
+              </div>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('description')}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t('describeProduct')}
+                    rows={5}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div>
+            <FormLabel>{t('uploadImage')}</FormLabel>
+            <FileUpload
+              images={images}
+              accept="image/*"
+              onChange={handleFileUpload}
+              progress={uploadProgress}
+              isUploading={isUploading}
+            />
+          </div>
+
+          <LoadingButton isLoading={isLoading} type="submit">
+            {t('submitProduct')}
+          </LoadingButton>
+        </form>
+      </Form>
     </div>
   );
 }

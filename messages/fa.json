@@ -236,7 +236,8 @@
             "physicalProduct": "کالای فیزیکی",
             "description": "توضیحات",
             "describeProduct": "کالا یا خدمت خود را توصیف کنید...",
-            "submitProduct": "ثبت کالا یا خدمت"
+            "submitProduct": "ثبت کالا یا خدمت",
+            "uploadImage": "بارگزاری تصاویر"
         },
         "List": {
             "image": "تصویر",

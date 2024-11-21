@@ -1,9 +1,9 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
-import { ChevronRight, ChevronLeft, Pencil, Trash2 } from 'lucide-react';
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -23,7 +23,14 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { ProductDeleteDialog } from "./product.delete";
+
 import { toast } from "@/components/ui/use-toast";
+import {
+  CaretRight,
+  CaretLeft,
+  Pencil,
+  Trash,
+} from "@phosphor-icons/react/dist/ssr";
 
 interface ContentItem {
   id: number;
@@ -34,7 +41,7 @@ interface ContentItem {
 }
 
 export default function ProductListTable() {
-  const t = useTranslations('Products.List');
+  const t = useTranslations("Products.List");
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
@@ -58,7 +65,7 @@ export default function ProductListTable() {
     fetcher,
     {
       revalidateOnFocus: false,
-    },
+    }
   );
   const products = productsData?.items || [];
   const productsMeta = productsData?.meta || undefined;
@@ -82,23 +89,23 @@ export default function ProductListTable() {
           {
             method: "DELETE",
             credentials: "include",
-          },
+          }
         );
 
         if (!res.ok) {
           toast({
-            title: t('error'),
-            description: t('problemOccurred'),
+            title: t("error"),
+            description: t("problemOccurred"),
             variant: "destructive",
           });
           return;
         }
 
         toast({
-          title: t('deleted'),
+          title: t("deleted"),
         });
         await mutate(
-          (key) => typeof key === "string" && key.includes("products"),
+          (key) => typeof key === "string" && key.includes("products")
         );
       } catch (error) {
         console.error("Error deleting item:", error);
@@ -110,16 +117,16 @@ export default function ProductListTable() {
   };
 
   return (
-    <div className="_table">
+    <div className="_table bg-stone-50 p-4 border rounded-lg shadow">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-right">{t('image')}</TableHead>
-            <TableHead className="text-right">{t('title')}</TableHead>
-            <TableHead className="text-right">{t('price')}</TableHead>
-            <TableHead className="text-right">{t('creationDate')}</TableHead>
-            <TableHead className="text-right">{t('actions')}</TableHead>
+            <TableHead className="text-right">{t("image")}</TableHead>
+            <TableHead className="text-right">{t("title")}</TableHead>
+            <TableHead className="text-right">{t("price")}</TableHead>
+            <TableHead className="text-right">{t("creationDate")}</TableHead>
+            <TableHead className="text-right">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -158,8 +165,7 @@ export default function ProductListTable() {
                     size="sm"
                     onClick={() => handleDeleteClick(product.id)}
                   >
-                    <Trash2 className="h-4 w-4 ml-2" />
-                    {t('delete')}
+                    <Trash className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
               </TableCell>
@@ -172,11 +178,11 @@ export default function ProductListTable() {
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
         >
-          <ChevronRight className="h-4 w-4 ml-2" />
-          {t('previous')}
+          <CaretRight className="h-4 w-4 ml-2" />
+          {t("previous")}
         </Button>
         <span>
-          {t('pageOf', { current: page, total: productsMeta?.totalPages })}
+          {t("pageOf", { current: page, total: productsMeta?.totalPages })}
         </span>
         <Button
           onClick={() =>
@@ -185,7 +191,7 @@ export default function ProductListTable() {
           disabled={page === productsMeta?.totalPages}
         >
           {t('next')}
-          <ChevronLeft className="h-4 w-4 mr-2" />
+          <CaretLeft className="h-4 w-4 mr-2" />
         </Button>
       </div>
       <ProductDeleteDialog
@@ -197,4 +203,3 @@ export default function ProductListTable() {
     </div>
   );
 }
-
