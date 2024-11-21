@@ -18,7 +18,7 @@ export default async function ConsoleLayout({
   const messages = await getMessages();
   return (
     <html lang={locale} dir="rtl">
-      <body className="bg-blue-50 h-screen overflow-hidden">
+      <body className="bg-blue-50 h-screen">
         <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster />

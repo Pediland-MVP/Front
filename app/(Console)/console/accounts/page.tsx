@@ -28,9 +28,7 @@ export default function AccountPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink>
-                  <Link href="/console">داشبورد</Link>
-                </BreadcrumbLink>
+                <BreadcrumbLink href="/console">داشبورد</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
