@@ -275,6 +275,32 @@
             "select": "انتخاب"
         }
     },
+    "Sessions": {
+        "title": "سشن‌ها",
+        "List": {
+            "fetchError": "خطا در دریافت اطلاعات",
+            "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
+            "id": "شناسه",
+            "profile": "پروفایل",
+            "instagramUsername": "نام کاربری اینستاگرام",
+            "status": "وضعیت",
+            "startDate": "تاریخ شروع",
+            "updateDate": "تاریخ بروزرسانی",
+            "actions": "عملیات",
+            "userAvatar": "تصویر کاربر",
+            "completed": "پایان",
+            "inProgress": "درحال انجام",
+            "cancelled": "لغو شده",
+            "viewChat": "دیدن چت",
+            "previous": "قبلی",
+            "next": "بعدی",
+            "pageOf": "صفحه {current} از {total}"
+          },
+          "QuestionAnswerDialog": {
+            "userAvatar": "تصویر کاربر",
+            "answers": "جواب‌ها"
+          }
+    },
     "FileUpload": {
         "title": "آپلود تصویر",
         "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",

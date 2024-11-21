@@ -274,6 +274,32 @@
             "select": "Select"
         }
     },
+    "Sessions": {
+        "title": "Sessions",
+        "List": {
+            "fetchError": "Error fetching data",
+            "fetchErrorRetry": "Error fetching data. Please try again.",
+            "id": "Id",
+            "profile": "Profile",
+            "instagramUsername": "Instagram username",
+            "status": "Status",
+            "startDate": "Start date",
+            "updateDate": "Update date",
+            "actions": "Actions",
+            "userAvatar": "User avatar",
+            "completed": "Completed",
+            "inProgress": "In progress",
+            "cancelled": "Cancelled",
+            "viewChat": "View chat",
+            "previous": "Previous",
+            "next": "Next",
+            "pageOf": "Page {current} of {total}"
+          },
+          "QuestionAnswerDialog": {
+            "userAvatar": "User avatar",
+            "answers": "Answers"
+          }
+    },
     "FileUpload": {
         "title": "Upload image",
         "description": "Click here or drag and drop your file to this area",

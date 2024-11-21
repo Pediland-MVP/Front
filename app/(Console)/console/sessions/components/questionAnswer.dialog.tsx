@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import * as React from "react";
 import { useMediaQuery } from "@react-hook/media-query";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
@@ -15,51 +16,51 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import { SessionNamespace } from "@/types/session";
 import { Skeleton } from "@/components/ui/skeleton";
 
-
 type QuestionAndAnswerProps = {
     questionId: number
     leadInstagram: SessionNamespace.Sessions['items'][0]['leadInstagram']
 }
 
 export default function QuestionAndAnswerDialog({questionId, leadInstagram}:QuestionAndAnswerProps) {
+  const t = useTranslations('Sessions.QuestionAnswerDialog');
   const [open, setOpen] = React.useState(false);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const { data: sessionData, error: sessionError, isLoading: isSessionLoading } = useSWRImmutable<SessionNamespace.SessionAnswers>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/sessions/answers/${questionId}`, fetcher)
 
-    const ChatSkeleton = () => (
-      <Card className="border-0 shadow-none">
-        <CardHeader className="flex flex-row items-center">
-          <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[100px]" />
-              <Skeleton className="h-4 w-[70px]" />
-            </div>
+  const ChatSkeleton = () => (
+    <Card className="border-0 shadow-none">
+      <CardHeader className="flex flex-row items-center">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[100px]" />
+            <Skeleton className="h-4 w-[70px]" />
           </div>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[300px] w-full pr-4">
-            <div className="space-y-4">
-              {[...Array(5)].map((_, index) => (
-                <React.Fragment key={index}>
-                  <Skeleton className="h-10 w-[75%] rounded-lg" />
-                  <Skeleton className="h-10 w-[75%] rounded-lg ml-auto" />
-                </React.Fragment>
-              ))}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    )
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[300px] w-full pr-4">
+          <div className="space-y-4">
+            {[...Array(5)].map((_, index) => (
+              <React.Fragment key={index}>
+                <Skeleton className="h-10 w-[75%] rounded-lg" />
+                <Skeleton className="h-10 w-[75%] rounded-lg ml-auto" />
+              </React.Fragment>
+            ))}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  )
 
   const ChatContent = () => (
     <Card className="border-0 shadow-none">
       <CardHeader className="flex flex-row items-center">
         <div className="flex gap-x-2 items-center space-x-4">
           <Avatar>
-            <AvatarImage src={leadInstagram.profilePicture?.url} alt="User" />
+            <AvatarImage src={leadInstagram.profilePicture?.url} alt={t('userAvatar')} />
             <AvatarFallback>{leadInstagram.username[0]}</AvatarFallback>
           </Avatar>
           <div>
@@ -103,7 +104,7 @@ export default function QuestionAndAnswerDialog({questionId, leadInstagram}:Ques
         <DrawerTrigger asChild>
         <Button variant="ghost" size="sm">
           <Mailbox className="h-4 w-4 ml-2" />
-          جواب‌ها
+          {t('answers')}
         </Button>
         </DrawerTrigger>
         <DrawerContent>
@@ -126,7 +127,7 @@ export default function QuestionAndAnswerDialog({questionId, leadInstagram}:Ques
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
           <Mailbox className="h-4 w-4 ml-2" />
-          جواب‌ها
+          {t('answers')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-0">
@@ -142,3 +143,4 @@ export default function QuestionAndAnswerDialog({questionId, leadInstagram}:Ques
     </Dialog>
   );
 }
+

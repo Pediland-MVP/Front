@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -10,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
+import { Loader2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { SessionNamespace } from "@/types/session";
@@ -26,6 +27,7 @@ interface SessionTableProps {
 }
 
 export default function SessionsTable({ contentCycleId }: SessionTableProps) {
+  const t = useTranslations('Sessions.List');
   const [data, setData] = useState<SessionNamespace.Sessions | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,13 +44,13 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
         }
       );
       if (!response.ok) {
-        throw new Error("خطا در دریافت اطلاعات");
+        throw new Error(t('fetchError'));
       }
       const result = await response.json();
       setData(result);
       setCurrentPage(page);
     } catch (error) {
-      setError("خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.");
+      setError(t('fetchErrorRetry'));
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
@@ -77,15 +79,13 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">شناسه</TableHead>
-                  <TableHead className="text-right">پروفایل</TableHead>
-                  <TableHead className="text-right">
-                    نام کاربری اینستاگرام
-                  </TableHead>
-                  <TableHead className="text-right">وضعیت</TableHead>
-                  <TableHead className="text-right">تاریخ شروع</TableHead>
-                  <TableHead className="text-right">تاریخ بروزرسانی</TableHead>
-                  <TableHead className="text-right">عملیات</TableHead>
+                  <TableHead className="text-right">{t('id')}</TableHead>
+                  <TableHead className="text-right">{t('profile')}</TableHead>
+                  <TableHead className="text-right">{t('instagramUsername')}</TableHead>
+                  <TableHead className="text-right">{t('status')}</TableHead>
+                  <TableHead className="text-right">{t('startDate')}</TableHead>
+                  <TableHead className="text-right">{t('updateDate')}</TableHead>
+                  <TableHead className="text-right">{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -96,7 +96,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                       <Avatar>
                         <AvatarImage
                           src={item.leadInstagram.profilePicture?.url}
-                          alt="User"
+                          alt={t('userAvatar')}
                         />
                         <AvatarFallback>
                           {item.leadInstagram.username[0]}
@@ -108,11 +108,11 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       {item.isCompleted ? (
-                        <Badge variant={"success"}>پایان</Badge>
+                        <Badge variant={"success"}>{t('completed')}</Badge>
                       ) : item.isEnabled ? (
-                        <Badge variant={"default"}>درحال انجام</Badge>
+                        <Badge variant={"default"}>{t('inProgress')}</Badge>
                       ) : (
-                        <Badge variant={"destructive"}>لغو شده</Badge>
+                        <Badge variant={"destructive"}>{t('cancelled')}</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -130,7 +130,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                         <Link href={`/console/inbox/${item.leadInstagram.lead.id}`}>
                           <Button variant="ghost" size="sm">
                             <ChatCircleText className="h-4 w-4 ml-2" />
-                            دیدن چت
+                            {t('viewChat')}
                           </Button>
                         </Link>
                       </div>
@@ -148,17 +148,17 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                 disabled={currentPage === 1}
               >
                 <ChevronRight className="h-4 w-4 ml-2" />
-                قبلی
+                {t('previous')}
               </Button>
               <span>
-                صفحه {currentPage} از {data.meta.totalPages}
+                {t('pageOf', { current: currentPage, total: data.meta.totalPages })}
               </span>
               <Button
                 variant="outline"
                 onClick={() => fetchData(currentPage + 1)}
                 disabled={currentPage === data.meta.totalPages}
               >
-                بعدی
+                {t('next')}
                 <ChevronLeft className="h-4 w-4 mr-2" />
               </Button>
             </div>
@@ -168,3 +168,4 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
     </div>
   );
 }
+
