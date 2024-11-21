@@ -12,6 +12,7 @@ import formatTimestamp from "@/lib/formatTimestamp";
 import Reply from "./reply";
 import { useEffect, useState } from "react";
 import EE from "@/lib/ee";
+import { useTranslations } from "next-intl";
 
 interface ProfilePicture {
   url: string;
@@ -95,6 +96,8 @@ export default function Component({ id }: { id: string }) {
     console.log(comment);
   }, [comment]);
 
+  const t = useTranslations('Comments.Comment');
+
   if (isLoading) return <CommentSkeleton />;
   if (error) return <CommentError />;
   if (!comment) return null;
@@ -103,7 +106,7 @@ export default function Component({ id }: { id: string }) {
     <div className="flex w-full h-full bg-background">
       <Card className="flex-1 border-0 rounded-none">
         <CardHeader className="border-b">
-          <h1 className="text-xl font-semibold">کامنت‌ها</h1>
+          <h1 className="text-xl font-semibold">{t('comments')}</h1>
         </CardHeader>
         <CardContent className="p-0">
           <ScrollArea className="h-full">

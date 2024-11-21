@@ -56,6 +56,9 @@ export default function ContactForm({
   const [contactError, setContactError] = useState<Error | null>(null);
   const [isContactLoading, setIsContactLoading] = useState(true);
 
+  const t = useTranslations('Contacts.Form')
+
+
   const fetchContact = async () => {
     setIsContactLoading(true);
     setContact(null);
@@ -135,17 +138,16 @@ export default function ContactForm({
     setIsSubmitLoading(false);
     if (!response.ok) {
       toast({
-        title: "خطا در آپدیت اطلاعات",
+        title: t('errors.update'),
       });
       return;
     }
     toast({
-      title: "آپدیت شد",
+      title: t('updated'),
     });
     setOpen(false);
   };
 
-  const t = useTranslations('Contacts.Form')
 
   if (isContactLoading || !contact) {
     return <ContactSkeleton />;

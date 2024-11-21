@@ -10,6 +10,7 @@ import { CommentsNamespace } from "@/types/comment"
 import { useParams } from "next/navigation"
 import InfiniteScroll from "react-infinite-scroll-component"
 import CommentsSkeleton from "./comments.skeleton"
+import { useTranslations } from "next-intl"
 
 interface CommentsListProps {
   isCollapsed: boolean
@@ -25,6 +26,8 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
+
+  const t = useTranslations('Comments.List')
 
   const fetchComments = useCallback(() => {
     console.log("FetchMore", page)
@@ -99,8 +102,8 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
           dataLength={comments.length}
           next={fetchComments}
           hasMore={hasMore}
-          loader={<div className="text-center py-4">درحال بارگزاری...</div>}
-          endMessage={<div className="text-center py-4">تموم شد :)</div>}
+          loader={<div className="text-center py-4">{t('loading')}</div>}
+          endMessage={<div className="text-center py-4">{t('thereAreNoMoreComments')}</div>}
           scrollableTarget="comments-container"
         >
           <div className="grid gap-1 px-2">

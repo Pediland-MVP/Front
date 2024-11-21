@@ -42,8 +42,10 @@
                 "address": "Please enter address",
                 "gender": "Please select gender",
                 "birthDate": "Please enter valid birth date",
-                "birthDateRequired": "Birth date is required"
-            }
+                "birthDateRequired": "Birth date is required",
+                "update": "Update failed"
+            },
+            "updated": "Updated"
         },
         "List": {
             "image": "Image",
@@ -63,5 +65,41 @@
             "show": "Show",
             "page": "{page} of {pages}"
         }
+    },
+    "Inbox": {
+        "ChatBottombar": {
+            "errors": {
+                "send": "Failed to send"
+            },
+            "textPlaceholder": "Message text"
+        },
+        "ChatList": {
+            "thereAreNoMoreMessages": "There are no more messages"
+        },
+        "ChatsList": {
+            "loading": "Loading...",
+            "thereAreNoMoreChats": "No more messages"
+        },
+        "directsList": "Directs list"
+    },
+    "Comments": {
+        "Footer": {
+            "errors": {
+                "text": "Please enter your comment"
+            },
+            "placeholder": "Your reply",
+            "success": "Comment sent successfully",
+            "error": "Error sending comment"
+        },
+        "Comment": {
+            "thereAreNoMoreMessages": "There are no more comments",
+            "comments": "Comments"
+        },
+        "List": {
+            "loading": "Loading...",
+            "thereAreNoMoreComments": "No more comments"
+        },
+        "title": "Comments list"
     }
+    
 }

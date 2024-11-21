@@ -42,8 +42,10 @@
                 "address": "لطفاً آدرس را وارد کنید",
                 "gender": "لطفاً جنسیت را انتخاب کنید",
                 "birthDate": "لطفاً تاریخ تولد معتبر وارد کنید",
-                "birthDateRequired": "تاریخ تولد الزامی است"
-            }
+                "birthDateRequired": "تاریخ تولد الزامی است",
+                "update": "خطایی پیش آمد"
+            },
+            "updated": "اطلاعات با موفقیت بروز شد"
         },
         "List": {
             "image": "تصویر",
@@ -63,5 +65,41 @@
             "show": "نمایش",
             "page": "صفحه {page} از {pages}"
         }
+    },
+    "Inbox": {
+        "ChatBottombar": {
+            "errors": {
+                "send": "خطا در ارسال"
+            },
+            "textPlaceholder": "متن پیام"
+        },
+        "ChatList": {
+            "thereAreNoMoreMessages": "دیگه پیامی نیست"
+        },
+        "ChatsList": {
+            "loading":  "در حال بارگذاری...",
+            "thereAreNoMoreChats": "تموم شد :)"
+        },
+        "directsList": "لیست دایرکت‌ها"
+    },
+    "Comments": {
+        "Footer": {
+            "errors": {
+                "text": "نظر خود را وارد کنید"
+            },
+            "placeholder": "متن کامنت",
+            "success": "کامنت با موفقیت ارسال شد",
+            "error": "خطا در ارسال کامنت"
+        },
+        "Comment": {
+            "thereAreNoMoreMessages": "دیگه کامنتی نیست",
+            "comments": "کامنت‌ها"
+        },
+        "List": {
+            "loading":  "در حال بارگذاری...",
+            "thereAreNoMoreComments": "تموم شد :)"
+        },
+        "title": "لیست کامنت‌ها"
     }
+    
 }

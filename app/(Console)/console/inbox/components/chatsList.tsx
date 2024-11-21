@@ -8,6 +8,7 @@ import { Conversations, Item } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ChatsListSkeleton from "./chatsList.skeleton";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface ChatsListProps {
   isCollapsed: boolean;
@@ -79,6 +80,8 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
     };
   }, []);
 
+  const t = useTranslations('Inbox.ChatsList');
+
   if (!conversations.length && isLoading) {
     return <ChatsListSkeleton />;
   }
@@ -93,8 +96,8 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
         dataLength={conversations.length}
         next={fetchConversations}
         hasMore={hasMore}
-        loader={<div className="text-center py-4">درحال بارگزاری...</div>}
-        endMessage={<div className="text-center py-4">تموم شد :)</div>}
+        loader={<div className="text-center py-4">{t('loading')}</div>}
+        endMessage={<div className="text-center py-4">{t('thereAreNoMoreChats')}</div>}
         scrollableTarget="chats-container"
       >
         <nav className="grid group-[[data-collapsed=true]]:justify-center">

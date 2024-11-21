@@ -13,12 +13,10 @@ import { EmojiPicker } from "../../../inbox/components/emojiPicker";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { FormField, Form } from "@/components/ui/form";
 import { KeyedMutator } from "swr";
+import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  text: z.string().min(1, "نظر خود را وارد کنید"),
-});
 
-type FormData = z.infer<typeof formSchema>;
+
 
 interface RedesignedCommentFooterProps {
   commentId: string;
@@ -31,6 +29,15 @@ export default function RedesignedCommentFooter({
   mutateComments,
   isMobile = false,
 }: RedesignedCommentFooterProps) {
+
+  const t = useTranslations('Comments.Footer')
+
+  const formSchema = z.object({
+    text: z.string().min(1, `${t("errors.text")}`),
+  });
+
+  type FormData = z.infer<typeof formSchema>;
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -65,12 +72,12 @@ export default function RedesignedCommentFooter({
       }
 
       await mutateComments();
-      toast({ title: "ثبت شد" });
+      toast({ title: t('success') });
       form.reset();
     } catch (error) {
       console.error("Error submitting comment:", error);
       toast({
-        title: "خطا در ارسال نظر",
+        title: t('error'),
         variant: "destructive",
       });
     }
@@ -134,7 +141,7 @@ export default function RedesignedCommentFooter({
                   <Textarea
                     {...field}
                     ref={inputRef}
-                    placeholder="ریپلای..."
+                    placeholder={t('placeholder')}
                     className="w-full resize-none min-h-[60px]"
                     onKeyDown={handleKeyPress}
                     autoComplete="off"

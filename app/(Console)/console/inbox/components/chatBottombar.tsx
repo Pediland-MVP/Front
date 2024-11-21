@@ -11,6 +11,7 @@ import { WsMessages } from "@/ws.messages";
 import { IMessage } from "./message";
 import { messagesSocket } from "@/app/utils/socket";
 import { PaperPlaneRight } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
 
 interface ChatBottombarProps {
   isMobile: boolean;
@@ -29,6 +30,8 @@ export default function ChatBottombar({
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const t = useTranslations('Inbox.ChatBottombar');
+
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
   };
@@ -37,7 +40,7 @@ export default function ChatBottombar({
     if (!currentLead) {
       return toast({
         variant: "destructive",
-        title: "خطا در ارسال پیام",
+        title: t('errors.send'),
       });
     }
 
@@ -57,6 +60,7 @@ export default function ChatBottombar({
       }
     }
   };
+
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -120,7 +124,7 @@ export default function ChatBottombar({
               onKeyDown={handleKeyPress}
               onChange={handleInputChange}
               name="message"
-              placeholder="متن پیام"
+              placeholder={t('textPlaceholder')}
               className="w-full resize-none"
             ></Textarea>
           </motion.div>

@@ -9,6 +9,7 @@ import Message, { IMessage } from "./message";
 import { messagesSocket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { useTranslations } from "next-intl";
 
 interface ChatScreenProps {
   lead?: leadNamespace.GET["One"];
@@ -22,6 +23,8 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
   const [messagesList, setMessagesList] = useState<IMessage[]>([]);
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
+
+  const t = useTranslations('Inbox.ChatList');
 
   useEffect(() => {
     console.log(messagesList);
@@ -92,7 +95,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
           inverse={true} // To load items in reverse order (top down)
           endMessage={
             <p className="text-sm text-center mt-2 text-gray-500">
-              <p>دیگه پیامی نیست!</p>
+              <p>{t('thereAreNoMoreMessages')}</p>
             </p>
           }
           scrollableTarget="chat-container" // The ID of the scrollable div
