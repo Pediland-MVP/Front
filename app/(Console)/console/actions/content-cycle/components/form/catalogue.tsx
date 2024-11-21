@@ -35,6 +35,7 @@ import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from 'next-intl';
 
 type SortableItemProps = {
   id: string;
@@ -141,6 +142,8 @@ export default function Catalogue({
     }
   };
 
+  const t = useTranslations('Automations.Catalogue')
+
   return (
     <>
       <FormField
@@ -164,7 +167,7 @@ export default function Catalogue({
                     }}
                   />
                 </FormControl>
-                <FormLabel className="">ارسال کاتالوگ محصولات</FormLabel>
+                <FormLabel className="">{t('label')}</FormLabel>
               </div>
               {field.value && (
                 <div className='space-y-1'>
@@ -176,7 +179,7 @@ export default function Catalogue({
                   >
                     <PlusCircle size={24} />
                     <span className="text-sm font-semibold text-blue-600">
-                      افزودن محصول
+                      {t('add')}
                     </span>
                   </Button>
                   <DndContext 

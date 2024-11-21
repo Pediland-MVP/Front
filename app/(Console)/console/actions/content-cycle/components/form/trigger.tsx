@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
 import { Control, UseFormGetValues } from "react-hook-form";
 import { contentCycleFormSchema } from "../contentCycle";
@@ -11,10 +12,12 @@ type TriggerProps = {
 };
 
 export default function Trigger({ control, getValues }: TriggerProps) {
+  const t = useTranslations('Automations.Trigger');
+
   return (
     <>
       <div className="_trigger gap-4 flex items-center">
-        <p>اگر کاربر شما در</p>
+        <p>{t('userIn')}</p>
         <div className="flex gap-6 items-center">
           <FormField
             control={control}
@@ -28,7 +31,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
-                <FormLabel htmlFor="direct">دایرکت</FormLabel>
+                <FormLabel htmlFor="direct">{t('direct')}</FormLabel>
               </div>
             )}
           ></FormField>
@@ -43,7 +46,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
-                <FormLabel htmlFor="direct">کامنت</FormLabel>
+                <FormLabel htmlFor="direct">{t('comment')}</FormLabel>
               </div>
             )}
           ></FormField>
@@ -56,13 +59,13 @@ export default function Trigger({ control, getValues }: TriggerProps) {
           name="commentStartText"
           render={({ field, fieldState: { error } }) => (
             <div className="space-y-1">
-              <FormLabel> پیام درخواست شروع </FormLabel>
+              <FormLabel>{t('startRequestMessage')}</FormLabel>
               <Textarea
                 {...field}
                 value={field.value ?? ""}
-                placeholder="لطفا برای شروع فرایند روی دکمه شروع بزنید..."
+                placeholder={t('commentPlaceholder')}
               ></Textarea>
-              {error && <FormMessage> {error.message} </FormMessage>}
+              {error && <FormMessage>{error.message}</FormMessage>}
             </div>
           )}
         ></FormField>
@@ -70,3 +73,4 @@ export default function Trigger({ control, getValues }: TriggerProps) {
     </>
   );
 }
+

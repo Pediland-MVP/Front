@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { useState, useEffect, MouseEvent } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ const ProductsDialog = ({
   updateProducts,
   productsField,
 }: InstagramProductsDialogProps) => {
+  const t = useTranslations('Automations.ProductsDialog');
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState<ProductNamespace.Products>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -49,7 +51,7 @@ const ProductsDialog = ({
       const data: ProductNamespace.GET = await response.json();
 
       if (!response.ok) {
-        console.error("Error fetching products:", response.statusText);
+        console.error(t('fetchError'), response.statusText);
         return;
       }
 
@@ -57,7 +59,7 @@ const ProductsDialog = ({
       setHasMore(data.meta.totalPages === PAGE_SIZE);
       setPage((prevPage) => prevPage + 1);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error(t('fetchError'), error);
     } finally {
       setIsLoading(false);
     }
@@ -89,18 +91,18 @@ const ProductsDialog = ({
           <div className="relative w-48 h-48 rounded-lg overflow-hidden">
             <Image
               src={productsField[index]?.images?.[0]?.url}
-              alt="cover"
+              alt={t('coverImageAlt')}
               fill
             />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
               <Button type="button" className="text-white">
-                تعویض محصول
+                {t('changeProduct')}
               </Button>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-y-2">
-            <Button type="button" variant="outline">انتخاب محصول</Button>
+            <Button type="button" variant="outline">{t('selectProduct')}</Button>
             {formState?.errors?.products?.[index]?.id && (
               <ErrorMessage>
                 {formState.errors.products?.[index].id.message}
@@ -111,15 +113,15 @@ const ProductsDialog = ({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>انتخاب محصول</DialogTitle>
-          <DialogDescription>یک محصول انتخاب کنید</DialogDescription>
+          <DialogTitle>{t('selectProduct')}</DialogTitle>
+          <DialogDescription>{t('selectProductDescription')}</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={products.length}
           next={() => fetchProducts(page)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>پست دیگری موجود نیست.</p>}
+          endMessage={<p>{t('noMorePosts')}</p>}
           scrollableTarget="scrollableDiv"
         >
           <div
@@ -144,21 +146,21 @@ const ProductsDialog = ({
                   >
                     <Image
                       src={product.images[0].url}
-                      alt={product.title|| "Instagram Post"}
+                      alt={product.title || t('instagramPostAlt')}
                       layout="fill"
                       objectFit="cover"
                       className="hover:opacity-80 duration-150"
                     />
                     <div className="absolute inset-x-0 bottom-0 px-2 py-1 bg-black bg-opacity-50">
                       <div className="text-white text-sm font-bold">{product.title}</div>
-                      <div className="text-white text-sm">{product.price} تومان</div>
+                      <div className="text-white text-sm">{t('price', { price: product.price })}</div>
                     </div>
                   </div>
                 ))}
           </div>
         </InfiniteScroll>
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>بستن</Button>
+          <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

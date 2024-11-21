@@ -77,7 +77,7 @@
             "thereAreNoMoreMessages": "دیگه پیامی نیست"
         },
         "ChatsList": {
-            "loading":  "در حال بارگذاری...",
+            "loading": "در حال بارگذاری...",
             "thereAreNoMoreChats": "تموم شد :)"
         },
         "directsList": "لیست دایرکت‌ها"
@@ -96,10 +96,108 @@
             "comments": "کامنت‌ها"
         },
         "List": {
-            "loading":  "در حال بارگذاری...",
+            "loading": "در حال بارگذاری...",
             "thereAreNoMoreComments": "تموم شد :)"
         },
         "title": "لیست کامنت‌ها"
+    },
+    "Automations": {
+        "list": "لیست اتوماسیون",
+        "add": "افزودن",
+        "List": {
+            "fetchError": "خطا در دریافت اطلاعات",
+            "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
+            "error": "خطا",
+            "problemOccurred": "مشکلی پیش آمده است",
+            "deleted": "حذف شد",
+            "deleteErrorRetry": "خطا در حذف مورد. لطفاً دوباره تلاش کنید.",
+            "title": "عنوان",
+            "conditionValue": "مقدار شرط",
+            "firstMessage": "پیام اول",
+            "actions": "عملیات",
+            "notAvailable": "موجود نیست",
+            "responses": "جواب‌ها",
+            "edit": "ویرایش",
+            "delete": "حذف",
+            "previous": "قبلی",
+            "next": "بعدی",
+            "pageOf": "صفحه {current} از {total}"
+        },
+        "ProductsDialog": {
+            "fetchError": "خطا در دریافت محصولات:",
+            "coverImageAlt": "تصویر کاور",
+            "changeProduct": "تعویض محصول",
+            "selectProduct": "انتخاب محصول",
+            "selectProductDescription": "یک محصول انتخاب کنید",
+            "noMorePosts": "پست دیگری موجود نیست.",
+            "instagramPostAlt": "پست اینستاگرام",
+            "price": "{price} تومان",
+            "close": "بستن"
+        },
+        "DeleteConfirmationDialog": {
+            "title": "آیا از حذف این مورد اطمینان دارید؟",
+            "description": "این عمل غیرقابل بازگشت است. این مورد به طور دائمی از سرورهای ما حذف خواهد شد.",
+            "delete": "حذف",
+            "cancel": "لغو"
+        },
+        "Trigger": {
+            "userIn": "اگر کاربر شما در",
+            "direct": "دایرکت",
+            "comment": "کامنت",
+            "startRequestMessage": "پیام درخواست شروع",
+            "commentPlaceholder": "لطفا برای شروع فرایند روی دکمه شروع بزنید..."
+        },
+        "Title": {
+            "title": "عنوان",
+            "placeholder": "برای این اتوماسیون یک عنوان انتخاب کنید"
+        },
+        "Questions": {
+            "placeholder": "سوال",
+            "add": "افزودن سوال"
+        },
+        "JustFollowers": {
+            "justFollowers": "ارسال به شرط فالو داشتن صفحه",
+            "messageText": "متن پیام",
+            "helper": "با فعال کردن این گزینه، پیام مشخص شده در صورتی ارسال می‌شود که کاربر، صفحه شما را دنبال (فالو) کرده باشد در غیر این صورت پیام زیر نمایش داده می‌شود.",
+            "placeholder": "لطفا برای ادامه صفحه ما را فالو کنید ...",
+            "retryButton": "متن دکمه بررسی مجدد",
+            "retryPlaceholder": "فالو کردم"
+        },
+        "Conditions": {
+            "wordOrPhrase": "کلمه یا جمله ای",
+            "equal": "برابر",
+            "include": "شامل",
+            "with": "با",
+            "value": "مقدار",
+            "deleteCondition": "حذف شرط",
+            "addNewCondition": "افزودن شرط جدید",
+            "sendMessageBelow": "را ارسال کند پیام زیر برایش ارسال شود."
+        },
+        "Contents": {
+            "removeContent": "حذف محتوا",
+            "enterYourMessage": "پیام خود را وارد کنید",
+            "consentMessage": "پیام کسب اجازه: آیا مایل به ادامه هستید؟...",
+            "addContent": "افزودن محتوا"
+        },
+        "Cta": {
+            "label": "متن مرحله پایانی",
+            "placeholder": "خیلی ممنون که چرخه رو کامل کردید..."
+        },
+        "GetUserData": {
+            "getUserData": "دریافت اطلاعات کاربر",
+            "selectDataType": "انتخاب نوع اطلاعات",
+            "select": "انتخاب کنید",
+            "email": "ایمیل",
+            "mobileNumber": "شماره موبایل",
+            "questionText": "متن سوال",
+            "enterMobileNumber": "لطفا شماره موبایل خود را وارد کنید"
+        },
+        "Catalogue": {
+            "label": "ارسال کاتالوگ  محصولات",
+            "add": "افزودن محصول"
+        },
+        "likeCommand": "لایک کردن دستور",
+        "submit": "ایجاد",
+        "update": "آپدیت"
     }
-    
 }

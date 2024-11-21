@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import ErrorMessage from "@/components/ui/errorMessage";
 import { FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,8 @@ export default function Conditions({
   getValues,
   formState,
 }: TriggerProps) {
+  const t = useTranslations('Automations.Conditions');
+
   const {
     fields: conditionsField,
     remove: removeConditions,
@@ -48,7 +51,7 @@ export default function Conditions({
   return (
     <>
       <div className="space-y-1">
-        <p>کلمه یا جمله ای</p>
+        <p>{t('wordOrPhrase')}</p>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
             <div key={condition.id} className="flex gap-4 items-center">
@@ -60,12 +63,12 @@ export default function Conditions({
                   <FormItem>
                     <Select {...field} dir="rtl" onValueChange={field.onChange}>
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="برابر" />
+                        <SelectValue placeholder={t('equal')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectItem value="EQUAL">برابر</SelectItem>
-                          <SelectItem value="INCLUDE">شامل</SelectItem>
+                          <SelectItem value="EQUAL">{t('equal')}</SelectItem>
+                          <SelectItem value="INCLUDE">{t('include')}</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -73,7 +76,7 @@ export default function Conditions({
                   </FormItem>
                 )}
               />
-              <span className="text-sm">با</span>
+              <span className="text-sm">{t('with')}</span>
               <Controller
                 name={`conditions.${index}.value`}
                 control={control}
@@ -83,7 +86,7 @@ export default function Conditions({
                       {...field}
                       className="max-w-[15rem]"
                       type="text"
-                      placeholder="مقدار"
+                      placeholder={t('value')}
                     />
                     {/* {error && (
                             <FormMessage> {error.message} </FormMessage>
@@ -98,6 +101,7 @@ export default function Conditions({
                   size={24}
                   className="text-red-600 cursor-pointer"
                   onClick={() => removeConditions(index)}
+                  aria-label={t('deleteCondition')}
                 />
               )}
               <Button
@@ -110,12 +114,11 @@ export default function Conditions({
               >
                 <PlusCircle size={24} />
                 <span className="text-sm font-semibold text-blue-600">
-                  افزودن شرط جدید
+                  {t('addNewCondition')}
                 </span>
               </Button>
             </div>
           ))}
-          {/* Add button to add more conditions */}
         </div>
       </div>
 
@@ -127,7 +130,8 @@ export default function Conditions({
         })}
 
       {/* Message input & post select */}
-      <p>را ارسال کند پیام زیر برایش ارسال شود.</p>
+      <p>{t('sendMessageBelow')}</p>
     </>
   );
 }
+

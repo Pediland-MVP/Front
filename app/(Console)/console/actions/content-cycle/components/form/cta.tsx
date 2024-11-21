@@ -3,12 +3,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Control } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
+import { useTranslations } from "next-intl";
 
 type CtaProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
 };
 
 export default function Cta({ control }: CtaProps) {
+  const t = useTranslations('Automations.Cta');
   return (
     <FormField
       name="cta"
@@ -16,10 +18,10 @@ export default function Cta({ control }: CtaProps) {
       render={({ field, fieldState: { error } }) => {
         return (
           <div className="space-y-1">
-            <FormLabel>متن مرحله پایانی</FormLabel>
+            <FormLabel>{t('label')}</FormLabel>
             <Textarea
               {...field}
-              placeholder="خیلی ممنون که چرخه رو کامل کردید..."
+              placeholder={t('placeholder')}
             />
             {error && <FormMessage> {error.message} </FormMessage>}
           </div>

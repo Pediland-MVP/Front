@@ -1,9 +1,10 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import React, { useState, useEffect } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Loader2, Pencil, Trash2, ChevronRight, ChevronLeft } from "lucide-react"
+import { Loader2, Pencil, Trash2, ChevronRight, ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
 import { toast } from '@/components/ui/use-toast'
@@ -31,6 +32,7 @@ type ContentCycleResponse = {
 };
 
 export default function ContentCycleTable() {
+  const t = useTranslations('Automations.List');
   const [data, setData] = useState<ContentCycleResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,13 +62,13 @@ export default function ContentCycleTable() {
         }
       );
       if (!response.ok) {
-        throw new Error("خطا در دریافت اطلاعات");
+        throw new Error(t('fetchError'));
       }
       const result = await response.json();
       setData(result);
       setCurrentPage(page);
     } catch (error) {
-      setError("خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.");
+      setError(t('fetchErrorRetry'));
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
@@ -98,19 +100,19 @@ export default function ContentCycleTable() {
 
         if (!res.ok) {
           toast({
-            title: "خطا",
-            description: "مشکلی پیش آمده است",
+            title: t('error'),
+            description: t('problemOccurred'),
             variant: "destructive",
           });
           return;
         }
 
         toast({
-          title: "حذف شد",
+          title: t('deleted'),
         });
         await fetchData(currentPage, undefined, true); // Refresh data after deletion
       } catch (error) {
-        setError("خطا در حذف مورد. لطفاً دوباره تلاش کنید.");
+        setError(t('deleteErrorRetry'));
         console.error("Error deleting item:", error);
       } finally {
         setIsLoading(false);
@@ -139,10 +141,10 @@ export default function ContentCycleTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">عنوان</TableHead>
-                  <TableHead className="text-right">مقدار شرط</TableHead>
-                  <TableHead className="text-right">پیام اول</TableHead>
-                  <TableHead className="text-right">عملیات</TableHead>
+                  <TableHead className="text-right">{t('title')}</TableHead>
+                  <TableHead className="text-right">{t('conditionValue')}</TableHead>
+                  <TableHead className="text-right">{t('firstMessage')}</TableHead>
+                  <TableHead className="text-right">{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -150,23 +152,23 @@ export default function ContentCycleTable() {
                   <TableRow key={item.id}>
                     <TableCell className="text-right">{item.title}</TableCell>
                     <TableCell className="text-right">
-                      {item.conditions[0]?.value || "موجود نیست"}
+                      {item.conditions[0]?.value || t('notAvailable')}
                     </TableCell>
                     <TableCell className="text-right">
-                      {item.contents[0]?.text || "موجود نیست"}
+                      {item.contents[0]?.text || t('notAvailable')}
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end space-x-2 space-x-reverse">
                       <Link href={`/console/sessions?contentCycleId=${item.id}`}>
                           <Button variant="ghost" size="sm">
                             <Mailbox className="h-4 w-4 ml-2" />
-                            جواب‌ها
+                            {t('responses')}
                           </Button>
                         </Link>
                         <Link href={`/console/actions/content-cycle/${item.id}`}>
                           <Button variant="ghost" size="sm">
                             <Pencil className="h-4 w-4 ml-2" />
-                            ویرایش
+                            {t('edit')}
                           </Button>
                         </Link>
                         <Button
@@ -175,7 +177,7 @@ export default function ContentCycleTable() {
                           onClick={() => handleDeleteClick(item.id)}
                         >
                           <Trash2 className="h-4 w-4 ml-2" />
-                          حذف
+                          {t('delete')}
                         </Button>
                       </div>
                     </TableCell>
@@ -192,17 +194,17 @@ export default function ContentCycleTable() {
                 disabled={currentPage === 1}
               >
                 <ChevronRight className="h-4 w-4 ml-2" />
-                قبلی
+                {t('previous')}
               </Button>
               <span>
-                صفحه {currentPage} از {data.meta.totalPages}
+                {t('pageOf', { current: currentPage, total: data.meta.totalPages })}
               </span>
               <Button
                 variant="outline"
                 onClick={() => fetchData(currentPage + 1)}
                 disabled={currentPage === data.meta.totalPages}
               >
-                بعدی
+                {t('next')}
                 <ChevronLeft className="h-4 w-4 mr-2" />
               </Button>
             </div>
@@ -218,3 +220,4 @@ export default function ContentCycleTable() {
     </div>
   );
 }
+

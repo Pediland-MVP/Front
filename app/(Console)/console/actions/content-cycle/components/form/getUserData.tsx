@@ -1,10 +1,13 @@
+"use client"
+
+import { useTranslations } from 'next-intl'
 import {
   FormField,
   FormItem,
   FormControl,
   FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -12,17 +15,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Control } from "react-hook-form";
-import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
-import { Switch } from "@/components/ui/switch";
+} from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { Control } from "react-hook-form"
+import { z } from "zod"
+import { contentCycleFormSchema } from "../contentCycle"
 
 type GetUserDataProps = {
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-};
+  control: Control<z.infer<typeof contentCycleFormSchema>>
+}
 
 export default function GetUserData({ control }: GetUserDataProps) {
+  const t = useTranslations('Automations.GetUserData')
+
   return (
     <FormField
       control={control}
@@ -37,7 +42,7 @@ export default function GetUserData({ control }: GetUserDataProps) {
                 onCheckedChange={field.onChange}
               />
             </FormControl>
-            <FormLabel className="">دریافت اطلاعات کاربر</FormLabel>
+            <FormLabel className="">{t('getUserData')}</FormLabel>
           </div>
           {field.value && (
             <div className="space-y-1">
@@ -46,7 +51,7 @@ export default function GetUserData({ control }: GetUserDataProps) {
                 name="getUserData.type"
                 render={({ field: selectField }) => (
                   <FormItem>
-                    <FormLabel className="">انتخاب نوع اطلاعات</FormLabel>
+                    <FormLabel className="">{t('selectDataType')}</FormLabel>
                     <FormControl>
                       <Select
                         {...selectField}
@@ -55,14 +60,14 @@ export default function GetUserData({ control }: GetUserDataProps) {
                         onValueChange={selectField.onChange}
                       >
                         <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="انتخاب کنید" />
+                          <SelectValue placeholder={t('select')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectItem value="email" defaultChecked>
-                              ایمیل
+                              {t('email')}
                             </SelectItem>
-                            <SelectItem value="mobile">شماره موبایل</SelectItem>
+                            <SelectItem value="mobile">{t('mobileNumber')}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -76,10 +81,10 @@ export default function GetUserData({ control }: GetUserDataProps) {
                 name="getUserData.text"
                 render={({ field: textField }) => (
                   <FormItem>
-                    <FormLabel className="">متن سوال</FormLabel>
+                    <FormLabel className="">{t('questionText')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={`لطفا شماره موبایل خود را وارد کنید`}
+                        placeholder={t('enterMobileNumber')}
                         {...textField}
                         value={textField.value ?? ""}
                       />
@@ -92,5 +97,6 @@ export default function GetUserData({ control }: GetUserDataProps) {
         </FormItem>
       )}
     />
-  );
+  )
 }
+

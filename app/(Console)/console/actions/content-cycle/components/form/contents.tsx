@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { FormItem, FormMessage } from "@/components/ui/form";
 import { PlusCircle, Trash, ArrowsOutCardinal } from "@phosphor-icons/react";
 import {
@@ -57,6 +58,7 @@ function SortableItem({
   removeContents: (index: number) => void;
   updateContents: (index: number, value: any) => void;
 }) {
+  const t = useTranslations('Automations.Contents');
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -90,8 +92,9 @@ function SortableItem({
       <div className="flex flex-col gap-2 w-full">
         <Trash
           size={24}
-          className="text-red-600 cursor-pointer "
+          className="text-red-600 cursor-pointer"
           onClick={() => removeContents(index)}
+          aria-label={t('removeContent')}
         />
         <Controller
           name={`contents.${index}.text`}
@@ -100,7 +103,7 @@ function SortableItem({
             <FormItem>
               <Textarea
                 className="w-full border px-3 py-2 rounded-xl"
-                placeholder="پیام خود را وارد کنید"
+                placeholder={t('enterYourMessage')}
                 {...field}
               />
               {error && <FormMessage> {error.message} </FormMessage>}
@@ -115,7 +118,7 @@ function SortableItem({
             <FormItem>
               <Textarea
                 className="w-full border px-3 py-2 rounded-xl"
-                placeholder="پیام کسب اجازه: آیا مایل به ادامه هستید؟..."
+                placeholder={t('consentMessage')}
                 {...field}
               />
               {error && <FormMessage> {error.message} </FormMessage>}
@@ -132,6 +135,7 @@ export default function Contents({
   getValues,
   formState,
 }: ContentsProps) {
+  const t = useTranslations('Automations.Contents');
   const {
     fields: contentsField,
     remove: removeContents,
@@ -184,7 +188,7 @@ export default function Contents({
       >
         <PlusCircle size={24} />
         <span className="text-sm font-semibold text-blue-600">
-          افزودن محتوا
+          {t('addContent')}
         </span>
       </Button>
 
@@ -217,3 +221,4 @@ export default function Contents({
     </>
   );
 }
+

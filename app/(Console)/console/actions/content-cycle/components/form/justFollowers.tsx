@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Control, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
+import { useTranslations } from "next-intl";
 
 type JustFollowersProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -19,6 +20,7 @@ export default function JustFollowers({
   control,
   getValues,
 }: JustFollowersProps) {
+  const t = useTranslations('Automations.JustFollowers');
   return (
     <>
       <FormField
@@ -34,7 +36,7 @@ export default function JustFollowers({
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel className="">ارسال به شرط فالو داشتن صفحه</FormLabel>
+              <FormLabel className="">{t('justFollowers')}</FormLabel>
             </div>
             <FormMessage />
           </FormItem>
@@ -48,15 +50,13 @@ export default function JustFollowers({
             name="followMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel className="">متن پیام</FormLabel>
+                <FormLabel className="">{t('messageText')}</FormLabel>
                 <p className="text-sm mb-1">
-                  با فعال کردن این گزینه، پیام مشخص شده در صورتی ارسال می‌شود که
-                  کاربر، صفحه شما را دنبال (فالو) کرده باشد در غیر این صورت پیام
-                  زیر نمایش داده می‌شود.
+                  {t('helper')}
                 </p>
                 <FormControl>
                   <Input
-                    placeholder="لطفا برای ادامه صفحه ما را فالو کنید ..."
+                    placeholder={t('placeholder')}
                     {...field}
                     value={field.value ?? ""}
                   />
@@ -71,10 +71,10 @@ export default function JustFollowers({
             name="followCheckMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel className="">متن دکمه بررسی مجدد</FormLabel>
+                <FormLabel className="">{t('retryButton')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="فالو کردم"
+                    placeholder={t('retryPlaceholder')}
                     {...field}
                     value={field.value ?? ""}
                   />

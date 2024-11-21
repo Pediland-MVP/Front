@@ -9,20 +9,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
 
 type TitleProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
 };
 export default function ContentCycleTitle({ control }: TitleProps) {
+  const t = useTranslations('Automations.Title');
   return (
     <FormField
       control={control}
       name="title"
       render={({ field, fieldState: { error } }) => (
         <FormItem>
-          <FormLabel>عنوان</FormLabel>
+          <FormLabel>{t('title')}</FormLabel>
           <FormControl>
-            <Input {...field} placeholder="برای این اتوماسیون یک عنوان انتخاب کنید" />
+            <Input {...field} placeholder={t('placeholder')} />
           </FormControl>
           {error && <FormMessage> {error.message} </FormMessage>}
         </FormItem>

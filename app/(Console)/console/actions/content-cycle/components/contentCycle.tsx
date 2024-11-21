@@ -21,6 +21,7 @@ import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
 import Questions from "./form/questions";
 import ContentCycleTitle from "./form/title";
+import { useTranslations } from "next-intl";
 
 export type ContentType = {
   id: string;
@@ -266,6 +267,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     console.log(form.formState.errors);
   }, [form.watch()]);
 
+  const t = useTranslations('Automations')
+
   return (
     <div className="_add-automation">
       {isLoading ? (
@@ -316,7 +319,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               <GetUserData control={form.control} />
 
               {/* Submit button */}
-              <LoadingButton isLoading={isSubmitting}>ایجاد</LoadingButton>
+              <LoadingButton isLoading={isSubmitting}>{id ? t('update') : t('submit')}</LoadingButton>
             </form>
           </Form>
         </div>

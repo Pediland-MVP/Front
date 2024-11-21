@@ -16,15 +16,14 @@ import {
   DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
   SortableContext,
-  useSortable,
+  useSortable
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
 import { Trash } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
 
 type QuestionsProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -45,6 +44,8 @@ function SortableItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
+  const t = useTranslations('Automations.Questions');
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -64,7 +65,7 @@ function SortableItem({
         control={control}
         name={`questions.${index}.text`}
         render={({ field }) => (
-          <Input {...field} placeholder="سوال" className="flex-grow" />
+        <Input {...field} placeholder={t('placeholder')} className="flex-grow" />
         )}
       />
     </div>
@@ -110,6 +111,8 @@ export default function Questions({ control }: QuestionsProps) {
     }
   };
 
+  const t = useTranslations('Automations.Questions');
+
   return (
     <>
       <Button
@@ -123,7 +126,7 @@ export default function Questions({ control }: QuestionsProps) {
         className="flex items-center gap-2 cursor-pointer"
       >
         <PlusCircle size={24} />
-        <span className="text-sm font-semibold text-blue-600">افزودن سوال</span>
+        <span className="text-sm font-semibold text-blue-600">{t('add')}</span>
       </Button>
 
       <DndContext

@@ -3,13 +3,14 @@ import { Switch } from "@/components/ui/switch";
 import { Control } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
+import { useTranslations } from "next-intl";
 
 type LikeDirectProps = {
     control: Control<z.infer<typeof contentCycleFormSchema>>;
   };
 
 export default function LikeDirect({ control }: LikeDirectProps) {
-
+    const t = useTranslations('Automations')
     return (
         <FormField
         control={control}
@@ -25,7 +26,7 @@ export default function LikeDirect({ control }: LikeDirectProps) {
                 />
               </FormControl>
               <FormLabel className="">
-                لایک کردن پیام‌های دایرکت
+                {t('likeCommand')}
               </FormLabel>
             </div>
             <FormMessage />
