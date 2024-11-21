@@ -21,8 +21,9 @@ export default async function ConsoleLayout({
       <body className="min-h-screen">
         <NextIntlClientProvider messages={messages}>
           <AuthHeader />
-
-          <div className="_main-wrap h-[calc(100vh-69px)]">{children}</div>
+          <div className="_main-wrap h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)]">
+            {children}
+          </div>
           <Toaster />
         </NextIntlClientProvider>
       </body>

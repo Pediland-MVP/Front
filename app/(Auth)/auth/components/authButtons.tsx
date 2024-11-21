@@ -2,10 +2,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Keyhole, UserCirclePlus } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { Button } from "@/components/theme/ui/button";
+import { Keyhole, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 
 export default function AuthButtons() {
   const [currentPath, setCurrentPath] = useState<string>("");
@@ -16,15 +17,21 @@ export default function AuthButtons() {
   }, [pathname]);
 
   return (
-    <div className="_back flex items-center gap-1 text-gray-400 hover:text-gray-700 duration-300">
+    <div className="_auth-buttons flex items-center">
       {currentPath === "/auth/signin" && (
-        <Button asChild variant="ghost">
-          <Link href="/auth/signup"><UserCirclePlus size={24} weight="light" className="ml-2" />ثبت نام</Link>
+        <Button asChild variant="link">
+          <Link href="/auth/signup">
+            <UserCirclePlus size={22} />
+            ثبت نام
+          </Link>
         </Button>
       )}
       {(currentPath === "/auth/signup" || currentPath === "/auth/reset") && (
-        <Button asChild variant="ghost">
-          <Link href="/auth/signin"><Keyhole size={24} weight="light" className="ml-2" />حساب کاربری</Link>
+        <Button asChild variant="link">
+          <Link href="/auth/signin">
+            <Keyhole size={22} />
+            حساب کاربری
+          </Link>
         </Button>
       )}
     </div>
