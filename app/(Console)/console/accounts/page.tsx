@@ -1,26 +1,56 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import React from "react";
 import { Suspense } from "react";
 import Accounts from "./components/accounts";
 
+import SidebarTrigger from "@/components/theme/ui/sidebar";
+import { Button } from "@/components/theme/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/theme/ui/breadcrumb";
+import { Plus } from "@phosphor-icons/react/dist/ssr";
+
 export default function AccountPage() {
   return (
     <div className="_accounts">
-      <div className="_header flex justify-between items-center mb-4 h-9">
-        <h1 className="text-xl font-bold">مدیریت اکانت‌ها</h1>
+      <header className="px-4 pt-4 flex justify-between items-center gap-4">
+        <div className="_wrap flex items-center gap-4">
+          <SidebarTrigger />
+          <Separator orientation="vertical" className="h-6" />
+
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink>
+                  <Link href="/console">داشبورد</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>مدیریت اکانت‌ها</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
 
         <div className="_tools">
-          <Link href="/console/products/add">
-            <Button>
-              افزودن <Plus className="mr-2 h-4 w-4" />
+          <Link href="#">
+            <Button size={"sm"}>
+              <span className="hidden sm:inline">افزودن</span>{" "}
+              <Plus size={20} />
             </Button>
           </Link>
         </div>
-      </div>
-      <div className="_cards grid grid-cols-5 gap-5">
+      </header>
+
+      <div className="_cards p-4 grid sm:grid-cols-5 gap-5">
         <Suspense>
           <Accounts />
         </Suspense>

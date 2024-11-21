@@ -1,19 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/hooks/swr/fetcher";
-import { Separator } from "@/registry/new-york/ui/separator";
 import { InstagramNamespace } from "@/types/instagram";
-import { InstagramLogo, Plus, Trash } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { DrawerDialogDemo } from "./selectInstagram";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+
+import { Button } from "@/components/theme/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/theme/ui/alert-dialog";
+import { InstagramLogo, Trash } from "@phosphor-icons/react/dist/ssr";
 
 export default function Accounts() {
   const router = useRouter();
@@ -113,13 +113,6 @@ export default function Accounts() {
 
   return (
     <>
-      {/* <div className="w-full mb-6 px-4">
-        <Button
-          className=""
-          disabled={(filteredInstagramPages?.length || 0) > 0}
-        ></Button>
-      </div> */}
-
       {isInstagramPagesLoading &&
         Array.from({ length: 10 }).map((_, index) => (
           <Skeleton
@@ -135,7 +128,10 @@ export default function Accounts() {
 
       {filteredInstagramPages?.map((instagram) => {
         return (
-          <div key={instagram.id} className="_card bg-white shadow rounded-lg">
+          <div
+            key={instagram.id}
+            className="_card bg-stone-50 shadow hover:shadow-lg duration-200 border rounded-lg"
+          >
             <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
               <div>
                 {instagram.profilePictureUrl ? (
@@ -164,7 +160,7 @@ export default function Accounts() {
                     href={`https://instagram.com/${instagram.username}`}
                     target="_blank"
                   >
-                    <Button variant={"outline"}>مشاهده اکانت</Button>
+                    <Button variant={"success"}>مشاهده اکانت</Button>
                   </Link>
                 ) : (
                   <Button
@@ -181,24 +177,27 @@ export default function Accounts() {
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" size="icon">
-                      <Trash size={20} />
+                      <Trash size={22} />
                     </Button>
                   </AlertDialogTrigger>
+
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>آیا مطمئن هستید؟</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        از حذف این اکانت مطمئن هستید؟
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف
+                        این عمل قابل بازگشت نیست و این اکانت از لیست شما حذف
                         خواهد شد.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>انصراف</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleDelete(instagram.id)}
                       >
                         حذف
                       </AlertDialogAction>
+                      <AlertDialogCancel>انصراف</AlertDialogCancel>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
