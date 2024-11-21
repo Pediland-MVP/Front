@@ -1,11 +1,17 @@
 "use client";
 import { useState } from "react";
-
-import { Eye, EyeSlash, FacebookLogo, GoogleLogo } from "@phosphor-icons/react";
-// import AuthHeader from "../layout/header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { REGEX_PASSWORD } from "@/app/utils/regex";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+
+import { Button } from "@/components/theme/ui/button";
+import { Input } from "@/components/theme/ui/input";
+import TextDivider from "@/components/theme/ui/textDivider";
+import { toast } from "@/components/ui/use-toast";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
   Form,
   FormControl,
@@ -13,90 +19,111 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { REGEX_PASSWORD } from "@/app/utils/regex";
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import LoadingSpinner from '@/components/ui/loadingSpinner';
-import TextDivider from "@/components/ui/textDivider";
+import { Eye, EyeSlash, Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { InputPassword } from "@/components/theme/ui/inputPassword";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
-  const [isLoading, setIsLoading] = useState(false)
-  const [loginWith, setLoginWith] = useState<'mobile' | 'google'>()
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginWith, setLoginWith] = useState<"mobile" | "google">();
 
   const formSchema = z.object({
-    emailOrMobile: z.string({ message: 'شماره همراه الزامیست' }).min(1, "شماره همراه را وارد کنید"),
-    password: z.string({ message: 'پسورد الزامیست' }).regex(REGEX_PASSWORD, 'پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد')
-  })
+    emailOrMobile: z
+      .string({ message: "شماره همراه الزامیست" })
+      .min(1, "شماره همراه را وارد کنید"),
+    password: z
+      .string({ message: "پسورد الزامیست" })
+      .regex(
+        REGEX_PASSWORD,
+        "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد"
+      ),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: process.env.NODE_ENV === 'development' ? { emailOrMobile: '09210246947', password: '123Sina@' } : undefined
+    defaultValues:
+      process.env.NODE_ENV === "development"
+        ? { emailOrMobile: "09210246947", password: "123Sina@" }
+        : undefined,
   });
 
-  const router = useRouter()
+  const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoginWith('mobile')
-    setIsLoading(true)
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signIn`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: 'include',
-      body: JSON.stringify(values),
-    })
-      .then(async res => {
+    setLoginWith("mobile");
+    setIsLoading(true);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signIn`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(values),
+      }
+    )
+      .then(async (res) => {
         if (!res.ok) {
           toast({
-            title: 'خطا',
-            description: 'شماره همراه یا پسورد اشتباه است',
-            variant: 'destructive',
-          })
+            title: "خطا",
+            description: "شماره همراه یا پسورد اشتباه است",
+            variant: "destructive",
+          });
           return;
         }
         toast({
-          title: 'با موفقیت وارد شدید',
-          description: 'به حساب کاربری خود خوش آمدید',
-        })
-        router.push('/console')
+          title: "با موفقیت وارد شدید",
+          description: "به حساب کاربری خود خوش آمدید",
+        });
+        router.push("/console");
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
         toast({
-          title: 'خطا',
-          description: 'خطایی رخ داده است',
-          variant: 'destructive',
-        })
+          title: "خطا",
+          description: "خطایی رخ داده است",
+          variant: "destructive",
+        });
       })
-      .finally(() => setIsLoading(false))
-  }
+      .finally(() => setIsLoading(false));
+  };
 
   const loginWithGoogle = () => {
-    setLoginWith('google')
-    setIsLoading(true)
-    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/google/login`)
-  }
+    setLoginWith("google");
+    setIsLoading(true);
+    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/google/login`);
+  };
 
   return (
-    <main className="_signin h-full">
+    <main className="_signin h-full bg-fuchsia-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="_wrap flex items-center justify-center h-full">
           <div className="_content text-center w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
-              <h1 className="text-2xl font-semibold">ورود به حساب کاربری</h1>
-              <p className="text-sm text-gray-400">حساب کاربری ندارید؟ <Link className="text-gray-400 hover:text-black" href='/auth/signup'>از اینجا ثبت نام کنید</Link></p>
+              <div className="_title flex items-center justify-center gap-2">
+                <Keyhole size={36} weight="light" className="text-primary" />
+                <h1 className="text-2xl font-semibold text-primary">
+                  ورود به حساب کاربری
+                </h1>
+              </div>
+              <p className="text-sm text-gray-500 text-center">
+                حساب کاربری ندارید؟{" "}
+                <Link
+                  className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
+                  href="/auth/signup"
+                >
+                  از اینجا ثبت نام کنید.
+                </Link>
+              </p>
             </div>
+
             <div className="_form">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="grid grid-cols-4 gap-2"
+                  className="grid grid-cols-4 gap-3"
                 >
                   <FormField
                     control={form.control}
@@ -104,10 +131,7 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input
-                            placeholder="شماره همراه"
-                            {...field}
-                          />
+                          <Input placeholder="شماره همراه" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -119,24 +143,7 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input
-                            placeholder="رمز عبور"
-                            type={isVisible ? "text" : "password"}
-                            startContent={
-                              <button
-                                className="focus:outline-none flex justify-center items-center"
-                                type="button"
-                                onClick={toggleVisibility}
-                              >
-                                {isVisible ? (
-                                  <Eye size={22} className="text-gray-400" />
-                                ) : (
-                                  <EyeSlash size={22} className="text-gray-400" />
-                                )}
-                              </button>
-                            }
-                            {...field}
-                          />
+                          <InputPassword {...field} placeholder="رمز عبور" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -145,7 +152,7 @@ export default function Login() {
                   <div className="flex col-span-4">
                     <Link
                       href={"/auth/resetPassword"}
-                      className="py-1 text-sm text-gray-400 hover:text-gray-700 font-light duration-300"
+                      className="py-1 text-sm text-gray-400 hover:text-secondary duration-300"
                     >
                       رمز عبورم را فراموش کردم.
                     </Link>
@@ -156,25 +163,41 @@ export default function Login() {
                     color="success"
                     disabled={isLoading}
                   >
-                    ورود با شماره همراه
-                    {
-                      loginWith === 'mobile' && isLoading ? <LoadingSpinner className="mr-1" size={20} /> : null
-                    }
+                    ورود
+                    {loginWith === "mobile" && isLoading ? (
+                      <LoadingSpinner className="mr-1" size={20} />
+                    ) : null}
                   </Button>
                 </form>
               </Form>
 
               <TextDivider size="lg">یا</TextDivider>
 
-              <div className="w-full">
+              <div className="w-full grid grid-cols-4 gap-3">
                 <Button
                   onClick={loginWithGoogle}
                   className="col-span-2"
                   variant="outline"
                   disabled={isLoading}
                 >
-                  {
-                    loginWith === 'google' && isLoading ? <LoadingSpinner className="ml-1" size={22} /> : ""}
+                  {loginWith === "google" && isLoading ? (
+                    <LoadingSpinner className="ml-1" size={22} />
+                  ) : (
+                    ""
+                  )}
+                  ادامه با اکانت فیس بوک
+                </Button>
+                <Button
+                  onClick={loginWithGoogle}
+                  className="col-span-2"
+                  variant="outline"
+                  disabled={isLoading}
+                >
+                  {loginWith === "google" && isLoading ? (
+                    <LoadingSpinner className="ml-1" size={22} />
+                  ) : (
+                    ""
+                  )}
                   ادامه با اکانت گوگل
                 </Button>
               </div>

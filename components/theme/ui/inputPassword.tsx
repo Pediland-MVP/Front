@@ -14,15 +14,14 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
     };
 
     const Icon = isVisible ? EyeClosed : EyeSlash;
-    const hasButton = true; // Assume button is always available, you can change this logic as needed
+    const hasButton = true;
 
     return (
-      <div className="flex items-center border rounded-md group">
+      <div className="flex items-center group relative">
         <input
           type={isVisible ? "text" : "password"}
           className={cn(
-            "flex-1 h-9 rounded-md bg-white px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground   disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border focus-visible:border-black focus-visible:outline-none focus-visible:border-l-0",
-            hasButton ? "rounded-tl-none rounded-bl-none" : "",
+            "flex h-10 w-full rounded-lg border border-input bg-white px-3 py-1 text-base shadow-sm transition-colors outline-none file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
             className
           )}
           ref={ref}
@@ -31,10 +30,13 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
         {hasButton && (
           <button
             type="button"
-            className="h-9 w-9 focus:outline-none flex justify-center items-center bg-white rounded-tl-md rounded-bl-md group-focus-within:ring-1 group-focus-within:ring-black group-focus-within:ring-right-red-400"
+            className="absolute left-0 h-10 w-10 focus:outline-none flex justify-center items-center bg-transparent"
             onClick={toggleVisibility}
           >
-            <Icon size={20} className="text-gray-400" />
+            <Icon
+              size={20}
+              className="text-gray-400 hover:text-gray-600 duration-200"
+            />
           </button>
         )}
       </div>

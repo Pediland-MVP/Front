@@ -17,7 +17,7 @@ export default function ConsoleLayout({
       <body className="min-h-screen">
         <AuthHeader />
 
-        <div className="_main-wrap h-[calc(100vh-69px)]">
+        <div className="_main-wrap h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)]">
           {children}
         </div>
         <Toaster />

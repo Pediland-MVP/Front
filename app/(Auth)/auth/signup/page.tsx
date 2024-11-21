@@ -10,12 +10,11 @@ import { ToastAction } from "@radix-ui/react-toast";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/app/utils/regex";
 
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import TextDivider from "@/components/ui/textDivider";
+import TextDivider from "@/components/theme/ui/textDivider";
 import { Input } from "@/components/theme/ui/input";
-import { InputPassword } from "@/components/theme/ui/input-password";
-import { Button } from "@/components/ui/button";
-
-import { EyeClosed, EyeSlash } from "@phosphor-icons/react/dist/ssr";
+import { InputPassword } from "@/components/theme/ui/inputPassword";
+import { Button } from "@/components/theme/ui/button";
+import { UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 
 import {
   Form,
@@ -51,23 +50,25 @@ export default function Signup() {
   };
 
   const formSchema = z.object({
-    firstname: z.string({ message: "نام الزامیست" }).min(1, "نام را وارد کنید"),
+    firstname: z
+      .string({ message: "نام الزامیست" })
+      .min(1, "نام خود را وارد کنید."),
     lastname: z
       .string({ message: "نام خانوادگی الزامیست" })
-      .min(1, "نام خانوادگی را وارد کنید"),
+      .min(1, "نام خانوادگی خود را وارد کنید."),
     mobile: z
       .string({ message: "شماره همراه الزامیست" })
-      .regex(REGEX_MOBILE, "شماره همراه نامعتبر است")
+      .regex(REGEX_MOBILE, "یک شماره همراه معتبر وارد کنید.")
       .min(1, "شماره همراه را وارد کنید"),
     password: z
       .string({ message: "پسورد الزامیست" })
       .regex(
         REGEX_PASSWORD,
-        "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد"
+        "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد."
       ),
     confirmPassword: z
       .string({ message: "تکرار پسورد الزامیست" })
-      .min(1, "تکرار پسورد را وارد کنید"),
+      .min(1, "تکرار پسورد خود را وارد کنید."),
   });
 
   const form = useForm({
@@ -148,37 +149,55 @@ export default function Signup() {
   };
 
   return (
-    <main className="_signup h-full bg-blue-50">
+    <main className="_signup h-full bg-fuchsia-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="_wrap flex items-center justify-center h-full">
-          <div className="_content text-center w-full sm:w-1/3 mx-auto">
+          <div className="_content w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
-              <h1 className="text-2xl font-semibold">ثبت نام کاربر جدید</h1>
-              <p className="text-sm text-gray-400">
+              <div className="_title flex items-center justify-center gap-2">
+                <UserCirclePlus size={36} weight="light" className="text-primary" />
+                <h1 className="text-2xl font-semibold text-primary">ثبت نام کاربر جدید</h1>
+              </div>
+              <p className="text-sm text-gray-500 text-center">
                 حساب کاربری دارید؟{" "}
                 <Link
-                  className="text-gray-400 hover:text-black"
+                  className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
-                  از اینجا وارد شوید
+                  از اینجا وارد شوید.
                 </Link>
               </p>
             </div>
+
             <div className="_form">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="grid grid-cols-4 gap-2"
+                  className="grid grid-cols-4 gap-3"
                 >
-                  <Input
-                    {...form.register("firstname")}
-                    placeholder="نام"
-                    className="col-span-2"
+                  <FormField
+                    control={form.control}
+                    name="firstname"
+                    render={({ field }) => (
+                      <FormItem className="col-span-4 sm:col-span-2">
+                        <FormControl>
+                          <Input {...field} placeholder="نام" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  <Input
-                    {...form.register("lastname")}
-                    placeholder="نام خانوادگی"
-                    className="col-span-2"
+                  <FormField
+                    control={form.control}
+                    name="lastname"
+                    render={({ field }) => (
+                      <FormItem className="col-span-4 sm:col-span-2">
+                        <FormControl>
+                          <Input {...field} placeholder="نام خانوادگی" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                   <FormField
                     control={form.control}
@@ -198,8 +217,7 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field}
-                          placeholder="رمز عبور" />
+                          <InputPassword {...field} placeholder="رمز عبور" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -223,8 +241,7 @@ export default function Signup() {
 
                   <Button
                     type="submit"
-                    className="col-span-4 text-white mt-1"
-                    color="success"
+                    className="col-span-4"
                     disabled={isLoading}
                   >
                     ثبت نام
@@ -237,7 +254,20 @@ export default function Signup() {
 
               <TextDivider size="lg">یا</TextDivider>
 
-              <div className="w-full">
+              <div className="w-full grid grid-cols-4 gap-3">
+                <Button
+                  onClick={signUpWithGoogle}
+                  className="col-span-2"
+                  variant="outline"
+                  disabled={isLoading}
+                >
+                  {loginWith === "google" && isLoading ? (
+                    <LoadingSpinner className="ml-1" size={22} />
+                  ) : (
+                    ""
+                  )}
+                  ادامه با اکانت فیس بوک
+                </Button>
                 <Button
                   onClick={signUpWithGoogle}
                   className="col-span-2"
