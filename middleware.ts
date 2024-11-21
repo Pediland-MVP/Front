@@ -63,6 +63,9 @@ async function authMiddleware(
   return NextResponse.next();
 }
 
+
+export default withNextIntl(middleware);
+
 export const config: MiddlewareConfig = {
   matcher: ["/console/:path*", "/auth/:path*"],
 };

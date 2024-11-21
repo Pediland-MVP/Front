@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "../../../inbox/components/emojiPicker";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { FormField, Form } from "@/components/ui/form";
+import { KeyedMutator } from "swr";
 
 const formSchema = z.object({
   text: z.string().min(1, "نظر خود را وارد کنید"),
@@ -21,7 +22,7 @@ type FormData = z.infer<typeof formSchema>;
 
 interface RedesignedCommentFooterProps {
   commentId: string;
-  mutateComments: () => Promise<void>;
+  mutateComments: KeyedMutator<any>;
   isMobile?: boolean;
 }
 
