@@ -1,13 +1,10 @@
+"use client";
+
+import { useTranslations } from 'next-intl';
 import { fetcher } from "@/hooks/swr/fetcher";
 import { useEffect, useState } from "react";
 import useSWRImmutable, { mutate } from "swr";
-
-export type SelectInstagramProps = {
-  facebookAccountId: string;
-};
-
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,9 +29,7 @@ import { APIError } from "@/types/apierror";
 import Image from "next/image";
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import { sleep } from "@/app/utils/sleep";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export type DrawerDialogDemoProps = {
@@ -43,11 +38,12 @@ export type DrawerDialogDemoProps = {
   facebookAccountId: string;
 };
 
-export function DrawerDialogDemo({
+export function SelectInstagram({
   open,
   setOpen,
   facebookAccountId,
 }: DrawerDialogDemoProps) {
+  const t = useTranslations('Accounts.SelectInstagram');
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
   const router = useRouter()
 
@@ -57,11 +53,10 @@ export function DrawerDialogDemo({
         <DialogContent>
           <DialogHeader className="flex justify-center items-start mt-2">
             <DialogTitle className="text-black">
-              یک اکانت انتخاب کنید
+              {t('selectAccount')}
             </DialogTitle>
             <DialogDescription className="text-right">
-              این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما
-              میتوانید یکی را انتخاب کنید
+              {t('accountsDescription')}
             </DialogDescription>
           </DialogHeader>
           <SelectPagesForm facebookAccountId={facebookAccountId} setOpen={setOpen} />
@@ -74,10 +69,9 @@ export function DrawerDialogDemo({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <DrawerHeader className="">
-          <DrawerTitle>یک اکانت انتخاب کنید</DrawerTitle>
+          <DrawerTitle>{t('selectAccount')}</DrawerTitle>
           <DrawerDescription>
-            این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید
-            یکی را انتخاب کنید
+            {t('accountsDescription')}
           </DrawerDescription>
         </DrawerHeader>
         <SelectPagesForm
@@ -87,7 +81,7 @@ export function DrawerDialogDemo({
         />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-              <Button variant="outline" onClick={() => router.push('/console/accounts')}>انصراف</Button>
+              <Button variant="outline" onClick={() => router.push('/console/accounts')}>{t('cancel')}</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
@@ -104,6 +98,7 @@ function SelectPagesForm({
   facebookAccountId: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+  const t = useTranslations('SelectPagesForm');
   const [loading, setLoading] = useState<{ id: string }>();
   const router = useRouter()
 
@@ -120,17 +115,14 @@ function SelectPagesForm({
     if (!instagramPagesError) return;
     toast({
       title: instagramPagesError?.message,
-      description: "ارتباط با سرور برقرار نشد",
+      description: t('serverConnectionError'),
       variant: "destructive",
     });
   }, [instagramPagesError]);
 
-
-
   const handleSelectInstagram = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-
     e.preventDefault();
     const pageId = e.currentTarget.dataset.id;
     setLoading({ id: pageId! });
@@ -146,18 +138,14 @@ function SelectPagesForm({
         if (!res.ok) {
           const isExist = response?.message?.includes("already exist");
           toast({
-            title: isExist
-              ? "این اکانت قبلا انتخاب شده است"
-              : "ارتباط با سرور برقرار نشد",
-            description: isExist
-              ? "اکانت دیگری انتخاب کنید"
-              : "ارتباط با سرور برقرار نشد",
+            title: isExist ? t('accountAlreadySelected') : t('serverConnectionError'),
+            description: isExist ? t('selectDifferentAccount') : t('serverConnectionError'),
             variant: "destructive",
           });
           return;
         }
         toast({
-          title: 'اکانت با موفقیت انتخاب شد',
+          title: t('accountSelectedSuccess'),
         });
         await mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`)
         setOpen(false)
@@ -166,8 +154,8 @@ function SelectPagesForm({
       .catch((e) => {
         console.error(e);
         toast({
-          title: "ارتباط با سرور برقرار نشد",
-          description: "ارتباط با سرور برقرار نشد",
+          title: t('serverConnectionError'),
+          description: t('serverConnectionError'),
           variant: "destructive",
         });
       })
@@ -215,7 +203,7 @@ function SelectPagesForm({
                   className="w-full text-black flex justify-center items-center gap-x-2"
                   variant={"outline"}
                 >
-                  انتخاب
+                  {t('select')}
                   {loading?.id === instagram.id && <LoadingSpinner size={20} />}
                 </Button>
               </div>
@@ -225,3 +213,4 @@ function SelectPagesForm({
     </form>
   );
 }
+

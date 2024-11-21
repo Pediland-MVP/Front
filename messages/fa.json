@@ -245,6 +245,36 @@
             "description": "این عمل غیرقابل بازگشت است. این مورد به طور دائمی از سرورهای ما حذف خواهد شد"
         }
     },
+    "Accounts": {
+        "title": "مدیریت اکانت‌ها",
+        "add": "افزودن",
+        "Accounts": {
+            "errorOccurred": "خطایی پیش آمد",
+            "tryAgain": "لطفا دوباره امتحان کنید",
+            "deleteSuccess": "حذف موفق",
+            "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
+            "deleteError": "خطا در حذف",
+            "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
+            "viewAccount": "مشاهده اکانت",
+            "connectAccount": "اتصال به اکانت",
+            "areYouSure": "آیا مطمئن هستید؟",
+            "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
+            "cancel": "انصراف",
+            "delete": "حذف"
+        },
+        "SelectInstagram": {
+            "selectAccount": "یک اکانت انتخاب کنید",
+            "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
+            "cancel": "انصراف"
+        },
+        "SelectPagesForm": {
+            "serverConnectionError": "ارتباط با سرور برقرار نشد",
+            "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
+            "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
+            "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
+            "select": "انتخاب"
+        }
+    },
     "FileUpload": {
         "title": "آپلود تصویر",
         "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/hooks/swr/fetcher";
@@ -9,7 +10,7 @@ import { InstagramLogo, Plus, Trash } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { DrawerDialogDemo } from "./selectInstagram";
+import { SelectInstagram } from "./selectInstagram";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
@@ -26,7 +27,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export default function Accounts() {
+type AccountsProps = {
+  filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
+  setFilteredInstagramPages: React.Dispatch<
+    React.SetStateAction<InstagramNamespace.GET["Accounts"] | null | undefined>
+  >;
+};
+
+export default function Accounts({
+  filteredInstagramPages,
+  setFilteredInstagramPages,
+}: AccountsProps) {
+  const t = useTranslations("Accounts.Accounts");
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");
@@ -44,22 +56,28 @@ export default function Accounts() {
     }
   );
 
-  const filteredInstagramPages = isFromFacebook
-    ? instagramPages?.filter(
-        (page) =>
-          page.facebookAccountId === searchParams.get("facebookAccountId") &&
-          !page.instagramId
-      )
-    : !!instagramPages?.length
-      ? instagramPages.filter((account) => account.instagramId)
-      : null;
+  useEffect(() => {
+    if (!instagramPages) return;
+
+    setFilteredInstagramPages(
+      isFromFacebook
+        ? instagramPages?.filter(
+            (page) =>
+              page.facebookAccountId ===
+                searchParams.get("facebookAccountId") && !page.instagramId
+          )
+        : !!instagramPages?.length
+          ? instagramPages.filter((account) => account.instagramId)
+          : null
+    );
+  }, [instagramPages]);
 
   useEffect(() => {
     if (isFromFacebook) {
       if (filteredInstagramPages?.length === 0) {
         toast({
-          title: "خطایی پیش آمد",
-          description: "لطفا دوباره امتحان کنید",
+          title: t("errorOccurred"),
+          description: t("tryAgain"),
         });
         router.push("/console/accounts");
         return;
@@ -90,22 +108,22 @@ export default function Accounts() {
 
       if (!response.ok) {
         toast({
-          title: "خطایی پیش امد",
+          title: t("errorOccurred"),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "حذف موفق",
-        description: "اکانت با موفقیت حذف شد",
+        title: t("deleteSuccess"),
+        description: t("accountDeletedSuccess"),
       });
 
-      mutate(); // Refresh the data
+      mutate();
     } catch (error) {
       toast({
-        title: "خطا در حذف",
-        description: "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
+        title: t("deleteError"),
+        description: t("deleteErrorDescription"),
         variant: "destructive",
       });
     }
@@ -113,13 +131,6 @@ export default function Accounts() {
 
   return (
     <>
-      {/* <div className="w-full mb-6 px-4">
-        <Button
-          className=""
-          disabled={(filteredInstagramPages?.length || 0) > 0}
-        ></Button>
-      </div> */}
-
       {isInstagramPagesLoading &&
         Array.from({ length: 10 }).map((_, index) => (
           <Skeleton
@@ -164,7 +175,7 @@ export default function Accounts() {
                     href={`https://instagram.com/${instagram.username}`}
                     target="_blank"
                   >
-                    <Button variant={"outline"}>مشاهده اکانت</Button>
+                    <Button variant={"outline"}>{t("viewAccount")}</Button>
                   </Link>
                 ) : (
                   <Button
@@ -174,7 +185,7 @@ export default function Accounts() {
                     }}
                     variant={"outline"}
                   >
-                    اتصال به اکانت
+                    {t("connectAccount")}
                   </Button>
                 )}
 
@@ -186,18 +197,17 @@ export default function Accounts() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>آیا مطمئن هستید؟</AlertDialogTitle>
+                      <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف
-                        خواهد شد.
+                        {t("deleteConfirmation")}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>انصراف</AlertDialogCancel>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleDelete(instagram.id)}
                       >
-                        حذف
+                        {t("delete")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -208,30 +218,11 @@ export default function Accounts() {
         );
       })}
 
-      <DrawerDialogDemo
+      <SelectInstagram
         facebookAccountId={facebookAccountId!}
         open={openSelectInstagramDialog}
         setOpen={setOpenSelectInstagramDialog}
       />
-
-      {/* <div className="_card bg-white hover:shadow rounded-lg duration-300">
-        <div
-          className="flex flex-col items-center justify-center gap-3 p-5 group h-full hover:cursor-pointer"
-          onClick={() =>
-            router.push(
-              `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`
-            )
-          }
-        >
-          <Plus
-            size={28}
-            className="text-gray-400 group-hover:text-black duration-300"
-          />
-          <span className="font-medium text-gray-400 group-hover:text-black duration-300">
-            افزودن اکانت
-          </span>
-        </div>
-      </div> */}
     </>
   );
 }

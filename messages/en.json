@@ -244,6 +244,36 @@
             "description": "This action is irreversible. This item will be permanently deleted from our servers."
         }
     },
+    "Accounts": {
+        "title": "Manage accounts",
+        "add": "Add",
+        "Accounts": {
+            "errorOccurred": "An error occurred",
+            "tryAgain": "Please try again",
+            "deleteSuccess": "Deleted successfully",
+            "accountDeletedSuccess": "Account deleted successfully",
+            "deleteError": "Error deleting",
+            "deleteErrorDescription": "An error occurred while deleting the account. Please try again.",
+            "viewAccount": "View account",
+            "connectAccount": "Connect to account",
+            "areYouSure": "Are you sure?",
+            "deleteConfirmation": "This action is irreversible. The account will be deleted from your list.",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        },
+        "SelectInstagram": {
+            "selectAccount": "Select an account",
+            "accountsDescription": "These Instagram accounts are connected to your Facebook account. You can select one.",
+            "cancel": "Cancel"
+        },
+        "SelectPagesForm": {
+            "serverConnectionError": "Failed to connect to server",
+            "accountAlreadySelected": "This account has already been selected",
+            "selectDifferentAccount": "Select a different account",
+            "accountSelectedSuccess": "Account selected successfully",
+            "select": "Select"
+        }
+    },
     "FileUpload": {
         "title": "Upload image",
         "description": "Click here or drag and drop your file to this area",
