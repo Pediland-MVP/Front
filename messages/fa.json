@@ -1,5 +1,11 @@
 {
     "Console": {
-        
+        "productCount": "تعداد محصولات",
+        "leadCount": "تعداد مخاطب",
+        "automations": "اتومیشن‌ها",
+        "responseCount": "تعداد جواب‌ها",
+        "growthFromLastMonth": "{growth}% از ماه پیش",
+        "leadsGrowthChart": "رشد تعداد مخاطبین",
+        "recentSessions": "سشن‌های اخیر"
     }
 }

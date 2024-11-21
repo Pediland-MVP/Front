@@ -1,0 +1,11 @@
+{
+    "Console": {
+        "productCount": "Number of products",
+        "leadCount": "Number of leads",
+        "automations": "Automations",
+        "responseCount": "Number of responses",
+        "growthFromLastMonth": "{growth}% from last month",
+        "leadsGrowthChart": "Number of leads growth chart",
+        "recentSessions": "Recent sessions"
+    }
+}

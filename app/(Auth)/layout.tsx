@@ -2,25 +2,29 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import AuthHeader from "./auth/components/auth.header";
+import { getLocale, getMessages } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
   title: "TabDeal Application",
   description: "This is first version of TabDeal application.",
 };
-export default function ConsoleLayout({
+export default async function ConsoleLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
     <html lang="fa" dir="rtl">
       <body className="min-h-screen">
-        <AuthHeader />
+        <NextIntlClientProvider messages={messages}>
+          <AuthHeader />
 
-        <div className="_main-wrap h-[calc(100vh-69px)]">
-          {children}
-        </div>
-        <Toaster />
+          <div className="_main-wrap h-[calc(100vh-69px)]">{children}</div>
+          <Toaster />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

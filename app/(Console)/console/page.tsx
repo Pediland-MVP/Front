@@ -9,6 +9,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import moment from "moment-jalaali";
 import DashboardSkeleton from "./components/dashboard.skeleton";
 import LeadsGrowsChart from "./components/leadsGrows.chart";
+import { useTranslations } from "next-intl";
+import logger from "@/app/utils/logger";
 
 export default function Dashboard() {
   const {
@@ -20,40 +22,50 @@ export default function Dashboard() {
     fetcher
   );
 
+  const t = useTranslations("Console");
+
   if (isStatsLoading) {
     return <DashboardSkeleton />;
   }
+
+  logger.debug(stats)
 
   return (
     <div className="_dashboard space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">تعداد محصولات</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("productCount")}
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.products.count}</div>
             <p className="text-xs text-muted-foreground">
-              {stats?.products.growth}% از ماه پیش
+              {t("growthFromLastMonth", { growth: stats?.products.growth })}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">تعداد مخاطب</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("leadCount")}
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.leads.count}</div>
             <p className="text-xs text-muted-foreground">
-              {stats?.leads.growth}% از ماه پیش
+              {t("growthFromLastMonth", { growth: stats?.leads.growth })}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">اتومیشن‌ها</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("automations")}
+            </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -64,13 +76,15 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">تعداد جواب‌ها</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("responseCount")}
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.sessions.count}</div>
             <p className="text-xs text-muted-foreground">
-              {stats?.sessions.growth}% از ماه پیش
+              {t("growthFromLastMonth", { growth: stats?.sessions.growth })}
             </p>
           </CardContent>
         </Card>
@@ -78,15 +92,15 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>رشد تعداد مخاطبین</CardTitle>
+            <CardTitle>{t("leadsGrowthChart")}</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <LeadsGrowsChart stats={stats} />
+            <LeadsGrowsChart eachMonthLeadGrow={stats?.eachMonthLeadGrows} />
           </CardContent>
         </Card>
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>سشن‌های اخیر</CardTitle>
+            <CardTitle>{t("recentSessions")}</CardTitle>
             <CardContent>
               <div className="space-y-2 mt-9">
                 {stats?.recentSessions.map((session) => (
@@ -124,8 +138,6 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
       </div>
-      {/* </TabsContent> */}
-      {/* </Tabs> */}
     </div>
   );
 }

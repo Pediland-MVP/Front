@@ -9,25 +9,19 @@ import {
   Tooltip,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EachMonthLeadGrow, StatsNamespace } from '../../../../types/stats';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-interface LeadsGrowsChartProps {
-  stats: {
-    eachMonthLeadGrows: Array<{
-      monthName: string;
-      count: number;
-    }>;
-    totalLeads: number;
-    growthPercentage: number;
-  };
+export type LeadsGrowsChartProps = {
+  eachMonthLeadGrow: StatsNamespace.Overall['eachMonthLeadGrows'] | undefined
 }
 
-export default function LeadsGrowsChart({ stats }: LeadsGrowsChartProps) {
-  if (!stats) {
+export default function LeadsGrowsChart({ eachMonthLeadGrow }: LeadsGrowsChartProps) {
+  if (!eachMonthLeadGrow) {
     return null;
   }
   return (
@@ -43,7 +37,7 @@ export default function LeadsGrowsChart({ stats }: LeadsGrowsChartProps) {
         >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
-              data={stats.eachMonthLeadGrows}
+              data={eachMonthLeadGrow}
               margin={{
                 top: 5,
                 right: 10,
