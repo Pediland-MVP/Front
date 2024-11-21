@@ -10,7 +10,6 @@ import moment from "moment-jalaali";
 import DashboardSkeleton from "./components/dashboard.skeleton";
 import LeadsGrowsChart from "./components/leadsGrows.chart";
 import { useTranslations } from "next-intl";
-import logger from "@/app/utils/logger";
 
 export default function Dashboard() {
   const {
