@@ -13,6 +13,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 
 interface DataTablePaginationProps {
   currentPage: number;
@@ -32,6 +33,8 @@ export function Pagination({
   onPageSizeChange,
 }: DataTablePaginationProps) {
   const pageSizeOptions = [10, 20, 30, 40, 50];
+
+  const t = useTranslations('Contacts.Pagination')
 
   return (
     <div className="_pagination flex items-center justify-between gap-4 mt-5 border-t pt-3">
@@ -78,19 +81,20 @@ export function Pagination({
           </Button>
         </div>
         <div className="flex items-center justify-center gap-1 text-gray-500 text-sm">
-          <span>صفحه</span>
+          <span>{t('page', {pages: totalPages, page: currentPage})}</span>
+          {/* <span>صفحه</span>
           {totalPages}
           <span>از</span>
-          {currentPage}
+          {currentPage} */}
         </div>
       </div>
 
       <div className="flex items-center justify-end gap-8 flex-1 text-gray-500 text-sm">
         <div>
-          <span>تعداد آیتم‌ها:</span> {totalItems}
+          <span>{t('itemsCount')}:</span> {totalItems}
         </div>
         <div className="flex items-center gap-2">
-          <span>نمایش</span>
+          <span>{t('show')}</span>
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => onPageSizeChange(Number(value))}

@@ -22,6 +22,7 @@ import { ContactNamespace } from "@/types/contact";
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import ContactSkeleton from "./contactSkeleton";
+import { useTranslations } from "next-intl";
 
 export type ContactFormProps = {
   contactId: string;
@@ -144,16 +145,17 @@ export default function ContactForm({
     setOpen(false);
   };
 
+  const t = useTranslations('Contacts.Form')
+
   if (isContactLoading || !contact) {
     return <ContactSkeleton />;
   }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-4 gap-4">
         <div className="col-span-2">
           <Label htmlFor="firstname" className="text-right">
-            نام
+            {t('firstname')}
           </Label>
           <Input
             id="firstname"
@@ -162,14 +164,14 @@ export default function ContactForm({
           />
           {errors.firstname && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.firstname.message}
+              {t('errors.firstname')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="lastname" className="text-right">
-            نام خانوادگی
+            {t('lastname')}
           </Label>
           <Input
             id="lastname"
@@ -178,62 +180,62 @@ export default function ContactForm({
           />
           {errors.lastname && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.lastname.message}
+              {t('errors.lastname')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="mobile" className="text-right">
-            موبایل
+            {t('mobile')}
           </Label>
           <Input id="mobile" {...register("mobile")} className="col-span-3" />
           {errors.mobile && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.mobile.message}
+              {t('errors.mobile')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="email" className="text-right">
-            ایمیل
+            {t('email')}
           </Label>
           <Input id="email" {...register("email")} className="col-span-3" />
           {errors.email && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.email.message}
+              {t('errors.email')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="country" className="text-right">
-            کشور
+            {t('country')}
           </Label>
           <Input id="country" {...register("country")} className="col-span-3" />
           {errors.country && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.country.message}
+              {t('errors.country')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="city" className="text-right">
-            شهر
+            {t('city')}
           </Label>
           <Input id="city" {...register("city")} className="col-span-3" />
           {errors.city && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.city.message}
+              {t('errors.city')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="postalcode" className="text-right">
-            کد پستی
+            {t('postalcode')}
           </Label>
           <Input
             id="postalcode"
@@ -242,37 +244,31 @@ export default function ContactForm({
           />
           {errors.postalcode && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.postalcode.message}
+              {t('errors.postalcode')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="address" className="text-right">
-            آدرس
+            {t('address')}
           </Label>
           <Input id="address" {...register("address")} className="col-span-3" />
           {errors.address && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.address.message}
+              {t('errors.address')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="gender" className="text-right">
-            جنسیت
+            {t('gender')}
           </Label>
           <Controller
             name="gender"
             control={control}
             render={({ field }) => {
-              console.log(
-                "gender",
-                field.value,
-                typeof field.value,
-                field.value === ""
-              );
               if (field.value === undefined) {
                 return <></>;
               }
@@ -284,12 +280,12 @@ export default function ContactForm({
                   value={field.value!}
                 >
                   <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="انتخاب جنسیت" />
+                    <SelectValue placeholder={t('genderPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="female">زن</SelectItem>
-                    <SelectItem value="male">مرد</SelectItem>
-                    <SelectItem value="other">سایر</SelectItem>
+                    <SelectItem value="female">{t('female')}</SelectItem>
+                    <SelectItem value="male">{t('male')}</SelectItem>
+                    <SelectItem value="other">{t('other')}</SelectItem>
                   </SelectContent>
                 </Select>
               );
@@ -297,23 +293,23 @@ export default function ContactForm({
           />
           {errors.gender && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.gender.message}
+              {t('errors.gender')}
             </p>
           )}
         </div>
 
         <div className="col-span-2">
           <Label htmlFor="birthDate" className="text-right mb-3">
-            تاریخ تولد
+            {t('birthDate')}
           </Label>
           <Controller
             control={control}
             name="birthDate"
-            rules={{ required: true }} //optional
+            rules={{ required: true }}
             render={({
               field: { onChange, name, value },
-              fieldState: { invalid, isDirty }, //optional
-              formState: { errors }, //optional, but necessary if you want to show an error message
+              fieldState: { invalid, isDirty },
+              formState: { errors },
             }) => (
               <>
                 <DatePicker
@@ -338,22 +334,21 @@ export default function ContactForm({
                   render={<Input name="birthDate" />}
                 />
                 {errors && errors[name] && errors[name].type === "required" && (
-                  //if you want to show an error message
-                  <span>your error message !</span>
+                  <span>{t('errors.birthDateRequired')}</span>
                 )}
               </>
             )}
           />
           {errors.birthDate && (
             <p className="col-span-4 text-sm text-red-500">
-              {errors.birthDate.message}
+              {t('errors.birthDate')}
             </p>
           )}
         </div>
       </div>
 
       <Button type="submit" className="w-full">
-        ذخیره
+        {t('save')}
         {isSubmitLoading && <LoadingSpinner className="mr-1" size={20} />}
       </Button>
     </form>

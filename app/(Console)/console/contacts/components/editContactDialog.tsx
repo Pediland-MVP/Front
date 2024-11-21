@@ -19,6 +19,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import ContactForm from "./contactForm";
+import { useTranslations } from "next-intl";
 
 export interface EditContactProps {
   open: boolean;
@@ -42,29 +43,29 @@ export default function EditContact({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const t = useTranslations('Contacts.EditDialog')
+
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
           <DrawerHeader className="text-right">
-            <DrawerTitle>ویرایش مخاطب</DrawerTitle>
+            <DrawerTitle>{t('editContact')}</DrawerTitle>
             <DrawerDescription>
-              از اینجا میتونی مخاطب رو ویرایش کنی
+              {t('editContactDescription')}
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0">
-            {
-              <ContactForm
-                contactId={contactId}
-                open={open}
-                setOpen={setOpen}
-              />
-            }
+            <ContactForm
+              contactId={contactId}
+              open={open}
+              setOpen={setOpen}
+            />
           </div>
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
-                انصراف
+                {t('cancel')}
               </Button>
             </DrawerClose>
           </DrawerFooter>
@@ -77,10 +78,10 @@ export default function EditContact({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>ویرایش اطلاعات</DialogTitle>
+          <DialogTitle>{t('editInformation')}</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        {<ContactForm contactId={contactId} open={open} setOpen={setOpen} />}
+        <ContactForm contactId={contactId} open={open} setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   );

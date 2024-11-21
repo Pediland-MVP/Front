@@ -1,4 +1,7 @@
 {
+    "General": {
+        "search": "جستجو"
+    },
     "Console": {
         "productCount": "تعداد محصولات",
         "leadCount": "تعداد مخاطب",
@@ -8,5 +11,57 @@
         "leadsGrowthChart": "رشد تعداد مخاطبین",
         "recentSessions": "سشن‌های اخیر",
         "console": "داشبورد"
+    },
+    "Contacts": {
+        "list": "لیست مخاطبین",
+        "searchPlaceholder": "جستجو...",
+        "Form": {
+            "firstname": "نام",
+            "lastname": "نام خانوادگی",
+            "mobile": "موبایل",
+            "email": "ایمیل",
+            "country": "کشور",
+            "city": "شهر",
+            "postalcode": "کد پستی",
+            "address": "آدرس",
+            "gender": "جنسیت",
+            "genderPlaceholder": "انتخاب جنسیت",
+            "female": "زن",
+            "male": "مرد",
+            "other": "سایر",
+            "birthDate": "تاریخ تولد",
+            "save": "ذخیره",
+            "errors": {
+                "firstname": "لطفاً نام را وارد کنید",
+                "lastname": "لطفاً نام خانوادگی را وارد کنید",
+                "mobile": "لطفاً شماره موبایل معتبر وارد کنید",
+                "email": "لطفاً آدرس ایمیل معتبر وارد کنید",
+                "country": "لطفاً کشور را وارد کنید",
+                "city": "لطفاً شهر را وارد کنید",
+                "postalcode": "لطفاً کد پستی معتبر وارد کنید",
+                "address": "لطفاً آدرس را وارد کنید",
+                "gender": "لطفاً جنسیت را انتخاب کنید",
+                "birthDate": "لطفاً تاریخ تولد معتبر وارد کنید",
+                "birthDateRequired": "تاریخ تولد الزامی است"
+            }
+        },
+        "List": {
+            "image": "تصویر",
+            "userName": "نام کاربر",
+            "instagramId": "آیدی اینستاگرام",
+            "messageCount": "تعداد پیام",
+            "actions": "عملیات"
+        },
+        "EditDialog": {
+            "editContact": "ویرایش مخاطب",
+            "editContactDescription": "از اینجا میتونی مخاطب رو ویرایش کنی",
+            "cancel": "انصراف",
+            "editInformation": "ویرایش اطلاعات"
+        },
+        "Pagination": {
+            "itemsCount": "تعداد آیتم‌ها",
+            "show": "نمایش",
+            "page": "صفحه {page} از {pages}"
+        }
     }
 }

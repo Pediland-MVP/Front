@@ -20,6 +20,7 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import ContactListSkeleton from "./contactListSkeleton";
 import useDebounce from "@/hooks/useDebounce";
 import EditContactDialog from "./editContactDialog";
+import { useTranslations } from "next-intl";
 
 type Lead = {
   profile: string;
@@ -81,6 +82,8 @@ export default function ContactListCard({
     );
   };
 
+  const t = useTranslations('Contacts.List')
+
   return (
     <div className="_table">
       <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
@@ -88,13 +91,13 @@ export default function ContactListCard({
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="w-[7%] text-center">تصویر</TableHead>
+              <TableHead className="w-[7%] text-center">{t('image')}</TableHead>
 
               <TableHead
                 onClick={() => handleSort("name")}
                 className="cursor-pointer text-right hover:text-black w-[25%]"
               >
-                نام کاربر
+                {t('userName')}
                 {sortColumn === "name" && (
                   <span className="mr-2">
                     {sortDirection === "asc" ? "\u2191" : "\u2193"}
@@ -106,7 +109,7 @@ export default function ContactListCard({
                 className="cursor-pointer text-center hover:text-black w-[25%]"
                 onClick={() => handleSort("username")}
               >
-                آیدی اینستاگرام
+                {t('instagramId')}
                 {sortColumn === "username" && (
                   <span className="mr-2">
                     {sortDirection === "asc" ? "\u2191" : "\u2193"}
@@ -118,7 +121,7 @@ export default function ContactListCard({
                 className="cursor-pointer text-center hover:text-black w-[8%]"
                 onClick={() => handleSort("messages")}
               >
-                تعداد پیام
+                {t('messageCount')}
                 {sortColumn === "messages" && (
                   <span className="mr-2">
                     {sortDirection === "asc" ? "\u2191" : "\u2193"}
@@ -128,7 +131,7 @@ export default function ContactListCard({
 
               <TableHead className="w-[27%] _space"></TableHead>
 
-              <TableHead className="text-center w-[7%]">عملیات</TableHead>
+              <TableHead className="text-center w-[7%]">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
 

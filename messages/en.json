@@ -1,4 +1,7 @@
 {
+    "General": {
+        "search": "Search"
+    },
     "Console": {
         "productCount": "Number of products",
         "leadCount": "Number of leads",
@@ -8,5 +11,57 @@
         "leadsGrowthChart": "Number of leads growth chart",
         "recentSessions": "Recent sessions",
         "console": "Console"
+    },
+    "Contacts": {
+        "list": "Contact list",
+        "searchPlaceholder": "Search...",
+        "Form": {
+            "firstname": "First name",
+            "lastname": "Last name",
+            "mobile": "Mobile",
+            "email": "Email",
+            "country": "Country",
+            "city": "City",
+            "postalcode": "Postal code",
+            "address": "Address",
+            "gender": "Gender",
+            "genderPlaceholder": "Select gender",
+            "female": "Female",
+            "male": "Male",
+            "other": "Other",
+            "birthDate": "Birth date",
+            "save": "Save",
+            "errors": {
+                "firstname": "Please enter first name",
+                "lastname": "Please enter last name",
+                "mobile": "Please enter valid mobile number",
+                "email": "Please enter valid email address",
+                "country": "Please enter country",
+                "city": "Please enter city",
+                "postalcode": "Please enter valid postal code",
+                "address": "Please enter address",
+                "gender": "Please select gender",
+                "birthDate": "Please enter valid birth date",
+                "birthDateRequired": "Birth date is required"
+            }
+        },
+        "List": {
+            "image": "Image",
+            "userName": "Name",
+            "instagramId": "username",
+            "messageCount": "Number of messages",
+            "actions": "Actions"
+        },
+        "EditDialog": {
+            "editContact": "Edit contact",
+            "editContactDescription": "Edit contact information here",
+            "cancel": "Cancel",
+            "editInformation": "Edit information"
+        },
+        "Pagination": {
+            "itemsCount": "Items count",
+            "show": "Show",
+            "page": "{page} of {pages}"
+        }
     }
 }
