@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import type { MiddlewareConfig, NextRequest } from "next/server";
 import * as jose from "jose";
 
-export async function middleware(request: NextRequest) {
+import createNextIntlPlugin from 'next-intl/plugin';
+ 
+const withNextIntl = createNextIntlPlugin();
+
+async function middleware(request: NextRequest) {
   const token = request.cookies.get("token");
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
@@ -62,6 +66,9 @@ async function authMiddleware(
   }
   return NextResponse.next();
 }
+
+
+export default withNextIntl(middleware);
 
 export const config: MiddlewareConfig = {
   matcher: ["/console/:path*", "/auth/:path*"],
