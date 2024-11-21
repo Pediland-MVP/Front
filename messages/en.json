@@ -1,6 +1,23 @@
 {
     "General": {
-        "search": "Search"
+        "App": {
+            "name": "Tabdeal",
+            "description": "Customer management"
+        },
+        "console": "Console",
+        "search": "Search",
+        "notFound": "Nothing found",
+        "contacts": "Contacts",
+        "messages": "Messages",
+        "comments": "Comments",
+        "directs": "Directs",
+        "automations": "Automations",
+        "sessions": "Sessions",
+        "settings": "Settings",
+        "products": "Products",
+        "accounts": "Accounts",
+        "profile": "Profile",
+        "logout": "Logout"
     },
     "Console": {
         "productCount": "Number of products",
@@ -294,11 +311,11 @@
             "previous": "Previous",
             "next": "Next",
             "pageOf": "Page {current} of {total}"
-          },
-          "QuestionAnswerDialog": {
+        },
+        "QuestionAnswerDialog": {
             "userAvatar": "User avatar",
             "answers": "Answers"
-          }
+        }
     },
     "FileUpload": {
         "title": "Upload image",

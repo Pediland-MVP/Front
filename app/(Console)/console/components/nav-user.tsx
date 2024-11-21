@@ -31,6 +31,7 @@ import {
   Bell,
   SignOut,
 } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
 
 export function NavUser({
   user,
@@ -42,6 +43,8 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const t = useTranslations('General')
 
   return (
     <SidebarMenu>
@@ -81,7 +84,7 @@ export function NavUser({
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                حساب کاربری
+                {t('profile')}
                 <SealCheck size={24} />
               </DropdownMenuItem>
               {/* <DropdownMenuItem>
@@ -95,7 +98,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              خروج
+              {t('logout')}
               <SignOut size={24} />
             </DropdownMenuItem>
           </DropdownMenuContent>
