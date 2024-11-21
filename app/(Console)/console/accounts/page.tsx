@@ -47,7 +47,7 @@ export default function AccountPage() {
         <div className="_tools">
           <Link href="#">
             <Button size={"sm"}>
-              <span className="hidden sm:inline">t("add")</span>{" "}
+              <span className="hidden sm:inline">{t("add")}</span>{" "}
               <Plus size={20} />
             </Button>
           </Link>
