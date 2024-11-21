@@ -6,6 +6,7 @@
         "responseCount": "تعداد جواب‌ها",
         "growthFromLastMonth": "{growth}% از ماه پیش",
         "leadsGrowthChart": "رشد تعداد مخاطبین",
-        "recentSessions": "سشن‌های اخیر"
+        "recentSessions": "سشن‌های اخیر",
+        "console": "داشبورد"
     }
 }

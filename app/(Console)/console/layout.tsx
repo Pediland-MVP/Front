@@ -17,8 +17,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/theme/ui/sidebar";
+import { useTranslations } from "next-intl";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+
+  const t = useTranslations("Console");
+
   return (
     <SidebarProvider>
       <AppSidebar side="right" />
@@ -31,11 +35,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage>داشبورد</BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">ارتباطات</BreadcrumbLink>
+                  <BreadcrumbPage>{t('console')}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

@@ -6,6 +6,7 @@
         "responseCount": "Number of responses",
         "growthFromLastMonth": "{growth}% from last month",
         "leadsGrowthChart": "Number of leads growth chart",
-        "recentSessions": "Recent sessions"
+        "recentSessions": "Recent sessions",
+        "console": "Console"
     }
 }

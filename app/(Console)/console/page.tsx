@@ -28,8 +28,6 @@ export default function Dashboard() {
     return <DashboardSkeleton />;
   }
 
-  logger.debug(stats)
-
   return (
     <div className="_dashboard space-y-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
