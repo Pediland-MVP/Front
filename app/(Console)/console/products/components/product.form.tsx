@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,6 +75,7 @@ export type ProductFormProps = {
 };
 
 export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
+  const t = useTranslations('Products.Form');
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,7 +90,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   useEffect(() => {
     if (form.formState?.errors?.imageId) {
       toast({
-        title: "تصویر کالا یا خدمت را آپلود کنید.",
+        title: t('uploadProductImage'),
         variant: "destructive",
       });
     }
@@ -100,7 +102,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values.isInfinite && !values.quantity) {
       form.setError("quantity", {
-        message: "تعداد نمیتواند کمتر از صفر باشد",
+        message: t('quantityError'),
       });
       return;
     }
@@ -123,14 +125,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
       if (!response.ok) {
         toast({
-          title: "خطایی رخ داد",
+          title: t('errorOccurred'),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "محصول با موفقیت اضافه شد",
+        title: t('productAddedSuccess'),
       });
 
       await mutate(
@@ -139,7 +141,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       router.push("/console/products");
     } catch (error) {
       toast({
-        title: "اتصال خود را چک کنید",
+        title: t('checkConnection'),
         variant: "destructive",
       });
     } finally {
@@ -202,9 +204,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>عنوان</FormLabel>
+                  <FormLabel>{t('title')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="عنوان کالا / خدمت" {...field} />
+                    <Input placeholder={t('productTitle')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -221,7 +223,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <Label htmlFor="direct">غیرفعال</Label>
+                  <Label htmlFor="direct">{t('inactive')}</Label>
                 </div>
               )}
             />
@@ -230,7 +232,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>قیمت (تومان)</FormLabel>
+                  <FormLabel>{t('price')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -250,7 +252,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               name="quantity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>تعداد</FormLabel>
+                  <FormLabel>{t('quantity')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -277,7 +279,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <Label htmlFor="direct">تعداد نامحدود</Label>
+                  <Label htmlFor="direct">{t('unlimitedQuantity')}</Label>
                 </div>
               )}
             />
@@ -292,7 +294,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(checked)}
                   />
-                  <Label htmlFor="direct">کالای فیزیکی</Label>
+                  <Label htmlFor="direct">{t('physicalProduct')}</Label>
                 </div>
               )}
             />
@@ -301,10 +303,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>توضیحات</FormLabel>
+                  <FormLabel>{t('description')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="کالا یا خدمت خود را توصیف کنید..."
+                      placeholder={t('describeProduct')}
                       rows={5}
                       {...field}
                     />
@@ -314,7 +316,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               )}
             />
             <LoadingButton isLoading={isLoading} type="submit">
-              ثبت کالا یا خدمت
+              {t('submitProduct')}
             </LoadingButton>
           </form>
         </Form>
@@ -333,3 +335,4 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     </div>
   );
 }
+

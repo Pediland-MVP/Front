@@ -199,5 +199,54 @@
         "likeCommand": "Like command",
         "submit": "Create",
         "update": "Update"
+    },
+    "Products": {
+        "title": "Products list",
+        "add": "Add",
+        "Form": {
+            "uploadProductImage": "Upload product image.",
+            "quantityError": "Quantity cannot be less than zero",
+            "errorOccurred": "An error occurred",
+            "productAddedSuccess": "Product added successfully",
+            "checkConnection": "Check your connection",
+            "title": "Title",
+            "productTitle": "Product title",
+            "inactive": "Inactive",
+            "price": "Price (IRT)",
+            "quantity": "Quantity",
+            "unlimitedQuantity": "Unlimited quantity",
+            "physicalProduct": "Physical product",
+            "description": "Description",
+            "describeProduct": "Describe your product...",
+            "submitProduct": "Submit product"
+        },
+        "List": {
+            "image": "Image",
+            "title": "Title",
+            "price": "Price",
+            "creationDate": "Creation date",
+            "actions": "Actions",
+            "delete": "Delete",
+            "previous": "Previous",
+            "next": "Next",
+            "pageOf": "Page {current} of {total}",
+            "error": "Error",
+            "problemOccurred": "A problem occurred",
+            "deleted": "Deleted"
+        },
+        "Edit": {
+            "editContact": "Edit contact",
+            "editContactDescription": "Edit contact information here",
+            "cancel": "Cancel"
+        },
+        "Delete": {
+            "aler": "Are you sure you want to delete this item?",
+            "description": "This action is irreversible. This item will be permanently deleted from our servers."
+        }
+    },
+    "FileUpload": {
+        "title": "Upload image",
+        "description": "Click here or drag and drop your file to this area",
+        "dropIt": "Drop it"
     }
 }

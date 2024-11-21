@@ -7,9 +7,11 @@ import { useEffect, useState } from "react"
 import ProductFormSkeleton from "../components/product.form.skeleton"
 import ProductForm from "../components/product.form"
 import InstaDirectUi from "@/components/global/instaDirectUi"
+import { useTranslations } from "next-intl"
 
 export default function Product({ id }: {id: string}) {
 
+    const t = useTranslations('General')
     const [product, setProduct] = useState<ProductNamespace.Product>()
 
     const router = useRouter()
@@ -23,7 +25,7 @@ export default function Product({ id }: {id: string}) {
                 if (!response.ok) {
                     router.push(`/console/products`)
                     toast({
-                        title: 'پیدا نشد',
+                        title: t('notFound'),
                         variant: 'destructive',
                     })
                 }
@@ -33,7 +35,7 @@ export default function Product({ id }: {id: string}) {
             catch(e) {
                 router.push(`/console/products`)
                 toast({
-                    title: 'پیدا نشد',
+                    title: t('notFound'),
                     variant: 'destructive',
                 })
             }

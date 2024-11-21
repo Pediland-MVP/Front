@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import AnimatedCircularProgressBar from "./ui/animated-circular-progress-bar";
+import { useTranslations } from "next-intl";
 
 const mainVariant = {
   initial: {
@@ -44,6 +45,8 @@ export const FileUpload = ({
   progress?: number;
   isUploading?: boolean;
 }) => {
+
+  const t = useTranslations('FileUpload')
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,10 +102,10 @@ export const FileUpload = ({
         </div>
         <div className="flex flex-col items-center justify-center">
           <p className="relative z-20  font-bold text-neutral-700 dark:text-neutral-300 text-base">
-            آپلود تصویر
+            {t('title')}
           </p>
           <p className="relative z-20  font-normal text-neutral-400 dark:text-neutral-400 text-base mt-2">
-            روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید
+            {t('description')}
           </p>
           <div className="relative w-full mt-10 max-w-xl mx-auto">
             <ImageGrid images={images} />
@@ -168,7 +171,7 @@ export const FileUpload = ({
                     animate={{ opacity: 1 }}
                     className="text-neutral-600 flex flex-col items-center"
                   >
-                    رها کنید
+                    {t('dropIt')}
                     <UploadSimple className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                   </motion.p>
                 ) : (

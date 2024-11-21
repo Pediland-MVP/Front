@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,9 +32,8 @@ export default function EditProduct({
   setOpen,
   productId,
 }: EditProductProps) {
+  const t = useTranslations('Products.Edit');
   const [isMobile, setIsMobile] = useState(false);
-
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -47,24 +47,18 @@ export default function EditProduct({
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
           <DrawerHeader className="text-right">
-            <DrawerTitle>ویرایش مخاطب</DrawerTitle>
+            <DrawerTitle>{t('editContact')}</DrawerTitle>
             <DrawerDescription>
-              از اینجا میتونی مخاطب رو ویرایش کنی
+              {t('editContactDescription')}
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0">
-            {
-              <ProductForm
-                productId={productId}
-                open={open}
-                setOpen={setOpen}
-              />
-            }
+            <ProductForm/>
           </div>
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
-                انصراف
+                {t('cancel')}
               </Button>
             </DrawerClose>
           </DrawerFooter>
@@ -77,13 +71,14 @@ export default function EditProduct({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent dir="rtl" className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>ویرایش مخاطب</DialogTitle>
+          <DialogTitle>{t('editContact')}</DialogTitle>
           <DialogDescription>
-            از اینجا میتونی مخاطب رو ویرایش کنی
+            {t('editContactDescription')}
           </DialogDescription>
         </DialogHeader>
-        {<ProductForm productId={productId} open={open} setOpen={setOpen} />}
+        <ProductForm />
       </DialogContent>
     </Dialog>
   );
 }
+

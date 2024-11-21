@@ -1,6 +1,7 @@
 {
     "General": {
-        "search": "جستجو"
+        "search": "جستجو",
+        "notFound": "موردی یافت نشد"
     },
     "Console": {
         "productCount": "تعداد محصولات",
@@ -199,5 +200,54 @@
         "likeCommand": "لایک کردن دستور",
         "submit": "ایجاد",
         "update": "آپدیت"
+    },
+    "Products": {
+        "title": "لیست کالاها / خدمات",
+        "add": "افزودن",
+        "Form": {
+            "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
+            "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
+            "errorOccurred": "خطایی رخ داد",
+            "productAddedSuccess": "محصول با موفقیت اضافه شد",
+            "checkConnection": "اتصال خود را چک کنید",
+            "title": "عنوان",
+            "productTitle": "عنوان کالا / خدمت",
+            "inactive": "غیرفعال",
+            "price": "قیمت (تومان)",
+            "quantity": "تعداد",
+            "unlimitedQuantity": "تعداد نامحدود",
+            "physicalProduct": "کالای فیزیکی",
+            "description": "توضیحات",
+            "describeProduct": "کالا یا خدمت خود را توصیف کنید...",
+            "submitProduct": "ثبت کالا یا خدمت"
+        },
+        "List": {
+            "image": "تصویر",
+            "title": "عنوان",
+            "price": "قیمت",
+            "creationDate": "تاریخ ایجاد",
+            "actions": "اقدامات",
+            "delete": "حذف",
+            "previous": "قبلی",
+            "next": "بعدی",
+            "pageOf": "صفحه {current} از {total}",
+            "error": "خطا",
+            "problemOccurred": "مشکلی پیش آمده است",
+            "deleted": "حذف شد"
+        },
+        "Edit": {
+            "editContact": "ویرایش مخاطب",
+            "editContactDescription": "از اینجا میتونی مخاطب رو ویرایش کنی",
+            "cancel": "انصراف"
+        },
+        "Delete": {
+            "aler": "آیا از حذف این مورد اطمینان دارید؟",
+            "description": "این عمل غیرقابل بازگشت است. این مورد به طور دائمی از سرورهای ما حذف خواهد شد"
+        }
+    },
+    "FileUpload": {
+        "title": "آپلود تصویر",
+        "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
+        "dropIt": "رها کنید"
     }
 }

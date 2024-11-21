@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { useState } from "react";
 import Image from "next/image";
-import { ChevronRight, ChevronLeft, Pencil, Trash2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, Pencil, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,7 +18,6 @@ import useDebounce from "@/hooks/useDebounce";
 import { fetcher } from "@/hooks/swr/fetcher";
 import EditProduct from "./product.dialog";
 import { DateObject } from "react-multi-date-picker";
-// import * as DateObject from 'date-fns-jalali'
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useRouter } from "next/navigation";
@@ -34,8 +34,8 @@ interface ContentItem {
 }
 
 export default function ProductListTable() {
+  const t = useTranslations('Products.List');
   const [limit, setLimit] = useState<number>(10);
-  // const [contacts, setContacts] = useState<ContactNamespace.Contacts>([]);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
   const debouncedSearchTerm = useDebounce(search, 500);
@@ -63,10 +63,6 @@ export default function ProductListTable() {
   const products = productsData?.items || [];
   const productsMeta = productsData?.meta || undefined;
 
-  const handleEdit = (item: ContentItem) => {
-    // setEditingItem({ ...item })
-  };
-
   const router = useRouter();
 
   const handleDeleteClick = (id: string) => {
@@ -91,15 +87,15 @@ export default function ProductListTable() {
 
         if (!res.ok) {
           toast({
-            title: "خطا",
-            description: "مشکلی پیش آمده است",
+            title: t('error'),
+            description: t('problemOccurred'),
             variant: "destructive",
           });
           return;
         }
 
         toast({
-          title: "حذف شد",
+          title: t('deleted'),
         });
         await mutate(
           (key) => typeof key === "string" && key.includes("products"),
@@ -119,11 +115,11 @@ export default function ProductListTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-right">تصویر</TableHead>
-            <TableHead className="text-right">عنوان</TableHead>
-            <TableHead className="text-right">قیمت</TableHead>
-            <TableHead className="text-right">تاریخ ایجاد</TableHead>
-            <TableHead className="text-right">اقدامات</TableHead>
+            <TableHead className="text-right">{t('image')}</TableHead>
+            <TableHead className="text-right">{t('title')}</TableHead>
+            <TableHead className="text-right">{t('price')}</TableHead>
+            <TableHead className="text-right">{t('creationDate')}</TableHead>
+            <TableHead className="text-right">{t('actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -163,6 +159,7 @@ export default function ProductListTable() {
                     onClick={() => handleDeleteClick(product.id)}
                   >
                     <Trash2 className="h-4 w-4 ml-2" />
+                    {t('delete')}
                   </Button>
                 </div>
               </TableCell>
@@ -176,10 +173,10 @@ export default function ProductListTable() {
           disabled={page === 1}
         >
           <ChevronRight className="h-4 w-4 ml-2" />
-          قبلی
+          {t('previous')}
         </Button>
         <span>
-          صفحه {page} از {productsMeta?.totalPages}
+          {t('pageOf', { current: page, total: productsMeta?.totalPages })}
         </span>
         <Button
           onClick={() =>
@@ -187,7 +184,7 @@ export default function ProductListTable() {
           }
           disabled={page === productsMeta?.totalPages}
         >
-          بعدی
+          {t('next')}
           <ChevronLeft className="h-4 w-4 mr-2" />
         </Button>
       </div>
@@ -200,3 +197,4 @@ export default function ProductListTable() {
     </div>
   );
 }
+

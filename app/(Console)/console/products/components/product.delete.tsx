@@ -1,3 +1,4 @@
+'use client'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -22,16 +24,18 @@ export function ProductDeleteDialog({
   onConfirm,
   itemId,
 }: DeleteConfirmationDialogProps) {
+
+  const t = useTranslations('Products.Delete')
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="rtl:text-right ltr:text-left">
         <AlertDialogHeader>
           <AlertDialogTitle>
-            آیا از حذف این مورد اطمینان دارید؟
+            {t('alert')}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            این عمل غیرقابل بازگشت است. این مورد به طور دائمی از سرورهای ما حذف
-            خواهد شد.
+            {t('description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="rtl:flex-row-reverse">
