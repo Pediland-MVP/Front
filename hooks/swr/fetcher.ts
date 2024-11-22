@@ -1,17 +1,44 @@
+// Custom error class to include additional properties
+class FetchError extends Error {
+  data?: any;
+  status?: number;
+
+  constructor(message: string, data?: any, status?: number) {
+    super(message);
+    this.name = 'FetchError';
+    this.data = data;
+    this.status = status;
+    
+    // This is necessary for proper prototype chain setup in TypeScript
+    Object.setPrototypeOf(this, FetchError.prototype);
+  }
+}
 
 export const fetcher = async (url: string, options?: RequestInit) => {
   try {
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       ...options,
       credentials: 'include',
     });
-    const data = await response.json();
+    
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new FetchError(
+        'An error occurred while fetching the data.',
+        data, // The error info from the response
+        res.status
+      );
+    }
+    
     return data;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to fetch data: ${error.message}`);
-    } else {
-      throw new Error('An unexpected error occurred while fetching data');
+    if (error instanceof FetchError) {
+      throw error; // Re-throw our custom error
     }
+    if (error instanceof Error) {
+      throw new FetchError(`Failed to fetch data: ${error.message}`);
+    }
+    throw new FetchError('An unexpected error occurred while fetching data');
   }
 };
