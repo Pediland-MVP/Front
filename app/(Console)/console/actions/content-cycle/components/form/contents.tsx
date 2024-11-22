@@ -1,8 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
-import { FormItem, FormMessage } from "@/components/ui/form";
-import { PlusCircle, Trash, ArrowsOutCardinal } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 import {
   Control,
   Controller,
@@ -13,8 +11,7 @@ import {
 import InstagramPostsDialog from "../../../components/instagramPosts.dialog";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
   DndContext,
   closestCenter,
@@ -31,6 +28,15 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+// Just UI Imports Below
+import { Button } from "@/components/theme/ui/button";
+import { Textarea } from "@/components/theme/ui/textarea";
+import { FormItem, FormMessage } from "@/components/ui/form";
+import {
+  PlusCircle,
+  Trash,
+  ArrowsOutCardinal,
+} from "@phosphor-icons/react/dist/ssr";
 
 type ContentsProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -58,7 +64,7 @@ function SortableItem({
   removeContents: (index: number) => void;
   updateContents: (index: number, value: any) => void;
 }) {
-  const t = useTranslations('Automations.Contents');
+  const t = useTranslations("Automations.Contents");
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -71,60 +77,55 @@ function SortableItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="space-y-4 border-[1.2px] p-2 rounded-2xl flex gap-x-4 items-start"
+      className="bg-blue-50 p-3 rounded-xl flex flex-col items-start"
     >
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-move pt-2 flex flex-col gap-y-2 justify-center items-center"
-      >
-        <ArrowsOutCardinal size={20} />
+      <div className="_header flex justify-between items-center w-full">
+        <div {...attributes} {...listeners} className="cursor-move">
+          <ArrowsOutCardinal size={20} />
+        </div>
+        <div>
+          <Trash
+            size={22}
+            className="text-red-600 cursor-pointer"
+            onClick={() => removeContents(index)}
+            aria-label={t("removeContent")}
+          />
+        </div>
       </div>
-      <div className="relative flex justify-center items-center w-48">
-        <InstagramPostsDialog
-          index={index}
-          updateContents={updateContents}
-          formState={formState}
-          getValues={getValues}
-          contents={contentsField}
-        />
-      </div>
-      <div className="flex flex-col gap-2 w-full">
-        <Trash
-          size={24}
-          className="text-red-600 cursor-pointer"
-          onClick={() => removeContents(index)}
-          aria-label={t('removeContent')}
-        />
-        <Controller
-          name={`contents.${index}.text`}
-          control={control}
-          render={({ field, fieldState: { error } }) => (
-            <FormItem>
-              <Textarea
-                className="w-full border px-3 py-2 rounded-xl"
-                placeholder={t('enterYourMessage')}
-                {...field}
-              />
-              {error && <FormMessage> {error.message} </FormMessage>}
-            </FormItem>
-          )}
-        />
 
-        <Controller
-          name={`contents.${index}.consentText`}
-          control={control}
-          render={({ field, fieldState: { error } }) => (
-            <FormItem>
-              <Textarea
-                className="w-full border px-3 py-2 rounded-xl"
-                placeholder={t('consentMessage')}
-                {...field}
-              />
-              {error && <FormMessage> {error.message} </FormMessage>}
-            </FormItem>
-          )}
-        />
+      <div className="_content gap-3 flex flex-col w-full">
+        <div className="relative flex justify-center items-center">
+          <InstagramPostsDialog
+            index={index}
+            updateContents={updateContents}
+            formState={formState}
+            getValues={getValues}
+            contents={contentsField}
+          />
+        </div>
+        <div className="flex flex-col gap-2 w-full">
+          <Controller
+            name={`contents.${index}.text`}
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <FormItem>
+                <Textarea placeholder={t("enterYourMessage")} {...field} />
+                {error && <FormMessage> {error.message} </FormMessage>}
+              </FormItem>
+            )}
+          />
+
+          <Controller
+            name={`contents.${index}.consentText`}
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <FormItem>
+                <Textarea placeholder={t("consentMessage")} {...field} />
+                {error && <FormMessage> {error.message} </FormMessage>}
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
     </div>
   );
@@ -135,7 +136,7 @@ export default function Contents({
   getValues,
   formState,
 }: ContentsProps) {
-  const t = useTranslations('Automations.Contents');
+  const t = useTranslations("Automations.Contents");
   const {
     fields: contentsField,
     remove: removeContents,
@@ -186,9 +187,9 @@ export default function Contents({
         type="button"
         className="flex items-center gap-2 cursor-pointer"
       >
-        <PlusCircle size={24} />
+        <PlusCircle size={22} className="text-blue-600" />
         <span className="text-sm font-semibold text-blue-600">
-          {t('addContent')}
+          {t("addContent")}
         </span>
       </Button>
 
@@ -221,4 +222,3 @@ export default function Contents({
     </>
   );
 }
-

@@ -3,7 +3,10 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Suspense } from "react";
 import Accounts from "./components/accounts";
-
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { InstagramNamespace } from "@/types/instagram";
+// Just UI Imports Below
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Button } from "@/components/theme/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,9 +19,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/theme/ui/breadcrumb";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { InstagramNamespace } from "@/types/instagram";
+
 
 export default function AccountPage() {
   const t = useTranslations("Accounts");
@@ -34,7 +35,7 @@ export default function AccountPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/console">{t("title")}</BreadcrumbLink>
+                <BreadcrumbLink href="/console">{t("dashboard")}</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

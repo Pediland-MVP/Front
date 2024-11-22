@@ -1,14 +1,28 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
-import React, { useState, useEffect } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Loader2, Pencil, Trash2, ChevronRight, ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
-import { DeleteConfirmationDialog } from './contentCycleDeleteConfirmation'
-import { toast } from '@/components/ui/use-toast'
-import { Mailbox } from '@phosphor-icons/react'
+import { useTranslations } from "next-intl";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { DeleteConfirmationDialog } from "./contentCycleDeleteConfirmation";
+// Just UI Imports Below
+import { toast } from "@/components/ui/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/theme/ui/button";
+import {
+  Spinner,
+  Pencil,
+  Trash,
+  CaretRight,
+  CaretLeft,
+  Mailbox,
+} from "@phosphor-icons/react/dist/ssr";
 
 type ContentCycle = {
   title: string;
@@ -32,7 +46,7 @@ type ContentCycleResponse = {
 };
 
 export default function ContentCycleTable() {
-  const t = useTranslations('Automations.List');
+  const t = useTranslations("Automations.List");
   const [data, setData] = useState<ContentCycleResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,13 +76,13 @@ export default function ContentCycleTable() {
         }
       );
       if (!response.ok) {
-        throw new Error(t('fetchError'));
+        throw new Error(t("fetchError"));
       }
       const result = await response.json();
       setData(result);
       setCurrentPage(page);
     } catch (error) {
-      setError(t('fetchErrorRetry'));
+      setError(t("fetchErrorRetry"));
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
@@ -100,19 +114,19 @@ export default function ContentCycleTable() {
 
         if (!res.ok) {
           toast({
-            title: t('error'),
-            description: t('problemOccurred'),
+            title: t("error"),
+            description: t("problemOccurred"),
             variant: "destructive",
           });
           return;
         }
 
         toast({
-          title: t('deleted'),
+          title: t("deleted"),
         });
         await fetchData(currentPage, undefined, true); // Refresh data after deletion
       } catch (error) {
-        setError(t('deleteErrorRetry'));
+        setError(t("deleteErrorRetry"));
         console.error("Error deleting item:", error);
       } finally {
         setIsLoading(false);
@@ -131,7 +145,7 @@ export default function ContentCycleTable() {
     <div className="rtl" dir="rtl">
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <Spinner className="h-8 w-8 animate-spin" />
         </div>
       ) : error ? (
         <div className="text-center text-red-500">{error}</div>
@@ -141,10 +155,14 @@ export default function ContentCycleTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">{t('title')}</TableHead>
-                  <TableHead className="text-right">{t('conditionValue')}</TableHead>
-                  <TableHead className="text-right">{t('firstMessage')}</TableHead>
-                  <TableHead className="text-right">{t('actions')}</TableHead>
+                  <TableHead className="text-right">{t("title")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("conditionValue")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("firstMessage")}
+                  </TableHead>
+                  <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -152,23 +170,27 @@ export default function ContentCycleTable() {
                   <TableRow key={item.id}>
                     <TableCell className="text-right">{item.title}</TableCell>
                     <TableCell className="text-right">
-                      {item.conditions[0]?.value || t('notAvailable')}
+                      {item.conditions[0]?.value || t("notAvailable")}
                     </TableCell>
                     <TableCell className="text-right">
-                      {item.contents[0]?.text || t('notAvailable')}
+                      {item.contents[0]?.text || t("notAvailable")}
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end space-x-2 space-x-reverse">
-                      <Link href={`/console/sessions?contentCycleId=${item.id}`}>
+                        <Link
+                          href={`/console/sessions?contentCycleId=${item.id}`}
+                        >
                           <Button variant="ghost" size="sm">
                             <Mailbox className="h-4 w-4 ml-2" />
-                            {t('responses')}
+                            {t("responses")}
                           </Button>
                         </Link>
-                        <Link href={`/console/actions/content-cycle/${item.id}`}>
+                        <Link
+                          href={`/console/actions/content-cycle/${item.id}`}
+                        >
                           <Button variant="ghost" size="sm">
                             <Pencil className="h-4 w-4 ml-2" />
-                            {t('edit')}
+                            {t("edit")}
                           </Button>
                         </Link>
                         <Button
@@ -176,8 +198,8 @@ export default function ContentCycleTable() {
                           size="sm"
                           onClick={() => handleDeleteClick(item.id)}
                         >
-                          <Trash2 className="h-4 w-4 ml-2" />
-                          {t('delete')}
+                          <Trash className="h-4 w-4 ml-2" />
+                          {t("delete")}
                         </Button>
                       </div>
                     </TableCell>
@@ -193,19 +215,22 @@ export default function ContentCycleTable() {
                 onClick={() => fetchData(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                <ChevronRight className="h-4 w-4 ml-2" />
-                {t('previous')}
+                <CaretRight className="h-4 w-4 ml-2" />
+                {t("previous")}
               </Button>
               <span>
-                {t('pageOf', { current: currentPage, total: data.meta.totalPages })}
+                {t("pageOf", {
+                  current: currentPage,
+                  total: data.meta.totalPages,
+                })}
               </span>
               <Button
                 variant="outline"
                 onClick={() => fetchData(currentPage + 1)}
                 disabled={currentPage === data.meta.totalPages}
               >
-                {t('next')}
-                <ChevronLeft className="h-4 w-4 mr-2" />
+                {t("next")}
+                <CaretLeft className="h-4 w-4 mr-2" />
               </Button>
             </div>
           )}
@@ -220,4 +245,3 @@ export default function ContentCycleTable() {
     </div>
   );
 }
-

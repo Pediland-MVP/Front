@@ -1,7 +1,8 @@
 "use client";
 
 import ProductForm from "../components/product.form";
-
+import { useTranslations } from "next-intl";
+// Just UI Imports Below
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -15,6 +16,8 @@ import {
 } from "@/components/theme/ui/breadcrumb";
 
 export default function Page() {
+  const t = useTranslations("Products");
+
   return (
     <div className="_products">
       <header className="px-4 pt-4 flex justify-between items-center gap-4">
@@ -25,12 +28,14 @@ export default function Page() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/console">داشبورد</BreadcrumbLink>
+                <BreadcrumbLink href="/console">
+                  {t("dashboard")}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem className="hidden sm:block">
                 <BreadcrumbLink href="/console/products">
-                  لیست کالاها / خدمات
+                  {t("title")}
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem className="sm:hidden">
@@ -38,7 +43,7 @@ export default function Page() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>جزئیات کالا / خدمت</BreadcrumbPage>
+                <BreadcrumbPage>{t("addTitle")}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

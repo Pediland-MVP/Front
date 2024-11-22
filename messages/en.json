@@ -5,6 +5,7 @@
             "description": "Customer management"
         },
         "console": "Console",
+        "dashboard": "Dashboard",
         "search": "Search",
         "notFound": "Nothing found",
         "contacts": "Contacts",
@@ -119,6 +120,7 @@
         "title": "Comments list"
     },
     "Automations": {
+        "dashboard": "Dashboard",
         "list": "Automation list",
         "add": "Add",
         "List": {
@@ -218,6 +220,7 @@
         "update": "Update"
     },
     "Products": {
+        "dashboard": "Dashboard",
         "title": "Products list",
         "add": "Add",
         "Form": {
@@ -263,6 +266,7 @@
         }
     },
     "Accounts": {
+        "dashboard": "Dashboard",
         "title": "Manage accounts",
         "add": "Add",
         "Accounts": {

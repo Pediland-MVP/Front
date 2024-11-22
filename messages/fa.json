@@ -5,14 +5,14 @@
             "name": "تبدیل",
             "description": "مدیریت مشتریان"
         },
-        "console": "کنسول",
+        "console": "داشبورد",
         "search": "جستجو",
         "notFound": "موردی یافت نشد",
         "contacts": "مخاطبین",
         "messages": "پیام‌ها",
         "comments": "کامنت‌ها",
         "directs": "دایرکت‌ها",
-        "automations": "اتومیشن‌ها",
+        "automations": "اتوماسیون",
         "sessions": "سشن‌ها",
         "settings": "تنظیمات",
         "products": "کالاها / خدمات",
@@ -23,7 +23,7 @@
     "Console": {
         "productCount": "تعداد محصولات",
         "leadCount": "تعداد مخاطب",
-        "automations": "اتومیشن‌ها",
+        "automations": "اتوماسیون",
         "responseCount": "تعداد جواب‌ها",
         "growthFromLastMonth": "{growth}% از ماه پیش",
         "leadsGrowthChart": "رشد تعداد مخاطبین",
@@ -31,6 +31,7 @@
         "console": "داشبورد"
     },
     "Contacts": {
+        "dashboard": "داشبورد",
         "list": "لیست مخاطبین",
         "searchPlaceholder": "جستجو...",
         "Form": {
@@ -120,8 +121,10 @@
         "title": "لیست کامنت‌ها"
     },
     "Automations": {
-        "list": "لیست اتوماسیون",
+        "dashboard": "داشبورد",
+        "list": "لیست اتوماسیون ها",
         "add": "افزودن",
+        "addTitle": "جزئیات اتوماسیون",
         "List": {
             "fetchError": "خطا در دریافت اطلاعات",
             "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
@@ -219,8 +222,10 @@
         "update": "آپدیت"
     },
     "Products": {
+        "dashboard": "داشبورد",
         "title": "لیست کالاها / خدمات",
         "add": "افزودن",
+        "addTitle": "جزئیات کالا / خدمت",
         "Form": {
             "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
             "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
@@ -264,6 +269,7 @@
         }
     },
     "Accounts": {
+        "dashboard": "داشبورد",
         "title": "مدیریت اکانت‌ها",
         "add": "افزودن",
         "Accounts": {

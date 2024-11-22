@@ -1,10 +1,11 @@
 import { useTranslations } from 'next-intl';
-import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
 import { Control, UseFormGetValues } from "react-hook-form";
 import { contentCycleFormSchema } from "../contentCycle";
 import { z } from "zod";
+// Just UI Imports Below
+import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/theme/ui/textarea";
 
 type TriggerProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;

@@ -10,7 +10,7 @@ import { SelectInstagram } from "./selectInstagram";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-
+// Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/theme/ui/alert-dialog";
 import { InstagramLogo, Trash } from "@phosphor-icons/react/dist/ssr";
 
 type AccountsProps = {
@@ -213,7 +213,6 @@ export default function Accounts({
                       >
                         {t("delete")}
                       </AlertDialogAction>
-                      <AlertDialogCancel>انصراف</AlertDialogCancel>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

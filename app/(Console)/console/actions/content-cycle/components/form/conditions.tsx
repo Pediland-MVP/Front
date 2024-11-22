@@ -1,7 +1,18 @@
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+import {
+  Control,
+  Controller,
+  useFieldArray,
+  UseFormGetValues,
+  UseFormStateReturn,
+} from "react-hook-form";
+import { z } from "zod";
+import { contentCycleFormSchema } from "../contentCycle";
+// Just UI Imports Below
+import { Button } from "@/components/theme/ui/button";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { FormItem, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/theme/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -9,19 +20,8 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-} from "@/components/ui/select";
-import { Trash, PlusCircle } from "@phosphor-icons/react";
-import {
-  Control,
-  Controller,
-  useFieldArray,
-  UseFormGetValues,
-  UseFormStateProps,
-  UseFormStateReturn,
-} from "react-hook-form";
-import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
-import { Button } from "@/components/ui/button";
+} from "@/components/theme/ui/select";
+import { Trash, PlusCircle } from "@phosphor-icons/react/dist/ssr";
 
 type TriggerProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -34,7 +34,7 @@ export default function Conditions({
   getValues,
   formState,
 }: TriggerProps) {
-  const t = useTranslations('Automations.Conditions');
+  const t = useTranslations("Automations.Conditions");
 
   const {
     fields: conditionsField,
@@ -51,70 +51,81 @@ export default function Conditions({
   return (
     <>
       <div className="space-y-1">
-        <p>{t('wordOrPhrase')}</p>
+        <p>{t("wordOrPhrase")}</p>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
-            <div key={condition.id} className="flex gap-4 items-center">
-              <Controller
-                name={`conditions.${index}.type`}
-                control={control}
-                defaultValue="EQUAL"
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem>
-                    <Select {...field} dir="rtl" onValueChange={field.onChange}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder={t('equal')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="EQUAL">{t('equal')}</SelectItem>
-                          <SelectItem value="INCLUDE">{t('include')}</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    {error && <FormMessage>{error.message}</FormMessage>}
-                  </FormItem>
-                )}
-              />
-              <span className="text-sm">{t('with')}</span>
-              <Controller
-                name={`conditions.${index}.value`}
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem>
-                    <Input
-                      {...field}
-                      className="max-w-[15rem]"
-                      type="text"
-                      placeholder={t('value')}
-                    />
-                    {/* {error && (
-                            <FormMessage> {error.message} </FormMessage>
-                          )} */}
-                  </FormItem>
-                )}
-              />
-
-              {/* Delete Icon */}
-              {getValues().conditions?.length > 1 && (
-                <Trash
-                  size={24}
-                  className="text-red-600 cursor-pointer"
-                  onClick={() => removeConditions(index)}
-                  aria-label={t('deleteCondition')}
+            <div
+              key={condition.id}
+              className="flex flex-col xl:flex-row gap-3 items-center"
+            >
+              <div className="w-full flex items-center gap-2">
+                <Controller
+                  name={`conditions.${index}.type`}
+                  control={control}
+                  defaultValue="EQUAL"
+                  render={({ field, fieldState: { error } }) => (
+                    <FormItem className="w-full">
+                      <Select
+                        {...field}
+                        dir="rtl"
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("equal")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="EQUAL">{t("equal")}</SelectItem>
+                            <SelectItem value="INCLUDE">
+                              {t("include")}
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {error && <FormMessage>{error.message}</FormMessage>}
+                    </FormItem>
+                  )}
                 />
-              )}
+                <span className="text-sm">{t("with")}</span>
+              </div>
+              <div className="w-full flex items-center gap-2">
+                <Controller
+                  name={`conditions.${index}.value`}
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormItem className="flex-1">
+                      <Input {...field} type="text" placeholder={t("value")} />
+                      {/* {error && (
+              <FormMessage> {error.message} </FormMessage>
+            )} */}
+                    </FormItem>
+                  )}
+                />
+
+                {/* Delete Icon */}
+                {getValues().conditions?.length > 1 && (
+                  <div>
+                    <Trash
+                      size={20}
+                      className="text-red-600 cursor-pointer"
+                      onClick={() => removeConditions(index)}
+                      aria-label={t("deleteCondition")}
+                    />
+                  </div>
+                )}
+              </div>
+
               <Button
                 onClick={() =>
                   appendConditions({ type: "EQUAL", value: "", id: "" })
                 }
                 variant="ghost"
                 type="button"
-                className="flex items-center gap-2 cursor-pointer"
+                className="flex items-center gap-2 cursor-pointer px-2"
               >
-                <PlusCircle size={24} />
-                <span className="text-sm font-semibold text-blue-600">
-                  {t('addNewCondition')}
+                <PlusCircle size={20} className="text-blue-600" />
+                <span className="text-sm font-medium text-blue-600">
+                  {t("addNewCondition")}
                 </span>
               </Button>
             </div>
@@ -130,8 +141,7 @@ export default function Conditions({
         })}
 
       {/* Message input & post select */}
-      <p>{t('sendMessageBelow')}</p>
+      <p>{t("sendMessageBelow")}</p>
     </>
   );
 }
-

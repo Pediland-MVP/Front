@@ -3,14 +3,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form } from "@/components/ui/form";
-
-import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import LoadingButton from "@/components/ui/button-loading";
-
-import LoadingSpinner from "@/components/ui/loadingSpinner";
-
 import JustFollowers from "./form/justFollowers";
 import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
@@ -22,6 +14,12 @@ import LikeDirect from "./form/likeDirect";
 import Questions from "./form/questions";
 import ContentCycleTitle from "./form/title";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+// Just UI Imports Below
+import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { Form } from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
+import LoadingButton from "@/components/ui/button-loading";
 
 export type ContentType = {
   id: string;
@@ -267,21 +265,21 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     console.log(form.formState.errors);
   }, [form.watch()]);
 
-  const t = useTranslations('Automations')
+  const t = useTranslations("Automations");
 
   return (
-    <div className="_add-automation">
+    <div className="_add-automation bg-stone-50 w-full xl:w-1/2 2xl:w-1/3 border rounded-lg shadow p-4 sm:p-6">
       {isLoading ? (
         <div className="min-h-screen w-full flex justify-center items-center">
           <LoadingSpinner className="h-20 w-20 text-gray-500" />
         </div>
       ) : (
-        <div className="w-full h-[calc(100vh-136px)] _wrap overflow-auto">
+        <div className="_wrap">
           {/* Form wrapper */}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="p-4 space-y-5"
+              className="grid gap-4"
             >
               <ContentCycleTitle control={form.control} />
 
@@ -319,7 +317,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
               <GetUserData control={form.control} />
 
               {/* Submit button */}
-              <LoadingButton isLoading={isSubmitting}>{id ? t('update') : t('submit')}</LoadingButton>
+              <LoadingButton isLoading={isSubmitting}>
+                {id ? t("update") : t("submit")}
+              </LoadingButton>
             </form>
           </Form>
         </div>

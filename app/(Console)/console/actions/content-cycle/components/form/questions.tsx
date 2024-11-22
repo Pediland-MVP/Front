@@ -1,11 +1,10 @@
 "use client";
-import { FormField } from "@/components/ui/form";
-import { PlusCircle, ArrowsOutCardinal } from "@phosphor-icons/react";
+
 import { Control, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
+import { CSS } from "@dnd-kit/utilities";
 import {
   DndContext,
   closestCenter,
@@ -19,11 +18,17 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
   SortableContext,
-  useSortable
+  useSortable,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { Trash } from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
+// Just UI Imports Below
+import { Button } from "@/components/theme/ui/button";
+import { Input } from "@/components/theme/ui/input";
+import { FormField } from "@/components/ui/form";
+import {
+  PlusCircle,
+  ArrowsOutCardinal,
+  Trash,
+} from "@phosphor-icons/react/dist/ssr";
 
 type QuestionsProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -44,7 +49,7 @@ function SortableItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
-  const t = useTranslations('Automations.Questions');
+  const t = useTranslations("Automations.Questions");
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -56,16 +61,22 @@ function SortableItem({
       <div {...attributes} {...listeners} className="cursor-move">
         <ArrowsOutCardinal size={20} />
       </div>
-      <Trash
-        size={24}
-        className="text-red-600 cursor-pointer "
-        onClick={() => removeQuestions(index)}
-      />
+      <div>
+        <Trash
+          size={20}
+          className="text-red-600 cursor-pointer "
+          onClick={() => removeQuestions(index)}
+        />
+      </div>
       <FormField
         control={control}
         name={`questions.${index}.text`}
         render={({ field }) => (
-        <Input {...field} placeholder={t('placeholder')} className="flex-grow" />
+          <Input
+            {...field}
+            placeholder={t("placeholder")}
+            className="flex-grow"
+          />
         )}
       />
     </div>
@@ -111,7 +122,7 @@ export default function Questions({ control }: QuestionsProps) {
     }
   };
 
-  const t = useTranslations('Automations.Questions');
+  const t = useTranslations("Automations.Questions");
 
   return (
     <>
@@ -125,8 +136,8 @@ export default function Questions({ control }: QuestionsProps) {
         type="button"
         className="flex items-center gap-2 cursor-pointer"
       >
-        <PlusCircle size={24} />
-        <span className="text-sm font-semibold text-blue-600">{t('add')}</span>
+        <PlusCircle size={22} className="text-blue-700" />
+        <span className="text-sm font-semibold text-blue-600">{t("add")}</span>
       </Button>
 
       <DndContext

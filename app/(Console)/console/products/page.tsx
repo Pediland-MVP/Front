@@ -1,7 +1,8 @@
 import Link from "next/link";
 import React from "react";
 import ProductListTable from "./components/productListTable";
-
+import { useTranslations } from "next-intl";
+// Just UI Imports Below
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Button } from "@/components/theme/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,7 +15,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/theme/ui/breadcrumb";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
 
 export default function Page() {
   const t = useTranslations('Products')
@@ -28,7 +28,7 @@ export default function Page() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/console">داشبورد</BreadcrumbLink>
+                <BreadcrumbLink href="/console">{t('dashboard')}</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
