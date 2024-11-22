@@ -1,7 +1,5 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -9,11 +7,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/registry/new-york/ui/carousel";
-// import ExplainFeatures from "@/components/ExplainFeatures";
-import kommoProfile from "@/public/kommo-profile.png"; // Example static image
 import UserCommentsCard from "./userCommentsCard";
+import { useTranslations } from "next-intl";
 
 export function UserComments() {
+  const t = useTranslations('Lorem')
   return (
     <Carousel
       dir="ltr"
@@ -40,8 +38,8 @@ export function UserComments() {
                   picCoverSize="w-full h-full object-contain rounded-lg"
                   picCoverBg="bg-gray-200"
                   srcPic="https://pcfcdn.kommo.com/images/main/crm-for-finance.jpg" // Replace with your actual image path
-                  title={`سینا پیرانی ${index + 1}`}
-                  text="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گراف و مجله در"
+                  title={`${t('sina')} ${index + 1}`}
+                  text={t('p')}
                 />
               </CardContent>
               {/* </Card> */}

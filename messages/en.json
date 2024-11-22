@@ -318,6 +318,17 @@
             "answers": "Answers"
         }
     },
+    "Lorem": {
+        "title": "Lorem ipsum is a dummy text from the printing industry",
+        "p": "Lorem ipsum is a dummy text from the printing industry and is used by graphic designers. Printers and texts are also used in columns and rows, as needed.",
+        "s": "Lorem ipsum is a dummy text from the printing industry and is used by graphic designers in magazines.",
+        "xs": "Dummy text from the printing industry"
+    },
+    "Skeleton": {
+        "title": "Access Denied :(",
+        "description": "Please connect to your Instagram account to see the console",
+        "button": "Connect to Instagram"
+    },
     "FileUpload": {
         "title": "Upload image",
         "description": "Click here or drag and drop your file to this area",
