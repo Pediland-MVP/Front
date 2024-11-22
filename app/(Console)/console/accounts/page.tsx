@@ -45,7 +45,7 @@ export default function AccountPage() {
         </div>
 
         <div className="_tools">
-          <Link href="#">
+          <Link href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
             <Button size={"sm"}>
               <span className="hidden sm:inline">{t("add")}</span>{" "}
               <Plus size={20} />
