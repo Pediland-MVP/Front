@@ -3,6 +3,7 @@ import React from "react";
 import pipline from "@/public/kommo-profile.png";
 import Image, { StaticImageData } from "next/image";
 import { ArrowArcRight, ArrowLeft } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 interface ExplainFeaturesProps {
     bg: string;
     picCoverBg: string;
@@ -15,7 +16,7 @@ interface ExplainFeaturesProps {
   
   
   const ExplainFeatures: React.FC<ExplainFeaturesProps> = ({flex, bg,picCoverSize, picCoverBg, srcPic, title, text }) => {
-    
+    const t = useTranslations('General')
   return (
     <div className={`flex justify-center items-center mb-4 md:mb-6 md:px-16 px-4 text-blueKommo `}>
       <div className={`w-full max-w-[80rem] ${bg} rounded-2xl py-6 px-4 md:px-8 xl:px-12`}>
@@ -25,7 +26,7 @@ interface ExplainFeaturesProps {
             <p className="text-md ">{text}
             </p>
             <span className="flex gap-2 mt-4 items-center hover:text-purple-700 cursor-pointer font-semibold">
-              بیشتر
+              {t('more')}
               <ArrowLeft
                 size={18}
                 color="#100534"

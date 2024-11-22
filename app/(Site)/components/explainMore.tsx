@@ -3,7 +3,9 @@ import happyCustomer from "@/public/kommo-happy-client.png";
 import Customer from "@/public/kommo-enterpreneur.png";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 export default function ExplainUser() {
+  const t = useTranslations('Lorem')
   return (
     <div className="max-w-[104rem] m-auto overflow-hidden  w-full flex flex-col md:flex-row  md:justify-between items-center mb-24">
       <Image
@@ -21,8 +23,7 @@ export default function ExplainUser() {
         className="hidden md:block xl:hidden"
       />
       <h2 className=" text-2xl text-center leading-120 font-medium md:text-2xl lg:leading-[3rem] lg:text-[38px] px-16 md:px-0">
-        لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از نامفهومنامفهوم صنعت چاپ
-        و با استفاده
+        {t('s')}
       </h2>
       <Image
         src={Customer}

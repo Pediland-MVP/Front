@@ -11,7 +11,7 @@ import UserCommentsCard from "./userCommentsCard";
 import { useTranslations } from "next-intl";
 
 export function UserComments() {
-  const t = useTranslations('Lorem')
+  const t = useTranslations('UsersComments');
   return (
     <Carousel
       dir="ltr"
@@ -21,7 +21,7 @@ export function UserComments() {
       className="h-full"
     >
       <div className="w-full  max-w-[102rem] mx-auto lg:text-right text-center">
-        <h1 className="font-semibold md:text-2xl pb-8 text-xl" >نظرات دیگران راجب مارا بخوانید</h1>
+        <h1 className="font-semibold md:text-2xl pb-8 text-xl" ></h1>
       </div>
       <CarouselContent className="flex ">
         {Array.from({ length: 10 }).map((_, index) => (

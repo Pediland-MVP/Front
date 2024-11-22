@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -57,6 +58,8 @@ export default function HeroSection() {
     return () => intervals.forEach(clearInterval);
   }, []);
 
+  const t = useTranslations('Home')
+
   return (
     <div className="flex my-24 h-auto md:h-[88vh]  w-full max-w-[70rem] m-auto text-center justify-center xl:px-20 md:px-6 px-4 ">
       <div className="flex flex-col sm:gap-4 md:gap-2 items-center justify-start md:justify-center">
@@ -68,11 +71,11 @@ export default function HeroSection() {
             <Image width={0} height={0} alt="logo" className="w-[2rem] md:w-[3rem] xl:w-[4rem]" src={currentImages[2]} />
           </div>
         </div>
-        <p className="text-sm font-semibold text-slate-500">فروش crm مبتنی بر پیام رسان</p>
+        <p className="text-sm font-semibold text-slate-500">{t('crm')}</p>
         <h1 className="text-blueKommo xl:text-6xl md:text-5xl text-4xl font-semibold leading-[2.9rem] xl:leading-[5rem] md:leading-[3.5rem]">
-          لورم ایپسوم متن ساختگی با <br className="hidden sm:block" />
-          چاپ و با استفاده از <br className="hidden sm:block" />
-          گرافیک است صنعت نامفهوم از
+          {t('xs')} <br className="hidden sm:block" />
+          {t('xs')} <br className="hidden sm:block" />
+          {t('xs')}
         </h1>
         <div className="md:hidden flex gap-4">
           <div className={`flex transition-all duration-1000 ${fades[2] ? "opacity-0" : "opacity-100"}`}>
@@ -83,7 +86,7 @@ export default function HeroSection() {
           </div>
         </div>
         <div className="relative">
-          <Button className="md:h-[4rem] h-[3rem] bg-blueKommo mt-4" size="lg">شروع رایگان برای 14 روز</Button>
+          <Button className="md:h-[4rem] h-[3rem] bg-blueKommo mt-4" size="lg">{t('trialButton')}</Button>
           <div className={`hidden md:block _pic absolute xl:-left-[] md:-top-[1rem] md:-right-[18rem] xl:-right-[27rem] ${fades[0] ? "opacity-0 translate-y-[3rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}>
             <Image width={0} height={0} className="w-[4rem] md:w-[5rem] xl:w-[8rem]" alt="logo" src={currentImages[0]} />
           </div>

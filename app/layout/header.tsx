@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -15,24 +16,29 @@ import {
   List,
   X,
 } from "@phosphor-icons/react";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import MegaMenuXl from "../(Site)/components/megaMenuXl";
 import Link from "next/link";
 
 function Header() {
+  const t = useTranslations('Home.Header');
   const [showMenu, setShowMenu] = useState(false);
   const [showMenuXl, setShowMenuXl] = useState<string | null>(null);
+
+  const navItems = [
+    { key: 'features', label: t('features') },
+    { key: 'products', label: t('products') },
+    { key: 'pricing', label: t('pricing'), link: '/prices' },
+  ];
+
   return (
     <header
       className={`w-full top-0 fixed z-10 justify-between items-center flex flex-col px-4 sm:px-10 py-4 sm:py-7 shadow-sm bg-white ${
         showMenu ? "md:border-blueKommo md:border-b-2 " : ""
       } `}
     >
-      <div className=" max-w-[72rem] w-full flex justify-between">
-        <div
-          className={`w-full flex justify-between flex-row-reverse xl:flex-row sm:justify-start items-center xl:justify-around sm:border-none`}
-        >
+      <div className="max-w-[72rem] w-full flex justify-between">
+        <div className={`w-full flex justify-between flex-row-reverse xl:flex-row sm:justify-start items-center xl:justify-around sm:border-none`}>
           <div>
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -53,64 +59,57 @@ function Header() {
 
               <div className="hidden sm:flex xl:hidden gap-8 xl:border-b">
                 <Link href="/auth/signin">
-                  <Button variant="outline">ورود</Button>
+                  <Button variant="outline">{t('login')}</Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button variant="secondary">ثبت نام</Button>
+                  <Button variant="secondary">{t('signup')}</Button>
                 </Link>
               </div>
             </div>
             <div className="hidden xl:flex w-full justify-between items-center ">
               <ul className="flex gap-8 cursor-pointer ">
-                <li
-                  onClick={() => {
-                    setShowMenuXl("features");
-                    setShowMenu(!showMenu);
-                  }}
-                >
-                  <span className="hover:text-gray-500 flex items-center gap-2">
-                    امکانات <CaretDown size={12} />
-                  </span>
-                </li>
-                <li
-                  onClick={() => {
-                    setShowMenuXl("product");
-                    setShowMenu(!showMenu);
-                  }}
-                >
-                  <span className="hover:text-gray-500 flex items-center gap-2">
-                    محصولات <CaretDown size={12} />
-                  </span>
-                </li>
-                <li>
-                  <a
-                    href="prices"
-                    className="hover:text-gray-500 flex items-center gap-2"
+                {navItems.map((item) => (
+                  <li
+                    key={item.key}
+                    onClick={() => {
+                      if (item.key !== 'pricing') {
+                        setShowMenuXl(item.key);
+                        setShowMenu(!showMenu);
+                      }
+                    }}
                   >
-                    تعرفه ها
-                  </a>
-                </li>
+                    {item.link ? (
+                      <a href={item.link} className="hover:text-gray-500 flex items-center gap-2">
+                        {item.label}
+                      </a>
+                    ) : (
+                      <span className="hover:text-gray-500 flex items-center gap-2">
+                        {item.label} <CaretDown size={12} />
+                      </span>
+                    )}
+                  </li>
+                ))}
               </ul>
               <div className="flex gap-8">
                 <Link href="/auth/signin">
-                  <Button variant="outline">ورود</Button>
+                  <Button variant="outline">{t('login')}</Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button variant="secondary">ثبت نام</Button>
+                  <Button variant="secondary">{t('signup')}</Button>
                 </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {/* features xl */}
-      {showMenuXl === "features" && showMenu && (
-        <MegaMenuXl title1="امکانات" title2="لورم اپیزوم" list2="" list1="" />
-      )}
-
-      {/* product xl */}
-      {showMenuXl === "product" && showMenu && (
-        <MegaMenuXl title1="محصولات" title2="لورم اپیزوم" list2="" list1="" />
+      
+      {showMenuXl && showMenu && (
+        <MegaMenuXl 
+          title1={showMenuXl === 'features' ? t('features') : t('products')} 
+          title2={t('loremIpsum')} 
+          list2="" 
+          list1="" 
+        />
       )}
 
       <nav className="xl:hidden w-full ">
@@ -122,35 +121,25 @@ function Header() {
                 collapsible
                 className="w-full border-b pb-4 "
               >
-                <div className=" flex flex-col gap-4 ">
-                  <div className=" bg-purple-100 px-4 rounded-xl">
-                    <AccordionItem value="item-1">
-                      <AccordionTrigger>امکانات</AccordionTrigger>
-                      <div>
-                        <AccordionContent>
-                          <a href="#">لور اپیزومم</a>
-                        </AccordionContent>
-                        <AccordionContent>
-                          <a href="#">لور اپیزومم</a>
-                        </AccordionContent>
-                        <AccordionContent>
-                          <a href="#">لور اپیزومم</a>
-                        </AccordionContent>
-                      </div>
-                    </AccordionItem>
-                  </div>
-                  <div className=" bg-purple-100 px-4 rounded-xl">
-                    <AccordionItem value="item-2">
-                      <AccordionTrigger>محصولات</AccordionTrigger>
-                      <AccordionContent>
-                        Yes. It comes with default styles that matches the other
-                        components&apos; aesthetic.
-                      </AccordionContent>
-                    </AccordionItem>
-                  </div>
-                  <div className=" bg-purple-100 px-4 py-4 rounded-xl">
-                    تعرفه ها
-                  </div>
+                <div className="flex flex-col gap-4 ">
+                  {navItems.map((item) => (
+                    <div key={item.key} className="bg-purple-100 px-4 rounded-xl">
+                      {item.key === 'pricing' ? (
+                        <div className="py-4">{item.label}</div>
+                      ) : (
+                        <AccordionItem value={item.key}>
+                          <AccordionTrigger>{item.label}</AccordionTrigger>
+                          <div>
+                            {['1', '2', '3'].map((subItem) => (
+                              <AccordionContent key={subItem}>
+                                <a href="#">{t('loremIpsum')}</a>
+                              </AccordionContent>
+                            ))}
+                          </div>
+                        </AccordionItem>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </Accordion>
               <div className="flex flex-col gap-4 cursor-pointer">
@@ -159,12 +148,12 @@ function Header() {
                     <span>
                       <EnvelopeSimple size={28} />
                     </span>
-                    تماس با ما
+                    {t('contactUs')}
                   </div>
                 </a>
                 <Link href="/auth/signin">
                   <Button variant="outline" className="border-blueKommo">
-                    ورود
+                    {t('login')}
                   </Button>
                 </Link>
                 <Link href="/auth/signup">
@@ -172,7 +161,7 @@ function Header() {
                     variant="secondary"
                     className="bg-blueKommo text-white"
                   >
-                    ثبت نام
+                    {t('signup')}
                   </Button>
                 </Link>
               </div>
@@ -181,81 +170,38 @@ function Header() {
         </div>
 
         {showMenu && (
-          <div className="hidden md:block xl:hidden  w-full bg-white ">
+          <div className="hidden md:block xl:hidden w-full bg-white ">
             <div className="flex px-[4.5rem] py-7 gap-[12rem] ">
-              <div>
-                <h2 className="font-semibold text-xl">امکانات</h2>
-                <h3 className="text-md "></h3>
-                <ul className="leading-[2rem] mt-4">
-                  <li>
-                    <a className="flex items-center gap-1">
-                      لورم اپیزوم <CaretLeft size={13} />
-                    </a>
-                  </li>
-                  <li>
-                    <a className="flex items-center gap-1">
-                      لورم اپیزوم <CaretLeft size={13} />
-                    </a>
-                  </li>
-                  <li>
-                    <a className="flex items-center gap-1">
-                      لورم اپیزوم <CaretLeft size={13} />
-                    </a>
-                  </li>
-                  <li>
-                    <a className="flex items-center gap-1">
-                      لورم اپیزوم <CaretLeft size={13} />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h2 className="font-semibold text-xl">محصولات</h2>
-                <ul className="leading-[2rem] mt-4">
-                  <li>
-                    <li>
-                      <a className="flex items-center gap-1">
-                        لورم اپیزوم <CaretLeft size={13} />
-                      </a>
-                    </li>
-                    <li>
-                      <a className="flex items-center gap-1">
-                        لورم اپیزوم <CaretLeft size={13} />
-                      </a>
-                    </li>
-                    <li>
-                      <a className="flex items-center gap-1">
-                        لورم اپیزوم <CaretLeft size={13} />
-                      </a>
-                    </li>
-                    <li>
-                      <a className="flex items-center gap-1">
-                        لورم اپیزوم <CaretLeft size={13} />
-                      </a>
-                    </li>
-                  </li>
-                </ul>
-              </div>
+              {['features', 'products'].map((section) => (
+                <div key={section}>
+                  <h2 className="font-semibold text-xl">{t(section)}</h2>
+                  <ul className="leading-[2rem] mt-4">
+                    {[1, 2, 3, 4].map((item) => (
+                      <li key={item}>
+                        <a className="flex items-center gap-1">
+                          {t('loremIpsum')} <CaretLeft size={13} />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
 
             <div className="flex flex-col w-full px-[4.5rem] py-7 gap-4 border-b">
-              <div className="w-full bg-purple-100 p-4 rounded-xl">
-                <a href="/prices" className="flex items-center gap-1">
-                  تعرفه ها
-                  <CaretLeft size={13} />
-                </a>
-              </div>
-              <div className="w-full bg-purple-100 p-4 rounded-xl">
-                <a className="flex items-center gap-1">
-                  تعرفه ها
-                  <CaretLeft size={13} />
-                </a>
-              </div>
+              {['pricing', 'loremIpsum'].map((item) => (
+                <div key={item} className="w-full bg-purple-100 p-4 rounded-xl">
+                  <a href={item === 'pricing' ? "/prices" : "#"} className="flex items-center gap-1">
+                    {t(item)}
+                    <CaretLeft size={13} />
+                  </a>
+                </div>
+              ))}
             </div>
             <div className="px-[4.5rem]">
               <a className="flex items-center pt-4">
                 <EnvelopeSimple size={28} className="pl-1" />
-                تماس با ما
+                {t('contactUs')}
               </a>
             </div>
           </div>
@@ -266,3 +212,4 @@ function Header() {
 }
 
 export default Header;
+
