@@ -4,8 +4,8 @@ import Customer from "@/public/kommo-enterpreneur.png";
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-export default function ExplainUser() {
-  const t = useTranslations('Lorem')
+export default function SecOne() {
+  const t = useTranslations('Home')
   return (
     <div className="max-w-[104rem] m-auto overflow-hidden  w-full flex flex-col md:flex-row  md:justify-between items-center mb-24">
       <Image
@@ -22,8 +22,10 @@ export default function ExplainUser() {
         height={40}
         className="hidden md:block xl:hidden"
       />
-      <h2 className=" text-2xl text-center leading-120 font-medium md:text-2xl lg:leading-[3rem] lg:text-[38px] px-16 md:px-0">
-        {t('s')}
+      <h2 className=" text-2xl text-center leading-120 font-semibold md:text-2xl lg:leading-[3rem] lg:text-[38px] px-16 md:px-0">
+        {t('Section1.title')}
+        <br/>
+        <span>{t('Section1.subTitle')}</span>
       </h2>
       <Image
         src={Customer}

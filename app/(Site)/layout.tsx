@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import Header from "../layout/header";
 import Footer from "./components/footer";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+// Just UI Imports Below
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "تپدیل: مدیریت اینستاگرام",
@@ -27,7 +28,6 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <Header />
           {children}
-
           <Toaster />
           <Footer />
         </NextIntlClientProvider>

@@ -1,9 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+// Just UI Imports Below
+import { Button } from "@/components/theme/ui/button";
+import Link from "next/link";
 
 const images = [
   "https://pcfcdn.kommo.com/images/main/circle-instagram.svg",
@@ -11,35 +13,41 @@ const images = [
   "https://pcfcdn.kommo.com/images/main/circle-whatsapp.svg",
   "https://pcfcdn.kommo.com/images/main/circle-messenger.svg",
   "https://pcfcdn.kommo.com/images/main/circle-gmail.svg",
-  "https://pcfcdn.kommo.com/images/main/circle-gmail.svg"
+  "https://pcfcdn.kommo.com/images/main/circle-gmail.svg",
   // می‌توانید تصاویر بیشتری به اینجا اضافه کنید
 ];
 
 export default function HeroSection() {
-  const [currentImages, setCurrentImages] = useState([images[0], images[1], images[2], images[3]]);
+  const [currentImages, setCurrentImages] = useState([
+    images[0],
+    images[1],
+    images[2],
+    images[3],
+  ]);
   const [fades, setFades] = useState([false, false, false, false]);
 
   const updateImage = (index: number, duration: number) => {
-    setFades(prevFades => {
+    setFades((prevFades) => {
       const newFades = [...prevFades];
       newFades[index] = true;
       return newFades;
     });
 
     setTimeout(() => {
-      setCurrentImages(prevImages => {
+      setCurrentImages((prevImages) => {
         const newImages = [...prevImages];
-        let availableImages = images.filter(img => !newImages.includes(img));
+        let availableImages = images.filter((img) => !newImages.includes(img));
 
         if (availableImages.length === 0) {
-          availableImages = images.filter(img => img !== newImages[index]);
+          availableImages = images.filter((img) => img !== newImages[index]);
         }
 
-        newImages[index] = availableImages[Math.floor(Math.random() * availableImages.length)];
+        newImages[index] =
+          availableImages[Math.floor(Math.random() * availableImages.length)];
         return newImages;
       });
 
-      setFades(prevFades => {
+      setFades((prevFades) => {
         const newFades = [...prevFades];
         newFades[index] = false;
         return newFades;
@@ -58,40 +66,84 @@ export default function HeroSection() {
     return () => intervals.forEach(clearInterval);
   }, []);
 
-  const t = useTranslations('Home')
+  const t = useTranslations("Home");
 
   return (
-    <div className="flex my-24 h-auto md:h-[88vh]  w-full max-w-[70rem] m-auto text-center justify-center xl:px-20 md:px-6 px-4 ">
-      <div className="flex flex-col sm:gap-4 md:gap-2 items-center justify-start md:justify-center">
-        <div className="relative w-full hidden md:flex">
-          <div className={`_pic absolute top-0 md:-top-12 xl:-top-24 xl:-left-[9rem] -left-[2rem] z-1 ${fades[1] ? "opacity-0 translate-y-[2rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}>
-            <Image width={0} height={0} alt="logo" className="w-16 md:w-20 xl:w-32" src={currentImages[1]} />
+    <div className="_heroSection">
+      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0">
+        <div className="_wrapper py-20 md:py-24 lg:py-32 relative">
+          <div className="_title flex flex-col gap-8 items-center justify-start md:justify-center">
+            <h1 className="text-secondary text-4xl lg:text-5xl xl:text-[3.25rem] font-bold leading-[3rem] md:leading-[3.25rem] lg:leading-[4rem] xl:leading-[5rem] sm:max-w-[30rem] lg:max-w-[40rem] xl:max-w-[50rem] text-center">
+              {t("heroSectionTitle")}
+            </h1>
+
+            <Button className="bg-primary" size="lg" asChild>
+              <Link href="/console">{t("trialButton")}</Link>
+            </Button>
           </div>
-          <div className={`_pic absolute top-0 md:top-[2.5rem] xl:top-[3rem] xl:-left-[3.8rem] -left-[2rem] z-1 ${fades[2] ? "opacity-0 translate-y-[2rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}>
-            <Image width={0} height={0} alt="logo" className="w-[2rem] md:w-[3rem] xl:w-[4rem]" src={currentImages[2]} />
+
+          <div className="_iconLeft hidden md:flex">
+            <div
+              className={`_pic1 absolute top-16 xl:top-[70px] left-0 xl:-left-[4rem] z-1 ${fades[1] ? "opacity-0 translate-y-[2rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}
+            >
+              <Image
+                width={0}
+                height={0}
+                alt="logo"
+                className="w-[5rem] lg:w-[6.5rem] xl:w-[8rem]"
+                src={currentImages[1]}
+              />
+            </div>
+            <div
+              className={`_pic2 absolute top-40 lg:top-48 xl:top-52 left-14 lg:left-20 xl:left-16 z-1 ${fades[2] ? "opacity-0 translate-y-[2rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}
+            >
+              <Image
+                width={0}
+                height={0}
+                alt="logo"
+                className="w-[2.5rem] lg:w-[3.5rem] xl:w-[4.5rem]"
+                src={currentImages[2]}
+              />
+            </div>
           </div>
-        </div>
-        <p className="text-sm font-semibold text-slate-500">{t('crm')}</p>
-        <h1 className="text-blueKommo xl:text-6xl md:text-5xl text-4xl font-semibold leading-[2.9rem] xl:leading-[5rem] md:leading-[3.5rem]">
-          {t('xs')} <br className="hidden sm:block" />
-          {t('xs')} <br className="hidden sm:block" />
-          {t('xs')}
-        </h1>
-        <div className="md:hidden flex gap-4">
-          <div className={`flex transition-all duration-1000 ${fades[2] ? "opacity-0" : "opacity-100"}`}>
-            <Image width={40} height={40} alt="logo" src={currentImages[2]} />
+
+          <div className="_iconRight hidden md:flex">
+            <div
+              className={`_pic3 hidden md:block absolute bottom-20 lg:bottom-24 xl:bottom-[70px] right-0 xl:-right-[4rem] ${fades[0] ? "opacity-0 translate-y-[3rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}
+            >
+              <Image
+                width={0}
+                height={0}
+                className="w-[5rem] lg:w-[6.5rem] xl:w-[8rem]"
+                alt="logo"
+                src={currentImages[0]}
+              />
+            </div>
+
+            <div
+              className={`_pic4 hidden md:block absolute bottom-44 lg:bottom-56 lg:right-20 right-16 ${fades[3] ? "opacity-0 translate-y-[3rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}
+            >
+              <Image
+                width={0}
+                height={0}
+                className="w-[2.5rem] lg:w-[3.5rem] xl:w-[4.5rem]"
+                alt="logo"
+                src={currentImages[3]}
+              />
+            </div>
           </div>
-          <div className={`flex transition-all duration-1000 ${fades[3] ? "opacity-0" : "opacity-100"}`}>
-            <Image width={40} height={40} alt="logo" src={currentImages[3]} />
-          </div>
-        </div>
-        <div className="relative">
-          <Button className="md:h-[4rem] h-[3rem] bg-blueKommo mt-4" size="lg">{t('trialButton')}</Button>
-          <div className={`hidden md:block _pic absolute xl:-left-[] md:-top-[1rem] md:-right-[18rem] xl:-right-[27rem] ${fades[0] ? "opacity-0 translate-y-[3rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}>
-            <Image width={0} height={0} className="w-[4rem] md:w-[5rem] xl:w-[8rem]" alt="logo" src={currentImages[0]} />
-          </div>
-          <div className={`_pic hidden md:block absolute xl:-left-[] top-[9rem] right-[2rem] md:-top-[3rem] xl:-top-[4rem] md:-right-[21rem] xl:-right-[32rem] ${fades[3] ? "opacity-0 translate-y-[3rem]" : "opacity-100 translate-y-[0rem]"} transition-all duration-1000`}>
-            <Image width={0} height={0} className="w-[4rem] md:w-[3rem] xl:w-[5rem]" alt="logo" src={currentImages[3]} />
+
+          <div className="_iconCenter md:hidden flex gap-5 absolute top-4 left-0 justify-center w-full">
+            <div
+              className={`_pic5flex transition-all duration-1000 ${fades[2] ? "opacity-0" : "opacity-100"}`}
+            >
+              <Image width={44} height={44} alt="logo" src={currentImages[2]} />
+            </div>
+            <div
+              className={`_pic6 flex transition-all duration-1000 ${fades[3] ? "opacity-0" : "opacity-100"}`}
+            >
+              <Image width={44} height={44} alt="logo" src={currentImages[3]} />
+            </div>
           </div>
         </div>
       </div>
