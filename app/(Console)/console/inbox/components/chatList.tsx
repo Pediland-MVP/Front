@@ -24,7 +24,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
   const [page, setPage] = React.useState(1);
   const [hasMore, setHasMore] = React.useState(true);
 
-  const t = useTranslations('Inbox.ChatList');
+  const t = useTranslations("Inbox.ChatList");
 
   useEffect(() => {
     console.log(messagesList);
@@ -74,7 +74,6 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
   if (!lead?.id) {
     return (
       <div>
-        {" "}
         <LoadingSpinner size="sm" className="w-4 h-4 mx-auto" />
       </div>
     );
@@ -95,7 +94,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
           inverse={true} // To load items in reverse order (top down)
           endMessage={
             <p className="text-sm text-center mt-2 text-gray-500">
-              <p>{t('thereAreNoMoreMessages')}</p>
+              <p>{t("thereAreNoMoreMessages")}</p>
             </p>
           }
           scrollableTarget="chat-container" // The ID of the scrollable div

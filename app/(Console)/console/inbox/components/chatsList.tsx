@@ -9,6 +9,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ChatsListSkeleton from "./chatsList.skeleton";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Card } from "@/components/theme/ui/card";
 
 interface ChatsListProps {
   isCollapsed: boolean;
@@ -17,13 +18,13 @@ interface ChatsListProps {
 }
 
 function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
-  const [conversations, setConversations] = useState<Item[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(true)
-  const [page, setPage] = useState(0)
-  const limit = 15
-  const selectedChatId = useParams().chatId
+  const [conversations, setConversations] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const limit = 15;
+  const selectedChatId = useParams().chatId;
 
   const fetchConversations = useCallback(() => {
     setIsLoading(true);
@@ -80,59 +81,63 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
     };
   }, []);
 
-  const t = useTranslations('Inbox.ChatsList');
+  const t = useTranslations("Inbox.ChatsList");
 
   if (!conversations.length && isLoading) {
     return <ChatsListSkeleton />;
   }
 
   return (
-    <div
-      data-collapsed={isCollapsed}
-      id="chats-container"
-      className="_chat-list bg-white group rounded-lg shadow overflow-y-auto p-4 pl-2 max-h-[calc(100%-51px)] h-[calc(100%-8px)] min-h-[calc(100%-8px)] _wrap"
-    >
-      <InfiniteScroll
-        dataLength={conversations.length}
-        next={fetchConversations}
-        hasMore={hasMore}
-        loader={<div className="text-center py-4">{t('loading')}</div>}
-        endMessage={<div className="text-center py-4">{t('thereAreNoMoreChats')}</div>}
-        scrollableTarget="chats-container"
+    <Card className="p-4 box-border">
+      <div
+        data-collapsed={isCollapsed}
+        id="chats-container"
+        className="_chat-list group"
       >
-        <nav className="grid group-[[data-collapsed=true]]:justify-center">
-          {conversations.map((chat, index) => (
-            <Link
-              key={chat.id || index}
-              href={`/console/inbox/${chat.id}`}
-              className="flex p-2 items-center gap-4 rounded-lg hover:bg-gray-100 duration-300"
-            >
-              <Image
-                src={
-                  chat.leadInstagram?.profilePicture?.url ||
-                  "/images/profile.png"
-                }
-                alt={chat.firstname}
-                width={48}
-                height={48}
-                className="rounded-full"
-              />
-              <div className="flex flex-col">
-                <span>
-                  {chat.firstname} {chat.lastname || ""}
-                </span>
-                {chat.messages && (
-                  <span className="text-zinc-300 text-xs truncate">
-                    {chat.messages.text}
+        <InfiniteScroll
+          dataLength={conversations.length}
+          next={fetchConversations}
+          hasMore={hasMore}
+          loader={<div className="text-center py-4">{t("loading")}</div>}
+          endMessage={
+            <div className="text-center py-4">{t("thereAreNoMoreChats")}</div>
+          }
+          scrollableTarget="chats-container"
+        >
+          <nav className="grid group-[[data-collapsed=true]]:justify-center">
+            {conversations.map((chat, index) => (
+              <Link
+                key={chat.id || index}
+                href={`/console/inbox/${chat.id}`}
+                className="flex p-2 items-center gap-4 rounded-lg hover:bg-gray-100 duration-300"
+              >
+                <Image
+                  src={
+                    chat.leadInstagram?.profilePicture?.url ||
+                    "/images/profile.png"
+                  }
+                  alt={chat.firstname}
+                  width={48}
+                  height={48}
+                  className="rounded-full"
+                />
+                <div className="flex flex-col">
+                  <span>
+                    {chat.firstname} {chat.lastname || ""}
                   </span>
-                )}
-              </div>
-            </Link>
-          ))}
-        </nav>
-      </InfiniteScroll>
-      {error && <div className="text-center py-4 text-red-500">{error}</div>}
-    </div>
+                  {chat.messages && (
+                    <span className="text-zinc-300 text-xs truncate">
+                      {chat.messages.text}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </InfiniteScroll>
+        {error && <div className="text-center py-4 text-red-500">{error}</div>}
+      </div>
+    </Card>
   );
 }
 

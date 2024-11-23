@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import ChatsList from "./chatsList";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 
@@ -32,8 +31,8 @@ export function ChatLayout({ children }: ChatLayoutProps) {
   }, []);
 
   return (
-    <div className="_chat-layout flex gap-5 overflow-auto">
-      <div className="w-1/3">
+    <div className="_chat-layout flex flex-col lg:flex-row gap-5 overflow-auto">
+      <div className="lg:w-1/3">
         <ChatsList isCollapsed={isCollapsed || isMobile} isMobile={isMobile} />
       </div>
 

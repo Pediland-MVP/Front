@@ -40,6 +40,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@react-hook/media-query": "^1.1.1",
     "@sentry/nextjs": "^8.35.0",
+    "@tanstack/react-table": "^8.20.5",
     "accept-language-parser": "^1.5.0",
     "axios": "^1.7.7",
     "class-validator": "^0.14.1",

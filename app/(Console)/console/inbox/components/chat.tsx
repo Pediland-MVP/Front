@@ -10,6 +10,7 @@ import useCurrentLead from "@/store/currentLead.store";
 import { useTabStore } from "@/store/tabActiveStore";
 import ChatBottombar from "./chatBottombar";
 import { IMessage } from "./message";
+import { Card } from "@/components/theme/ui/card";
 
 interface ChatProps {
   leadId: string;
@@ -48,15 +49,17 @@ export function Chat({ leadId }: ChatProps) {
   return (
     <>
       {activeTab === "chat" && (
-        <div className="flex flex-col rounded-lg bg-white shadow mb-2 overflow-y-auto max-h-[calc(100vh-138px)]">
-          <ChatTopbar lead={lead} />
-          <ChatList lead={lead} isMobile={isMobile} />
-          <ChatBottombar
-            setMessagesList={setMessagesList}
-            messagesList={messagesList}
-            isMobile={isMobile}
-          />
-        </div>
+        <Card>
+          <div className="flex flex-col overflow-y-auto max-h-[calc(100vh-138px)]">
+            <ChatTopbar lead={lead} />
+            <ChatList lead={lead} isMobile={isMobile} />
+            <ChatBottombar
+              setMessagesList={setMessagesList}
+              messagesList={messagesList}
+              isMobile={isMobile}
+            />
+          </div>
+        </Card>
       )}
     </>
   );

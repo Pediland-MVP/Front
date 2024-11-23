@@ -1,19 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableHead,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { Pencil } from "@phosphor-icons/react";
 import { ContactNamespace } from "@/types/contact";
-import ImageWithFallback from "@/components/ui/imageWithCallback";
 import { Pagination } from "./pagination";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";
@@ -21,6 +10,18 @@ import ContactListSkeleton from "./contactListSkeleton";
 import useDebounce from "@/hooks/useDebounce";
 import EditContactDialog from "./editContactDialog";
 import { useTranslations } from "next-intl";
+// Just UI Imports Below
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableHead,
+} from "@/components/theme/ui/table";
+import ImageWithFallback from "@/components/ui/imageWithCallback";
+import { Pencil } from "@phosphor-icons/react/dist/ssr";
+import { Card } from "@/components/theme/ui/card";
 
 type Lead = {
   profile: string;
@@ -82,22 +83,25 @@ export default function ContactListCard({
     );
   };
 
-  const t = useTranslations('Contacts.List')
+  const t = useTranslations("Contacts.List");
 
   return (
-    <div className="_table">
+    <Card className="p-4">
       <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
-      <div className="max-h-[calc(100%-44px)] overflow-auto">
+
+      <div className="_table">
         <Table>
-          <TableHeader className="bg-gray-50">
+          <TableHeader>
             <TableRow>
-              <TableHead className="w-[7%] text-center">{t('image')}</TableHead>
+              <TableHead className="lg:w-[7%] text-center">
+                {t("image")}
+              </TableHead>
 
               <TableHead
                 onClick={() => handleSort("name")}
-                className="cursor-pointer text-right hover:text-black w-[25%]"
+                className="cursor-pointer text-right hover:text-black lg:w-[25%]"
               >
-                {t('userName')}
+                {t("userName")}
                 {sortColumn === "name" && (
                   <span className="mr-2">
                     {sortDirection === "asc" ? "\u2191" : "\u2193"}
@@ -106,10 +110,10 @@ export default function ContactListCard({
               </TableHead>
 
               <TableHead
-                className="cursor-pointer text-center hover:text-black w-[25%]"
+                className="cursor-pointer text-center hover:text-black lg:w-[25%]"
                 onClick={() => handleSort("username")}
               >
-                {t('instagramId')}
+                {t("instagramId")}
                 {sortColumn === "username" && (
                   <span className="mr-2">
                     {sortDirection === "asc" ? "\u2191" : "\u2193"}
@@ -118,10 +122,10 @@ export default function ContactListCard({
               </TableHead>
 
               <TableHead
-                className="cursor-pointer text-center hover:text-black w-[8%]"
+                className="cursor-pointer text-center hover:text-black lg:w-[8%]"
                 onClick={() => handleSort("messages")}
               >
-                {t('messageCount')}
+                {t("messageCount")}
                 {sortColumn === "messages" && (
                   <span className="mr-2">
                     {sortDirection === "asc" ? "\u2191" : "\u2193"}
@@ -129,9 +133,11 @@ export default function ContactListCard({
                 )}
               </TableHead>
 
-              <TableHead className="w-[27%] _space"></TableHead>
+              <TableHead className="lg:w-[27%] _space"></TableHead>
 
-              <TableHead className="text-center w-[7%]">{t('actions')}</TableHead>
+              <TableHead className="text-center lg:w-[7%]">
+                {t("actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
 
@@ -208,16 +214,16 @@ export default function ContactListCard({
             )}
           </TableBody>
         </Table>
-
-        <Pagination
-          currentPage={page}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-          pageSize={limit}
-          totalItems={contactsMeta?.totalItems || limit}
-          totalPages={contactsMeta?.totalPages || 1}
-        />
       </div>
-    </div>
+
+      <Pagination
+        currentPage={page}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+        pageSize={limit}
+        totalItems={contactsMeta?.totalItems || limit}
+        totalPages={contactsMeta?.totalPages || 1}
+      />
+    </Card>
   );
 }

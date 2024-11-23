@@ -3,16 +3,6 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
-
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { ProductNamespace } from "@/types/product";
 import useDebounce from "@/hooks/useDebounce";
 import { fetcher } from "@/hooks/swr/fetcher";
@@ -24,6 +14,17 @@ import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { ProductDeleteDialog } from "./product.delete";
 
+// Just UI Imports Below
+import { Card } from "@/components/theme/ui/card";
+import { Button } from "@/components/theme/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/theme/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import {
   CaretRight,
@@ -117,7 +118,7 @@ export default function ProductListTable() {
   };
 
   return (
-    <div className="_table bg-stone-50 p-4 border rounded-lg shadow">
+    <Card className="p-4">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <Table>
         <TableHeader>
@@ -173,15 +174,17 @@ export default function ProductListTable() {
           ))}
         </TableBody>
       </Table>
+
       <div className="flex justify-between items-center mt-4">
         <Button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
+          variant={'ghost'}
         >
-          <CaretRight className="h-4 w-4 ml-2" />
+          <CaretRight size={18} />
           {t("previous")}
         </Button>
-        <span>
+        <span className="text-muted-foreground text-sm">
           {t("pageOf", { current: page, total: productsMeta?.totalPages })}
         </span>
         <Button
@@ -189,9 +192,10 @@ export default function ProductListTable() {
             setPage((prev) => Math.min(prev + 1, productsMeta?.totalPages || 1))
           }
           disabled={page === productsMeta?.totalPages}
+          variant={'ghost'}
         >
-          {t('next')}
-          <CaretLeft className="h-4 w-4 mr-2" />
+          {t("next")}
+          <CaretLeft size={18} />
         </Button>
       </div>
       <ProductDeleteDialog
@@ -200,6 +204,6 @@ export default function ProductListTable() {
         onConfirm={handleDeleteConfirm}
         itemId={itemToDelete || ""}
       />
-    </div>
+    </Card>
   );
 }

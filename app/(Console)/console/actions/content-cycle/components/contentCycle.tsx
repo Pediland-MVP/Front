@@ -20,6 +20,7 @@ import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
+import { Card } from "@/components/theme/ui/card";
 
 export type ContentType = {
   id: string;
@@ -268,62 +269,64 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const t = useTranslations("Automations");
 
   return (
-    <div className="_add-automation bg-stone-50 w-full xl:w-1/2 2xl:w-1/3 border rounded-lg shadow p-4 sm:p-6">
-      {isLoading ? (
-        <div className="min-h-screen w-full flex justify-center items-center">
-          <LoadingSpinner className="h-20 w-20 text-gray-500" />
-        </div>
-      ) : (
-        <div className="_wrap">
-          {/* Form wrapper */}
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4"
-            >
-              <ContentCycleTitle control={form.control} />
+    <div className="_add-automation w-full xl:w-1/2 2xl:w-1/3">
+      <Card className="p-4 sm:p-6">
+        {isLoading ? (
+          <div className="min-h-screen w-full flex justify-center items-center">
+            <LoadingSpinner className="h-20 w-20 text-gray-500" />
+          </div>
+        ) : (
+          <div className="_wrap">
+            {/* Form wrapper */}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="grid gap-4"
+              >
+                <ContentCycleTitle control={form.control} />
 
-              <Trigger control={form.control} getValues={form.getValues} />
+                <Trigger control={form.control} getValues={form.getValues} />
 
-              <JustFollowers
-                control={form.control}
-                getValues={form.getValues}
-              />
+                <JustFollowers
+                  control={form.control}
+                  getValues={form.getValues}
+                />
 
-              <LikeDirect control={form.control} />
+                <LikeDirect control={form.control} />
 
-              <Conditions
-                control={form.control}
-                getValues={form.getValues}
-                formState={form.formState}
-              />
+                <Conditions
+                  control={form.control}
+                  getValues={form.getValues}
+                  formState={form.formState}
+                />
 
-              <Questions control={form.control} />
+                <Questions control={form.control} />
 
-              <Contents
-                control={form.control}
-                getValues={form.getValues}
-                formState={form.formState}
-              />
+                <Contents
+                  control={form.control}
+                  getValues={form.getValues}
+                  formState={form.formState}
+                />
 
-              <Cta control={form.control} />
+                <Cta control={form.control} />
 
-              <Catalogue
-                control={form.control}
-                formState={form.formState}
-                getValues={form.getValues}
-              />
+                <Catalogue
+                  control={form.control}
+                  formState={form.formState}
+                  getValues={form.getValues}
+                />
 
-              <GetUserData control={form.control} />
+                <GetUserData control={form.control} />
 
-              {/* Submit button */}
-              <LoadingButton isLoading={isSubmitting}>
-                {id ? t("update") : t("submit")}
-              </LoadingButton>
-            </form>
-          </Form>
-        </div>
-      )}
+                {/* Submit button */}
+                <LoadingButton isLoading={isSubmitting}>
+                  {id ? t("update") : t("submit")}
+                </LoadingButton>
+              </form>
+            </Form>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

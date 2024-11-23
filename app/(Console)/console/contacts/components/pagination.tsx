@@ -93,7 +93,7 @@ export function Pagination({
         <div>
           <span>{t('itemsCount')}:</span> {totalItems}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           <span>{t('show')}</span>
           <Select
             value={`${pageSize}`}

@@ -87,6 +87,8 @@
         }
     },
     "Inbox": {
+        "dashboard": "داشبورد",
+        "list": "لیست دایرکت‌ها",
         "ChatBottombar": {
             "errors": {
                 "send": "خطا در ارسال"
@@ -103,6 +105,8 @@
         "directsList": "لیست دایرکت‌ها"
     },
     "Comments": {
+        "dashboard": "داشبورد",
+        "list": "لیست کامنت‌ها",
         "Footer": {
             "errors": {
                 "text": "نظر خود را وارد کنید"

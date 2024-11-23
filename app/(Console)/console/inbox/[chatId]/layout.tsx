@@ -5,7 +5,7 @@ type ChatsLayout = {
 };
 
 const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
-  return <div className="w-2/3">{children}</div>;
+  return <div className="lg:w-2/3">{children}</div>;
 };
 
 export default ChatsLayout;
