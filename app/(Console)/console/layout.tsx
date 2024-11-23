@@ -3,21 +3,9 @@
 "use client";
 
 import { AppSidebar } from "./components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/theme/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/theme/ui/sidebar";
 import { useTranslations } from "next-intl";
+// Just UI Imports Below
+import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations("Console");

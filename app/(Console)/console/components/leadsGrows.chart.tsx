@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EachMonthLeadGrow, StatsNamespace } from '../../../../types/stats';
+import { EachMonthLeadGrow, StatsNamespace } from "../../../../types/stats";
 import {
   ChartContainer,
   ChartTooltip,
@@ -17,16 +17,18 @@ import {
 } from "@/components/ui/chart";
 
 export type LeadsGrowsChartProps = {
-  eachMonthLeadGrow: StatsNamespace.Overall['eachMonthLeadGrows'] | undefined
-}
+  eachMonthLeadGrow: StatsNamespace.Overall["eachMonthLeadGrows"] | undefined;
+};
 
-export default function LeadsGrowsChart({ eachMonthLeadGrow }: LeadsGrowsChartProps) {
+export default function LeadsGrowsChart({
+  eachMonthLeadGrow,
+}: LeadsGrowsChartProps) {
   if (!eachMonthLeadGrow) {
     return null;
   }
   return (
     <>
-      <div className=" mt-4">
+      <div>
         <ChartContainer
           config={{
             leads: {
@@ -77,7 +79,6 @@ export default function LeadsGrowsChart({ eachMonthLeadGrow }: LeadsGrowsChartPr
           </ResponsiveContainer>
         </ChartContainer>
       </div>
-      `
     </>
   );
 }
