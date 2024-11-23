@@ -18,7 +18,8 @@
         "products": "Products",
         "accounts": "Accounts",
         "profile": "Profile",
-        "logout": "Logout"
+        "logout": "Logout",
+        "more": "More"
     },
     "Console": {
         "productCount": "Number of products",
@@ -322,9 +323,317 @@
             "answers": "Answers"
         }
     },
+    "Lorem": {
+        "title": "Lorem ipsum is a dummy text from the printing industry",
+        "p": "Lorem ipsum is a dummy text from the printing industry and is used by graphic designers. Printers and texts are also used in columns and rows, as needed.",
+        "s": "Lorem ipsum is a dummy text from the printing industry and is used by graphic designers in magazines.",
+        "xs": "Dummy text from the printing industry",
+        "sina": "Sina"
+    },
+    "Skeleton": {
+        "title": "Access Denied :(",
+        "description": "Please connect to your Instagram account to see the console",
+        "button": "Connect to Instagram"
+    },
     "FileUpload": {
         "title": "Upload image",
         "description": "Click here or drag and drop your file to this area",
         "dropIt": "Drop it"
+    },
+    "TermsAndConditions": {
+        "title": "Rules and regulations",
+        "introduction": {
+            "title": "Site introduction",
+            "paragraph1": "Novin Hub is a social network management platform that allows users to manage their social networks using its tools and facilities.",
+            "paragraph2": "By registering in Novin Hub, you will be provided with a dashboard that includes tools such as scheduling and publishing content, analyzing social networks, managing and downloading comments, and team management depending on the type of your account.",
+            "paragraph3": "Novin Hub platform is under web and application version and helps businesses to easily manage their social networks."
+        },
+        "generalRules": {
+            "title": "General regulations",
+            "rule1": "Novin Hub is registered in Iran and operates under the laws of the Islamic Republic of Iran. ",
+            "rule2": "Users are fully responsible for the content they publish on the site. ",
+            "rule3": "We do not accept criminal and filtered content on Navin Hub and we will prevent the distribution and protection of such content as soon as we become aware of it; ",
+            "rule4": "Publication of immoral and sexual content and images, support, cooperation or sale of drugs, mass killing equipment, cooperation and support of domestic and foreign terrorist and separatist groups, or any other activity that is contrary to the laws of the Islamic Republic of Iran is subject to the prohibition of distribution and ",
+            "rule5": "When you enter the site, Novin Hub, like most sites, through standard methods and automatically receives the address of the site from which you came, information about the pages of the site that you have viewed, IP address, the type of browser and the operating system that you use. ",
+            "rule6": "By any means (email, tickets and online chat) that the user communicates with Novin Hub, Novin Hub will keep a summary of these communications in his user account with the aim of improving service to users, maintaining statistics and preventing possible fraud and abuse of users. ",
+            "rule7": "Users must have the necessary legal capacity to enter into this agreement. ",
+            "rule8": "Novin Hub is committed to protecting users' privacy, therefore, except for the law or the order of a competent judicial authority, user information on the Novin Hub site will not be made available to any person or organization.",
+            "rule9": "The owner of the information is responsible for maintaining the confidentiality of the user account information. ",
+            "rule10": "The user is aware that sending personal information and files, whether in person, over the phone, or through the Internet, always faces the risk of disclosure, and no system has complete security. ",
+            "rule11": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
+        },
+        "registrationConditions": {
+            "title": "Terms of registration and use",
+            "condition1": "When registering, the user is obliged to send his information such as name and surname, contact number and e-mail address completely and accurately, and the user is responsible for the correctness of this information.",
+            "condition2": "The user does not have the right to transfer his ID to another person, and in case of such an action, all the responsibilities and consequences are on the user.",
+            "condition3": "Only people over 18 years of age are allowed to use Novin Hub services.",
+            "condition4": "If any suspicious activity is observed, Navin Hub is authorized to block the user account. ",
+            "condition5": "Novin Hub website is an online social media management platform for businesses. ",
+            "condition6": "Social networks have their own rules and regulations, and the user is obliged to comply with them, and in case of non-compliance with their rules and closure of the user's account, changes in the way of presentation and conditions by the relevant social network, Novin Hub will not bear any responsibility.",
+            "condition7": "Novin Hub has the permission to delete some information, including uploaded files, after 3 months if the subscription expires and the user does not use it."
+        },
+        "informationChange": {
+            "title": "Change information",
+            "point1": "The user is not allowed to change the email entered at the time of registration. ",
+            "point2": "Novin Hub is allowed to change various parts of the site, including the tariff section, without prior notice."
+        },
+        "confidentiality": {
+            "title": "Confidentiality of information",
+            "point1": "The connection of most social network accounts in Novin Hub is through the official API and data will be stored according to the rules of the social networks themselves. ",
+            "point2": "The account information of some social networks is stored in the Novin Hub database. "
+        },
+        "paymentAndRefund": {
+            "title": "Payment and refund",
+            "point1": "User payments are made through authentic online payment portals of banks and payment intermediary services.",
+            "point2": "Due to the possibility of connecting an account in the free plan, as well as access to the publishing section of Instant Post and checking and viewing the platform's features, after the user pays, your account will be activated automatically, and in such circumstances, there will be no possibility of returning the money. "
+        },
+        "otherCases": {
+            "title": "Other cases",
+            "point1": "All material and intellectual rights of the Novin Hub name, applied ideas, product, service, algorithm and content published under any title on the website www.novinhub.com and under any of its subdomains are reserved for Novin Hub startup and use and exploitation ",
+            "point2": "Novin Hub reserves the right to change the rules and regulations of this page without informing the user.",
+            "point3": "By registering in Novin Hub, you give permission to display your name, logo and website address in the customer list without prior notice.",
+            "point4": "Copyright: By using Novin Hub, you accept that you comply with the international rules and customs of the Internet and the laws and customs in force in any case or region covered by Novin Hub services, and that you do not take any action that in any way creates legal or financial responsibility outside ",
+            "point5": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
+        },
+        "forceMajeure": {
+            "title": "force majeure",
+            "description": "None of the parties to this agreement shall be liable for failure or delay in the performance of its obligations due to circumstances beyond its reasonable control. "
+        },
+        "disputeResolution": {
+            "title": "dispute resolution",
+            "description": "This agreement is regulated according to the laws and regulations of the Islamic Republic of Iran. "
+        }
+    },
+    "PrivacyPolicy": {
+        "title": "Privacy",
+        "introduction": {
+            "title": "Site introduction",
+            "paragraph1": "Novin Hub is a social network management platform that allows users to manage their social networks using its tools and facilities.",
+            "paragraph2": "By registering in Novin Hub, you will be provided with a dashboard that includes tools such as scheduling and publishing content, analyzing social networks, managing and downloading comments, and team management depending on the type of your account.",
+            "paragraph3": "Novin Hub platform is under web and application version and helps businesses to easily manage their social networks."
+        },
+        "generalRules": {
+            "title": "General regulations",
+            "rule1": "Novin Hub is registered in Iran and operates under the laws of the Islamic Republic of Iran. ",
+            "rule2": "Users are fully responsible for the content they publish on the site. ",
+            "rule3": "We do not accept criminal and filtered content on Navin Hub and we will prevent the distribution and protection of such content as soon as we become aware of it; ",
+            "rule4": "Publication of immoral and sexual content and images, support, cooperation or sale of drugs, mass killing equipment, cooperation and support of domestic and foreign terrorist and separatist groups, or any other activity that is contrary to the laws of the Islamic Republic of Iran is subject to the prohibition of distribution and ",
+            "rule5": "When you enter the site, Novin Hub, like most sites, through standard methods and automatically receives the address of the site from which you came, information about the pages of the site you have viewed, IP address, the type of browser and the operating system you use. ",
+            "rule6": "By any means (email, tickets and online chat) that the user communicates with Novin Hub, Novin Hub will keep a summary of these communications in his user account with the aim of improving service to users, maintaining statistics and preventing possible fraud and abuse of users. ",
+            "rule7": "Users must have the necessary legal capacity to enter into this agreement. ",
+            "rule8": "Novin Hub is committed to protecting users' privacy, therefore, except for the law or the order of a competent judicial authority, user information on the Novin Hub site will not be made available to any person or organization.",
+            "rule9": "The owner of the information is responsible for maintaining the confidentiality of the user account information. ",
+            "rule10": "The user is aware that sending personal information and files, whether in person, over the phone, or through the Internet, always faces the risk of disclosure, and no system has complete security. ",
+            "rule11": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
+        },
+        "registrationConditions": {
+            "title": "Terms of registration and use",
+            "condition1": "When registering, the user is obliged to send his information such as name and surname, contact number and e-mail address completely and accurately, and the user is responsible for the correctness of this information.",
+            "condition2": "The user does not have the right to transfer his ID to another person, and in case of such an action, all the responsibilities and consequences are on the user.",
+            "condition3": "Only people over 18 years of age are allowed to use Novin Hub services.",
+            "condition4": "If any suspicious activity is observed, Navin Hub is authorized to block the user account. ",
+            "condition5": "Novin Hub website is an online social media management platform for businesses. ",
+            "condition6": "Social networks have their own rules and regulations, and the user is obliged to comply with them, and in case of non-compliance with their rules and closure of the user's account, changes in the way of presentation and conditions by the relevant social network, Novin Hub will not bear any responsibility.",
+            "condition7": "Novin Hub has the permission to delete some information, including uploaded files, after 3 months if the subscription expires and the user does not use it."
+        },
+        "informationChange": {
+            "title": "Change information",
+            "point1": "The user is not allowed to change the email entered at the time of registration. ",
+            "point2": "Novin Hub is allowed to change various parts of the site, including the tariff section, without prior notice."
+        },
+        "confidentiality": {
+            "title": "Confidentiality of information",
+            "point1": "The connection of most social network accounts in Novin Hub is through the official API and data will be stored according to the rules of the social networks themselves. ",
+            "point2": "The account information of some social networks is stored in the Novin Hub database. "
+        },
+        "paymentAndRefund": {
+            "title": "Payment and refund",
+            "point1": "User payments are made through authentic online payment portals of banks and payment intermediary services.",
+            "point2": "Due to the possibility of connecting an account in the free plan, as well as access to the publishing section of Instant Post and checking and viewing the platform's features, after the user pays, your account will be activated automatically, and in such circumstances, there will be no possibility of returning the money. "
+        },
+        "otherCases": {
+            "title": "Other cases",
+            "point1": "All material and intellectual rights of the Novin Hub name, applied ideas, product, service, algorithm and content published under any title on the website www.novinhub.com and under any of its subdomains are reserved for Novin Hub startup and use and exploitation ",
+            "point2": "Novin Hub reserves the right to change the rules and regulations of this page without informing the user.",
+            "point3": "By registering in Novin Hub, you give permission to display your name, logo and website address in the customer list without prior notice.",
+            "point4": "Copyright: By using Novin Hub, you accept that you comply with the international rules and customs of the Internet and the laws and customs in force in any case or region covered by Novin Hub services, and that you do not take any action that in any way creates legal or financial responsibility outside ",
+            "point5": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
+        },
+        "forceMajeure": {
+            "title": "force majeure",
+            "description": "None of the parties to this agreement shall be liable for failure or delay in the performance of its obligations due to circumstances beyond its reasonable control. "
+        },
+        "disputeResolution": {
+            "title": "dispute resolution",
+            "description": "This agreement is regulated according to the laws and regulations of the Islamic Republic of Iran. "
+        }
+    },
+    "PricingTable": {
+        "plan": "design",
+        "base": "base",
+        "professional": "professional",
+        "custom": "customized",
+        "features": {
+            "accountLimit": {
+                "title": "Account connection limit",
+                "description": "The total number of accounts that you can connect to Navin Hub from the covered networks.",
+                "base": "5 accounts",
+                "professional": "10 accounts",
+                "custom": "25 accounts"
+            },
+            "contentPlanning": {
+                "title": "Content planning and publishing",
+                "description": "Content scheduling and publishing. "
+            },
+            "storage": {
+                "title": "File storage space",
+                "description": "The amount of space you can upload your files so that they are always available to you. ",
+                "base": "2 GB",
+                "professional": "4 GB",
+                "custom": "10 GB"
+            }
+        }
+    },
+    "PricingPage": {
+        "header": "Manage social networks at the most reasonable cost.",
+        "subheader": "With one purchase, you can have scheduling, management of messages and comments, artificial intelligence assistant, etc.",
+        "faqTitle": "Frequently asked questions",
+        "faq": {
+            "q1": "Is it possible to upgrade the subscription after payment?",
+            "a1": "Yes, you can upgrade your subscription at any time and if you upgrade, half of the current subscription time will be added to the higher subscription.",
+            "q2": "If the subscription is not renewed, will the content of the schedule be published?",
+            "a2": "When the subscription expires, your account will be suspended and the parts of the new hub will be disabled for you.",
+            "q3": "Why WhatsApp and some social networks do not exist?",
+            "a3": "Due to API limitations or the lack of channels and pages in all social networks, it is not possible to add all of them.",
+            "q4": "If not used, will the subscription time be kept?",
+            "a4": "No, after activation and start of your subscription time, your subscription time will automatically decrease if you use or not use it."
+        }
+    },
+    "Features": {
+        "p": "Lorem Epsom is a fake text produced with incomprehensible simplicity from the printing industry and using graphic designers, printers and texts, but also newspapers and magazines in columns and rows as necessary.",
+        "s": "Lorem Epsom fake text by producing incomprehensible simplicity from the printing industry and using graphic and magazine designers",
+        "xs": "Production of incomprehensible simplicity",
+        "tasks": {
+            "title": "Duties",
+            "description": "Set reminders in customer profiles and manage your calendar"
+        },
+        "chat": {
+            "title": "Team chat",
+            "description": "Chat with colleagues privately, in group chats or directly on customer profiles"
+        },
+        "analytics": {
+            "title": "Analyzes",
+            "description": "Track performance with real-time reports and customizable dashboards"
+        },
+        "form": {
+            "title": "Web forms",
+            "description": "Design beautiful forms that drive customers directly into your sales pipeline"
+        },
+        "chatButton": {
+            "title": "Chat button",
+            "description": "Customize your multi messenger chat button, just like what you see on this page"
+        },
+        "merge": {
+            "title": "Mergers",
+            "description": "The apps you love integrate directly with Como to make your workflow seamless"
+        }
+    },
+    "Home": {
+        "crm": "Messanger based CRM",
+        "trialButton": "14 Day free trial",
+        "xs": "Dummy text from the printing industry",
+        "BigSection": {
+            "trialButton": "14 Day free trial",
+            "xs": "Dummy text from the printing industry",
+            "imageAlt": "CRM Pipeline",
+            "title": "Improve your CRM experience",
+            "description1": "Manage your sales efficiently with our CRM tools.",
+            "description2": "Customize your workflow and increase productivity.",
+            "badge1": "Simple user interface",
+            "badge2": "Fully customizable",
+            "badge3": "Support"
+        },
+        "Header": {
+            "features": "Facilities",
+            "products": "Products",
+            "pricing": "Tariffs",
+            "login": "login",
+            "signup": "Registration",
+            "loremIpsum": "Lorem episum",
+            "contactUs": "contact us"
+        },
+        "Footer": {
+            "company": "company",
+            "aboutUs": "about us",
+            "careers": "Job opportunities",
+            "media": "the media",
+            "blog": "Blog",
+            "support": "Support",
+            "helpCenter": "Help center",
+            "contactUs": "contact us",
+            "faq": "Frequently asked questions",
+            "terms": "Rules",
+            "services": "Services",
+            "consulting": "Counseling",
+            "sales": "sale",
+            "marketing": "Marketing",
+            "customerService": "Customer service",
+            "followUs": "follow us",
+            "copyright": "All rights are reserved for the site and any copying is prohibited."
+        }
+    },
+    "UsersComments": {
+        "see": "Read what others think about us",
+        "p": "Lorem Ipsum is a dummy text of the printing industry, used by graphic designers. Printers and texts, as well as newspapers and magazines, are laid out in columns and rows as necessary.",
+        "sina": "Sina Pirani"
+    },
+    "Prices": {
+        "periods": {
+            "monthly": "monthly",
+            "yearly": "Annually"
+        },
+        "plans": {
+            "basic": {
+                "title": "base",
+                "price": {
+                    "monthly": "499 thousand tomans/month",
+                    "yearly": "4,990 thousand tomans/year"
+                },
+                "features": [
+                    "Connect up to 5 social network accounts",
+                    "1 user (no teammate)",
+                    "2 GB of storage space",
+                    "Smart Reply (Telegram, Instagram): 1 account with 10,000 monthly replies"
+                ]
+            },
+            "professional": {
+                "title": "professional",
+                "price": {
+                    "monthly": "999 thousand tomans/month",
+                    "yearly": "9,990 thousand tomans/year"
+                },
+                "features": [
+                    "Connecting up to 10 social network accounts",
+                    "2 users (1 teammate access to the panel)",
+                    "4 GB of storage space",
+                    "Smart Reply (Telegram, Instagram): 1 account with unlimited replies"
+                ]
+            },
+            "advanced": {
+                "title": "advanced",
+                "price": {
+                    "monthly": "2,999 thousand tomans/month",
+                    "yearly": "29,990 thousand Tomans/year"
+                },
+                "features": [
+                    "Connect up to 25 social network accounts",
+                    "4 users (access of 3 teammates to the panel)",
+                    "10 GB of storage space",
+                    "Smart Reply (Telegram, Instagram): 3 accounts with unlimited replies"
+                ]
+            }
+        },
+        "viewAllFeatures": "View all features",
+        "subscribe": "Buy a subscription"
     }
 }

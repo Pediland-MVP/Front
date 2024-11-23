@@ -21,10 +21,19 @@ export default function Dashboard() {
     fetcher
   );
 
-  const t = useTranslations("Console");
+  const t = useTranslations("Console")
+  
+
 
   if (isStatsLoading) {
     return <DashboardSkeleton />;
+  }
+
+  if (statsError) {
+    const data = statsError?.data
+    if (data?.code === 6) {
+      return <DashboardSkeleton accessDenied={true} />
+    }
   }
 
   return (
@@ -98,41 +107,39 @@ export default function Dashboard() {
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>{t("recentSessions")}</CardTitle>
-            <CardContent>
-              <div className="space-y-2 mt-9">
-                {stats?.recentSessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="flex items-center border rounded-lg p-5 cursor-pointer"
-                  >
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage
-                        src={session.leadInstagram.profilePicture?.url}
-                        alt={session.leadInstagram?.name}
-                      />
-                      <AvatarFallback>
-                        {session.leadInstagram.name?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="mr-4 space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {session.leadInstagram?.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {session.leadInstagram.username} •{" "}
-                        {session.contentCycle.title}
-                      </p>
-                    </div>
-                    <div className="mr-auto text-sm text-muted-foreground">
-                      {moment(session.updateDate).format(
-                        "HH:MM  jYYYY/jMM/jDD"
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
           </CardHeader>
+          <CardContent>
+            <div className="space-y-2 mt-9">
+              {stats?.recentSessions.map((session) => (
+                <div
+                  key={session.id}
+                  className="flex items-center border rounded-lg p-5 cursor-pointer"
+                >
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage
+                      src={session.leadInstagram.profilePicture?.url}
+                      alt={session.leadInstagram?.name}
+                    />
+                    <AvatarFallback>
+                      {session.leadInstagram.name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="mr-4 space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {session.leadInstagram?.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {session.leadInstagram.username} •{" "}
+                      {session.contentCycle.title}
+                    </p>
+                  </div>
+                  <div className="mr-auto text-sm text-muted-foreground">
+                    {moment(session.updateDate).format("HH:MM  jYYYY/jMM/jDD")}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
         </Card>
       </div>
     </div>

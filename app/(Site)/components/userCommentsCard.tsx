@@ -2,6 +2,7 @@
 import React from "react";
 import Image, { StaticImageData } from "next/image";
 import { ArrowLeft } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 
 interface UserCommentsCardProps {
   bg: string;
@@ -22,6 +23,7 @@ const UserCommentsCard: React.FC<UserCommentsCardProps> = ({
   title,
   text,
 }) => {
+  const t = useTranslations('General')
   return (
     <div className={`flex text-blueKommo max-w-[60rem]`}>
       <div className={`w-full ${bg} rounded-2xl py-4 px-4`}>
@@ -32,7 +34,7 @@ const UserCommentsCard: React.FC<UserCommentsCardProps> = ({
             <h1 className="text-2xl font-semibold">{title}</h1>
             <p className="text-md">{text}</p>
             <span className="flex gap-2 mt-4 items-center hover:text-purple-700 cursor-pointer font-semibold">
-              بیشتر
+              {t('more')}
               <ArrowLeft
                 size={18}
                 color="#100534"

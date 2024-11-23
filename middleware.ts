@@ -15,7 +15,7 @@ export default async function middleware(request: NextRequest) {
       ""
     );
     const response = CustomResponse.redirect(
-      new URL(pathWithoutLocale, request.url),
+      new URL(pathWithoutLocale ? pathWithoutLocale : "/", request.url),
       request
     )
     response.cookies.set("NEXT_LOCALE", currentRoute)
