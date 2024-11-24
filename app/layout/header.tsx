@@ -39,7 +39,7 @@ function Header() {
         showMenu ? "border-primary border-b-2" : ""
       } `}
     >
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0">
+      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className={`_wrapper flex justify-between gap-10`}>
           <div className="_logo">
             <a

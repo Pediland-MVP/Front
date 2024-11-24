@@ -140,7 +140,7 @@ export default function VerifyOTP() {
 
   return (
     <main className=" h-full">
-      <div className="container max-w-6xl px-6 sm:px-0 h-full">
+      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="flex items-center justify-center h-full">
           <div className="text-center w-full sm:w-1/3 mx-auto">
             <h1 className="text-2xl font-semibold">تایید کد یکبار مصرف</h1>

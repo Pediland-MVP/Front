@@ -150,7 +150,7 @@ export default function Signup() {
 
   return (
     <main className="_signup h-full bg-fuchsia-50/75">
-      <div className="container max-w-6xl px-6 sm:px-0 h-full">
+      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="_wrap flex items-center justify-center h-full">
           <div className="_content w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
