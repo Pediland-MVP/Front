@@ -545,7 +545,7 @@
         }
     },
     "Home": {
-        "heroSectionTitle":"ارتباط، فروش، ارسال و مدیریت مشتریان در شبکه های اجتماعی را آسان کرده ایم!",
+        "heroSectionTitle": "ارتباط، فروش، ارسال و مدیریت مشتریان در شبکه های اجتماعی را آسان کرده ایم!",
         "crm": "فروش crm مبتنی بر پیام رسان",
         "trialButton": "ثـبـت نـام رایـگـان",
         "xs": "تولید سادگی نامفهوم",
@@ -646,5 +646,87 @@
         },
         "viewAllFeatures": "مشاهده همه قابلیت‌ها",
         "subscribe": "خرید اشتراک"
+    },
+    "Login": {
+        "title": "ورود به حساب کاربری",
+        "noAccount": "حساب کاربری ندارید؟",
+        "signupLink": "از اینجا ثبت نام کنید.",
+        "placeholders": {
+            "mobileNumber": "شماره همراه",
+            "password": "رمز عبور"
+        },
+        "forgotPassword": "رمز عبورم را فراموش کردم.",
+        "loginButton": "ورود",
+        "or": "یا",
+        "continueWithFacebook": "ادامه با اکانت فیس بوک",
+        "continueWithGoogle": "ادامه با اکانت گوگل",
+        "errors": {
+            "mobileRequired": "شماره همراه الزامیست",
+            "mobileEnter": "شماره همراه را وارد کنید",
+            "passwordRequired": "پسورد الزامیست",
+            "passwordRequirements": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد"
+        },
+        "toasts": {
+            "error": "خطا",
+            "invalidCredentials": "شماره همراه یا پسورد اشتباه است",
+            "loginSuccess": "با موفقیت وارد شدید",
+            "welcomeMessage": "به حساب کاربری خود خوش آمدید",
+            "generalError": "خطایی رخ داده است"
+        }
+    },
+    "Signup": {
+        "title": "ثبت نام کاربر جدید",
+        "haveAccount": "حساب کاربری دارید؟",
+        "loginLink": "از اینجا وارد شوید.",
+        "placeholders": {
+            "firstName": "نام",
+            "lastName": "نام خانوادگی",
+            "mobileNumber": "شماره همراه",
+            "password": "رمز عبور",
+            "confirmPassword": "تکرار رمز عبور"
+        },
+        "signupButton": "ثبت نام",
+        "or": "یا",
+        "continueWithFacebook": "ادامه با اکانت فیس بوک",
+        "continueWithGoogle": "ادامه با اکانت گوگل",
+        "errors": {
+            "firstNameRequired": "نام الزامیست",
+            "firstNameEnter": "نام خود را وارد کنید.",
+            "lastNameRequired": "نام خانوادگی الزامیست",
+            "lastNameEnter": "نام خانوادگی خود را وارد کنید.",
+            "mobileRequired": "شماره همراه الزامیست",
+            "mobileInvalid": "یک شماره همراه معتبر وارد کنید.",
+            "mobileEnter": "شماره همراه را وارد کنید",
+            "passwordRequired": "پسورد الزامیست",
+            "passwordRequirements": "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
+            "confirmPasswordRequired": "تکرار پسورد الزامیست",
+            "confirmPasswordEnter": "تکرار پسورد خود را وارد کنید.",
+            "passwordMismatch": "پسوردها مطابقت ندارند"
+        },
+        "toasts": {
+            "pleaseLogin": "لطفا وارد شوید",
+            "mobileAlreadyRegistered": "این شماره همراه قبلا ثبت شده است",
+            "login": "ورود",
+            "error": "خطا",
+            "generalError": "خطایی رخ داده است"
+        }
+    },
+    "Verify": {
+        "title": "تایید کد یکبار مصرف",
+        "otpDescription": "کد تاییدی که به موبایل شما ارسال شده را وارد کنید",
+        "verifyButton": "تایید کد",
+        "resendCode": "ارسال مجدد کد",
+        "errors": {
+            "otpLength": "کد تایید باید 6 رقم باشد"
+        },
+        "toasts": {
+            "tryAgainLater": "لطفا ۲ دقیقه بعد امتحان کنید",
+            "alreadyVerified": "شما قبلا تایید شده اید",
+            "error": "خطا",
+            "invalidOTP": "کد تایید نامعتبر است",
+            "loginSuccess": "با موفقیت وارد شدید",
+            "welcomeMessage": "به حساب کاربری خود خوش آمدید",
+            "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید"
+        }
     }
 }

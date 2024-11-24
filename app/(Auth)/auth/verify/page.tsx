@@ -5,20 +5,16 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from 'next-intl';
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormDescription,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  FormItem, FormMessage
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
   InputOTP,
   InputOTPGroup,
@@ -27,13 +23,14 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import ButtonLoading from "@/components/ui/button-loading";
 
-const formSchema = z.object({
-  otp: z.string().length(6, "کد تایید باید 6 رقم باشد"),
-});
-
 export default function VerifyOTP() {
+  const t = useTranslations('Verify');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const formSchema = z.object({
+    otp: z.string().length(6, t('errors.otpLength')),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,7 +65,7 @@ export default function VerifyOTP() {
       if (!res.ok) {
         if (res.status === 429) {
           toast({
-            title: "لطفا ۲ دقیقه بعد امتحان کنید",
+            title: t('toasts.tryAgainLater'),
             variant: "destructive",
           });
           return;
@@ -76,30 +73,30 @@ export default function VerifyOTP() {
 
         if (res.status === 409) {
           toast({
-            title: "شما قبلا تایید شده اید",
+            title: t('toasts.alreadyVerified'),
             variant: "destructive",
           });
           return;
         }
 
         toast({
-          title: "خطا",
-          description: "کد تایید نامعتبر است",
+          title: t('toasts.error'),
+          description: t('toasts.invalidOTP'),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: "با موفقیت وارد شدید",
-        description: "به حساب کاربری خود خوش آمدید",
+        title: t('toasts.loginSuccess'),
+        description: t('toasts.welcomeMessage'),
       });
       router.push("/console");
     } catch (error) {
       console.error(error);
       toast({
-        title: "خطا",
-        description: "کد تایید نامعتبر است",
+        title: t('toasts.error'),
+        description: t('toasts.invalidOTP'),
         variant: "destructive",
       });
     } finally {
@@ -119,7 +116,7 @@ export default function VerifyOTP() {
     if (!res.ok) {
       if (res.status === 429) {
         toast({
-          title: "لطفا به مدت ۲ دقیقه صبر کنید",
+          title: t('toasts.waitTwoMinutes'),
           variant: "destructive",
         });
         return;
@@ -127,7 +124,7 @@ export default function VerifyOTP() {
 
       if (res.status === 409) {
         toast({
-          title: "شما قبلا تایید شده اید",
+          title: t('toasts.alreadyVerified'),
           variant: "destructive",
         });
       }
@@ -139,11 +136,11 @@ export default function VerifyOTP() {
   };
 
   return (
-    <main className=" h-full">
+    <main className="h-full">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="flex items-center justify-center h-full">
           <div className="text-center w-full sm:w-1/3 mx-auto">
-            <h1 className="text-2xl font-semibold">تایید کد یکبار مصرف</h1>
+            <h1 className="text-2xl font-semibold">{t('title')}</h1>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -173,7 +170,7 @@ export default function VerifyOTP() {
                         </InputOTP>
                       </FormControl>
                       <FormDescription>
-                        کد تاییدی که به موبایل شما ارسال شده را وارد کنید
+                        {t('otpDescription')}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -187,7 +184,7 @@ export default function VerifyOTP() {
                   disabled={isLoading}
                   size={"lg"}
                 >
-                  تایید کد
+                  {t('verifyButton')}
                 </ButtonLoading>
               </form>
             </Form>
@@ -196,7 +193,7 @@ export default function VerifyOTP() {
                 className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer"
                 onClick={resendHandler}
               >
-                ارسال مجدد کد
+                {t('resendCode')}
               </p>
             </div>
           </div>
@@ -205,3 +202,4 @@ export default function VerifyOTP() {
     </main>
   );
 }
+

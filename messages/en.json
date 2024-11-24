@@ -635,5 +635,87 @@
         },
         "viewAllFeatures": "View all features",
         "subscribe": "Buy a subscription"
+    },
+    "Login": {
+        "title": "Login to user account",
+        "noAccount": "Don't have an account?",
+        "signupLink": "Register here.",
+        "placeholders": {
+            "mobileNumber": "mobile number",
+            "password": "password"
+        },
+        "forgotPassword": "I forgot my password.",
+        "loginButton": "login",
+        "or": "or",
+        "continueWithFacebook": "Continue with Facebook",
+        "continueWithGoogle": "Continue with Google",
+        "errors": {
+            "mobileRequired": "Mobile number is required",
+            "mobileEnter": "Enter mobile number",
+            "passwordRequired": "Password is required",
+            "passwordRequirements": "The password must be at least 8 characters and contain a number and an uppercase English letter"
+        },
+        "toasts": {
+            "error": "error",
+            "invalidCredentials": "The mobile number or password is wrong",
+            "loginSuccess": "You have successfully logged in",
+            "welcomeMessage": "Welcome to your account",
+            "generalError": "An error has occurred"
+        }
+    },
+    "Signup": {
+        "title": "New user registration",
+        "haveAccount": "Do you have an account?",
+        "loginLink": "Log in here.",
+        "placeholders": {
+            "firstName": "name",
+            "lastName": "last name",
+            "mobileNumber": "mobile number",
+            "password": "password",
+            "confirmPassword": "Repeat password"
+        },
+        "signupButton": "Registration",
+        "or": "or",
+        "continueWithFacebook": "Continue with Facebook",
+        "continueWithGoogle": "Continue with Google",
+        "errors": {
+            "firstNameRequired": "Name is required",
+            "firstNameEnter": "Enter your name.",
+            "lastNameRequired": "Surname is required",
+            "lastNameEnter": "Enter your last name.",
+            "mobileRequired": "Mobile number is required",
+            "mobileInvalid": "Enter a valid mobile number.",
+            "mobileEnter": "Enter mobile number",
+            "passwordRequired": "Password is required",
+            "passwordRequirements": "Your password must be at least 8 characters long and include a number, an uppercase English letter, and a special character (!@#$%^&*).",
+            "confirmPasswordRequired": "Repeating the password is required",
+            "confirmPasswordEnter": "Enter your password again.",
+            "passwordMismatch": "Passwords do not match"
+        },
+        "toasts": {
+            "pleaseLogin": "Please log in",
+            "mobileAlreadyRegistered": "This mobile number is already registered",
+            "login": "login",
+            "error": "error",
+            "generalError": "An error has occurred"
+        }
+    },
+    "Verify": {
+        "title": "Verification of one-time code",
+        "otpDescription": "Enter the confirmation code sent to your mobile phone",
+        "verifyButton": "Confirm code",
+        "resendCode": "Resend the code",
+        "errors": {
+            "otpLength": "The verification code must be 6 digits"
+        },
+        "toasts": {
+            "tryAgainLater": "Please try again in 2 minutes",
+            "alreadyVerified": "You have already been approved",
+            "error": "error",
+            "invalidOTP": "The verification code is invalid",
+            "loginSuccess": "You have successfully logged in",
+            "welcomeMessage": "Welcome to your account",
+            "waitTwoMinutes": "Please wait for 2 minutes"
+        }
     }
 }

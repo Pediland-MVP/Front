@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -6,6 +7,7 @@ import { z } from "zod";
 import { REGEX_PASSWORD } from "@/app/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 
 import { Button } from "@/components/theme/ui/button";
 import { Input } from "@/components/theme/ui/input";
@@ -19,24 +21,23 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeSlash, Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
 
 export default function Login() {
-  const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const t = useTranslations('Login');
   const [isLoading, setIsLoading] = useState(false);
   const [loginWith, setLoginWith] = useState<"mobile" | "google">();
 
   const formSchema = z.object({
     emailOrMobile: z
-      .string({ message: "شماره همراه الزامیست" })
-      .min(1, "شماره همراه را وارد کنید"),
+      .string({ required_error: t('errors.mobileRequired') })
+      .min(1, t('errors.mobileEnter')),
     password: z
-      .string({ message: "پسورد الزامیست" })
+      .string({ required_error: t('errors.passwordRequired') })
       .regex(
         REGEX_PASSWORD,
-        "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد"
+        t('errors.passwordRequirements')
       ),
   });
 
@@ -67,23 +68,23 @@ export default function Login() {
       .then(async (res) => {
         if (!res.ok) {
           toast({
-            title: "خطا",
-            description: "شماره همراه یا پسورد اشتباه است",
+            title: t('toasts.error'),
+            description: t('toasts.invalidCredentials'),
             variant: "destructive",
           });
           return;
         }
         toast({
-          title: "با موفقیت وارد شدید",
-          description: "به حساب کاربری خود خوش آمدید",
+          title: t('toasts.loginSuccess'),
+          description: t('toasts.welcomeMessage'),
         });
         router.push("/console");
       })
       .catch((e) => {
         console.error(e);
         toast({
-          title: "خطا",
-          description: "خطایی رخ داده است",
+          title: t('toasts.error'),
+          description: t('toasts.generalError'),
           variant: "destructive",
         });
       })
@@ -105,16 +106,16 @@ export default function Login() {
               <div className="_title flex items-center justify-center gap-2">
                 <Keyhole size={36} weight="light" className="text-primary" />
                 <h1 className="text-2xl font-semibold text-primary">
-                  ورود به حساب کاربری
+                  {t('title')}
                 </h1>
               </div>
               <p className="text-sm text-gray-500 text-center">
-                حساب کاربری ندارید؟{" "}
+                {t('noAccount')}{" "}
                 <Link
                   className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signup"
                 >
-                  از اینجا ثبت نام کنید.
+                  {t('signupLink')}
                 </Link>
               </p>
             </div>
@@ -131,7 +132,7 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input placeholder="شماره همراه" {...field} />
+                          <Input placeholder={t('placeholders.mobileNumber')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -143,7 +144,7 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field} placeholder="رمز عبور" />
+                          <InputPassword {...field} placeholder={t('placeholders.password')} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -154,7 +155,7 @@ export default function Login() {
                       href={"/auth/resetPassword"}
                       className="py-1 text-sm text-gray-400 hover:text-secondary duration-300"
                     >
-                      رمز عبورم را فراموش کردم.
+                      {t('forgotPassword')}
                     </Link>
                   </div>
                   <Button
@@ -163,7 +164,7 @@ export default function Login() {
                     color="success"
                     disabled={isLoading}
                   >
-                    ورود
+                    {t('loginButton')}
                     {loginWith === "mobile" && isLoading ? (
                       <LoadingSpinner className="mr-1" size={20} />
                     ) : null}
@@ -171,7 +172,7 @@ export default function Login() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">یا</TextDivider>
+              <TextDivider size="lg">{t('or')}</TextDivider>
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
@@ -185,7 +186,7 @@ export default function Login() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت فیس بوک
+                  {t('continueWithFacebook')}
                 </Button>
                 <Button
                   onClick={loginWithGoogle}
@@ -198,7 +199,7 @@ export default function Login() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت گوگل
+                  {t('continueWithGoogle')}
                 </Button>
               </div>
             </div>
@@ -208,3 +209,4 @@ export default function Login() {
     </main>
   );
 }
+

@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/app/utils/regex";
+import { useTranslations } from 'next-intl';
 
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import TextDivider from "@/components/theme/ui/textDivider";
@@ -25,50 +27,30 @@ import {
 } from "@/components/ui/form";
 
 export default function Signup() {
-  const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const t = useTranslations('Signup');
   const [isLoading, setIsLoading] = useState(false);
   const [loginWith, setLoginWith] = useState<"mobile" | "google">();
 
-  const [formData, setFormData] = React.useState({
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // فرم را ثبت کنید یا داده‌ها را پردازش کنید
-    console.log("Submitted Data: ", formData);
-  };
-
   const formSchema = z.object({
     firstname: z
-      .string({ message: "نام الزامیست" })
-      .min(1, "نام خود را وارد کنید."),
+      .string({ required_error: t('errors.firstNameRequired') })
+      .min(1, t('errors.firstNameEnter')),
     lastname: z
-      .string({ message: "نام خانوادگی الزامیست" })
-      .min(1, "نام خانوادگی خود را وارد کنید."),
+      .string({ required_error: t('errors.lastNameRequired') })
+      .min(1, t('errors.lastNameEnter')),
     mobile: z
-      .string({ message: "شماره همراه الزامیست" })
-      .regex(REGEX_MOBILE, "یک شماره همراه معتبر وارد کنید.")
-      .min(1, "شماره همراه را وارد کنید"),
+      .string({ required_error: t('errors.mobileRequired') })
+      .regex(REGEX_MOBILE, t('errors.mobileInvalid'))
+      .min(1, t('errors.mobileEnter')),
     password: z
-      .string({ message: "پسورد الزامیست" })
-      .regex(
-        REGEX_PASSWORD,
-        "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد."
-      ),
+      .string({ required_error: t('errors.passwordRequired') })
+      .regex(REGEX_PASSWORD, t('errors.passwordRequirements')),
     confirmPassword: z
-      .string({ message: "تکرار پسورد الزامیست" })
-      .min(1, "تکرار پسورد خود را وارد کنید."),
+      .string({ required_error: t('errors.confirmPasswordRequired') })
+      .min(1, t('errors.confirmPasswordEnter')),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('errors.passwordMismatch'),
+    path: ['confirmPassword'],
   });
 
   const form = useForm({
@@ -87,59 +69,61 @@ export default function Signup() {
 
   const router = useRouter();
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoginWith("mobile");
     setIsLoading(true);
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signUp`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(values),
-      }
-    )
-      .then(async (res) => {
-        const resJson = await res.json();
-        if (!res.ok) {
-          if (res.status === 409) {
-            toast({
-              title: "لطفا وارد شوید",
-              description: "این شماره همراه قبلا ثبت شده است",
-              variant: "destructive",
-              action: (
-                <ToastAction
-                  altText="وارد شوید"
-                  onClick={() => router.push("/auth/signin")}
-                >
-                  {" "}
-                  ورود{" "}
-                </ToastAction>
-              ),
-            });
-            return;
-          }
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signUp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(values),
+        }
+      );
 
+      const resJson = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
           toast({
-            title: "خطا",
-            description: resJson.message,
+            title: t('toasts.pleaseLogin'),
+            description: t('toasts.mobileAlreadyRegistered'),
             variant: "destructive",
+            action: (
+              <ToastAction
+                altText={t('toasts.login')}
+                onClick={() => router.push("/auth/signin")}
+              >
+                {t('toasts.login')}
+              </ToastAction>
+            ),
           });
           return;
         }
-        router.push("/auth/verify");
-      })
-      .catch((e) => {
-        console.error(e);
+
         toast({
-          title: "خطا",
-          description: "خطایی رخ داده است",
+          title: t('toasts.error'),
+          description: resJson.message,
           variant: "destructive",
         });
-      })
-      .finally(() => setIsLoading(false));
+        return;
+      }
+
+      router.push("/auth/verify");
+    } catch (e) {
+      console.error(e);
+      toast({
+        title: t('toasts.error'),
+        description: t('toasts.generalError'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const signUpWithGoogle = () => {
@@ -156,15 +140,15 @@ export default function Signup() {
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
                 <UserCirclePlus size={36} weight="light" className="text-primary" />
-                <h1 className="text-2xl font-semibold text-primary">ثبت نام کاربر جدید</h1>
+                <h1 className="text-2xl font-semibold text-primary">{t('title')}</h1>
               </div>
               <p className="text-sm text-gray-500 text-center">
-                حساب کاربری دارید؟{" "}
+                {t('haveAccount')}{" "}
                 <Link
                   className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
-                  از اینجا وارد شوید.
+                  {t('loginLink')}
                 </Link>
               </p>
             </div>
@@ -181,7 +165,7 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4 sm:col-span-2">
                         <FormControl>
-                          <Input {...field} placeholder="نام" />
+                          <Input {...field} placeholder={t('placeholders.firstName')} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -193,7 +177,7 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4 sm:col-span-2">
                         <FormControl>
-                          <Input {...field} placeholder="نام خانوادگی" />
+                          <Input {...field} placeholder={t('placeholders.lastName')} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -205,7 +189,7 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input {...field} placeholder="شماره همراه" />
+                          <Input {...field} placeholder={t('placeholders.mobileNumber')} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -217,7 +201,7 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field} placeholder="رمز عبور" />
+                          <InputPassword {...field} placeholder={t('placeholders.password')} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -231,7 +215,7 @@ export default function Signup() {
                         <FormControl>
                           <InputPassword
                             {...field}
-                            placeholder="تکرار رمز عبور"
+                            placeholder={t('placeholders.confirmPassword')}
                           />
                         </FormControl>
                         <FormMessage />
@@ -244,7 +228,7 @@ export default function Signup() {
                     className="col-span-4"
                     disabled={isLoading}
                   >
-                    ثبت نام
+                    {t('signupButton')}
                     {isLoading && loginWith === "mobile" && (
                       <LoadingSpinner className="mr-1" size={20} />
                     )}
@@ -252,7 +236,7 @@ export default function Signup() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">یا</TextDivider>
+              <TextDivider size="lg">{t('or')}</TextDivider>
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
@@ -266,7 +250,7 @@ export default function Signup() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت فیس بوک
+                  {t('continueWithFacebook')}
                 </Button>
                 <Button
                   onClick={signUpWithGoogle}
@@ -279,7 +263,7 @@ export default function Signup() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت گوگل
+                  {t('continueWithGoogle')}
                 </Button>
               </div>
             </div>
@@ -289,3 +273,4 @@ export default function Signup() {
     </main>
   );
 }
+
