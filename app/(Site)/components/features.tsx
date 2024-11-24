@@ -56,7 +56,7 @@ export default function Features() {
       <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="_wrapper border-b border-dashed py-14 sm:py-20 md:w-5/6 sm:mx-auto">
           <h2 className="text-secondary text-center text-3xl font-bold mb-10">
-            امکانات:
+            {t("Features.title")}
           </h2>
           <div className="_cards grid sm:grid-cols-2 gap-12 md:gap-8 xl:gap-10">
             {featuresList.map((feature, index) => (

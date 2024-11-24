@@ -7,8 +7,10 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/theme/ui/button";
 import { Keyhole, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
 
 export default function AuthButtons() {
+  const t = useTranslations("Auth");
   const [currentPath, setCurrentPath] = useState<string>("");
   const pathname = usePathname();
 
@@ -22,7 +24,7 @@ export default function AuthButtons() {
         <Button asChild variant="link">
           <Link href="/auth/signup">
             <UserCirclePlus size={22} />
-            ثبت نام
+            {t("signup")}
           </Link>
         </Button>
       )}
@@ -30,7 +32,7 @@ export default function AuthButtons() {
         <Button asChild variant="link">
           <Link href="/auth/signin">
             <Keyhole size={22} />
-            حساب کاربری
+            {t("signin")}
           </Link>
         </Button>
       )}

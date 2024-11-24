@@ -23,8 +23,11 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useTranslations } from "next-intl";
 
 export default function Signup() {
+  const t = useTranslations("Auth.Signup");
+
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,24 +54,21 @@ export default function Signup() {
 
   const formSchema = z.object({
     firstname: z
-      .string({ message: "نام الزامیست" })
-      .min(1, "نام خود را وارد کنید."),
+      .string({ message: t("firstnameRequired") })
+      .min(1, t("enterFirstname")),
     lastname: z
-      .string({ message: "نام خانوادگی الزامیست" })
-      .min(1, "نام خانوادگی خود را وارد کنید."),
+      .string({ message: t("lastnameRequired") })
+      .min(1, t("enterLastname")),
     mobile: z
-      .string({ message: "شماره همراه الزامیست" })
-      .regex(REGEX_MOBILE, "یک شماره همراه معتبر وارد کنید.")
-      .min(1, "شماره همراه را وارد کنید"),
+      .string({ message: t("mobileRequired") })
+      .regex(REGEX_MOBILE, t("enterValidMobile"))
+      .min(1, t("enterMobile")),
     password: z
-      .string({ message: "پسورد الزامیست" })
-      .regex(
-        REGEX_PASSWORD,
-        "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد."
-      ),
+      .string({ message: t("passwordRequired") })
+      .regex(REGEX_PASSWORD, t("passwordValidation")),
     confirmPassword: z
-      .string({ message: "تکرار پسورد الزامیست" })
-      .min(1, "تکرار پسورد خود را وارد کنید."),
+      .string({ message: t("confirmPasswordRequired") })
+      .min(1, t("enterConfirmPassword")),
   });
 
   const form = useForm({
@@ -106,16 +106,15 @@ export default function Signup() {
         if (!res.ok) {
           if (res.status === 409) {
             toast({
-              title: "لطفا وارد شوید",
-              description: "این شماره همراه قبلا ثبت شده است",
+              title: t("pleaseSignIn"),
+              description: t("mobileAlreadyRegistered"),
               variant: "destructive",
               action: (
                 <ToastAction
                   altText="وارد شوید"
                   onClick={() => router.push("/auth/signin")}
                 >
-                  {" "}
-                  ورود{" "}
+                  {t("signInHere")}
                 </ToastAction>
               ),
             });
@@ -123,7 +122,7 @@ export default function Signup() {
           }
 
           toast({
-            title: "خطا",
+            title: t("error"),
             description: resJson.message,
             variant: "destructive",
           });
@@ -134,8 +133,8 @@ export default function Signup() {
       .catch((e) => {
         console.error(e);
         toast({
-          title: "خطا",
-          description: "خطایی رخ داده است",
+          title: t("error"),
+          description: t("generalError"),
           variant: "destructive",
         });
       })
@@ -150,21 +149,27 @@ export default function Signup() {
 
   return (
     <main className="_signup h-full bg-fuchsia-50/75">
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
+      <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="_wrap flex items-center justify-center h-full">
-          <div className="_content w-full sm:w-1/3 mx-auto">
+          <div className="_content text-center w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
-                <UserCirclePlus size={36} weight="light" className="text-primary" />
-                <h1 className="text-2xl font-semibold text-primary">ثبت نام کاربر جدید</h1>
+                <UserCirclePlus
+                  size={36}
+                  weight="light"
+                  className="text-primary"
+                />
+                <h1 className="text-2xl font-semibold text-primary">
+                  {t("signupTitle")}
+                </h1>
               </div>
               <p className="text-sm text-gray-500 text-center">
-                حساب کاربری دارید؟{" "}
+                {t("alreadyHaveAccount")}{" "}
                 <Link
                   className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
-                  از اینجا وارد شوید.
+                  {t("signInHere")}
                 </Link>
               </p>
             </div>
@@ -181,7 +186,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4 sm:col-span-2">
                         <FormControl>
-                          <Input {...field} placeholder="نام" />
+                          <Input
+                            {...field}
+                            placeholder={t("enterFirstnamePlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -193,7 +201,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4 sm:col-span-2">
                         <FormControl>
-                          <Input {...field} placeholder="نام خانوادگی" />
+                          <Input
+                            {...field}
+                            placeholder={t("enterLastnamePlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -205,7 +216,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input {...field} placeholder="شماره همراه" />
+                          <Input
+                            {...field}
+                            placeholder={t("enterMobilePlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -217,7 +231,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field} placeholder="رمز عبور" />
+                          <InputPassword
+                            {...field}
+                            placeholder={t("enterPasswordPlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -231,7 +248,7 @@ export default function Signup() {
                         <FormControl>
                           <InputPassword
                             {...field}
-                            placeholder="تکرار رمز عبور"
+                            placeholder={t("enterConfirmPasswordPlaceholder")}
                           />
                         </FormControl>
                         <FormMessage />
@@ -244,7 +261,7 @@ export default function Signup() {
                     className="col-span-4"
                     disabled={isLoading}
                   >
-                    ثبت نام
+                    {t("signup")}
                     {isLoading && loginWith === "mobile" && (
                       <LoadingSpinner className="mr-1" size={20} />
                     )}
@@ -252,7 +269,7 @@ export default function Signup() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">یا</TextDivider>
+              <TextDivider size="lg">{t("orDivider")}</TextDivider>
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
@@ -266,7 +283,7 @@ export default function Signup() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت فیس بوک
+                  {t("continueWithFacebook")}
                 </Button>
                 <Button
                   onClick={signUpWithGoogle}
@@ -279,7 +296,7 @@ export default function Signup() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت گوگل
+                  {t("continueWithGoogle")}
                 </Button>
               </div>
             </div>

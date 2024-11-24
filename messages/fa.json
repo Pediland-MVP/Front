@@ -20,6 +20,60 @@
         "logout": "خروج",
         "more": "بیشتر"
     },
+    "Auth": {
+        "signup": "ثبت نام",
+        "signin": "حساب کاربری",
+        "Signin": {
+            "login": "ورود",
+            "loginTitle": "ورود به حساب کاربری",
+            "noAccount": "حساب کاربری ندارید؟",
+            "signUpHere": "از اینجا ثبت نام کنید.",
+            "mobileRequired": "شماره همراه الزامیست",
+            "enterMobile": "شماره همراه را وارد کنید",
+            "passwordRequired": "پسورد الزامیست",
+            "passwordValidation": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد",
+            "loginSuccess": "با موفقیت وارد شدید",
+            "loginWelcome": "به حساب کاربری خود خوش آمدید",
+            "loginError": "خطا",
+            "loginErrorDescription": "شماره همراه یا پسورد اشتباه است",
+            "generalError": "خطایی رخ داده است",
+            "enterMobilePlaceholder": "شماره همراه",
+            "enterPasswordPlaceholder": "رمز عبور",
+            "forgotPassword": "رمز عبورم را فراموش کردم.",
+            "orDivider": "یا",
+            "continueWithFacebook": "ادامه با اکانت فیس بوک",
+            "continueWithGoogle": "ادامه با اکانت گوگل"
+        },
+        "Signup": {
+            "signupTitle": "ثبت نام کاربر جدید",
+            "alreadyHaveAccount": "حساب کاربری دارید؟",
+            "signInHere": "از اینجا وارد شوید.",
+            "firstnameRequired": "نام الزامیست",
+            "enterFirstname": "نام خود را وارد کنید.",
+            "lastnameRequired": "نام خانوادگی الزامیست",
+            "enterLastname": "نام خانوادگی خود را وارد کنید.",
+            "mobileRequired": "شماره همراه الزامیست",
+            "enterValidMobile": "یک شماره همراه معتبر وارد کنید.",
+            "enterMobile": "شماره همراه را وارد کنید",
+            "passwordRequired": "پسورد الزامیست",
+            "passwordValidation": "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
+            "confirmPasswordRequired": "تکرار پسورد الزامیست",
+            "enterConfirmPassword": "تکرار پسورد خود را وارد کنید.",
+            "mobileAlreadyRegistered": "این شماره همراه قبلا ثبت شده است",
+            "pleaseSignIn": "لطفا وارد شوید",
+            "error": "خطا",
+            "generalError": "خطایی رخ داده است",
+            "enterFirstnamePlaceholder": "نام",
+            "enterLastnamePlaceholder": "نام خانوادگی",
+            "enterMobilePlaceholder": "شماره همراه",
+            "enterPasswordPlaceholder": "رمز عبور",
+            "enterConfirmPasswordPlaceholder": "تکرار رمز عبور",
+            "signup": "ثبت نام",
+            "orDivider": "یا",
+            "continueWithFacebook": "ادامه با اکانت فیس بوک",
+            "continueWithGoogle": "ادامه با اکانت گوگل"
+        }
+    },
     "Console": {
         "dashboard": "داشبورد",
         "productCount": "تعداد محصولات",
@@ -546,9 +600,7 @@
     },
     "Home": {
         "heroSectionTitle":"ارتباط، فروش، ارسال و مدیریت مشتریان در شبکه های اجتماعی را آسان کرده ایم!",
-        "crm": "فروش crm مبتنی بر پیام رسان",
         "trialButton": "ثـبـت نـام رایـگـان",
-        "xs": "تولید سادگی نامفهوم",
         "Section1": {
             "title": "شما فقط به فکر تولید محتـوا و تامیـن باشیـد!",
             "subTitle": "ما ارتباط می‌سازیم، می‌فروشیم، می‌فرستیم و مشتریاتون رو مدیریت می‌کنیم."
@@ -557,6 +609,7 @@
             "title": "با هزینه و انرژی کمتر، فروش و بهره‌وری بیشتر رو تجربه کنید!"
         },
         "Features": {
+            "title": "امکانات",
             "title1": "ذخیره اتوماتیک اطلاعات مشتریان",
             "text1": "اطلاعات مشتریان مثل شماره موبایل و ایمیل بصورت اتوماتیک در پروفایل آنها ثبت می شود.",
             "title2": "دیتابیس اختصاصی",
@@ -581,14 +634,15 @@
             "badge3": "پشتیبانی"
         },
         "Header": {
-            "dashboard": "داشبورد",
+            "freeRegistration": "ثبت نام رایگان",
             "features": "امکانات",
+            "contactUs": "تماس با ما",
+            "dashboard": "داشبورد",
             "products": "محصولات",
             "pricing": "تعرفه ها",
             "login": "ورود",
             "signup": "ثبت نام",
-            "loremIpsum": "لورم اپیزوم",
-            "contactUs": "تماس با ما"
+            "loremIpsum": "لورم اپیزوم"
         },
         "Footer": {
             "contactUs": "تماس با ما",

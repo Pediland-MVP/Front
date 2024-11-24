@@ -19,10 +19,13 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeSlash, Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
+import { useTranslations } from "next-intl";
 
 export default function Login() {
+  const t = useTranslations("Auth.Signin");
+
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,14 +33,11 @@ export default function Login() {
 
   const formSchema = z.object({
     emailOrMobile: z
-      .string({ message: "شماره همراه الزامیست" })
-      .min(1, "شماره همراه را وارد کنید"),
+      .string({ message: t("mobileRequired") })
+      .min(1, t("enterMobile")),
     password: z
-      .string({ message: "پسورد الزامیست" })
-      .regex(
-        REGEX_PASSWORD,
-        "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد"
-      ),
+      .string({ message: t("passwordRequired") })
+      .regex(REGEX_PASSWORD, t("passwordValidation")),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,23 +67,23 @@ export default function Login() {
       .then(async (res) => {
         if (!res.ok) {
           toast({
-            title: "خطا",
-            description: "شماره همراه یا پسورد اشتباه است",
+            title: t("loginError"),
+            description: t("loginErrorDescription"),
             variant: "destructive",
           });
           return;
         }
         toast({
-          title: "با موفقیت وارد شدید",
-          description: "به حساب کاربری خود خوش آمدید",
+          title: t("loginSuccess"),
+          description: t("loginWelcome"),
         });
         router.push("/console");
       })
       .catch((e) => {
         console.error(e);
         toast({
-          title: "خطا",
-          description: "خطایی رخ داده است",
+          title: t("loginError"),
+          description: t("generalError"),
           variant: "destructive",
         });
       })
@@ -98,23 +98,23 @@ export default function Login() {
 
   return (
     <main className="_signin h-full bg-fuchsia-50/75">
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto h-full">
+      <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="_wrap flex items-center justify-center h-full">
           <div className="_content text-center w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
                 <Keyhole size={36} weight="light" className="text-primary" />
                 <h1 className="text-2xl font-semibold text-primary">
-                  ورود به حساب کاربری
+                  {t("loginTitle")}
                 </h1>
               </div>
               <p className="text-sm text-gray-500 text-center">
-                حساب کاربری ندارید؟{" "}
+                {t("noAccount")}{" "}
                 <Link
                   className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signup"
                 >
-                  از اینجا ثبت نام کنید.
+                  {t("signUpHere")}
                 </Link>
               </p>
             </div>
@@ -131,7 +131,10 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input placeholder="شماره همراه" {...field} />
+                          <Input
+                            placeholder={t("enterMobilePlaceholder")}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -143,7 +146,10 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field} placeholder="رمز عبور" />
+                          <InputPassword
+                            {...field}
+                            placeholder={t("enterPasswordPlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -154,7 +160,7 @@ export default function Login() {
                       href={"/auth/resetPassword"}
                       className="py-1 text-sm text-gray-400 hover:text-secondary duration-300"
                     >
-                      رمز عبورم را فراموش کردم.
+                      {t("forgotPassword")}
                     </Link>
                   </div>
                   <Button
@@ -163,7 +169,7 @@ export default function Login() {
                     color="success"
                     disabled={isLoading}
                   >
-                    ورود
+                    {t("login")}
                     {loginWith === "mobile" && isLoading ? (
                       <LoadingSpinner className="mr-1" size={20} />
                     ) : null}
@@ -171,7 +177,7 @@ export default function Login() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">یا</TextDivider>
+              <TextDivider size="lg">{t("orDivider")}</TextDivider>
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
@@ -185,7 +191,7 @@ export default function Login() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت فیس بوک
+                  {t("continueWithFacebook")}
                 </Button>
                 <Button
                   onClick={loginWithGoogle}
@@ -198,7 +204,7 @@ export default function Login() {
                   ) : (
                     ""
                   )}
-                  ادامه با اکانت گوگل
+                  {t("continueWithGoogle")}
                 </Button>
               </div>
             </div>

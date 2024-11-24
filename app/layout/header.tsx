@@ -54,17 +54,17 @@ function Header() {
             <ul className="flex gap-5 lg:gap-10 font-semibold text-primary">
               <li>
                 <Link href="/auth/signup" className="hover:text-secondary">
-                  ثبت نام رایگان
+                  {t("freeRegistration")}
                 </Link>
               </li>
               <li>
                 <Link href="/#features" className="hover:text-secondary">
-                  امکانات
+                  {t("features")}
                 </Link>
               </li>
               <li>
                 <Link href="/#contact" className="hover:text-secondary">
-                  ارتباط
+                  {t("contactUs")}
                 </Link>
               </li>
             </ul>
