@@ -182,20 +182,7 @@ export default function Login() {
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
                   onClick={loginWithGoogle}
-                  className="col-span-2"
-                  variant="outline"
-                  disabled={isLoading}
-                >
-                  {loginWith === "google" && isLoading ? (
-                    <LoadingSpinner className="ml-1" size={22} />
-                  ) : (
-                    ""
-                  )}
-                  {t("continueWithFacebook")}
-                </Button>
-                <Button
-                  onClick={loginWithGoogle}
-                  className="col-span-2"
+                  className="col-span-4"
                   variant="outline"
                   disabled={isLoading}
                 >

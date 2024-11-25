@@ -261,21 +261,8 @@ export default function Signup() {
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
-                  onClick={signUpWithFacebook}
-                  className="col-span-2"
-                  variant="outline"
-                  disabled={isLoading}
-                >
-                  {loginWith === "facebook" && isLoading ? (
-                    <LoadingSpinner className="ml-1" size={22} />
-                  ) : (
-                    ""
-                  )}
-                  {t("continueWithFacebook")}
-                </Button>
-                <Button
                   onClick={signUpWithGoogle}
-                  className="col-span-2"
+                  className="col-span-4"
                   variant="outline"
                   disabled={isLoading}
                 >
