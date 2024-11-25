@@ -17,7 +17,7 @@ export default async function ConsoleLayout({
   const locale = await getLocale();
   const messages = await getMessages();
   return (
-    <html lang={locale} dir="rtl">
+    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"}>
       <body className="bg-blue-50 h-screen">
         <NextIntlClientProvider messages={messages}>
           {children}

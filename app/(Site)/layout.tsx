@@ -23,7 +23,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir="rtl">
+    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"}>
       <head>
         <link
           rel="icon"

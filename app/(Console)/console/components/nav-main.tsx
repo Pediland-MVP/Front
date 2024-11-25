@@ -18,6 +18,7 @@ import {
 } from "@/components/theme/ui/sidebar";
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr";
 import { useParams, usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function NavMain({
   items,
@@ -43,10 +44,10 @@ export function NavMain({
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title} className={pathname === item.url ? "text-black bg-blue-100" : "text-gray-700"}>
-                <a href={item.url}>
+                <Link href={item.url}>
                   <item.icon size={24} weight="duotone"  />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
               {item.items?.length ? (
                 <>
@@ -62,9 +63,9 @@ export function NavMain({
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild className={pathname.startsWith(subItem.url) ? "bg-blue-100 text-black" : "text-gray-700"}>
-                            <a href={subItem.url}>
+                            <Link href={subItem.url}>
                               <span>{subItem.title}</span>
-                            </a>
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}

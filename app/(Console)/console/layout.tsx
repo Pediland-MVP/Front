@@ -1,18 +1,15 @@
-// console/layout.tsx
 
-"use client";
-
+import { getLocale } from "next-intl/server";
 import { AppSidebar } from "./components/app-sidebar";
-import { useTranslations } from "next-intl";
-// Just UI Imports Below
 import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
-  const t = useTranslations("Console");
+const Layout = async ({ children }: { children: React.ReactNode }) => {
+
+  const locale = await getLocale();
 
   return (
     <SidebarProvider>
-      <AppSidebar side="right" />
+      <AppSidebar side={locale==='fa'?'right':'left'} />
       <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
