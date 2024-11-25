@@ -11,13 +11,7 @@ import { useTranslations } from "next-intl";
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
-  Breadcrumb,
-  BreadcrumbEllipsis,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
+  Breadcrumb, BreadcrumbItem, BreadcrumbList
 } from "@/components/theme/ui/breadcrumb";
 import {
   Card,
