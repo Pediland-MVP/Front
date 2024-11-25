@@ -19,7 +19,9 @@
         "accounts": "Accounts",
         "profile": "Profile",
         "logout": "Logout",
-        "more": "More"
+        "more": "More",
+        "logoutFailed": "Logout failed",
+        "logoutSuccess": "Logout successfully"
     },
     "Auth": {
         "signup": "Sign up",

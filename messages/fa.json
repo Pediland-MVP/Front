@@ -18,7 +18,9 @@
         "accounts": "اکانت‌ها",
         "profile": "حساب کاربری",
         "logout": "خروج",
-        "more": "بیشتر"
+        "more": "بیشتر",
+        "logoutFailed": "خروج انجام نشد",
+        "logoutSuccess": "خروج با موفقیت انجام شد"
     },
     "Auth": {
         "signup": "ثبت نام",
