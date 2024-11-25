@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/app/utils/regex";
-import { useTranslations } from 'next-intl';
 
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import TextDivider from "@/components/theme/ui/textDivider";
@@ -33,7 +32,7 @@ export default function Signup() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginWith, setLoginWith] = useState<"mobile" | "google">();
+  const [loginWith, setLoginWith] = useState<"mobile" | "google" | "facebook">();
 
   const formSchema = z.object({
     firstname: z
@@ -128,6 +127,12 @@ export default function Signup() {
     setLoginWith("google");
     setIsLoading(true);
     router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/google/login`);
+  };
+
+  const signUpWithFacebook = () => {
+    setLoginWith("facebook");
+    setIsLoading(true);
+    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/facebook`);
   };
 
   return (
@@ -256,12 +261,12 @@ export default function Signup() {
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
-                  onClick={signUpWithGoogle}
+                  onClick={signUpWithFacebook}
                   className="col-span-2"
                   variant="outline"
                   disabled={isLoading}
                 >
-                  {loginWith === "google" && isLoading ? (
+                  {loginWith === "facebook" && isLoading ? (
                     <LoadingSpinner className="ml-1" size={22} />
                   ) : (
                     ""
