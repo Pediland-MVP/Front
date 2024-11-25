@@ -39,7 +39,7 @@ function Header() {
         showMenu ? "border-primary border-b-2" : ""
       } `}
     >
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0">
+      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className={`_wrapper flex justify-between gap-10`}>
           <div className="_logo">
             <a
@@ -54,17 +54,17 @@ function Header() {
             <ul className="flex gap-5 lg:gap-10 font-semibold text-primary">
               <li>
                 <Link href="/auth/signup" className="hover:text-secondary">
-                  ثبت نام رایگان
+                  {t("freeRegistration")}
                 </Link>
               </li>
               <li>
                 <Link href="/#features" className="hover:text-secondary">
-                  امکانات
+                  {t("features")}
                 </Link>
               </li>
               <li>
                 <Link href="/#contact" className="hover:text-secondary">
-                  ارتباط
+                  {t("contactUs")}
                 </Link>
               </li>
             </ul>

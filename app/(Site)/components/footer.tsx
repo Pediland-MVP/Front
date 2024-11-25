@@ -1,89 +1,60 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from 'next-intl';
-import {
-  FacebookLogo,
-  TwitterLogo,
-  InstagramLogo,
-  LinkedinLogo,
-} from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { Headset, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/theme/ui/button";
+import { TelegramLogo } from "@phosphor-icons/react";
 
 export default function Footer() {
-  const t = useTranslations('Home.Footer');
-
-  const footerColumns = [
-    {
-      title: t('company'),
-      links: ['aboutUs', 'careers', 'media', 'blog'],
-    },
-    {
-      title: t('support'),
-      links: ['helpCenter', 'contactUs', 'faq', 'terms'],
-    },
-    {
-      title: t('services'),
-      links: ['consulting', 'sales', 'marketing', 'customerService'],
-    },
-    {
-      title: t('support'),
-      links: ['helpCenter', 'contactUs', 'faq', 'terms'],
-    },
-  ];
-
-  const socialIcons = [
-    { Icon: FacebookLogo, label: 'Facebook' },
-    { Icon: TwitterLogo, label: 'Twitter' },
-    { Icon: InstagramLogo, label: 'Instagram' },
-    { Icon: LinkedinLogo, label: 'LinkedIn' },
-  ];
+  const t = useTranslations("Home.Footer");
 
   return (
-    <div className="md:mt-24 mt-16">
-      <footer className="bg-blueKommo mt-auto pt-8 rounded-t-2xl px-4 md:px-8">
-        <div className="container mx-auto rounded-t-xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 pb-8 justify-items-center mx-auto">
-            {footerColumns.map((column, index) => (
-              <div key={index}>
-                <h3 className="text-sm md:text-md font-semibold mb-4 text-white">
-                  {column.title}
+    <div className="_footer" id="#contact">
+      <footer className="bg-gradient-to-b from-primary to-secondary rounded-tl-3xl rounded-tr-3xl">
+        <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
+          <div className="_wrapper flex flex-col items-center justify-center py-16 text-white">
+            <div className="_content sm:w-2/3 md:w-3/5 lg:w-2/5 xl:w-full flex flex-col items-center justify-center gap-6 px-6 sm:px-0">
+              <div className="_text">
+                <h3 className="flex items-center gap-2 mb-1 text-xl font-semibold">
+                  <Headset size={28} weight="duotone" />
+                  <span>{t("contactUs")}</span>
                 </h3>
-                <ul className="leading-8 md:leading-[2.5rem] text-xs">
-                  {column.links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className="text-gray-100 hover:text-gray-400">
-                        {t(link)}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                <p className="font-light">{t("contactUsText")}</p>
               </div>
-            ))}
-          </div>
-
-          <div className="border-b text-center pb-8">
-            <h3 className="text-sm md:text-md font-semibold mb-4 text-white">
-              {t('followUs')}
-            </h3>
-            <div className="flex flex-wrap justify-center gap-4">
-              {socialIcons.map(({ Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="text-white hover:text-purple-700"
+              <div className="_links flex items-center justify-center gap-3 w-full xl:w-1/4">
+                <Button
+                  asChild
+                  variant="contact"
+                  size="contact"
+                  className="bg-green-600 hover:bg-green-600/90 w-full"
                 >
-                  <Icon size={28} />
-                </a>
-              ))}
+                  <Link href="#" target="_blank">
+                    <WhatsappLogo size={24} weight="fill" />
+                    {t("whatsapp")}
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="contact"
+                  size="contact"
+                  className="bg-sky-600 hover:bg-sky-600/90 w-full"
+                >
+                  <Link href="#" target="_blank">
+                    <TelegramLogo size={24} weight="fill" />
+                    {t("telegram")}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
-          <h4 className="text-center m-auto py-4 text-white text-xs md:font-light">
-            {t('copyright')}
-          </h4>
+
+          {/* <h4 className="text-center py-5 text-gray-100 text-xs font-extralight">
+            {t("copyright")}
+          </h4> */}
         </div>
       </footer>
     </div>
   );
 }
-

@@ -70,10 +70,10 @@ export default function HeroSection() {
 
   return (
     <div className="_heroSection">
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0">
+      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="_wrapper py-20 md:py-24 lg:py-32 relative">
           <div className="_title flex flex-col gap-8 items-center justify-start md:justify-center">
-            <h1 className="text-secondary text-4xl lg:text-5xl xl:text-[3.25rem] font-bold leading-[3rem] md:leading-[3.25rem] lg:leading-[4rem] xl:leading-[5rem] sm:max-w-[30rem] lg:max-w-[40rem] xl:max-w-[50rem] text-center">
+            <h1 className="text-secondary text-4xl lg:text-5xl xl:text-[3.25rem] font-semibold sm:font-bold leading-[3rem] md:leading-[3.25rem] lg:leading-[4rem] xl:leading-[5rem] sm:max-w-[30rem] lg:max-w-[40rem] xl:max-w-[50rem] text-center">
               {t("heroSectionTitle")}
             </h1>
 

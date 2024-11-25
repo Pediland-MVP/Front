@@ -21,6 +21,60 @@
         "logout": "Logout",
         "more": "More"
     },
+    "Auth": {
+        "signup": "Sign up",
+        "signin": "Sign in",
+        "Signin": {
+            "login": "Login",
+            "loginTitle": "Log in to your account",
+            "noAccount": "Don't have an account?",
+            "signUpHere": "Sign up here.",
+            "mobileRequired": "Mobile number is required",
+            "enterMobile": "Enter your mobile number",
+            "passwordRequired": "Password is required",
+            "passwordValidation": "Password must be at least 8 characters and include one number and one uppercase English letter",
+            "loginSuccess": "Successfully logged in",
+            "loginWelcome": "Welcome to your account",
+            "loginError": "Error",
+            "loginErrorDescription": "Incorrect mobile number or password",
+            "generalError": "An error occurred",
+            "enterMobilePlaceholder": "Mobile number",
+            "enterPasswordPlaceholder": "Password",
+            "forgotPassword": "I forgot my password.",
+            "orDivider": "or",
+            "continueWithFacebook": "Continue with Facebook",
+            "continueWithGoogle": "Continue with Google"
+        },
+        "Signup": {
+            "signupTitle": "Register a new user",
+            "alreadyHaveAccount": "Already have an account?",
+            "signInHere": "Sign in here.",
+            "firstnameRequired": "First name is required",
+            "enterFirstname": "Enter your first name",
+            "lastnameRequired": "Last name is required",
+            "enterLastname": "Enter your last name",
+            "mobileRequired": "Mobile number is required",
+            "enterValidMobile": "Enter a valid mobile number",
+            "enterMobile": "Enter your mobile number",
+            "passwordRequired": "Password is required",
+            "passwordValidation": "Your password must be at least 8 characters long and include a number, an uppercase English letter, and a special character (!@#$%^&*)",
+            "confirmPasswordRequired": "Confirm password is required",
+            "enterConfirmPassword": "Enter your confirm password",
+            "mobileAlreadyRegistered": "This mobile number is already registered",
+            "pleaseSignIn": "Please sign in",
+            "error": "Error",
+            "generalError": "An error occurred",
+            "enterFirstnamePlaceholder": "First name",
+            "enterLastnamePlaceholder": "Last name",
+            "enterMobilePlaceholder": "Mobile number",
+            "enterPasswordPlaceholder": "Password",
+            "enterConfirmPasswordPlaceholder": "Confirm password",
+            "signup": "Sign up",
+            "orDivider": "or",
+            "continueWithFacebook": "Continue with Facebook",
+            "continueWithGoogle": "Continue with Google"
+        }
+    },
     "Console": {
         "productCount": "Number of products",
         "leadCount": "Number of leads",
@@ -539,9 +593,30 @@
         }
     },
     "Home": {
-        "crm": "Messanger based CRM",
+        "heroSectionTitle": "Connect, sell, send and manage your customers in social networks",
         "trialButton": "14 Day free trial",
-        "xs": "Dummy text from the printing industry",
+        "Section1": {
+            "title": "You just focus on content creation and supply!",
+            "subTitle": "We build connections, sell, ship, and manage your customers."
+        },
+        "Section2": {
+            "title": "Experience more sales and productivity with less cost and energy!"
+        },
+        "Features": {
+            "title": "Features",
+            "title1": "Automatic Customer Data Saving",
+            "text1": "Customer information, such as mobile numbers and emails, is automatically recorded in their profiles.",
+            "title2": "Dedicated Database",
+            "text2": "No need to worry about losing access to Instagram. Your customer data is transferred to your dedicated database, and even if your page is lost for any reason, you still have access to your customers.",
+            "title3": "Easy Sales on Instagram",
+            "text3": "No more worries about losing customer messages, payment receipts, or order registrations. Customers can easily place their orders without needing to sign up.",
+            "title4": "Easy Order Shipping",
+            "text4": "After placing an order, purchase details are automatically sent to the post, and a shipping receipt is issued.",
+            "title5": "New Version of Smart Direct",
+            "text5": "Respond to customers smarter and create automated messaging for increased sales.",
+            "title6": "360-Degree Customer Communication",
+            "text6": "Connect with customers through various communication channels such as direct messages, automation, SMS, and more."
+        },
         "BigSection": {
             "trialButton": "14 Day free trial",
             "xs": "Dummy text from the printing industry",
@@ -554,15 +629,21 @@
             "badge3": "Support"
         },
         "Header": {
-            "features": "Facilities",
+            "freeRegistration": "Free Trial",
+            "features": "Features",
+            "contactUs": "Contact Us",
+            "dashboard": "Dashboard",
             "products": "Products",
             "pricing": "Tariffs",
             "login": "login",
             "signup": "Registration",
-            "loremIpsum": "Lorem episum",
-            "contactUs": "contact us"
+            "loremIpsum": "Lorem episum"
         },
         "Footer": {
+            "contactUs": "Contact Us",
+            "contactUsText": "At the moment, if you have any questions or need support, you can contact us using the following methods.",
+            "whatsapp": "WhatsApp",
+            "telegram": "Telegram",
             "company": "company",
             "aboutUs": "about us",
             "careers": "Job opportunities",
@@ -570,7 +651,6 @@
             "blog": "Blog",
             "support": "Support",
             "helpCenter": "Help center",
-            "contactUs": "contact us",
             "faq": "Frequently asked questions",
             "terms": "Rules",
             "services": "Services",

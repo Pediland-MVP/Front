@@ -19,13 +19,15 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary hover:text-secondary gap-1",
+        link: "text-primary hover:text-secondary gap-1 px-1",
+        contact: "text-white",
       },
       size: {
         sm: "h-8 sm:h-9 rounded px-2 sm:px-3 text-xs",
         default: "h-10 px-4 py-2",
         lg: "h-14 rounded-lg px-7 text-md",
         icon: "h-10 w-10",
+        contact: "h-10 pr-3 pl-4 py-2 text-base",
       },
     },
     defaultVariants: {

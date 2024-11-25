@@ -23,22 +23,23 @@ import {
 } from "@/components/ui/form";
 import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
+import { useTranslations } from "next-intl";
 
 export default function Login() {
-  const t = useTranslations('Login');
+  const t = useTranslations("Auth.Signin");
+
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
   const [loginWith, setLoginWith] = useState<"mobile" | "google">();
 
   const formSchema = z.object({
     emailOrMobile: z
-      .string({ required_error: t('errors.mobileRequired') })
-      .min(1, t('errors.mobileEnter')),
+      .string({ message: t("mobileRequired") })
+      .min(1, t("enterMobile")),
     password: z
-      .string({ required_error: t('errors.passwordRequired') })
-      .regex(
-        REGEX_PASSWORD,
-        t('errors.passwordRequirements')
-      ),
+      .string({ message: t("passwordRequired") })
+      .regex(REGEX_PASSWORD, t("passwordValidation")),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -68,23 +69,23 @@ export default function Login() {
       .then(async (res) => {
         if (!res.ok) {
           toast({
-            title: t('toasts.error'),
-            description: t('toasts.invalidCredentials'),
+            title: t("loginError"),
+            description: t("loginErrorDescription"),
             variant: "destructive",
           });
           return;
         }
         toast({
-          title: t('toasts.loginSuccess'),
-          description: t('toasts.welcomeMessage'),
+          title: t("loginSuccess"),
+          description: t("loginWelcome"),
         });
         router.push("/console");
       })
       .catch((e) => {
         console.error(e);
         toast({
-          title: t('toasts.error'),
-          description: t('toasts.generalError'),
+          title: t("loginError"),
+          description: t("generalError"),
           variant: "destructive",
         });
       })
@@ -106,16 +107,16 @@ export default function Login() {
               <div className="_title flex items-center justify-center gap-2">
                 <Keyhole size={36} weight="light" className="text-primary" />
                 <h1 className="text-2xl font-semibold text-primary">
-                  {t('title')}
+                  {t("loginTitle")}
                 </h1>
               </div>
               <p className="text-sm text-gray-500 text-center">
-                {t('noAccount')}{" "}
+                {t("noAccount")}{" "}
                 <Link
                   className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signup"
                 >
-                  {t('signupLink')}
+                  {t("signUpHere")}
                 </Link>
               </p>
             </div>
@@ -132,7 +133,10 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input placeholder={t('placeholders.mobileNumber')} {...field} />
+                          <Input
+                            placeholder={t("enterMobilePlaceholder")}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -144,7 +148,10 @@ export default function Login() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field} placeholder={t('placeholders.password')} />
+                          <InputPassword
+                            {...field}
+                            placeholder={t("enterPasswordPlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -155,7 +162,7 @@ export default function Login() {
                       href={"/auth/resetPassword"}
                       className="py-1 text-sm text-gray-400 hover:text-secondary duration-300"
                     >
-                      {t('forgotPassword')}
+                      {t("forgotPassword")}
                     </Link>
                   </div>
                   <Button
@@ -164,7 +171,7 @@ export default function Login() {
                     color="success"
                     disabled={isLoading}
                   >
-                    {t('loginButton')}
+                    {t("login")}
                     {loginWith === "mobile" && isLoading ? (
                       <LoadingSpinner className="mr-1" size={20} />
                     ) : null}
@@ -172,7 +179,7 @@ export default function Login() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">{t('or')}</TextDivider>
+              <TextDivider size="lg">{t("orDivider")}</TextDivider>
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
@@ -186,7 +193,7 @@ export default function Login() {
                   ) : (
                     ""
                   )}
-                  {t('continueWithFacebook')}
+                  {t("continueWithFacebook")}
                 </Button>
                 <Button
                   onClick={loginWithGoogle}
@@ -199,7 +206,7 @@ export default function Login() {
                   ) : (
                     ""
                   )}
-                  {t('continueWithGoogle')}
+                  {t("continueWithGoogle")}
                 </Button>
               </div>
             </div>

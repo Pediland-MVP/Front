@@ -25,32 +25,33 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useTranslations } from "next-intl";
 
 export default function Signup() {
-  const t = useTranslations('Signup');
+  const t = useTranslations("Auth.Signup");
+
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
   const [loginWith, setLoginWith] = useState<"mobile" | "google">();
 
   const formSchema = z.object({
     firstname: z
-      .string({ required_error: t('errors.firstNameRequired') })
-      .min(1, t('errors.firstNameEnter')),
+      .string({ message: t("firstnameRequired") })
+      .min(1, t("enterFirstname")),
     lastname: z
-      .string({ required_error: t('errors.lastNameRequired') })
-      .min(1, t('errors.lastNameEnter')),
+      .string({ message: t("lastnameRequired") })
+      .min(1, t("enterLastname")),
     mobile: z
-      .string({ required_error: t('errors.mobileRequired') })
-      .regex(REGEX_MOBILE, t('errors.mobileInvalid'))
-      .min(1, t('errors.mobileEnter')),
+      .string({ message: t("mobileRequired") })
+      .regex(REGEX_MOBILE, t("enterValidMobile"))
+      .min(1, t("enterMobile")),
     password: z
-      .string({ required_error: t('errors.passwordRequired') })
-      .regex(REGEX_PASSWORD, t('errors.passwordRequirements')),
+      .string({ message: t("passwordRequired") })
+      .regex(REGEX_PASSWORD, t("passwordValidation")),
     confirmPassword: z
-      .string({ required_error: t('errors.confirmPasswordRequired') })
-      .min(1, t('errors.confirmPasswordEnter')),
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: t('errors.passwordMismatch'),
-    path: ['confirmPassword'],
+      .string({ message: t("confirmPasswordRequired") })
+      .min(1, t("enterConfirmPassword")),
   });
 
   const form = useForm({
@@ -72,58 +73,55 @@ export default function Signup() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoginWith("mobile");
     setIsLoading(true);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signUp`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(values),
-        }
-      );
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/signUp`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(values),
+      }
+    )
+      .then(async (res) => {
+        const resJson = await res.json();
+        if (!res.ok) {
+          if (res.status === 409) {
+            toast({
+              title: t("pleaseSignIn"),
+              description: t("mobileAlreadyRegistered"),
+              variant: "destructive",
+              action: (
+                <ToastAction
+                  altText="وارد شوید"
+                  onClick={() => router.push("/auth/signin")}
+                >
+                  {t("signInHere")}
+                </ToastAction>
+              ),
+            });
+            return;
+          }
 
-      const resJson = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 409) {
           toast({
-            title: t('toasts.pleaseLogin'),
-            description: t('toasts.mobileAlreadyRegistered'),
+            title: t("error"),
+            description: resJson.message,
             variant: "destructive",
-            action: (
-              <ToastAction
-                altText={t('toasts.login')}
-                onClick={() => router.push("/auth/signin")}
-              >
-                {t('toasts.login')}
-              </ToastAction>
-            ),
           });
           return;
         }
-
+        router.push("/auth/verify");
+      })
+      .catch((e) => {
+        console.error(e);
         toast({
-          title: t('toasts.error'),
-          description: resJson.message,
+          title: t("error"),
+          description: t("generalError"),
           variant: "destructive",
         });
-        return;
-      }
-
-      router.push("/auth/verify");
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: t('toasts.error'),
-        description: t('toasts.generalError'),
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const signUpWithGoogle = () => {
@@ -136,19 +134,25 @@ export default function Signup() {
     <main className="_signup h-full bg-fuchsia-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="_wrap flex items-center justify-center h-full">
-          <div className="_content w-full sm:w-1/3 mx-auto">
+          <div className="_content text-center w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
-                <UserCirclePlus size={36} weight="light" className="text-primary" />
-                <h1 className="text-2xl font-semibold text-primary">{t('title')}</h1>
+                <UserCirclePlus
+                  size={36}
+                  weight="light"
+                  className="text-primary"
+                />
+                <h1 className="text-2xl font-semibold text-primary">
+                  {t("signupTitle")}
+                </h1>
               </div>
               <p className="text-sm text-gray-500 text-center">
-                {t('haveAccount')}{" "}
+                {t("alreadyHaveAccount")}{" "}
                 <Link
                   className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
-                  {t('loginLink')}
+                  {t("signInHere")}
                 </Link>
               </p>
             </div>
@@ -165,7 +169,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4 sm:col-span-2">
                         <FormControl>
-                          <Input {...field} placeholder={t('placeholders.firstName')} />
+                          <Input
+                            {...field}
+                            placeholder={t("enterFirstnamePlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -177,7 +184,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4 sm:col-span-2">
                         <FormControl>
-                          <Input {...field} placeholder={t('placeholders.lastName')} />
+                          <Input
+                            {...field}
+                            placeholder={t("enterLastnamePlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -189,7 +199,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <Input {...field} placeholder={t('placeholders.mobileNumber')} />
+                          <Input
+                            {...field}
+                            placeholder={t("enterMobilePlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -201,7 +214,10 @@ export default function Signup() {
                     render={({ field }) => (
                       <FormItem className="col-span-4">
                         <FormControl>
-                          <InputPassword {...field} placeholder={t('placeholders.password')} />
+                          <InputPassword
+                            {...field}
+                            placeholder={t("enterPasswordPlaceholder")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -215,7 +231,7 @@ export default function Signup() {
                         <FormControl>
                           <InputPassword
                             {...field}
-                            placeholder={t('placeholders.confirmPassword')}
+                            placeholder={t("enterConfirmPasswordPlaceholder")}
                           />
                         </FormControl>
                         <FormMessage />
@@ -228,7 +244,7 @@ export default function Signup() {
                     className="col-span-4"
                     disabled={isLoading}
                   >
-                    {t('signupButton')}
+                    {t("signup")}
                     {isLoading && loginWith === "mobile" && (
                       <LoadingSpinner className="mr-1" size={20} />
                     )}
@@ -236,7 +252,7 @@ export default function Signup() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">{t('or')}</TextDivider>
+              <TextDivider size="lg">{t("orDivider")}</TextDivider>
 
               <div className="w-full grid grid-cols-4 gap-3">
                 <Button
@@ -250,7 +266,7 @@ export default function Signup() {
                   ) : (
                     ""
                   )}
-                  {t('continueWithFacebook')}
+                  {t("continueWithFacebook")}
                 </Button>
                 <Button
                   onClick={signUpWithGoogle}
@@ -263,7 +279,7 @@ export default function Signup() {
                   ) : (
                     ""
                   )}
-                  {t('continueWithGoogle')}
+                  {t("continueWithGoogle")}
                 </Button>
               </div>
             </div>
