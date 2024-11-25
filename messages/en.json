@@ -396,131 +396,97 @@
         "dropIt": "Drop it"
     },
     "TermsAndConditions": {
-        "title": "Rules and regulations",
+        "title": "Terms and Conditions of Service",
         "introduction": {
-            "title": "Site introduction",
-            "paragraph1": "Novin Hub is a social network management platform that allows users to manage their social networks using its tools and facilities.",
-            "paragraph2": "By registering in Novin Hub, you will be provided with a dashboard that includes tools such as scheduling and publishing content, analyzing social networks, managing and downloading comments, and team management depending on the type of your account.",
-            "paragraph3": "Novin Hub platform is under web and application version and helps businesses to easily manage their social networks."
+            "title": "Introduction",
+            "paragraph1": "Welcome to our website. Please read these terms and conditions carefully before using the services and content of this website. By using this website, you indicate your agreement to these terms. If you do not agree, please do not use the website."
         },
-        "generalRules": {
-            "title": "General regulations",
-            "rule1": "Novin Hub is registered in Iran and operates under the laws of the Islamic Republic of Iran. ",
-            "rule2": "Users are fully responsible for the content they publish on the site. ",
-            "rule3": "We do not accept criminal and filtered content on Navin Hub and we will prevent the distribution and protection of such content as soon as we become aware of it; ",
-            "rule4": "Publication of immoral and sexual content and images, support, cooperation or sale of drugs, mass killing equipment, cooperation and support of domestic and foreign terrorist and separatist groups, or any other activity that is contrary to the laws of the Islamic Republic of Iran is subject to the prohibition of distribution and ",
-            "rule5": "When you enter the site, Novin Hub, like most sites, through standard methods and automatically receives the address of the site from which you came, information about the pages of the site that you have viewed, IP address, the type of browser and the operating system that you use. ",
-            "rule6": "By any means (email, tickets and online chat) that the user communicates with Novin Hub, Novin Hub will keep a summary of these communications in his user account with the aim of improving service to users, maintaining statistics and preventing possible fraud and abuse of users. ",
-            "rule7": "Users must have the necessary legal capacity to enter into this agreement. ",
-            "rule8": "Novin Hub is committed to protecting users' privacy, therefore, except for the law or the order of a competent judicial authority, user information on the Novin Hub site will not be made available to any person or organization.",
-            "rule9": "The owner of the information is responsible for maintaining the confidentiality of the user account information. ",
-            "rule10": "The user is aware that sending personal information and files, whether in person, over the phone, or through the Internet, always faces the risk of disclosure, and no system has complete security. ",
-            "rule11": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
-        },
-        "registrationConditions": {
-            "title": "Terms of registration and use",
-            "condition1": "When registering, the user is obliged to send his information such as name and surname, contact number and e-mail address completely and accurately, and the user is responsible for the correctness of this information.",
-            "condition2": "The user does not have the right to transfer his ID to another person, and in case of such an action, all the responsibilities and consequences are on the user.",
-            "condition3": "Only people over 18 years of age are allowed to use Novin Hub services.",
-            "condition4": "If any suspicious activity is observed, Navin Hub is authorized to block the user account. ",
-            "condition5": "Novin Hub website is an online social media management platform for businesses. ",
-            "condition6": "Social networks have their own rules and regulations, and the user is obliged to comply with them, and in case of non-compliance with their rules and closure of the user's account, changes in the way of presentation and conditions by the relevant social network, Novin Hub will not bear any responsibility.",
-            "condition7": "Novin Hub has the permission to delete some information, including uploaded files, after 3 months if the subscription expires and the user does not use it."
-        },
-        "informationChange": {
-            "title": "Change information",
-            "point1": "The user is not allowed to change the email entered at the time of registration. ",
-            "point2": "Novin Hub is allowed to change various parts of the site, including the tariff section, without prior notice."
-        },
-        "confidentiality": {
-            "title": "Confidentiality of information",
-            "point1": "The connection of most social network accounts in Novin Hub is through the official API and data will be stored according to the rules of the social networks themselves. ",
-            "point2": "The account information of some social networks is stored in the Novin Hub database. "
-        },
-        "paymentAndRefund": {
-            "title": "Payment and refund",
-            "point1": "User payments are made through authentic online payment portals of banks and payment intermediary services.",
-            "point2": "Due to the possibility of connecting an account in the free plan, as well as access to the publishing section of Instant Post and checking and viewing the platform's features, after the user pays, your account will be activated automatically, and in such circumstances, there will be no possibility of returning the money. "
-        },
-        "otherCases": {
-            "title": "Other cases",
-            "point1": "All material and intellectual rights of the Novin Hub name, applied ideas, product, service, algorithm and content published under any title on the website www.novinhub.com and under any of its subdomains are reserved for Novin Hub startup and use and exploitation ",
-            "point2": "Novin Hub reserves the right to change the rules and regulations of this page without informing the user.",
-            "point3": "By registering in Novin Hub, you give permission to display your name, logo and website address in the customer list without prior notice.",
-            "point4": "Copyright: By using Novin Hub, you accept that you comply with the international rules and customs of the Internet and the laws and customs in force in any case or region covered by Novin Hub services, and that you do not take any action that in any way creates legal or financial responsibility outside ",
-            "point5": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
-        },
-        "forceMajeure": {
-            "title": "force majeure",
-            "description": "None of the parties to this agreement shall be liable for failure or delay in the performance of its obligations due to circumstances beyond its reasonable control. "
-        },
-        "disputeResolution": {
-            "title": "dispute resolution",
-            "description": "This agreement is regulated according to the laws and regulations of the Islamic Republic of Iran. "
+        "sections": [
+            {
+                "title": "Acceptance of Terms",
+                "paragraph1": "By accessing the website and using its services, you confirm that you have accepted all the terms and conditions and agree to comply with them."
+            },
+            {
+                "title": "Changes to Terms",
+                "paragraph1": "We may modify these terms at any time without prior notice. You are required to regularly review this page to stay informed of any changes. Your continued use of the website after any changes implies acceptance of those changes."
+            },
+            {
+                "title": "Intellectual Property",
+                "paragraph1": "All content, designs, images, and texts on this website are owned by us or authorized providers. Any commercial use or distribution without written permission is prohibited."
+            },
+            {
+                "title": "Use of Services",
+                "paragraph1": "You are required to use the services of this website legally and in a way that does not harm other users or the website owners. Any misuse of the website, including hacking or sending viruses, is considered a violation."
+            },
+            {
+                "title": "Responsibilities",
+                "paragraph1": "This website is provided 'as is', and we make no guarantees for flawless performance or the absence of errors in the services. You agree that the responsibility for using the website lies with you."
+            },
+            {
+                "title": "Dispute Resolution",
+                "paragraph1": "In case of any disputes, we will try to resolve the matter through friendly negotiations. If an agreement cannot be reached, legal matters will be handled according to the laws of United Arabs Emirates."
+            },
+            {
+                "title": "Contact Us",
+                "paragraph1": "If you have any questions or concerns regarding these terms, please contact us via support@pediland.com."
+            }
+        ],
+        "last_updated": "20/11/2024",
+        "disclaimer": {
+            "title": "Disclaimer",
+            "paragraph1": "This text is a general template and may need further adjustments based on the specific needs of your business or services. I recommend consulting with a legal advisor to ensure compliance with all local regulations."
         }
     },
     "PrivacyPolicy": {
-        "title": "Privacy",
+        "title": "Privacy Policy",
         "introduction": {
-            "title": "Site introduction",
-            "paragraph1": "Novin Hub is a social network management platform that allows users to manage their social networks using its tools and facilities.",
-            "paragraph2": "By registering in Novin Hub, you will be provided with a dashboard that includes tools such as scheduling and publishing content, analyzing social networks, managing and downloading comments, and team management depending on the type of your account.",
-            "paragraph3": "Novin Hub platform is under web and application version and helps businesses to easily manage their social networks."
+            "title": "Introduction",
+            "paragraph1": "We respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard the information you provide when you use our services to manage your Instagram direct messages and comments. By using our website and services, you agree to the terms outlined in this policy."
         },
-        "generalRules": {
-            "title": "General regulations",
-            "rule1": "Novin Hub is registered in Iran and operates under the laws of the Islamic Republic of Iran. ",
-            "rule2": "Users are fully responsible for the content they publish on the site. ",
-            "rule3": "We do not accept criminal and filtered content on Navin Hub and we will prevent the distribution and protection of such content as soon as we become aware of it; ",
-            "rule4": "Publication of immoral and sexual content and images, support, cooperation or sale of drugs, mass killing equipment, cooperation and support of domestic and foreign terrorist and separatist groups, or any other activity that is contrary to the laws of the Islamic Republic of Iran is subject to the prohibition of distribution and ",
-            "rule5": "When you enter the site, Novin Hub, like most sites, through standard methods and automatically receives the address of the site from which you came, information about the pages of the site you have viewed, IP address, the type of browser and the operating system you use. ",
-            "rule6": "By any means (email, tickets and online chat) that the user communicates with Novin Hub, Novin Hub will keep a summary of these communications in his user account with the aim of improving service to users, maintaining statistics and preventing possible fraud and abuse of users. ",
-            "rule7": "Users must have the necessary legal capacity to enter into this agreement. ",
-            "rule8": "Novin Hub is committed to protecting users' privacy, therefore, except for the law or the order of a competent judicial authority, user information on the Novin Hub site will not be made available to any person or organization.",
-            "rule9": "The owner of the information is responsible for maintaining the confidentiality of the user account information. ",
-            "rule10": "The user is aware that sending personal information and files, whether in person, over the phone, or through the Internet, always faces the risk of disclosure, and no system has complete security. ",
-            "rule11": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
+        "informationWeCollect": {
+            "title": "Information We Collect",
+            "paragraph1": "We may collect the following types of information when you use our services:",
+            "point1Title": "Personal Information",
+            "point1Text": "This includes your name, email address, and other information you provide when you register or contact us.",
+            "point2Title": "Instagram Data",
+            "point2Text": "To provide our services, we may access information from your Instagram account, such as your direct messages, comments, and profile details. We only collect the data necessary to fulfill the service requirements.",
+            "point3Title": "Usage Data",
+            "point3Text": "Information such as your IP address, browser type, and usage patterns may also be collected for analytical purposes to improve our services."
         },
-        "registrationConditions": {
-            "title": "Terms of registration and use",
-            "condition1": "When registering, the user is obliged to send his information such as name and surname, contact number and e-mail address completely and accurately, and the user is responsible for the correctness of this information.",
-            "condition2": "The user does not have the right to transfer his ID to another person, and in case of such an action, all the responsibilities and consequences are on the user.",
-            "condition3": "Only people over 18 years of age are allowed to use Novin Hub services.",
-            "condition4": "If any suspicious activity is observed, Navin Hub is authorized to block the user account. ",
-            "condition5": "Novin Hub website is an online social media management platform for businesses. ",
-            "condition6": "Social networks have their own rules and regulations, and the user is obliged to comply with them, and in case of non-compliance with their rules and closure of the user's account, changes in the way of presentation and conditions by the relevant social network, Novin Hub will not bear any responsibility.",
-            "condition7": "Novin Hub has the permission to delete some information, including uploaded files, after 3 months if the subscription expires and the user does not use it."
+        "howWeUseYourInformation": {
+            "title": "How We Use Your Information",
+            "paragraph1": "We use the collected information for the following purposes:",
+            "point1Text": "To provide and improve our services.",
+            "point2Text": "To personalize your experience by tailoring our services based on your preferences.",
+            "point3Text": "To communicate with you regarding updates, support, and promotional offers.",
+            "point4Text": "To ensure compliance with Instagram's policies and protect against unauthorized use."
         },
-        "informationChange": {
-            "title": "Change information",
-            "point1": "The user is not allowed to change the email entered at the time of registration. ",
-            "point2": "Novin Hub is allowed to change various parts of the site, including the tariff section, without prior notice."
+        "sharingYourInformation": {
+            "title": "Sharing Your Information",
+            "paragraph1": "We do not sell or share your personal information with third parties for marketing purposes. We may share your information in the following circumstances:",
+            "point1Title": "Service Providers",
+            "point1Text": "We may share data with trusted service providers who assist us in delivering our services.",
+            "point2Title": "Legal Requirements",
+            "point2Text": "We may disclose your information to comply with applicable laws, regulations, or legal processes."
         },
-        "confidentiality": {
-            "title": "Confidentiality of information",
-            "point1": "The connection of most social network accounts in Novin Hub is through the official API and data will be stored according to the rules of the social networks themselves. ",
-            "point2": "The account information of some social networks is stored in the Novin Hub database. "
+        "dataSecurity": {
+            "title": "Data Security",
+            "paragraph1": "We are committed to securing your data and have implemented appropriate technical and organizational measures to prevent unauthorized access, use, or disclosure of your personal information."
         },
-        "paymentAndRefund": {
-            "title": "Payment and refund",
-            "point1": "User payments are made through authentic online payment portals of banks and payment intermediary services.",
-            "point2": "Due to the possibility of connecting an account in the free plan, as well as access to the publishing section of Instant Post and checking and viewing the platform's features, after the user pays, your account will be activated automatically, and in such circumstances, there will be no possibility of returning the money. "
+        "yourRights": {
+            "title": "Your Rights",
+            "paragraph1": "You have the right to:",
+            "point1Text": "Access the personal information we hold about you.",
+            "point2Text": "Request corrections or updates to your information.",
+            "point3Text": "Request deletion of your data, subject to applicable legal requirements."
         },
-        "otherCases": {
-            "title": "Other cases",
-            "point1": "All material and intellectual rights of the Novin Hub name, applied ideas, product, service, algorithm and content published under any title on the website www.novinhub.com and under any of its subdomains are reserved for Novin Hub startup and use and exploitation ",
-            "point2": "Novin Hub reserves the right to change the rules and regulations of this page without informing the user.",
-            "point3": "By registering in Novin Hub, you give permission to display your name, logo and website address in the customer list without prior notice.",
-            "point4": "Copyright: By using Novin Hub, you accept that you comply with the international rules and customs of the Internet and the laws and customs in force in any case or region covered by Novin Hub services, and that you do not take any action that in any way creates legal or financial responsibility outside ",
-            "point5": "Novin Hub reserves the right to stop providing services to you at any time at its own discretion and based on complaints and reports received from Internet enforcement agencies and entities and legal entities. "
+        "changesToThisPrivacyPolicy": {
+            "title": "Changes to This Privacy Policy",
+            "paragraph1": "We may update this Privacy Policy from time to time. Any changes will be posted on this page, and we encourage you to review it periodically."
         },
-        "forceMajeure": {
-            "title": "force majeure",
-            "description": "None of the parties to this agreement shall be liable for failure or delay in the performance of its obligations due to circumstances beyond its reasonable control. "
-        },
-        "disputeResolution": {
-            "title": "dispute resolution",
-            "description": "This agreement is regulated according to the laws and regulations of the Islamic Republic of Iran. "
+        "contactUs": {
+            "title": "Contact Us",
+            "paragraph1": "If you have any questions or concerns about this Privacy Policy, please contact us at: support@pediland.com."
         }
     },
     "PricingTable": {
@@ -646,6 +612,8 @@
             "whatsapp": "WhatsApp",
             "telegram": "Telegram",
             "company": "company",
+            "privacy": "Privacy Policy",
+            "terms": "Terms and conditions",
             "aboutUs": "about us",
             "careers": "Job opportunities",
             "media": "the media",
@@ -653,7 +621,6 @@
             "support": "Support",
             "helpCenter": "Help center",
             "faq": "Frequently asked questions",
-            "terms": "Rules",
             "services": "Services",
             "consulting": "Counseling",
             "sales": "sale",

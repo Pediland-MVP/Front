@@ -49,6 +49,26 @@ export default function Footer() {
               </div>
             </div>
           </div>
+          <div className="_links py-6">
+            <ul className="text-sm font-light text-gray-300 flex items-center justify-center gap-6">
+              <li>
+                <Link
+                  href="/privacy"
+                  className="hover:underline underline-offset-4"
+                >
+                  {t("privacy")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="hover:underline underline-offset-4"
+                >
+                  {t("terms")}
+                </Link>
+              </li>
+            </ul>
+          </div>
 
           {/* <h4 className="text-center py-5 text-gray-100 text-xs font-extralight">
             {t("copyright")}
