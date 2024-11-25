@@ -7,8 +7,6 @@ import { z } from "zod";
 import { REGEX_PASSWORD } from "@/app/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useTranslations } from 'next-intl';
-
 import { Button } from "@/components/theme/ui/button";
 import { Input } from "@/components/theme/ui/input";
 import TextDivider from "@/components/theme/ui/textDivider";
