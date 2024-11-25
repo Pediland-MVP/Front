@@ -32,6 +32,7 @@ import {
   Robot,
   Users,
 } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 
 export default function Dashboard() {
   const {
@@ -156,8 +157,15 @@ export default function Dashboard() {
               <CardTitle>{t("recentSessions")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 mt-9">
-                {stats?.recentSessions.map((session) => (
+              <div className="space-y-2 mt-9 h-full flex flex-col justify-center items-center">
+                {
+                  stats?.recentSessions?.length === 0 ?
+                    <div className="flex flex-col items-center justify-center h-full space-y-4">
+                      <Image alt="man shrugging" src={'/images/emojies/man-shrugging.webp'} width={200} height={200} />
+                      <p className="text-muted-foreground text-xl">{t("noRecentSessions")}</p>
+                    </div>
+                    : 
+                stats?.recentSessions.map((session) => (
                   <div
                     key={session.id}
                     className="flex items-center border rounded-lg p-5 cursor-pointer"
@@ -186,7 +194,8 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                ))}
+                ))
+              }
               </div>
             </CardContent>
           </Card>

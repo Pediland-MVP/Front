@@ -83,7 +83,8 @@
         "growthFromLastMonth": "{growth}% from last month",
         "leadsGrowthChart": "Number of leads growth chart",
         "recentSessions": "Recent sessions",
-        "console": "Console"
+        "console": "Console",
+        "noRecentSessions": "No recent sessions"
     },
     "Contacts": {
         "list": "Contact list",

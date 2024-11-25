@@ -83,7 +83,8 @@
         "growthFromLastMonth": "{growth}% از ماه پیش",
         "leadsGrowthChart": "رشد تعداد مخاطبین",
         "recentSessions": "سشن‌های اخیر",
-        "console": "داشبورد"
+        "console": "داشبورد",
+        "noRecentSessions": "فعلا خبری نیست :)"
     },
     "Contacts": {
         "dashboard": "داشبورد",
