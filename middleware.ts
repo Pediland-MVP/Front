@@ -18,7 +18,9 @@ export default async function middleware(request: NextRequest) {
       new URL(pathWithoutLocale ? pathWithoutLocale : "/", request.url),
       request
     )
-    response.cookies.set("NEXT_LOCALE", currentRoute)
+    response.cookies.set("NEXT_LOCALE", currentRoute, {
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10),
+    })
     return response
   }
 
@@ -31,45 +33,6 @@ export default async function middleware(request: NextRequest) {
   }
 
   return CustomResponse.next(request);
-
-  // const headerWithPathname = new Headers(request.headers);
-  // headerWithPathname.set('next-pathname', request.nextUrl.pathname)
-  // const token = request.cookies.get("token");
-
-  // const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
-  // const isConsolePage = request.nextUrl.pathname.startsWith('/console')
-  // if (isAuthPage && !token) {
-  //   const isVerifyPage = request.nextUrl.pathname === '/auth/verify'
-  //   if (isVerifyPage) {
-  //     return NextResponse.redirect(new URL("/auth/signin", request.url));
-  //   }
-  //   return NextResponse.next({
-  //     headers: headerWithPathname
-  //   })
-  // }
-
-  // if (isConsolePage && !token) {
-  //   return NextResponse.redirect(new URL("/auth/signin", request.url));
-  // }
-
-  // try {
-  //   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-  //   const jwt = await jose.jwtVerify(token!.value, secret);
-
-  //   if (isConsolePage) {
-  //     return consoleMiddleWare(request, jwt, headerWithPathname);
-  //   }
-
-  //   if (isAuthPage) {
-  //     return authMiddleware(request, jwt, headerWithPathname);
-  //   }
-  //   return NextResponse.next({
-  //     headers: headerWithPathname
-  //   });
-  // } catch (error) {
-  //   console.error(error);
-  //   return NextResponse.redirect(new URL("/auth/signin", request.url));
-  // }
 }
 
 async function consoleMiddleware(request: NextRequest) {
