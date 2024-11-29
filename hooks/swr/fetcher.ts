@@ -1,5 +1,5 @@
 // Custom error class to include additional properties
-class FetchError extends Error {
+export class FetchError extends Error {
   data?: any;
   status?: number;
 
@@ -19,6 +19,9 @@ export const fetcher = async (url: string, options?: RequestInit) => {
     const res = await fetch(url, {
       ...options,
       credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
     
     const data = await res.json();
