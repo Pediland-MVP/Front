@@ -32,9 +32,6 @@ export default getRequestConfig(async () => {
   
   if (acceptLanguage.length > 0) {
     const language = acceptLanguage[0].code
-    cookiesStore.set('NEXT_LOCALE', language, {
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10),
-    })
     return {
       locale: language,
       messages: (await import(`../messages/${language}.json`)).default
