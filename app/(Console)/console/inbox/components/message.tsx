@@ -42,11 +42,11 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
       }}
       className={cn(
         "flex flex-col gap-2 px-4 py-2 whitespace-pre-wrap",
-        message.from === "lead" ? "items-end" : "items-start bg-blue-950"
+        message.from === "lead" ? "items-end" : "items-start"
       )}
     >
       <div className=" relative flex flex-ro gap-3 items-center">
-        <span className="mr-14 bg-accent p-2 rounded-md max-w-xs">
+        <span className={cn(message.from === "lead" ? "bg-accent" : "bg-blue-950","mr-14 p-2 rounded-md max-w-xs")}>
           {message.text}
         </span>
       </div>
