@@ -42,33 +42,13 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
       }}
       className={cn(
         "flex flex-col gap-2 px-4 py-2 whitespace-pre-wrap",
-        message.from === "lead" ? "items-end" : "items-start"
+        message.from === "lead" ? "items-end" : "items-start bg-blue-950"
       )}
     >
       <div className=" relative flex flex-ro gap-3 items-center">
         <span className="mr-14 bg-accent p-2 rounded-md max-w-xs">
           {message.text}
         </span>
-        {message.from === "lead" && (
-          <Avatar className="flex justify-center items-center">
-            <AvatarImage
-              src={lead.profilePic}
-              alt={lead.profilePic}
-              width={5}
-              height={5}
-            />
-          </Avatar>
-        )}
-        {message.from !== "lead" && (
-          <Avatar className="flex absolute justify-center items-center">
-            <AvatarImage
-              src={lead.instagram?.profilePictureUrl}
-              alt={lead.instagram?.firstname}
-              width={5}
-              height={5}
-            />
-          </Avatar>
-        )}
       </div>
     </motion.div>
   );
