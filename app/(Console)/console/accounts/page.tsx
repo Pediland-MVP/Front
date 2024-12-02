@@ -39,7 +39,7 @@ export default function AccountPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>مدیریت اکانت‌ها</BreadcrumbPage>
+                <BreadcrumbPage>{t('title')}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
