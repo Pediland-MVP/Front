@@ -23,14 +23,14 @@ export function Nav({ links }: NavProps) {
     <div className="_navigation py-5 shadow bg-white group flex flex-col transition-all duration-300 gap-5 h-full">
       <div className="_logo flex items-center gap-3 px-4">
         <Image
-          src="/images/tabdeal-logo.svg"
-          alt="TapDeal Logo"
+          src="/images/befroosh-logo.svg"
+          alt="Befroosh App Logo"
           width={40}
           height={20}
           className="w-[40px] h-[20px]"
           priority
         />
-        <span className="font-bold text-lg">تـبـدیـل</span>
+        <span className="font-bold text-lg">بـِفـروش</span>
       </div>
 
       <nav className="flex flex-col">

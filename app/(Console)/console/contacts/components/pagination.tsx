@@ -13,7 +13,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface DataTablePaginationProps {
   currentPage: number;
@@ -34,7 +34,8 @@ export function Pagination({
 }: DataTablePaginationProps) {
   const pageSizeOptions = [10, 20, 30, 40, 50];
 
-  const t = useTranslations('Contacts.Pagination')
+  const t = useTranslations('Contacts.Pagination');
+  const locale = useLocale();
 
   return (
     <div className="_pagination flex items-center justify-between gap-4 mt-5 border-t pt-3">
@@ -47,7 +48,7 @@ export function Pagination({
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
           >
-            <DoubleArrowRightIcon className="size-4" aria-hidden="true" />
+            {locale === "fa" ? (<DoubleArrowRightIcon className="size-4" aria-hidden="true" />) : <DoubleArrowLeftIcon className="size-4" aria-hidden="true" />}
           </Button>
           <Button
             aria-label="Go to previous page"
@@ -57,7 +58,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <ChevronRightIcon className="size-4" aria-hidden="true" />
+            {locale === "fa" ? (<ChevronRightIcon className="size-4" aria-hidden="true" />) : <ChevronLeftIcon className="size-4" aria-hidden="true" />}
           </Button>
           <Button
             aria-label="Go to next page"
@@ -67,7 +68,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            <ChevronLeftIcon className="size-4" aria-hidden="true" />
+            {locale === "fa" ? (<ChevronLeftIcon className="size-4" aria-hidden="true" />) : <ChevronRightIcon className="size-4" aria-hidden="true" />}
           </Button>
           <Button
             aria-label="Go to last page"
@@ -77,11 +78,11 @@ export function Pagination({
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage === totalPages}
           >
-            <DoubleArrowLeftIcon className="size-4" aria-hidden="true" />
+            {locale === "fa" ? (<DoubleArrowLeftIcon className="size-4" aria-hidden="true" />) : <DoubleArrowRightIcon className="size-4" aria-hidden="true" />}
           </Button>
         </div>
         <div className="flex items-center justify-center gap-1 text-gray-500 text-sm">
-          <span>{t('page', {pages: totalPages, page: currentPage})}</span>
+          <span>{t('page', { pages: totalPages, page: currentPage })}</span>
           {/* <span>صفحه</span>
           {totalPages}
           <span>از</span>

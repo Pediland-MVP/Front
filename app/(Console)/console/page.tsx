@@ -53,7 +53,7 @@ export default function Dashboard() {
 
   return (
     <div className="_dashboard">
-      <header className="px-4 pt-4 flex justify-between items-center gap-4">
+      <header className="px-4 pt-4 h-14 flex justify-between items-center gap-4">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -72,11 +72,11 @@ export default function Dashboard() {
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium">{t("productCount")}</CardTitle>
+              <CardTitle className="font-medium tracking-normal">{t("productCount")}</CardTitle>
               <Package
                 size={40}
                 weight="light"
-                className="text-muted-foreground"
+                className="text-primary"
               />
             </CardHeader>
             <CardContent>
@@ -88,11 +88,11 @@ export default function Dashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium">{t("leadCount")}</CardTitle>
+              <CardTitle className="font-medium tracking-normal">{t("leadCount")}</CardTitle>
               <Users
                 size={40}
                 weight="light"
-                className="text-muted-foreground"
+                className="text-primary"
               />
             </CardHeader>
             <CardContent>
@@ -104,11 +104,11 @@ export default function Dashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium">{t("automations")}</CardTitle>
+              <CardTitle className="font-medium tracking-normal">{t("automations")}</CardTitle>
               <Robot
                 size={40}
                 weight="light"
-                className="text-muted-foreground"
+                className="text-primary"
               />
             </CardHeader>
             <CardContent>
@@ -119,13 +119,13 @@ export default function Dashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium">
+              <CardTitle className="font-medium tracking-normal">
                 {t("responseCount")}
               </CardTitle>
               <ChatDots
                 size={40}
                 weight="light"
-                className="text-muted-foreground"
+                className="text-primary"
               />
             </CardHeader>
             <CardContent>
@@ -158,38 +158,38 @@ export default function Dashboard() {
                       <Image alt="man shrugging" src={'/images/emojies/man-shrugging.webp'} width={200} height={200} />
                       <p className="text-muted-foreground text-xl">{t("noRecentSessions")}</p>
                     </div>
-                    : 
-                stats?.recentSessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="flex items-center border rounded-lg p-5 cursor-pointer"
-                  >
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage
-                        src={session.leadInstagram.profilePicture?.url}
-                        alt={session.leadInstagram?.name}
-                      />
-                      <AvatarFallback>
-                        {session.leadInstagram.name?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="mr-4 space-y-1">
-                      <p className="font-medium leading-none">
-                        {session.leadInstagram?.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {session.leadInstagram.username} •{" "}
-                        {session.contentCycle.title}
-                      </p>
-                    </div>
-                    <div className="mr-auto text-sm text-muted-foreground">
-                      {moment(session.updateDate).format(
-                        "HH:MM  jYYYY/jMM/jDD"
-                      )}
-                    </div>
-                  </div>
-                ))
-              }
+                    :
+                    stats?.recentSessions.map((session) => (
+                      <div
+                        key={session.id}
+                        className="flex items-center border rounded-lg p-5 cursor-pointer"
+                      >
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage
+                            src={session.leadInstagram.profilePicture?.url}
+                            alt={session.leadInstagram?.name}
+                          />
+                          <AvatarFallback>
+                            {session.leadInstagram.name?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="mr-4 space-y-1">
+                          <p className="font-medium leading-none">
+                            {session.leadInstagram?.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {session.leadInstagram.username} •{" "}
+                            {session.contentCycle.title}
+                          </p>
+                        </div>
+                        <div className="mr-auto text-sm text-muted-foreground">
+                          {moment(session.updateDate).format(
+                            "HH:MM  jYYYY/jMM/jDD"
+                          )}
+                        </div>
+                      </div>
+                    ))
+                }
               </div>
             </CardContent>
           </Card>

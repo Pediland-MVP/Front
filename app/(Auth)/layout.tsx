@@ -6,8 +6,8 @@ import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
-  title: "TabDeal Application",
-  description: "This is first version of TabDeal application.",
+  title: "Befroosh Application",
+  description: "This is first version of Befroosh application.",
 };
 export default async function ConsoleLayout({
   children,
