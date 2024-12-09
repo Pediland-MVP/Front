@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import ChatsList from "./chatsList";
+import ChatsList from "./conversationsList";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 
 interface ChatLayoutProps {

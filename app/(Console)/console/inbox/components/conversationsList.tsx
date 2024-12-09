@@ -6,18 +6,18 @@ import Image from "next/image";
 import { messagesSocket } from "@/app/utils/socket";
 import { Conversations, Item } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
-import ChatsListSkeleton from "./chatsList.skeleton";
+import ConversationsListSkeleton from "./conversationsList.skeleton";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/theme/ui/card";
 
-interface ChatsListProps {
+interface ConversationsListProps {
   isCollapsed: boolean;
   onClick?: () => void;
   isMobile: boolean;
 }
 
-function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
+function ConversationsList({ isCollapsed, isMobile }: ConversationsListProps) {
   const [conversations, setConversations] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,10 +81,10 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
     };
   }, []);
 
-  const t = useTranslations("Inbox.ChatsList");
+  const t = useTranslations("Inbox.ConversationsList");
 
   if (!conversations.length && isLoading) {
-    return <ChatsListSkeleton />;
+    return <ConversationsListSkeleton />;
   }
 
   return (
@@ -141,4 +141,4 @@ function ChatsList({ isCollapsed, isMobile }: ChatsListProps) {
   );
 }
 
-export default memo(ChatsList);
+export default memo(ConversationsList);

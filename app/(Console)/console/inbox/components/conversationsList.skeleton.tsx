@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface ChatsListSkeletonProps {
+interface ConversationsListSkeletonProps {
   isCollapsed: boolean;
   isMobile: boolean;
 }
 
-function ChatsListSkeleton() {
+function ConversationsListSkeleton() {
   return (
     <div className="relative w-full group flex flex-col bg-white rounded-lg shadow">
       <div
@@ -39,4 +39,4 @@ function ChatsListSkeleton() {
   );
 }
 
-export default memo(ChatsListSkeleton);
+export default memo(ConversationsListSkeleton);

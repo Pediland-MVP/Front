@@ -16,7 +16,7 @@ interface ChatScreenProps {
   isMobile: boolean;
 }
 
-export function ChatList({ lead, isMobile }: ChatScreenProps) {
+export function ChatMessages({ lead, isMobile }: ChatScreenProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const limit = 13;
@@ -39,6 +39,7 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
     messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
     messagesSocket.on(WsMessages.CONVERSATION, (conversationStr) => {
+      //Get conversation data
       const conversation: InstagramNamespace.GET["Conversation"] =
         JSON.parse(conversationStr);
       if (conversation.items.length === 0) {
@@ -117,3 +118,4 @@ export function ChatList({ lead, isMobile }: ChatScreenProps) {
     </AnimatePresence>
   );
 }
+

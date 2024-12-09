@@ -1,6 +1,6 @@
 "use client";
 import ChatTopbar from "./chatTopbar";
-import { ChatList } from "./chatList";
+import { ChatMessages } from "./chatMessages";
 import { useEffect, useState } from "react";
 import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 import useSWR from "swr";
@@ -52,7 +52,7 @@ export function Chat({ leadId }: ChatProps) {
         <Card>
           <div className="flex flex-col overflow-y-auto max-h-[calc(100vh-138px)]">
             <ChatTopbar lead={lead} />
-            <ChatList lead={lead} isMobile={isMobile} />
+            <ChatMessages lead={lead} isMobile={isMobile} />
             <ChatBottombar
               setMessagesList={setMessagesList}
               messagesList={messagesList}
