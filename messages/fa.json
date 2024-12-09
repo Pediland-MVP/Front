@@ -808,5 +808,12 @@
             "welcomeMessage": "به حساب کاربری خود خوش آمدید",
             "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید"
         }
+    },
+    "InstagramPostDialog": {
+        "changePost": "تعویض پست",
+        "selectPost": "انتخاب پست",
+        "seeYourLastPosts": "آخرین پست‌های اینستاگرام خود را مشاهده کنید.",
+        "thereIsNoMore": "پست دیگری موجود نیست.",
+        "close": "بستن"
     }
 }

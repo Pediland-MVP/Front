@@ -18,6 +18,7 @@ import ErrorMessage from "@/components/ui/errorMessage";
 import { Control, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
+import { useTranslations } from 'next-intl'
 
 const PAGE_SIZE = 9;
 
@@ -87,6 +88,8 @@ const InstagramPostsDialog = ({
     setIsOpen(false);
   };
 
+  const t = useTranslations('InstagramPostDialog')
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -99,14 +102,14 @@ const InstagramPostsDialog = ({
             />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
               <Button type="button" className="text-white">
-                تعویض پست
+                {t("changePost")}
               </Button>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-y-2">
             <Button type="button" variant="outline">
-              انتخاب پست
+              {t('selectPost')}
             </Button>
             {formState?.errors?.contents?.[index]?.id && (
               <ErrorMessage>
@@ -118,9 +121,9 @@ const InstagramPostsDialog = ({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>انتخاب پست</DialogTitle>
+          <DialogTitle>{t('selectPost')}</DialogTitle>
           <DialogDescription>
-            آخرین پست‌های اینستاگرام خود را مشاهده کنید.
+            {t('seeYourLastPosts')}
           </DialogDescription>
         </DialogHeader>
         <InfiniteScroll
@@ -128,7 +131,7 @@ const InstagramPostsDialog = ({
           next={() => fetchPosts(after)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>پست دیگری موجود نیست.</p>}
+          endMessage={<p>{t('thereIsNoMore')}</p>}
           scrollableTarget="scrollableDiv"
         >
           <div
@@ -171,7 +174,7 @@ const InstagramPostsDialog = ({
           </div>
         </InfiniteScroll>
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>بستن</Button>
+          <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

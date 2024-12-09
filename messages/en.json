@@ -802,5 +802,12 @@
             "welcomeMessage": "Welcome to your account",
             "waitTwoMinutes": "Please wait for 2 minutes"
         }
+    },
+    "InstagramPostDialog": {
+        "changePost": "Change of post",
+        "selectPost": "Select a post",
+        "seeYourLastPosts": "View your latest Instagram posts.",
+        "thereIsNoMore": "There is no other post available.",
+        "close": "to close"
     }
 }

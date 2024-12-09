@@ -46,29 +46,9 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
       )}
     >
       <div className=" relative flex flex-ro gap-3 items-center">
-        <span className="mr-14 bg-accent p-2 rounded-md max-w-xs">
+        <span className={cn(message.from === "lead" ? "bg-accent" : "bg-blue-950 text-white","mr-14 p-2 rounded-md max-w-xs")}>
           {message.text}
         </span>
-        {message.from === "lead" && (
-          <Avatar className="flex justify-center items-center">
-            <AvatarImage
-              src={lead.profilePic}
-              alt={lead.profilePic}
-              width={5}
-              height={5}
-            />
-          </Avatar>
-        )}
-        {message.from !== "lead" && (
-          <Avatar className="flex absolute justify-center items-center">
-            <AvatarImage
-              src={lead.instagram?.profilePictureUrl}
-              alt={lead.instagram?.firstname}
-              width={5}
-              height={5}
-            />
-          </Avatar>
-        )}
       </div>
     </motion.div>
   );
