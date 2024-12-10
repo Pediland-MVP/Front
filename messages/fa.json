@@ -194,7 +194,8 @@
             "loading": "در حال بارگذاری...",
             "thereAreNoMoreChats": "تموم شد :)"
         },
-        "directsList": "لیست دایرکت‌ها"
+        "directsList": "لیست دایرکت‌ها",
+        "conversationsList": "دایرکت"
     },
     "Comments": {
         "dashboard": "داشبورد",

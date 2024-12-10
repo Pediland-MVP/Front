@@ -191,7 +191,8 @@
             "loading": "Loading...",
             "thereAreNoMoreChats": "No more messages"
         },
-        "directsList": "Directs list"
+        "directsList": "Directs list",
+        "conversationsList": "Directs"
     },
     "Comments": {
         "Footer": {

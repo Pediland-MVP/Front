@@ -1,33 +1,28 @@
 "use client";
 import ChatTopbar from "./chatTopbar";
 import { ChatMessages } from "./chatMessages";
-import { useEffect, useState } from "react";
-import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
+import { useEffect } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { leadNamespace } from "@/types/lead";
 import useCurrentLead from "@/store/currentLead.store";
-import { useTabStore } from "@/store/tabActiveStore";
 import ChatBottombar from "./chatBottombar";
-import { IMessage } from "./message";
 import { Card } from "@/components/theme/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
+import useFetchMessages from "./useFetchMessages";
+import ChatSkeleton from "./chat.skeleton";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface ChatProps {
   leadId: string;
 }
 
 export function Chat({ leadId }: ChatProps) {
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-  const { activeTab } = useTabStore();
-  useEffect(() => {
-    sessionStorage.getItem(SessionStorageKeys.IS_MOBILE) === "true"
-      ? setIsMobile(true)
-      : setIsMobile(false);
-  }, []);
-
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
+  const isMediumDevice = useMediaQuery(
+    "only screen and (min-width : 769px) and (max-width : 992px)"
+  );
   const { setCurrentLead } = useCurrentLead();
-
-  const [messagesList, setMessagesList] = useState<IMessage[]>([]);
 
   const {
     data: lead,
@@ -46,21 +41,30 @@ export function Chat({ leadId }: ChatProps) {
     console.log(`Current lead`, lead);
   }, [lead]);
 
+  const messagesData = useFetchMessages(lead);
+
   return (
-    <>
-      {activeTab === "chat" && (
-        <Card>
-          <div className="flex flex-col overflow-y-auto max-h-[calc(100vh-138px)]">
-            <ChatTopbar lead={lead} />
-            <ChatMessages lead={lead} isMobile={isMobile} />
-            <ChatBottombar
-              setMessagesList={setMessagesList}
-              messagesList={messagesList}
-              isMobile={isMobile}
-            />
-          </div>
-        </Card>
-      )}
-    </>
+    <AnimatePresence mode="wait">
+      <motion.div
+        className="w-full md:w-2/3 md:pl-4"
+
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.3 }}
+      >
+        {!messagesData?.messagesList?.length ? (
+          <ChatSkeleton />
+        ) : (
+          <Card className="flex w-full h-full">
+            <div className="w-full flex flex-col overflow-y-auto h-svh lg:max-h-[calc(100vh-138px)]">
+              <ChatTopbar lead={lead} />
+              <ChatMessages messagesData={messagesData} lead={lead} />
+              <ChatBottombar />
+            </div>
+          </Card>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }

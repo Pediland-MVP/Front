@@ -1,7 +1,8 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Info, Phone, Video } from "lucide-react";
 import { leadNamespace } from "@/types/lead";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
+import { useRouter } from "next/navigation";
 // import { Spinner } from "@nextui-org/react";
 
 interface ChatTopbarProps {
@@ -11,6 +12,9 @@ interface ChatTopbarProps {
 export const TopbarIcons = [{ icon: Phone }, { icon: Video }, { icon: Info }];
 
 export default function ChatTopbar({ lead }: ChatTopbarProps) {
+
+  const router = useRouter()
+
   if (!lead) {
     return (
       <div>
@@ -40,6 +44,8 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
           </span>
         </div>
       </div>
+      <ArrowLeft onClick={() => router.push('/console/inbox')} className="text-black/20" height={30} width={30} />
+
     </div>
   );
 }

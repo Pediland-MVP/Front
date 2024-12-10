@@ -12,7 +12,7 @@ interface ConversationsListSkeletonProps {
 
 function ConversationsListSkeleton() {
   return (
-    <div className="relative w-full group flex flex-col bg-white rounded-lg shadow">
+    <div className="lg:w-1/3 lg:max-h-[calc(100vh-138px)] relative w-full group flex flex-col bg-white rounded-lg shadow">
       <div
         id="chats-container"
         className="overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 transition-colors duration-200"

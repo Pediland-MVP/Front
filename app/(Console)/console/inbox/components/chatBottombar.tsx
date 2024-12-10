@@ -8,23 +8,12 @@ import { EmojiPicker } from "./emojiPicker";
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
 import { WsMessages } from "@/ws.messages";
-import { IMessage } from "./message";
 import { messagesSocket } from "@/app/utils/socket";
 import { PaperPlaneRight } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 
-interface ChatBottombarProps {
-  isMobile: boolean;
-  setMessagesList: React.Dispatch<React.SetStateAction<IMessage[]>>;
-  messagesList: IMessage[];
-}
 
-
-export default function ChatBottombar({
-  isMobile,
-  setMessagesList,
-  messagesList,
-}: ChatBottombarProps) {
+export default function ChatBottombar() {
   const { currentLead } = useCurrentLead();
 
   const [message, setMessage] = useState("");

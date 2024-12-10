@@ -1,0 +1,54 @@
+import { Skeleton } from "@/components/ui/skeleton"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Send, Smile } from 'lucide-react'
+
+export default function ChatSkeleton() {
+  return (
+    <div className="flex flex-col h-svh  lg:max-h-[calc(100vh-138px)]">
+      {/* Header */}
+      <div className="border-b p-4 flex items-center gap-2">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+
+      {/* Chat messages */}
+      <div className="flex-1 overflow-auto p-4 space-y-4">
+        <div className="flex justify-end">
+          <Skeleton className="h-10 w-24 rounded-lg" />
+        </div>
+        <div className="flex justify-end">
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+        <div className="flex justify-start">
+          <Skeleton className="h-10 w-28 rounded-lg" />
+        </div>
+        <div className="flex justify-end">
+          <Skeleton className="h-10 w-20 rounded-lg" />
+        </div>
+        <div className="flex justify-end">
+          <Skeleton className="h-10 w-16 rounded-lg" />
+        </div>
+        <div className="flex justify-start">
+          <Skeleton className="h-10 w-36 rounded-lg" />
+        </div>
+        <div className="flex justify-start">
+          <Skeleton className="h-10 w-32 rounded-lg" />
+        </div>
+        <div className="flex justify-end">
+          <Skeleton className="h-10 w-40 rounded-lg" />
+        </div>
+      </div>
+
+      {/* Input area */}
+      <div className=" p-4">
+        <div className="flex items-center gap-2 max-w-2xl mx-auto">
+          <Skeleton className="h-5 w-5 rounded-full" />
+          <Skeleton className="h-8 w-full rounded-full" />
+          <Skeleton className="h-5 w-5 rounded-full" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
