@@ -53,7 +53,7 @@ export default function Dashboard() {
 
   return (
     <div className="_dashboard">
-      <header className="px-4 pt-4 h-14 flex justify-between items-center gap-4">
+      <header className="px-4 pt-4 sm:h-14 flex justify-between items-center gap-4">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -72,7 +72,7 @@ export default function Dashboard() {
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium tracking-normal">{t("productCount")}</CardTitle>
+              <CardTitle className="tracking-normal">{t("productCount")}</CardTitle>
               <Package
                 size={40}
                 weight="light"
@@ -88,7 +88,7 @@ export default function Dashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium tracking-normal">{t("leadCount")}</CardTitle>
+              <CardTitle className="tracking-normal">{t("leadCount")}</CardTitle>
               <Users
                 size={40}
                 weight="light"
@@ -104,7 +104,7 @@ export default function Dashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium tracking-normal">{t("automations")}</CardTitle>
+              <CardTitle className="tracking-normal">{t("automations")}</CardTitle>
               <Robot
                 size={40}
                 weight="light"
@@ -119,7 +119,7 @@ export default function Dashboard() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="font-medium tracking-normal">
+              <CardTitle className="tracking-normal">
                 {t("responseCount")}
               </CardTitle>
               <ChatDots
@@ -140,7 +140,7 @@ export default function Dashboard() {
         <div className="grid gap-4 col-span-1 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-1 lg:col-span-4">
             <CardHeader>
-              <CardTitle>{t("leadsGrowthChart")}</CardTitle>
+              <CardTitle className="tracking-normal">{t("leadsGrowthChart")}</CardTitle>
             </CardHeader>
             <CardContent>
               <LeadsGrowsChart eachMonthLeadGrow={stats?.eachMonthLeadGrows} />
@@ -148,7 +148,7 @@ export default function Dashboard() {
           </Card>
           <Card className="col-span-1 lg:col-span-3">
             <CardHeader>
-              <CardTitle>{t("recentSessions")}</CardTitle>
+              <CardTitle className="tracking-normal">{t("recentSessions")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 mt-9 h-full flex flex-col justify-center items-center">

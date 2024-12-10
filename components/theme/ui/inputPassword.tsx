@@ -1,21 +1,22 @@
 import * as React from "react";
 import { EyeClosed, EyeSlash } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 interface InputProps extends React.ComponentProps<"input"> {
   iconName?: "EyeClosed" | "EyeSlash";
-  locale: string;
-  messages: Record<string, string>;
+  messages?: Record<string, string>;
 }
 
 const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, iconName = "EyeSlash", locale, messages, ...props }, ref) => {
+  ({ className, type, iconName = "EyeSlash", messages, ...props }, ref) => {
     const [isVisible, setIsVisible] = React.useState(false);
     const toggleVisibility = () => {
       setIsVisible((prev) => !prev);
     };
     const Icon = isVisible ? EyeClosed : EyeSlash;
     const hasButton = true;
+    const locale = useLocale();
 
     return (
       <div className="flex items-center group relative">
@@ -33,7 +34,7 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
             type="button"
             className={cn(
               "absolute h-10 w-10 focus:outline-none flex justify-center items-center bg-transparent",
-              locale === "fa" ? "left-0" : "right-0" // شرطی کردن جهت دکمه
+              locale === "fa" ? "left-0" : "right-0"
             )}
             onClick={toggleVisibility}
           >

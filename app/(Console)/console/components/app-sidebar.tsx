@@ -81,19 +81,6 @@ const generateData = (t: any) => ({
       ],
     },
   ],
-
-  navSecondary: [
-    {
-      title: "پشتیبانی",
-      url: "#",
-      icon: Lifebuoy,
-    },
-    {
-      title: "ثبت بازخورد",
-      url: "#",
-      icon: Note,
-    },
-  ],
 })
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -115,7 +102,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
       <SidebarFooter>

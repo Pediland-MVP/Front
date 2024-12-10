@@ -18,7 +18,7 @@
         "products": "Products",
         "accounts": "Accounts",
         "profile": "Profile",
-        "logout": "Logout",
+        "logout": "Log Out",
         "more": "More",
         "logoutFailed": "Logout failed",
         "logoutSuccess": "Logout successfully"
@@ -319,6 +319,8 @@
         "dashboard": "Dashboard",
         "title": "Products List",
         "add": "Add",
+        "addTitle": "New Product Details",
+        "editTitle": "Edit Product Details",
         "Form": {
             "uploadProductImage": "Upload product image.",
             "quantityError": "Quantity cannot be less than zero",
@@ -328,13 +330,13 @@
             "title": "Title",
             "productTitle": "Product title",
             "inactive": "Inactive",
-            "price": "Price (IRT)",
+            "price": "Price (USD)",
             "quantity": "Quantity",
             "unlimitedQuantity": "Unlimited quantity",
             "physicalProduct": "Physical product",
             "description": "Description",
             "describeProduct": "Describe your product...",
-            "submitProduct": "Submit product",
+            "submitProduct": "Save Product",
             "uploadImage": "Upload Image"
         },
         "List": {

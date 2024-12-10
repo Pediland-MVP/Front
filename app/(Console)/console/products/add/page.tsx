@@ -19,8 +19,8 @@ export default function Page() {
   const t = useTranslations("Products");
 
   return (
-    <div className="_products">
-      <header className="px-4 pt-4 flex justify-between items-center gap-4">
+    <div className="_add-product">
+      <header className="px-4 pt-4 sm:h-14 flex justify-between items-center gap-4">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />

@@ -19,7 +19,7 @@ export default function page() {
   const t = useTranslations("Automations");
 
   return (
-    <div className="_automation">
+    <div className="_add-automation">
       <header className="px-4 pt-4 h-14 flex justify-between items-center gap-4">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />

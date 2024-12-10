@@ -1,19 +1,28 @@
 'use client'
 
-import { toast } from "@/components/ui/use-toast"
 import { ProductNamespace } from "@/types/product"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProductFormSkeleton from "../components/product.form.skeleton"
 import ProductForm from "../components/product.form"
-import InstaDirectUi from "@/components/global/instaDirectUi"
 import { useTranslations } from "next-intl"
+// Just UI Imports Below
+import SidebarTrigger from "@/components/theme/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+    Breadcrumb,
+    BreadcrumbEllipsis,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/theme/ui/breadcrumb";
+import { toast } from "@/components/ui/use-toast"
 
-export default function Product({ id }: {id: string}) {
-
-    const t = useTranslations('General')
+export default function Product({ id }: { id: string }) {
+    const t = useTranslations("Products");
     const [product, setProduct] = useState<ProductNamespace.Product>()
-
     const router = useRouter()
 
     useEffect(() => {
@@ -32,7 +41,7 @@ export default function Product({ id }: {id: string}) {
                 const data = await response.json()
                 setProduct(data)
             }
-            catch(e) {
+            catch (e) {
                 router.push(`/console/products`)
                 toast({
                     title: t('notFound'),
@@ -44,21 +53,48 @@ export default function Product({ id }: {id: string}) {
         fetchProduct()
     }, [])
     console.log(typeof product, !!product);
-    
 
     if (!product) {
-        return <ProductFormSkeleton/>
+        return <ProductFormSkeleton />
     }
-    
-    return (
-        <div className="h-full flex gap-4">
-        <div className="w-2/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-          <ProductForm shouldBeEdit={product} />
-        </div>
-        <div className="w-1/3 h-[calc(100vh-2rem)] bg-white shadow rounded-2xl p-4">
-          <InstaDirectUi />
-        </div>
-      </div>
-    )
 
+    return (
+        <div className="_edit-product">
+            <header className="px-4 pt-4 sm:h-14 flex justify-between items-center gap-4">
+                <div className="_wrap flex items-center gap-4">
+                    <SidebarTrigger />
+                    <Separator orientation="vertical" className="h-6" />
+
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/console">
+                                    {t("dashboard")}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem className="hidden sm:block">
+                                <BreadcrumbLink href="/console/products">
+                                    {t("title")}
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem className="sm:hidden">
+                                <BreadcrumbEllipsis />
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>{t("editTitle")}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+
+                <div className="_tools"></div>
+            </header>
+
+            <div className="p-4">
+                <ProductForm shouldBeEdit={product} />
+            </div>
+        </div>
+    )
 }
