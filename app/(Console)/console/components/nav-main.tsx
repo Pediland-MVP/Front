@@ -45,7 +45,7 @@ export function NavMain({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title} className={pathname === item.url ? "text-black bg-blue-100" : "text-gray-700"}>
                 <Link href={item.url}>
-                  <item.icon size={24} weight="duotone"  />
+                  <item.icon size={24} weight="duotone" />
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>

@@ -9,7 +9,7 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import ContactListSkeleton from "./contactListSkeleton";
 import useDebounce from "@/hooks/useDebounce";
 import EditContactDialog from "./editContactDialog";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 // Just UI Imports Below
 import {
   Table,
@@ -84,6 +84,7 @@ export default function ContactListCard({
   };
 
   const t = useTranslations("Contacts.List");
+  const locale = useLocale();
 
   return (
     <Card className="p-4">
@@ -99,7 +100,7 @@ export default function ContactListCard({
 
               <TableHead
                 onClick={() => handleSort("name")}
-                className="cursor-pointer text-right hover:text-black lg:w-[25%]"
+                className={`cursor-pointer hover:text-black lg:w-[25%] ${locale === "fa" ? "text-right" : "text-left"}`}
               >
                 {t("userName")}
                 {sortColumn === "name" && (
@@ -163,11 +164,10 @@ export default function ContactListCard({
                           "https://github.com/shadcn.png"
                         }
                         fallbackSrc="https://github.com/shadcn.png"
-                        alt={`${
-                          contact.firstname && contact.lastname
+                        alt={`${contact.firstname && contact.lastname
                             ? `${contact.firstname} ${contact.lastname}`
                             : contact.lead?.firstname
-                        } profile`}
+                          } profile`}
                         width={38}
                         height={38}
                         className="rounded-full"

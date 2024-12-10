@@ -21,7 +21,7 @@ export default function page() {
 
   return (
     <div className="_contacts">
-      <header className="px-4 pt-4 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4">
+      <header className="px-4 pt-4 sm:h-14 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />

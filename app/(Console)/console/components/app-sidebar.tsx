@@ -81,19 +81,6 @@ const generateData = (t: any) => ({
       ],
     },
   ],
-
-  navSecondary: [
-    {
-      title: "پشتیبانی",
-      url: "#",
-      icon: Lifebuoy,
-    },
-    {
-      title: "ثبت بازخورد",
-      url: "#",
-      icon: Note,
-    },
-  ],
 })
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -102,11 +89,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
-        <div className="flex items-center p-2">
+        <div className="flex items-center p-2 gap-3">
           <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
             <Infinity size={22} weight="bold" />
           </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="flex flex-col flex-1 text-left text-sm leading-tight">
             <span className="font-bold">{t('App.name')}</span>
             <span className="text-xs">{t('App.description')}</span>
           </div>
@@ -115,7 +102,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
       <SidebarFooter>

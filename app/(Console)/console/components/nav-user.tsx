@@ -1,18 +1,21 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import logger from "@/app/utils/logger";
+
 import {
   SidebarMenu,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/theme/ui/sidebar";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { SignOut } from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/theme/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
-import logger from "@/app/utils/logger";
-import { useState } from "react";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { SignOut } from "@phosphor-icons/react/dist/ssr";
+import { cn } from "@/lib/utils";
+
 
 export function NavUser({
   user,
@@ -24,7 +27,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-
+  const locale = useLocale();
   const t = useTranslations("General");
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
 
@@ -35,39 +38,40 @@ export function NavUser({
       method: "DELETE",
       credentials: "include",
     })
-    .then(async (res) => {
+      .then(async (res) => {
 
-      logger.debug("res", await res.text())
-      if (!res.ok) {
+        logger.debug("res", await res.text())
+        if (!res.ok) {
+          toast({
+            title: t("logoutFailed"),
+            variant: "destructive",
+          });
+          return;
+        }
+        toast({
+          title: t("logoutSuccess"),
+        });
+        router.push("/");
+      })
+      .catch(e => {
         toast({
           title: t("logoutFailed"),
           variant: "destructive",
         });
-        return;
-      }
-      toast({
-        title: t("logoutSuccess"),
-      });
-      router.push("/");
-    })
-    .catch(e => {
-      toast({
-        title: t("logoutFailed"),
-        variant: "destructive",
-      });
-    })
-    .finally(() => {
-      setIsLogoutLoading(false)
-    })
+      })
+      .finally(() => {
+        setIsLogoutLoading(false)
+      })
   };
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <Button onClick={logoutHandler} size={"icon"} variant={"outline"}>
+      <SidebarMenuItem className="flex items-center justify-center sm:justify-end">
+        <Button onClick={logoutHandler} variant={"link"} className="flex-row-reverse px-0">
           {
-            isLogoutLoading ? <LoadingSpinner/> : <SignOut size={24} />
+            isLogoutLoading ? <LoadingSpinner /> : <SignOut size={20} className={cn(locale === "fa" ? "rotate-180" : "")} />
           }
+          <span>{t("logout")}</span>
         </Button>
       </SidebarMenuItem>
     </SidebarMenu>

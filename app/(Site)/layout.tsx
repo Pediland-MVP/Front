@@ -8,8 +8,8 @@ import { getLocale, getMessages } from "next-intl/server";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "Tapdeal: Manage & Automate your instagram",
-  description: "This is first version of TabDeal application.",
+  title: "Befroosh: Manage & Automate your instagram",
+  description: "This is first version of Befroosh application.",
 };
 export default async function RootLayout({
   children,

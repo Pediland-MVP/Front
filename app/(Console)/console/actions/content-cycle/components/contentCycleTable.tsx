@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { DeleteConfirmationDialog } from "./contentCycleDeleteConfirmation";
@@ -24,6 +24,7 @@ import {
   Mailbox,
 } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/theme/ui/card";
+import { cn } from "@/lib/utils";
 
 type ContentCycle = {
   title: string;
@@ -141,10 +142,11 @@ export default function ContentCycleTable() {
     setDeleteDialogOpen(false);
     setItemToDelete(null);
   };
+  const locale = useLocale();
 
   return (
     <Card className="p-4">
-      <div className="rtl" dir="rtl">
+      <div className={cn(locale === "fa" ? "rtl" : "ltr")} dir={cn(locale === "fa" ? "rtl" : "ltr")}>
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner className="h-8 w-8 animate-spin" />
@@ -157,24 +159,24 @@ export default function ContentCycleTable() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-right">{t("title")}</TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("title")}</TableHead>
+                    <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>
                       {t("conditionValue")}
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>
                       {t("firstMessage")}
                     </TableHead>
-                    <TableHead className="text-right">{t("actions")}</TableHead>
+                    <TableHead className={cn(locale === "fa" ? "text-left" : "text-right")}>{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data?.items.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell className="text-right">{item.title}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className={cn(locale === "fa" ? "text-right" : "text-left")}>{item.title}</TableCell>
+                      <TableCell className={cn(locale === "fa" ? "text-right" : "text-left")}>
                         {item.conditions[0]?.value || t("notAvailable")}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className={cn(locale === "fa" ? "text-right" : "text-left")}>
                         {item.contents[0]?.text || t("notAvailable")}
                       </TableCell>
                       <TableCell>
@@ -218,7 +220,7 @@ export default function ContentCycleTable() {
                   onClick={() => fetchData(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
-                  <CaretRight size={18} />
+                  {locale === "fa" ? <CaretRight size={18} /> : <CaretLeft size={18} />}
                   {t("previous")}
                 </Button>
                 <span className="text-sm text-muted-foreground">
@@ -233,7 +235,7 @@ export default function ContentCycleTable() {
                   disabled={currentPage === data.meta.totalPages}
                 >
                   {t("next")}
-                  <CaretLeft size={18} />
+                  {locale === "fa" ? <CaretLeft size={18} /> : <CaretRight size={18} />}
                 </Button>
               </div>
             )}

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
-import { ChevronLeftIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { useLocale } from "next-intl";
 
 const Breadcrumb = React.forwardRef<
   HTMLElement,
@@ -75,17 +76,22 @@ const BreadcrumbSeparator = ({
   children,
   className,
   ...props
-}: React.ComponentProps<"li">) => (
-  <li
-    role="presentation"
-    aria-hidden="true"
-    className={cn("[&>svg]:w-4 [&>svg]:h-4", className)}
-    {...props}
-  >
-    {children ?? <ChevronLeftIcon />}
-  </li>
-);
+}: React.ComponentProps<"li">) => {
+  const locale = useLocale();
+
+  return (
+    <li
+      role="presentation"
+      aria-hidden="true"
+      className={cn("[&>svg]:w-4 [&>svg]:h-4", className)}
+      {...props}
+    >
+      {children ?? (locale === "fa" ? <ChevronLeftIcon /> : <ChevronRightIcon />)}
+    </li>
+  );
+};
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
+
 
 const BreadcrumbEllipsis = ({
   className,

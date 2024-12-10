@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
 import { ProductNamespace } from "@/types/product";
@@ -32,6 +32,7 @@ import {
   Pencil,
   Trash,
 } from "@phosphor-icons/react/dist/ssr";
+import { cn } from "@/lib/utils";
 
 interface ContentItem {
   id: number;
@@ -58,10 +59,8 @@ export default function ProductListTable() {
     isLoading: isProductsLoading,
     mutate: fetchproducts,
   } = useSWR<ProductNamespace.GET>(
-    `${
-      process.env.NEXT_PUBLIC_BACK_API_URL
-    }/products?page=${page}&limit=${limit}${
-      search ? `&search=${debouncedSearchTerm}` : ""
+    `${process.env.NEXT_PUBLIC_BACK_API_URL
+    }/products?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""
     }`,
     fetcher,
     {
@@ -117,19 +116,22 @@ export default function ProductListTable() {
     }
   };
 
+  const locale = useLocale();
+
   return (
     <Card className="p-4">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-right">{t("image")}</TableHead>
-            <TableHead className="text-right">{t("title")}</TableHead>
-            <TableHead className="text-right">{t("price")}</TableHead>
-            <TableHead className="text-right">{t("creationDate")}</TableHead>
-            <TableHead className="text-right">{t("actions")}</TableHead>
+            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("image")}</TableHead>
+            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("title")}</TableHead>
+            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("price")}</TableHead>
+            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("creationDate")}</TableHead>
+            <TableHead className={cn(locale === "fa" ? "text-left" : "text-right")}>{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {products.map((product) => (
             <TableRow key={product.id}>
@@ -181,7 +183,7 @@ export default function ProductListTable() {
           disabled={page === 1}
           variant={'ghost'}
         >
-          <CaretRight size={18} />
+          {locale === "fa" ? <CaretRight size={18} /> : <CaretLeft size={18} />}
           {t("previous")}
         </Button>
         <span className="text-muted-foreground text-sm">
@@ -195,7 +197,7 @@ export default function ProductListTable() {
           variant={'ghost'}
         >
           {t("next")}
-          <CaretLeft size={18} />
+          {locale === "fa" ? <CaretLeft size={18} /> : <CaretRight size={18} />}
         </Button>
       </div>
       <ProductDeleteDialog
