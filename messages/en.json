@@ -194,7 +194,9 @@
             "thereAreNoMoreChats": "No more messages"
         },
         "directsList": "Directs list",
-        "conversationsList": "Directs"
+        "ConversationsList": {
+            "noConversations": "There is no conversation or conversations are loading, it's can take a few seconds, please reload page after a few seconds"
+        }
     },
     "Comments": {
         "Footer": {

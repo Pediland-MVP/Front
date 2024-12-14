@@ -110,6 +110,14 @@ function ConversationsList() {
     return <ConversationsListSkeleton />;
   }
 
+  if(true) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <p>{t("noConversations")}</p>
+      </div>
+    )
+  }
+
   return (
     <AnimatePresence>
       {!isConversationsListHidden && (
