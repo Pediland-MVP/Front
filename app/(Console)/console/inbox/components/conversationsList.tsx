@@ -110,7 +110,7 @@ function ConversationsList() {
     return <ConversationsListSkeleton />;
   }
 
-  if(true) {
+  if(!conversations.length) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         <p>{t("noConversations")}</p>
