@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IMessage } from "./message";
 import { messagesSocket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
-import { InstagramNamespace } from "@/types/instagram";
+import { InstagramNamespace, Messages } from "@/types/instagram";
 import { leadNamespace } from "@/types/lead";
 
 export type UseFetchMessage = {
@@ -23,6 +23,7 @@ export default function useFetchMessages(
   useEffect(() => {
     if (isListenersSet) return;
     isListenersSet = true;
+    
 
     messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
@@ -37,6 +38,12 @@ export default function useFetchMessages(
       setMessagesList((old) => [...old, ...conversation.items]);
     });
 
+
+    messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
+      const message: Messages & { digest: number } = JSON.parse(messageStr);
+      setMessagesList((old) => [message, ...old]);
+    });
+
     messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
       console.log(JSON.parse(data));
 
@@ -46,6 +53,7 @@ export default function useFetchMessages(
     return () => {
       messagesSocket.off(WsMessages.CONVERSATION);
       messagesSocket.off(WsMessages.NEW_MESSAGE);
+      messagesSocket.off(WsMessages.MESSAGE_SENT);
     };
   }, [lead]);
 
