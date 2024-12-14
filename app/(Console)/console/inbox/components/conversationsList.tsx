@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  memo,
-  useEffect,
-  useState,
-  useCallback
-} from "react";
+import { memo, useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { messagesSocket } from "@/app/utils/socket";
 import { Conversations, Item } from "@/types/instagram";
@@ -14,11 +9,15 @@ import ConversationsListSkeleton from "./conversationsList.skeleton";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/theme/ui/card";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@/components/theme/ui/sidebar";
-import { ArrowLeft, DotsThreeVertical, Sidebar } from "@phosphor-icons/react/dist/ssr";
-
+import {
+  ArrowLeft,
+  DotsThreeVertical,
+  Sidebar,
+} from "@phosphor-icons/react/dist/ssr";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 function ConversationsList() {
   const router = useRouter();
@@ -29,12 +28,9 @@ function ConversationsList() {
   const [page, setPage] = useState(0);
   const limit = 15;
 
-
-  const sidebar = useSidebar()
-  // Get chatId
+  const sidebar = useSidebar();
   const selectedChatId = useParams()?.chatId as string | undefined;
 
-  // Fetch all conversations when page number changes
   const fetchConversations = useCallback(() => {
     setIsLoading(true);
     setError(null);
@@ -47,7 +43,7 @@ function ConversationsList() {
       });
       return updatedPage;
     });
-  }, [page]);
+  }, []);
 
   const handleConversations = useCallback((conversationsData: string) => {
     try {
@@ -98,21 +94,15 @@ function ConversationsList() {
   );
 
   const conversationClickHandler = (chatId: string) => () => {
-    // if (isSmallDevice || isMediumDevice) {
-    //   setSelectedChatId(chatId);
-    //   router.push("/console/inbox?conversation");
-    // }
     router.push(`/console/inbox/${chatId}`);
   };
-
 
   useEffect(() => {
     if (selectedChatId) {
       router.push(`/console/inbox/${selectedChatId}`);
     }
-  }, [isSmallDevice, isMediumDevice]);
+  }, [isSmallDevice, isMediumDevice, selectedChatId, router]);
 
-  // const [isConversationsHidden, setIsConversationHidden] = useState()
   const isConversationsListHidden =
     (isSmallDevice || isMediumDevice) && selectedChatId;
 
@@ -121,36 +111,52 @@ function ConversationsList() {
   }
 
   return (
-    <>
+    <AnimatePresence>
       {!isConversationsListHidden && (
-        <AnimatePresence>
-          <Card className="lg:w-1/3 lg:max-h-[calc(100vh-138px)] w-full h-full p-4 box-border">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+          className="lg:w-1/3 lg:max-h-[calc(100vh-138px)] max-h-svh w-full h-full"
+        >
+          <Card className="w-full h-full p-4 box-border bg-background overflow-hidden flex flex-col">
             <div className="w-full flex lg:hidden justify-between mb-4">
-              <Sidebar onClick={() => sidebar.setOpenMobile(true)} className="text-black/20" height={30} width={30} />
-              <ArrowLeft onClick={() => router.push('/console')} className="text-black/20" height={30} width={30} />
+              <Sidebar
+                onClick={() => sidebar.setOpenMobile(true)}
+                className="text-muted-foreground"
+                height={30}
+                width={30}
+              />
+              <ArrowLeft
+                onClick={() => router.push("/console")}
+                className="text-muted-foreground"
+                height={30}
+                width={30}
+              />
             </div>
             <div
               id="chats-container"
-              className="_chat-list group"
+              className="flex-grow overflow-y-auto w-full"
             >
               <InfiniteScroll
                 dataLength={conversations.length}
                 next={fetchConversations}
                 hasMore={hasMore}
-                loader={<div className="text-center py-4">{t("loading")}</div>}
-                // endMessage={
-                //   <div className="text-center py-4">
-                //     {t("thereAreNoMoreChats")}
-                //   </div>
-                // }
+                loader={
+                  <div className="w-full flex justify-center items-center text-center py-4">
+                    <LoadingSpinner />
+                  </div>
+                }
                 scrollableTarget="chats-container"
+                className="overflow-hidden"
               >
-                <nav className="gap overflow-y-hidden">
+                <div className="w-full">
                   {conversations.map((chat, index) => (
                     <div
                       onClick={conversationClickHandler(chat.id)}
                       key={chat.id || index}
-                      className="flex p-2 items-center gap-4 box-border rounded-lg hover:bg-gray-100 duration-300"
+                      className="flex p-2 items-center gap-4 box-border rounded-lg hover:bg-accent duration-300 cursor-pointer"
                     >
                       <Image
                         src={
@@ -162,28 +168,28 @@ function ConversationsList() {
                         height={48}
                         className="rounded-full"
                       />
-                      <div className="flex flex-col">
-                        <span>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="font-medium">
                           {chat.firstname} {chat.lastname || ""}
                         </span>
                         {chat.messages && (
-                          <span className="text-zinc-300 text-xs truncate">
-                            {chat.messages.text}
+                          <span className="text-muted-foreground text-xs truncate">
+                            {chat.messages?.[0]?.text}
                           </span>
                         )}
                       </div>
                     </div>
                   ))}
-                </nav>
+                </div>
               </InfiniteScroll>
               {error && (
-                <div className="text-center py-4 text-red-500">{error}</div>
+                <div className="text-center py-4 text-destructive">{error}</div>
               )}
             </div>
           </Card>
-        </AnimatePresence>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   );
 }
 
