@@ -49,8 +49,8 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="_links py-6">
-            <ul className="text-sm font-light text-gray-300 flex items-center justify-center gap-6">
+          <div className="_links flex flex-col items-center gap-2 py-6 text-sm font-light text-gray-300">
+            <ul className="flex items-center justify-center gap-6">
               <li>
                 <Link
                   href="/privacy"
@@ -68,6 +68,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
+            <p className="text-center">All right reserved for Tech Island Information Technology Services.</p>
           </div>
 
           {/* <h4 className="text-center py-5 text-gray-100 text-xs font-extralight">
