@@ -23,7 +23,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"}>
+    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
       <head>
         <link
           rel="icon"
@@ -42,7 +42,7 @@ export default async function RootLayout({
         <link rel="manifest" href="/favicon/site.webmanifest" />
       </head>
 
-      <body>
+      <body className="relative overflow-auto scroll-mt-20" id="top">
         <NextIntlClientProvider messages={messages}>
           <Header />
           {children}

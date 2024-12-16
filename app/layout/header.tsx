@@ -21,6 +21,7 @@ import {
   List,
   X,
 } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 
 function Header() {
   const t = useTranslations("Home.Header");
@@ -35,23 +36,19 @@ function Header() {
 
   return (
     <header
-      className={`bg-white w-full top-0 fixed z-10 justify-between items-center flex flex-col py-3 lg:py-4 shadow-sm ${
-        showMenu ? "border-primary border-b-2" : ""
-      } `}
+      className={`bg-white w-full top-0 fixed z-10 justify-between items-center flex flex-col py-3 lg:py-4 shadow-sm ${showMenu ? "border-primary border-b-2" : ""
+        } `}
     >
       <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
-        <div className={`_wrapper flex justify-between gap-10`}>
+        <div className={`_wrapper flex justify-between gap-5 sm:gap-10`}>
           <div className="_logo">
-            <a
-              href="/"
-              className="bg-primary flex items-center justify-center w-12 h-12 rounded-full"
-            >
-              <Infinity size={36} className="text-white" />
+            <a href="/#top" >
+              <Image src="/images/befroosh-logo.svg" alt="logo" width={46} height={44} />
             </a>
           </div>
 
           <div className="_navigation flex flex-1 items-center justify-center">
-            <ul className="flex gap-5 lg:gap-10 font-semibold text-primary">
+            <ul className="flex gap-5 lg:gap-10 font-semibold text-primary text-[15px] sm:text-base">
               <li>
                 <Link href="/auth/signup" className="hover:text-secondary">
                   {t("freeRegistration")}
