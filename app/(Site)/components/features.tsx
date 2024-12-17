@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
   Coins,
   Cube,
@@ -7,7 +8,7 @@ import {
   Truck,
   UserSwitch,
 } from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type Feature = {
   icon?: React.ComponentType<any>;
@@ -17,6 +18,7 @@ type Feature = {
 
 export default function Features() {
   const t = useTranslations("Home");
+  const locale = useLocale();
 
   const featuresList: Feature[] = [
     {
@@ -52,7 +54,7 @@ export default function Features() {
   ];
 
   return (
-    <div className="_features">
+    <div className="_features scroll-mt-12" id="features">
       <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="_wrapper border-b border-dashed py-14 sm:py-20 md:w-5/6 sm:mx-auto">
           <h2 className="text-secondary text-center text-3xl font-bold mb-10">
@@ -73,7 +75,10 @@ export default function Features() {
                     />
                   </div>
                 )}
-                <div className="_text text-center xl:text-right">
+                <div className={cn(
+                  "_text text-center",
+                  locale === "fa" ? "xl:text-right" : "xl:text-left"
+                )}>
                   <h3 className="text-primary text-xl font-bold mb-2">
                     {feature.title}
                   </h3>

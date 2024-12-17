@@ -11,7 +11,7 @@ export default function Footer() {
   const t = useTranslations("Home.Footer");
 
   return (
-    <div className="_footer" id="#contact">
+    <div className="_footer" id="contact">
       <footer className="bg-gradient-to-b from-primary to-secondary rounded-tl-3xl rounded-tr-3xl">
         <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
           <div className="_wrapper flex flex-col items-center justify-center py-16 text-white">
