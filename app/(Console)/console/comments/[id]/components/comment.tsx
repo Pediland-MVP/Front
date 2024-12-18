@@ -3,7 +3,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";
 import CommentSkeleton from "./comment.skeleton";
 import CommentError from "./comment.error";
@@ -11,8 +10,8 @@ import CommentFooter from "./comment.footer";
 import formatTimestamp from "@/lib/formatTimestamp";
 import Reply from "./reply";
 import { useEffect, useState } from "react";
-import EE from "@/lib/ee";
 import { useTranslations } from "next-intl";
+import useSWR from "swr";
 
 interface ProfilePicture {
   url: string;
@@ -63,7 +62,7 @@ export default function Component({ id }: { id: string }) {
     error,
     isLoading,
     mutate: mutateComments,
-  } = useSWRImmutable<Comment>(
+  } = useSWR<Comment>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/${id}?includeReplies=true`,
     fetcher
   );
@@ -74,27 +73,6 @@ export default function Component({ id }: { id: string }) {
     }
   }, [data]);
 
-  useEffect(() => {
-    EE.on("reply.sent", (reply: CommentReply) => {
-      setComment((prevComment) => {
-        if (prevComment) {
-          return {
-            ...prevComment,
-            replies: [...prevComment.replies, reply],
-          };
-        }
-        return prevComment;
-      });
-    });
-  
-    return () => {
-      EE.off("reply.sent");
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log(comment);
-  }, [comment]);
 
   const t = useTranslations('Comments.Comment');
 
