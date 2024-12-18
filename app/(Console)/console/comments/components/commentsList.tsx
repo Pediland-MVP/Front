@@ -11,21 +11,19 @@ import { useParams } from "next/navigation"
 import InfiniteScroll from "react-infinite-scroll-component"
 import CommentsSkeleton from "./comments.skeleton"
 import { useTranslations } from "next-intl"
+import logger from "@/app/utils/logger"
 
-interface CommentsListProps {
-  isCollapsed: boolean
-  onClick?: () => void
-  isMobile: boolean
-}
 
-function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
+
+
+function CommentsList() {
   const { id: SelectedCommentId } = useParams()
 
   const [comments, setComments] = useState<CommentsNamespace.Comments>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(0)
 
   const t = useTranslations('Comments.List')
 
@@ -48,6 +46,7 @@ function CommentsList({ isCollapsed, onClick, isMobile }: CommentsListProps) {
   const handleComments = useCallback((commentsData: string) => {
     try {
       const newComments = JSON.parse(commentsData) as CommentsNamespace.GET
+      logger.debug(newComments)
       setComments((prevComments) => [...prevComments, ...newComments.items])
       setHasMore(newComments.items.length > 0)
     } catch (error) {
