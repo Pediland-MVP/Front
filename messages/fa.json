@@ -325,6 +325,9 @@
         "add": "افزودن",
         "addTitle": "جزئیات کالا / خدمت",
         "editTitle": "ویرایش جزئیات",
+        "quantity": "تعداد",
+        "stock": "موجودی",
+        "price":"قیمت",
         "Form": {
             "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
             "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
@@ -366,6 +369,22 @@
             "aler": "آیا از حذف این مورد اطمینان دارید؟",
             "description": "این عمل غیرقابل بازگشت است. این مورد به طور دائمی از سرورهای ما حذف خواهد شد"
         }
+    },
+    "Checkout": {
+        "customerDetails": "اطلاعات خریدار",
+        "firstName": "نام",
+        "lastName": "نام خانوادگی",
+        "gender": "جنسیت",
+        "email": "ایمیل",
+        "mobile": "همراه",
+        "person": "نام گیرنده",
+        "address": "نشانی",
+        "city": "شهر",
+        "state": "استان",
+        "country": "کشور",
+        "postalCode": "کد پستی",
+        "paymentMethod": "روش پرداخت",
+        "paynow": "پرداخت و ثبت خرید"
     },
     "Accounts": {
         "dashboard": "داشبورد",

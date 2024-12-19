@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html  {
+html {
   scroll-behavior: smooth;
 }
 
@@ -30,6 +30,14 @@ body {
       rgb(var(--background-end-rgb))
     ) */
   /* rgb(var(--background-start-rgb)); */
+}
+
+input[type="file"]::file-selector-button:hover {
+  font-weight: bold;
+  color: dodgerblue;
+  padding: 0.5em;
+  border: thin solid grey;
+  border-radius: 3px;
 }
 
 @layer utilities {
