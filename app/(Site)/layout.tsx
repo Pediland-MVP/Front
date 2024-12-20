@@ -7,19 +7,12 @@ import { getLocale, getMessages } from "next-intl/server";
 // Just UI Imports Below
 import { Toaster } from "@/components/ui/toaster";
 
-export const metadata: Metadata = {
-  title: "Befroosh: Manage & Automate your instagram",
-  description: "This is first version of Befroosh application.",
-};
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
 
   return (
