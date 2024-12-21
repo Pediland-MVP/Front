@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  CreditCard
-} from "@phosphor-icons/react/dist/ssr";
+import { CreditCard } from "@phosphor-icons/react/dist/ssr";
 import { Label } from "@/components/theme/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
 import { FileUpload } from "@/components/file-upload";
@@ -12,11 +10,12 @@ import axios from "axios";
 import { OrderNamespace } from "@/types/order";
 import { toast } from "@/components/ui/use-toast";
 
-
 type PaymentDetailsProps = {
-  orderCardToCard: OrderNamespace.Order['orderCardToCard']
-}
-export default function PaymentDetails({ orderCardToCard }: PaymentDetailsProps) {
+  orderCardToCard: OrderNamespace.Order["orderCardToCard"] | undefined;
+};
+export default function PaymentDetails({
+  orderCardToCard,
+}: PaymentDetailsProps) {
   const t = useTranslations("Checkout");
 
   const shopId = "ba4c3ff2-4b94-47a1-97c7-f041c73dbd49";
@@ -25,7 +24,9 @@ export default function PaymentDetails({ orderCardToCard }: PaymentDetailsProps)
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [images, setImages] = useState<string[]>([orderCardToCard.url]);
+  const [images, setImages] = useState<string[]>(
+    orderCardToCard?.url ? [orderCardToCard?.url] : []
+  );
 
   const handleFileUpload = async (files: File[]) => {
     setIsUploading(true);
@@ -59,7 +60,7 @@ export default function PaymentDetails({ orderCardToCard }: PaymentDetailsProps)
       setImages([response.data.data.url]);
       toast({
         title: t("uploadSuccess"),
-      })
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -67,7 +68,6 @@ export default function PaymentDetails({ orderCardToCard }: PaymentDetailsProps)
       setIsUploading(false);
     }
   };
-
 
   return (
     <div className="_customer-details md:col-span-4">

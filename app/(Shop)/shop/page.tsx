@@ -19,6 +19,7 @@ import { GENDERS } from "@/app/constants/gender.constant";
 import { REGEX_MOBILE } from "@/app/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
+import FloatingTimeCircle from "./components/floatingTimeCircle";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -120,6 +121,8 @@ export default function CheckoutPage() {
             <Suspense fallback={<PaymentSkeleton />}>
               <PaymentDetails orderCardToCard={order?.orderCardToCard} />
             </Suspense>
+
+            {order && <FloatingTimeCircle startDate={new Date(order.createDate)} />}
 
             <Button type="submit" className="w-full">
               {t("paynow")}
