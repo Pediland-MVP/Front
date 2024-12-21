@@ -26,49 +26,7 @@ import { FileUpload } from "@/components/file-upload";
 import LoadingButton from "@/components/ui/button-loading";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
-const formSchema = z
-  .object({
-    title: z
-      .string({
-        message: "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
-      })
-      .min(1, {
-        message: "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
-      }),
-    status: z.boolean(),
-    price: z
-      .number({
-        message: "قیمت نمی‌تواند کمتر از صفر باشد.",
-      })
-      .min(0, {
-        message: "قیمت نمی‌تواند کمتر از صفر باشد.",
-      }),
-    isInfinite: z.boolean(),
-    quantity: z.number().optional(),
-    description: z
-      .string({
-        message: "توضیحات باید حداقل 5 کاراکتر باشد.",
-      })
-      .min(5, {
-        message: "توضیحات باید حداقل 5 کاراکتر باشد.",
-      }),
-    imageId: z
-      .number({ message: "تصویر محصول را آپلود کنید" })
-      .min(1, "تصویر محصول را آپلود کنید"),
-    isDigital: z.boolean(),
-  })
-  .superRefine((data, ctx) => {
-    if (!data.isInfinite && !data.quantity) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "تعداد نمیتواند کمتر از صفر باشد",
-        path: ["quantity"],
-        fatal: true,
-      });
-      return z.NEVER;
-    }
-  });
+import { Card } from '@/components/theme/ui/card';
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -76,14 +34,58 @@ export type ProductFormProps = {
 
 export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const t = useTranslations('Products.Form');
+  const formSchema = z
+    .object({
+      title: z
+        .string({
+          message: t('Alerts.title'),
+        })
+        .min(1, {
+          message: t('Alerts.title'),
+        }),
+      status: z.boolean(),
+      price: z
+        .number({
+          message: t('Alerts.price'),
+        })
+        .min(0, {
+          message: t('Alerts.priceMinus'),
+        }),
+      isInfinite: z.boolean(),
+      quantity: z.number().optional(),
+      description: z
+        .string({
+          message: t('Alerts.description'),
+        })
+        .min(5, {
+          message: t('Alerts.descrptionLength'),
+        }),
+      imageId: z
+        .number({
+          message: t('Alerts.image'),
+        })
+        .min(1, t('Alerts.image'),),
+      isDigital: z.boolean(),
+    })
+    .superRefine((data, ctx) => {
+      if (!data.isInfinite && (!data.quantity || data.quantity <= 0)) {
+        console.log("Adding issue for quantity");
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "وقتی تعداد نامحدود نیست، تعداد نمی‌تواند خالی یا صفر باشد.",
+          path: ["quantity"],
+        });
+      }
+    });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       isDigital: false,
       status: true,
       isInfinite: false,
-      ...shouldBeEdit,
-      imageId: shouldBeEdit?.images?.[0].id || undefined,
+      ...shouldBeEdit || {}, // اطمینان از مقدار پیش‌فرض
+      imageId: shouldBeEdit?.images?.[0]?.id || undefined,
     },
   });
 
@@ -94,7 +96,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         variant: "destructive",
       });
     }
-  }, [form.formState.errors]);
+    console.log("Form errors:", form.formState.errors);
+  }, [form.formState.errors.imageId]);
 
   const router = useRouter();
 
@@ -110,8 +113,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${
-          shouldBeEdit ? `/${shouldBeEdit.id}` : ""
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""
         }`,
         {
           method: shouldBeEdit ? "PUT" : "POST",
@@ -195,141 +197,150 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   };
 
   return (
-    <div className="bg-stone-50 sm:w-1/3 border rounded-lg shadow p-4 sm:p-6">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid gap-4"
-        >
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('title')}</FormLabel>
-                <FormControl>
-                  <Input placeholder={t('productTitle')}{...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Controller
-            name="status"
-            control={form.control}
-            render={({ field }) => (
-              <div className="flex gap-2 items-center">
-                <Switch
-                  dir="ltr"
-                  id="status"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(checked)}
-                />
-                <Label htmlFor="direct">{t('inactive')}</Label>
-              </div>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('price')}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="۰.۰۰"
-                    {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="quantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('quantity')}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="۰.۰۰"
-                    {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                    disabled={form.getValues().isInfinite}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Controller
-            name="isInfinite"
-            control={form.control}
-            render={({ field }) => (
-              <div className="flex gap-2 items-center">
-                <Switch
-                  dir="ltr"
-                  id="isinfinite"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(checked)}
-                />
-                <Label htmlFor="direct">{t('unlimitedQuantity')}</Label>
-              </div>
-            )}
-          />
-          <Controller
-            name="isDigital"
-            control={form.control}
-            render={({ field }) => (
-              <div className="flex gap-2 items-center">
-                <Switch
-                  dir="ltr"
-                  id="direct"
-                  checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(checked)}
-                />
-                <Label htmlFor="direct">{t('physicalProduct')}</Label>
-              </div>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('description')}</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={t('describeProduct')}
-                    rows={5}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div>
-            <FormLabel>{t('uploadImage')}</FormLabel>
-            <FileUpload
-              images={images}
-              accept="image/*"
-              onChange={handleFileUpload}
-              progress={uploadProgress}
-              isUploading={isUploading}
+    <div className="w-full xl:w-1/2 2xl:w-1/3">
+      <Card className='border-l-2 border-gray-100 px-8 py-6'>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4"
+          >
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('title')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('productTitle')}{...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
+            <Controller
+              name="status"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Label htmlFor="direct">{t('active')}</Label>
+                  <Switch
+                    dir="ltr"
+                    id="status"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">{t('inactive')}</Label>
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('price')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="۰.۰۰"
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <LoadingButton isLoading={isLoading} type="submit">
-            {t('submitProduct')}
-          </LoadingButton>
-        </form>
-      </Form>
+            <Controller
+              name="isInfinite"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Label htmlFor="direct">{t('unlimitedQuantity')}</Label>
+                  <Switch
+                    dir="ltr"
+                    id="isinfinite"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">{t('limitedQuantity')}</Label>
+                </div>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('quantity')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="۰.۰۰"
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      disabled={form.getValues().isInfinite}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Controller
+              name="isDigital"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex gap-2 items-center">
+                  <Label htmlFor="direct">{t('digitalService')}</Label>
+                  <Switch
+                    dir="ltr"
+                    id="direct"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                  <Label htmlFor="direct">{t('physicalProduct')}</Label>
+                </div>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('description')}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={t('describeProduct')}
+                      rows={5}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div>
+              <FormLabel>{t('uploadImage')}</FormLabel>
+              <FileUpload
+                images={images}
+                accept="image/*"
+                onChange={handleFileUpload}
+                progress={uploadProgress}
+                isUploading={isUploading}
+              />
+            </div>
+
+            <LoadingButton isLoading={isLoading} type="submit">
+              {t('submitProduct')}
+            </LoadingButton>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

@@ -2,6 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import React, { useState, useEffect } from "react";
+import { Loader2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { SessionNamespace } from "@/types/session";
+import QuestionAnswerDialog from "./questionAnswer.dialog";
+import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import Link from "next/link";
+// Just UI Imports Below
+import { Card } from '@/components/theme/ui/card';
+import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -9,18 +19,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Loader2, ChevronRight, ChevronLeft } from 'lucide-react';
-import { toast } from "@/components/ui/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { SessionNamespace } from "@/types/session";
-import { Mailbox } from "@phosphor-icons/react";
-import QuestionAnswerDialog from "./questionAnswer.dialog";
-import { Avatar } from "@/components/ui/avatar";
-import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
-import Link from "next/link";
+} from "@/components/theme/ui/table";
+import { Button } from "@/components/theme/ui/button";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -66,7 +66,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
   };
 
   return (
-    <div className="rtl bg-white rounded-lg p-7" dir="rtl">
+    <Card className="border-b-2 border-gray-100">
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin" />
@@ -165,7 +165,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
           )}
         </>
       )}
-    </div>
+    </Card>
   );
 }
 

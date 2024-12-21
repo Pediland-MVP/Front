@@ -18,7 +18,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
   return (
     <>
       <div className="_trigger gap-4 flex items-center">
-        <p>{t('userIn')}</p>
+        <p className='text-sm font-medium'>{t('userIn')}</p>
         <div className="flex gap-6 items-center">
           <FormField
             control={control}

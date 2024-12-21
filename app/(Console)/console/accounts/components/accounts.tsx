@@ -62,10 +62,10 @@ export default function Accounts({
     setFilteredInstagramPages(
       isFromFacebook
         ? instagramPages?.filter(
-            (page) =>
-              page.facebookAccountId ===
-                searchParams.get("facebookAccountId") && !page.instagramId
-          )
+          (page) =>
+            page.facebookAccountId ===
+            searchParams.get("facebookAccountId") && !page.instagramId
+        )
         : !!instagramPages?.length
           ? instagramPages.filter((account) => account.instagramId)
           : null
@@ -131,96 +131,107 @@ export default function Accounts({
 
   return (
     <>
-      {isInstagramPagesLoading &&
-        Array.from({ length: 10 }).map((_, index) => (
-          <Skeleton
-            key={index}
-            className="flex flex-col gap-4 justify-center items-center w-full h-52 border rounded-lg "
-          >
-            <Skeleton className="w-20 h-20" />
-            <Skeleton className="w-20 h-4" />
-            <Skeleton className="w-20 h-4" />
-            <Skeleton className="w-20 h-8 rounded" />
-          </Skeleton>
-        ))}
-
-      {filteredInstagramPages?.map((instagram) => {
-        return (
+      {isInstagramPagesLoading && !instagramPages ? (
+        Array.from({ length: 1 }).map((_, index) => (
           <div
-            key={instagram.id}
-            className="_card bg-stone-50 shadow hover:shadow-lg duration-200 border rounded-lg"
+            key={index}
+            className="_card bg-white shadow hover:shadow-lg duration-200 border rounded-lg"
           >
-            <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
-              <div>
-                {instagram.profilePictureUrl ? (
-                  <Image
-                    className="rounded-full"
-                    src={instagram.profilePictureUrl}
-                    width={75}
-                    height={75}
-                    alt={instagram.name}
-                  />
-                ) : (
-                  <InstagramLogo size={75} />
-                )}
-              </div>
-
-              <div className="flex flex-col justify-center items-center">
-                <span>{instagram.name}</span>
-                <span className="text-[15px] text-gray-500">
-                  {instagram.username}@
-                </span>
-              </div>
-
-              <div className="flex gap-2">
-                {instagram.instagramId ? (
-                  <Link
-                    href={`https://instagram.com/${instagram.username}`}
-                    target="_blank"
-                  >
-                    <Button variant={"success"}>{t("viewAccount")}</Button>
-                  </Link>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      setOpenSelectInstagramDialog(true);
-                      setFacebookAccountId(instagram.facebookAccountId);
-                    }}
-                    variant={"outline"}
-                  >
-                    {t("connectAccount")}
-                  </Button>
-                )}
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
-                      <Trash size={22} />
-                    </Button>
-                  </AlertDialogTrigger>
-
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t("deleteConfirmation")}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(instagram.id)}
-                      >
-                        {t("delete")}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+            <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full">
+              <Skeleton className="w-[75px] h-[75px] rounded-full" />
+              <Skeleton className="w-[50%] h-4 mt-2" />
+              <Skeleton className="w-[40%] h-4 mt-1" />
+              <div className="flex gap-2 mt-4">
+                <Skeleton className="w-[100px] h-8 rounded" />
+                <Skeleton className="w-[40px] h-8 rounded" />
               </div>
             </div>
           </div>
-        );
-      })}
+        ))
+      ) : filteredInstagramPages && filteredInstagramPages.length > 0 ? (
+        filteredInstagramPages?.map((instagram) => {
+          return (
+            <div
+              key={instagram.id}
+              className="_card bg-white shadow hover:shadow-lg duration-200 border rounded-lg"
+            >
+              <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
+                <div>
+                  {instagram.profilePictureUrl ? (
+                    <Image
+                      className="rounded-full"
+                      src={instagram.profilePictureUrl}
+                      width={75}
+                      height={75}
+                      alt={instagram.name}
+                    />
+                  ) : (
+                    <InstagramLogo size={75} />
+                  )}
+                </div>
+
+                <div className="flex flex-col justify-center items-center">
+                  <span>{instagram.name}</span>
+                  <span className="text-[15px] text-gray-500">
+                    {instagram.username}@
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  {instagram.instagramId ? (
+                    <Link
+                      href={`https://instagram.com/${instagram.username}`}
+                      target="_blank"
+                    >
+                      <Button variant={"success"}>{t("viewAccount")}</Button>
+                    </Link>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setOpenSelectInstagramDialog(true);
+                        setFacebookAccountId(instagram.facebookAccountId);
+                      }}
+                      variant={"outline"}
+                    >
+                      {t("connectAccount")}
+                    </Button>
+                  )}
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="icon">
+                        <Trash size={22} />
+                      </Button>
+                    </AlertDialogTrigger>
+
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("deleteConfirmation")}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(instagram.id)}
+                        >
+                          {t("delete")}
+                        </AlertDialogAction>
+                        <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <div className="flex items-center justify-center h-[calc(100vh-8rem)] w-full">
+          <p className="text-gray-600">{t("noAccountsFound")}</p>
+        </div>
+      )}
+
 
       <SelectInstagram
         facebookAccountId={facebookAccountId!}

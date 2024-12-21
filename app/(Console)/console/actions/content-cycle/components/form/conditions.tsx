@@ -51,7 +51,7 @@ export default function Conditions({
   return (
     <>
       <div className="space-y-1">
-        <p>{t("wordOrPhrase")}</p>
+        <p className="text-sm font-medium">{t("wordOrPhrase")}</p>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
             <div
@@ -141,7 +141,7 @@ export default function Conditions({
         })}
 
       {/* Message input & post select */}
-      <p>{t("sendMessageBelow")}</p>
+      <p className="text-sm font-medium">{t("sendMessageBelow")}</p>
     </>
   );
 }

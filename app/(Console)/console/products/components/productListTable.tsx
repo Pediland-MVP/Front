@@ -13,6 +13,8 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { ProductDeleteDialog } from "./product.delete";
+import { cn } from "@/lib/utils";
+import ProductListSkeleton from "./productListSkeleton";
 
 // Just UI Imports Below
 import { Card } from "@/components/theme/ui/card";
@@ -32,7 +34,7 @@ import {
   Pencil,
   Trash,
 } from "@phosphor-icons/react/dist/ssr";
-import { cn } from "@/lib/utils";
+
 
 interface ContentItem {
   id: number;
@@ -115,66 +117,86 @@ export default function ProductListTable() {
       }
     }
   };
-
   const locale = useLocale();
 
   return (
-    <Card className="p-4">
+    <Card className="border-b-2 border-gray-100">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("image")}</TableHead>
+            <TableHead className="lg:w-[7%] text-center">{t("image")}</TableHead>
             <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("title")}</TableHead>
-            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("price")}</TableHead>
-            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("creationDate")}</TableHead>
-            <TableHead className={cn(locale === "fa" ? "text-left" : "text-right")}>{t("actions")}</TableHead>
+            <TableHead className="text-center">{t("type")}</TableHead>
+            <TableHead className="text-center">{t("price")}</TableHead>
+            <TableHead className="text-center">{t("quantity")}</TableHead>
+            <TableHead className="text-center">{t("creationDate")}</TableHead>
+            <TableHead className="text-center">{t("status")}</TableHead>
+            <TableHead className="text-center lg:w-[7%]">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
 
-        <TableBody>
-          {products.map((product) => (
-            <TableRow key={product.id}>
-              <TableCell>
-                <Image
-                  src={product.images?.[0]?.url}
-                  alt={product.title}
-                  width={50}
-                  height={50}
-                  className="rounded-sm"
-                />
-              </TableCell>
-              <TableCell>{product.title}</TableCell>
-              <TableCell>{product.price.toLocaleString()}</TableCell>
-              <TableCell>
-                {new DateObject(product.createDate)
-                  .setCalendar(persian)
-                  .setLocale(persian_fa)
-                  .format("YYYY/MM/DD")}
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      router.push(`/console/products/${product.id}`);
-                    }}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteClick(product.id)}
-                  >
-                    <Trash className="h-4 w-4 ml-2" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+        {isProductsLoading ? (
+          <ProductListSkeleton />
+        ) : (
+          <TableBody>
+            {products.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell className="flex justify-center">
+                  <Image
+                    src={product.images?.[0]?.url}
+                    alt={product.title}
+                    width={50}
+                    height={50}
+                    className="rounded-sm"
+                  />
+                </TableCell>
+
+                <TableCell>{product.title}</TableCell>
+
+                <TableCell className="text-center">کالای فیزیکی</TableCell>
+
+                <TableCell className="text-center">
+                  {product.price.toLocaleString()}
+                </TableCell>
+
+                <TableCell className="text-center">
+                  11
+                </TableCell>
+
+                <TableCell className="text-center">
+                  {new DateObject(product.createDate)
+                    .setCalendar(persian)
+                    .setLocale(persian_fa)
+                    .format("YYYY/MM/DD")}
+                </TableCell>
+
+                <TableCell className="text-center">
+                  فعال
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex gap-2 justify-center">
+                    <Pencil
+                      size={20}
+                      weight="light"
+                      className="text-gray-500 hover:text-green-600 cursor-pointer"
+                      onClick={() => {
+                        router.push(`/console/products/${product.id}`);
+                      }}
+                    />
+                    <Trash
+                      size={20}
+                      weight="light"
+                      className="text-gray-500 hover:text-red-600 cursor-pointer"
+                      onClick={() => handleDeleteClick(product.id)}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        )}
       </Table>
 
       <div className="flex justify-between items-center mt-4">
@@ -200,6 +222,7 @@ export default function ProductListTable() {
           {locale === "fa" ? <CaretLeft size={18} /> : <CaretRight size={18} />}
         </Button>
       </div>
+
       <ProductDeleteDialog
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}

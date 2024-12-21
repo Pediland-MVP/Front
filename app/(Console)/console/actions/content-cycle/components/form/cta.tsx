@@ -18,7 +18,7 @@ export default function Cta({ control }: CtaProps) {
       control={control}
       render={({ field, fieldState: { error } }) => {
         return (
-          <div className="space-y-1">
+          <div className="space-y-1 mb-2">
             <FormLabel>{t("label")}</FormLabel>
             <Textarea {...field} placeholder={t("placeholder")} />
             {error && <FormMessage> {error.message} </FormMessage>}

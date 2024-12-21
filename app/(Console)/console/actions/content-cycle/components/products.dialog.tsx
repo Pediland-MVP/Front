@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, useEffect, MouseEvent } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/theme/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -88,21 +88,22 @@ const ProductsDialog = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {productsField[index]?.id ? (
-          <div className="relative w-48 h-48 rounded-lg overflow-hidden">
+          <div className="relative rounded-lg overflow-hidden">
             <Image
               src={productsField[index]?.images?.[0]?.url}
               alt={t('coverImageAlt')}
-              fill
+              width={300}
+              height={300}            
             />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
-              <Button type="button" className="text-white">
+              <Button type="button" className="text-white text-xs">
                 {t('changeProduct')}
               </Button>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-y-2">
-            <Button type="button" variant="outline">{t('selectProduct')}</Button>
+          <div className="flex justify-center w-full gap-y-2">
+            <Button type="button" variant="outline" className='text-xs'>{t('selectProduct')}</Button>
             {formState?.errors?.products?.[index]?.id && (
               <ErrorMessage>
                 {formState.errors.products?.[index].id.message}

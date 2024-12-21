@@ -19,7 +19,7 @@ export default function ContentCyclePage() {
   const t = useTranslations("Automations");
   return (
     <div className="_automation">
-      <header className="px-4 pt-4 h-14 flex justify-between items-center gap-4">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -49,9 +49,7 @@ export default function ContentCyclePage() {
         </div>
       </header>
 
-      <div className="p-4">
-        <ContentCycleTable />
-      </div>
+      <ContentCycleTable />
     </div>
   );
 }

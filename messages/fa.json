@@ -223,7 +223,7 @@
         "dashboard": "داشبورد",
         "list": "لیست اتوماسیون ها",
         "add": "افزودن",
-        "addTitle": "جزئیات اتوماسیون",
+        "addTitle": "ایجاد اتوماسیون جدید",
         "List": {
             "fetchError": "خطا در دریافت اطلاعات",
             "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
@@ -246,8 +246,8 @@
         "ProductsDialog": {
             "fetchError": "خطا در دریافت محصولات:",
             "coverImageAlt": "تصویر کاور",
-            "changeProduct": "تعویض محصول",
-            "selectProduct": "انتخاب محصول",
+            "changeProduct": "تغییر",
+            "selectProduct": "انتخاب",
             "selectProductDescription": "یک محصول انتخاب کنید",
             "noMorePosts": "پست دیگری موجود نیست.",
             "instagramPostAlt": "پست اینستاگرام",
@@ -265,7 +265,7 @@
             "direct": "دایرکت",
             "comment": "کامنت",
             "startRequestMessage": "پیام درخواست شروع",
-            "commentPlaceholder": "لطفا برای شروع فرایند روی دکمه شروع بزنید..."
+            "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید"
         },
         "Title": {
             "title": "عنوان",
@@ -278,10 +278,10 @@
         "JustFollowers": {
             "justFollowers": "ارسال به شرط فالو داشتن صفحه",
             "messageText": "متن پیام",
-            "helper": "با فعال کردن این گزینه، پیام مشخص شده در صورتی ارسال می‌شود که کاربر، صفحه شما را دنبال (فالو) کرده باشد در غیر این صورت پیام زیر نمایش داده می‌شود.",
-            "placeholder": "لطفا برای ادامه صفحه ما را فالو کنید ...",
+            "helper": "با فعال کردن این گزینه اتوماسیون در صورتی ارسال می‌شود که کاربر، صفحه شما را فالو کرده باشد در غیر این صورت پیام زیر برای او نمایش داده می‌شود.",
+            "placeholder": "مثال: لطفا برای ادامه، صفحه ما را فالو کنید",
             "retryButton": "متن دکمه بررسی مجدد",
-            "retryPlaceholder": "فالو کردم"
+            "retryPlaceholder": "مثال: فالو کردم"
         },
         "Conditions": {
             "wordOrPhrase": "کلمه یا جمله ای",
@@ -291,7 +291,7 @@
             "value": "مقدار",
             "deleteCondition": "حذف شرط",
             "addNewCondition": "افزودن شرط جدید",
-            "sendMessageBelow": "را ارسال کند پیام زیر برایش ارسال شود."
+            "sendMessageBelow": "را ارسال کند، موارد زیر برایش ارسال می‌شود."
         },
         "Contents": {
             "removeContent": "حذف محتوا",
@@ -300,8 +300,8 @@
             "addContent": "افزودن محتوا"
         },
         "Cta": {
-            "label": "متن مرحله پایانی",
-            "placeholder": "خیلی ممنون که چرخه رو کامل کردید..."
+            "label": "متن پایانی",
+            "placeholder": "این متن در پایان نماش داده می‌شود"
         },
         "GetUserData": {
             "getUserData": "دریافت اطلاعات کاربر",
@@ -310,13 +310,13 @@
             "email": "ایمیل",
             "mobileNumber": "شماره موبایل",
             "questionText": "متن سوال",
-            "enterMobileNumber": "لطفا شماره موبایل خود را وارد کنید"
+            "enterMobileNumber": "مثال: لطفا شماره موبایل خود را وارد کنید"
         },
         "Catalogue": {
             "label": "ارسال کاتالوگ  محصولات",
             "add": "افزودن محصول"
         },
-        "likeCommand": "لایک کردن دستور",
+        "likeCommand": "لایک کردن اولین پیام کاربر",
         "submit": "ایجاد",
         "update": "آپدیت"
     },
@@ -324,34 +324,16 @@
         "dashboard": "داشبورد",
         "title": "لیست کالاها / خدمات",
         "add": "افزودن",
-        "addTitle": "جزئیات کالا / خدمت",
-        "editTitle": "ویرایش جزئیات",
-        "quantity": "تعداد",
-        "stock": "موجودی",
-        "price":"قیمت",
-        "Form": {
-            "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
-            "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
-            "errorOccurred": "خطایی رخ داد",
-            "productAddedSuccess": "محصول با موفقیت اضافه شد",
-            "checkConnection": "اتصال خود را چک کنید",
-            "title": "عنوان",
-            "productTitle": "عنوان کالا / خدمت",
-            "inactive": "غیرفعال",
-            "price": "قیمت (تومان)",
-            "quantity": "تعداد",
-            "unlimitedQuantity": "تعداد نامحدود",
-            "physicalProduct": "کالای فیزیکی",
-            "description": "توضیحات",
-            "describeProduct": "کالا یا خدمت خود را توصیف کنید...",
-            "submitProduct": "ثبت کالا یا خدمت",
-            "uploadImage": "بارگزاری تصاویر"
-        },
+        "addTitle": "ثبت کالا / خدمت جدید",
+        "editTitle": "ویرایش کالا / خدمت",
         "List": {
             "image": "تصویر",
             "title": "عنوان",
+            "type": "نوع",
             "price": "قیمت",
+            "quantity": "تعداد",
             "creationDate": "تاریخ ایجاد",
+            "status": "وضعیت",
             "actions": "اقدامات",
             "delete": "حذف",
             "previous": "قبلی",
@@ -359,7 +341,37 @@
             "pageOf": "صفحه {current} از {total}",
             "error": "خطا",
             "problemOccurred": "مشکلی پیش آمده است",
-            "deleted": "حذف شد"
+            "deleted": "کالا یا خدمت مورد نظر حذف شد."
+        },
+        "Form": {
+            "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
+            "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
+            "errorOccurred": "خطایی رخ داد",
+            "productAddedSuccess": "محصول با موفقیت اضافه شد",
+            "checkConnection": "اتصال خود را چک کنید",
+            "title": "عنوان",
+            "productTitle": "عنوان کالا یا خدمت خود را بنویسید",
+            "active": "فعال",
+            "inactive": "غیرفعال",
+            "price": "قیمت (تومان)",
+            "quantity": "تعداد",
+            "limitedQuantity": "محدودیت تعداد",
+            "unlimitedQuantity": "تعداد نامحدود",
+            "physicalProduct": "کالای فیزیکی",
+            "digitalService": "خدمت مجازی",
+            "description": "توضیحات",
+            "describeProduct": "توضیحات کالا یا خدمت خود را ثبت کنید",
+            "submitProduct": "ثبت کالا یا خدمت",
+            "uploadImage": "بارگزاری تصاویر",
+            "Alerts": {
+                "title": "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
+                "price": "لطفا قیمت کالا یا خدمات خود را وارد کنید.",
+                "priceMinus": "قیمت نمی‌تواند کمتر از صفر باشد.",
+                "quantity": "لطفا تعداد موجودی کالا یا خدمات خود را وارد کنید.",
+                "description": "لطفا توضیحات کالا یا خدمات خود را وارد کنید.",
+                "descrptionLength": "طول توضیحات کالا یا خدمات باید بیشتر از 5 کاراکتر باشد.",
+                "image": "لطفا تصویر کالا یا خدمات خود را انتخاب کنید."
+            }
         },
         "Edit": {
             "editContact": "ویرایش مخاطب",
@@ -367,8 +379,10 @@
             "cancel": "انصراف"
         },
         "Delete": {
-            "aler": "آیا از حذف این مورد اطمینان دارید؟",
-            "description": "این عمل غیرقابل بازگشت است. این مورد به طور دائمی از سرورهای ما حذف خواهد شد"
+            "areYouSure": "آیا مطمئن هستید؟",
+            "deleteConfirmation": "این عملیات غیر قابل بازگشت است. کالا یا خدمت شما حذف خواهد شد.",
+            "cancel": "انصراف",
+            "delete": "حذف"
         }
     },
     "Checkout": {
@@ -403,7 +417,8 @@
             "areYouSure": "آیا مطمئن هستید؟",
             "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
             "cancel": "انصراف",
-            "delete": "حذف"
+            "delete": "حذف",
+            "noAccountsFound": "هیچ اکانتی وجود ندارد."
         },
         "SelectInstagram": {
             "selectAccount": "یک اکانت انتخاب کنید",
@@ -419,7 +434,9 @@
         }
     },
     "Sessions": {
-        "title": "سشن‌ها",
+        "title": "لیست سشن‌ها",
+        "dashboard": "داشبورد",
+        "automation": "اتوماسیون",
         "List": {
             "fetchError": "خطا در دریافت اطلاعات",
             "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
@@ -837,5 +854,10 @@
         "seeYourLastPosts": "آخرین پست‌های اینستاگرام خود را مشاهده کنید.",
         "thereIsNoMore": "پست دیگری موجود نیست.",
         "close": "بستن"
+    },
+    "Error": {
+        "dashboard": "داشبورد",
+        "accounts": "اکانت‌ها",
+        "title": "خطا"
     }
 }
