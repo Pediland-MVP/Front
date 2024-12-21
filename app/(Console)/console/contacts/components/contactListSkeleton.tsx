@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { TableRow, TableCell } from "@/components/ui/table";
 
 interface ContactListSkeletonProps {
   rowCount?: number;
@@ -12,30 +12,34 @@ export default function ContactListSkeleton({
     <>
       {[...Array(rowCount)].map((_, index) => (
         <TableRow key={index}>
-          <TableCell className="w-[5%]">
-            <Skeleton className="h-4 w-4" />
+          {/* ستون عکس پروفایل (اول) */}
+          <TableCell className="lg:w-[7%] text-center">
+            <Skeleton className="h-10 w-10 rounded-full mx-auto" />
           </TableCell>
-          <TableCell className="w-[15%]">
-            <div className="flex justify-center">
-              <Skeleton className="h-10 w-10 rounded-full" />
-            </div>
+
+          {/* ستون نام کاربر (دوم) */}
+          <TableCell className="lg:w-[25%]">
+            <Skeleton className="h-4 w-3/4" />
           </TableCell>
-          <TableCell className="w-[25%]">
+
+          {/* ستون اینستاگرام آیدی (سوم) */}
+          <TableCell className="lg:w-[25%] text-center">
+            <Skeleton className="h-4 w-3/4 mx-auto" />
+          </TableCell>
+
+          {/* ستون تعداد پیام (چهارم) */}
+          <TableCell className="lg:w-[8%] text-center">
+            <Skeleton className="h-4 w-1/2 mx-auto" />
+          </TableCell>
+
+          {/* ستون خالی (پنجم) */}
+          <TableCell className="lg:w-[27%]">
             <Skeleton className="h-4 w-full" />
           </TableCell>
-          <TableCell className="w-[25%]">
-            <Skeleton className="h-4 w-full" />
-          </TableCell>
-          <TableCell className="w-[10%]">
-            <Skeleton className="h-4 w-full" />
-          </TableCell>
-          <TableCell className="w-[10%]">
-            <Skeleton className="h-4 w-full" />
-          </TableCell>
-          <TableCell className="w-[10%]">
-            <div className="flex gap-2 justify-center">
-              <Skeleton className="h-5 w-5" />
-            </div>
+
+          {/* ستون اکشن (ششم) */}
+          <TableCell className="lg:w-[7%] text-center">
+            <Skeleton className="h-5 w-5 mx-auto" />
           </TableCell>
         </TableRow>
       ))}

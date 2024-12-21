@@ -126,9 +126,9 @@ function ConversationsList() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className="lg:w-1/3 lg:max-h-[calc(100vh-138px)] max-h-svh w-full h-full"
+          className="lg:w-1/3 w-full h-full bg-white"
         >
-          <Card className="w-full h-full p-4 box-border bg-background overflow-hidden flex flex-col">
+          <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
             <div className="w-full flex lg:hidden justify-between mb-4">
               <Sidebar
                 onClick={() => sidebar.setOpenMobile(true)}

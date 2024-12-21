@@ -38,7 +38,7 @@ export function Pagination({
   const locale = useLocale();
 
   return (
-    <div className="_pagination flex items-center justify-between gap-4 mt-5 border-t pt-3">
+    <div className="_pagination flex items-center justify-between gap-4 mt-4 pt-4 border-t">
       <div className="_navigation flex items-center gap-4">
         <div className="flex items-center gap-2">
           <Button

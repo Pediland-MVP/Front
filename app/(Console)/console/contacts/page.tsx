@@ -21,7 +21,7 @@ export default function page() {
 
   return (
     <div className="_contacts">
-      <header className="px-4 pt-4 sm:h-14 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -47,13 +47,12 @@ export default function page() {
             placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1"
+            className="flex-1 border-none shadow-none"
           />
         </div>
       </header>
-      <div className="p-4">
-        <ContactListCard search={search} setSearch={setSearch} />
-      </div>
+
+      <ContactListCard search={search} setSearch={setSearch} />
     </div>
   );
 }

@@ -87,7 +87,7 @@ export default function ContactListCard({
   const locale = useLocale();
 
   return (
-    <Card className="p-4">
+    <Card className="border-b-2 border-gray-100">
       <EditContactDialog contactId={contactId} open={open} setOpen={setOpen} />
 
       <div className="_table">

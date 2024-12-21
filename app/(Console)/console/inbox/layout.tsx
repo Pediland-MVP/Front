@@ -21,7 +21,7 @@ const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
 
   return (
     <div className="_direct flex flex-col h-full max-h-full overflow-hidden">
-      <header className="hidden lg:flex px-4 pt-4 justify-between items-center gap-4">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -44,11 +44,9 @@ const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
         <div className="_tools"></div>
       </header>
 
-      <div className="flex h-full w-full lg:p-4 box-border">
-        <div className="_chat-layout h-full w-full flex flex-col lg:flex-row gap-5 overflow-auto">
-          <ConversationsList />
-          {children}
-        </div>
+      <div className="_chat-layout h-full w-full flex flex-col lg:flex-row overflow-auto">
+        <ConversationsList />
+        {children}
       </div>
     </div>
   );

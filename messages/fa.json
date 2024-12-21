@@ -126,7 +126,7 @@
     "Contacts": {
         "dashboard": "داشبورد",
         "list": "لیست مخاطبین",
-        "searchPlaceholder": "جستجو...",
+        "searchPlaceholder": "جستجو ...",
         "Form": {
             "firstname": "نام",
             "lastname": "نام خانوادگی",
@@ -181,6 +181,7 @@
     "Inbox": {
         "dashboard": "داشبورد",
         "list": "لیست دایرکت‌ها",
+        "ConversationsList": "لیست دایرکت‌ها",
         "ChatBottombar": {
             "errors": {
                 "send": "خطا در ارسال"
