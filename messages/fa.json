@@ -387,7 +387,8 @@
         "paymentMethod": "روش پرداخت",
         "paynow": "پرداخت و ثبت خرید",
         "male":"مرد",
-        "female":"زن"
+        "female":"زن",
+        "uploadSuccess": "رسید شما آپلود شد"
     },
     "Accounts": {
         "dashboard": "داشبورد",

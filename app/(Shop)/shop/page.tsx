@@ -118,7 +118,7 @@ export default function CheckoutPage() {
             </Suspense>
 
             <Suspense fallback={<PaymentSkeleton />}>
-              <PaymentDetails />
+              <PaymentDetails orderCardToCard={order?.orderCardToCard} />
             </Suspense>
 
             <Button type="submit" className="w-full">
