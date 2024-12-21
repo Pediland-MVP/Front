@@ -202,3 +202,26 @@ body::-webkit-scrollbar-thumb:hover,
 ._wrap::-webkit-scrollbar-thumb:hover {
   background-color: #b0c9e8;
 }
+
+/* Chat Body Custom Scrollbar */
+#chat-container::-webkit-scrollbar,
+._wrap::-webkit-scrollbar {
+  width: 5px;
+}
+
+#chat-container::-webkit-scrollbar-track,
+._wrap::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+#chat-container::-webkit-scrollbar-thumb,
+._wrap::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 10px;
+  border-right: 8px solid #ddd;
+}
+
+#chat-container::-webkit-scrollbar-thumb:hover,
+._wrap::-webkit-scrollbar-thumb:hover {
+  background-color: #c1c1c1;
+}

@@ -33,7 +33,7 @@ export function ChatMessages({ lead, messagesData }: ChatScreenProps) {
       <div
         id="chat-container"
         ref={messagesContainerRef}
-        className="w-full overflow-y-auto overflow-x-hidden flex flex-col-reverse _wrap"
+        className="w-full overflow-y-auto overflow-x-hidden flex flex-col-reverse _wrap bg-slate-50 h-full"
       >
         <InfiniteScroll
           dataLength={messagesList.length} // Length of the messages array
@@ -47,6 +47,7 @@ export function ChatMessages({ lead, messagesData }: ChatScreenProps) {
             </p>
           }
           scrollableTarget="chat-container" // The ID of the scrollable div
+          className="flex flex-col gap-1.5 p-3"
           style={{
             display: "flex",
             flexDirection: "column-reverse",

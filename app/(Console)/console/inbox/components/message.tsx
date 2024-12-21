@@ -41,14 +41,13 @@ export default function Message({ message, messagesList, lead }: MessageProps) {
         originY: 0.5,
       }}
       className={cn(
-        "flex flex-col gap-2 px-4 py-2 whitespace-pre-wrap",
+        "flex flex-col whitespace-pre-wrap",
         message.from === "lead" ? "items-end" : "items-start"
       )}
     >
-      <div className=" relative flex flex-ro gap-3 items-center">
-        <span className={cn(message.from === "lead" ? "bg-accent" : "bg-blue-950 text-white","mr-14 p-2 rounded-md max-w-xs")}>
-          {message.text}
-        </span>
+      <div className={cn("text-[15px] p-2 rounded-md max-w-xs",
+        message.from === "lead" ? "bg-gray-200" : "bg-primary text-white")}>
+        {message.text}
       </div>
     </motion.div>
   );

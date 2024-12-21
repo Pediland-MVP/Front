@@ -1,9 +1,9 @@
 import Link from "next/link";
 import React, { useRef, useState } from "react";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/theme/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/theme/ui/textarea";
 import { EmojiPicker } from "./emojiPicker";
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
@@ -50,7 +50,6 @@ export default function ChatBottombar() {
     }
   };
 
-
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -64,7 +63,7 @@ export default function ChatBottombar() {
   };
 
   return (
-    <div className="_bottom-bar p-3">
+    <div className="_bottom-bar mt-4">
       <div className="_wrapper w-full flex items-center">
         <div className="_emoji">
           <EmojiPicker
@@ -86,7 +85,7 @@ export default function ChatBottombar() {
             )}
             onClick={handleSend}
           >
-            <PaperPlaneRight size={20} className="text-muted-foreground" />
+            <PaperPlaneRight size={22} className="text-muted-foreground -rotate-[30deg]" />
           </Link>
         </div>
 
@@ -114,7 +113,7 @@ export default function ChatBottombar() {
               onChange={handleInputChange}
               name="message"
               placeholder={t('textPlaceholder')}
-              className="w-full resize-none"
+              className="w-full h-20 resize-none border-gray-200/60 rounded-md focus-visible:border-gray-300"
             ></Textarea>
           </motion.div>
         </AnimatePresence>

@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Info, Phone, Video } from "lucide-react";
 import { leadNamespace } from "@/types/lead";
-import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, X } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 // import { Spinner } from "@nextui-org/react";
 
@@ -24,11 +24,11 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
   }
 
   return (
-    <div className="w-full rounded-t-2xl flex p-4 justify-between items-center border-b">
-      <div className="flex  items-center gap-2">
+    <div className="w-full rounded-t-2xl flex pb-5 justify-between items-center border-b mb-2">
+      <div className="flex  items-center gap-4">
         <Avatar className="flex justify-center items-center bg-gray-400">
           <AvatarImage
-            src={lead.leadInstagram.profilePicture?.url}            
+            src={lead.leadInstagram.profilePicture?.url}
             alt={lead.firstname}
             width={6}
             height={6}
@@ -44,8 +44,11 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
           </span>
         </div>
       </div>
-      <ArrowLeft onClick={() => router.push('/console/inbox')} className="text-black/20" height={30} width={30} />
-
+      <X
+        onClick={() => router.push('/console/inbox')}
+        className="text-gray-300 cursor-pointer hover:text-gray-700 duration-300"
+        height={24}
+        width={24} />
     </div>
   );
 }

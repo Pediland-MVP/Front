@@ -56,7 +56,7 @@ export function Chat({ leadId }: ChatProps) {
         {!messagesData?.messagesList?.length ? (
           <ChatSkeleton />
         ) : (
-          <Card className="flex w-full h-full">
+          <Card className="flex w-full h-full p-5">
             <div className="w-full flex flex-col overflow-y-auto h-svh lg:max-h-[calc(100vh-138px)]">
               <ChatTopbar lead={lead} />
               <ChatMessages messagesData={messagesData} lead={lead} />

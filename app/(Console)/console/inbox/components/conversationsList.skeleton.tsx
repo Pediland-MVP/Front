@@ -1,42 +1,36 @@
 "use client";
 
-import { memo } from "react";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/theme/ui/card";
+import { Sidebar, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 
-interface ConversationsListSkeletonProps {
-  isCollapsed: boolean;
-  isMobile: boolean;
-}
-
-function ConversationsListSkeleton() {
+export default function ConversationsListSkeleton() {
   return (
-    <div className="lg:w-1/3 lg:max-h-[calc(100vh-138px)] relative w-full group flex flex-col bg-white rounded-lg shadow">
-      <div
-        id="chats-container"
-        className="overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 transition-colors duration-200"
-      >
-        <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+    <div className="lg:w-1/3 w-full h-full bg-white animate-pulse">
+      <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
+        <div className="w-full flex lg:hidden justify-between mb-4">
+          <Sidebar
+            className="text-gray-300 bg-gray-200 rounded-md h-6 w-6"
+          />
+          <ArrowLeft
+            className="text-gray-300 bg-gray-200 rounded-md h-6 w-6"
+          />
+        </div>
+
+        <div className="flex-grow overflow-y-auto w-full space-y-4">
           {[...Array(10)].map((_, index) => (
             <div
               key={index}
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "lg" }),
-                "justify-start gap-4 pt-10 pb-8"
-              )}
+              className="flex p-2 items-center gap-4 box-border rounded-lg bg-gray-100"
             >
-              <Skeleton className="w-[60px] h-[60px] rounded-full" />
-              <div className="flex flex-col max-w-28 space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-3 w-20" />
+              <div className="bg-gray-200 rounded-full w-12 h-12"></div>
+              <div className="flex flex-col w-full">
+                <div className="bg-gray-200 h-4 w-3/4 mb-2 rounded-md"></div>
+                <div className="bg-gray-200 h-3 w-1/2 rounded-md"></div>
               </div>
             </div>
           ))}
-        </nav>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 }
-
-export default memo(ConversationsListSkeleton);
