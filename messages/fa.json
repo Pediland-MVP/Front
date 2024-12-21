@@ -385,7 +385,9 @@
         "country": "کشور",
         "postalCode": "کد پستی",
         "paymentMethod": "روش پرداخت",
-        "paynow": "پرداخت و ثبت خرید"
+        "paynow": "پرداخت و ثبت خرید",
+        "male":"مرد",
+        "female":"زن"
     },
     "Accounts": {
         "dashboard": "داشبورد",
