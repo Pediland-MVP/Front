@@ -226,8 +226,9 @@ export default function OrderListCard({
                   <TableCell className="_space">
                     <Badge
                       variant={
-                        order.status === ORDER_STATUS.PROCESSING
-                          ? "success"
+                        order.status === ORDER_STATUS.COMPLETED
+                          ? "success" :
+                          order.status === ORDER_STATUS.CANCELLED ? "destructive"
                           : "outline"
                       }
                     >
