@@ -1,0 +1,266 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { ORDER_STATUS, OrderNamespace } from "@/types/order";
+import { Pagination } from "./pagination";
+import useSWRImmutable from "swr/immutable";
+import { fetcher } from "@/hooks/swr/fetcher";
+import useDebounce from "@/hooks/useDebounce";
+// import EditContactDialog from "./editContactDialog";
+import { useLocale, useTranslations } from "next-intl";
+// Just UI Imports Below
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableHead,
+} from "@/components/theme/ui/table";
+import ImageWithFallback from "@/components/ui/imageWithCallback";
+import { Pencil } from "@phosphor-icons/react/dist/ssr";
+import { Card } from "@/components/theme/ui/card";
+import OrderListSkeleton from "./orderListSkeleton";
+import { Badge } from "@/components/ui/badge";
+import EditOrderDialog from "./editOrderDialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+type Lead = {
+  profile: string;
+  name: string;
+  username: string;
+  messages: number;
+  lastSeen: string;
+};
+
+type OrderListCardProps = {
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+};
+
+export default function OrderListCard({
+  search,
+  setSearch,
+}: OrderListCardProps) {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [limit, setLimit] = useState<number>(10);
+  // const [orders, setContacts] = useState<ContactNamespace.Contacts>([]);
+  const [page, setPage] = useState<number>(1);
+  const debouncedSearchTerm = useDebounce(search, 500);
+  const [open, setOpen] = useState<boolean>(false);
+  const [orderId, setOrderId] = useState<string>("");
+
+  const {
+    data: ordersData,
+    error: ordersError,
+    isLoading: isOrdersLoading,
+    mutate: fetchOrders,
+  } = useSWRImmutable<OrderNamespace.GET>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
+    fetcher
+  );
+  const orders = ordersData?.items || [];
+  const ordersMeta = ordersData?.meta || undefined;
+
+  const onPageChange = (value: number) => {
+    setPage(value);
+  };
+
+  const onPageSizeChange = (value: number) => {
+    setLimit(value);
+  };
+
+  const handleSort = (column: keyof Lead) => {
+    setSortColumn(column);
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  const handleSelect = (orderId: string) => {
+    setSelectedLeads((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const t = useTranslations("Orders.List");
+  const locale = useLocale();
+
+  return (
+    <Card className="border-b-2 border-gray-100">
+      {/* <EditContactDialog orderId={orderId} open={open} setOpen={setOpen} /> */}
+      <EditOrderDialog
+        open={open}
+        setOpen={setOpen}
+        order={orders.find((order) => order.id === orderId)!}
+      />
+
+      <div className="_table">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead
+                onClick={() => handleSort("name")}
+                className={`cursor-pointer hover:text-black lg:w-[10%] ${locale === "fa" ? "text-right" : "text-left"}`}
+              >
+                {t("product")}
+              </TableHead>
+
+              <TableHead className="lg:w-[7%] text-center">
+                {t("image")}
+              </TableHead>
+
+              <TableHead
+                className="cursor-pointer text-center hover:text-black lg:w-[4%]"
+                onClick={() => handleSort("username")}
+              >
+                {t("quantity")}
+              </TableHead>
+
+              <TableHead
+                className="cursor-pointer text-center hover:text-black lg:w-[8%]"
+                onClick={() => handleSort("messages")}
+              >
+                {t("price")}
+              </TableHead>
+
+              <TableHead
+                className="cursor-pointer text-center hover:text-black lg:w-[8%]"
+                onClick={() => handleSort("messages")}
+              >
+                {t("details")}
+              </TableHead>
+
+              <TableHead className="lg:w-[3%] _space">وضعیت</TableHead>
+
+              <TableHead className="text-center lg:w-[7%]">
+                {t("actions")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody id="scrollableDiv">
+            {isOrdersLoading ? (
+              <OrderListSkeleton rowCount={limit} />
+            ) : (
+              orders.map((order) => (
+                <TableRow
+                  key={order.id}
+                  className={selectedLeads.includes(order.id) ? "bg-muted" : ""}
+                >
+                  <TableCell className="">
+                    <Link
+                      href={`/console/products/${order.orderProducts[0].product.id}`}
+                      target="_blank"
+                      className="hover:text-pink-700 flex justify-start items-center gap-x-3"
+                    >
+                      <ImageWithFallback
+                        src={
+                          order.orderProducts[0].product.images[0].url ??
+                          "https://github.com/shadcn.png"
+                        }
+                        fallbackSrc="https://github.com/shadcn.png"
+                        alt={`${order.id} order`}
+                        width={70}
+                        height={70}
+                        className="rounded-sm"
+                      />
+                      <p className="text-md font-medium">
+                        {order.orderProducts[0].product.title}
+                      </p>
+                    </Link>
+                  </TableCell>
+
+                  <TableCell className="flex justify-center">
+                    <Dialog
+                      open={isImageModalOpen}
+                      onOpenChange={setIsImageModalOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" className="w-full p-0 h-auto">
+                          <ImageWithFallback
+                            src={order.orderCardToCard.url}
+                            alt={t("cardToCardImage")}
+                            fallbackSrc="https://github.com/shadcn.png"
+                            width={70}
+                            height={70}
+                            className=" rounded-md"
+                          />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl">
+                        <ImageWithFallback
+                          src={order.orderCardToCard.url}
+                          fallbackSrc="https://github.com/shadcn.png"
+                          alt={t("cardToCardImage")}
+                          width={1200}
+                          height={800}
+                          className="w-full h-auto object-contain"
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {order.orderProducts[0].quantity}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    <span dir="ltr">
+                      {(order.orderProducts[0].quantity *
+                        order.orderProducts[0].product.price).toLocaleString()}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="_space">
+                    {`${order.lead.contact.firstname} ${order.lead.contact.lastname}\n${order.lead.contact.state}, ${order.lead.contact.city}`}
+                  </TableCell>
+
+                  <TableCell className="_space">
+                    <Badge
+                      variant={
+                        order.status === ORDER_STATUS.PROCESSING
+                          ? "success"
+                          : "outline"
+                      }
+                    >
+                      {t(`orderStatus.${order.status}`)}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    <div className="flex gap-2 justify-center">
+                      <Pencil
+                        size={20}
+                        weight="light"
+                        className="text-gray-500 hover:text-pink-700 cursor-pointer"
+                        onClick={() => {
+                          setOpen(true);
+                          setOrderId(order.id);
+                        }}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Pagination
+        currentPage={page}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+        pageSize={limit}
+        totalItems={ordersMeta?.totalItems || limit}
+        totalPages={ordersMeta?.totalPages || 1}
+      />
+    </Card>
+  );
+}

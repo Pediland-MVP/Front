@@ -7,9 +7,12 @@ export type ERROR_CODES =
     | 'ORDER_EXPIRED'
     | 'ORDER_SHOP_IS_NOT_VALID'
     | 'ORDER_INVALID'
-    | 'ORDER_CARD_TO_CARD_NOT_UPLOADED'
     | 'ORDER_QUANTITY_IS_ZERO'
-    | 'LEAD_INSTAGRAM_NOT_FOUND';
+    | 'ORDER_CARD_TO_CARD_NOT_UPLOADED'
+    | 'LEAD_INSTAGRAM_NOT_FOUND'
+    | 'NO_INSTAGRAM';
+
+
 export interface ExceptionMessage {
     message: string;
     statusCode: 400 | 401 | 404 | 500;
