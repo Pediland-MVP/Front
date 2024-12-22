@@ -1,13 +1,11 @@
 "use client";
 
-import { Suspense, lazy } from "react";
+import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { Button } from "@/components/theme/ui/button";
 import useSWR from "swr";
 import { OrderNamespace } from "@/types/order";
 import { fetcher } from "@/hooks/swr/fetcher";
-import LoadingComponent from "./components/loadingComponent";
 import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
 import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";
 import { PaymentSkeleton } from "./components/payment.skeleton";
@@ -15,11 +13,14 @@ import { ProductDetailsSkeleton } from "./components/productDetails.skeleton";
 import ProductDetails from "./components/productDetails";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import { GENDERS } from "@/app/constants/gender.constant";
 import { REGEX_MOBILE } from "@/app/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import FloatingTimeCircle from "./components/floatingTimeCircle";
+import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { toast } from "@/components/ui/use-toast";
+import { OrderSubmitButtonSkeleton } from "./components/orderSubmitButton.skeleton";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -36,27 +37,36 @@ const PaymentDetails = dynamic(() => import("./components/payment"), {
   ssr: false,
 });
 
+const OrderSubmitButton = dynamic(
+  () => import("./components/orderSubmitButton"),
+  {
+    loading: () => <OrderSubmitButtonSkeleton />,
+    ssr: false,
+  }
+);
+
 export const orderFormSchema = z.object({
-  gender: z.enum(["male", "female"]),
-  firstname: z.string().nullable(),
-  lastname: z.string().nullable(),
-  email: z.string().email().nullable(),
-  mobile: z.string().regex(REGEX_MOBILE, "Invalid mobile number").nullable(),
-  state: z.string().min(1, "State is required").nullable(),
-  city: z.string().min(1, "City is required").nullable(),
-  address: z.string().min(1, "Address is required").nullable(),
-  postalCode: z.string().min(1, "Postal code is required").nullable(),
+  gender: z.nativeEnum(GENDERS_ENUM),
+  firstname: z.string(),
+  lastname: z.string(),
+  email: z.string().email(),
+  mobile: z.string().regex(REGEX_MOBILE, "Invalid mobile number"),
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  address: z.string().min(1, "Address is required"),
+  postalcode: z.string().min(1, "Postal code is required"),
 });
 
 export default function CheckoutPage() {
   const t = useTranslations("Checkout");
+  const [isLoading, setIsLoading] = useState(false);
   const shopId = "ba4c3ff2-4b94-47a1-97c7-f041c73dbd49";
   const orderId = "c3d5d99e-cab2-4082-ad1d-16e67c04b926";
   const secret = "d7220ce2-8780-4be8-a95d-8f5dea9ff6cc";
 
   const {
     data: order,
-    isLoading,
+    isLoading: isLoadingOrder,
     error,
   } = useSWR<OrderNamespace.Order>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}`,
@@ -66,7 +76,7 @@ export default function CheckoutPage() {
   const form = useForm({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
-      gender: GENDERS[0],
+      gender: GENDERS_ENUM.MALE,
       firstname: "",
       lastname: "",
       email: "",
@@ -92,12 +102,45 @@ export default function CheckoutPage() {
           | "city"
           | "address"
           | "postalcode"
-        >)
-      })
+        >),
+      });
     }
-  }, [order])
+  }, [order]);
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
+    setIsLoading(true);
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/process`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(values),
+      }
+    )
+      .then(async (res) => {
+        const response = await res.json();
+        if (!res.ok) {
+          switch ((response as ExceptionMessage).code) {
+            case "ORDER_CARD_TO_CARD_NOT_UPLOADED":
+              toast({
+                title: t("orderCardToCardNotUploaded"),
+                variant: "destructive",
+              });
+              break;
+          }
+        }
+        toast({
+          title: t("orderProcessed"),
+          description: t("orderProcessedDescription"),
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   if (error) return <div>Error loading order data</div>;
 
@@ -107,7 +150,10 @@ export default function CheckoutPage() {
         <div className="_checkout bg-white border rounded-xl p-5 md:p-10">
           <div className="grid md:grid-cols-4 gap-10">
             <Suspense fallback={<ProductDetailsSkeleton />}>
-              <ProductDetails orderQuantity={order?.orderProducts[0].quantity}  product={order?.orderProducts?.[0]?.product} />
+              <ProductDetails
+                orderQuantity={order?.orderProducts[0].quantity}
+                product={order?.orderProducts?.[0]?.product}
+              />
             </Suspense>
 
             <Suspense fallback={<CustomerDetailsSkeleton />}>
@@ -122,11 +168,13 @@ export default function CheckoutPage() {
               <PaymentDetails orderCardToCard={order?.orderCardToCard} />
             </Suspense>
 
-            {order && <FloatingTimeCircle startDate={new Date(order.createDate)} />}
+            {order && (
+              <FloatingTimeCircle startDate={new Date(order.createDate)} />
+            )}
 
-            <Button type="submit" className="w-full">
-              {t("paynow")}
-            </Button>
+            <Suspense fallback={<OrderSubmitButtonSkeleton />}>
+              <OrderSubmitButton isLoading={isLoading} />
+            </Suspense>
           </div>
         </div>
       </form>

@@ -1,19 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { CircleNotch, Package } from "@phosphor-icons/react/dist/ssr";
+import { Package } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { orderFormSchema } from "../page";
 
-
 export default function Address() {
   const t = useTranslations("Checkout");
-    const { register, handleSubmit, formState: { errors } } = useFormContext<z.infer<typeof orderFormSchema>>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof orderFormSchema>>();
 
   return (
     <div className="_customer-address md:col-span-2">
@@ -55,9 +56,9 @@ export default function Address() {
           </Label>
           <Input
             id="postalcode"
-            {...register("postalCode", { required: true })}
+            {...register("postalcode", { required: true })}
           />
-          {errors.postalCode && (
+          {errors.postalcode && (
             <span className="text-red-500 text-sm">{t("required")}</span>
           )}
         </div>

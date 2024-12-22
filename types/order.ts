@@ -1,3 +1,5 @@
+import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+
 export namespace OrderNamespace {
     export type Order = IOrder
 }
@@ -56,7 +58,7 @@ export interface Contact {
     postalcode?: string;
     address?:    string;
     city?:       string;
-    gender?:     string;
+    gender?:     GENDERS_ENUM;
     birthDate?:  string;
     state?:      string
 }
