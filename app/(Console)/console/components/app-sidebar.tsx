@@ -9,7 +9,8 @@ import {
   Lightning,
   Note,
   Sliders,
-  Infinity
+  Infinity,
+  Basket
 } from "@phosphor-icons/react/dist/ssr";
 
 import { NavMain } from "./nav-main";
@@ -41,6 +42,12 @@ const generateData = (t: any) => ({
       url: "/console/contacts",
       icon: AddressBookTabs,
       isActive: true,
+    },
+    {
+      title: t('orders'),
+      url: '/console/orders',
+      icon: Basket,
+      isActive: true
     },
     {
       title: t('messages'),
