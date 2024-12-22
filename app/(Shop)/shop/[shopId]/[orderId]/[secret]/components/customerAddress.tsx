@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
+import logger from "@/app/utils/logger";
 
 export default function Address() {
   const t = useTranslations("Checkout");
@@ -15,6 +16,8 @@ export default function Address() {
     handleSubmit,
     formState: { errors },
   } = useFormContext<z.infer<typeof orderFormSchema>>();
+
+  logger.debug(errors)
 
   return (
     <div className="_customer-address md:col-span-2">
@@ -56,10 +59,11 @@ export default function Address() {
           </Label>
           <Input
             id="postalcode"
+            type="number"
             {...register("postalcode", { required: true })}
           />
           {errors.postalcode && (
-            <span className="text-red-500 text-sm">{t("required")}</span>
+            <span className="text-red-500 text-sm">{t(`Errors.postalcode.${errors.postalcode.type}`)}</span>
           )}
         </div>
       </div>

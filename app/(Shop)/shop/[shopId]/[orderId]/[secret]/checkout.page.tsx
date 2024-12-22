@@ -63,7 +63,7 @@ export const orderFormSchema = z.object({
   state: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
   address: z.string().min(1, "Address is required"),
-  postalcode: z.string().min(1, "Postal code is required"),
+  postalcode: z.string().min(10, 'کد پستی باید ۱۰ رقمی باشد').max(10),
 });
 
 export type CheckoutProps = {
