@@ -38,6 +38,7 @@ export const FileUpload = ({
   images = [],
   progress = 0,
   isUploading = false,
+  className
 }: {
   onChange?: (files: File[]) => void;
   type?: "file" | "image";
@@ -46,6 +47,7 @@ export const FileUpload = ({
   multiple?: boolean;
   progress?: number;
   isUploading?: boolean;
+  className?: string;
 }) => {
 
   const t = useTranslations('FileUpload')
@@ -75,7 +77,7 @@ export const FileUpload = ({
   });
 
   return (
-    <div className="bg-white border-2 hover:border-primary rounded-lg mt-1 duration-300 relative" {...getRootProps()}>
+    <div className={cn(className, "bg-white border-2 hover:border-primary rounded-lg mt-1 duration-300 relative")} {...getRootProps()}>
       {isUploading && (
         <AnimatedCircularProgressBar
           className="w-10 h-10 text-xs font-sans absolute right-5 top-5"

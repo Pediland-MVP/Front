@@ -4,6 +4,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import "@/app/globals.css";
 import Image from "next/image";
 import { ShoppingBagOpen } from "@phosphor-icons/react/dist/ssr";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -20,6 +21,7 @@ export default async function ShopLayout({
 
   return (
     <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
+      <Toaster/>
       <body className="bg-fuchsia-50/75">
         <header className="mb-2">
           <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
