@@ -40,16 +40,6 @@ export default function page() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-
-        <div className="_tools">
-          <Input
-            type="search"
-            placeholder={t("searchPlaceholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 border-none shadow-none"
-          />
-        </div>
       </header>
 
       <OrderListCard search={search} setSearch={setSearch} />
