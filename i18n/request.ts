@@ -6,21 +6,21 @@ import logger from '@/app/utils/logger';
 export default getRequestConfig(async () => {
 
   const cookiesStore = await cookies()
-  const header = await headers()
+  // const header = await headers()
 
 
   const locale = cookiesStore.get('NEXT_LOCALE')?.value
   logger.debug("Locale of token", locale)
   
-  const acceptLanguageHeader = header.get('Accept-Language')
-    let acceptLanguage: parser.Language[] = []
-    if (acceptLanguageHeader) {
-      acceptLanguage = parser.parse(acceptLanguageHeader)
-    }
+  // const acceptLanguageHeader = header.get('Accept-Language')
+  //   let acceptLanguage: parser.Language[] = []
+  //   if (acceptLanguageHeader) {
+  //     acceptLanguage = parser.parse(acceptLanguageHeader)
+  //   }
 
-  if (acceptLanguage.length > 0) {
-    logger.debug("Accept-Language", acceptLanguage[0].code)
-  }
+  // if (acceptLanguage.length > 0) {
+  //   logger.debug("Accept-Language", acceptLanguage[0].code)
+  // }
 
 
   if (locale) {
@@ -30,13 +30,13 @@ export default getRequestConfig(async () => {
     };
   }
   
-  if (acceptLanguage.length > 0) {
-    const language = acceptLanguage[0].code
-    return {
-      locale: language,
-      messages: (await import(`../messages/${language}.json`)).default
-    };
-  }
+  // if (acceptLanguage.length > 0) {
+  //   const language = acceptLanguage[0].code
+  //   return {
+  //     locale: language,
+  //     messages: (await import(`../messages/${language}.json`)).default
+  //   };
+  // }
 
  
   return {
