@@ -82,7 +82,6 @@ export default function ContactListCard({
         : [...prev, contactId]
     );
   };
-
   const t = useTranslations("Contacts.List");
   const locale = useLocale();
 
@@ -201,7 +200,7 @@ export default function ContactListCard({
                       <Pencil
                         size={20}
                         weight="light"
-                        className="text-gray-500 hover:text-pink-700 cursor-pointer"
+                        className="text-gray-500 hover:text-green-600 cursor-pointer"
                         onClick={() => {
                           setOpen(true);
                           setContactId(contact.id);

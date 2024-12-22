@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/theme/ui/alert-dialog";
 import { useTranslations } from "next-intl";
 
 interface DeleteConfirmationDialogProps {
@@ -29,18 +29,20 @@ export function ProductDeleteDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="rtl:text-right ltr:text-left">
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {t('alert')}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
           <AlertDialogDescription>
-            {t('description')}
+            {t("deleteConfirmation")}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="rtl:flex-row-reverse">
-          <AlertDialogAction onClick={onConfirm}>حذف</AlertDialogAction>
-          <AlertDialogCancel onClick={onClose}>لغو</AlertDialogCancel>
+        <AlertDialogFooter>
+          <AlertDialogAction
+            onClick={onConfirm}
+          >
+            {t("delete")}
+          </AlertDialogAction>
+          <AlertDialogCancel onClick={onClose}>{t("cancel")}</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

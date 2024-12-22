@@ -1,20 +1,20 @@
 'use client'
 import React from 'react';
-import { 
-  DndContext, 
-  closestCenter, 
-  KeyboardSensor, 
-  PointerSensor, 
-  useSensor, 
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
   useSensors,
   DragEndEvent
 } from '@dnd-kit/core';
-import { 
-  arrayMove, 
-  sortableKeyboardCoordinates, 
-  rectSortingStrategy, 
+import {
+  arrayMove,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
   SortableContext,
-  useSortable 
+  useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
@@ -34,7 +34,7 @@ import {
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/theme/ui/button";
 import { useTranslations } from 'next-intl';
 
 type SortableItemProps = {
@@ -47,10 +47,10 @@ type SortableItemProps = {
 };
 
 function SortableItem({
-  id, 
-  index, 
-  productsField, 
-  removeProducts, 
+  id,
+  index,
+  productsField,
+  removeProducts,
   updateProducts,
   formState
 }: SortableItemProps) {
@@ -68,35 +68,34 @@ function SortableItem({
   };
 
   return (
-    <div 
-      ref={setNodeRef} 
+    <div
+      ref={setNodeRef}
       style={style}
-      className="flex flex-col justify-center items-center gap-x-4 p-2 rounded-2xl border-[1.2px] relative"
+      className="bg-blue-50/50 p-3 rounded-xl flex flex-col items-start h-44"
     >
-      <div className="absolute top-2 left-2">
-        <ArrowsOutCardinal 
-          {...attributes} 
-          {...listeners} 
-          size={24} 
-          className="text-gray-400 cursor-move" 
+      <div className="flex items-center justify-between w-full">
+        <ArrowsOutCardinal
+          {...attributes}
+          {...listeners}
+          size={18}
+          className="cursor-move"
         />
+        {productsField.length > 1 && (
+          <Trash
+            size={20}
+            className="text-red-600 cursor-pointer"
+            onClick={() => removeProducts(index)}
+          />
+        )}
       </div>
-      <div className="relative flex justify-center items-center">
+      <div className="flex justify-center items-center h-full w-full">
         <ProductsDialog
           index={index}
           productsField={productsField}
           updateProducts={updateProducts}
           formState={formState}
         />
-        {productsField.length > 2 && (
-          <Trash
-            size={24}
-            className="text-red-600 cursor-pointer absolute z-50 top-0 -right-10"
-            onClick={() => removeProducts(index)}
-          />
-        )}
       </div>
-      <div className="flex flex-col gap-2 w-full"></div>
     </div>
   );
 }
@@ -151,8 +150,8 @@ export default function Catalogue({
         name="isProductsEnabled"
         render={({ field }) => {
           return (
-            <FormItem className="flex flex-col justify-start gap-y-4">
-              <div className="flex items-center gap-x-2 mb-2">
+            <FormItem className="flex flex-col justify-start gap-y-2">
+              <div className="flex items-center gap-x-2">
                 <FormControl>
                   <Switch
                     dir="ltr"
@@ -170,29 +169,29 @@ export default function Catalogue({
                 <FormLabel className="">{t('label')}</FormLabel>
               </div>
               {field.value && (
-                <div className='space-y-1'>
+                <div className='space-y-3'>
                   <Button
                     variant="ghost"
-                    type="button"
                     onClick={() => appendProducts({})}
-                    className="flex items-center gap-2 cursor-pointer"
+                    type="button"
+                    className="flex items-center gap-2 cursor-pointer w-full"
                   >
-                    <PlusCircle size={24} />
+                    <PlusCircle size={22} className="text-blue-600" />
                     <span className="text-sm font-semibold text-blue-600">
                       {t('add')}
                     </span>
                   </Button>
-                  <DndContext 
+                  <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={handleDragEnd}
                   >
-                    <SortableContext 
-                      items={productsField.map(item => item._xid)} 
+                    <SortableContext
+                      items={productsField.map(item => item._xid)}
                       strategy={rectSortingStrategy}
                     >
                       <div
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
                         style={{
                           gridTemplateRows:
                             "repeat(auto-fill, minmax(200px, 1fr))",

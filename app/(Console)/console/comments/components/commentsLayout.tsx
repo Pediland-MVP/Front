@@ -12,16 +12,13 @@ interface ChatLayoutProps {
 export function CommentsLayout({ children }: ChatLayoutProps) {
 
   return (
-    <>
-      <div className="w-full flex h-full justify-center items-center gap-x-2 mr-4">
-        <div className="w-2/6">
-          <Suspense>
-            <CommentsList/>
-          </Suspense>
-        </div>
-
-        {children}
+    <div className="w-full flex">
+      <div className="lg:w-1/3">
+        <Suspense>
+          <CommentsList />
+        </Suspense>
       </div>
-    </>
+      {children}
+    </div>
   );
 }

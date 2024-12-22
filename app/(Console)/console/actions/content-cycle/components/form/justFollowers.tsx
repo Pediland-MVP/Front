@@ -48,15 +48,15 @@ export default function JustFollowers({
 
       {getValues().justFollowers && (
         <>
+          <p className="text-sm text-muted-foreground">
+            {t('helper')}
+          </p>
           <FormField
             control={control}
             name="followMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
                 <FormLabel className="">{t('messageText')}</FormLabel>
-                <p className="text-sm mb-1">
-                  {t('helper')}
-                </p>
                 <FormControl>
                   <Input
                     placeholder={t('placeholder')}

@@ -57,9 +57,9 @@ function SortableItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex gap-x-4 items-center">
+    <div ref={setNodeRef} style={style} className="flex gap-x-3 items-center">
       <div {...attributes} {...listeners} className="cursor-move">
-        <ArrowsOutCardinal size={20} />
+        <ArrowsOutCardinal size={18} />
       </div>
       <div>
         <Trash
@@ -149,17 +149,19 @@ export default function Questions({ control }: QuestionsProps) {
           items={questionsField.map((field) => field._xid)}
           strategy={rectSortingStrategy}
         >
-          <div className="space-y-2">
-            {questionsField.map((question, index) => (
-              <SortableItem
-                removeQuestions={removeQuestions}
-                key={question._xid}
-                id={question._xid}
-                index={index}
-                control={control}
-              />
-            ))}
-          </div>
+          {questionsField.length > 0 && (
+            <div className="space-y-2">
+              {questionsField.map((question, index) => (
+                <SortableItem
+                  removeQuestions={removeQuestions}
+                  key={question._xid}
+                  id={question._xid}
+                  index={index}
+                  control={control}
+                />
+              ))}
+            </div>
+          )}
         </SortableContext>
       </DndContext>
     </>

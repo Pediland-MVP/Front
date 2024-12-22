@@ -22,9 +22,9 @@ import {
   CaretRight,
   CaretLeft,
   Mailbox,
+  EnvelopeSimple,
 } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/theme/ui/card";
-import { cn } from "@/lib/utils";
 
 type ContentCycle = {
   title: string;
@@ -145,8 +145,8 @@ export default function ContentCycleTable() {
   const locale = useLocale();
 
   return (
-    <Card className="p-4">
-      <div className={cn(locale === "fa" ? "rtl" : "ltr")} dir={cn(locale === "fa" ? "rtl" : "ltr")}>
+    <Card className="border-b-2 border-gray-100">
+      <div>
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner className="h-8 w-8 animate-spin" />
@@ -159,52 +159,52 @@ export default function ContentCycleTable() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("title")}</TableHead>
-                    <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>
+                    <TableHead className="text-center">{t("title")}</TableHead>
+                    <TableHead className="text-center">
                       {t("conditionValue")}
                     </TableHead>
-                    <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>
+                    <TableHead className="text-center">
                       {t("firstMessage")}
                     </TableHead>
-                    <TableHead className={cn(locale === "fa" ? "text-left" : "text-right")}>{t("actions")}</TableHead>
+                    <TableHead className="lg:w-[10%] text-center">{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {data?.items.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell className={cn(locale === "fa" ? "text-right" : "text-left")}>{item.title}</TableCell>
-                      <TableCell className={cn(locale === "fa" ? "text-right" : "text-left")}>
+                      <TableCell className="text-center py-3">{item.title}</TableCell>
+                      <TableCell className="text-center">
                         {item.conditions[0]?.value || t("notAvailable")}
                       </TableCell>
-                      <TableCell className={cn(locale === "fa" ? "text-right" : "text-left")}>
+                      <TableCell className="text-center">
                         {item.contents[0]?.text || t("notAvailable")}
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-end space-x-2 space-x-reverse">
+                        <div className="flex justify-center gap-3">
                           <Link
                             href={`/console/sessions?contentCycleId=${item.id}`}
                           >
-                            <Button variant="ghost" size="sm">
-                              <Mailbox className="h-4 w-4 ml-2" />
-                              {t("responses")}
-                            </Button>
+                            <EnvelopeSimple
+                              size={20}
+                              weight="light"
+                              className="text-gray-500 hover:text-primary cursor-pointer" />
+
                           </Link>
                           <Link
                             href={`/console/actions/content-cycle/${item.id}`}
                           >
-                            <Button variant="ghost" size="sm">
-                              <Pencil className="h-4 w-4 ml-2" />
-                              {t("edit")}
-                            </Button>
+                            <Pencil
+                              size={20}
+                              weight="light"
+                              className="text-gray-500 hover:text-green-600 cursor-pointer" />
+
                           </Link>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteClick(item.id)}
-                          >
-                            <Trash className="h-4 w-4 ml-2" />
-                            {t("delete")}
-                          </Button>
+                          <Trash
+                            size={20}
+                            weight="light"
+                            className="text-gray-500 hover:text-red-600 cursor-pointer"
+                            onClick={() => handleDeleteClick(item.id)} />
                         </div>
                       </TableCell>
                     </TableRow>

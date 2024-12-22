@@ -43,12 +43,13 @@ export function NavMain({
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.title} className={pathname === item.url ? "text-black bg-blue-100" : "text-gray-700"}>
+              <SidebarMenuButton asChild tooltip={item.title} className={pathname === item.url ? "text-primary hover:text-primary bg-blue-100" : "text-gray-700 hover:text-primary"}>
                 <Link href={item.url}>
                   <item.icon size={24} weight="duotone" />
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
+              
               {item.items?.length ? (
                 <>
                   <CollapsibleTrigger asChild>
@@ -57,12 +58,12 @@ export function NavMain({
                       <span className="sr-only">Toggle</span>
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
-                  
+
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild className={pathname.startsWith(subItem.url) ? "bg-blue-100 text-black" : "text-gray-700"}>
+                          <SidebarMenuSubButton asChild className={pathname.startsWith(subItem.url) ? "text-primary hover:text-primary bg-blue-100" : "text-gray-700 hover:text-primary"}>
                             <Link href={subItem.url}>
                               <span>{subItem.title}</span>
                             </Link>

@@ -60,7 +60,7 @@ export default function Product({ id }: { id: string }) {
 
     return (
         <div className="_edit-product">
-            <header className="px-4 pt-4 sm:h-14 flex justify-between items-center gap-4">
+            <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
                 <div className="_wrap flex items-center gap-4">
                     <SidebarTrigger />
                     <Separator orientation="vertical" className="h-6" />
@@ -92,9 +92,7 @@ export default function Product({ id }: { id: string }) {
                 <div className="_tools"></div>
             </header>
 
-            <div className="p-4">
-                <ProductForm shouldBeEdit={product} />
-            </div>
+            <ProductForm shouldBeEdit={product} />
         </div>
     )
 }

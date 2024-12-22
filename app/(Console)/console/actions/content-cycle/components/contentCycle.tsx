@@ -48,7 +48,7 @@ type ContentCycleProps = {
 };
 
 export const contentCycleFormSchema = z.object({
-  title: z.string().min(1, "عنوان الزامی است"),
+  title: z.string().min(1, "لطفا عنوان اتوماسیون رو مشخص کنید."),
   conditions: z
     .array(
       z.object({
@@ -226,8 +226,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     setIsSubmitting(true);
 
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${
-        id ? `/${id}` : ""
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${id ? `/${id}` : ""
       }`,
       {
         method: id ? "PATCH" : "POST",
@@ -269,8 +268,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const t = useTranslations("Automations");
 
   return (
-    <div className="_add-automation w-full xl:w-1/2 2xl:w-1/3">
-      <Card className="p-4 sm:p-6">
+    <div className="_add-automation w-full xl:w-1/2 2xl:w-1/3 h-full">
+      <Card className='border-l-2 border-gray-100 px-8 py-6 h-full'>
         {isLoading ? (
           <div className="min-h-screen w-full flex justify-center items-center">
             <LoadingSpinner className="h-20 w-20 text-gray-500" />
@@ -281,18 +280,15 @@ export default function ContentCycle({ id }: ContentCycleProps) {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="grid gap-4"
+                className="grid gap-3"
               >
                 <ContentCycleTitle control={form.control} />
 
+                <hr className="border-gray-100" />
+
                 <Trigger control={form.control} getValues={form.getValues} />
 
-                <JustFollowers
-                  control={form.control}
-                  getValues={form.getValues}
-                />
-
-                <LikeDirect control={form.control} />
+                <hr className="border-gray-100" />
 
                 <Conditions
                   control={form.control}
@@ -300,7 +296,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   formState={form.formState}
                 />
 
+                <hr className="border-gray-100" />
+
                 <Questions control={form.control} />
+
+                <hr className="border-gray-100" />
 
                 <Contents
                   control={form.control}
@@ -308,7 +308,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   formState={form.formState}
                 />
 
-                <Cta control={form.control} />
+                <hr className="border-gray-100" />
 
                 <Catalogue
                   control={form.control}
@@ -316,7 +316,24 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   getValues={form.getValues}
                 />
 
+                <hr className="border-gray-100" />
+
                 <GetUserData control={form.control} />
+
+                <hr className="border-gray-100" />
+
+                <JustFollowers
+                  control={form.control}
+                  getValues={form.getValues}
+                />
+
+                <hr className="border-gray-100" />
+
+                <LikeDirect control={form.control} />
+
+                <hr className="border-gray-100" />
+
+                <Cta control={form.control} />
 
                 {/* Submit button */}
                 <LoadingButton isLoading={isSubmitting}>

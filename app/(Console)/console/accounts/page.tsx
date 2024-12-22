@@ -24,10 +24,10 @@ import { Plus } from "@phosphor-icons/react/dist/ssr";
 export default function AccountPage() {
   const t = useTranslations("Accounts");
   const router = useRouter();
-  const [filteredInstagramPages,  setfilteredInstagramPages] = useState<InstagramNamespace.GET['Accounts'] | null>()
+  const [filteredInstagramPages, setfilteredInstagramPages] = useState<InstagramNamespace.GET['Accounts'] | null>()
   return (
     <div className="_accounts">
-      <header className="px-4 pt-4 flex justify-between items-center gap-4">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -57,7 +57,7 @@ export default function AccountPage() {
 
       <div className="_cards p-4 grid sm:grid-cols-5 gap-5">
         <Suspense>
-          <Accounts  filteredInstagramPages={filteredInstagramPages} setFilteredInstagramPages={setfilteredInstagramPages} />
+          <Accounts filteredInstagramPages={filteredInstagramPages} setFilteredInstagramPages={setfilteredInstagramPages} />
         </Suspense>
       </div>
     </div>

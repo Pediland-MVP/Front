@@ -202,21 +202,23 @@ export default function Contents({
           items={contentsField.map((field) => field._xid)}
           strategy={rectSortingStrategy}
         >
-          <div className="space-y-4">
-            {contentsField.map((content, index) => (
-              <SortableItem
-                key={content._xid}
-                id={content._xid}
-                index={index}
-                control={control}
-                getValues={getValues}
-                formState={formState}
-                contentsField={contentsField}
-                removeContents={removeContents}
-                updateContents={updateContents}
-              />
-            ))}
-          </div>
+          {contentsField.length > 0 && (
+            <div className="space-y-3">
+              {contentsField.map((content, index) => (
+                <SortableItem
+                  key={content._xid}
+                  id={content._xid}
+                  index={index}
+                  control={control}
+                  getValues={getValues}
+                  formState={formState}
+                  contentsField={contentsField}
+                  removeContents={removeContents}
+                  updateContents={updateContents}
+                />
+              ))}
+            </div>
+          )}
         </SortableContext>
       </DndContext>
     </>

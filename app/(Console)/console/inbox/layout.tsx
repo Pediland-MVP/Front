@@ -44,7 +44,7 @@ const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
         <div className="_tools"></div>
       </header>
 
-      <div className="_chat-layout h-full w-full flex flex-col lg:flex-row overflow-auto">
+      <div className="_chat-layout min-h-[calc(100vh-5.5rem)] w-full flex flex-col lg:flex-row overflow-auto">
         <ConversationsList />
         {children}
       </div>

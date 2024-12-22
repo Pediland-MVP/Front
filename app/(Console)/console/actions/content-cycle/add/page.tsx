@@ -20,7 +20,7 @@ export default function page() {
 
   return (
     <div className="_add-automation">
-      <header className="px-4 pt-4 h-14 flex justify-between items-center gap-4">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -51,7 +51,8 @@ export default function page() {
 
         <div className="_tools"></div>
       </header>
-      <div className="p-4">
+
+      <div className="min-h-[calc(100vh-5.5rem)]">
         <ContentCycle />
       </div>
     </div>
