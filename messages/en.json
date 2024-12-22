@@ -22,7 +22,7 @@
         "more": "More",
         "logoutFailed": "Logout failed",
         "logoutSuccess": "Logout successfully",
-        "orders": "سفارشات"
+        "orders": "Orders"
     },
     "Auth": {
         "signup": "Sign up",
