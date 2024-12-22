@@ -7,7 +7,7 @@ import { CircleNotch, UserRectangle } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
-import { orderFormSchema } from "../page";
+import { orderFormSchema } from "../checkout.page";
 import { Select, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/theme/ui/select";
 
 export default function CustomerDetails() {

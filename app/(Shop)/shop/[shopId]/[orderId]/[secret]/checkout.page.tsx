@@ -4,8 +4,7 @@ import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import useSWR from "swr";
-import { OrderNamespace } from "@/types/order";
-import { fetcher } from "@/hooks/swr/fetcher";
+import { ORDER_STATUS, OrderNamespace } from "@/types/order";
 import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
 import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";
 import { PaymentSkeleton } from "./components/payment.skeleton";
@@ -21,6 +20,11 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { toast } from "@/components/ui/use-toast";
 import { OrderSubmitButtonSkeleton } from "./components/orderSubmitButton.skeleton";
 import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skeleton";
+import logger from "@/app/utils/logger";
+import OrderNotfound from "./components/order.notfound";
+import { fetcher2 } from "@/hooks/swr/fetcher2";
+import { useRouter } from "next/navigation";
+import OrderProcessing from "./components/order.processing";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -62,12 +66,17 @@ export const orderFormSchema = z.object({
   postalcode: z.string().min(1, "Postal code is required"),
 });
 
-export default function CheckoutPage() {
+export type CheckoutProps = {
+  shopId: string;
+  orderId: string;
+  secret: string
+}
+
+export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) {
   const t = useTranslations("Checkout");
   const [isLoading, setIsLoading] = useState(false);
-  const shopId = "ba4c3ff2-4b94-47a1-97c7-f041c73dbd49";
-  const orderId = "c3d5d99e-cab2-4082-ad1d-16e67c04b926";
-  const secret = "d7220ce2-8780-4be8-a95d-8f5dea9ff6cc";
+  const [orderCompleted, setOrderCompleted] = useState(false)
+
 
   const {
     data: order,
@@ -75,7 +84,7 @@ export default function CheckoutPage() {
     error,
   } = useSWR<OrderNamespace.Order>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}`,
-    fetcher
+    fetcher2
   );
 
   const form = useForm({
@@ -112,6 +121,7 @@ export default function CheckoutPage() {
     }
   }, [order]);
 
+
   const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
     setIsLoading(true);
     await fetch(
@@ -137,17 +147,27 @@ export default function CheckoutPage() {
               break;
           }
         }
-        toast({
-          title: t("orderProcessed"),
-          description: t("orderProcessedDescription"),
-        });
+        setOrderCompleted(true)
       })
       .finally(() => {
         setIsLoading(false);
       });
   };
 
-  if (error) return <div>Error loading order data</div>;
+  switch((error?.data as ExceptionMessage)?.code) {
+    case 'ORDER_INVALID':
+      return <OrderNotfound/>
+    case 'ORDER_EXPIRED' :
+      return <OrderNotfound/>
+  }
+
+  if (order?.status === ORDER_STATUS.PROCESSING) {
+    return <OrderProcessing/>
+  }
+
+  if(orderCompleted) {
+    return <OrderProcessing/>
+  }
 
   return (
     <FormProvider {...form}>
