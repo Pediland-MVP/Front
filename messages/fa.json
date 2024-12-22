@@ -20,7 +20,8 @@
         "logout": "خروج",
         "more": "بیشتر",
         "logoutFailed": "خروج انجام نشد",
-        "logoutSuccess": "خروج با موفقیت انجام شد"
+        "logoutSuccess": "خروج با موفقیت انجام شد",
+        "orders": "سفارشات"
     },
     "Auth": {
         "signup": "ثبت نام",

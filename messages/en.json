@@ -21,7 +21,8 @@
         "logout": "Log Out",
         "more": "More",
         "logoutFailed": "Logout failed",
-        "logoutSuccess": "Logout successfully"
+        "logoutSuccess": "Logout successfully",
+        "orders": "سفارشات"
     },
     "Auth": {
         "signup": "Sign up",
@@ -177,6 +178,56 @@
             "itemsCount": "Items Count",
             "show": "Show",
             "page": "{page} of {pages}"
+        }
+    },
+    "Orders": {
+        "dashboard": "Dashboard",
+        "list": "Orders List",
+        "searchPlaceholder": "Search...",
+        "List": {
+            "image": "Card to Card",
+            "product": "Product",
+            "price": "Total Price",
+            "quantity": "Quantity",
+            "details": "Details",
+            "actions": "Actions",
+            "orderStatus": {
+                "pending": "Pending",
+                "processing": "Processing",
+                "sending": "Sending",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            }
+        },
+        "OrderDetails": {
+            "productDetails": "Product Details",
+            "quantity": "Quantity",
+            "price": "Price",
+            "totalPrice": "Total Price",
+            "customerDetails": "Customer Details",
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone",
+            "shippingAddress": "Shipping Address",
+            "address": "Address",
+            "city": "City",
+            "state": "State",
+            "postalCode": "Postal Code",
+            "orderStatusTitle": "Order Status",
+            "selectStatus": "Select Status",
+            "updateStatus": "Update Status",
+            "cardToCardImage": "Card to Card Image",
+            "statusUpdated": "Status updated successfully",
+            "orderStatus": {
+                "pending": "Pending",
+                "processing": "Processing",
+                "sending": "Sending",
+                "completed": "Completed",
+                "cancelled": "Cancelled"
+            }
+        },
+        "EditDialog": {
+            "editInformation": "Edit Order"
         }
     },
     "Inbox": {
