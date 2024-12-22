@@ -3,20 +3,22 @@
 import { useState, useEffect } from 'react'
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { FloatingTimeCircleSkeleton } from './floatingTimeCircle.skeleton'
 
 interface FloatingTimeCircleProps {
-  startDate: Date
+  startDateString: string | undefined
 }
 
-const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDate }) => {
+const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString }) => {
   const [timeLeft, setTimeLeft] = useState(3600) // Initialize with 1 hour in seconds
   const totalTime = 3600 // 1 hour in seconds
   const progress = ((totalTime - timeLeft) / totalTime) * 100
 
   useEffect(() => {
+    if (!startDateString) return;
     const calculateTimeLeft = () => {
       const now = new Date()
-      const endTime = new Date(startDate.getTime() + 60 * 60 * 1000) // 1 hour after start
+      const endTime = new Date(new Date(startDateString).getTime() + 60 * 60 * 1000) // 1 hour after start
       const difference = endTime.getTime() - now.getTime()
       
       if (difference > 0) {
@@ -30,13 +32,15 @@ const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDate }) =>
     const timer = setInterval(calculateTimeLeft, 1000)
 
     return () => clearInterval(timer)
-  }, [startDate])
+  }, [startDateString])
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60)
     const seconds = time % 60
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
+
+  if (!startDateString) return <FloatingTimeCircleSkeleton/>
 
   return (
     <Card className="fixed z-50 md:bottom-4 md:right-4 bottom-0 right-0 left-0 md:w-32 md:h-32 h-16 md:rounded-full rounded-none flex items-center justify-center bg-background shadow-lg">

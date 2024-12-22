@@ -21,8 +21,8 @@ export default async function ShopLayout({
 
   return (
     <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
-      <Toaster/>
       <body className="bg-fuchsia-50/75">
+        <Toaster/>
         <header className="mb-2">
           <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
             <div className="_wrap flex items-center justify-between py-2 sm:py-3 lg:py-4">

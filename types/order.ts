@@ -8,8 +8,8 @@ export namespace OrderNamespace {
 export interface IOrder {
     id:              string;
     secret:          string;
-    createDate:      Date;
-    updateDate:      Date;
+    createDate:      string;
+    updateDate:      string;
     status:          string;
     from:            string;
     paymentMethod:   string;

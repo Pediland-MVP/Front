@@ -16,11 +16,11 @@ import { z } from "zod";
 import { REGEX_MOBILE } from "@/app/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import FloatingTimeCircle from "./components/floatingTimeCircle";
 import { GENDERS_ENUM } from "@/app/constants/gender.constant";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { toast } from "@/components/ui/use-toast";
 import { OrderSubmitButtonSkeleton } from "./components/orderSubmitButton.skeleton";
+import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skeleton";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -36,6 +36,11 @@ const PaymentDetails = dynamic(() => import("./components/payment"), {
   loading: () => <PaymentSkeleton />,
   ssr: false,
 });
+
+const FloatingTimeCircle = dynamic(() => import("./components/floatingTimeCircle"), {
+  loading: () => <FloatingTimeCircleSkeleton />,
+  ssr: false,
+})
 
 const OrderSubmitButton = dynamic(
   () => import("./components/orderSubmitButton"),
@@ -168,9 +173,9 @@ export default function CheckoutPage() {
               <PaymentDetails orderCardToCard={order?.orderCardToCard} />
             </Suspense>
 
-            {order && (
-              <FloatingTimeCircle startDate={new Date(order.createDate)} />
-            )}
+            <Suspense fallback={<FloatingTimeCircleSkeleton/>}>
+              <FloatingTimeCircle startDateString={order?.createDate} />
+            </Suspense>
 
             <Suspense fallback={<OrderSubmitButtonSkeleton />}>
               <OrderSubmitButton isLoading={isLoading} />
