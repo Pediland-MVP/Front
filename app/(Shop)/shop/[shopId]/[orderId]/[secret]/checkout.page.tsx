@@ -159,6 +159,8 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
       return <OrderNotfound/>
     case 'ORDER_EXPIRED' :
       return <OrderNotfound/>
+    case "ORDER_NOT_FOUND":
+      return <OrderNotfound/>
   }
 
   if (order?.status === ORDER_STATUS.PROCESSING) {

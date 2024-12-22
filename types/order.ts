@@ -147,6 +147,10 @@ export interface Item {
     orderCardToCard: GetOrderCardToCard;
     orderProducts:   GetOrderProduct[];
     lead:            GetLead;
+    instagram: GetInstagram
+}
+export interface GetInstagram {
+    id: string
 }
 
 export interface GetLead {

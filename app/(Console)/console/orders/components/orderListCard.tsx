@@ -19,7 +19,7 @@ import {
   TableHead,
 } from "@/components/theme/ui/table";
 import ImageWithFallback from "@/components/ui/imageWithCallback";
-import { Pencil } from "@phosphor-icons/react/dist/ssr";
+import { Eye, Pencil } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/theme/ui/card";
 import OrderListSkeleton from "./orderListSkeleton";
 import { Badge } from "@/components/ui/badge";
@@ -212,8 +212,10 @@ export default function OrderListCard({
 
                   <TableCell className="text-center">
                     <span dir="ltr">
-                      {(order.orderProducts[0].quantity *
-                        order.orderProducts[0].product.price).toLocaleString()}
+                      {(
+                        order.orderProducts[0].quantity *
+                        order.orderProducts[0].product.price
+                      ).toLocaleString()}
                     </span>
                   </TableCell>
 
@@ -244,6 +246,14 @@ export default function OrderListCard({
                           setOrderId(order.id);
                         }}
                       />
+
+                      <Link href={`/shop/${order.instagram.id}/${order.id}/${order.secret}`} target="_blank">
+                        <Eye
+                          size={20}
+                          weight="light"
+                          className="text-gray-500 hover:text-pink-700 cursor-pointer"
+                        />
+                      </Link>
                     </div>
                   </TableCell>
                 </TableRow>
