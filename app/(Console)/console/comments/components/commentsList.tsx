@@ -12,9 +12,7 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import CommentsSkeleton from "./comments.skeleton"
 import { useTranslations } from "next-intl"
 import logger from "@/app/utils/logger"
-
-
-
+import { Card } from "@/components/theme/ui/card"
 
 function CommentsList() {
   const { id: SelectedCommentId } = useParams()
@@ -84,19 +82,16 @@ function CommentsList() {
 
   useEffect(() => {
     console.log(page);
-    
+
   }, [page])
 
   if (comments.length && isLoading) {
-    return <CommentsSkeleton/>
+    return <CommentsSkeleton />
   }
 
   return (
-    <div className="relative w-full group flex flex-col h-screen bg-white rounded-xl">
-      <div
-        id="comments-container"
-        className="overflow-y-auto h-[calc(100vh-2rem)] p-2  scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 transition-colors duration-200"
-      >
+    <Card className="border-l-2 border-gray-100 h-full">
+      <div id="comments-container">
         <InfiniteScroll
           dataLength={comments.length}
           next={fetchComments}
@@ -105,14 +100,13 @@ function CommentsList() {
           endMessage={<div className="text-center py-4">{t('thereAreNoMoreComments')}</div>}
           scrollableTarget="comments-container"
         >
-          <div className="grid gap-1 px-2">
+          <div className="w-full">
             {comments.map((comment, index) => (
               <Link
                 key={comment.id || index}
                 href={`/console/comments/${comment.id}`}
                 className={cn(
-                  buttonVariants({ variant: "ghost", size: "lg" }),
-                  "justify-start gap-4 pt-10 pb-8",
+                  "flex p-2 items-center gap-4 box-border rounded-lg hover:bg-accent duration-300 cursor-pointer",
                   comment.id === SelectedCommentId && "bg-zinc-100"
                 )}
               >
@@ -122,13 +116,13 @@ function CommentsList() {
                     "/images/profile.png"
                   }
                   alt={comment.leadInstagram?.name}
-                  width={60}
-                  height={60}
+                  width={48}
+                  height={48}
                   className="rounded-full"
                 />
-                <div className="flex flex-col max-w-28">
-                  <span>{comment.leadInstagram?.name}</span>
-                  <span className="text-zinc-300 text-xs truncate">
+                <div className="flex flex-col overflow-hidden">
+                  <span className="font-medium">{comment.leadInstagram?.name}</span>
+                  <span className="text-muted-foreground text-xs truncate">
                     {comment.text}
                   </span>
                 </div>
@@ -138,7 +132,7 @@ function CommentsList() {
         </InfiniteScroll>
         {error && <div className="text-center py-4 text-red-500">{error}</div>}
       </div>
-    </div>
+    </Card>
   )
 }
 

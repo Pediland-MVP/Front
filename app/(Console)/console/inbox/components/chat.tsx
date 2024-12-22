@@ -47,7 +47,6 @@ export function Chat({ leadId }: ChatProps) {
     <AnimatePresence mode="wait">
       <motion.div
         className="w-full md:w-2/3 bg-white h-full border-l-2 border-gray-100"
-
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/theme/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { fetcher } from "@/hooks/swr/fetcher";
 import CommentSkeleton from "./comment.skeleton";
@@ -81,52 +81,50 @@ export default function Component({ id }: { id: string }) {
   if (!comment) return null;
 
   return (
-    <div className="flex w-full h-full bg-background">
-      <Card className="flex-1 border-0 rounded-none">
-        <CardHeader className="border-b">
-          <h1 className="text-xl font-semibold">{t('comments')}</h1>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              {/* Parent Comment */}
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={comment.leadInstagram?.profilePicture?.url}
-                      alt={comment.leadInstagram?.username}
-                    />
-                    <AvatarFallback>
-                      {comment.leadInstagram?.username[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">
-                        {comment.leadInstagram?.username}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {formatTimestamp(comment.time)}
-                      </span>
+    <div className="w-full md:w-2/3 h-full">
+      <div className="w-full md:w-2/3 bg-white h-full border-l-2 border-gray-100">
+        <Card className="flex flex-col w-full h-full p-5">
+          <CardContent className="p-0">
+            <ScrollArea className="h-full">
+              <div className="p-4 space-y-4">
+                {/* Parent Comment */}
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={comment.leadInstagram?.profilePicture?.url}
+                        alt={comment.leadInstagram?.username}
+                      />
+                      <AvatarFallback>
+                        {comment.leadInstagram?.username[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">
+                          {comment.leadInstagram?.username}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {formatTimestamp(comment.time)}
+                        </span>
+                      </div>
+                      <p className="text-sm">{comment.text}</p>
                     </div>
-                    <p className="text-sm">{comment.text}</p>
+                  </div>
+
+                  {/* Replies */}
+                  <div className="ml-12 space-y-4">
+                    {comment.replies?.map((reply) => (
+                      <Reply reply={reply} key={reply.id} />
+                    ))}
                   </div>
                 </div>
-
-                {/* Replies */}
-                <div className="ml-12 space-y-4">
-                  {comment.replies?.map((reply) => (
-                    <Reply reply={reply} key={reply.id} />
-                  ))}
-                </div>
               </div>
-            </div>
-          </ScrollArea>
-        </CardContent>
-
-        <CommentFooter commentId={id} mutateComments={mutateComments} />
-      </Card>
+            </ScrollArea>
+          </CardContent>
+          <CommentFooter commentId={id} mutateComments={mutateComments} />
+        </Card>
+      </div>
     </div>
   );
 }

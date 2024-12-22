@@ -154,7 +154,7 @@ export default function Dashboard() {
               <CardTitle className="tracking-normal">{t("recentSessions")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 h-full flex flex-col">
+              <div className="h-full flex flex-col">
                 {
                   stats?.recentSessions?.length === 0 ?
                     <div className="flex flex-col items-center justify-center h-full space-y-4">
@@ -165,7 +165,7 @@ export default function Dashboard() {
                     stats?.recentSessions.map((session) => (
                       <div
                         key={session.id}
-                        className="flex items-center border rounded-md p-4"
+                        className="flex items-center border-b first:border-t p-4"
                       >
                         <Avatar className="h-9 w-9">
                           <AvatarImage
