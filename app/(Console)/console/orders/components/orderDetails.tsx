@@ -113,13 +113,13 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
                     {t("quantity")}: {op.quantity}
                   </p>
                   <p>
-                    {t("price")}: ${op.product.price * op.quantity}
+                    {t("price")}: {op.product.price.toLocaleString()}
                   </p>
                 </div>
               </div>
             ))}
             <div className="mt-4 font-bold">
-              {t("totalPrice")}: ${totalPrice}
+              {t("totalPrice")}: {totalPrice.toLocaleString()}
             </div>
           </CardContent>
         </Card>
