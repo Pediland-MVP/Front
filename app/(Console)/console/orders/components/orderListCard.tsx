@@ -227,9 +227,10 @@ export default function OrderListCard({
                     <Badge
                       variant={
                         order.status === ORDER_STATUS.COMPLETED
-                          ? "success" :
-                          order.status === ORDER_STATUS.CANCELLED ? "destructive"
-                          : "outline"
+                          ? "success"
+                          : order.status === ORDER_STATUS.CANCELLED
+                            ? "destructive"
+                            : "outline"
                       }
                     >
                       {t(`orderStatus.${order.status}`)}
@@ -248,7 +249,10 @@ export default function OrderListCard({
                         }}
                       />
 
-                      <Link href={`/shop/${order.instagram.id}/${order.id}/${order.secret}`} target="_blank">
+                      <Link
+                        href={`/shop/${order.instagram.id}/${order.id}/${order.secret}`}
+                        target="_blank"
+                      >
                         <Eye
                           size={20}
                           weight="light"
