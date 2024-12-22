@@ -1,3 +1,5 @@
+import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+
 export namespace OrderNamespace {
     export type Order = IOrder
 }
@@ -6,8 +8,8 @@ export namespace OrderNamespace {
 export interface IOrder {
     id:              string;
     secret:          string;
-    createDate:      Date;
-    updateDate:      Date;
+    createDate:      string;
+    updateDate:      string;
     status:          string;
     from:            string;
     paymentMethod:   string;
@@ -56,7 +58,7 @@ export interface Contact {
     postalcode?: string;
     address?:    string;
     city?:       string;
-    gender?:     string;
+    gender?:     GENDERS_ENUM;
     birthDate?:  string;
     state?:      string
 }
@@ -99,4 +101,21 @@ export interface Image {
     tubmnailUrl: string;
     size:        number;
     key:         string;
+}
+
+
+export enum ORDER_STATUS {
+    PENDING = 'pending',
+    PROCESSING = 'processing',
+    COMPLETED = 'completed',
+    CANCELLED = 'cancelled',
+}
+
+export enum ORDER_FROM {
+    INSTAGRAM = 'instagram',
+}
+
+export enum ORDER_PAYMENT_METHODS {
+    CARD_TO_CARD = 'card_to_card',
+    ZARINPAL = 'zarinpal',
 }

@@ -20,7 +20,7 @@ export function PaymentSkeleton() {
         </div>
         <div>
           <Skeleton className="h-4 w-64 mb-2" /> {/* File uploader label placeholder */}
-          <Skeleton className="h-10 w-full" /> {/* File uploader input placeholder */}
+          <Skeleton className="h-[468px] max-w-[400px]" /> {/* File uploader input placeholder */}
         </div>
       </div>
     </div>

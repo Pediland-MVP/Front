@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { CircleNotch, Package } from "@phosphor-icons/react/dist/ssr";
+import { Package } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
-import { orderFormSchema } from "../page";
-
+import { orderFormSchema } from "../checkout.page";
+import logger from "@/app/utils/logger";
 
 export default function Address() {
   const t = useTranslations("Checkout");
-    const { register, handleSubmit, formState: { errors } } = useFormContext<z.infer<typeof orderFormSchema>>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof orderFormSchema>>();
+
+  logger.debug(errors)
 
   return (
     <div className="_customer-address md:col-span-2">
@@ -55,10 +59,11 @@ export default function Address() {
           </Label>
           <Input
             id="postalcode"
-            {...register("postalCode", { required: true })}
+            type="number"
+            {...register("postalcode", { required: true })}
           />
-          {errors.postalCode && (
-            <span className="text-red-500 text-sm">{t("required")}</span>
+          {errors.postalcode && (
+            <span className="text-red-500 text-sm">{t(`Errors.postalcode.${errors.postalcode.type}`)}</span>
           )}
         </div>
       </div>
