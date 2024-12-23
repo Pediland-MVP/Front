@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Headset, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
+// UI
 import { Button } from "@/components/theme/ui/button";
-import { TelegramLogo } from "@phosphor-icons/react";
+import { TelegramLogo, Headset, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 
 export default function Footer() {
-  const t = useTranslations("Home.Footer");
+  const t = useTranslations("Site.Footer");
 
   return (
     <div className="_footer" id="contact">
@@ -68,12 +68,8 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-            <p className="text-center">All right reserved for Tech Island Information Technology Services.</p>
+            <p className="text-center">{t("copyright")}</p>
           </div>
-
-          {/* <h4 className="text-center py-5 text-gray-100 text-xs font-extralight">
-            {t("copyright")}
-          </h4> */}
         </div>
       </footer>
     </div>

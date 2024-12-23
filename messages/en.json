@@ -653,6 +653,18 @@
             "description": "The apps you love integrate directly with Como to make your workflow seamless"
         }
     },
+    "Site": {        
+        "Footer": {
+        "contactUs": "Contact Us",
+        "contactUsText": "At the moment, if you have any questions or need support, you can contact us using the following methods.",
+        "whatsapp": "WhatsApp",
+        "telegram": "Telegram",
+        "company": "company",
+        "privacy": "Privacy Policy",
+        "terms": "Terms and conditions",
+        "copyright": "All right reserved for Tech Island Information Technology Services."
+        }
+    },
     "Home": {
         "heroSectionTitle": "Connect, sell, send and manage your customers in social networks",
         "trialButton": "14 Day free trial",
@@ -699,29 +711,6 @@
             "login": "login",
             "signup": "Registration",
             "loremIpsum": "Lorem episum"
-        },
-        "Footer": {
-            "contactUs": "Contact Us",
-            "contactUsText": "At the moment, if you have any questions or need support, you can contact us using the following methods.",
-            "whatsapp": "WhatsApp",
-            "telegram": "Telegram",
-            "company": "company",
-            "privacy": "Privacy Policy",
-            "terms": "Terms and conditions",
-            "aboutUs": "about us",
-            "careers": "Job opportunities",
-            "media": "the media",
-            "blog": "Blog",
-            "support": "Support",
-            "helpCenter": "Help center",
-            "faq": "Frequently asked questions",
-            "services": "Services",
-            "consulting": "Counseling",
-            "sales": "sale",
-            "marketing": "Marketing",
-            "customerService": "Customer service",
-            "followUs": "follow us",
-            "copyright": "All rights are reserved for the site and any copying is prohibited."
         }
     },
     "UsersComments": {
