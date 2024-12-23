@@ -191,11 +191,13 @@
             "quantity": "تعداد",
             "details": "مشخصات",
             "actions": "عملیات",
+            "status": "وضعیت",
             "orderStatus": {
                 "pending": "درحال پرداخت",
                 "processing": "آماده پردازش",
                 "sending": "در حال ارسال",
                 "completed": "تکمیل شده",
+                "invalid_data": "اطلاعات نامعتبر",
                 "cancelled": "لغو شده"
             }
         },
@@ -223,6 +225,7 @@
                 "processing": "آماده پردازش",
                 "sending": "در حال ارسال",
                 "completed": "تکمیل شده",
+                "invalid_data": "اطلاعات نامعتبر",
                 "cancelled": "لغو شده"
             }
           },

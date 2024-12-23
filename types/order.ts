@@ -110,8 +110,10 @@ export enum ORDER_STATUS {
     PROCESSING = 'processing',
     SENDING = 'sending',
     COMPLETED = 'completed',
+    INVALID_DATA = 'invalid_data',
     CANCELLED = 'cancelled',
 }
+
 
 export enum ORDER_FROM {
     INSTAGRAM = 'instagram',

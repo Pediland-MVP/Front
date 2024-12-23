@@ -192,11 +192,13 @@
             "quantity": "Quantity",
             "details": "Details",
             "actions": "Actions",
+            "status": "Status",
             "orderStatus": {
                 "pending": "Pending",
                 "processing": "Processing",
                 "sending": "Sending",
                 "completed": "Completed",
+                "invalid_data": "Invalid Data",
                 "cancelled": "Cancelled"
             }
         },
@@ -224,6 +226,7 @@
                 "processing": "Processing",
                 "sending": "Sending",
                 "completed": "Completed",
+                "invalid_data": "Invalid Data",
                 "cancelled": "Cancelled"
             }
         },

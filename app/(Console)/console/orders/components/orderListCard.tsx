@@ -136,7 +136,7 @@ export default function OrderListCard({
                 {t("details")}
               </TableHead>
 
-              <TableHead className="lg:w-[3%] _space">وضعیت</TableHead>
+              <TableHead className="lg:w-[3%] _space">{t('status')}</TableHead>
 
               <TableHead className="text-center lg:w-[7%]">
                 {t("actions")}
