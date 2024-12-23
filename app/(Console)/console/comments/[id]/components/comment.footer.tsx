@@ -21,14 +21,12 @@ import logger from "@/app/utils/logger";
 
 interface RedesignedCommentFooterProps {
   commentId: string;
-  mutateComments: KeyedMutator<any>;
-  isMobile?: boolean;
+  addReply: (replyData: any) => void;
 }
 
 export default function RedesignedCommentFooter({
   commentId,
-  mutateComments,
-  isMobile = false,
+  addReply
 }: RedesignedCommentFooterProps) {
 
   const t = useTranslations('Comments.Footer')
@@ -72,8 +70,9 @@ export default function RedesignedCommentFooter({
         return;
       }
 
+
+      addReply(await response.json())
       await mutate((key) => typeof key === "string" && key.includes(`comments/${commentId}`));
-      mutate(key => logger.debug(key))
       toast({ title: t('success') });
       form.reset();
     } catch (error) {
