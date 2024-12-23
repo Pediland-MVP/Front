@@ -22,12 +22,11 @@ function CommentsList() {
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(0)
+  const LIMIT = 15
 
   const t = useTranslations('Comments.List')
 
   const fetchComments = useCallback(() => {
-    console.log("FetchMore", page)
-
     setIsLoading(true)
     setError(null)
 
@@ -35,7 +34,7 @@ function CommentsList() {
       const updatedPage = prevPage + 1;
       commentsSocket.emit("comments", {
         page: updatedPage,
-        limit: 15,
+        limit: LIMIT,
       })
       return updatedPage
     })
@@ -46,7 +45,7 @@ function CommentsList() {
       const newComments = JSON.parse(commentsData) as CommentsNamespace.GET
       logger.debug(newComments)
       setComments((prevComments) => [...prevComments, ...newComments.items])
-      setHasMore(newComments.items.length > 0)
+      setHasMore(newComments.meta.currentPage !== newComments.meta.totalPages)
     } catch (error) {
       setError("Error parsing comments data")
       console.error("Error handling comments:", error)
@@ -79,11 +78,6 @@ function CommentsList() {
       commentsSocket.off("comment.created", handleNewComment)
     }
   }, [])
-
-  useEffect(() => {
-    console.log(page);
-
-  }, [page])
 
   if (comments.length && isLoading) {
     return <CommentsSkeleton />
