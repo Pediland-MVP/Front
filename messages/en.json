@@ -135,6 +135,7 @@
             "mobile": "Mobile",
             "email": "Email",
             "country": "Country",
+            "state": "State",
             "city": "City",
             "postalcode": "Postal code",
             "address": "Address",

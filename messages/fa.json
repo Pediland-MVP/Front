@@ -134,6 +134,7 @@
             "mobile": "موبایل",
             "email": "ایمیل",
             "country": "کشور",
+            "state": "استان",
             "city": "شهر",
             "postalcode": "کد پستی",
             "address": "آدرس",
