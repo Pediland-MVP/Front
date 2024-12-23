@@ -11,15 +11,16 @@ import { useToast } from "@/components/ui/use-toast"
 interface PersianImageUploaderProps {
   url: string,
   fieldName: string,
-  onUploadComplete?: (url: string) => void
+  onUploadComplete?: (url: string) => void,
+  defaultImageUrl?: string
 }
 
-const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, url, fieldName }) => {
+const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, url, fieldName, defaultImageUrl }) => {
   const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(defaultImageUrl || null)
   const [progress, setProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(defaultImageUrl || null)
   const { toast } = useToast()
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -82,6 +83,9 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, 
     setPreview(null)
     setProgress(0)
     setUploadedUrl(null)
+    if (onUploadComplete) {
+      onUploadComplete('')
+    }
   }
 
   return (

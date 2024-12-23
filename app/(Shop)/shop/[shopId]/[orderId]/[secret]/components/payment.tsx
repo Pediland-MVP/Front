@@ -13,62 +13,19 @@ import ImageUpload from "@/components/theme/ui/image-upload";
 
 type PaymentDetailsProps = {
   orderCardToCard: OrderNamespace.Order["orderCardToCard"] | undefined;
+  orderDetails: {
+    shopId: string;
+    orderId: string;
+    secret: string
+  }
 };
 export default function PaymentDetails({
   orderCardToCard,
+  orderDetails
 }: PaymentDetailsProps) {
   const t = useTranslations("Checkout");
 
-  const shopId = "ba4c3ff2-4b94-47a1-97c7-f041c73dbd49";
-  const orderId = "c3d5d99e-cab2-4082-ad1d-16e67c04b926";
-  const secret = "d7220ce2-8780-4be8-a95d-8f5dea9ff6cc";
-
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [images, setImages] = useState<string[]>(
-    orderCardToCard?.url ? [orderCardToCard?.url] : []
-  );
-
-  const handleFileUpload = async (files: File[]) => {
-    setIsUploading(true);
-    const file = files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/cardToCard`,
-        formData,
-        {
-          signal,
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              console.log(`Upload Progress: ${percentCompleted}%`);
-              setUploadProgress(percentCompleted);
-            } else {
-              console.log(`Loaded ${progressEvent.loaded} bytes`);
-            }
-          },
-          withCredentials: true,
-        }
-      );
-      setImages([response.data.data.url]);
-      toast({
-        title: t("uploadSuccess"),
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setUploadProgress(0);
-      setIsUploading(false);
-    }
-  };
+  const  {  orderId, secret, shopId } = orderDetails
 
   return (
     <div className="_customer-details md:col-span-4">
@@ -103,6 +60,7 @@ export default function PaymentDetails({
             <ImageUpload
               url={`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/cardToCard`}
               fieldName="image"
+              {...orderCardToCard?.url && { defaultImageUrl: orderCardToCard.url }}
               // className="max-w-[400px]"
               // uploadProgress={uploadProgress}
               // onUpload={handleFileUpload}

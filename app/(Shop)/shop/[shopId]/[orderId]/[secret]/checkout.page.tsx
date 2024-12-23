@@ -193,7 +193,7 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
             </Suspense>
 
             <Suspense fallback={<PaymentSkeleton />}>
-              <PaymentDetails orderCardToCard={order?.orderCardToCard} />
+              <PaymentDetails orderDetails={{orderId, secret, shopId}} orderCardToCard={order?.orderCardToCard} />
             </Suspense>
 
             <Suspense fallback={<FloatingTimeCircleSkeleton/>}>
