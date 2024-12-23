@@ -148,5 +148,5 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, 
   )
 }
 
-export default PersianImageUploader
+export default ImageUploader
 
