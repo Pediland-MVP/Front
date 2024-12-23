@@ -3,7 +3,6 @@ import { Info, Phone, Video } from "lucide-react";
 import { leadNamespace } from "@/types/lead";
 import { ArrowLeft, X } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
-// import { Spinner } from "@nextui-org/react";
 
 interface ChatTopbarProps {
   lead?: leadNamespace.GET["One"];

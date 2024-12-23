@@ -1,8 +1,6 @@
 import React from "react";
 import Table1 from "./component/table";
-import { ResizablePanel } from "@/registry/new-york/ui/resizable";
-import { TabsContent } from "@/registry/new-york/ui/tabs";
-import { Card } from "@/registry/new-york/ui/card";
+import { Card } from "@/components/theme/ui/card";
 
 export default function page() {
   return (

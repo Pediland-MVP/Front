@@ -7,9 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-  } from "@/registry/new-york/ui/dialog";
-import { Button } from '@/registry/new-york/ui/button';
-import { Label } from '@/registry/new-york/ui/label';
+  } from "@/components/ui/dialog";
 
 export default function ModalPost() {
   return (

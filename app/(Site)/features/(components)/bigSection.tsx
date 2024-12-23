@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Badge } from "@/registry/new-york/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import poplineImage from "@/public/pipeline-image-kommo.png";
 import { useTranslations } from 'next-intl';
 

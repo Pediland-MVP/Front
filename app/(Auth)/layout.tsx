@@ -1,14 +1,21 @@
-import type { Metadata } from "next";
 import "@/app/globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import AuthHeader from "./auth/components/auth.header";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { cookies } from "next/headers";
 
-export const metadata: Metadata = {
-  title: "Befroosh Application",
-  description: "This is first version of Befroosh application.",
-};
+import { Toaster } from "@/components/ui/toaster";
+
+export async function generateMetadata() {
+  const cookieStore = await cookies()
+  const locale = cookieStore.get('NEXT_LOCALE')
+  const t = await getTranslations({ locale, namespace: 'Auth.Metadata' });
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
+}
+
 export default async function ConsoleLayout({
   children,
 }: Readonly<{

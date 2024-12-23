@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/registry/new-york/ui/select"
+} from "@/components/theme/ui/select"
 
 interface AccountSwitcherProps {
   isCollapsed: boolean

@@ -6,7 +6,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/registry/new-york/ui/carousel";
+} from "@/components/ui/carousel";
 import UserCommentsCard from "./userCommentsCard";
 import { useTranslations } from "next-intl";
 

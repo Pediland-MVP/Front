@@ -26,6 +26,14 @@
     "Auth": {
         "signup": "ثبت نام",
         "signin": "حساب کاربری",
+        "MetaData": {
+            "title": "ثبت نام",
+            "description": "ثبت نام کنید",
+            "Signin":{
+                "title": "ثبت نام",
+                "description": "ثبت نام کنید"
+            }
+        },
         "ResetPassword": {
             "resetPassword": "بازنشانی رمز عبور",
             "enterMobile": "برای بازنشانی رمز عبور شماره موبایل خود را وارد کنید",
@@ -80,7 +88,10 @@
             "forgotPassword": "رمز عبورم را فراموش کردم.",
             "orDivider": "یا",
             "continueWithFacebook": "ادامه با اکانت فیس بوک",
-            "continueWithGoogle": "ادامه با اکانت گوگل"
+            "continueWithGoogle": "ادامه با اکانت گوگل",
+            "Error": {
+                "invalidCredentials": "شماره همراه یا پسورد اشتباه است"
+            }
         },
         "Signup": {
             "signupTitle": "ثبت نام کاربر جدید",
@@ -190,6 +201,7 @@
             "quantity": "تعداد",
             "details": "مشخصات",
             "actions": "عملیات",
+            "cardToCardImage": "تصویر کارت به کارت",
             "orderStatus": {
                 "pending": "درحال پرداخت",
                 "processing": "آماده پردازش",
@@ -416,6 +428,7 @@
             "uploadImage": "بارگزاری تصاویر",
             "Alerts": {
                 "title": "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
+                "titleLenght": "کوتاهه",
                 "price": "لطفا قیمت کالا یا خدمات خود را وارد کنید.",
                 "priceMinus": "قیمت نمی‌تواند کمتر از صفر باشد.",
                 "quantity": "لطفا تعداد موجودی کالا یا خدمات خود را وارد کنید.",

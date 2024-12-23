@@ -16,16 +16,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/registry/new-york/ui/table";
-import { Checkbox } from "@/registry/new-york/ui/checkbox";
-import { TableCell } from "@/registry/default/ui/table";
+} from "@/components/theme/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TableCell } from "@/components/theme/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/registry/new-york/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { ArrowUp, Eye } from "@phosphor-icons/react";
 import Image from "next/image";
 type Lead = {

@@ -1,4 +1,4 @@
-import { Checkbox } from "@/registry/new-york/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 import { Controller } from "react-hook-form";
 

@@ -10,7 +10,6 @@ import { UploadNamespace } from "@/types/upload";
 import { useRouter } from "next/navigation";
 import { ProductNamespace } from "@/types/product";
 import { mutate } from "swr";
-
 import { Input } from "@/components/theme/ui/input";
 import { Textarea } from "@/components/theme/ui/textarea";
 import {
@@ -41,7 +40,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           message: t('Alerts.title'),
         })
         .min(1, {
-          message: t('Alerts.title'),
+          message: t('Alerts.titleLenght'),
         }),
       status: z.boolean(),
       price: z

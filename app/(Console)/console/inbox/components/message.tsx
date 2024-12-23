@@ -1,5 +1,4 @@
 import { leadNamespace } from "@/types/lead";
-import { cn, Avatar } from "@nextui-org/react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { motion } from "framer-motion";
 

@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { REGEX_PASSWORD } from "@/app/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { REGEX_PASSWORD } from "@/app/utils/regex";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/theme/ui/button";
 import { Input } from "@/components/theme/ui/input";
 import TextDivider from "@/components/theme/ui/textDivider";
+// UI 
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
