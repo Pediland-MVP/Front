@@ -9,6 +9,7 @@ import { FileUpload } from "@/components/file-upload";
 import axios from "axios";
 import { OrderNamespace } from "@/types/order";
 import { toast } from "@/components/ui/use-toast";
+import ImageUpload from "@/components/theme/ui/image-upload";
 
 type PaymentDetailsProps = {
   orderCardToCard: OrderNamespace.Order["orderCardToCard"] | undefined;
@@ -99,13 +100,13 @@ export default function PaymentDetails({
             <Label htmlFor="picture" className="font-normal mb-2 text-gray-500">
               لطفا تصویر رسید وجه پرداختی را بارگذاری نمایید.
             </Label>
-            <FileUpload
-              className="max-w-[400px]"
-              images={images}
-              accept="image/*"
-              onChange={handleFileUpload}
-              progress={uploadProgress}
-              isUploading={isUploading}
+            <ImageUpload
+              url={`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/cardToCard`}
+              fieldName="image"
+              // className="max-w-[400px]"
+              // uploadProgress={uploadProgress}
+              // onUpload={handleFileUpload}
+              // multiple={false}
             />
           </div>
         </div>
