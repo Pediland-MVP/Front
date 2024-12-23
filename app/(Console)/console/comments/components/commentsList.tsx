@@ -26,7 +26,8 @@ function CommentsList() {
 
   const t = useTranslations('Comments.List')
 
-  const fetchComments = useCallback(() => {
+  const fetchComments = () => {
+    
     setIsLoading(true)
     setError(null)
 
@@ -38,12 +39,11 @@ function CommentsList() {
       })
       return updatedPage
     })
-  }, [page])
+  }
 
-  const handleComments = useCallback((commentsData: string) => {
+  const handleComments = (commentsData: string) => {
     try {
       const newComments = JSON.parse(commentsData) as CommentsNamespace.GET
-      logger.debug(newComments)
       setComments((prevComments) => [...prevComments, ...newComments.items])
       setHasMore(newComments.meta.currentPage !== newComments.meta.totalPages)
     } catch (error) {
@@ -52,7 +52,7 @@ function CommentsList() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }
 
   const handleNewComment = useCallback((commentData: string) => {
     try {

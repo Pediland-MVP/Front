@@ -12,8 +12,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "../../../inbox/components/emojiPicker";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { FormField, Form } from "@/components/ui/form";
-import { KeyedMutator } from "swr";
+import { KeyedMutator, mutate } from "swr";
 import { useTranslations } from "next-intl";
+import logger from "@/app/utils/logger";
 
 
 
@@ -71,7 +72,8 @@ export default function RedesignedCommentFooter({
         return;
       }
 
-      await mutateComments();
+      await mutate((key) => typeof key === "string" && key.includes(`comments/${commentId}`));
+      mutate(key => logger.debug(key))
       toast({ title: t('success') });
       form.reset();
     } catch (error) {
