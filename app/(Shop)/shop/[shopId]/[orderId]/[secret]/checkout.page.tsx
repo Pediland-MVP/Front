@@ -146,6 +146,7 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
               });
               break;
           }
+          return
         }
         setOrderCompleted(true)
       })
