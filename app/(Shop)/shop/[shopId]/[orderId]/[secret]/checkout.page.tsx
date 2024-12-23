@@ -179,6 +179,7 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
           <div className="grid md:grid-cols-4 gap-10">
             <Suspense fallback={<ProductDetailsSkeleton />}>
               <ProductDetails
+                orderDetails={{orderId, secret, shopId}}
                 orderQuantity={order?.orderProducts[0].quantity}
                 product={order?.orderProducts?.[0]?.product}
               />

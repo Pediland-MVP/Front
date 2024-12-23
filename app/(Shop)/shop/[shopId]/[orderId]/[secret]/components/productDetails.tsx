@@ -10,9 +10,14 @@ import { Quantity } from "./quantity";
 export type ProductDetailsProps = {
   product: OrderNamespace.Order['orderProducts'][0]['product'] | undefined,
   orderQuantity: number | undefined
+  orderDetails: {
+    shopId: string;
+    orderId: string;
+    secret: string
+  }
 }
 
-export default function ProductDetails({ product, orderQuantity }: ProductDetailsProps) {
+export default function ProductDetails({ product, orderQuantity, orderDetails: {orderId, secret, shopId} }: ProductDetailsProps) {
   const t = useTranslations("Products");
 
   if (!product || typeof orderQuantity !== 'number') return <ProductDetailsSkeleton/>
@@ -36,7 +41,7 @@ export default function ProductDetails({ product, orderQuantity }: ProductDetail
               {product.title}
             </h2>
             <div className="text-gray-600">{product.description}</div>
-            <Quantity productQuantity={product.quantity} orderQuantity={orderQuantity} />
+            <Quantity orderDetails={{shopId, orderId, secret}} productQuantity={product.quantity}  orderQuantity={orderQuantity} />
           </div>
         </div>
       </div>

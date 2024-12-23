@@ -84,7 +84,7 @@ export default function CustomerDetails() {
             render={({ field }) => (
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder={t('selectGender')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="male">{t("male")}</SelectItem>
