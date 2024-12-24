@@ -133,7 +133,53 @@
         "leadsGrowthChart": "رشد تعداد مخاطبین",
         "recentSessions": "سشن‌های اخیر",
         "console": "داشبورد",
-        "noRecentSessions": "فعلا خبری نیست :)"
+        "noRecentSessions": "فعلا خبری نیست :)"    
+    },
+    "Profile": {
+        "title": "حساب کاربری",
+        "dashboard": "داشبورد",
+        "Form":{
+            "gender": "جنسیت",
+            "birthDate": "تاریخ تولد",
+            "genderSelect": "انتخاب کنید",
+            "male": "مرد",
+            "female": "زن",
+            "other": "سایر",
+            "firstname": "نام",
+            "lastname": "نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "country": "کشور",
+            "state": "استان",
+            "city": "شهر",
+            "save": "ذخیره",
+            "cancel": "انصراف",
+            "Errors":{
+                "firstname": {
+                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
+                },
+                "lastname": {
+                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
+                },
+                "email": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "ایمیل نامعتبر است"
+                },
+                "mobile": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "شماره همراه نامعتبر است"
+                },
+                "country": {
+                    "invalid_type": "کشور نامعتبر است"
+                },
+                "state": {
+                    "invalid_type": "استان نامعتبر است"
+                },
+                "city": {
+                    "invalid_type": "شهر نامعتبر است"
+                }
+            }
+        }
     },
     "Contacts": {
         "dashboard": "داشبورد",
