@@ -359,8 +359,6 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-          </div>
-          <div className="grid grid-cols-3 gap-2">
             {locale === "fa" && (
               <>
                 <FormField

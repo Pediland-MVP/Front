@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileFormSkeleton() {
   return (
@@ -41,19 +41,17 @@ export default function ProfileFormSkeleton() {
             <Skeleton className="h-4 w-20" />
             <Skeleton className="h-10 w-full" />
           </div>
+          <div className="md:col-span-2 space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="md:col-span-2 space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         </div>
 
         {/* State and City fields skeleton */}
-        <div className="grid grid-cols-3 gap-2 mt-2">
-          <div className="col-span-3 md:col-span-1 space-y-2">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-          <div className="col-span-3 md:col-span-1 space-y-2">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-        </div>
 
         {/* Buttons skeleton */}
         <div className="grid grid-cols-2 gap-3 mt-10">
@@ -62,6 +60,5 @@ export default function ProfileFormSkeleton() {
         </div>
       </div>
     </Card>
-  )
+  );
 }
-
