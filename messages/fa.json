@@ -158,7 +158,11 @@
             "city": "شهر",
             "save": "ذخیره",
             "cancel": "انصراف",
+            "thereIsError": "خطایی رخ داده است",
+            "profileUpdated": "پروفایل شما با موفقیت به روز رسانی شد",
+            "profileUpdateFailed": "خطایی در بروز رسانی پروفایل رخ داده است",
             "Errors":{
+                "cityRequired": "لطفا یک شهر انتخاب کنید",
                 "firstname": {
                     "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
                 },

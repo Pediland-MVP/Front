@@ -1,3 +1,4 @@
+'use client'
 // Custom error class to include additional properties
 export class FetchError extends Error {
   data?: any;

@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
 import { z } from "zod";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 // UI
 import { Card } from "@/components/theme/ui/card";
 import { Input } from "@/components/theme/ui/input";
@@ -22,29 +22,193 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/theme/ui/select";
+import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import DatePicker from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import DateObject from "react-date-object";
+import persian_fa from "react-date-object/locales/persian_fa";
+import { useEffect, useState } from "react";
+import ProfileFormSkeleton from "./profileForm.sekeleton";
+import useSWRImmutable from "swr/immutable";
+import logger from "@/app/utils/logger";
+import useSWR from "swr";
+import { ProvinceNamespace } from "@/types/province";
+import { CityNamespace } from "@/types/city";
+import { toast } from "@/components/ui/use-toast";
+import { UserNamespace } from "@/types/user";
+import LoadingButton from "@/components/ui/button-loading";
 
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
   const locale = useLocale();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const formSchema = z.object({
-    gender: z.string().optional(),
-    birthDate: z.string().optional(),
-    firstname: z.string().optional(),
-    lastname: z.string().optional(),
-    email: z.string().email().readonly(),
-    mobile: z.string().readonly(),
-    state: z.string().optional(),
-    city: z.string().optional(),
-  });
+  const formSchema = z
+    .object({
+      gender: z
+        .nativeEnum(GENDERS_ENUM)
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      birthDate: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      firstname: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      lastname: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      email: z
+        .string()
+        .email()
+        .readonly()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      mobile: z
+        .string()
+        .readonly()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      state: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+      cityId: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((data) => data || undefined),
+    })
+    .superRefine((data, ctx) => {
+      if (data.state && !data.cityId) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("Errors.cityRequired"),
+          path: ["cityId"],
+        });
+      }
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      cityId: "",
+      state: "",
+    },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const {
+    data: userData,
+    error: userError,
+    isLoading: userIsLoading,
+  } = useSWRImmutable<UserNamespace.GET>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  const resetWithUserData = () => {
+    if (!userData || userError) return;
+    const cityId = userData.city?.id?.toString();
+    const state = userData.city?.province?.id?.toString();
+    form.reset({
+      ...userData,
+      ...(userData.birthDate && {
+        birthDate: new Date(userData.birthDate).getTime().toString(),
+      }),
+      ...(cityId && { cityId }),
+      ...(state && { state }),
+    });
   };
+
+  useEffect(() => {
+    resetWithUserData();
+
+    if (userError) {
+      logger.debug(userError.data);
+    }
+  }, [userData, userError]);
+
+  const {
+    data: provinces,
+    error: provincesError,
+    isLoading: provincesIsLoading,
+    mutate: fetchProvinces,
+  } = useSWRImmutable<ProvinceNamespace.GET>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities/provinces`,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  const {
+    data: cities,
+    error: citiesError,
+    isLoading: citiesIsLoading,
+    mutate: fetchCities,
+  } = useSWRImmutable<CityNamespace.GET>(
+    () =>
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities?provinceId=` +
+      `${form.getValues().state}`,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  useEffect(() => {
+    if (form.getValues().state) {
+      fetchCities();
+    }
+  }, [form.watch("state")]);
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          toast({
+            title: t("profileUpdated"),
+          });
+          return;
+        }
+        toast({
+          title: t("profileUpdateFailed"),
+        });
+      })
+      .catch((e) => {
+        toast({
+          title: t("profileUpdateFailed"),
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
+  const onCancel = () => {
+    resetWithUserData()
+  };
+
+  if (userIsLoading) return <ProfileFormSkeleton />;
 
   return (
     <Card className="h-full md:border-l-2 border-gray-100 p-6 md:p-10">
@@ -61,8 +225,9 @@ export function ProfileForm() {
                 <FormItem className="md:col-span-2">
                   <FormLabel>{t("gender")}</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(val) => val && field.onChange(val)}
                     defaultValue={field.value}
+                    value={field.value}
                     dir="rtl"
                   >
                     <FormControl>
@@ -80,29 +245,43 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-            <FormField
+            <Controller
               control={form.control}
               name="birthDate"
-              render={({ field }) => (
+              rules={{ required: true }}
+              render={({
+                field: { onChange, name, value },
+                fieldState: { invalid, isDirty },
+                formState: { errors },
+              }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>{t("birthDate")}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    dir="rtl"
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("birthDateSelect")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="female">{t("female")}</SelectItem>
-                      <SelectItem value="male">{t("male")}</SelectItem>
-                      <SelectItem value="other">{t("other")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
+                  <DatePicker
+                    containerClassName="w-full"
+                    style={{ width: "100%" }}
+                    value={
+                      value
+                        ? new DateObject(+value)
+                            .setLocale(persian_fa)
+                            .setCalendar(persian)
+                            .format("YYYY/MM/DD")
+                        : ""
+                    }
+                    onChange={(date) => {
+                      onChange(
+                        date?.isValid ? (date.unix * 1000).toString() : ""
+                      );
+                    }}
+                    format={"YYYY/MM/DD"}
+                    calendar={persian}
+                    locale={persian_fa}
+                    render={<Input name="birthDate" />}
+                  />
+                  {errors &&
+                    errors[name] &&
+                    errors[name].type === "required" && (
+                      <span>{t("errors.birthDateRequired")}</span>
+                    )}
                 </FormItem>
               )}
             />
@@ -147,6 +326,7 @@ export function ProfileForm() {
             <FormField
               control={form.control}
               name="email"
+              disabled
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>{t("email")}</FormLabel>
@@ -164,6 +344,7 @@ export function ProfileForm() {
             <FormField
               control={form.control}
               name="mobile"
+              disabled
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>{t("mobile")}</FormLabel>
@@ -186,35 +367,60 @@ export function ProfileForm() {
                   control={form.control}
                   name="state"
                   render={({ field }) => (
-                    <FormItem className="col-span-3 md:col-span-1">
+                    <FormItem className="md:col-span-2">
                       <FormLabel>{t("state")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      {form.formState.errors?.state && (
-                        <span className="text-red-500 text-sm">
-                          {t(
-                            `Errors.country.${form.formState.errors.state.type}`
-                          )}
-                        </span>
-                      )}
+                      <Select
+                        onValueChange={(val) => val && field.onChange(val)}
+                        defaultValue={field.value}
+                        value={field.value}
+                        dir="rtl"
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("genderSelect")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {provinces?.map((province) => (
+                            <SelectItem
+                              key={province.id}
+                              value={`${province.id}`}
+                            >
+                              {province.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
-                  name="city"
+                  name="cityId"
                   render={({ field }) => (
-                    <FormItem className="col-span-3 md:col-span-1">
+                    <FormItem className="md:col-span-2">
                       <FormLabel>{t("city")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      {form.formState.errors?.city && (
-                        <span className="text-red-500 text-sm">
-                          {t(`Errors.city.${form.formState.errors.city.type}`)}
-                        </span>
-                      )}
+                      <Select
+                        onValueChange={(val) => val && field.onChange(val)}
+                        defaultValue={field.value}
+                        dir="rtl"
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("genderSelect")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {cities?.map((city) => (
+                            <SelectItem key={city.id} value={`${city.id}`}>
+                              {city.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -222,10 +428,14 @@ export function ProfileForm() {
             )}
           </div>
           <div className="grid grid-cols-2 gap-3 mt-10">
-            <Button type="submit" className="w-full">
+            <LoadingButton
+              isLoading={isSubmitting}
+              type="submit"
+              className="w-full"
+            >
               {t("save")}
-            </Button>
-            <Button className="w-full" variant="outline">
+            </LoadingButton>
+            <Button onClick={onCancel} type="button" className="w-full" variant="outline">
               {t("cancel")}
             </Button>
           </div>

@@ -51,8 +51,9 @@ const nextConfig = {
 };
 
 const withNextIntlConfig = withNextIntl(nextConfig);
+export default withNextIntlConfig
 
-export default withSentryConfig(withNextIntlConfig, {
+withSentryConfig(withNextIntlConfig, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
