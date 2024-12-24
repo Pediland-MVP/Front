@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,9 +30,10 @@ type StatusFormData = z.infer<typeof statusSchema>;
 
 interface OrderDetailsProps {
   order: Item;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function OrderDetails({ order }: OrderDetailsProps) {
+export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   const t = useTranslations("Orders.OrderDetails");
   const Errors = useTranslations("ERRORS")
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -59,6 +60,9 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
       }
     )
     .then(async res => {
+        if (data.status === ORDER_STATUS.PENDING) {
+          setOpen(false)
+        }
         toast({
             title: t("statusUpdated"),
         })

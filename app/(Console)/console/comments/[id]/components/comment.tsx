@@ -12,6 +12,7 @@ import Reply from "./reply";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import useSWR from "swr";
+import logger from "@/app/utils/logger";
 
 interface ProfilePicture {
   url: string;
@@ -57,6 +58,7 @@ interface Comment {
 
 export default function Component({ id }: { id: string }) {
   const [comment, setComment] = useState<Comment>();
+  const [lastReplyId, setLastReplyId] = useState<string>()
   const {
     data,
     error,
@@ -64,14 +66,34 @@ export default function Component({ id }: { id: string }) {
     mutate: mutateComments,
   } = useSWR<Comment>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/${id}?includeReplies=true`,
-    fetcher
+    fetcher,
   );
 
   useEffect(() => {
     if (!isLoading && !error) {
+      if (lastReplyId) {
+        const isHaveLastReply = data?.replies.some((reply) => reply.commentId === lastReplyId)
+        if (isHaveLastReply) {
+          setLastReplyId(undefined)
+          setComment(data)
+        }
+        return
+      }
       setComment(data);
     }
   }, [data]);
+
+  const addReply = (replyData: any) => {
+    setComment((comment) => {
+      if (comment) {
+        setLastReplyId(replyData.commentId)
+        return ({
+          ...comment,
+          replies: [replyData, ...comment.replies],
+        } as unknown as Comment)
+      }
+    })
+  }
 
 
   const t = useTranslations('Comments.Comment');
@@ -122,7 +144,7 @@ export default function Component({ id }: { id: string }) {
               </div>
             </ScrollArea>
           </CardContent>
-          <CommentFooter commentId={id} mutateComments={mutateComments} />
+          <CommentFooter commentId={id} addReply={addReply} />
         </Card>
       </div>
     </div>

@@ -12,22 +12,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "../../../inbox/components/emojiPicker";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { FormField, Form } from "@/components/ui/form";
-import { KeyedMutator } from "swr";
+import { KeyedMutator, mutate } from "swr";
 import { useTranslations } from "next-intl";
+import logger from "@/app/utils/logger";
 
 
 
 
 interface RedesignedCommentFooterProps {
   commentId: string;
-  mutateComments: KeyedMutator<any>;
-  isMobile?: boolean;
+  addReply: (replyData: any) => void;
 }
 
 export default function RedesignedCommentFooter({
   commentId,
-  mutateComments,
-  isMobile = false,
+  addReply
 }: RedesignedCommentFooterProps) {
 
   const t = useTranslations('Comments.Footer')
@@ -71,7 +70,9 @@ export default function RedesignedCommentFooter({
         return;
       }
 
-      await mutateComments();
+
+      addReply(await response.json())
+      await mutate((key) => typeof key === "string" && key.includes(`comments/${commentId}`));
       toast({ title: t('success') });
       form.reset();
     } catch (error) {

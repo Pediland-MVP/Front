@@ -59,8 +59,12 @@
             "passwordRequired": "Password is required",
             "passwordValidation": "Password must be at least 8 characters and include one number and one uppercase English letter",
             "enterPasswordPlaceholder": "Password",
-            "codeInvalid": "Code should be 6 digits",
-            "codeExpired": "Code has expired"
+            "codeLength": "Code should be 6 digits",
+            "invalidCode": "Invalid code",
+            "codeExpired": "Code has expired",
+
+            "passwordsDontMatch": "Passwords do not match",
+            "confirmPasswordPlaceholder": "Confirm password"
         },
         "Signin": {
             "login": "Login",
@@ -135,6 +139,7 @@
             "mobile": "Mobile",
             "email": "Email",
             "country": "Country",
+            "state": "State",
             "city": "City",
             "postalcode": "Postal code",
             "address": "Address",
@@ -191,11 +196,13 @@
             "quantity": "Quantity",
             "details": "Details",
             "actions": "Actions",
+            "status": "Status",
             "orderStatus": {
                 "pending": "Pending",
                 "processing": "Processing",
                 "sending": "Sending",
                 "completed": "Completed",
+                "invalid_data": "Invalid Data",
                 "cancelled": "Cancelled"
             }
         },
@@ -223,6 +230,7 @@
                 "processing": "Processing",
                 "sending": "Sending",
                 "completed": "Completed",
+                "invalid_data": "Invalid Data",
                 "cancelled": "Cancelled"
             }
         },
@@ -846,7 +854,9 @@
             "invalidOTP": "The verification code is invalid",
             "loginSuccess": "You have successfully logged in",
             "welcomeMessage": "Welcome to your account",
-            "waitTwoMinutes": "Please wait for 2 minutes"
+            "waitTwoMinutes": "Please wait for 2 minutes",
+            "resendOk": "A new verification code has been sent",
+            "checkConnection": "Check your internet connection"
         }
     },
     "InstagramPostDialog": {

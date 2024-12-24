@@ -4,18 +4,22 @@ import { messagesSocket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
 import { InstagramNamespace, Messages } from "@/types/instagram";
 import { leadNamespace } from "@/types/lead";
+import { WsConversation, WsConversationItem } from "@/types/wsConversation";
+import { WsMessageSent } from "@/types/wsMessageSent";
+import logger from "@/app/utils/logger";
+import { WsNewMessage } from "@/types/wsNewMessage";
 
 export type UseFetchMessage = {
   next: () => void;
   hasMore: boolean;
-  messagesList: IMessage[];
+  messagesList: (WsConversationItem | WsMessageSent | WsNewMessage)[];
 };
 
 export default function useFetchMessages(
   lead?: leadNamespace.GET["One"]
 ): UseFetchMessage {
   const limit = 13;
-  const [messagesList, setMessagesList] = useState<IMessage[]>([]);
+  const [messagesList, setMessagesList] = useState<(WsConversationItem | WsMessageSent | WsNewMessage)[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   let isListenersSet = false;
@@ -29,7 +33,7 @@ export default function useFetchMessages(
 
     messagesSocket.on(WsMessages.CONVERSATION, (conversationStr) => {
       //Get conversation data
-      const conversation: InstagramNamespace.GET["Conversation"] =
+      const conversation: WsConversation =
         JSON.parse(conversationStr);
       if (conversation.items.length === 0) {
         setHasMore(false);
@@ -40,14 +44,15 @@ export default function useFetchMessages(
 
 
     messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
-      const message: Messages & { digest: number } = JSON.parse(messageStr);
+      const message: WsMessageSent = JSON.parse(messageStr);
       setMessagesList((old) => [message, ...old]);
     });
 
     messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
-      console.log(JSON.parse(data));
-
-      setMessagesList((old) => [JSON.parse(data), ...old]);
+      const message: WsNewMessage = JSON.parse(data);
+      if (message.lead.id === lead?.id) {
+        setMessagesList((old) => [message, ...old]);
+      }
     });
 
     return () => {

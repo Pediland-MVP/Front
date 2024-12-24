@@ -66,8 +66,11 @@
             "passwordRequired": "پسورد الزامیست",
             "passwordValidation": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد",
             "enterPasswordPlaceholder": "رمز عبور",
-            "codeInvalid": "کد باید شامل ۶ رقم باشد",
-            "codeExpired": "کد منقضی شده است"
+            "codeLength": "کد باید شامل ۶ رقم باشد",
+            "invalidCode": "کد وارد شده صحیح نیست",
+            "codeExpired": "کد منقضی شده است",
+            "passwordsDontMatch": "رمز عبور با تکرار آن مطابقت ندارد",
+            "confirmPasswordPlaceholder": "تکرار رمز عبور"
         },
         "Signin": {
             "login": "ورود",
@@ -192,6 +195,7 @@
             "mobile": "موبایل",
             "email": "ایمیل",
             "country": "کشور",
+            "state": "استان",
             "city": "شهر",
             "postalcode": "کد پستی",
             "address": "آدرس",
@@ -248,12 +252,14 @@
             "quantity": "تعداد",
             "details": "مشخصات",
             "actions": "عملیات",
+            "status": "وضعیت",
             "cardToCardImage": "تصویر کارت به کارت",
             "orderStatus": {
                 "pending": "درحال پرداخت",
                 "processing": "آماده پردازش",
                 "sending": "در حال ارسال",
                 "completed": "تکمیل شده",
+                "invalid_data": "اطلاعات نامعتبر",
                 "cancelled": "لغو شده"
             }
         },
@@ -281,6 +287,7 @@
                 "processing": "آماده پردازش",
                 "sending": "در حال ارسال",
                 "completed": "تکمیل شده",
+                "invalid_data": "اطلاعات نامعتبر",
                 "cancelled": "لغو شده"
             }
           },
@@ -519,6 +526,8 @@
         "orderProcessing": "سفارش شما با موفقیت ثبت شد",
         "orderProcessingDescription": "خرید شما توسط فروشگاه بررسی میشود و درصورت تایید، اطلاعات مربوط به سفارش به اینستاگرام شما ارسال خواهد شد",
         "orderInvalid": "سفارش مورد نظر شما منقضی یا قبلا پرداخت شده است",
+        "invalidEmail": "ایمیل نامعتبر",
+        "selectGender": "یک مورد انتخاب کنید",
         "Errors": {
             "postalcode": {
                 "invalid_type": "کدپستی باید ۱۰ رقم باشد",
@@ -959,7 +968,9 @@
             "invalidOTP": "کد تایید نامعتبر است",
             "loginSuccess": "با موفقیت وارد شدید",
             "welcomeMessage": "به حساب کاربری خود خوش آمدید",
-            "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید"
+            "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
+            "resendOk": "کد تایید جدید ارسال شد",
+            "checkConnection":"اتصال خود را چک کنید"
         }
     },
     "InstagramPostDialog": {

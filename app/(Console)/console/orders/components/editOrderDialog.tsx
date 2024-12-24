@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +24,7 @@ import { Item } from '@/types/order'
 
 export interface EditOrderProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
   order: Item
 }
 
@@ -57,7 +57,7 @@ export default function EditOrderDialog({
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0">
-            <OrderDetails order={order}  />
+            <OrderDetails setOpen={setOpen} order={order}  />
           </div>
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
@@ -78,7 +78,7 @@ export default function EditOrderDialog({
           <DialogTitle>{t('editInformation')}</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <OrderDetails order={order}  />
+        <OrderDetails setOpen={setOpen} order={order}  />
 
       </DialogContent>
     </Dialog>

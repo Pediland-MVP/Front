@@ -37,6 +37,7 @@ const UpdateContactSchema = z.object({
   email: z.string().optional().nullable(),
   country: z.string().optional().nullable(),
   city: z.string().optional().nullable(),
+  state: z.string().optional().nullable(),
   gender: z.string().optional().nullable(),
   birthDate: z.string().optional().nullable(),
   postalcode: z.string().optional().nullable(), // added postalcode
@@ -224,6 +225,18 @@ export default function ContactForm({
         </div>
 
         <div className="col-span-2">
+          <Label htmlFor="country" className="text-right">
+            {t('state')}
+          </Label>
+          <Input id="state" {...register("state")} className="col-span-3" />
+          {errors.state && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.state')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-2">
           <Label htmlFor="city" className="text-right">
             {t('city')}
           </Label>
@@ -251,7 +264,7 @@ export default function ContactForm({
           )}
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-4">
           <Label htmlFor="address" className="text-right">
             {t('address')}
           </Label>

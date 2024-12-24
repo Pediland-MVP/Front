@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import EditOrderDialog from "./editOrderDialog";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import CardToCardDialog from "./cardToCard.dialog";
 
 type Lead = {
   profile: string;
@@ -44,7 +45,6 @@ export default function OrderListCard({
   search,
   setSearch,
 }: OrderListCardProps) {
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -136,7 +136,7 @@ export default function OrderListCard({
                 {t("details")}
               </TableHead>
 
-              <TableHead className="lg:w-[3%] _space">وضعیت</TableHead>
+              <TableHead className="lg:w-[3%] _space">{t('status')}</TableHead>
 
               <TableHead className="text-center lg:w-[7%]">
                 {t("actions")}
@@ -177,33 +177,7 @@ export default function OrderListCard({
                   </TableCell>
 
                   <TableCell className="flex justify-center">
-                    <Dialog
-                      open={isImageModalOpen}
-                      onOpenChange={setIsImageModalOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" className="w-full p-0 h-auto">
-                          <ImageWithFallback
-                            src={order.orderCardToCard.url}
-                            alt={t("cardToCardImage")}
-                            fallbackSrc="https://github.com/shadcn.png"
-                            width={70}
-                            height={70}
-                            className=" rounded-md"
-                          />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-3xl">
-                        <ImageWithFallback
-                          src={order.orderCardToCard.url}
-                          fallbackSrc="https://github.com/shadcn.png"
-                          alt={t("cardToCardImage")}
-                          width={1200}
-                          height={800}
-                          className="w-full h-auto object-contain"
-                        />
-                      </DialogContent>
-                    </Dialog>
+                    <CardToCardDialog url={order.orderCardToCard.url} />
                   </TableCell>
 
                   <TableCell className="text-center">

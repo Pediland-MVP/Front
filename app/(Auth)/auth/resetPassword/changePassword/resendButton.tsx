@@ -4,6 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import LoadingButton from '@/components/ui/button-loading';
 
 type ResendButtonProps = {
     mobile: string
@@ -83,9 +84,9 @@ export default function ResetButton({ mobile }: ResendButtonProps) {
     return (
         <div className="w-full flex justify-center items-center gap-x-4">
             <p className="w-2/4">0{ Math.floor(remainingTime / 60) }:{(remainingTime % 60).toString().padStart(2, '0')}</p>
-            <Button disabled={remainingTime > 0} className="w-2/4" onClick={resend} type="button">
+            <LoadingButton isLoading={isLoading} disabled={remainingTime > 0} className="w-2/4" onClick={resend} type="button">
                 {t('resend')}
-            </Button>
+            </LoadingButton>
         </div>
     )
 

@@ -34,7 +34,7 @@ export function NavUser({
   const router = useRouter();
   const logoutHandler = async () => {
     setIsLogoutLoading(true)
-    await fetch("/api/logout", {
+    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/logout`, {
       method: "DELETE",
       credentials: "include",
     })

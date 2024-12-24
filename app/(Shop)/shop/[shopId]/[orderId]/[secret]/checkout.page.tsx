@@ -146,6 +146,7 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
               });
               break;
           }
+          return
         }
         setOrderCompleted(true)
       })
@@ -178,6 +179,7 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
           <div className="grid md:grid-cols-4 gap-10">
             <Suspense fallback={<ProductDetailsSkeleton />}>
               <ProductDetails
+                orderDetails={{orderId, secret, shopId}}
                 orderQuantity={order?.orderProducts[0].quantity}
                 product={order?.orderProducts?.[0]?.product}
               />
@@ -192,7 +194,7 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
             </Suspense>
 
             <Suspense fallback={<PaymentSkeleton />}>
-              <PaymentDetails orderCardToCard={order?.orderCardToCard} />
+              <PaymentDetails orderDetails={{orderId, secret, shopId}} orderCardToCard={order?.orderCardToCard} />
             </Suspense>
 
             <Suspense fallback={<FloatingTimeCircleSkeleton/>}>

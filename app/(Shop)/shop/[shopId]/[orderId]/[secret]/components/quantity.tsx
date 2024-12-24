@@ -10,17 +10,21 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 type QuantityProps = {
     orderQuantity: number;
     productQuantity: number
+    orderDetails: {
+      shopId: string;
+      orderId: string;
+      secret: string
+    }
 }
-export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _productQuantity }: QuantityProps) {
+
+
+export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _productQuantity, orderDetails: {shopId, orderId, secret} }: QuantityProps) {
   const [orderQuantity, setOrderQuantity] = useState(_orderQuantity);
   const [productQuantity, setProductQuantity] = useState(_productQuantity)
   const [isPending, setIsPending] = useState(false);
 
   const handleAdjustment = async (adjustment: "increment" | "decrement") => {
     setIsPending(true);
-    const shopId = "ba4c3ff2-4b94-47a1-97c7-f041c73dbd49";
-    const orderId = "c3d5d99e-cab2-4082-ad1d-16e67c04b926";
-    const secret = "d7220ce2-8780-4be8-a95d-8f5dea9ff6cc";
 
     if (adjustment === 'increment' && orderQuantity === productQuantity) {
       toast({
