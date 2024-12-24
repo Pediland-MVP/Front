@@ -5,14 +5,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
 import {
   Form,
   FormControl,
   FormDescription,
   FormField,
-  FormItem, FormMessage
+  FormItem,
+  FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import {
@@ -22,14 +23,16 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import ButtonLoading from "@/components/ui/button-loading";
+import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
 
 export default function VerifyOTP() {
-  const t = useTranslations('Verify');
+  const t = useTranslations("Verify");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [isResendLoading, setIsResendLoading] = useState(false);
 
   const formSchema = z.object({
-    otp: z.string().length(6, t('errors.otpLength')),
+    otp: z.string().length(6, t("errors.otpLength")),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,7 +68,7 @@ export default function VerifyOTP() {
       if (!res.ok) {
         if (res.status === 429) {
           toast({
-            title: t('toasts.tryAgainLater'),
+            title: t("toasts.tryAgainLater"),
             variant: "destructive",
           });
           return;
@@ -73,30 +76,30 @@ export default function VerifyOTP() {
 
         if (res.status === 409) {
           toast({
-            title: t('toasts.alreadyVerified'),
+            title: t("toasts.alreadyVerified"),
             variant: "destructive",
           });
           return;
         }
 
         toast({
-          title: t('toasts.error'),
-          description: t('toasts.invalidOTP'),
+          title: t("toasts.error"),
+          description: t("toasts.invalidOTP"),
           variant: "destructive",
         });
         return;
       }
 
       toast({
-        title: t('toasts.loginSuccess'),
-        description: t('toasts.welcomeMessage'),
+        title: t("toasts.loginSuccess"),
+        description: t("toasts.welcomeMessage"),
       });
       router.push("/console");
     } catch (error) {
       console.error(error);
       toast({
-        title: t('toasts.error'),
-        description: t('toasts.invalidOTP'),
+        title: t("toasts.error"),
+        description: t("toasts.invalidOTP"),
         variant: "destructive",
       });
     } finally {
@@ -105,30 +108,44 @@ export default function VerifyOTP() {
   };
 
   const resendHandler = async () => {
+    setIsResendLoading(true);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/resendOtp`,
       {
         method: "POST",
         credentials: "include",
       }
-    );
+    )
+      .then(async (res) => {
+        if (!res.ok) {
+          if (res.status === 429) {
+            toast({
+              title: t("toasts.waitTwoMinutes"),
+              variant: "destructive",
+            });
+            return;
+          }
 
-    if (!res.ok) {
-      if (res.status === 429) {
-        toast({
-          title: t('toasts.waitTwoMinutes'),
-          variant: "destructive",
-        });
-        return;
-      }
+          if (res.status === 409) {
+            toast({
+              title: t("toasts.alreadyVerified"),
+              variant: "destructive",
+            });
+            return;
+          }
+        }
 
-      if (res.status === 409) {
         toast({
-          title: t('toasts.alreadyVerified'),
-          variant: "destructive",
+          title: t('toasts.resendOk'),
         });
-      }
-    }
+      }).catch(e =>{
+        toast({
+          title: t('checkConnection')
+        })
+      })
+      .finally(() => {
+        setIsResendLoading(false);
+      });
   };
 
   const otpCompleted = () => {
@@ -140,7 +157,7 @@ export default function VerifyOTP() {
       <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="flex items-center justify-center h-full">
           <div className="text-center w-full sm:w-1/3 mx-auto">
-            <h1 className="text-2xl font-semibold">{t('title')}</h1>
+            <h1 className="text-2xl font-semibold">{t("title")}</h1>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -169,9 +186,7 @@ export default function VerifyOTP() {
                           </InputOTPGroup>
                         </InputOTP>
                       </FormControl>
-                      <FormDescription>
-                        {t('otpDescription')}
-                      </FormDescription>
+                      <FormDescription>{t("otpDescription")}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -184,16 +199,16 @@ export default function VerifyOTP() {
                   disabled={isLoading}
                   size={"lg"}
                 >
-                  {t('verifyButton')}
+                  {t("verifyButton")}
                 </ButtonLoading>
               </form>
             </Form>
             <div className="mt-4">
               <p
-                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer"
+                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
                 onClick={resendHandler}
               >
-                {t('resendCode')}
+                { isResendLoading ? <CircleNotch className="animate-spin"/> : t("resendCode")}
               </p>
             </div>
           </div>
@@ -202,4 +217,3 @@ export default function VerifyOTP() {
     </main>
   );
 }
-

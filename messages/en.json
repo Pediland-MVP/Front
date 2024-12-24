@@ -861,7 +861,9 @@
             "invalidOTP": "The verification code is invalid",
             "loginSuccess": "You have successfully logged in",
             "welcomeMessage": "Welcome to your account",
-            "waitTwoMinutes": "Please wait for 2 minutes"
+            "waitTwoMinutes": "Please wait for 2 minutes",
+            "resendOk": "A new verification code has been sent",
+            "checkConnection": "Check your internet connection"
         }
     },
     "InstagramPostDialog": {

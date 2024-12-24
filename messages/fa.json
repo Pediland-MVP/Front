@@ -917,7 +917,9 @@
             "invalidOTP": "کد تایید نامعتبر است",
             "loginSuccess": "با موفقیت وارد شدید",
             "welcomeMessage": "به حساب کاربری خود خوش آمدید",
-            "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید"
+            "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
+            "resendOk": "کد تایید جدید ارسال شد",
+            "checkConnection":"اتصال خود را چک کنید"
         }
     },
     "InstagramPostDialog": {
