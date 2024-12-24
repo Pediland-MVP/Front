@@ -94,6 +94,7 @@ const generateData = (t: any) => ({
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('General')
   const data = generateData(t)
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

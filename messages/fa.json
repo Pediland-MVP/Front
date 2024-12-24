@@ -5,23 +5,26 @@
             "description": "مدیریت مشتریان"
         },
         "console": "داشبورد",
-        "search": "جستجو",
-        "notFound": "موردی یافت نشد",
         "contacts": "مخاطبین",
+        "orders": "سفارشات",
         "messages": "پیام‌ها",
-        "comments": "کامنت‌ها",
         "directs": "دایرکت‌ها",
+        "comments": "کامنت‌ها",
         "automations": "اتوماسیون",
-        "sessions": "سشن‌ها",
         "settings": "تنظیمات",
         "products": "کالاها / خدمات",
         "accounts": "اکانت‌ها",
+        "upgradeAccount": "ارتقا حساب",
+        "soon": "بزودی",
         "profile": "حساب کاربری",
         "logout": "خروج",
+
+        "search": "جستجو",
+        "notFound": "موردی یافت نشد",
+        "sessions": "سشن‌ها",
         "more": "بیشتر",
         "logoutFailed": "خروج انجام نشد",
-        "logoutSuccess": "خروج با موفقیت انجام شد",
-        "orders": "سفارشات"
+        "logoutSuccess": "خروج با موفقیت انجام شد"
     },
     "Auth": {
         "signup": "ثبت نام",
