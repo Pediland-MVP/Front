@@ -22,6 +22,7 @@ import {
 export function ProfileForm() {
     const formSchema = z.object({
         gender: z.string().optional(),
+        birthdate: z.string().optional(),
         firstname: z.string().optional(),
         lastname: z.string().optional(),
         email: z.string().email(),
@@ -56,7 +57,7 @@ export function ProfileForm() {
         <Card className="h-full md:border-l-2 border-gray-100 p-6 md:p-10">
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-2">
-                    <div className="grid md:grid-cols-8 gap-2">
+                    <div className="grid md:grid-cols-4 gap-2">
                         <FormField
                             control={form.control}
                             name="gender"
@@ -81,9 +82,31 @@ export function ProfileForm() {
                         />
                         <FormField
                             control={form.control}
+                            name="birthdate"
+                            render={({ field }) => (
+                                <FormItem className="md:col-span-2">
+                                    <FormLabel>{t('birthDate')}</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} dir="rtl">
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={t('birthDateSelect')} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="female">{t('female')}</SelectItem>
+                                            <SelectItem value="male">{t('male')}</SelectItem>
+                                            <SelectItem value="other">{t('other')}</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
                             name="firstname"
                             render={({ field }) => (
-                                <FormItem className="md:col-span-3">
+                                <FormItem className="md:col-span-2">
                                     <FormLabel>{t('firstname')}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
@@ -98,7 +121,7 @@ export function ProfileForm() {
                             control={form.control}
                             name="lastname"
                             render={({ field }) => (
-                                <FormItem className="md:col-span-3">
+                                <FormItem className="md:col-span-2">
                                     <FormLabel>{t('lastname')}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
@@ -114,7 +137,7 @@ export function ProfileForm() {
                             control={form.control}
                             name="email"
                             render={({ field }) => (
-                                <FormItem className="md:col-span-4">
+                                <FormItem className="md:col-span-2">
                                     <FormLabel>{t('email')}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
@@ -130,7 +153,7 @@ export function ProfileForm() {
                             control={form.control}
                             name="mobile"
                             render={({ field }) => (
-                                <FormItem className="md:col-span-4">
+                                <FormItem className="md:col-span-2">
                                     <FormLabel>{t('mobile')}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />

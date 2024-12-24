@@ -140,8 +140,9 @@
         "dashboard": "داشبورد",
         "Form":{
             "gender": "جنسیت",
-            "birthDate": "تاریخ تولد",
             "genderSelect": "انتخاب کنید",
+            "birthDate": "تاریخ تولد",
+            "birthDateSelect": "انتخاب کنید",
             "male": "مرد",
             "female": "زن",
             "other": "سایر",
