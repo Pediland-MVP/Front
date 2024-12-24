@@ -129,6 +129,57 @@
         "console": "Console",
         "noRecentSessions": "No recent sessions"
     },
+    "Profile": {
+        "title": "User account",
+        "dashboard": "Dashboard",
+        "Form": {
+          "gender": "gender",
+          "genderSelect": "choose",
+          "birthDate": "date of birth",
+          "birthDateSelect": "choose",
+          "male": "the man",
+          "female": "woman",
+          "other": "other",
+          "firstname": "name",
+          "lastname": "last name",
+          "email": "Email",
+          "mobile": "Mobile",
+          "country": "country",
+          "state": "province",
+          "city": "city",
+          "save": "save",
+          "cancel": "opt out",
+          "thereIsError": "An error has occurred",
+          "profileUpdated": "Your profile has been successfully updated",
+          "profileUpdateFailed": "An error occurred while updating the profile",
+          "Errors": {
+            "cityRequired": "Please select a city",
+            "firstname": {
+              "invalid_type": "The name can only be Persian characters"
+            },
+            "lastname": {
+              "invalid_type": "Last name can only be Persian letters"
+            },
+            "email": {
+              "required": "This field is required",
+              "invalid_type": "The email is invalid"
+            },
+            "mobile": {
+              "required": "This field is required",
+              "invalid_type": "The mobile number is invalid"
+            },
+            "country": {
+              "invalid_type": "The country is invalid"
+            },
+            "state": {
+              "invalid_type": "The province is invalid"
+            },
+            "city": {
+              "invalid_type": "The city is invalid"
+            }
+          }
+        }
+      },    
     "Contacts": {
         "dashboard": "Dashboard",
         "list": "Contacts List",
