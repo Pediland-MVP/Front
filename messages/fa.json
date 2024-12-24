@@ -58,8 +58,11 @@
             "passwordRequired": "پسورد الزامیست",
             "passwordValidation": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد",
             "enterPasswordPlaceholder": "رمز عبور",
-            "codeInvalid": "کد باید شامل ۶ رقم باشد",
-            "codeExpired": "کد منقضی شده است"
+            "codeLength": "کد باید شامل ۶ رقم باشد",
+            "invalidCode": "کد وارد شده صحیح نیست",
+            "codeExpired": "کد منقضی شده است",
+            "passwordsDontMatch": "رمز عبور با تکرار آن مطابقت ندارد",
+            "confirmPasswordPlaceholder": "تکرار رمز عبور"
         },
         "Signin": {
             "login": "ورود",

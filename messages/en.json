@@ -59,8 +59,12 @@
             "passwordRequired": "Password is required",
             "passwordValidation": "Password must be at least 8 characters and include one number and one uppercase English letter",
             "enterPasswordPlaceholder": "Password",
-            "codeInvalid": "Code should be 6 digits",
-            "codeExpired": "Code has expired"
+            "codeLength": "Code should be 6 digits",
+            "invalidCode": "Invalid code",
+            "codeExpired": "Code has expired",
+
+            "passwordsDontMatch": "Passwords do not match",
+            "confirmPasswordPlaceholder": "Confirm password"
         },
         "Signin": {
             "login": "Login",

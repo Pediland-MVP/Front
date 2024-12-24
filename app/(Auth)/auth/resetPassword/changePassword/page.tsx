@@ -42,7 +42,7 @@ export default function ResetPasswordForm() {
       .string()
       .min(1, { message: t("mobileRequired") })
       .regex(/^[0-9]+$/, { message: t("mobileInvalid") }),
-    otp: z.string().length(6, { message: t("codeInvalid") }),
+    otp: z.string().length(6, { message: t("codeLength") }),
     password: z
       .string()
       .min(8, { message: t("passwordValidation") })
@@ -78,10 +78,25 @@ export default function ResetPasswordForm() {
     form.setFocus("password");
   };
 
-  const router = useRouter()
+  const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
+
+    if (values.password !== values.confirmPassword) {
+      form.setError(
+        "confirmPassword",
+        {
+          message: t("passwordsDontMatch"),
+          type: "pattern",
+        },
+        {
+          shouldFocus: true,
+        }
+      );
+      setIsLoading(false)
+      return;
+    }
 
     try {
       const res = await fetch(
@@ -105,9 +120,17 @@ export default function ResetPasswordForm() {
           return;
         }
 
-        if(res.status === 410) {
+        if (res.status === 410) {
           toast({
-            title: t('codeExpired'),
+            title: t("codeExpired"),
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (res.status === 400) {
+          toast({
+            title: t("invalidCode"),
             variant: "destructive",
           })
           return
@@ -127,7 +150,6 @@ export default function ResetPasswordForm() {
       });
 
       router.push("/auth/signin");
-
     } catch (e) {
       toast({
         title: t("resetRequestError"),
@@ -239,14 +261,14 @@ export default function ResetPasswordForm() {
                       <FormControl>
                         <InputPassword
                           {...field}
-                          placeholder={t("enterPasswordPlaceholder")}
+                          placeholder={t("confirmPasswordPlaceholder")}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <ResetButton mobile={form.getValues().mobile}/>
+                <ResetButton mobile={form.getValues().mobile} />
                 <Button
                   type="submit"
                   className="w-full text-white"

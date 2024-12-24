@@ -17,7 +17,7 @@ export default function ButtonLoading({
       {...props}
       className={` ${props.className} duration-150 transition-[with]`}
       type="submit"
-      disabled={isLoading}
+      disabled={ props.disabled ? props.disabled : isLoading}
     >
       {isLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
       {children}
