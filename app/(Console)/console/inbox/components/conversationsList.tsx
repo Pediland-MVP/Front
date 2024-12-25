@@ -86,7 +86,7 @@ function ConversationsList() {
     };
   }, []);
 
-  const t = useTranslations("Inbox.ConversationsList");
+  const t = useTranslations("Inbox");
 
   const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
   const isMediumDevice = useMediaQuery(
@@ -113,7 +113,7 @@ function ConversationsList() {
   if (!conversations.length) {
     return (
       <div className="w-full h-full flex justify-center items-center">
-        <p>{t("noConversations")}</p>
+        <p className="text-muted-foreground">{t("noConversations")}</p>
       </div>
     )
   }

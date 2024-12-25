@@ -40,22 +40,6 @@ const generateData = (t: any) => ({
       isActive: true,
     },
     {
-      title: t('shop'),
-      url: '#',
-      icon: Basket,
-      isActive: true,
-      items: [
-        {
-          title: t('ordersList'),
-          url: "/console/orders",
-        },
-        {
-          title: t('products'),
-          url: "/console/products",
-        }
-      ],
-    },
-    {
       title: t('messages'),
       url: "#",
       icon: ChatCircleText,
@@ -77,7 +61,22 @@ const generateData = (t: any) => ({
       icon: Lightning,
       isActive: true,
     },
-
+    {
+      title: t('shop'),
+      url: '#',
+      icon: Basket,
+      isActive: true,
+      items: [
+        {
+          title: t('ordersList'),
+          url: "/console/orders",
+        },
+        {
+          title: t('products'),
+          url: "/console/products",
+        }
+      ],
+    },
     {
       title: t('settings'),
       url: "/console/settings",
