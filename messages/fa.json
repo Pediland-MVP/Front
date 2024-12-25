@@ -29,95 +29,14 @@
     "Auth": {
         "signup": "ثبت نام",
         "signin": "حساب کاربری",
-        "MetaData": {
-            "title": "ثبت نام",
-            "description": "ثبت نام کنید",
-            "Signin":{
-                "title": "ثبت نام",
-                "description": "ثبت نام کنید"
-            }
-        },
-        "ResetPassword": {
-            "resetPassword": "بازنشانی رمز عبور",
-            "enterMobile": "برای بازنشانی رمز عبور شماره موبایل خود را وارد کنید",
-            "mobilePlaceholder": "شماره موبایل خود را وارد کنید",
-            "mobileRequired": "شماره موبایل الزامی است",
-            "mobileInvalid": "لطفا یک شماره موبایل معتبر وارد کنید",
-            "sendResetLink": "ارسال کد",
-            "sending": "ارسال...",
-            "resetRequestSent": "درخواست بازنشانی ارسال شد",
-            "checkMobile": "لطفا برای راهنمایی بیشتر موبایل خود را بررسی کنید",
-            "resetRequestError": "خطایی رخ داد",
-            "resetRequestErrorDescription": "نتونستیم کد رو برات بفرستیم. دوباره امتحان کن",
-            "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کن",
-            "resend": "ارسال مجدد کد"
-        },
-        "ChangePassword": {
-            "resetPassword": "بازنشانی رمز عبور",
-            "enterMobile": "برای بازنشانی رمز عبور شماره موبایل خود را وارد کنید",
-            "mobilePlaceholder": "شماره موبایل خود را وارد کنید",
-            "mobileRequired": "شماره موبایل الزامیست",
-            "mobileInvalid": "لطفا یک شماره موبایل معتبر وارد کنید",
-            "sendResetLink": "بازنشانی رمز عبور",
-            "sending": "ارسال...",
-            "resetRequestSent": "رمز عبور شما بازنشانی شد",
-            "checkMobile": "اکنون می‌توانید با رمز عبور جدید وارد شوید",
-            "resetRequestError": "خطا در بازنشانی رمز عبور",
-            "resetRequestErrorDescription": "خطایی رخ داد، لطفا دوباره امتحان کنید",
-            "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کنید",
-            "otpDescription": "کد تاییدی که به موبایل شما ارسال شده را وارد کنید",
-            "passwordRequired": "پسورد الزامیست",
-            "passwordValidation": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد",
-            "enterPasswordPlaceholder": "رمز عبور",
-            "codeLength": "کد باید شامل ۶ رقم باشد",
-            "invalidCode": "کد وارد شده صحیح نیست",
-            "codeExpired": "کد منقضی شده است",
-            "passwordsDontMatch": "رمز عبور با تکرار آن مطابقت ندارد",
-            "confirmPasswordPlaceholder": "تکرار رمز عبور"
-        },
-        "Signin": {
-            "login": "ورود",
-            "loginTitle": "ورود به حساب کاربری",
-            "noAccount": "حساب کاربری ندارید؟",
-            "signUpHere": "از اینجا ثبت نام کنید.",
-            "mobileRequired": "شماره همراه الزامیست",
-            "enterMobile": "شماره همراه را وارد کنید",
-            "passwordRequired": "پسورد الزامیست",
-            "passwordValidation": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد",
-            "loginSuccess": "با موفقیت وارد شدید",
-            "loginWelcome": "به حساب کاربری خود خوش آمدید",
-            "loginError": "خطا",
-            "loginErrorDescription": "شماره همراه یا پسورد اشتباه است",
-            "generalError": "خطایی رخ داده است",
-            "enterMobilePlaceholder": "شماره همراه",
-            "enterPasswordPlaceholder": "رمز عبور",
-            "forgotPassword": "رمز عبورم را فراموش کردم.",
-            "orDivider": "یا",
-            "continueWithFacebook": "ادامه با اکانت فیس بوک",
-            "continueWithGoogle": "ادامه با اکانت گوگل",
-            "Error": {
-                "invalidCredentials": "شماره همراه یا پسورد اشتباه است"
-            }
+        "Metadata": {
+            "title": "بفروش، مدیریت هوشمند مشتریان",
+            "description": ""
         },
         "Signup": {
             "signupTitle": "ثبت نام کاربر جدید",
             "alreadyHaveAccount": "حساب کاربری دارید؟",
             "signInHere": "از اینجا وارد شوید.",
-            "firstnameRequired": "نام الزامیست",
-            "enterFirstname": "نام خود را وارد کنید.",
-            "lastnameRequired": "نام خانوادگی الزامیست",
-            "enterLastname": "نام خانوادگی خود را وارد کنید.",
-            "mobileRequired": "شماره همراه الزامیست",
-            "enterValidMobile": "یک شماره همراه معتبر وارد کنید.",
-            "enterMobile": "شماره همراه را وارد کنید",
-            "passwordRequired": "پسورد الزامیست",
-            "passwordValidation": "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
-            "confirmPasswordRequired": "تکرار پسورد الزامیست",
-            "enterConfirmPassword": "تکرار پسورد خود را وارد کنید.",
-            "mobileAlreadyRegistered": "این شماره همراه قبلا ثبت شده است",
-            "pleaseSignIn": "لطفا وارد شوید",
-            "error": "خطا",
-            "generalError": "خطایی رخ داده است",
             "enterFirstnamePlaceholder": "نام",
             "enterLastnamePlaceholder": "نام خانوادگی",
             "enterMobilePlaceholder": "شماره همراه",
@@ -126,9 +45,115 @@
             "signup": "ثبت نام",
             "orDivider": "یا",
             "continueWithFacebook": "ادامه با اکانت فیس بوک",
-            "continueWithGoogle": "ادامه با اکانت گوگل"
+            "continueWithGoogle": "ادامه با اکانت گوگل",
+            "enterFirstname": "نام خود را وارد کنید.",
+            "enterLastname": "نام خانوادگی خود را وارد کنید.",
+            "enterValidMobile": "یک شماره همراه معتبر وارد کنید.",
+            "passwordValidation": "رمز عبور باید حداقل ۸ کاراکتر، شامل یک عدد، یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
+            "enterConfirmPassword": "تکرار رمز عبور خود را وارد کنید.",
+            "signupFailed": "امکان ثبت نام وجود ندارد",
+            "mobileAlreadyRegistered": "این شماره همراه قبلا ثبت شده است.",
+
+            "firstnameRequired": "نام الزامیست",
+            "pleaseSignIn": "لطفا وارد شوید",
+            "lastnameRequired": "نام خانوادگی الزامیست",
+            "mobileRequired": "شماره همراه الزامیست",
+            "enterMobile": "شماره همراه را وارد کنید",
+            "passwordRequired": "رمز عبور الزامیست",
+            "confirmPasswordRequired": "تکرار رمز عبور الزامیست",
+            "error": "خطا",
+            "generalError": "خطایی رخ داده است"
+        },
+        "Verify": {
+            "title": "تایید کد یکبار مصرف",
+            "otpDescription": "کد تاییدی که به موبایل شما ارسال شده را وارد کنید",
+            "verifyButton": "تایید کد",
+            "resendCode": "ارسال مجدد کد",
+            "errors": {
+                "otpLength": "کد تایید باید 6 رقم باشد"
+            },
+            "toasts": {
+                "tryAgainLater": "لطفا ۲ دقیقه بعد امتحان کنید",
+                "alreadyVerified": "شما قبلا تایید شده اید",
+                "error": "خطا",
+                "invalidOTP": "کد تایید نامعتبر است",
+                "loginSuccess": "با موفقیت وارد شدید",
+                "welcomeMessage": "به حساب کاربری خود خوش آمدید",
+                "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
+                "resendOk": "کد تایید جدید ارسال شد",
+                "checkConnection":"اتصال خود را چک کنید"
+            }
+        },
+        "Signin": {
+            "loginTitle": "ورود به حساب کاربری",
+            "noAccount": "حساب کاربری ندارید؟",
+            "signUpHere": "از اینجا ثبت نام کنید.",
+            "login": "ورود",
+            "enterMobilePlaceholder": "شماره همراه",
+            "enterPasswordPlaceholder": "رمز عبور",
+            "forgotPassword": "رمز عبورم را فراموش کردم.",
+            "orDivider": "یا",
+            "continueWithFacebook": "ادامه با اکانت فیس بوک",
+            "continueWithGoogle": "ادامه با اکانت گوگل",
+            "enterMobile": "شماره همراه را وارد کنید.",
+            "passwordValidation": "رمز عبور باید حداقل ۸ کاراکتر، شامل یک عدد، یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
+            "loginErrorDescription": "شماره همراه یا رمز عبور اشتباه است.",
+            
+            "mobileRequired": "شماره همراه الزامیست",
+            "passwordRequired": "رمز عبور الزامیست",
+            "loginSuccess": "با موفقیت وارد شدید",
+            "loginWelcome": "به حساب کاربری خود خوش آمدید",
+            "loginError": "خطا",
+            "generalError": "خطایی رخ داده است",
+            "Error": {
+                "invalidCredentials": "شماره همراه یا رمز عبور اشتباه است."
+            }
+        },
+        "ResetPassword": {
+            "resetPassword": "بازنشانی رمز عبور",
+            "enterMobile": "برای بازنشانی رمز عبور شماره همراه خود را وارد کنید.",
+            "mobilePlaceholder": "شماره همراه",
+            "sendResetLink": "ارسال کد",
+            "sending": "ارسال ...",
+            "mobileRequired": "شماره همراه خود را وارد کنید.",
+            "resetRequestSent": "درخواست بازنشانی ارسال شد.",
+            "checkMobile": "لطفا تلفن همراه خود را بررسی کنید.",
+            "resend": "ارسال مجدد کد",
+
+            "mobileInvalid": "لطفا یک شماره همراه معتبر وارد کنید",
+            "resetRequestError": "خطایی رخ داد",
+            "resetRequestErrorDescription": "نتونستیم کد رو برات بفرستیم. دوباره امتحان کن",
+            "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کن",
+
+            "ChangePassword": {
+                "resetPassword": "بازنشانی رمز عبور",
+                "enterMobile": "برای بازنشانی رمز عبور شماره همراه خود را وارد کنید.",
+                "mobilePlaceholder": "شماره همراه",
+                "otpDescription": "کد ارسال شده به موبایل خود را اینجا وارد کنید.",
+                "enterPasswordPlaceholder": "رمز عبور",
+                "confirmPasswordPlaceholder": "تکرار رمز عبور",
+                "codeLength": "کد دریافتی را بطور کامل وارد کنید.",
+                "passwordValidation": "رمز عبور باید حداقل ۸ کاراکتر، شامل یک عدد، یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
+                "invalidCode": "کد وارد شده صحیح نیست.",
+                
+                "mobileRequired": "شماره همراه الزامیست",
+                "mobileInvalid": "لطفا یک شماره همراه معتبر وارد کنید",
+                "sendResetLink": "بازنشانی رمز عبور",
+                "sending": "ارسال...",
+                "resetRequestSent": "رمز عبور شما بازنشانی شد",
+                "checkMobile": "اکنون می‌توانید با رمز عبور جدید وارد شوید",
+                "resetRequestError": "خطا در بازنشانی رمز عبور",
+                "resetRequestErrorDescription": "خطایی رخ داد، لطفا دوباره امتحان کنید",
+                "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کنید",
+                "passwordRequired": "رمز عبور الزامیست",
+                "codeExpired": "کد منقضی شده است",
+                "passwordsDontMatch": "رمز عبور با تکرار آن مطابقت ندارد"
+            }
         }
     },
+
+
+
     "Console": {
         "dashboard": "داشبورد",
         "productCount": "تعداد محصولات",
@@ -165,7 +190,7 @@
             "errors": {
                 "firstname": "لطفاً نام را وارد کنید",
                 "lastname": "لطفاً نام خانوادگی را وارد کنید",
-                "mobile": "لطفاً شماره موبایل معتبر وارد کنید",
+                "mobile": "لطفاً شماره همراه معتبر وارد کنید",
                 "email": "لطفاً آدرس ایمیل معتبر وارد کنید",
                 "country": "لطفاً کشور را وارد کنید",
                 "city": "لطفاً شهر را وارد کنید",
@@ -381,9 +406,9 @@
             "selectDataType": "انتخاب نوع اطلاعات",
             "select": "انتخاب کنید",
             "email": "ایمیل",
-            "mobileNumber": "شماره موبایل",
+            "mobileNumber": "شماره همراه",
             "questionText": "متن سوال",
-            "enterMobileNumber": "مثال: لطفا شماره موبایل خود را وارد کنید"
+            "enterMobileNumber": "مثال: لطفا شماره همراه خود را وارد کنید"
         },
         "Catalogue": {
             "label": "ارسال کاتالوگ  محصولات",
@@ -725,7 +750,7 @@
         "Features": {
             "title": "امکانات",
             "title1": "ذخیره اتوماتیک اطلاعات مشتریان",
-            "text1": "اطلاعات مشتریان مثل شماره موبایل و ایمیل بصورت اتوماتیک در پروفایل آنها ثبت می شود.",
+            "text1": "اطلاعات مشتریان مثل شماره همراه و ایمیل بصورت اتوماتیک در پروفایل آنها ثبت می شود.",
             "title2": "دیتابیس اختصاصی",
             "text2": "نگران عدم دسترسی به اینستاگرام نباشید، اطلاعات مشتریان شما از اینستاگرام به دیتابیس اختصاصی خودتان منتقل می‌شود و اگر به هر دلیل پیج شما از بین برود، به مشتریان خود دسترسی دارید.",
             "title3": "فروش آسان در اینستاگرام",
@@ -812,90 +837,6 @@
         },
         "viewAllFeatures": "مشاهده همه قابلیت‌ها",
         "subscribe": "خرید اشتراک"
-    },
-    "Login": {
-        "title": "ورود به حساب کاربری",
-        "noAccount": "حساب کاربری ندارید؟",
-        "signupLink": "از اینجا ثبت نام کنید.",
-        "placeholders": {
-            "mobileNumber": "شماره همراه",
-            "password": "رمز عبور"
-        },
-        "forgotPassword": "رمز عبورم را فراموش کردم.",
-        "loginButton": "ورود",
-        "or": "یا",
-        "continueWithFacebook": "ادامه با اکانت فیس بوک",
-        "continueWithGoogle": "ادامه با اکانت گوگل",
-        "errors": {
-            "mobileRequired": "شماره همراه الزامیست",
-            "mobileEnter": "شماره همراه را وارد کنید",
-            "passwordRequired": "پسورد الزامیست",
-            "passwordRequirements": "پسورد باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ باشد"
-        },
-        "toasts": {
-            "error": "خطا",
-            "invalidCredentials": "شماره همراه یا پسورد اشتباه است",
-            "loginSuccess": "با موفقیت وارد شدید",
-            "welcomeMessage": "به حساب کاربری خود خوش آمدید",
-            "generalError": "خطایی رخ داده است"
-        }
-    },
-    "Signup": {
-        "title": "ثبت نام کاربر جدید",
-        "haveAccount": "حساب کاربری دارید؟",
-        "loginLink": "از اینجا وارد شوید.",
-        "placeholders": {
-            "firstName": "نام",
-            "lastName": "نام خانوادگی",
-            "mobileNumber": "شماره همراه",
-            "password": "رمز عبور",
-            "confirmPassword": "تکرار رمز عبور"
-        },
-        "signupButton": "ثبت نام",
-        "or": "یا",
-        "continueWithFacebook": "ادامه با اکانت فیس بوک",
-        "continueWithGoogle": "ادامه با اکانت گوگل",
-        "errors": {
-            "firstNameRequired": "نام الزامیست",
-            "firstNameEnter": "نام خود را وارد کنید.",
-            "lastNameRequired": "نام خانوادگی الزامیست",
-            "lastNameEnter": "نام خانوادگی خود را وارد کنید.",
-            "mobileRequired": "شماره همراه الزامیست",
-            "mobileInvalid": "یک شماره همراه معتبر وارد کنید.",
-            "mobileEnter": "شماره همراه را وارد کنید",
-            "passwordRequired": "پسورد الزامیست",
-            "passwordRequirements": "پسورد شما باید حداقل ۸ کاراکتر و شامل یک عدد و یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
-            "confirmPasswordRequired": "تکرار پسورد الزامیست",
-            "confirmPasswordEnter": "تکرار پسورد خود را وارد کنید.",
-            "passwordMismatch": "پسوردها مطابقت ندارند"
-        },
-        "toasts": {
-            "pleaseLogin": "لطفا وارد شوید",
-            "mobileAlreadyRegistered": "این شماره همراه قبلا ثبت شده است",
-            "login": "ورود",
-            "error": "خطا",
-            "generalError": "خطایی رخ داده است"
-        }
-    },
-    "Verify": {
-        "title": "تایید کد یکبار مصرف",
-        "otpDescription": "کد تاییدی که به موبایل شما ارسال شده را وارد کنید",
-        "verifyButton": "تایید کد",
-        "resendCode": "ارسال مجدد کد",
-        "errors": {
-            "otpLength": "کد تایید باید 6 رقم باشد"
-        },
-        "toasts": {
-            "tryAgainLater": "لطفا ۲ دقیقه بعد امتحان کنید",
-            "alreadyVerified": "شما قبلا تایید شده اید",
-            "error": "خطا",
-            "invalidOTP": "کد تایید نامعتبر است",
-            "loginSuccess": "با موفقیت وارد شدید",
-            "welcomeMessage": "به حساب کاربری خود خوش آمدید",
-            "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
-            "resendOk": "کد تایید جدید ارسال شد",
-            "checkConnection":"اتصال خود را چک کنید"
-        }
     },
     "InstagramPostDialog": {
         "changePost": "تعویض پست",

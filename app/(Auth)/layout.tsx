@@ -1,9 +1,8 @@
 import "@/app/globals.css";
-import AuthHeader from "./auth/components/auth.header";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
-
+// UI
 import { Toaster } from "@/components/ui/toaster";
 
 export async function generateMetadata() {
@@ -28,8 +27,7 @@ export default async function ConsoleLayout({
     <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
       <body className="min-h-screen">
         <NextIntlClientProvider messages={messages}>
-          <AuthHeader />
-          <div className="_main-wrap h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)]">
+          <div className="_main-wrap h-screen">
             {children}
           </div>
           <Toaster />

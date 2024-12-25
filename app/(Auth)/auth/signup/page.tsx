@@ -2,21 +2,20 @@
 
 import Link from "next/link";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/app/utils/regex";
-
+import { useTranslations } from "next-intl";
+// UI
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import TextDivider from "@/components/theme/ui/textDivider";
+import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/theme/ui/input";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
 import { Button } from "@/components/theme/ui/button";
-import { UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
-
 import {
   Form,
   FormControl,
@@ -24,7 +23,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useTranslations } from "next-intl";
+import { UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -58,12 +57,12 @@ export default function Signup() {
     defaultValues:
       process.env.NODE_ENV === "development"
         ? {
-            firstname: "Test",
-            lastname: "TestUser",
-            mobile: "09210246947",
-            password: "123Sina@",
-            confirmPassword: "123Sina@",
-          }
+          firstname: "Test",
+          lastname: "TestUser",
+          mobile: "09210246947",
+          password: "123Sina@",
+          confirmPassword: "123Sina@",
+        }
         : undefined,
   });
 
@@ -88,17 +87,9 @@ export default function Signup() {
         if (!res.ok) {
           if (res.status === 409) {
             toast({
-              title: t("pleaseSignIn"),
+              title: t("signupFailed"),
               description: t("mobileAlreadyRegistered"),
               variant: "destructive",
-              action: (
-                <ToastAction
-                  altText="وارد شوید"
-                  onClick={() => router.push("/auth/signin")}
-                >
-                  {t("signInHere")}
-                </ToastAction>
-              ),
             });
             return;
           }
@@ -136,10 +127,10 @@ export default function Signup() {
   };
 
   return (
-    <main className="_signup h-full bg-fuchsia-50/75">
+    <main className="_signup h-full bg-blue-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="_wrap flex items-center justify-center h-full">
-          <div className="_content text-center w-full sm:w-1/3 mx-auto">
+          <div className="_content w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
                 <UserCirclePlus
@@ -154,7 +145,7 @@ export default function Signup() {
               <p className="text-sm text-gray-500 text-center">
                 {t("alreadyHaveAccount")}{" "}
                 <Link
-                  className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
+                  className="text-gray-500 hover:text-secondary underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
                   {t("signInHere")}
@@ -257,9 +248,9 @@ export default function Signup() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">{t("orDivider")}</TextDivider>
+              {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
 
-              <div className="w-full grid grid-cols-4 gap-3">
+              {/* <div className="w-full grid grid-cols-4 gap-3">
                 <Button
                   onClick={signUpWithGoogle}
                   className="col-span-4"
@@ -273,7 +264,7 @@ export default function Signup() {
                   )}
                   {t("continueWithGoogle")}
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

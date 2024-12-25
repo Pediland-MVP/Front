@@ -29,6 +29,13 @@
     "Auth": {
         "signup": "Sign up",
         "signin": "Sign in",
+        "Metadata": {
+            "title": "ثبت نام",
+            "description": "ثبت نام کنید",
+            "Signin":{
+                "title": "ورود به حساب کاربری"
+            }
+        },
         "ResetPassword": {
             "resetPassword": "Reset Password",
             "enterMobile": "Enter your mobile number to reset your password",
