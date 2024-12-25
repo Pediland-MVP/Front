@@ -38,25 +38,14 @@ export default function NavUser({
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
 
   const router = useRouter();
-  const logoutHandler = async () => {
+  const logoutHandler = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
     setIsLogoutLoading(true)
     await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/logout`, {
       method: "DELETE",
       credentials: "include",
     })
       .then(async (res) => {
-
-        logger.debug("res", await res.text())
-        if (!res.ok) {
-          toast({
-            title: t("logoutFailed"),
-            variant: "destructive",
-          });
-          return;
-        }
-        toast({
-          title: t("logoutSuccess"),
-        });
         router.push("/");
       })
       .catch(e => {
