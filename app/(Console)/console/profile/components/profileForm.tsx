@@ -37,6 +37,7 @@ import { CityNamespace } from "@/types/city";
 import { toast } from "@/components/ui/use-toast";
 import { UserNamespace } from "@/types/user";
 import LoadingButton from "@/components/ui/button-loading";
+import { useRouter } from "next/navigation";
 
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
@@ -204,8 +205,9 @@ export function ProfileForm() {
       });
   };
 
+  const router = useRouter()
   const onCancel = () => {
-    resetWithUserData()
+    router.push('/console')
   };
 
   if (userIsLoading) return <ProfileFormSkeleton />;
