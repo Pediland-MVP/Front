@@ -5,24 +5,26 @@
             "description": "Social Base CRM"
         },
         "console": "Console",
-        "dashboard": "Dashboard",
-        "search": "Search",
-        "notFound": "Nothing found",
         "contacts": "Contacts",
+        "orders": "Orders",
         "messages": "Messages",
-        "comments": "Comments",
         "directs": "Directs",
+        "comments": "Comments",
         "automations": "Automations",
-        "sessions": "Sessions",
         "settings": "Settings",
         "products": "Products",
         "accounts": "Accounts",
+        "upgradeAccount": "Upgrade Account",
+        "soon": "Soon",
         "profile": "Profile",
         "logout": "Log Out",
+
+        "search": "Search",
+        "notFound": "Nothing found",
+        "sessions": "Sessions",
         "more": "More",
         "logoutFailed": "Logout failed",
-        "logoutSuccess": "Logout successfully",
-        "orders": "Orders"
+        "logoutSuccess": "Logout successfully"
     },
     "Auth": {
         "signup": "Sign up",
@@ -865,5 +867,66 @@
         "seeYourLastPosts": "View your latest Instagram posts.",
         "thereIsNoMore": "There is no other post available.",
         "close": "to close"
+    },
+
+
+
+
+
+    "Profile": {
+        "dashboard": "Dashboard",
+        "title": "User Profile",
+        "Form":{
+            "gender": "Gender",
+            "genderSelect": "Select",
+            "birthDate": "Birthdate",
+            "birthDateSelect": "Select",
+            "male": "Male",
+            "female": "Female",
+            "other": "Other",
+            "firstname": "First Name",
+            "lastname": "Family Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "country": "Country",
+            "state": "State",
+            "city": "City",
+            "save": "Save",
+            "cancel": "Cancel",
+            "Errors":{
+                "firstname": {
+                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
+                },
+                "lastname": {
+                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
+                },
+                "email": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "ایمیل نامعتبر است"
+                },
+                "mobile": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "شماره همراه نامعتبر است"
+                },
+                "country": {
+                    "invalid_type": "کشور نامعتبر است"
+                },
+                "state": {
+                    "invalid_type": "استان نامعتبر است"
+                },
+                "city": {
+                    "invalid_type": "شهر نامعتبر است"
+                }
+            }
+        }
+    },
+    "Settings": {
+        "dashboard": "Dashboard",
+        "title": "Settings",
+        "chooseOneOption": "Please choose an option.",
+        "Navigation": {
+            "accounts": "Instagram Accounts Management",
+            "bankAccounts": "Bank Accounts Management"
+        }
     }
 }

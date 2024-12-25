@@ -47,7 +47,13 @@ const generateData = (t: any) => ({
       title: t('orders'),
       url: '/console/orders',
       icon: Basket,
-      isActive: true
+      isActive: true,
+      items: [
+        {
+          title: t('products'),
+          url: "/console/products",
+        },
+      ],
     },
     {
       title: t('messages'),
@@ -74,19 +80,9 @@ const generateData = (t: any) => ({
 
     {
       title: t('settings'),
-      url: "#",
+      url: "/console/settings",
       icon: Sliders,
       isActive: true,
-      items: [
-        {
-          title: t('products'),
-          url: "/console/products",
-        },
-        {
-          title: t('accounts'),
-          url: "/console/accounts",
-        },
-      ],
     },
   ],
 })

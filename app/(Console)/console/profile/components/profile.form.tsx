@@ -1,6 +1,5 @@
 "use client"
 
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";

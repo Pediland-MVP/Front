@@ -141,53 +141,6 @@
         "console": "داشبورد",
         "noRecentSessions": "فعلا خبری نیست :)"    
     },
-    "Profile": {
-        "title": "حساب کاربری",
-        "dashboard": "داشبورد",
-        "Form":{
-            "gender": "جنسیت",
-            "genderSelect": "انتخاب کنید",
-            "birthDate": "تاریخ تولد",
-            "birthDateSelect": "انتخاب کنید",
-            "male": "مرد",
-            "female": "زن",
-            "other": "سایر",
-            "firstname": "نام",
-            "lastname": "نام خانوادگی",
-            "email": "ایمیل",
-            "mobile": "موبایل",
-            "country": "کشور",
-            "state": "استان",
-            "city": "شهر",
-            "save": "ذخیره",
-            "cancel": "انصراف",
-            "Errors":{
-                "firstname": {
-                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
-                },
-                "lastname": {
-                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
-                },
-                "email": {
-                    "required": "این فیلد الزامی است",
-                    "invalid_type": "ایمیل نامعتبر است"
-                },
-                "mobile": {
-                    "required": "این فیلد الزامی است",
-                    "invalid_type": "شماره همراه نامعتبر است"
-                },
-                "country": {
-                    "invalid_type": "کشور نامعتبر است"
-                },
-                "state": {
-                    "invalid_type": "استان نامعتبر است"
-                },
-                "city": {
-                    "invalid_type": "شهر نامعتبر است"
-                }
-            }
-        }
-    },
     "Contacts": {
         "dashboard": "داشبورد",
         "list": "لیست مخاطبین",
@@ -1001,5 +954,66 @@
         "ORDER_CARD_TO_CARD_NOT_UPLOADED": "رسید کارت به کارت آپلود نشده است",
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام یافت نشد",
         "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
+    },
+
+
+
+
+
+    "Profile": {
+        "dashboard": "داشبورد",
+        "title": "حساب کاربری",
+        "Form":{
+            "gender": "جنسیت",
+            "genderSelect": "انتخاب کنید",
+            "birthDate": "تاریخ تولد",
+            "birthDateSelect": "انتخاب کنید",
+            "male": "مرد",
+            "female": "زن",
+            "other": "سایر",
+            "firstname": "نام",
+            "lastname": "نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "country": "کشور",
+            "state": "استان",
+            "city": "شهر",
+            "save": "ذخیره",
+            "cancel": "انصراف",
+            "Errors":{
+                "firstname": {
+                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
+                },
+                "lastname": {
+                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
+                },
+                "email": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "ایمیل نامعتبر است"
+                },
+                "mobile": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "شماره همراه نامعتبر است"
+                },
+                "country": {
+                    "invalid_type": "کشور نامعتبر است"
+                },
+                "state": {
+                    "invalid_type": "استان نامعتبر است"
+                },
+                "city": {
+                    "invalid_type": "شهر نامعتبر است"
+                }
+            }
+        }
+    },
+    "Settings": {
+        "dashboard": "داشبورد",
+        "title": "تنظیمات",
+        "chooseOneOption": "لطفا یک گزینه را انتخاب کنید.",
+        "Navigation": {
+            "accounts": "مدیریت اکانت‌ها",
+            "bankAccounts": "مدیریت حساب‌های بانکی"
+        }
     }
 }
