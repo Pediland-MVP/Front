@@ -1,5 +1,5 @@
+import { cn } from "@/components/lib/utils";
 import { leadNamespace } from "@/types/lead";
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { motion } from "framer-motion";
 
 export interface IMessage {
