@@ -40,15 +40,19 @@ const generateData = (t: any) => ({
       isActive: true,
     },
     {
-      title: t('orders'),
-      url: '/console/orders',
+      title: t('shop'),
+      url: '#',
       icon: Basket,
       isActive: true,
       items: [
         {
+          title: t('ordersList'),
+          url: "/console/orders",
+        },
+        {
           title: t('products'),
           url: "/console/products",
-        },
+        }
       ],
     },
     {
@@ -84,7 +88,7 @@ const generateData = (t: any) => ({
 })
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations('General')
+  const t = useTranslations('Dashboard.Sidebar')
   const data = generateData(t)
   
   const {data: userData, isLoading: userIsLoading, error: userError} = useSWR(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`, {
@@ -107,8 +111,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               priority
             />          </div>
           <div className="flex flex-col flex-1 text-left text-[15px] leading-snug">
-            <span className="font-bold">{t('App.name')}</span>
-            <span className="text-[13px]">{t('App.description')}</span>
+            <span className="font-bold">{t('name')}</span>
+            <span className="text-[13px]">{t('description')}</span>
           </div>
         </div>
       </SidebarHeader>

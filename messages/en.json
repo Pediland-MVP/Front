@@ -1,30 +1,33 @@
 {
-    "General": {
-        "App": {
+    "Dashboard": {
+        "accessDenied": "You do not have access to this page!",
+        "accessNote": "Please connect your Instagram account.",
+        "Sidebar": {
             "name": "Befroosh",
-            "description": "Social Base CRM"
+            "description": "Customer Management",
+            "console": "Dashboard",
+            "contacts": "Contacts",
+            "shop": "Shop",
+            "ordersList": "Orders List",
+            "products": "Products / Services",
+            "messages": "Messages",
+            "directs": "Directs",
+            "comments": "Comments",
+            "automations": "Automations",
+            "settings": "Settings",
+            "accounts": "Accounts",
+            "upgradeAccount": "Upgrade Account",
+            "soon": "Coming Soon",
+            "profile": "Profile",
+            "logout": "Logout"
         },
-        "console": "Console",
-        "contacts": "Contacts",
-        "orders": "Orders",
-        "messages": "Messages",
-        "directs": "Directs",
-        "comments": "Comments",
-        "automations": "Automations",
-        "settings": "Settings",
-        "products": "Products",
-        "accounts": "Accounts",
-        "upgradeAccount": "Upgrade Account",
-        "soon": "Soon",
-        "profile": "Profile",
-        "logout": "Log Out",
 
         "search": "Search",
-        "notFound": "Nothing found",
+        "notFound": "Not Found",
         "sessions": "Sessions",
         "more": "More",
-        "logoutFailed": "Logout failed",
-        "logoutSuccess": "Logout successfully"
+        "logoutFailed": "Logout Failed",
+        "logoutSuccess": "Logout Successful"
     },
     "Auth": {
         "signup": "Sign up",

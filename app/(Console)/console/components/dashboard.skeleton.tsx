@@ -1,16 +1,21 @@
 "use client";
-
+import { useTranslations } from "next-intl";
+// UI
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/theme/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/theme/ui/breadcrumb";
 import SidebarTrigger from "@/components/theme/ui/sidebar";
+import Link from "next/link";
 
 export default function DashboardSkeleton({ accessDenied = false }) {
+  const t = useTranslations("Dashboard");
+
   if (accessDenied) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
-        <p>Please check your permissions or contact support.</p>
+        <img src="/images/emojies/emj-01.webp" alt="404" width={120} height={120} />
+        <h2 className="text-xl font-semibold text-red-600 mt-3 mb-1">{t("accessDenied")}</h2>
+        <p className="text-muted-foreground"><Link href="/console/settings/accounts" className="text-blue-600 underline underline-offset-8 hover:text-primary">{t("accessNote")}</Link></p>
       </div>
     );
   }

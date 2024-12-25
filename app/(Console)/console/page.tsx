@@ -52,7 +52,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="_dashboard">
+    <div className="_dashboard h-full">
       <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
@@ -68,7 +68,7 @@ export default function Dashboard() {
         <div className="_tools"></div>
       </header>
 
-      <div className="_wrapper">
+      <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
           <Card className="border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -139,7 +139,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        <div className="grid col-span-1 md:grid-cols-2 lg:grid-cols-7">
+        <div className="grid col-span-1 md:grid-cols-2 lg:grid-cols-7 bg-red-500 h-full">
           <Card className="col-span-1 lg:col-span-4 border-l-2 border-y-2 border-gray-100">
             <CardHeader>
               <CardTitle className="tracking-normal">{t("leadsGrowthChart")}</CardTitle>
@@ -157,9 +157,9 @@ export default function Dashboard() {
               <div className="h-full flex flex-col">
                 {
                   stats?.recentSessions?.length === 0 ?
-                    <div className="flex flex-col items-center justify-center h-full space-y-4">
-                      <Image alt="man shrugging" src={'/images/emojies/man-shrugging.webp'} width={200} height={200} />
-                      <p className="text-muted-foreground text-xl">{t("noRecentSessions")}</p>
+                    <div className="flex flex-col items-center justify-center">
+                      <Image alt="man shrugging" src={'/images/emojies/man-shrugging.webp'} width={100} height={100} />
+                      <p className="text-muted-foreground">{t("noRecentSessions")}</p>
                     </div>
                     :
                     stats?.recentSessions.map((session) => (

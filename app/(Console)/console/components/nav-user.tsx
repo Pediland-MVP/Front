@@ -34,7 +34,7 @@ export default function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const locale = useLocale();
-  const t = useTranslations("General");
+  const t = useTranslations("Dashboard.Sidebar");
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
 
   const router = useRouter();

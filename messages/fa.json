@@ -1,23 +1,27 @@
 {
-    "General": {
-        "App": {
+    "Dashboard": {
+        "accessDenied": "شما به این صفحه دسترسی ندارید!",
+        "accessNote": "لطفا اکانت اینستاگرام خود را متصل نمایید.",
+        "Sidebar": {
             "name": "بِـفـروش",
-            "description": "مدیریت مشتریان"
+            "description": "مدیریت مشتریان",
+            "console": "داشبورد",
+            "contacts": "مخاطبین",
+            "shop": "فروشگاه",
+            "ordersList": "لیست سفارشات",
+            "products": "کالاها / خدمات",
+            "messages": "پیام‌ها",
+            "directs": "دایرکت‌ها",
+            "comments": "کامنت‌ها",
+            "automations": "اتوماسیون",
+            "settings": "تنظیمات",
+            "accounts": "اکانت‌ها",
+            "upgradeAccount": "ارتقا حساب",
+            "soon": "بزودی",
+            "profile": "حساب کاربری",
+            "logout": "خروج"
         },
-        "console": "داشبورد",
-        "contacts": "مخاطبین",
-        "orders": "سفارشات",
-        "messages": "پیام‌ها",
-        "directs": "دایرکت‌ها",
-        "comments": "کامنت‌ها",
-        "automations": "اتوماسیون",
-        "settings": "تنظیمات",
-        "products": "کالاها / خدمات",
-        "accounts": "اکانت‌ها",
-        "upgradeAccount": "ارتقا حساب",
-        "soon": "بزودی",
-        "profile": "حساب کاربری",
-        "logout": "خروج",
+
 
         "search": "جستجو",
         "notFound": "موردی یافت نشد",
@@ -98,11 +102,11 @@
             "enterMobile": "شماره همراه را وارد کنید.",
             "passwordValidation": "رمز عبور باید حداقل ۸ کاراکتر، شامل یک عدد، یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
             "loginErrorDescription": "شماره همراه یا رمز عبور اشتباه است.",
+            "loginSuccess": "خوش آمدید",
+            "loginWelcome": "با موفقیت به حساب کاربری وارد شدید.",
             
             "mobileRequired": "شماره همراه الزامیست",
             "passwordRequired": "رمز عبور الزامیست",
-            "loginSuccess": "با موفقیت وارد شدید",
-            "loginWelcome": "به حساب کاربری خود خوش آمدید",
             "loginError": "خطا",
             "generalError": "خطایی رخ داده است",
             "Error": {
@@ -889,6 +893,7 @@
             "city": "شهر",
             "save": "ذخیره",
             "cancel": "انصراف",
+            "profileUpdated": "حساب کاربری بروز شد.",
             "Errors":{
                 "firstname": {
                     "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
