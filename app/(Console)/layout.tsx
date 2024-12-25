@@ -1,8 +1,11 @@
+
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { SWRConfig } from "swr";
+import { fetcher } from "@/hooks/swr/fetcher";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -20,8 +23,12 @@ export default async function ConsoleLayout({
     <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
       <body className="bg-blue-50 h-screen">
         <NextIntlClientProvider messages={messages}>
-          {children}
-          <Toaster />
+          <SWRConfig value={{
+            fetcher
+          }}>
+            {children}
+            <Toaster />
+          </SWRConfig>
         </NextIntlClientProvider>
       </body>
     </html>

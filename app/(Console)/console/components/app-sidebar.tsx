@@ -1,20 +1,11 @@
 "use client";
 
-import * as React from "react";
-
 import {
   AddressBookTabs, ChatCircleText,
-  HouseSimple,
-  Lifebuoy,
-  Lightning,
-  Note,
-  Sliders,
-  Infinity,
-  Basket
+  HouseSimple, Lightning, Sliders, Basket
 } from "@phosphor-icons/react/dist/ssr";
 
 import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -23,13 +14,18 @@ import {
 } from "@/components/theme/ui/sidebar";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import useSWR from "swr";
+import logger from "@/app/utils/logger";
+import dynamic from "next/dynamic";
+import { NavUserSkeleton } from "./nav-user.skeleton";
+import { Suspense } from "react";
+
+const NavUser = dynamic(() => import("./nav-user"), {
+  loading: () => <NavUserSkeleton />,
+  ssr: false,
+});
 
 const generateData = (t: any) => ({
-  user: {
-    name: "پدرام قانع",
-    email: "p.ghane@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: t('console'),
@@ -90,6 +86,12 @@ const generateData = (t: any) => ({
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('General')
   const data = generateData(t)
+  
+  const {data: userData, isLoading: userIsLoading, error: userError} = useSWR(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`, {
+    revalidateOnMount: true
+  })
+
+  logger.debug(userData)
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -116,7 +118,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <Suspense fallback={<NavUserSkeleton />}>
+          <NavUser user={userData} isLoading={userIsLoading} />
+        </Suspense>
       </SidebarFooter>
     </Sidebar>
   );

@@ -22,15 +22,15 @@ import {
   DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/theme/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NavUserSkeleton } from "./nav-user.skeleton";
+import { UserNamespace } from "@/types/user";
 
-export function NavUser({
+export default function NavUser({
   user,
+  isLoading
 }: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
+  user: UserNamespace.GET
+  isLoading: boolean
 }) {
   const { isMobile } = useSidebar();
   const locale = useLocale();
@@ -38,25 +38,14 @@ export function NavUser({
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
 
   const router = useRouter();
-  const logoutHandler = async () => {
+  const logoutHandler = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
     setIsLogoutLoading(true)
     await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/logout`, {
       method: "DELETE",
       credentials: "include",
     })
       .then(async (res) => {
-
-        logger.debug("res", await res.text())
-        if (!res.ok) {
-          toast({
-            title: t("logoutFailed"),
-            variant: "destructive",
-          });
-          return;
-        }
-        toast({
-          title: t("logoutSuccess"),
-        });
         router.push("/");
       })
       .catch(e => {
@@ -70,6 +59,10 @@ export function NavUser({
       })
   };
 
+  if (isLoading) {
+    return <NavUserSkeleton/>
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -80,13 +73,13 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-none"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={undefined} alt={user.firstname} />
                 <AvatarFallback className="bg-transparent">
                   <UserCircle size={28} weight="duotone" />
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-right text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate font-semibold">{user.firstname} {user.lastname}</span>
               </div>
               <CaretUpDown size={20} className="ml-auto" />
             </SidebarMenuButton>
