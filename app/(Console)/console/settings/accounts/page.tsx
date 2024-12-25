@@ -12,7 +12,7 @@ import { Plus } from "@phosphor-icons/react/dist/ssr";
 
 
 export default function AccountPage() {
-  const t = useTranslations("Accounts");
+  const t = useTranslations("Settings.Accounts");
   const router = useRouter();
   const [filteredInstagramPages, setfilteredInstagramPages] = useState<InstagramNamespace.GET['Accounts'] | null>()
 

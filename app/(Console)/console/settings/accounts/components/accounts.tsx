@@ -38,7 +38,7 @@ export default function Accounts({
   filteredInstagramPages,
   setFilteredInstagramPages,
 }: AccountsProps) {
-  const t = useTranslations("Accounts.Accounts");
+  const t = useTranslations("Settings.Accounts");
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");

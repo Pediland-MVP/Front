@@ -492,38 +492,6 @@
             }
         }
     },
-    "Accounts": {
-        "dashboard": "داشبورد",
-        "title": "مدیریت اکانت‌ها",
-        "add": "افزودن",
-        "Accounts": {
-            "errorOccurred": "خطایی پیش آمد",
-            "tryAgain": "لطفا دوباره امتحان کنید",
-            "deleteSuccess": "حذف موفق",
-            "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
-            "deleteError": "خطا در حذف",
-            "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
-            "viewAccount": "مشاهده اکانت",
-            "connectAccount": "اتصال به اکانت",
-            "areYouSure": "آیا مطمئن هستید؟",
-            "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
-            "cancel": "انصراف",
-            "delete": "حذف",
-            "noAccountsFound": "هیچ اکانتی وجود ندارد."
-        },
-        "SelectInstagram": {
-            "selectAccount": "یک اکانت انتخاب کنید",
-            "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
-            "cancel": "انصراف"
-        },
-        "SelectPagesForm": {
-            "serverConnectionError": "ارتباط با سرور برقرار نشد",
-            "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
-            "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
-            "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
-            "select": "انتخاب"
-        }
-    },
     "Sessions": {
         "title": "لیست سشن‌ها",
         "dashboard": "داشبورد",
@@ -1012,8 +980,45 @@
         "title": "تنظیمات",
         "chooseOneOption": "لطفا یک گزینه را انتخاب کنید.",
         "Navigation": {
-            "accounts": "مدیریت اکانت‌ها",
+            "accounts": "مدیریت اکانت‌های اینستاگرام",
             "bankAccounts": "مدیریت حساب‌های بانکی"
+        },
+        "Accounts": {
+        "add": "افزودن",
+        "addAccount": "افزودن اکانت",
+        "viewAccount": "مشاهده اکانت",
+        "areYouSure": "آیا مطمئن هستید؟",
+        "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
+        "cancel": "انصراف",
+        "delete": "حذف",
+        "noAccountsFound": "هیچ اکانتی وجود ندارد.",
+            "Error": {
+                "errorOccurred": "متاسفانه مشکلی پیش آمده است!",
+                "goTo": "به",
+                "accounts": "مدیریت اکانت‌های اینستاگرام",
+                "goToEnd": "بروید"
+            },
+            "SelectInstagram": {
+                "selectAccount": "یک اکانت انتخاب کنید",
+                "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
+                "cancel": "انصراف"
+            },
+            "Accounts": {
+                "errorOccurred": "خطایی پیش آمد",
+                "tryAgain": "لطفا دوباره امتحان کنید",
+                "deleteSuccess": "حذف موفق",
+                "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
+                "deleteError": "خطا در حذف",
+                "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
+                "connectAccount": "اتصال به اکانت"
+            },
+            "SelectPagesForm": {
+                "serverConnectionError": "ارتباط با سرور برقرار نشد",
+                "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
+                "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
+                "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
+                "select": "انتخاب"
+            }
         }
     }
 }

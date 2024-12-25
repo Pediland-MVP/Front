@@ -43,7 +43,7 @@ export function SelectInstagram({
   setOpen,
   facebookAccountId,
 }: DrawerDialogDemoProps) {
-  const t = useTranslations('Accounts.SelectInstagram');
+  const t = useTranslations('Settings.Accounts.SelectInstagram');
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
   const router = useRouter()
 
