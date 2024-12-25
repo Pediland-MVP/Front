@@ -31,7 +31,7 @@ import { useEffect, useState } from "react";
 import ProfileFormSkeleton from "./profileForm.sekeleton";
 import useSWRImmutable from "swr/immutable";
 import logger from "@/app/utils/logger";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { ProvinceNamespace } from "@/types/province";
 import { CityNamespace } from "@/types/city";
 import { toast } from "@/components/ui/use-toast";
@@ -188,6 +188,7 @@ export function ProfileForm() {
           toast({
             title: t("profileUpdated"),
           });
+          mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`);
           return;
         }
         toast({
