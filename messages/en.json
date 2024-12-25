@@ -894,10 +894,10 @@
         "dashboard": "Dashboard",
         "title": "Settings",
         "chooseOneOption": "Please choose an option.",
-        "Navigation": {
-            "accounts": "Instagram Accounts Management",
-            "bankAccounts": "Bank Accounts Management"
-        },
+            "Navigation": {
+                "accounts": "Instagram Accounts Management",
+                "bankAccounts": "Bank Accounts Management"
+            },
         "Accounts": {
         "add": "Add",
         "noAccountsFound": "No accounts found.",
@@ -906,6 +906,14 @@
         "deleteConfirmation": "This action is irreversible. The account will be deleted from your list.",
         "cancel": "Cancel",
         "delete": "Delete",
+
+        "errorOccurred": "An error occurred",
+        "tryAgain": "Please try again",
+        "deleteSuccess": "Deleted successfully",
+        "accountDeletedSuccess": "Account deleted successfully",
+        "deleteError": "Error deleting",
+        "deleteErrorDescription": "An error occurred while deleting the account. Please try again.",
+        "connectAccount": "Connect to account",
         "Error": {
             "errorOccurred": "An error occurred!",
             "goTo": "Go to",
@@ -918,13 +926,7 @@
                 "cancel": "Cancel"
             },
             "Accounts": {
-                "errorOccurred": "An error occurred",
-                "tryAgain": "Please try again",
-                "deleteSuccess": "Deleted successfully",
-                "accountDeletedSuccess": "Account deleted successfully",
-                "deleteError": "Error deleting",
-                "deleteErrorDescription": "An error occurred while deleting the account. Please try again.",
-                "connectAccount": "Connect to account"
+
             },
             "SelectPagesForm": {
                 "serverConnectionError": "Failed to connect to server",
