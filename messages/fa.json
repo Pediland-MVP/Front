@@ -141,57 +141,6 @@
         "console": "داشبورد",
         "noRecentSessions": "فعلا خبری نیست :)"    
     },
-    "Profile": {
-        "title": "حساب کاربری",
-        "dashboard": "داشبورد",
-        "Form":{
-            "gender": "جنسیت",
-            "genderSelect": "انتخاب کنید",
-            "birthDate": "تاریخ تولد",
-            "birthDateSelect": "انتخاب کنید",
-            "male": "مرد",
-            "female": "زن",
-            "other": "سایر",
-            "firstname": "نام",
-            "lastname": "نام خانوادگی",
-            "email": "ایمیل",
-            "mobile": "موبایل",
-            "country": "کشور",
-            "state": "استان",
-            "city": "شهر",
-            "save": "ذخیره",
-            "cancel": "انصراف",
-            "thereIsError": "خطایی رخ داده است",
-            "profileUpdated": "پروفایل شما با موفقیت به روز رسانی شد",
-            "profileUpdateFailed": "خطایی در بروز رسانی پروفایل رخ داده است",
-            "Errors":{
-                "cityRequired": "لطفا یک شهر انتخاب کنید",
-                "firstname": {
-                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
-                },
-                "lastname": {
-                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
-                },
-                "email": {
-                    "required": "این فیلد الزامی است",
-                    "invalid_type": "ایمیل نامعتبر است"
-                },
-                "mobile": {
-                    "required": "این فیلد الزامی است",
-                    "invalid_type": "شماره همراه نامعتبر است"
-                },
-                "country": {
-                    "invalid_type": "کشور نامعتبر است"
-                },
-                "state": {
-                    "invalid_type": "استان نامعتبر است"
-                },
-                "city": {
-                    "invalid_type": "شهر نامعتبر است"
-                }
-            }
-        }
-    },
     "Contacts": {
         "dashboard": "داشبورد",
         "list": "لیست مخاطبین",
@@ -541,38 +490,6 @@
                 "required": "این فیلد الزامی است",
                 "too_small": "کد پستی باید ۱۰ رقم باشد"
             }
-        }
-    },
-    "Accounts": {
-        "dashboard": "داشبورد",
-        "title": "مدیریت اکانت‌ها",
-        "add": "افزودن",
-        "Accounts": {
-            "errorOccurred": "خطایی پیش آمد",
-            "tryAgain": "لطفا دوباره امتحان کنید",
-            "deleteSuccess": "حذف موفق",
-            "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
-            "deleteError": "خطا در حذف",
-            "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
-            "viewAccount": "مشاهده اکانت",
-            "connectAccount": "اتصال به اکانت",
-            "areYouSure": "آیا مطمئن هستید؟",
-            "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
-            "cancel": "انصراف",
-            "delete": "حذف",
-            "noAccountsFound": "هیچ اکانتی وجود ندارد."
-        },
-        "SelectInstagram": {
-            "selectAccount": "یک اکانت انتخاب کنید",
-            "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
-            "cancel": "انصراف"
-        },
-        "SelectPagesForm": {
-            "serverConnectionError": "ارتباط با سرور برقرار نشد",
-            "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
-            "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
-            "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
-            "select": "انتخاب"
         }
     },
     "Sessions": {
@@ -1005,5 +922,103 @@
         "ORDER_CARD_TO_CARD_NOT_UPLOADED": "رسید کارت به کارت آپلود نشده است",
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام یافت نشد",
         "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
+    },
+
+
+
+
+
+    "Profile": {
+        "dashboard": "داشبورد",
+        "title": "حساب کاربری",
+        "Form":{
+            "gender": "جنسیت",
+            "genderSelect": "انتخاب کنید",
+            "birthDate": "تاریخ تولد",
+            "birthDateSelect": "انتخاب کنید",
+            "male": "مرد",
+            "female": "زن",
+            "other": "سایر",
+            "firstname": "نام",
+            "lastname": "نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "country": "کشور",
+            "state": "استان",
+            "city": "شهر",
+            "save": "ذخیره",
+            "cancel": "انصراف",
+            "Errors":{
+                "firstname": {
+                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
+                },
+                "lastname": {
+                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
+                },
+                "email": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "ایمیل نامعتبر است"
+                },
+                "mobile": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "شماره همراه نامعتبر است"
+                },
+                "country": {
+                    "invalid_type": "کشور نامعتبر است"
+                },
+                "state": {
+                    "invalid_type": "استان نامعتبر است"
+                },
+                "city": {
+                    "invalid_type": "شهر نامعتبر است"
+                }
+            }
+        }
+    },
+    "Settings": {
+        "dashboard": "داشبورد",
+        "title": "تنظیمات",
+        "chooseOneOption": "لطفا یک گزینه را انتخاب کنید.",
+        "Navigation": {
+            "accounts": "مدیریت اکانت‌های اینستاگرام",
+            "bankAccounts": "مدیریت حساب‌های بانکی"
+        },
+        "Accounts": {
+        "add": "افزودن",
+        "addAccount": "افزودن اکانت",
+        "viewAccount": "مشاهده اکانت",
+        "areYouSure": "آیا مطمئن هستید؟",
+        "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
+        "cancel": "انصراف",
+        "delete": "حذف",
+        "noAccountsFound": "هیچ اکانتی وجود ندارد.",
+            "Error": {
+                "errorOccurred": "متاسفانه مشکلی پیش آمده است!",
+                "goTo": "به",
+                "accounts": "مدیریت اکانت‌های اینستاگرام",
+                "goToEnd": "بروید"
+            },
+            "SelectInstagram": {
+                "selectAccount": "یک اکانت انتخاب کنید",
+                "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
+                "cancel": "انصراف"
+            },
+            "Accounts": {
+                "errorOccurred": "خطایی پیش آمد",
+                "tryAgain": "لطفا دوباره امتحان کنید",
+                "deleteSuccess": "حذف موفق",
+                "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
+                "deleteError": "خطا در حذف",
+                "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
+                "connectAccount": "اتصال به اکانت"
+            },
+            "SelectPagesForm": {
+                "serverConnectionError": "ارتباط با سرور برقرار نشد",
+                "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
+                "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
+                "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
+                "select": "انتخاب"
+            }
+        }
     }
 }

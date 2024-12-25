@@ -5,24 +5,26 @@
             "description": "Social Base CRM"
         },
         "console": "Console",
-        "dashboard": "Dashboard",
-        "search": "Search",
-        "notFound": "Nothing found",
         "contacts": "Contacts",
+        "orders": "Orders",
         "messages": "Messages",
-        "comments": "Comments",
         "directs": "Directs",
+        "comments": "Comments",
         "automations": "Automations",
-        "sessions": "Sessions",
         "settings": "Settings",
         "products": "Products",
         "accounts": "Accounts",
+        "upgradeAccount": "Upgrade Account",
+        "soon": "Soon",
         "profile": "Profile",
         "logout": "Log Out",
+
+        "search": "Search",
+        "notFound": "Nothing found",
+        "sessions": "Sessions",
         "more": "More",
         "logoutFailed": "Logout failed",
-        "logoutSuccess": "Logout successfully",
-        "orders": "Orders"
+        "logoutSuccess": "Logout successfully"
     },
     "Auth": {
         "signup": "Sign up",
@@ -128,58 +130,7 @@
         "recentSessions": "Recent sessions",
         "console": "Console",
         "noRecentSessions": "No recent sessions"
-    },
-    "Profile": {
-        "title": "User account",
-        "dashboard": "Dashboard",
-        "Form": {
-          "gender": "gender",
-          "genderSelect": "choose",
-          "birthDate": "date of birth",
-          "birthDateSelect": "choose",
-          "male": "the man",
-          "female": "woman",
-          "other": "other",
-          "firstname": "name",
-          "lastname": "last name",
-          "email": "Email",
-          "mobile": "Mobile",
-          "country": "country",
-          "state": "province",
-          "city": "city",
-          "save": "save",
-          "cancel": "opt out",
-          "thereIsError": "An error has occurred",
-          "profileUpdated": "Your profile has been successfully updated",
-          "profileUpdateFailed": "An error occurred while updating the profile",
-          "Errors": {
-            "cityRequired": "Please select a city",
-            "firstname": {
-              "invalid_type": "The name can only be Persian characters"
-            },
-            "lastname": {
-              "invalid_type": "Last name can only be Persian letters"
-            },
-            "email": {
-              "required": "This field is required",
-              "invalid_type": "The email is invalid"
-            },
-            "mobile": {
-              "required": "This field is required",
-              "invalid_type": "The mobile number is invalid"
-            },
-            "country": {
-              "invalid_type": "The country is invalid"
-            },
-            "state": {
-              "invalid_type": "The province is invalid"
-            },
-            "city": {
-              "invalid_type": "The city is invalid"
-            }
-          }
-        }
-      },    
+    },   
     "Contacts": {
         "dashboard": "Dashboard",
         "list": "Contacts List",
@@ -472,37 +423,6 @@
         "Delete": {
             "alert": "Are you sure you want to delete this item?",
             "description": "This action is irreversible. This item will be permanently deleted from our servers."
-        }
-    },
-    "Accounts": {
-        "dashboard": "Dashboard",
-        "title": "Manage accounts",
-        "add": "Add",
-        "Accounts": {
-            "errorOccurred": "An error occurred",
-            "tryAgain": "Please try again",
-            "deleteSuccess": "Deleted successfully",
-            "accountDeletedSuccess": "Account deleted successfully",
-            "deleteError": "Error deleting",
-            "deleteErrorDescription": "An error occurred while deleting the account. Please try again.",
-            "viewAccount": "View account",
-            "connectAccount": "Connect to account",
-            "areYouSure": "Are you sure?",
-            "deleteConfirmation": "This action is irreversible. The account will be deleted from your list.",
-            "cancel": "Cancel",
-            "delete": "Delete"
-        },
-        "SelectInstagram": {
-            "selectAccount": "Select an account",
-            "accountsDescription": "These Instagram accounts are connected to your Facebook account. You can select one.",
-            "cancel": "Cancel"
-        },
-        "SelectPagesForm": {
-            "serverConnectionError": "Failed to connect to server",
-            "accountAlreadySelected": "This account has already been selected",
-            "selectDifferentAccount": "Select a different account",
-            "accountSelectedSuccess": "Account selected successfully",
-            "select": "Select"
         }
     },
     "Sessions": {
@@ -916,5 +836,103 @@
         "seeYourLastPosts": "View your latest Instagram posts.",
         "thereIsNoMore": "There is no other post available.",
         "close": "to close"
+    },
+
+
+
+
+
+    "Profile": {
+        "dashboard": "Dashboard",
+        "title": "User Profile",
+        "Form":{
+            "gender": "Gender",
+            "genderSelect": "Select",
+            "birthDate": "Birthdate",
+            "birthDateSelect": "Select",
+            "male": "Male",
+            "female": "Female",
+            "other": "Other",
+            "firstname": "First Name",
+            "lastname": "Family Name",
+            "email": "Email",
+            "mobile": "Mobile",
+            "country": "Country",
+            "state": "State",
+            "city": "City",
+            "save": "Save",
+            "cancel": "Cancel",
+            "Errors": {
+            "cityRequired": "Please select a city",
+            "firstname": {
+              "invalid_type": "The name can only be Persian characters"
+            },
+            "lastname": {
+              "invalid_type": "Last name can only be Persian letters"
+            },
+            "email": {
+              "required": "This field is required",
+              "invalid_type": "The email is invalid"
+            },
+            "mobile": {
+              "required": "This field is required",
+              "invalid_type": "The mobile number is invalid"
+            },
+            "country": {
+              "invalid_type": "The country is invalid"
+            },
+            "state": {
+              "invalid_type": "The province is invalid"
+            },
+            "city": {
+              "invalid_type": "The city is invalid"
+            }
+          }
+        }
+    },
+    "Settings": {
+        "dashboard": "Dashboard",
+        "title": "Settings",
+        "chooseOneOption": "Please choose an option.",
+        "Navigation": {
+            "accounts": "Instagram Accounts Management",
+            "bankAccounts": "Bank Accounts Management"
+        },
+        "Accounts": {
+        "add": "Add",
+        "noAccountsFound": "No accounts found.",
+        "viewAccount": "View account",
+        "areYouSure": "Are you sure?",
+        "deleteConfirmation": "This action is irreversible. The account will be deleted from your list.",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "Error": {
+            "errorOccurred": "An error occurred!",
+            "goTo": "Go to",
+            "accounts": "Instagram Accounts Management.",
+            "goToEnd": ""
+        },
+            "SelectInstagram": {
+                "selectAccount": "Select an account",
+                "accountsDescription": "These Instagram accounts are connected to your Facebook account. You can select one.",
+                "cancel": "Cancel"
+            },
+            "Accounts": {
+                "errorOccurred": "An error occurred",
+                "tryAgain": "Please try again",
+                "deleteSuccess": "Deleted successfully",
+                "accountDeletedSuccess": "Account deleted successfully",
+                "deleteError": "Error deleting",
+                "deleteErrorDescription": "An error occurred while deleting the account. Please try again.",
+                "connectAccount": "Connect to account"
+            },
+            "SelectPagesForm": {
+                "serverConnectionError": "Failed to connect to server",
+                "accountAlreadySelected": "This account has already been selected",
+                "selectDifferentAccount": "Select a different account",
+                "accountSelectedSuccess": "Account selected successfully",
+                "select": "Select"
+            }
+        }
     }
 }

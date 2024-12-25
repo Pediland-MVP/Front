@@ -38,7 +38,7 @@ export default function Accounts({
   filteredInstagramPages,
   setFilteredInstagramPages,
 }: AccountsProps) {
-  const t = useTranslations("Accounts.Accounts");
+  const t = useTranslations("Settings.Accounts");
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");
@@ -227,9 +227,7 @@ export default function Accounts({
           );
         })
       ) : (
-        <div className="flex items-center justify-center h-[calc(100vh-8rem)] w-full">
-          <p className="text-gray-600">{t("noAccountsFound")}</p>
-        </div>
+        <p className="text-gray-600">{t("noAccountsFound")}</p>
       )}
 
 
