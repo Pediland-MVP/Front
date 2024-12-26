@@ -30,7 +30,7 @@ export const ConversationsProvider = ({
       if (find) {
         return old
       }
-      return [...old, conversation]
+      return [conversation, ...old]
     })
   }
 
