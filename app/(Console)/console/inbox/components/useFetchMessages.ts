@@ -27,7 +27,27 @@ export default function useFetchMessages(
   const [hasMore, setHasMore] = useState(true);
   let isListenersSet = false;
 
+  const onNewMessage = (data: string) => {
+    const message: WsNewMessage = JSON.parse(data);
+    if (message.lead.id === lead?.id) {
+      setMessagesList((old) => [message, ...old]);
+    }
+  }
 
+  const onMessageSent = (data: string) => {
+    const message: WsMessageSent = JSON.parse(data);
+    setMessagesList((old) => [message, ...old]);
+  }
+
+  const onConversation = (data: string) => {
+    //Get conversation data
+    const conversation: WsConversation = JSON.parse(data);
+    if (conversation.items.length === 0) {
+      setHasMore(false);
+      return;
+    }
+    setMessagesList((old) => [...old, ...conversation.items]);
+  }
 
   useEffect(() => {
     if (isListenersSet) return;
@@ -35,32 +55,14 @@ export default function useFetchMessages(
 
     messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
-    messagesSocket.on(WsMessages.CONVERSATION, (conversationStr) => {
-      //Get conversation data
-      const conversation: WsConversation = JSON.parse(conversationStr);
-      if (conversation.items.length === 0) {
-        setHasMore(false);
-        return;
-      }
-      setMessagesList((old) => [...old, ...conversation.items]);
-    });
-
-    messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
-      const message: WsMessageSent = JSON.parse(messageStr);
-      setMessagesList((old) => [message, ...old]);
-    });
-
-    messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
-      const message: WsNewMessage = JSON.parse(data);
-      if (message.lead.id === lead?.id) {
-        setMessagesList((old) => [message, ...old]);
-      }
-    });
+    messagesSocket.on(WsMessages.CONVERSATION, onConversation);
+    messagesSocket.on(WsMessages.MESSAGE_SENT, onMessageSent);
+    messagesSocket.on(WsMessages.NEW_MESSAGE, onNewMessage);
 
     return () => {
-      messagesSocket.off(WsMessages.CONVERSATION);
-      messagesSocket.off(WsMessages.NEW_MESSAGE);
-      messagesSocket.off(WsMessages.MESSAGE_SENT);
+      messagesSocket.off(WsMessages.CONVERSATION, onConversation);
+      messagesSocket.off(WsMessages.NEW_MESSAGE, onNewMessage);
+      messagesSocket.off(WsMessages.MESSAGE_SENT, onMessageSent);
     };
   }, [lead]);
 
