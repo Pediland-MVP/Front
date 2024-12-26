@@ -8,7 +8,7 @@ import SidebarTrigger from "@/components/theme/ui/sidebar";
 import Link from "next/link";
 
 export default function DashboardSkeleton({ accessDenied = false }) {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations("Console");
 
   if (accessDenied) {
     return (

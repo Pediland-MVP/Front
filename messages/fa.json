@@ -1,35 +1,4 @@
 {
-    "Dashboard": {
-        "accessDenied": "شما به این صفحه دسترسی ندارید!",
-        "accessNote": "لطفا اکانت اینستاگرام خود را متصل نمایید.",
-        "Sidebar": {
-            "name": "بِـفـروش",
-            "description": "مدیریت مشتریان",
-            "console": "داشبورد",
-            "contacts": "مخاطبین",
-            "shop": "فروشگاه",
-            "ordersList": "لیست سفارشات",
-            "products": "کالاها / خدمات",
-            "messages": "پیام‌ها",
-            "directs": "دایرکت‌ها",
-            "comments": "کامنت‌ها",
-            "automations": "اتوماسیون",
-            "settings": "تنظیمات",
-            "accounts": "اکانت‌ها",
-            "upgradeAccount": "ارتقا حساب",
-            "soon": "بزودی",
-            "profile": "حساب کاربری",
-            "logout": "خروج"
-        },
-
-
-        "search": "جستجو",
-        "notFound": "موردی یافت نشد",
-        "sessions": "سشن‌ها",
-        "more": "بیشتر",
-        "logoutFailed": "خروج انجام نشد",
-        "logoutSuccess": "خروج با موفقیت انجام شد"
-    },
     "Auth": {
         "signup": "ثبت نام",
         "signin": "حساب کاربری",
@@ -155,66 +124,74 @@
             }
         }
     },
-    "Inbox": {
-        "dashboard": "داشبورد",
-        "list": "لیست دایرکت‌ها",
-        "ConversationsList": "لیست دایرکت‌ها",
-        "noConversations": "هیچ دایرکتی وجود ندارد.",
-
-        
-        "ChatBottombar": {
-            "errors": {
-                "send": "خطا در ارسال"
-            },
-            "textPlaceholder": "متن پیام"
-        },
-        "ChatList": {
-            "thereAreNoMoreMessages": "دیگه پیامی نیست"
-        },
-        "ChatsList": {
-            "loading": "در حال بارگذاری...",
-            "thereAreNoMoreChats": "تموم شد :)"
-        },
-        "directsList": "لیست دایرکت‌ها",
-        "conversationsList": "دایرکت"
-    },
-
-
-
-
     "Console": {
+        "accessDenied": "شما به این صفحه دسترسی ندارید!",
+        "accessNote": "لطفا اکانت اینستاگرام خود را متصل نمایید.",
         "dashboard": "داشبورد",
-        "productCount": "تعداد محصولات",
-        "leadCount": "تعداد مخاطب",
-        "automations": "اتوماسیون",
-        "responseCount": "تعداد جواب‌ها",
+        "productCount": "تعداد کالاها / خدمات",
+        "leadCount": "تعداد مخاطبین",
+        "automations": "تعداد پیام خودکار",
+        "responseCount": "تعداد پاسخ‌ها",
         "growthFromLastMonth": "{growth}% از ماه پیش",
-        "leadsGrowthChart": "رشد تعداد مخاطبین",
-        "recentSessions": "سشن‌های اخیر",
-        "console": "داشبورد",
-        "noRecentSessions": "فعلا خبری نیست :)"    
+        "leadsGrowthChart": "نمودار رشد مخاطبین",
+        "recentSessions": "آخرین نشست‌ها",
+        "noRecentSessions": "فعلا خبری نیست :)",
+        "Sidebar": {
+            "name": "بِـفـروش",
+            "description": "مدیریت مشتریان",
+            "dashboard": "داشبورد",
+            "contacts": "مخاطبین",
+            "instagramConnections": "ارتباط در اینستاگرام",
+            "directs": "دایرکت‌ها",
+            "comments": "کامنت‌ها",
+            "automations": "پیام‌های خودکار",
+            "shop": "فروشگاه",
+            "ordersList": "سفارشات",
+            "products": "کالاها / خدمات",
+            "settings": "تنظیمات",
+            "upgradeAccount": "ارتقا حساب",
+            "soon": "بزودی",
+            "profile": "حساب کاربری",
+            "logout": "خروج"
+        }
     },
     "Contacts": {
         "dashboard": "داشبورد",
         "list": "لیست مخاطبین",
         "searchPlaceholder": "جستجو ...",
+        "List": {
+            "image": "تصویر",
+            "userName": "نام کاربر",
+            "instagramId": "آیدی اینستاگرام",
+            "messageCount": "تعداد پیام",
+            "actions": "عملیات"
+        },
+        "Pagination": {
+            "itemsCount": "تعداد آیتم‌ها",
+            "show": "نمایش",
+            "page": "صفحه {page} از {pages}"
+        },
+        "EditDialog": {
+            "editInformation": "ویرایش اطلاعات",
+            "cancel": "انصراف"
+        },
         "Form": {
             "firstname": "نام",
             "lastname": "نام خانوادگی",
-            "mobile": "موبایل",
-            "email": "ایمیل",
-            "country": "کشور",
-            "state": "استان",
-            "city": "شهر",
-            "postalcode": "کد پستی",
-            "address": "آدرس",
             "gender": "جنسیت",
-            "genderPlaceholder": "انتخاب جنسیت",
+            "genderPlaceholder": "انتخاب کنید",
             "female": "زن",
             "male": "مرد",
             "other": "سایر",
-            "birthDate": "تاریخ تولد",
             "save": "ذخیره",
+            "birthDate": "تاریخ تولد",
+            "mobile": "همراه",
+            "email": "ایمیل",
+            "state": "استان",
+            "city": "شهر",
+            "address": "آدرس",
+            "postalcode": "کد پستی",
+            "updated": "اطلاعات با موفقیت بروز شد",
             "errors": {
                 "firstname": "لطفاً نام را وارد کنید",
                 "lastname": "لطفاً نام خانوادگی را وارد کنید",
@@ -228,81 +205,26 @@
                 "birthDate": "لطفاً تاریخ تولد معتبر وارد کنید",
                 "birthDateRequired": "تاریخ تولد الزامی است",
                 "update": "خطایی پیش آمد"
-            },
-            "updated": "اطلاعات با موفقیت بروز شد"
-        },
-        "List": {
-            "image": "تصویر",
-            "userName": "نام کاربر",
-            "instagramId": "آیدی اینستاگرام",
-            "messageCount": "تعداد پیام",
-            "actions": "عملیات"
-        },
-        "EditDialog": {
-            "editContact": "ویرایش مخاطب",
-            "editContactDescription": "از اینجا میتونی مخاطب رو ویرایش کنی",
-            "cancel": "انصراف",
-            "editInformation": "ویرایش اطلاعات"
-        },
-        "Pagination": {
-            "itemsCount": "تعداد آیتم‌ها",
-            "show": "نمایش",
-            "page": "صفحه {page} از {pages}"
+            }
         }
     },
-    "Orders": {
+    "Inbox": {
         "dashboard": "داشبورد",
-        "list": "لیست سفارشات",
-        "searchPlaceholder": "جست‌جو",
-        "List": {
-            "image": "کارت‌ به کارت",
-            "product": "محصول",
-            "price": "قیمت کل",
-            "quantity": "تعداد",
-            "details": "مشخصات",
-            "actions": "عملیات",
-            "status": "وضعیت",
-            "cardToCardImage": "تصویر کارت به کارت",
-            "orderStatus": {
-                "pending": "درحال پرداخت",
-                "processing": "آماده پردازش",
-                "sending": "در حال ارسال",
-                "completed": "تکمیل شده",
-                "invalid_data": "اطلاعات نامعتبر",
-                "cancelled": "لغو شده"
+        "list": "لیست دایرکت‌ها",
+        "noConversations": "هیچ دایرکتی وجود ندارد.",
+        "ChatBottombar": {
+            "textPlaceholder": "متن پیام",
+            "errors": {
+                "send": "خطا در ارسال"
             }
         },
-        "OrderDetails": {
-            "productDetails": "جزئیات محصول",
-            "quantity": "تعداد",
-            "price": "قیمت",
-            "totalPrice": "قیمت کل",
-            "customerDetails": "اطلاعات مشتری",
-            "name": "نام",
-            "email": "ایمیل",
-            "phone": "تلفن",
-            "shippingAddress": "آدرس ارسال",
-            "address": "آدرس",
-            "city": "شهر",
-            "state": "استان",
-            "postalCode": "کد پستی",
-            "orderStatusTitle": "وضعیت سفارش",
-            "selectStatus": "انتخاب وضعیت",
-            "updateStatus": "به‌روزرسانی وضعیت",
-            "cardToCardImage": "تصویر کارت به کارت",
-            "statusUpdated": "وضعیت با موفقیت بروز شد",
-            "orderStatus": {
-                "pending": "درحال پرداخت",
-                "processing": "آماده پردازش",
-                "sending": "در حال ارسال",
-                "completed": "تکمیل شده",
-                "invalid_data": "اطلاعات نامعتبر",
-                "cancelled": "لغو شده"
-            }
-          },
-          "EditDialog": {
-            "editInformation": "ویرایش سفارش"
-          }
+        "ChatList": {
+            "thereAreNoMoreMessages": "دیگه پیامی نیست"
+        },
+        "ChatsList": {
+            "loading": "در حال بارگذاری...",
+            "thereAreNoMoreChats": "تموم شد :)"
+        }
     },
     "Comments": {
         "dashboard": "داشبورد",
@@ -322,32 +244,32 @@
         "List": {
             "loading": "در حال بارگذاری...",
             "thereAreNoMoreComments": "تموم شد :)"
-        },
-        "title": "لیست کامنت‌ها"
+        }
     },
     "Automations": {
         "dashboard": "داشبورد",
-        "list": "لیست اتوماسیون ها",
+        "list": "لیست پیام‌های خودکار",
         "add": "افزودن",
-        "addTitle": "ایجاد اتوماسیون جدید",
+        "addTitle": "جزئیات پیام",
         "List": {
+            "title": "عنوان",
+            "conditionValue": "مقدار شرط",
+            "firstMessage": "پیام اول",
+            "actions": "عملیات",
+            "previous": "قبلی",
+            "next": "بعدی",
+            "pageOf": "صفحه {current} از {total}",
+
+            "deleteErrorRetry": "خطا در حذف مورد. لطفاً دوباره تلاش کنید.",
             "fetchError": "خطا در دریافت اطلاعات",
             "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
             "error": "خطا",
             "problemOccurred": "مشکلی پیش آمده است",
             "deleted": "حذف شد",
-            "deleteErrorRetry": "خطا در حذف مورد. لطفاً دوباره تلاش کنید.",
-            "title": "عنوان",
-            "conditionValue": "مقدار شرط",
-            "firstMessage": "پیام اول",
-            "actions": "عملیات",
             "notAvailable": "موجود نیست",
             "responses": "جواب‌ها",
             "edit": "ویرایش",
-            "delete": "حذف",
-            "previous": "قبلی",
-            "next": "بعدی",
-            "pageOf": "صفحه {current} از {total}"
+            "delete": "حذف"
         },
         "ProductsDialog": {
             "fetchError": "خطا در دریافت محصولات:",
@@ -425,6 +347,95 @@
         "likeCommand": "لایک کردن اولین پیام کاربر",
         "submit": "ایجاد",
         "update": "آپدیت"
+    },
+    "InstagramPostDialog": {
+        "changePost": "تعویض پست",
+        "selectPost": "انتخاب پست",
+        "seeYourLastPosts": "آخرین پست‌های اینستاگرام خود را مشاهده کنید.",
+        "thereIsNoMore": "پست دیگری موجود نیست.",
+        "close": "بستن"
+    },
+    "Sessions": {
+        "title": "لیست سشن‌ها",
+        "dashboard": "داشبورد",
+        "automation": "اتوماسیون",
+        "List": {
+            "fetchError": "خطا در دریافت اطلاعات",
+            "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
+            "id": "شناسه",
+            "profile": "پروفایل",
+            "instagramUsername": "نام کاربری اینستاگرام",
+            "status": "وضعیت",
+            "startDate": "تاریخ شروع",
+            "updateDate": "تاریخ بروزرسانی",
+            "actions": "عملیات",
+            "userAvatar": "تصویر کاربر",
+            "completed": "پایان",
+            "inProgress": "درحال انجام",
+            "cancelled": "لغو شده",
+            "viewChat": "دیدن چت",
+            "previous": "قبلی",
+            "next": "بعدی",
+            "pageOf": "صفحه {current} از {total}"
+        },
+        "QuestionAnswerDialog": {
+            "userAvatar": "تصویر کاربر",
+            "answers": "جواب‌ها"
+        }
+    },
+    "Orders": {
+        "dashboard": "داشبورد",
+        "list": "لیست سفارشات",
+        "searchPlaceholder": "جست‌جو",
+        "List": {
+            "image": "کارت‌ به کارت",
+            "product": "محصول",
+            "price": "قیمت کل",
+            "quantity": "تعداد",
+            "details": "مشخصات",
+            "actions": "عملیات",
+            "status": "وضعیت",
+            "cardToCardImage": "تصویر کارت به کارت",
+            "orderStatus": {
+                "pending": "درحال پرداخت",
+                "processing": "آماده پردازش",
+                "sending": "در حال ارسال",
+                "completed": "تکمیل شده",
+                "invalid_data": "اطلاعات نامعتبر",
+                "cancelled": "لغو شده"
+            }
+        },
+        "OrderDetails": {
+            "productDetails": "جزئیات محصول",
+            "quantity": "تعداد",
+            "price": "قیمت",
+            "totalPrice": "قیمت کل",
+            "customerDetails": "اطلاعات مشتری",
+            "name": "نام",
+            "email": "ایمیل",
+            "phone": "تلفن",
+            "shippingAddress": "آدرس ارسال",
+            "address": "آدرس",
+            "city": "شهر",
+            "state": "استان",
+            "postalCode": "کد پستی",
+            "orderStatusTitle": "وضعیت سفارش",
+            "selectStatus": "انتخاب وضعیت",
+            "updateStatus": "به‌روزرسانی وضعیت",
+            "cardToCardImage": "تصویر کارت به کارت",
+            "statusUpdated": "وضعیت با موفقیت بروز شد",
+            "orderStatus": {
+                "pending": "درحال پرداخت",
+                "processing": "آماده پردازش",
+                "sending": "در حال ارسال",
+                "completed": "تکمیل شده",
+                "invalid_data": "اطلاعات نامعتبر",
+                "cancelled": "لغو شده"
+            }
+          },
+          "EditDialog": {
+            "editInformation": "ویرایش سفارش"
+          }
     },
     "Products": {
         "dashboard": "داشبورد",
@@ -525,49 +536,157 @@
             }
         }
     },
-    "Sessions": {
-        "title": "لیست سشن‌ها",
+    "Settings": {
         "dashboard": "داشبورد",
-        "automation": "اتوماسیون",
-        "List": {
-            "fetchError": "خطا در دریافت اطلاعات",
-            "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
-            "id": "شناسه",
-            "profile": "پروفایل",
-            "instagramUsername": "نام کاربری اینستاگرام",
-            "status": "وضعیت",
-            "startDate": "تاریخ شروع",
-            "updateDate": "تاریخ بروزرسانی",
-            "actions": "عملیات",
-            "userAvatar": "تصویر کاربر",
-            "completed": "پایان",
-            "inProgress": "درحال انجام",
-            "cancelled": "لغو شده",
-            "viewChat": "دیدن چت",
-            "previous": "قبلی",
-            "next": "بعدی",
-            "pageOf": "صفحه {current} از {total}"
+        "title": "تنظیمات",
+        "chooseOneOption": "لطفا یک گزینه را انتخاب کنید.",
+        "Navigation": {
+            "accounts": "مدیریت اکانت‌های اینستاگرام",
+            "bankAccounts": "مدیریت حساب‌های بانکی"
         },
-        "QuestionAnswerDialog": {
-            "userAvatar": "تصویر کاربر",
-            "answers": "جواب‌ها"
+        "Accounts": {
+            "add": "افزودن",
+            "addAccount": "افزودن اکانت",
+            "viewAccount": "مشاهده اکانت",
+            "areYouSure": "آیا مطمئن هستید؟",
+            "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
+            "cancel": "انصراف",
+            "delete": "حذف",
+
+            "errorOccurred": "خطایی پیش آمد",
+            "tryAgain": "لطفا دوباره امتحان کنید",
+            "deleteSuccess": "حذف موفق",
+            "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
+            "deleteError": "خطا در حذف",
+            "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
+            "connectAccount": "اتصال به اکانت",
+            "noAccountsFound": "هیچ اکانتی وجود ندارد.",
+            "Error": {
+                "errorOccurred": "متاسفانه مشکلی پیش آمده است!",
+                "goTo": "به",
+                "accounts": "مدیریت اکانت‌های اینستاگرام",
+                "goToEnd": "بروید"
+            },
+            "SelectInstagram": {
+                "selectAccount": "یک اکانت انتخاب کنید",
+                "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
+                "cancel": "انصراف"
+            },
+            "SelectPagesForm": {
+                "serverConnectionError": "ارتباط با سرور برقرار نشد",
+                "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
+                "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
+                "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
+                "select": "انتخاب"
+            }
         }
     },
-    "Lorem": {
-        "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
-        "p": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است",
-        "s": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گراف و مجله در",
-        "xs": "تولید سادگی نامفهوم"
+    "Profile": {
+        "dashboard": "داشبورد",
+        "title": "حساب کاربری",
+        "Form":{
+            "gender": "جنسیت",
+            "genderSelect": "انتخاب کنید",
+            "birthDate": "تاریخ تولد",
+            "birthDateSelect": "انتخاب کنید",
+            "male": "مرد",
+            "female": "زن",
+            "other": "سایر",
+            "firstname": "نام",
+            "lastname": "نام خانوادگی",
+            "email": "ایمیل",
+            "mobile": "موبایل",
+            "country": "کشور",
+            "state": "استان",
+            "city": "شهر",
+            "save": "ذخیره",
+            "cancel": "انصراف",
+            "profileUpdated": "حساب کاربری بروز شد.",
+            "Errors":{
+                "firstname": {
+                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
+                },
+                "lastname": {
+                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
+                },
+                "email": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "ایمیل نامعتبر است"
+                },
+                "mobile": {
+                    "required": "این فیلد الزامی است",
+                    "invalid_type": "شماره همراه نامعتبر است"
+                },
+                "country": {
+                    "invalid_type": "کشور نامعتبر است"
+                },
+                "state": {
+                    "invalid_type": "استان نامعتبر است"
+                },
+                "city": {
+                    "invalid_type": "شهر نامعتبر است"
+                }
+            }
+        }
     },
-    "Skeleton": {
-        "title": "دسترسی نداری :(",
-        "description": "لطفا به اکانت اینستاگرامت متصل شو تا کنسول رو ببینی",
-        "button": "وصل کردن اینستاگرم"
+    "Site": {
+        "Footer": {
+            "contactUs": "تماس با ما",
+            "contactUsText": "در حال حاضر در صورت وجود هرگونه سوال و یا نیاز به پشتیبانی میتونید از روش‌های زیر با ما در ارتباط باشید.",
+            "whatsapp": "واتساپ",
+            "telegram": "تلگرام",
+            "privacy": "حریم خصوصی",
+            "terms": "قوانین و مقررات",            
+            "copyright": "تمامی حقوق ناشی از این وب‌سایت برای بـِفـروش محفوظ است."
+        }
     },
-    "FileUpload": {
-        "title": "آپلود تصویر",
-        "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
-        "dropIt": "رها کنید"
+    "Home": {
+        "heroSectionTitle": "ارتباط، فروش، ارسال و مدیریت مشتریان در شبکه های اجتماعی را آسان کرده ایم!",
+        "crm": "فروش crm مبتنی بر پیام رسان",
+        "trialButton": "ثـبـت نـام رایـگـان",
+        "Section1": {
+            "title": "شما فقط به فکر تولید محتـوا و تامیـن باشیـد!",
+            "subTitle": "ما ارتباط می‌سازیم، می‌فروشیم، می‌فرستیم و مشتریاتون رو مدیریت می‌کنیم."
+        },
+        "Section2": {
+            "title": "با هزینه و انرژی کمتر، فروش و بهره‌وری بیشتر رو تجربه کنید!"
+        },
+        "Features": {
+            "title": "امکانات",
+            "title1": "ذخیره اتوماتیک اطلاعات مشتریان",
+            "text1": "اطلاعات مشتریان مثل شماره همراه و ایمیل بصورت اتوماتیک در پروفایل آنها ثبت می شود.",
+            "title2": "دیتابیس اختصاصی",
+            "text2": "نگران عدم دسترسی به اینستاگرام نباشید، اطلاعات مشتریان شما از اینستاگرام به دیتابیس اختصاصی خودتان منتقل می‌شود و اگر به هر دلیل پیج شما از بین برود، به مشتریان خود دسترسی دارید.",
+            "title3": "فروش آسان در اینستاگرام",
+            "text3": "نگران گم کردن پیام مشتری و فیش واریزی و ثبت سفارش نباشید، ساده و بدون نیاز به ثبت نام مشتری میتونه سفارشش رو ثبت کنه.",
+            "title4": "ارسال آسان سفارشات",
+            "text4": "بعد از ثبت سفارش، اطلاعات خرید بصورت اتوماتیک برای پست ارسال و رسید پستی صادر می شود.",
+            "title5": "ورژن جدید دایرکت هوشمند",
+            "text5": "هوشمندتر پاسخ مشتریان رو بدید و اتوماسیون پیام ها را برای خرید بیشتر مشتریان بسازید.",
+            "title6": "ارتباط ۳۶۰ درجه با مشتریان",
+            "text6": "با مشتری از کانال های ارتباطی مختلف مثل دایرکت، اتوماسیون، پیامک، و ... در ارتباط باشید."
+        },
+        "BigSection": {
+            "xs": "تولید سادگی نامفهوم",
+            "imageAlt": "CRM پایپلاین",
+            "title": "تجربه CRM خود را بهبود بخشید",
+            "description1": "مدیریت فروش خود را با ابزارهای CRM ما به صورت کارآمد انجام دهید.",
+            "description2": "جریان کاری خود را سفارشی کنید و بهره‌وری را افزایش دهید.",
+            "badge1": "رابط کاربری ساده",
+            "badge2": "کاملاً قابل سفارشی‌سازی",
+            "badge3": "پشتیبانی"
+        },
+        "Header": {
+            "freeRegistration": "ثبت نام رایگان",
+            "features": "امکانات",
+            "contactUs": "تماس با ما",
+            "dashboard": "داشبورد",
+            "products": "محصولات",
+            "pricing": "تعرفه ها",
+            "login": "ورود",
+            "signup": "ثبت نام",
+            "loremIpsum": "لورم اپیزوم"
+        }
     },
     "TermsAndConditions": {
         "title": "شرایط و ضوابط خدمات",
@@ -663,6 +782,10 @@
             "paragraph1": "اگر سوال یا نگرانی در مورد این سیاست حفظ حریم خصوصی دارید، لطفاً با ما تماس بگیرید: support@pediland.com."
         }
     },
+
+
+
+
     "PricingTable": {
         "plan": "طرح",
         "base": "پایه",
@@ -733,65 +856,6 @@
             "description": "برنامه‌هایی که دوست دارید مستقیماً با Como ادغام می‌شوند تا گردش کار شما یکپارچه شود"
         }
     },
-    "Site": {
-        "Footer": {
-            "contactUs": "تماس با ما",
-            "contactUsText": "در حال حاضر در صورت وجود هرگونه سوال و یا نیاز به پشتیبانی میتونید از روش‌های زیر با ما در ارتباط باشید.",
-            "whatsapp": "واتساپ",
-            "telegram": "تلگرام",
-            "privacy": "حریم خصوصی",
-            "terms": "قوانین و مقررات",            
-            "copyright": "تمامی حقوق ناشی از این وب‌سایت برای بـِفـروش محفوظ است."
-        }
-    },
-    "Home": {
-        "heroSectionTitle": "ارتباط، فروش، ارسال و مدیریت مشتریان در شبکه های اجتماعی را آسان کرده ایم!",
-        "crm": "فروش crm مبتنی بر پیام رسان",
-        "trialButton": "ثـبـت نـام رایـگـان",
-        "Section1": {
-            "title": "شما فقط به فکر تولید محتـوا و تامیـن باشیـد!",
-            "subTitle": "ما ارتباط می‌سازیم، می‌فروشیم، می‌فرستیم و مشتریاتون رو مدیریت می‌کنیم."
-        },
-        "Section2": {
-            "title": "با هزینه و انرژی کمتر، فروش و بهره‌وری بیشتر رو تجربه کنید!"
-        },
-        "Features": {
-            "title": "امکانات",
-            "title1": "ذخیره اتوماتیک اطلاعات مشتریان",
-            "text1": "اطلاعات مشتریان مثل شماره همراه و ایمیل بصورت اتوماتیک در پروفایل آنها ثبت می شود.",
-            "title2": "دیتابیس اختصاصی",
-            "text2": "نگران عدم دسترسی به اینستاگرام نباشید، اطلاعات مشتریان شما از اینستاگرام به دیتابیس اختصاصی خودتان منتقل می‌شود و اگر به هر دلیل پیج شما از بین برود، به مشتریان خود دسترسی دارید.",
-            "title3": "فروش آسان در اینستاگرام",
-            "text3": "نگران گم کردن پیام مشتری و فیش واریزی و ثبت سفارش نباشید، ساده و بدون نیاز به ثبت نام مشتری میتونه سفارشش رو ثبت کنه.",
-            "title4": "ارسال آسان سفارشات",
-            "text4": "بعد از ثبت سفارش، اطلاعات خرید بصورت اتوماتیک برای پست ارسال و رسید پستی صادر می شود.",
-            "title5": "ورژن جدید دایرکت هوشمند",
-            "text5": "هوشمندتر پاسخ مشتریان رو بدید و اتوماسیون پیام ها را برای خرید بیشتر مشتریان بسازید.",
-            "title6": "ارتباط ۳۶۰ درجه با مشتریان",
-            "text6": "با مشتری از کانال های ارتباطی مختلف مثل دایرکت، اتوماسیون، پیامک، و ... در ارتباط باشید."
-        },
-        "BigSection": {
-            "xs": "تولید سادگی نامفهوم",
-            "imageAlt": "CRM پایپلاین",
-            "title": "تجربه CRM خود را بهبود بخشید",
-            "description1": "مدیریت فروش خود را با ابزارهای CRM ما به صورت کارآمد انجام دهید.",
-            "description2": "جریان کاری خود را سفارشی کنید و بهره‌وری را افزایش دهید.",
-            "badge1": "رابط کاربری ساده",
-            "badge2": "کاملاً قابل سفارشی‌سازی",
-            "badge3": "پشتیبانی"
-        },
-        "Header": {
-            "freeRegistration": "ثبت نام رایگان",
-            "features": "امکانات",
-            "contactUs": "تماس با ما",
-            "dashboard": "داشبورد",
-            "products": "محصولات",
-            "pricing": "تعرفه ها",
-            "login": "ورود",
-            "signup": "ثبت نام",
-            "loremIpsum": "لورم اپیزوم"
-        }
-    },
     "UsersComments": {
         "see": "نظرات دیگران راجب مارا بخوانید",
         "p": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است",
@@ -846,13 +910,6 @@
         "viewAllFeatures": "مشاهده همه قابلیت‌ها",
         "subscribe": "خرید اشتراک"
     },
-    "InstagramPostDialog": {
-        "changePost": "تعویض پست",
-        "selectPost": "انتخاب پست",
-        "seeYourLastPosts": "آخرین پست‌های اینستاگرام خود را مشاهده کنید.",
-        "thereIsNoMore": "پست دیگری موجود نیست.",
-        "close": "بستن"
-    },
     "Error": {
         "dashboard": "داشبورد",
         "accounts": "اکانت‌ها",
@@ -872,102 +929,20 @@
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام یافت نشد",
         "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
     },
-
-
-
-
-
-    "Profile": {
-        "dashboard": "داشبورد",
-        "title": "حساب کاربری",
-        "Form":{
-            "gender": "جنسیت",
-            "genderSelect": "انتخاب کنید",
-            "birthDate": "تاریخ تولد",
-            "birthDateSelect": "انتخاب کنید",
-            "male": "مرد",
-            "female": "زن",
-            "other": "سایر",
-            "firstname": "نام",
-            "lastname": "نام خانوادگی",
-            "email": "ایمیل",
-            "mobile": "موبایل",
-            "country": "کشور",
-            "state": "استان",
-            "city": "شهر",
-            "save": "ذخیره",
-            "cancel": "انصراف",
-            "profileUpdated": "حساب کاربری بروز شد.",
-            "Errors":{
-                "firstname": {
-                    "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
-                },
-                "lastname": {
-                    "invalid_type": "نام خانوادگی فقط می‌تواند حروف فارسی باشد"
-                },
-                "email": {
-                    "required": "این فیلد الزامی است",
-                    "invalid_type": "ایمیل نامعتبر است"
-                },
-                "mobile": {
-                    "required": "این فیلد الزامی است",
-                    "invalid_type": "شماره همراه نامعتبر است"
-                },
-                "country": {
-                    "invalid_type": "کشور نامعتبر است"
-                },
-                "state": {
-                    "invalid_type": "استان نامعتبر است"
-                },
-                "city": {
-                    "invalid_type": "شهر نامعتبر است"
-                }
-            }
-        }
+    "Lorem": {
+        "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
+        "p": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است",
+        "s": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گراف و مجله در",
+        "xs": "تولید سادگی نامفهوم"
     },
-    "Settings": {
-        "dashboard": "داشبورد",
-        "title": "تنظیمات",
-        "chooseOneOption": "لطفا یک گزینه را انتخاب کنید.",
-        "Navigation": {
-            "accounts": "مدیریت اکانت‌های اینستاگرام",
-            "bankAccounts": "مدیریت حساب‌های بانکی"
-        },
-        "Accounts": {
-        "add": "افزودن",
-        "addAccount": "افزودن اکانت",
-        "viewAccount": "مشاهده اکانت",
-        "areYouSure": "آیا مطمئن هستید؟",
-        "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
-        "cancel": "انصراف",
-        "delete": "حذف",
-
-        "errorOccurred": "خطایی پیش آمد",
-        "tryAgain": "لطفا دوباره امتحان کنید",
-        "deleteSuccess": "حذف موفق",
-        "accountDeletedSuccess": "اکانت با موفقیت حذف شد",
-        "deleteError": "خطا در حذف",
-        "deleteErrorDescription": "مشکلی در حذف اکانت پیش آمد. لطفا دوباره تلاش کنید.",
-        "connectAccount": "اتصال به اکانت",
-        "noAccountsFound": "هیچ اکانتی وجود ندارد.",
-            "Error": {
-                "errorOccurred": "متاسفانه مشکلی پیش آمده است!",
-                "goTo": "به",
-                "accounts": "مدیریت اکانت‌های اینستاگرام",
-                "goToEnd": "بروید"
-            },
-            "SelectInstagram": {
-                "selectAccount": "یک اکانت انتخاب کنید",
-                "accountsDescription": "این اکانت‌های اینستاگرام به حساب فیسبوک شما متصل هستند. شما میتوانید یکی را انتخاب کنید",
-                "cancel": "انصراف"
-            },
-            "SelectPagesForm": {
-                "serverConnectionError": "ارتباط با سرور برقرار نشد",
-                "accountAlreadySelected": "این اکانت قبلا انتخاب شده است",
-                "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
-                "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
-                "select": "انتخاب"
-            }
-        }
+    "Skeleton": {
+        "title": "دسترسی نداری :(",
+        "description": "لطفا به اکانت اینستاگرامت متصل شو تا کنسول رو ببینی",
+        "button": "وصل کردن اینستاگرم"
+    },
+    "FileUpload": {
+        "title": "آپلود تصویر",
+        "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
+        "dropIt": "رها کنید"
     }
 }

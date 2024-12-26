@@ -28,7 +28,7 @@ const NavUser = dynamic(() => import("./nav-user"), {
 const generateData = (t: any) => ({
   navMain: [
     {
-      title: t('console'),
+      title: t('dashboard'),
       url: "/console",
       icon: HouseSimple,
       isActive: true,
@@ -40,7 +40,7 @@ const generateData = (t: any) => ({
       isActive: true,
     },
     {
-      title: t('messages'),
+      title: t('instagramConnections'),
       url: "#",
       icon: ChatCircleText,
       isActive: true,
@@ -53,14 +53,13 @@ const generateData = (t: any) => ({
           title: t('comments'),
           url: "/console/comments",
         },
+        {
+          title: t('automations'),
+          url: "/console/actions/content-cycle",
+        },
       ],
     },
-    {
-      title: t('automations'),
-      url: "/console/actions/content-cycle",
-      icon: Lightning,
-      isActive: true,
-    },
+
     {
       title: t('shop'),
       url: '#',
@@ -87,7 +86,7 @@ const generateData = (t: any) => ({
 })
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations('Dashboard.Sidebar')
+  const t = useTranslations('Console.Sidebar')
   const data = generateData(t)
   
   const {data: userData, isLoading: userIsLoading, error: userError} = useSWR(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`, {

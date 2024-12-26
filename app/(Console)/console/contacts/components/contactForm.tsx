@@ -1,16 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,10 +9,21 @@ import persian from "react-date-object/calendars/persian";
 import DateObject from "react-date-object";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { ContactNamespace } from "@/types/contact";
-import { toast } from "@/components/ui/use-toast";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
 import ContactSkeleton from "./contactSkeleton";
 import { useTranslations } from "next-intl";
+// UI
+import { Button } from "@/components/theme/ui/button";
+import { Input } from "@/components/theme/ui/input";
+import { Label } from "@/components/theme/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/theme/ui/select";
+import { toast } from "@/components/ui/use-toast";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 export type ContactFormProps = {
   contactId: string;
@@ -156,7 +157,7 @@ export default function ContactForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-4 gap-4">
-        <div className="col-span-2">
+        <div className="col-span-4 md:col-span-2">
           <Label htmlFor="firstname" className="text-right">
             {t('firstname')}
           </Label>
@@ -172,7 +173,7 @@ export default function ContactForm({
           )}
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-4 md:col-span-2">
           <Label htmlFor="lastname" className="text-right">
             {t('lastname')}
           </Label>
@@ -188,95 +189,7 @@ export default function ContactForm({
           )}
         </div>
 
-        <div className="col-span-2">
-          <Label htmlFor="mobile" className="text-right">
-            {t('mobile')}
-          </Label>
-          <Input id="mobile" {...register("mobile")} className="col-span-3" />
-          {errors.mobile && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.mobile')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <Label htmlFor="email" className="text-right">
-            {t('email')}
-          </Label>
-          <Input id="email" {...register("email")} className="col-span-3" />
-          {errors.email && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.email')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <Label htmlFor="country" className="text-right">
-            {t('country')}
-          </Label>
-          <Input id="country" {...register("country")} className="col-span-3" />
-          {errors.country && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.country')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <Label htmlFor="country" className="text-right">
-            {t('state')}
-          </Label>
-          <Input id="state" {...register("state")} className="col-span-3" />
-          {errors.state && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.state')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <Label htmlFor="city" className="text-right">
-            {t('city')}
-          </Label>
-          <Input id="city" {...register("city")} className="col-span-3" />
-          {errors.city && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.city')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
-          <Label htmlFor="postalcode" className="text-right">
-            {t('postalcode')}
-          </Label>
-          <Input
-            id="postalcode"
-            {...register("postalcode")}
-            className="col-span-3"
-          />
-          {errors.postalcode && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.postalcode')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-4">
-          <Label htmlFor="address" className="text-right">
-            {t('address')}
-          </Label>
-          <Input id="address" {...register("address")} className="col-span-3" />
-          {errors.address && (
-            <p className="col-span-4 text-sm text-red-500">
-              {t('errors.address')}
-            </p>
-          )}
-        </div>
-
-        <div className="col-span-2">
+        <div className="col-span-4 md:col-span-2">
           <Label htmlFor="gender" className="text-right">
             {t('gender')}
           </Label>
@@ -313,7 +226,7 @@ export default function ContactForm({
           )}
         </div>
 
-        <div className="col-span-2">
+        <div className="col-span-4 md:col-span-2">
           <Label htmlFor="birthDate" className="text-right mb-3">
             {t('birthDate')}
           </Label>
@@ -333,9 +246,9 @@ export default function ContactForm({
                   value={
                     value
                       ? new DateObject(+value)
-                          .setLocale(persian_fa)
-                          .setCalendar(persian)
-                          .format("YYYY/MM/DD")
+                        .setLocale(persian_fa)
+                        .setCalendar(persian)
+                        .format("YYYY/MM/DD")
                       : ""
                   }
                   onChange={(date) => {
@@ -357,6 +270,82 @@ export default function ContactForm({
           {errors.birthDate && (
             <p className="col-span-4 text-sm text-red-500">
               {t('errors.birthDate')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-4 md:col-span-2">
+          <Label htmlFor="mobile" className="text-right">
+            {t('mobile')}
+          </Label>
+          <Input id="mobile" {...register("mobile")} className="col-span-3" />
+          {errors.mobile && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.mobile')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-4 md:col-span-2">
+          <Label htmlFor="email" className="text-right">
+            {t('email')}
+          </Label>
+          <Input id="email" {...register("email")} className="col-span-3" />
+          {errors.email && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.email')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-4 md:col-span-2">
+          <Label htmlFor="country" className="text-right">
+            {t('state')}
+          </Label>
+          <Input id="state" {...register("state")} className="col-span-3" />
+          {errors.state && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.state')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-4 md:col-span-2">
+          <Label htmlFor="city" className="text-right">
+            {t('city')}
+          </Label>
+          <Input id="city" {...register("city")} className="col-span-3" />
+          {errors.city && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.city')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-4">
+          <Label htmlFor="address" className="text-right">
+            {t('address')}
+          </Label>
+          <Input id="address" {...register("address")} className="col-span-3" />
+          {errors.address && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.address')}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-4">
+          <Label htmlFor="postalcode" className="text-right">
+            {t('postalcode')}
+          </Label>
+          <Input
+            id="postalcode"
+            {...register("postalcode")}
+            className="col-span-3"
+          />
+          {errors.postalcode && (
+            <p className="col-span-4 text-sm text-red-500">
+              {t('errors.postalcode')}
             </p>
           )}
         </div>
