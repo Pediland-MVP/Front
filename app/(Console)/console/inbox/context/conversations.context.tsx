@@ -13,7 +13,6 @@ export type ConversationsContextType = {
     React.SetStateAction<ConversationNamespace.WS.Conversations["items"]>
   >;
   addNewConversation: (conversation: ConversationNamespace.WS.NewConversation) => void;
-  updateLastMessageOfConversation: (message: WsMessageSent | WsNewMessage) => void
 };
 
 const ConversationsContext = createContext<
@@ -73,7 +72,7 @@ export const ConversationsProvider = ({
   },[]) 
 
   return (
-    <ConversationsContext.Provider value={{ conversations, setConversations, addNewConversation, updateLastMessageOfConversation }}>
+    <ConversationsContext.Provider value={{ conversations, setConversations, addNewConversation }}>
       {children}
     </ConversationsContext.Provider>
   );
