@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { InstagramNamespace } from "@/types/instagram";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import useSWR from "swr";
 import { SelectInstagram } from "./selectInstagram";
 import Image from "next/image";
@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/theme/ui/alert-dialog";
-import { InstagramLogo, Trash } from "@phosphor-icons/react/dist/ssr";
+import { InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -42,6 +42,8 @@ export default function Accounts({
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const {
     data: instagramPages,
@@ -96,7 +98,9 @@ export default function Accounts({
     }
   }, [filteredInstagramPages]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: MouseEvent<HTMLButtonElement>, id: string) => {
+    e.preventDefault()
+    setIsDeleteLoading(true)
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${id}`,
@@ -126,6 +130,9 @@ export default function Accounts({
         description: t("deleteErrorDescription"),
         variant: "destructive",
       });
+    } finally {
+      setShowDeleteModal(false)
+      setIsDeleteLoading(false)
     }
   };
 
@@ -197,7 +204,7 @@ export default function Accounts({
                     </Button>
                   )}
 
-                  <AlertDialog>
+                  <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" size="icon">
                         <Trash size={22} />
@@ -213,9 +220,10 @@ export default function Accounts({
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogAction
-                          onClick={() => handleDelete(instagram.id)}
+                          type="button"
+                          onClick={(e) => handleDelete(e, instagram.id)}
                         >
-                          {t("delete")}
+                          {isDeleteLoading ? <Spinner className="h-5 w-5 animate-spin" /> :t("delete")}
                         </AlertDialogAction>
                         <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                       </AlertDialogFooter>
