@@ -42,17 +42,30 @@ export const ConversationsProvider = ({
     message: WsMessageSent | WsNewMessage
   ) => {
     setConversations((old) => {
-      const conversation = old.find((c) => {
-        return c.id === message.lead.id;
-      });
-      if (conversation) {
-        // Conversation.messages is array but we just show last message on it
+      // Find the index of the conversation with the given id
+      const index = old.findIndex((c) => c.id === message.lead.id);
+      
+      if (index !== -1) {
+        // Copy the old array to avoid mutating the state directly
+        const updatedConversations = [...old];
+        const conversation = updatedConversations[index];
+        
+        // Update the messages of the conversation
         conversation.messages = [message];
-        return [...old];
+        
+        // Remove the conversation from its current position
+        updatedConversations.splice(index, 1);
+        
+        // Add the conversation to the beginning of the array
+        updatedConversations.unshift(conversation);
+        
+        return updatedConversations;
       }
+      
       return old;
     });
   };
+  
 
   useEffect(() => {
     messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
