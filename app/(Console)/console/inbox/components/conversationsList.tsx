@@ -15,12 +15,13 @@ import {
   ArrowLeft, Sidebar
 } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import { WsMessages } from "@/ws.messages";
+
 import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
 import { useConversations } from "../context/conversations.context";
-import logger from "@/app/utils/logger";
+import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
 
 
+const LIMIT = 15;
 function ConversationsList() {
   const router = useRouter();
   const { conversations, setConversations, addNewConversation } = useConversations()
@@ -28,7 +29,6 @@ function ConversationsList() {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(0);
-  const limit = 15;
 
   const sidebar = useSidebar();
   const selectedChatId = useParams()?.chatId as string | undefined;
@@ -41,7 +41,7 @@ function ConversationsList() {
       const updatedPage = prevPage + 1;
       messagesSocket.emit("conversations", {
         page: updatedPage,
-        limit,
+        LIMIT,
       });
       return updatedPage;
     });
@@ -54,7 +54,7 @@ function ConversationsList() {
         ...prevConversations,
         ...newConversations.items,
       ]);
-      setHasMore(newConversations.items.length === limit);
+      setHasMore(newConversations.items.length === LIMIT);
     } catch (error) {
       setError("Error parsing conversations data");
       console.error("Error handling conversations:", error);
@@ -73,15 +73,15 @@ function ConversationsList() {
   }, []);
 
   useEffect(() => {
-    messagesSocket.on(WsMessages.CONVERSATIONS, handleConversations);
-    messagesSocket.on(WsMessages.NEW_CONVERSATION, handleNewConversation);
+    messagesSocket.on(WsMessageEvents.CONVERSATIONS, handleConversations);
+    messagesSocket.on(WsMessageEvents.NEW_CONVERSATION, handleNewConversation);
     if(conversations.length === 0) {
       fetchConversations()
     }
 
     return () => {
-      messagesSocket.off(WsMessages.CONVERSATIONS, handleConversations);
-      messagesSocket.off(WsMessages.NEW_CONVERSATION, handleNewConversation);
+      messagesSocket.off(WsMessageEvents.CONVERSATIONS, handleConversations);
+      messagesSocket.off(WsMessageEvents.NEW_CONVERSATION, handleNewConversation);
     };
   }, []);
 

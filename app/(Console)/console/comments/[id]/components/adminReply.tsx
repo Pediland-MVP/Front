@@ -7,7 +7,7 @@ export default function AdminReply({ reply }: { reply: CommentReply }) {
     <div key={reply.id} className="flex items-start gap-3">
       <Avatar className="w-10 h-10">
         <AvatarImage
-          src={reply.instagram?.profilePicture.url}
+          src={reply.instagram?.profilePicture?.url || ''}
           alt={reply.instagram?.username}
         />
         <AvatarFallback>{reply.instagram?.username[0]}</AvatarFallback>

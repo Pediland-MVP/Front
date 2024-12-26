@@ -7,10 +7,10 @@ import { Textarea } from "@/components/theme/ui/textarea";
 import { EmojiPicker } from "./emojiPicker";
 import useCurrentLead from "@/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";
-import { WsMessages } from "@/ws.messages";
 import { messagesSocket } from "@/app/utils/socket";
 import { PaperPlaneRight } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
+import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
 
 
 export default function ChatBottombar() {
@@ -40,7 +40,7 @@ export default function ChatBottombar() {
         text: message.trim(),
       };
       const digest = Math.floor(Math.random()) * 10000 + Date.now();
-      messagesSocket.emit(WsMessages.SEND_MESSAGE, { ...newMessage, digest });
+      messagesSocket.emit(WsMessageEvents.SEND_MESSAGE, { ...newMessage, digest });
 
       setMessage("");
 

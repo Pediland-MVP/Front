@@ -13,6 +13,8 @@ import {
 } from "@/components/theme/ui/breadcrumb";
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import CommentsList from "./components/commentsList";
+import { CommentsProvider } from "./context/comments.context";
 
 type ChatsLayout = {
   children: React.ReactNode;
@@ -21,8 +23,8 @@ type ChatsLayout = {
 const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
   const t = useTranslations("Comments");
   return (
-    <div className="_comment max-h-full overflow-hidden">
-      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
+    <div className="_direct flex flex-col h-full max-h-full overflow-hidden">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100 hidden">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
@@ -45,8 +47,11 @@ const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
         <div className="_tools"></div>
       </header>
 
-      <div className="_comment-layout min-h-[calc(100vh-5.5rem)] w-full flex flex-col lg:flex-row overflow-auto">
-        <CommentsLayout>{children}</CommentsLayout>
+      <div className="_chat-layout min-h-[calc(100vh-5.5rem)] w-full flex flex-col lg:flex-row overflow-auto">
+        <CommentsProvider>
+          <CommentsList />
+          {children}
+        </CommentsProvider>
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { CommentReply } from "./comment";
 import formatTimestamp from "@/lib/formatTimestamp";
 import AdminReply from "./adminReply";
+import { CommentNamespace } from "@/types/comments/comment.namespace";
 
-export default function Reply({ reply }: { reply: CommentReply }) {
+export default function Reply({ reply }: { reply: CommentNamespace.GET.Comment['replies'][0] }) {
   if (reply.fromAdmin) {
     return <AdminReply reply={reply} />;
   }

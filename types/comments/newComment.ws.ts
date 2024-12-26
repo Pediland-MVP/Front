@@ -1,19 +1,4 @@
-export namespace CommentsNamespace {
-
-    export interface GET {
-        items: CommentItem[];
-        meta: Meta;
-      }
-
-      export type Comments = CommentItem[]
-
-      export type Comment = CommentItem
-
-
-}
-
-
-export interface CommentItem {
+export interface WsNewComment {
     id:            string;
     createDate:    Date;
     updateDate:    Date;
@@ -21,6 +6,7 @@ export interface CommentItem {
     mediaId:       string;
     commentId:     string;
     time:          Date;
+    fromAdmin:     boolean;
     leadInstagram: LeadInstagram;
 }
 
@@ -29,6 +15,7 @@ export interface LeadInstagram {
     createDate:           Date;
     updateDate:           Date;
     ASID:                 string;
+    isAdmin:              boolean;
     lastUpdate:           Date;
     name:                 string;
     username:             string;
@@ -37,15 +24,9 @@ export interface LeadInstagram {
     isUserFollowBusiness: boolean;
     isBusinessFollowUser: boolean;
     PSID:                 null;
-    profilePicture: {
-        url?: string;
-    }
+    profilePicture:       ProfilePicture;
 }
 
-export interface Meta {
-    currentPage:  number;
-    itemCount:    number;
-    itemsPerPage: number;
-    totalItems:   number;
-    totalPages:   number;
+export interface ProfilePicture {
+    url: string;
 }

@@ -97,7 +97,7 @@ export default function RedesignedCommentFooter({
   };
 
   return (
-    <CardFooter className="border-t p-3">
+    <CardFooter className="border-t px-2 pt-2 pb-2 fixed lg:static lg:p-5 bottom-0 left-0 right-0 bg-white w-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

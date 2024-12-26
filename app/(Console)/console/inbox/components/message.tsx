@@ -1,22 +1,12 @@
 import { cn } from "@/components/lib/utils";
+import { WsConversationMessage } from "@/types/conversations/conversation.ws";
 import { leadNamespace } from "@/types/lead";
 import { motion } from "framer-motion";
 
-export interface IMessage {
-  from: "instagram" | "lead";
-  text: string;
-  id?: string;
-  createDate?: Date;
-  updateDate?: Date;
-  messageId?: string;
-  attachment?: null;
-  sendDate?: string;
-  digest?: number;
-}
 
 export type MessageProps = {
-  message: IMessage;
-  messagesList: IMessage[];
+  message: WsConversationMessage;
+  messagesList: WsConversationMessage[];
   lead: leadNamespace.Lead;
 };
 export default function Message({ message, messagesList, lead }: MessageProps) {

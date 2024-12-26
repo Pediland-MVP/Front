@@ -1,4 +1,4 @@
-export enum WsMessages {
+export enum WsMessageEvents {
     EXCEPTION = 'exception',
     CONVERSATION = 'conversation',
     CONVERSATIONS = 'conversations',

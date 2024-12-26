@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { messagesSocket } from "@/app/utils/socket";
-import { WsMessages } from "@/ws.messages";
 import { leadNamespace } from "@/types/lead";
 import {
   WsConversation,
@@ -10,6 +9,7 @@ import {
 } from "@/types/conversations/conversation.ws";
 import { WsMessageSent } from "@/types/conversations/messageSent.ws";
 import { WsNewMessage } from "@/types/conversations/newMessage.ws";
+import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
 
 export type UseFetchMessage = {
   next: () => void;
@@ -53,23 +53,23 @@ export default function useFetchMessages(
     if (isListenersSet) return;
     isListenersSet = true;
 
-    messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
+    messagesSocket.emit(WsMessageEvents.CONVERSATION, { leadId: lead?.id });
 
-    messagesSocket.on(WsMessages.CONVERSATION, onConversation);
-    messagesSocket.on(WsMessages.MESSAGE_SENT, onMessageSent);
-    messagesSocket.on(WsMessages.NEW_MESSAGE, onNewMessage);
+    messagesSocket.on(WsMessageEvents.CONVERSATION, onConversation);
+    messagesSocket.on(WsMessageEvents.MESSAGE_SENT, onMessageSent);
+    messagesSocket.on(WsMessageEvents.NEW_MESSAGE, onNewMessage);
 
     return () => {
-      messagesSocket.off(WsMessages.CONVERSATION, onConversation);
-      messagesSocket.off(WsMessages.NEW_MESSAGE, onNewMessage);
-      messagesSocket.off(WsMessages.MESSAGE_SENT, onMessageSent);
+      messagesSocket.off(WsMessageEvents.CONVERSATION, onConversation);
+      messagesSocket.off(WsMessageEvents.NEW_MESSAGE, onNewMessage);
+      messagesSocket.off(WsMessageEvents.MESSAGE_SENT, onMessageSent);
     };
   }, [lead]);
 
   const next = () => {
     const lastMessageDate = messagesList.find((m) => m?.sendDate)?.sendDate;
     if (!lastMessageDate) return;
-    messagesSocket.emit(WsMessages.CONVERSATION, {
+    messagesSocket.emit(WsMessageEvents.CONVERSATION, {
       leadId: lead?.id,
       page: page + 1,
       after: lastMessageDate,

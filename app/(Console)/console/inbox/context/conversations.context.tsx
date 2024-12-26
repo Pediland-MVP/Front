@@ -4,7 +4,8 @@ import { messagesSocket } from "@/app/utils/socket";
 import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
 import { WsMessageSent } from "@/types/conversations/messageSent.ws";
 import { WsNewMessage } from "@/types/conversations/newMessage.ws";
-import { WsMessages } from "@/ws.messages";
+import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type ConversationsContextType = {
@@ -68,19 +69,19 @@ export const ConversationsProvider = ({
   
 
   useEffect(() => {
-    messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
+    messagesSocket.on(WsMessageEvents.NEW_MESSAGE, (data) => {
       const message: WsNewMessage = JSON.parse(data);
       updateLastMessageOfConversation(message);
     });
 
-    messagesSocket.on(WsMessages.MESSAGE_SENT, (data) => {
+    messagesSocket.on(WsMessageEvents.MESSAGE_SENT, (data) => {
       const message: WsNewMessage = JSON.parse(data);
       updateLastMessageOfConversation(message)
     });
 
     return () => {
-      messagesSocket.off(WsMessages.NEW_MESSAGE)
-      messagesSocket.off(WsMessages.MESSAGE_SENT)
+      messagesSocket.off(WsMessageEvents.NEW_MESSAGE)
+      messagesSocket.off(WsMessageEvents.MESSAGE_SENT)
     }
   },[]) 
 
