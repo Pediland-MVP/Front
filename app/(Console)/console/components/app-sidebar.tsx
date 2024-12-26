@@ -90,9 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const {data: userData, isLoading: userIsLoading, error: userError} = useSWR(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`, {
     revalidateOnMount: true
   })
-
-  logger.debug(userData)
-
+  
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
