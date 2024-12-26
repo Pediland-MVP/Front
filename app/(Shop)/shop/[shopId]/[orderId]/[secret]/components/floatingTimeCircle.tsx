@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { FloatingTimeCircleSkeleton } from './floatingTimeCircle.skeleton'
+// UI
+import { Card } from "@/components/theme/ui/card"
+import { Progress } from "@/components/theme/ui/progress"
 
 interface FloatingTimeCircleProps {
   startDateString: string | undefined
@@ -20,7 +21,7 @@ const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString
       const now = new Date()
       const endTime = new Date(new Date(startDateString).getTime() + 60 * 60 * 1000) // 1 hour after start
       const difference = endTime.getTime() - now.getTime()
-      
+
       if (difference > 0) {
         setTimeLeft(Math.floor(difference / 1000))
       } else {
@@ -40,12 +41,11 @@ const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
-  if (!startDateString) return <FloatingTimeCircleSkeleton/>
+  if (!startDateString) return <FloatingTimeCircleSkeleton />
 
   return (
-    <Card className="fixed z-50 md:bottom-4 md:right-4 bottom-0 right-0 left-0 md:w-32 md:h-32 h-16 md:rounded-full rounded-none flex items-center justify-center bg-background shadow-lg">
+    <Card className="rounded-full border flex items-center justify-center mb-2 py-1.5 px-0 md:fixed md:z-50 md:bottom-4 md:right-4 md:w-32 md:h-32">
       <div className="relative w-full h-full flex items-center justify-center">
-        {/* Circular progress for desktop */}
         <div className="hidden md:block w-full h-full">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
             <circle
@@ -76,11 +76,11 @@ const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString
         </div>
         {/* Linear progress and time display for mobile */}
         <div className="md:hidden w-full px-4 flex gap-x-3 items-center justify-center">
-          <span className="text-lg font-bold text-primary">
+          <span className="font-semibold text-primary">
             {formatTime(timeLeft)}
           </span>
           <div className="flex-grow flex justify-center items-center">
-            <Progress value={100 - progress} className="h-2" />
+            <Progress value={100 - progress} className="h-1" />
           </div>
         </div>
         {/* Time display for desktop */}

@@ -5,11 +5,13 @@ type OrderSubmitButtonProps = {
     isLoading: boolean
 }
 
-export default function OrderSubmitButton({isLoading}: OrderSubmitButtonProps) {
+export default function OrderSubmitButton({ isLoading }: OrderSubmitButtonProps) {
     const t = useTranslations("Checkout");
     return (
-        <LoadingButton isLoading={isLoading} type="submit" className="w-full">
-        {t("paynow")}
-      </LoadingButton>
+        <div className="p-3">
+            <LoadingButton isLoading={isLoading} type="submit" className="w-full" variant={"success"}>
+                {t("paynow")}
+            </LoadingButton>
+        </div>
     )
 }

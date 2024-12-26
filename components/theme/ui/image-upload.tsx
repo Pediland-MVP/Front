@@ -89,7 +89,7 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, 
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-md">
+    <div className="w-full max-w-md mx-auto">
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${
@@ -118,11 +118,11 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, 
           </div>
         ) : (
           <div>
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-2 text-sm text-gray-600">
+            <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+            <p className="mt-3 text-sm text-gray-600">
               {isDragActive
-                ? 'فایل را اینجا رها کنید'
-                : 'فایل را اینجا بکشید یا کلیک کنید تا انتخاب کنید'}
+                ? 'فایل را اینجا رها کنید.'
+                : 'اینجا کلیک کنید و یا فایل را به اینجا بکشید.'}
             </p>
           </div>
         )}

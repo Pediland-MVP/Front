@@ -1,24 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ChevronUp, ChevronDown, Loader2 } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+// UI
+import { cn } from "@/components/lib/utils";
+import { toast } from "@/components/ui/use-toast";
+import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr";
 
 type QuantityProps = {
-    orderQuantity: number;
-    productQuantity: number
-    orderDetails: {
-      shopId: string;
-      orderId: string;
-      secret: string
-    }
+  orderQuantity: number;
+  productQuantity: number
+  orderDetails: {
+    shopId: string;
+    orderId: string;
+    secret: string
+  }
 }
 
-
-export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _productQuantity, orderDetails: {shopId, orderId, secret} }: QuantityProps) {
+export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _productQuantity, orderDetails: { shopId, orderId, secret } }: QuantityProps) {
   const [orderQuantity, setOrderQuantity] = useState(_orderQuantity);
   const [productQuantity, setProductQuantity] = useState(_productQuantity)
   const [isPending, setIsPending] = useState(false);
@@ -79,36 +78,34 @@ export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _prod
   };
 
   return (
-    <div className="flex items-center justify-start gap-x-3">        
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => handleAdjustment("decrement")}
-            disabled={isPending || orderQuantity <= 1}
-            type="button"
-          >
-            {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-          </Button>
-        <div className="text-4xl font-bold select-none">{orderQuantity}</div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => handleAdjustment("increment")}
-            disabled={isPending || productQuantity === 0 || orderQuantity === productQuantity}
-            type="button"
-          >
-            {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ChevronUp className="h-4 w-4" />
-            )}
-          </Button>
-        
-      
+    <div className="flex items-center justify-start gap-x-2">
+      <button
+        onClick={() => handleAdjustment("decrement")}
+        disabled={isPending || orderQuantity <= 1}
+        type="button"
+        className="rounded-full bg-gray-100 p-1 border"
+      >
+        {isPending ? (
+          <Spinner size={16} className="animate-spin" />
+        ) : (
+          <Minus size={16} className={cn(orderQuantity <= 1 ? "text-gray-400" : "")} />
+        )}
+      </button>
+
+      <div className="text-[22px] font-semibold select-none">{orderQuantity}</div>
+
+      <button
+        onClick={() => handleAdjustment("increment")}
+        disabled={isPending || productQuantity === 0 || orderQuantity === productQuantity}
+        type="button"
+        className="rounded-full bg-gray-100 p-1 border"
+      >
+        {isPending ? (
+          <Spinner size={16} className="animate-spin" />
+        ) : (
+          <Plus size={16} weight="bold" />
+        )}
+      </button>
     </div>
   );
 }

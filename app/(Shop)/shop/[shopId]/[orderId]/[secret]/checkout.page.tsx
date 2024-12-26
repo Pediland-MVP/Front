@@ -5,26 +5,26 @@ import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import useSWR from "swr";
 import { ORDER_STATUS, OrderNamespace } from "@/types/order";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+import { useEffect } from "react";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { fetcher2 } from "@/hooks/swr/fetcher2";
+import { REGEX_MOBILE } from "@/app/utils/regex";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import ProductDetails from "./components/productDetails";
 import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
 import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";
 import { PaymentSkeleton } from "./components/payment.skeleton";
 import { ProductDetailsSkeleton } from "./components/productDetails.skeleton";
-import ProductDetails from "./components/productDetails";
-import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
-import { REGEX_MOBILE } from "@/app/utils/regex";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { GENDERS_ENUM } from "@/app/constants/gender.constant";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { toast } from "@/components/ui/use-toast";
 import { OrderSubmitButtonSkeleton } from "./components/orderSubmitButton.skeleton";
 import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skeleton";
-import logger from "@/app/utils/logger";
 import OrderNotfound from "./components/order.notfound";
-import { fetcher2 } from "@/hooks/swr/fetcher2";
-import { useRouter } from "next/navigation";
 import OrderProcessing from "./components/order.processing";
+// UI
+import { Card } from "@/components/theme/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -72,11 +72,10 @@ export type CheckoutProps = {
   secret: string
 }
 
-export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) {
+export default function CheckoutPage({ orderId, secret, shopId }: CheckoutProps) {
   const t = useTranslations("Checkout");
   const [isLoading, setIsLoading] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false)
-
 
   const {
     data: order,
@@ -121,7 +120,6 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
     }
   }, [order]);
 
-
   const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
     setIsLoading(true);
     await fetch(
@@ -155,31 +153,34 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
       });
   };
 
-  switch((error?.data as ExceptionMessage)?.code) {
+  switch ((error?.data as ExceptionMessage)?.code) {
     case 'ORDER_INVALID':
-      return <OrderNotfound/>
-    case 'ORDER_EXPIRED' :
-      return <OrderNotfound/>
+      return <OrderNotfound />
+    case 'ORDER_EXPIRED':
+      return <OrderNotfound />
     case "ORDER_NOT_FOUND":
-      return <OrderNotfound/>
+      return <OrderNotfound />
   }
 
   if (order?.status === ORDER_STATUS.PROCESSING) {
-    return <OrderProcessing/>
+    return <OrderProcessing />
   }
 
-  if(orderCompleted) {
-    return <OrderProcessing/>
+  if (orderCompleted) {
+    return <OrderProcessing />
   }
 
   return (
     <FormProvider {...form}>
       <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="_checkout bg-white border rounded-xl p-5 md:p-10">
-          <div className="grid md:grid-cols-4 gap-10">
+        <Suspense fallback={<FloatingTimeCircleSkeleton />}>
+          <FloatingTimeCircle startDateString={order?.createDate} />
+        </Suspense>
+        <Card className="_checkout border rounded-xl p-0 md:p-10">
+          <div className="grid md:grid-cols-4 gap-3">
             <Suspense fallback={<ProductDetailsSkeleton />}>
               <ProductDetails
-                orderDetails={{orderId, secret, shopId}}
+                orderDetails={{ orderId, secret, shopId }}
                 orderQuantity={order?.orderProducts[0].quantity}
                 product={order?.orderProducts?.[0]?.product}
               />
@@ -194,18 +195,14 @@ export default function CheckoutPage({ orderId, secret, shopId}: CheckoutProps) 
             </Suspense>
 
             <Suspense fallback={<PaymentSkeleton />}>
-              <PaymentDetails orderDetails={{orderId, secret, shopId}} orderCardToCard={order?.orderCardToCard} />
-            </Suspense>
-
-            <Suspense fallback={<FloatingTimeCircleSkeleton/>}>
-              <FloatingTimeCircle startDateString={order?.createDate} />
+              <PaymentDetails orderDetails={{ orderId, secret, shopId }} orderCardToCard={order?.orderCardToCard} />
             </Suspense>
 
             <Suspense fallback={<OrderSubmitButtonSkeleton />}>
               <OrderSubmitButton isLoading={isLoading} />
             </Suspense>
           </div>
-        </div>
+        </Card>
       </form>
     </FormProvider>
   );
