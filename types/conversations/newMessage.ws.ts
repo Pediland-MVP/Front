@@ -1,4 +1,4 @@
-export interface WsMessageSent {
+export interface WsNewMessage {
     messageId:   string;
     sendDate:    string;
     from:        string;
@@ -9,17 +9,16 @@ export interface WsMessageSent {
     attachment:  null;
     postId:      null;
     id:          string;
-    createDate:  string;
-    updateDate:  string;
-    digest:      number;
+    createDate:  Date;
+    updateDate:  Date;
 }
 
 export interface Instagram {
     id:                string;
-    createDate:        string;
-    updateDate:        string;
+    createDate:        Date;
+    updateDate:        Date;
     igToken:           string;
-    igTokenExpireDate: string;
+    igTokenExpireDate: Date;
     followersCount:    number;
     followsCount:      number;
     mediaCount:        number;
@@ -35,42 +34,27 @@ export interface Instagram {
     profileUrl:        null;
     profilePictureUrl: string;
     allowFirstLeads:   boolean;
+    user:              User;
+    leads:             Lead[];
 }
 
 export interface Lead {
-    id:            string;
-    createDate:    string;
-    updateDate:    string;
-    firstname:     string;
-    lastname:      null;
-    profilePic:    string;
-    user:          User;
-    instagram:     Instagram;
-    leadInstagram: LeadInstagram;
-}
-
-export interface LeadInstagram {
-    id:                   string;
-    createDate:           string;
-    updateDate:           string;
-    ASID:                 string;
-    isAdmin:              boolean;
-    lastUpdate:           string;
-    name:                 string;
-    username:             string;
-    isVerifiedUser:       boolean;
-    followerCount:        number;
-    isUserFollowBusiness: boolean;
-    isBusinessFollowUser: boolean;
-    PSID:                 null;
+    id:         string;
+    createDate: Date;
+    updateDate: Date;
+    firstname:  string;
+    lastname:   null;
+    profilePic: string;
 }
 
 export interface User {
     id:         string;
-    createDate: string;
-    updateDate: string;
+    createDate: Date;
+    updateDate: Date;
     firstname:  string;
     lastname:   string;
+    gender:     string;
+    birthDate:  Date;
     verified:   boolean;
     email:      null;
     mobile:     string;

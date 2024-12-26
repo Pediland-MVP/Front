@@ -1,28 +1,19 @@
 export interface WsConversation {
-    items: WsConversationItem[];
+    items: WsConversationMessage[];
     meta:  Meta;
 }
 
-export interface WsConversationItem {
+export interface WsConversationMessage {
     id:          string;
-    createDate:  string;
-    updateDate:  string;
+    createDate:  Date;
+    updateDate:  Date;
     messageId:   string;
     attachment:  null;
     sendDate:    string;
-    from:        From;
+    from:        string;
     postId:      null;
-    text:        null | string;
-    messageType: MessageType;
-}
-
-export enum From {
-    Instagram = "instagram",
-    Lead = "lead",
-}
-
-export enum MessageType {
-    Text = "text",
+    text:        string;
+    messageType: string;
 }
 
 export interface Meta {

@@ -2,18 +2,25 @@ import { FC } from "react";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import {
-  Breadcrumb, BreadcrumbItem,
+  Breadcrumb,
+  BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from "@/components/theme/ui/breadcrumb";
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import ConversationsList from "./components/conversationsList";
+import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
+import { ConversationsProvider } from "./context/conversations.context";
 
 type ChatsLayout = {
   children: React.ReactNode;
+};
+
+export type ConversationsContextType = {
+  conversations: ConversationNamespace.WS.Conversations["items"];
 };
 
 const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
@@ -45,8 +52,10 @@ const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
       </header>
 
       <div className="_chat-layout min-h-[calc(100vh-5.5rem)] w-full flex flex-col lg:flex-row overflow-auto">
-        <ConversationsList />
-        {children}
+        <ConversationsProvider>
+          <ConversationsList />
+          {children}
+        </ConversationsProvider>
       </div>
     </div>
   );

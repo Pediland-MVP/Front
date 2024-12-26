@@ -31,20 +31,20 @@ export namespace InstagramNamespace {
     Accounts: Account[];
     Pages: Page[];
     Conversations: Conversations;
-    Conversation: Conversation;
+    Conversation: IOneConversation;
   }
 }
 
-export interface Conversation {
+export interface IOneConversation {
   items: Messages[];
   meta: Meta;
 }
 
 export interface Conversations {
-  items: Item[];
+  items: IConversation[];
   meta: Meta;
 }
-export interface Item {
+export interface IConversation {
   id: string;
   createDate: Date;
   updateDate: Date;

@@ -1,40 +1,62 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { IMessage } from "./message";
 import { messagesSocket } from "@/app/utils/socket";
 import { WsMessages } from "@/ws.messages";
-import { InstagramNamespace, Messages } from "@/types/instagram";
 import { leadNamespace } from "@/types/lead";
-import { WsConversation, WsConversationItem } from "@/types/wsConversation";
-import { WsMessageSent } from "@/types/wsMessageSent";
+import {
+  WsConversation,
+  WsConversationMessage,
+} from "@/types/conversations/conversation.ws";
+import { WsMessageSent } from "@/types/conversations/messageSent.ws";
+import { WsNewMessage } from "@/types/conversations/newMessage.ws";
+import { useConversations } from "../context/conversations.context";
+import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
 import logger from "@/app/utils/logger";
-import { WsNewMessage } from "@/types/wsNewMessage";
 
 export type UseFetchMessage = {
   next: () => void;
   hasMore: boolean;
-  messagesList: (WsConversationItem | WsMessageSent | WsNewMessage)[];
+  messagesList: (WsConversationMessage | WsMessageSent | WsNewMessage)[];
 };
 
 export default function useFetchMessages(
   lead?: leadNamespace.GET["One"]
 ): UseFetchMessage {
   const limit = 13;
-  const [messagesList, setMessagesList] = useState<(WsConversationItem | WsMessageSent | WsNewMessage)[]>([]);
+  const [messagesList, setMessagesList] = useState<
+    (WsConversationMessage | WsMessageSent | WsNewMessage)[]
+  >([]);
+  const { conversations, setConversations } = useConversations();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   let isListenersSet = false;
 
+  const updateLastMessageOfConversation = (
+    message: WsMessageSent | WsNewMessage
+  ) => {
+    setConversations((old) => {
+      const conversation = old.find((c) => {
+        return c.id === message.lead.id;
+      });
+      if (conversation) {
+        // Conversation.messages is array but we just show last message on it
+        conversation.messages = [message];
+        return [...old];
+      }
+      return old;
+    });
+  };
+
   useEffect(() => {
     if (isListenersSet) return;
     isListenersSet = true;
-    
 
     messagesSocket.emit(WsMessages.CONVERSATION, { leadId: lead?.id });
 
     messagesSocket.on(WsMessages.CONVERSATION, (conversationStr) => {
       //Get conversation data
-      const conversation: WsConversation =
-        JSON.parse(conversationStr);
+      const conversation: WsConversation = JSON.parse(conversationStr);
       if (conversation.items.length === 0) {
         setHasMore(false);
         return;
@@ -42,14 +64,15 @@ export default function useFetchMessages(
       setMessagesList((old) => [...old, ...conversation.items]);
     });
 
-
     messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
       const message: WsMessageSent = JSON.parse(messageStr);
+      updateLastMessageOfConversation(message);
       setMessagesList((old) => [message, ...old]);
     });
 
     messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
       const message: WsNewMessage = JSON.parse(data);
+      updateLastMessageOfConversation(message);
       if (message.lead.id === lead?.id) {
         setMessagesList((old) => [message, ...old]);
       }
@@ -63,12 +86,12 @@ export default function useFetchMessages(
   }, [lead]);
 
   const next = () => {
-    const lastMessage = messagesList.find((m) => m?.sendDate)?.sendDate;
-    if (!lastMessage) return;
+    const lastMessageDate = messagesList.find((m) => m?.sendDate)?.sendDate;
+    if (!lastMessageDate) return;
     messagesSocket.emit(WsMessages.CONVERSATION, {
       leadId: lead?.id,
       page: page + 1,
-      after: btoa(lastMessage),
+      after: btoa(lastMessageDate),
     });
     setPage((old) => old + 1);
   };

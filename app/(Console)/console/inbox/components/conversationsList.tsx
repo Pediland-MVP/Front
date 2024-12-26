@@ -1,9 +1,8 @@
 "use client";
 
-import { memo, useEffect, useState, useCallback, useRef } from "react";
+import { memo, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { messagesSocket } from "@/app/utils/socket";
-import { Conversations, Item } from "@/types/instagram";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ConversationsListSkeleton from "./conversationsList.skeleton";
 import { useParams, useRouter } from "next/navigation";
@@ -13,18 +12,21 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@/components/theme/ui/sidebar";
 import {
-  ArrowLeft,
-  DotsThreeVertical,
-  Sidebar,
+  ArrowLeft, Sidebar
 } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { WsMessages } from "@/ws.messages";
+import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
+import { useConversations } from "../context/conversations.context";
+import logger from "@/app/utils/logger";
+
 
 function ConversationsList() {
   const router = useRouter();
-  const [conversations, setConversations] = useState<Item[]>([]);
+  const { conversations, setConversations, addNewConversation } = useConversations()
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(0);
   const limit = 15;
 
@@ -47,7 +49,7 @@ function ConversationsList() {
 
   const handleConversations = useCallback((conversationsData: string) => {
     try {
-      const newConversations = JSON.parse(conversationsData) as Conversations;
+      const newConversations = JSON.parse(conversationsData) as ConversationNamespace.WS.Conversations;
       setConversations((prevConversations) => [
         ...prevConversations,
         ...newConversations.items,
@@ -63,26 +65,23 @@ function ConversationsList() {
 
   const handleNewConversation = useCallback((conversationData: string) => {
     try {
-      const newConversation = JSON.parse(conversationData) as Item;
-      setConversations((prevConversations) => {
-        if (prevConversations.some((c) => c.id === newConversation.id)) {
-          return prevConversations;
-        }
-        return [newConversation, ...prevConversations];
-      });
+      const newConversation = JSON.parse(conversationData) as ConversationNamespace.WS.NewConversation;
+      addNewConversation(newConversation)
     } catch (error) {
       console.error("Error handling new conversation:", error);
     }
   }, []);
 
   useEffect(() => {
-    messagesSocket.on("conversations", handleConversations);
-    messagesSocket.on("conversation.created", handleNewConversation);
-    fetchConversations();
+    messagesSocket.on(WsMessages.CONVERSATIONS, handleConversations);
+    messagesSocket.on(WsMessages.NEW_CONVERSATION, handleNewConversation);
+    if(conversations.length === 0) {
+      fetchConversations()
+    }
 
     return () => {
-      messagesSocket.off("conversations", handleConversations);
-      messagesSocket.off("conversation.created", handleNewConversation);
+      messagesSocket.off(WsMessages.CONVERSATIONS, handleConversations);
+      messagesSocket.off(WsMessages.NEW_CONVERSATION, handleNewConversation);
     };
   }, []);
 
@@ -171,7 +170,7 @@ function ConversationsList() {
                           chat.leadInstagram?.profilePicture?.url ||
                           "/images/profile.png"
                         }
-                        alt={chat.firstname}
+                        alt={chat.firstname || ""}
                         width={48}
                         height={48}
                         className="rounded-full"

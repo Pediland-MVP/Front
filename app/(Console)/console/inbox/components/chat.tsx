@@ -12,16 +12,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import useFetchMessages from "./useFetchMessages";
 import ChatSkeleton from "./chat.skeleton";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useConversations } from "../context/conversations.context";
 
 interface ChatProps {
   leadId: string;
 }
 
 export function Chat({ leadId }: ChatProps) {
-  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
-  const isMediumDevice = useMediaQuery(
-    "only screen and (min-width : 769px) and (max-width : 992px)"
-  );
+  const {} = useConversations()
   const { setCurrentLead } = useCurrentLead();
 
   const {

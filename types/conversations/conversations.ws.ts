@@ -7,9 +7,9 @@ export interface Item {
     id:            string;
     createDate:    Date;
     updateDate:    Date;
-    firstname:     null | string;
+    firstname:     string;
     lastname:      null;
-    profilePic:    null | string;
+    profilePic:    string;
     leadInstagram: LeadInstagram;
     messages:      Message[];
 }
@@ -21,30 +21,26 @@ export interface LeadInstagram {
     ASID:                 string;
     isAdmin:              boolean;
     lastUpdate:           Date;
-    name:                 null | string;
+    name:                 string;
     username:             string;
     isVerifiedUser:       boolean;
     followerCount:        number;
     isUserFollowBusiness: boolean;
     isBusinessFollowUser: boolean;
     PSID:                 null;
-    profilePicture:       ProfilePicture | null;
+    profilePicture:       ProfilePicture;
 }
 
 export interface ProfilePicture {
     id:          number;
     createDate:  Date;
     updateDate:  Date;
-    memeType:    MemeType;
+    memeType:    string;
     name:        string;
     url:         string;
     tubmnailUrl: string;
     size:        number;
     key:         string;
-}
-
-export enum MemeType {
-    ImageJPEG = "image/jpeg",
 }
 
 export interface Message {
@@ -54,19 +50,10 @@ export interface Message {
     messageId:   string;
     attachment:  null;
     sendDate:    string;
-    from:        From;
+    from:        string;
     postId:      null;
-    text:        null | string;
-    messageType: MessageType;
-}
-
-export enum From {
-    Instagram = "instagram",
-    Lead = "lead",
-}
-
-export enum MessageType {
-    Text = "text",
+    text:        string;
+    messageType: string;
 }
 
 export interface Meta {
