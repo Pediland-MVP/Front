@@ -1,14 +1,19 @@
 "use client";
 
+import { messagesSocket } from "@/app/utils/socket";
 import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
-import { createContext, useContext, useState } from "react";
+import { WsMessageSent } from "@/types/conversations/messageSent.ws";
+import { WsNewMessage } from "@/types/conversations/newMessage.ws";
+import { WsMessages } from "@/ws.messages";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type ConversationsContextType = {
   conversations: ConversationNamespace.WS.Conversations["items"];
   setConversations: React.Dispatch<
     React.SetStateAction<ConversationNamespace.WS.Conversations["items"]>
   >;
-  addNewConversation: (conversation: ConversationNamespace.WS.NewConversation) => void
+  addNewConversation: (conversation: ConversationNamespace.WS.NewConversation) => void;
+  updateLastMessageOfConversation: (message: WsMessageSent | WsNewMessage) => void
 };
 
 const ConversationsContext = createContext<
@@ -34,8 +39,41 @@ export const ConversationsProvider = ({
     })
   }
 
+  const updateLastMessageOfConversation = (
+    message: WsMessageSent | WsNewMessage
+  ) => {
+    setConversations((old) => {
+      const conversation = old.find((c) => {
+        return c.id === message.lead.id;
+      });
+      if (conversation) {
+        // Conversation.messages is array but we just show last message on it
+        conversation.messages = [message];
+        return [...old];
+      }
+      return old;
+    });
+  };
+
+  useEffect(() => {
+    messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
+      const message: WsNewMessage = JSON.parse(data);
+      updateLastMessageOfConversation(message);
+    });
+
+    messagesSocket.on(WsMessages.MESSAGE_SENT, (data) => {
+      const message: WsNewMessage = JSON.parse(data);
+      updateLastMessageOfConversation(message)
+    });
+
+    return () => {
+      messagesSocket.off(WsMessages.NEW_MESSAGE)
+      messagesSocket.off(WsMessages.MESSAGE_SENT)
+    }
+  },[]) 
+
   return (
-    <ConversationsContext.Provider value={{ conversations, setConversations, addNewConversation }}>
+    <ConversationsContext.Provider value={{ conversations, setConversations, addNewConversation, updateLastMessageOfConversation }}>
       {children}
     </ConversationsContext.Provider>
   );

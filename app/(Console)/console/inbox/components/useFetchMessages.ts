@@ -23,30 +23,15 @@ export type UseFetchMessage = {
 export default function useFetchMessages(
   lead?: leadNamespace.GET["One"]
 ): UseFetchMessage {
-  const limit = 13;
   const [messagesList, setMessagesList] = useState<
     (WsConversationMessage | WsMessageSent | WsNewMessage)[]
   >([]);
-  const { conversations, setConversations } = useConversations();
+  const { updateLastMessageOfConversation } = useConversations();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   let isListenersSet = false;
 
-  const updateLastMessageOfConversation = (
-    message: WsMessageSent | WsNewMessage
-  ) => {
-    setConversations((old) => {
-      const conversation = old.find((c) => {
-        return c.id === message.lead.id;
-      });
-      if (conversation) {
-        // Conversation.messages is array but we just show last message on it
-        conversation.messages = [message];
-        return [...old];
-      }
-      return old;
-    });
-  };
+
 
   useEffect(() => {
     if (isListenersSet) return;
@@ -66,13 +51,11 @@ export default function useFetchMessages(
 
     messagesSocket.on(WsMessages.MESSAGE_SENT, (messageStr) => {
       const message: WsMessageSent = JSON.parse(messageStr);
-      updateLastMessageOfConversation(message);
       setMessagesList((old) => [message, ...old]);
     });
 
     messagesSocket.on(WsMessages.NEW_MESSAGE, (data) => {
       const message: WsNewMessage = JSON.parse(data);
-      updateLastMessageOfConversation(message);
       if (message.lead.id === lead?.id) {
         setMessagesList((old) => [message, ...old]);
       }
