@@ -10,9 +10,6 @@ import {
 } from "@/types/conversations/conversation.ws";
 import { WsMessageSent } from "@/types/conversations/messageSent.ws";
 import { WsNewMessage } from "@/types/conversations/newMessage.ws";
-import { useConversations } from "../context/conversations.context";
-import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
-import logger from "@/app/utils/logger";
 
 export type UseFetchMessage = {
   next: () => void;
@@ -26,7 +23,6 @@ export default function useFetchMessages(
   const [messagesList, setMessagesList] = useState<
     (WsConversationMessage | WsMessageSent | WsNewMessage)[]
   >([]);
-  const { updateLastMessageOfConversation } = useConversations();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   let isListenersSet = false;
