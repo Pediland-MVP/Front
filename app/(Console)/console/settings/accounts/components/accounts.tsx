@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { InstagramNamespace } from "@/types/instagram";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import useSWR from "swr";
 import { SelectInstagram } from "./selectInstagram";
 import Image from "next/image";
@@ -98,7 +98,8 @@ export default function Accounts({
     }
   }, [filteredInstagramPages]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: MouseEvent<HTMLButtonElement>, id: string) => {
+    e.preventDefault()
     setIsDeleteLoading(true)
     try {
       const response = await fetch(
@@ -220,7 +221,7 @@ export default function Accounts({
                       <AlertDialogFooter>
                         <AlertDialogAction
                           type="button"
-                          onClick={() => handleDelete(instagram.id)}
+                          onClick={(e) => handleDelete(e, instagram.id)}
                         >
                           {isDeleteLoading ? <Spinner className="h-5 w-5 animate-spin" /> :t("delete")}
                         </AlertDialogAction>
