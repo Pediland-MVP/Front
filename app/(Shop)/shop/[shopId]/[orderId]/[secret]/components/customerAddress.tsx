@@ -1,13 +1,15 @@
 "use client";
 
+import logger from "@/app/utils/logger";
+import { z } from "zod";
 import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Package } from "@phosphor-icons/react/dist/ssr";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
-import logger from "@/app/utils/logger";
+// UI
+import { Textarea } from "@/components/theme/ui/textarea";
+import { Package } from "@phosphor-icons/react/dist/ssr";
+import { Input } from "@/components/theme/ui/input";
+import { Label } from "@/components/theme/ui/label";
 
 export default function Address() {
   const t = useTranslations("Checkout");
@@ -20,8 +22,8 @@ export default function Address() {
   logger.debug(errors)
 
   return (
-    <div className="_customer-address md:col-span-2">
-      <h2 className="text-lg font-semibold mb-5 border-b pb-2 flex items-center gap-2 text-primary">
+    <div className="_customer-address md:col-span-2 p-3">
+      <h2 className="text-lg font-semibold mb-4 border-b pb-2 flex items-center gap-2 text-primary">
         <Package size={28} weight="duotone" className="text-primary" />
         {t("address")}
       </h2>
@@ -48,7 +50,7 @@ export default function Address() {
           <Label className="text-gray-600" htmlFor="address">
             {t("address")}
           </Label>
-          <Input id="address" {...register("address", { required: true })} />
+          <Textarea id="address" {...register("address", { required: true })} />
           {errors.address && (
             <span className="text-red-500 text-sm">{t("required")}</span>
           )}

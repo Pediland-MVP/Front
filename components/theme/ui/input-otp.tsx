@@ -8,6 +8,7 @@ import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { cn } from "@/lib/utils"
 import { MinusIcon } from "@radix-ui/react-icons"
+import { Dot } from "@phosphor-icons/react/dist/ssr"
 
 const InputOTP = React.forwardRef<
   React.ElementRef<typeof OTPInput>,
@@ -44,7 +45,7 @@ const InputOTPSlot = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative flex h-12 w-12 items-center justify-center border-y border-l border-input text-lg shadow-sm transition-all first:rounded-l-md first:border-r last:rounded-r-md",
+        "relative flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border-y border-l border-input text-lg shadow-sm transition-all first:rounded-l-md first:border-r last:rounded-r-md text-primary font-bold",
         isActive && "z-10 ring-1 ring-ring",
         className
       )}
@@ -66,7 +67,7 @@ const InputOTPSeparator = React.forwardRef<
   React.ComponentPropsWithoutRef<"div">
 >(({ ...props }, ref) => (
   <div ref={ref} role="separator" {...props}>
-    <MinusIcon />
+    <Dot size={17} />
   </div>
 ))
 InputOTPSeparator.displayName = "InputOTPSeparator"

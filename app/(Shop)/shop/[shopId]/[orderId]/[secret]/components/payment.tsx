@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CreditCard } from "@phosphor-icons/react/dist/ssr";
+import { OrderNamespace } from "@/types/order";
+// UI 
+import ImageUpload from "@/components/theme/ui/image-upload";
 import { Label } from "@/components/theme/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
-import { FileUpload } from "@/components/file-upload";
-import axios from "axios";
-import { OrderNamespace } from "@/types/order";
-import { toast } from "@/components/ui/use-toast";
-import ImageUpload from "@/components/theme/ui/image-upload";
+import { Copy, CreditCard } from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/theme/ui/button";
 
 type PaymentDetailsProps = {
   orderCardToCard: OrderNamespace.Order["orderCardToCard"] | undefined;
@@ -25,48 +23,67 @@ export default function PaymentDetails({
 }: PaymentDetailsProps) {
   const t = useTranslations("Checkout");
 
-  const  {  orderId, secret, shopId } = orderDetails
+  const { orderId, secret, shopId } = orderDetails
 
   return (
-    <div className="_customer-details md:col-span-4">
-      <h2 className="text-lg font-semibold mb-5 border-b pb-2 flex items-center gap-2 text-primary">
+    <div className="_customer-details md:col-span-4 p-3">
+      <h2 className="text-lg font-semibold mb-4 border-b pb-2 flex items-center gap-2 text-primary">
         <CreditCard size={28} weight="duotone" className="text-primary" />
         {t("paymentMethod")}
       </h2>
       <div className="grid md:grid-cols-2 gap-4">
-        <RadioGroup
-          defaultValue="2"
-          dir="rtl"
-          className="gap-4 items-start flex flex-col"
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="1" id="r1" disabled />
-            <Label htmlFor="r1" className="text-base text-gray-400">
-              پرداخت آنلاین (زرین پال) - بزودی
-            </Label>
+        <div>
+          <RadioGroup
+            defaultValue="2"
+            dir="rtl"
+            className="gap-4 items-start flex flex-col"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="1" id="r1" disabled />
+              <Label htmlFor="r1" className="text-base text-gray-400">
+                پرداخت آنلاین (زرین پال) - بزودی
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="2" id="r2" />
+              <Label htmlFor="r2" className="text-base">
+                کارت به کارت
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600 leading-relaxed">لطفا مبلغ <span className="bg-yellow-100 font-semibold px-1 text-primary">250.000 تومان</span> به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد بارگزاری نمایید.</p>
+          <div className="_card-template border-2 border-sky-600 border-b-[6px] border-b-sky-600 bg-sky-100/60 p-4 rounded-lg flex flex-col gap-8 mt-3">
+            <p className="font-bold text-sky-900">بانک سامان</p>
+            <div className="flex flex-col gap-2 mb-3 text-sm text-gray-700">
+              <p className="flex items-center gap-2"><span>شماره کارت:</span> <span className="font-medium">1234 1234 1234 1234</span><Copy size={22} weight="duotone" /></p>
+              <p className="flex items-center gap-2"><span>شبا:</span><span className="font-medium">IR - 123400000000000000001234</span><Copy size={22} weight="duotone" /></p>
+              <p><span>دارنده حساب:</span> <span className="font-medium">علی دائی</span></p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="2" id="r2" />
-            <Label htmlFor="r2" className="text-base">
-              کارت به کارت
-            </Label>
-          </div>
-        </RadioGroup>
-        <div className="_uploader">
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="picture" className="font-normal mb-2 text-gray-500">
-              لطفا تصویر رسید وجه پرداختی را بارگذاری نمایید.
-            </Label>
-            <ImageUpload
-              url={`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/cardToCard`}
-              fieldName="image"
-              {...orderCardToCard?.url && { defaultImageUrl: orderCardToCard.url }}
-              // className="max-w-[400px]"
-              // uploadProgress={uploadProgress}
-              // onUpload={handleFileUpload}
-              // multiple={false}
-            />
-          </div>
+        </div>
+
+        <div className="mt-3 w-full">
+          <Button className="w-full" variant={"success"}>
+            {t("nextStep")}
+          </Button>
+        </div>
+      </div>
+      <div className="_uploader mt-6">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="picture" className="font-normal mb-3">
+            لطفا تصویر رسید وجه پرداختی را بارگذاری نمایید.
+          </Label>
+          <ImageUpload
+            url={`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/cardToCard`}
+            fieldName="image"
+            {...orderCardToCard?.url && { defaultImageUrl: orderCardToCard.url }}
+          // className="max-w-[400px]"
+          // uploadProgress={uploadProgress}
+          // onUpload={handleFileUpload}
+          // multiple={false}
+          />
         </div>
       </div>
     </div>

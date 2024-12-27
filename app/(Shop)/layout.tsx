@@ -1,10 +1,11 @@
+import Image from "next/image";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "@/app/globals.css";
-import Image from "next/image";
-import { ShoppingBagOpen } from "@phosphor-icons/react/dist/ssr";
+// UI 
 import { Toaster } from "@/components/ui/toaster";
+import { ShoppingBagOpen } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -23,16 +24,16 @@ export default async function ShopLayout({
     <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
       <body className="bg-fuchsia-50/75">
         <Toaster/>
-        <header className="mb-2">
+        <header>
           <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
-            <div className="_wrap flex items-center justify-between py-2 sm:py-3 lg:py-4">
+            <div className="_wrap flex items-center justify-between py-3 lg:py-4">
               <div className="_logo flex items-center gap-3">
-                <Image src="/images/befroosh-logo.svg" alt="logo" width={46} height={44} />
+                <Image src="/images/befroosh-logo.svg" alt="logo" width={30} height={44} />
                 <span className="text-xl font-bold text-primary">بـفـروش</span>
               </div>
               <div className="_title flex items-center gap-2">
-                <ShoppingBagOpen weight="light" size={28} className="text-secondary" />
-                <h1 className="text-lg font-medium text-secondary">تکمیل سفارش</h1>
+                <ShoppingBagOpen size={24} weight="duotone" className="text-secondary" />
+                <h1 className="font-semibold text-secondary">ثبت سفارش</h1>
               </div>
             </div>
           </div>

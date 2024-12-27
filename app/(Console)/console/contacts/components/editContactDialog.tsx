@@ -45,35 +45,6 @@ export default function EditContact({
 
   const t = useTranslations('Contacts.EditDialog')
 
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <DrawerHeader className="text-right">
-            <DrawerTitle>{t('editContact')}</DrawerTitle>
-            <DrawerDescription>
-              {t('editContactDescription')}
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="p-4 pb-0">
-            <ContactForm
-              contactId={contactId}
-              open={open}
-              setOpen={setOpen}
-            />
-          </div>
-          <DrawerFooter className="pt-2">
-            <DrawerClose asChild>
-              <Button variant="outline" className="w-full">
-                {t('cancel')}
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[560px]">

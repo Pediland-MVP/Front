@@ -7,11 +7,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEX_PASSWORD } from "@/app/utils/regex";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+// UI 
 import { Button } from "@/components/theme/ui/button";
 import { Input } from "@/components/theme/ui/input";
 import TextDivider from "@/components/theme/ui/textDivider";
-// UI 
-import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
   Form,
@@ -20,11 +20,11 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
-import { useTranslations } from "next-intl";
+import { Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { toast } from "@/components/ui/use-toast";
 
-export default function Login() {
+export default function SignIn() {
   const t = useTranslations("Auth.Signin");
 
   const [isVisible, setIsVisible] = useState(false);
@@ -98,10 +98,10 @@ export default function Login() {
   };
 
   return (
-    <main className="_signin h-full bg-fuchsia-50/75">
+    <main className="_signin-page h-full bg-blue-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="_wrap flex items-center justify-center h-full">
-          <div className="_content text-center w-full sm:w-1/3 mx-auto">
+        <div className="_wrapper flex items-center justify-center h-full">
+          <div className="_content w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
                 <Keyhole size={36} weight="light" className="text-primary" />
@@ -112,7 +112,7 @@ export default function Login() {
               <p className="text-sm text-gray-500 text-center">
                 {t("noAccount")}{" "}
                 <Link
-                  className="text-gray-500 hover:text-secondary hover:underline underline-offset-8 duration-300"
+                  className="text-gray-500 hover:text-secondary underline underline-offset-8 duration-300"
                   href="/auth/signup"
                 >
                   {t("signUpHere")}
@@ -178,9 +178,9 @@ export default function Login() {
                 </form>
               </Form>
 
-              <TextDivider size="lg">{t("orDivider")}</TextDivider>
+              {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
 
-              <div className="w-full grid grid-cols-4 gap-3">
+              {/* <div className="w-full grid grid-cols-4 gap-3">
                 <Button
                   onClick={loginWithGoogle}
                   className="col-span-4"
@@ -194,7 +194,7 @@ export default function Login() {
                   )}
                   {t("continueWithGoogle")}
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

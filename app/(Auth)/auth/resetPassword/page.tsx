@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-
-import { Button } from "@/components/ui/button";
+// UI
+import { Button } from "@/components/theme/ui/button";
 import {
   Form,
   FormControl,
@@ -17,7 +18,6 @@ import {
 import { Input } from "@/components/theme/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Keyhole } from "@phosphor-icons/react/dist/ssr";
-import { useRouter } from "next/navigation";
 
 export default function ResetPasswordForm() {
   const t = useTranslations("Auth.ResetPassword");
@@ -43,59 +43,57 @@ export default function ResetPasswordForm() {
     setIsLoading(true);
 
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/sendResetPasswordCode`, {
-            method: "PATCH",
-            body: JSON.stringify(values),
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        
-        if (!res.ok) {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/sendResetPasswordCode`, {
+        method: "PATCH",
+        body: JSON.stringify(values),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
 
-            if (res.status === 429) {
-                toast({
-                    title: t("tryAgainLater"),
-                    variant: "destructive",
-                });
-                return
-            }
-
-            toast({
-                title: t("resetRequestError"),
-                description: t("resetRequestErrorDescription"),
-                variant: "destructive",
-            });
-            return
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast({
+            title: t("tryAgainLater"),
+            variant: "destructive",
+          });
+          return
         }
 
         toast({
-            title: t("resetRequestSent"),
-            description: t("checkMobile"),
-        });
-
-        router.push(`/auth/resetPassword/changePassword?mobile=${values.mobile}`)
-
-    }
-    catch(e) {
-        toast({
-            title: t("resetRequestError"),
-            description: t("resetRequestErrorDescription"),
-            variant: "destructive",
+          title: t("resetRequestError"),
+          description: t("resetRequestErrorDescription"),
+          variant: "destructive",
         });
         return
+      }
+
+      toast({
+        title: t("resetRequestSent"),
+        description: t("checkMobile"),
+      });
+
+      router.push(`/auth/resetPassword/changePassword?mobile=${values.mobile}`)
+    }
+    catch (e) {
+      toast({
+        title: t("resetRequestError"),
+        description: t("resetRequestErrorDescription"),
+        variant: "destructive",
+      });
+      return
     }
     finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <main className="h-full bg-fuchsia-50/75">
+    <main className="h-full bg-blue-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="flex items-center justify-center h-full">
-          <div className="text-center w-full sm:w-1/3 mx-auto">
+          <div className="w-full sm:w-1/3 mx-auto">
             <div className="mb-6 flex flex-col gap-2">
               <div className="flex items-center justify-center gap-2">
                 <Keyhole className="h-9 w-9 text-primary" />

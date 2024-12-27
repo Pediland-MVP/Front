@@ -28,7 +28,7 @@ const NavUser = dynamic(() => import("./nav-user"), {
 const generateData = (t: any) => ({
   navMain: [
     {
-      title: t('console'),
+      title: t('dashboard'),
       url: "/console",
       icon: HouseSimple,
       isActive: true,
@@ -40,19 +40,7 @@ const generateData = (t: any) => ({
       isActive: true,
     },
     {
-      title: t('orders'),
-      url: '/console/orders',
-      icon: Basket,
-      isActive: true,
-      items: [
-        {
-          title: t('products'),
-          url: "/console/products",
-        },
-      ],
-    },
-    {
-      title: t('messages'),
+      title: t('instagramConnections'),
       url: "#",
       icon: ChatCircleText,
       isActive: true,
@@ -65,15 +53,29 @@ const generateData = (t: any) => ({
           title: t('comments'),
           url: "/console/comments",
         },
+        {
+          title: t('automations'),
+          url: "/console/actions/content-cycle",
+        },
       ],
     },
-    {
-      title: t('automations'),
-      url: "/console/actions/content-cycle",
-      icon: Lightning,
-      isActive: true,
-    },
 
+    {
+      title: t('shop'),
+      url: '#',
+      icon: Basket,
+      isActive: true,
+      items: [
+        {
+          title: t('ordersList'),
+          url: "/console/orders",
+        },
+        {
+          title: t('products'),
+          url: "/console/products",
+        }
+      ],
+    },
     {
       title: t('settings'),
       url: "/console/settings",
@@ -84,7 +86,7 @@ const generateData = (t: any) => ({
 })
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations('General')
+  const t = useTranslations('Console.Sidebar')
   const data = generateData(t)
   
   const {data: userData, isLoading: userIsLoading, error: userError} = useSWR(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`, {
@@ -105,8 +107,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               priority
             />          </div>
           <div className="flex flex-col flex-1 text-left text-[15px] leading-snug">
-            <span className="font-bold">{t('App.name')}</span>
-            <span className="text-[13px]">{t('App.description')}</span>
+            <span className="font-bold">{t('name')}</span>
+            <span className="text-[13px]">{t('description')}</span>
           </div>
         </div>
       </SidebarHeader>

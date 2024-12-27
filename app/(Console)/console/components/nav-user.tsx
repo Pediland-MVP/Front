@@ -34,7 +34,7 @@ export default function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const locale = useLocale();
-  const t = useTranslations("General");
+  const t = useTranslations("Console.Sidebar");
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
 
   const router = useRouter();
@@ -94,7 +94,7 @@ export default function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem className="text-gray-400">
                 <Sparkle size={22} className="text-gray-400" />
-                {t("upgradeAccount")} <span className="font-light">({t("soon")})</span>
+                <span>{t("upgradeAccount")} <span className="font-light">({t("soon")})</span></span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
 

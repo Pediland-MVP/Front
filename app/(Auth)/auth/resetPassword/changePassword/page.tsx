@@ -5,8 +5,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-
-import { Button } from "@/components/ui/button";
+import ResetButton from "./resendButton";
+import { useRouter, useSearchParams } from "next/navigation";
+import { REGEX_PASSWORD } from "@/app/utils/regex";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+// UI
 import {
   Form,
   FormControl,
@@ -15,24 +18,20 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/theme/ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { Keyhole } from "@phosphor-icons/react/dist/ssr";
-import { REGEX_PASSWORD } from "@/app/utils/regex";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/theme/ui/input-otp";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/theme/ui/button";
+import { Input } from "@/components/theme/ui/input";
+import { toast } from "@/components/ui/use-toast";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
-import logger from "@/app/utils/logger";
-import ResetButton from "./resendButton";
+import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 
 export default function ResetPasswordForm() {
-  const t = useTranslations("Auth.ChangePassword");
+  const t = useTranslations("Auth.ResetPassword.ChangePassword");
   const [isLoading, setIsLoading] = useState(false);
 
   const searchParams = useSearchParams();
@@ -163,10 +162,10 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <main className="h-full bg-fuchsia-50/75">
+    <main className="h-full bg-blue-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
         <div className="flex items-center justify-center h-full">
-          <div className="text-center w-full sm:w-1/3 mx-auto">
+          <div className="w-full sm:w-1/3 mx-auto">
             <div className="mb-6 flex flex-col gap-2">
               <div className="flex items-center justify-center gap-2">
                 <Keyhole className="h-9 w-9 text-primary" />
@@ -216,19 +215,14 @@ export default function ResetPasswordForm() {
                           <InputOTPGroup>
                             <InputOTPSlot className="bg-white" index={0} />
                             <InputOTPSeparator />
-
                             <InputOTPSlot className="bg-white" index={1} />
                             <InputOTPSeparator />
-
                             <InputOTPSlot className="bg-white" index={2} />
                             <InputOTPSeparator />
-
                             <InputOTPSlot className="bg-white" index={3} />
                             <InputOTPSeparator />
-
                             <InputOTPSlot className="bg-white" index={4} />
                             <InputOTPSeparator />
-
                             <InputOTPSlot className="bg-white" index={5} />
                           </InputOTPGroup>
                         </InputOTP>
@@ -268,7 +262,9 @@ export default function ResetPasswordForm() {
                     </FormItem>
                   )}
                 />
+                
                 <ResetButton mobile={form.getValues().mobile} />
+
                 <Button
                   type="submit"
                   className="w-full text-white"
