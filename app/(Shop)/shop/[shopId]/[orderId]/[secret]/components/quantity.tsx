@@ -79,31 +79,33 @@ export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _prod
 
   return (
     <div className="flex items-center justify-start gap-x-2">
+      <div className="text-[13px] text-gray-700 text-center">تعداد</div>
+
       <button
         onClick={() => handleAdjustment("decrement")}
         disabled={isPending || orderQuantity <= 1}
         type="button"
-        className="rounded-full bg-gray-100 p-1 border"
+        className="rounded bg-gray-100 p-[3px] border"
       >
         {isPending ? (
-          <Spinner size={16} className="animate-spin" />
+          <Spinner size={12} className="animate-spin" />
         ) : (
-          <Minus size={16} className={cn(orderQuantity <= 1 ? "text-gray-400" : "")} />
+          <Minus size={12} className={cn(orderQuantity <= 1 ? "text-gray-400" : "")} />
         )}
       </button>
 
-      <div className="text-[22px] font-semibold select-none">{orderQuantity}</div>
+      <div className="text-lg font-medium text-gray-600 select-none">{orderQuantity}</div>
 
       <button
         onClick={() => handleAdjustment("increment")}
         disabled={isPending || productQuantity === 0 || orderQuantity === productQuantity}
         type="button"
-        className="rounded-full bg-gray-100 p-1 border"
+        className="rounded bg-gray-100 p-[3px] border"
       >
         {isPending ? (
-          <Spinner size={16} className="animate-spin" />
+          <Spinner size={12} className="animate-spin" />
         ) : (
-          <Plus size={16} weight="bold" />
+          <Plus size={12} weight="bold" />
         )}
       </button>
     </div>
