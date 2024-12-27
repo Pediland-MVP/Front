@@ -31,9 +31,9 @@ export default function CommentTopBar({ instagramPost }: CommentTopbarProps) {
       <Link href={instagramPost.permalink} target="_blank">
         <div className="flex  items-center gap-4">
           <Image
-            width={12}
-            height={12}
-            quality={40}
+            width={25}
+            height={25}
+            quality={100}
             className="w-10 h-10 rounded-sm"
             alt={instagramPost.caption}
             src={instagramPost.picture?.url || ""}

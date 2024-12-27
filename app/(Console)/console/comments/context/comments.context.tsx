@@ -26,7 +26,7 @@ export const CommentsProvider = ({
 
   const onNewComment = (data: string) => {
     const comment: CommentNamespace.WS.NewComment = JSON.parse(data);
-    setComments((old) => [...old, comment]);
+    setComments((old) => [comment, ...old]);
   };
 
   useEffect(() => {

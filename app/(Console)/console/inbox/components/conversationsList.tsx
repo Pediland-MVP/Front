@@ -41,7 +41,7 @@ function ConversationsList() {
       const updatedPage = prevPage + 1;
       messagesSocket.emit("conversations", {
         page: updatedPage,
-        LIMIT,
+        limit: LIMIT,
       });
       return updatedPage;
     });

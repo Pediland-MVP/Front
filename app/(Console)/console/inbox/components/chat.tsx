@@ -11,15 +11,12 @@ import { Card } from "@/components/theme/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 import useFetchMessages from "./useFetchMessages";
 import ChatSkeleton from "./chat.skeleton";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { useConversations } from "../context/conversations.context";
 
 interface ChatProps {
   leadId: string;
 }
 
 export function Chat({ leadId }: ChatProps) {
-  const {} = useConversations()
   const { setCurrentLead } = useCurrentLead();
 
   const {
@@ -36,7 +33,6 @@ export function Chat({ leadId }: ChatProps) {
       setCurrentLead(lead);
     }
 
-    console.log(`Current lead`, lead);
   }, [lead]);
 
   const messagesData = useFetchMessages(lead);
