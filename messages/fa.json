@@ -581,6 +581,13 @@
                 "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
                 "select": "انتخاب"
             }
+        },
+        "BankDetails": {
+            "bankName": "نام بانک",
+            "cardNumber": "شماره کارت",
+            "iban": "شبا",
+            "accountHolder": "دارنده حساب",
+            "save": "ذخیره"
         }
     },
     "Profile": {

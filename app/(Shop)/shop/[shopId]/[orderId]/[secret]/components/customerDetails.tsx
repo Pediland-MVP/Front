@@ -6,7 +6,6 @@ import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UI
-import { Label } from "@/components/theme/ui/label";
 import { Input } from "@/components/theme/ui/input";
 import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/theme/ui/button";
