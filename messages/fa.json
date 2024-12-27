@@ -229,7 +229,7 @@
     "Comments": {
         "dashboard": "داشبورد",
         "list": "لیست کامنت‌ها",
-        "commentsOf": "نظرات: {caption}!",
+        "commentsOf": "نظرات: {caption}",
         "Footer": {
             "errors": {
                 "text": "نظر خود را وارد کنید"

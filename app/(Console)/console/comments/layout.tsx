@@ -24,7 +24,7 @@ const ChatsLayout: FC<ChatsLayout> = ({ children }) => {
   const t = useTranslations("Comments");
   return (
     <div className="_direct flex flex-col h-full max-h-full overflow-hidden">
-      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100 hidden">
+      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
         <div className="_wrap flex items-center gap-4">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />

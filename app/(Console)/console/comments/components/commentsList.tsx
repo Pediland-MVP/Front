@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { commentsSocket } from "@/app/utils/socket";
 import { useParams, useRouter } from "next/navigation";
 import InfiniteScroll from "react-infinite-scroll-component";
-import CommentsSkeleton from "./comments.skeleton";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/theme/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,11 +16,14 @@ import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
+import CommentsListSkeleton from "./commentsList.skeleton";
+import logger from "@/app/utils/logger";
 
 interface CommentsListProps {
   children?: React.ReactNode;
 }
 
+const LIMIT = 15;
 function CommentsList({ children }: CommentsListProps) {
   const router = useRouter();
   const { id: selectedCommentId } = useParams();
@@ -30,15 +32,10 @@ function CommentsList({ children }: CommentsListProps) {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(0);
-  const LIMIT = 15;
 
   const sidebar = useSidebar();
   const t = useTranslations("Comments.List");
 
-  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
-  const isMediumDevice = useMediaQuery(
-    "only screen and (min-width : 769px) and (max-width : 992px)"
-  );
 
   const fetchComments = useCallback(() => {
     setIsLoading(true);
@@ -71,18 +68,25 @@ function CommentsList({ children }: CommentsListProps) {
 
   useEffect(() => {
     commentsSocket.on("comments", handleComments);
-    fetchComments();
+    if (!comments.length) {
+      fetchComments();
+    }
 
     return () => {
       commentsSocket.off("comments", handleComments);
     };
   }, []);
 
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
+  const isMediumDevice = useMediaQuery(
+    "only screen and (min-width : 769px) and (max-width : 992px)"
+  );
+
   const isCommentsListHidden =
     (isSmallDevice || isMediumDevice) && selectedCommentId;
 
   if (!comments.length && isLoading) {
-    return <CommentsSkeleton />;
+    return <CommentsListSkeleton />;
   }
 
   if (!comments.length) {
