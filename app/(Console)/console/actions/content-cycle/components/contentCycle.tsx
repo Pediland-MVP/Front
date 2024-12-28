@@ -21,6 +21,7 @@ import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
+import logger from "@/app/utils/logger";
 
 export type ContentType = {
   id: string;
@@ -72,9 +73,10 @@ export const contentCycleFormSchema = z.object({
       instagramPost: z.object({
         mediaUrl: z.string().optional().nullable(),
         mediaId: z.string().min(1, "انتخاب پست الزامی است"),
-      }),
+      }).optional().nullable(),
       id: z.string().optional().nullable(),
-      consentText: z.string().min(1, "پیام کسب اجازه الزامی است"),
+      haveConsent: z.boolean().optional().nullable().transform((data) => data || false),
+      consentText: z.string().optional().nullable().transform(data => data || undefined),
       _xid: z.string().optional().nullable(),
     })
   ),
@@ -94,14 +96,17 @@ export const contentCycleFormSchema = z.object({
     })
   ),
   isProductsEnabled: z.boolean().nullable().optional(),
+  isContentsEnabled: z.boolean().nullable().optional().transform((data) => data || false),
   isDirect: z.boolean(),
   isComment: z.boolean(),
+  commentStartText: z.string().optional().nullable(),
+  commentStartTitle: z.string().optional().nullable(),
   justFollowers: z.boolean(),
   likeDirect: z.boolean(),
   followMessage: z.string().optional().nullable(),
   followCheckMessage: z.string().optional().nullable(),
   cta: z.string().min(1, "متن مرحله پایانی اجباری است"),
-  commentStartText: z.string().optional().nullable(),
+  haveCta: z.boolean().optional().nullable().transform((data) => data || false),
   getUserData: z
     .object({
       type: z.enum(["email", "mobile"]).optional().nullable(),
@@ -131,6 +136,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       contents: [],
       products: [],
       isProductsEnabled: false,
+      isContentsEnabled: false,
       getUserData: {
         enabled: false,
         text: "",
@@ -146,6 +152,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       commentStartText: "",
     },
   });
+
+  useEffect(() => {
+    logger.log(form.formState.errors)
+  }, [form.formState.errors])
 
   useEffect(() => {
     if (!id) return;

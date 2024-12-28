@@ -294,7 +294,9 @@
             "direct": "دایرکت",
             "comment": "کامنت",
             "startRequestMessage": "پیام درخواست شروع",
-            "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید"
+            "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید",
+            "commentStartTitlePlaceholder": "شروع",
+            "commentStartTitle": "متن دکمه شروع"
         },
         "Title": {
             "title": "عنوان",
@@ -323,10 +325,12 @@
             "sendMessageBelow": "را ارسال کند، موارد زیر برایش ارسال می‌شود."
         },
         "Contents": {
+            "consent": "کسب اجازه برای پیام بعدی",
             "removeContent": "حذف محتوا",
             "enterYourMessage": "پیام خود را وارد کنید",
             "consentMessage": "پیام کسب اجازه: آیا مایل به ادامه هستید؟...",
-            "addContent": "افزودن محتوا"
+            "addContent": "افزودن محتوا",
+            "label": "ارسال محتوا"
         },
         "Cta": {
             "label": "متن پایانی",
