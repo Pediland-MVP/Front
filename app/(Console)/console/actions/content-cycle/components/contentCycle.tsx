@@ -107,7 +107,7 @@ export const contentCycleFormSchema = z
       .transform((data) => data || false),
     isDirect: z.boolean(),
     isComment: z.boolean(),
-    commentStartText: z.string().optional().nullable(),
+    commentStartText: z.string().optional().nullable().transform((data) => data || undefined),
     commentStartTitle: z.string().optional().nullable(),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
@@ -190,7 +190,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       followMessage: "",
       likeDirect: false,
       cta: "",
-      commentStartText: "",
     },
   });
 
