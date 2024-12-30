@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import JustFollowers from "./form/justFollowers";
@@ -11,7 +11,6 @@ import Cta from "./form/cta";
 import Catalogue from "./form/catalogue";
 import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
-import Questions from "./form/questions";
 import ContentCycleTitle from "./form/title";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -48,73 +47,116 @@ type ContentCycleProps = {
   id?: string;
 };
 
-export const contentCycleFormSchema = z.object({
-  title: z.string().min(1, "لطفا عنوان اتوماسیون رو مشخص کنید."),
-  conditions: z
-    .array(
+export const contentCycleFormSchema = z
+  .object({
+    title: z.string().min(1, "لطفا عنوان اتوماسیون رو مشخص کنید."),
+    conditions: z
+      .array(
+        z.object({
+          type: z.string().min(1, "نوع شرط الزامی است"),
+          value: z.string().min(1, "مقدار شرط الزامی است"),
+          id: z.string(),
+          conditionId: z.string().optional().nullable(),
+        })
+      )
+      .min(1, "حداقل یک شرط الزامی است"),
+    contents: z.array(
       z.object({
-        type: z.string().min(1, "نوع شرط الزامی است"),
-        value: z.string().min(1, "مقدار شرط الزامی است"),
-        id: z.string(),
-        conditionId: z.string().optional().nullable(),
-      })
-    )
-    .min(1, "حداقل یک شرط الزامی است"),
-  questions: z.array(
-    z.object({
-      text: z.string(),
-      id: z.string().optional().nullable(),
-      _xid: z.string().optional().nullable(),
-    })
-  ),
-  contents: z.array(
-    z.object({
-      text: z.string().min(1, "پیام الزامی است"),
-      instagramPost: z.object({
-        mediaUrl: z.string().optional().nullable(),
-        mediaId: z.string().min(1, "انتخاب پست الزامی است"),
-      }).optional().nullable(),
-      id: z.string().optional().nullable(),
-      haveConsent: z.boolean().optional().nullable().transform((data) => data || false),
-      consentText: z.string().optional().nullable().transform(data => data || undefined),
-      _xid: z.string().optional().nullable(),
-    })
-  ),
-  products: z.array(
-    z.object({
-      id: z.string().optional().nullable(),
-      images: z
-        .array(
-          z.object({
-            url: z.string().optional().nullable(),
-            id: z.number().optional().nullable(),
+        text: z.string().min(1, "پیام الزامی است"),
+        instagramPost: z
+          .object({
+            mediaUrl: z.string().optional().nullable(),
+            mediaId: z.string().min(1, "انتخاب پست الزامی است"),
           })
-        )
-        .optional()
-        .nullable(),
-      _xid: z.string().optional().nullable(),
-    })
-  ),
-  isProductsEnabled: z.boolean().nullable().optional(),
-  isContentsEnabled: z.boolean().nullable().optional().transform((data) => data || false),
-  isDirect: z.boolean(),
-  isComment: z.boolean(),
-  commentStartText: z.string().optional().nullable(),
-  commentStartTitle: z.string().optional().nullable(),
-  justFollowers: z.boolean(),
-  likeDirect: z.boolean(),
-  followMessage: z.string().optional().nullable(),
-  followCheckMessage: z.string().optional().nullable(),
-  cta: z.string().min(1, "متن مرحله پایانی اجباری است"),
-  haveCta: z.boolean().optional().nullable().transform((data) => data || false),
-  getUserData: z
-    .object({
-      type: z.enum(["email", "mobile"]).optional().nullable(),
-      text: z.string().optional().nullable(),
-      enabled: z.boolean(),
-    })
-    .optional(),
-});
+          .optional()
+          .nullable(),
+        id: z.string().optional().nullable(),
+        haveConsent: z
+          .boolean()
+          .optional()
+          .nullable()
+          .transform((data) => data || false),
+        consentText: z
+          .string()
+          .optional()
+          .nullable()
+          .transform((data) => data || undefined),
+        _xid: z.string().optional().nullable(),
+      })
+    ),
+    products: z.array(
+      z.object({
+        id: z.string().optional().nullable(),
+        images: z
+          .array(
+            z.object({
+              url: z.string().optional().nullable(),
+              id: z.number().optional().nullable(),
+            })
+          )
+          .optional()
+          .nullable(),
+        _xid: z.string().optional().nullable(),
+      })
+    ),
+    isProductsEnabled: z.boolean().nullable().optional(),
+    isContentsEnabled: z
+      .boolean()
+      .nullable()
+      .optional()
+      .transform((data) => data || false),
+    isDirect: z.boolean(),
+    isComment: z.boolean(),
+    commentStartText: z.string().optional().nullable(),
+    commentStartTitle: z.string().optional().nullable(),
+    justFollowers: z.boolean(),
+    likeDirect: z.boolean(),
+    followMessage: z.string().optional().nullable(),
+    followCheckMessage: z.string().optional().nullable(),
+    cta: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((data) => data || undefined),
+    haveCta: z
+      .boolean()
+      .optional()
+      .nullable()
+      .transform((data) => data || false),
+    getUserData: z
+      .object({
+        type: z.enum(["email", "mobile"]).optional().nullable(),
+        text: z.string().optional().nullable(),
+        enabled: z.boolean(),
+      })
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.haveCta && !data.cta) {
+      ctx.addIssue({
+        path: ["cta"],
+        code: "custom",
+      });
+    }
+
+    if (!data.contents.length && !data.products.length && !data.cta) {
+      ctx.addIssue({
+        path: ['isContentsEnabled'],
+        code: 'custom',
+        message: "at_least"
+      })
+      ctx.addIssue({
+        path: ['isProductsEnabled'],
+        code: 'custom',
+        message: "at_least"
+      })
+      ctx.addIssue({
+        path: ['cta'],
+        code: 'custom',
+        message: "at_least"
+      })
+    }
+  });
 
 /**
  *
@@ -132,7 +174,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     defaultValues: {
       title: "",
       conditions: [{ type: "EQUAL", value: "", id: "" }],
-      questions: [],
       contents: [],
       products: [],
       isProductsEnabled: false,
@@ -153,9 +194,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     },
   });
 
-  useEffect(() => {
-    logger.log(form.formState.errors)
-  }, [form.formState.errors])
 
   useEffect(() => {
     if (!id) return;
@@ -236,7 +274,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     setIsSubmitting(true);
 
     const result = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${id ? `/${id}` : ""
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${
+        id ? `/${id}` : ""
       }`,
       {
         method: id ? "PATCH" : "POST",
@@ -270,90 +309,87 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     setIsSubmitting(false);
   };
 
-  useEffect(() => {
-    console.log(form.getValues());
-    console.log(form.formState.errors);
-  }, [form.watch()]);
-
   const t = useTranslations("Automations");
 
+  useEffect(() => {
+    logger.log(form.getValues())
+  }, [form.watch(['isProductsEnabled', 'isContentsEnabled'])])
+
+  useEffect(() => {
+    logger.log(form.formState.errors);
+  }, [form.formState.errors]);
+
   return (
-    <div className="_add-automation w-full xl:w-1/2 2xl:w-1/3 h-full">
-      <Card className='border-l-2 border-gray-100 px-8 py-6 h-full'>
-        {isLoading ? (
-          <div className="min-h-screen w-full flex justify-center items-center">
-            <LoadingSpinner className="h-20 w-20 text-gray-500" />
-          </div>
-        ) : (
-          <div className="_wrap">
-            {/* Form wrapper */}
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="grid gap-3"
-              >
-                <ContentCycleTitle control={form.control} />
+    <FormProvider {...form}>
+      <div className="_add-automation w-full xl:w-1/2 2xl:w-1/3 h-full">
+        <Card className="border-l-2 border-gray-100 px-8 py-6 h-full">
+          {isLoading ? (
+            <div className="min-h-screen w-full flex justify-center items-center">
+              <LoadingSpinner className="h-20 w-20 text-gray-500" />
+            </div>
+          ) : (
+            <div className="_wrap">
+              {/* Form wrapper */}
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="grid gap-3"
+                >
+                  <ContentCycleTitle control={form.control} />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Trigger control={form.control} getValues={form.getValues} />
+                  <Trigger control={form.control} getValues={form.getValues} />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Conditions
-                  control={form.control}
-                  getValues={form.getValues}
-                  formState={form.formState}
-                />
+                  <Conditions
+                    control={form.control}
+                    getValues={form.getValues}
+                    formState={form.formState}
+                  />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Questions control={form.control} />
+                  <Contents
+                    control={form.control}
+                    getValues={form.getValues}
+                    formState={form.formState}
+                  />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Contents
-                  control={form.control}
-                  getValues={form.getValues}
-                  formState={form.formState}
-                />
+                  <Catalogue/>
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Catalogue
-                  control={form.control}
-                  formState={form.formState}
-                  getValues={form.getValues}
-                />
+                  <GetUserData control={form.control} />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <GetUserData control={form.control} />
+                  <JustFollowers
+                    control={form.control}
+                    getValues={form.getValues}
+                  />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <JustFollowers
-                  control={form.control}
-                  getValues={form.getValues}
-                />
+                  <LikeDirect control={form.control} />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <LikeDirect control={form.control} />
+                  <Cta control={form.control} />
 
-                <hr className="border-gray-100" />
-
-                <Cta control={form.control} />
-
-                {/* Submit button */}
-                <LoadingButton isLoading={isSubmitting}>
-                  {id ? t("update") : t("submit")}
-                </LoadingButton>
-              </form>
-            </Form>
-          </div>
-        )}
-      </Card>
-    </div>
+                  {/* Submit button */}
+                  <LoadingButton isLoading={isSubmitting}>
+                    {id ? t("update") : t("submit")}
+                  </LoadingButton>
+                </form>
+              </Form>
+            </div>
+          )}
+        </Card>
+      </div>
+    </FormProvider>
   );
 }

@@ -1,6 +1,6 @@
-import { Control } from "react-hook-form";
+import { Control, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { contentCycleFormSchema } from '../contentCycle';
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -13,8 +13,12 @@ type CtaProps = {
 
 export default function Cta({ control }: CtaProps) {
   const t = useTranslations("Automations.Cta");
-  return (
+  const t_errors = useTranslations('Automations.Errors')
+  const form = useFormContext<z.infer<typeof contentCycleFormSchema>>()
 
+  const isCtaDisabled = !form.getValues().contents.length && !form.getValues().products.length
+
+  return (
     <FormField
     control={control}
     name="haveCta"
@@ -26,6 +30,7 @@ export default function Cta({ control }: CtaProps) {
               dir="ltr"
               checked={field.value}
               onCheckedChange={field.onChange}
+              disabled={isCtaDisabled}
             />
           </FormControl>
           <FormLabel className="">{t("label")}</FormLabel>
@@ -39,14 +44,14 @@ export default function Cta({ control }: CtaProps) {
                 return (
                   <div className="space-y-1 mb-2">
                     <Textarea {...field} placeholder={t("placeholder")} />
-                    {error && <FormMessage> {error.message} </FormMessage>}
+                    {error && <span className="text-red-500 text-sm"> {t_errors(`cta.${error.type}`)}</span>}
                   </div>
                 );
               }}
             />
           )
         }
-        <FormMessage />
+        {/* <FormMessage /> */}
       </FormItem>
     )}
     />

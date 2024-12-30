@@ -17,21 +17,19 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { ProductNamespace } from "@/types/product";
-import { UseFormStateReturn } from "react-hook-form";
+import { useFormContext, UseFormStateReturn } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "./contentCycle";
 
 const PAGE_SIZE = 9;
 
 export type InstagramProductsDialogProps = {
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
   index: number;
   updateProducts: any;
   productsField: any;
 };
 
 const ProductsDialog = ({
-  formState,
   index,
   updateProducts,
   productsField,
@@ -42,6 +40,10 @@ const ProductsDialog = ({
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  const { formState: {errors} } =
+    useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
   const fetchProducts = async (pageNumber: number = 1) => {
     setIsLoading(true);
@@ -104,9 +106,9 @@ const ProductsDialog = ({
         ) : (
           <div className="flex justify-center w-full gap-y-2">
             <Button type="button" variant="outline" className='text-xs'>{t('selectProduct')}</Button>
-            {formState?.errors?.products?.[index]?.id && (
+            {errors?.products?.[index]?.id && (
               <ErrorMessage>
-                {formState.errors.products?.[index].id.message}
+                {errors.products?.[index].id.message}
               </ErrorMessage>
             )}
           </div>

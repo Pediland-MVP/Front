@@ -5,6 +5,7 @@ import {
   Control,
   Controller,
   useFieldArray,
+  useFormContext,
   UseFormGetValues,
   UseFormStateReturn,
 } from "react-hook-form";
@@ -45,6 +46,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 type ContentsProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -56,22 +58,19 @@ type ContentsProps = {
 function SortableItem({
   id,
   index,
-  control,
-  getValues,
-  formState,
   contentsField,
   removeContents,
   updateContents,
 }: {
   id: string;
   index: number;
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
   contentsField: any[];
   removeContents: (index: number) => void;
   updateContents: (index: number, value: any) => void;
 }) {
+
+  const { control, setValue, trigger } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
+
   const t = useTranslations("Automations.Contents");
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -80,6 +79,14 @@ function SortableItem({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const deleteContent = () => {
+    removeContents(index);
+    if (index === 0) {
+      setValue('isContentsEnabled', false);
+    }
+    trigger()
+  }
 
   return (
     <div
@@ -95,7 +102,7 @@ function SortableItem({
           <Trash
             size={22}
             className="text-red-600 cursor-pointer"
-            onClick={() => removeContents(index)}
+            onClick={deleteContent}
             aria-label={t("removeContent")}
           />
         </div>
@@ -106,8 +113,6 @@ function SortableItem({
           <InstagramPostsDialog
             index={index}
             updateContents={updateContents}
-            formState={formState}
-            getValues={getValues}
             contents={contentsField}
           />
         </div>
@@ -169,6 +174,7 @@ export default function Contents({
   formState,
 }: ContentsProps) {
   const t = useTranslations("Automations.Contents");
+  const t_errors = useTranslations("Automations.Errors");
   const {
     fields: contentsField,
     remove: removeContents,
@@ -180,6 +186,8 @@ export default function Contents({
     name: "contents",
     keyName: "_xid",
   });
+
+  const { setValue, trigger } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
 
   // Configure sensors for drag and drop
   const sensors = useSensors(
@@ -205,12 +213,28 @@ export default function Contents({
     }
   };
 
+  const addContent = (isEnabled: boolean) => { {
+      if (isEnabled) {
+        if (getValues().contents?.length === 0) {
+          appendContents({
+            text: "",
+            haveConsent: false,
+          });
+        }
+      } else {
+        removeContents(0)
+      }
+      setValue('isContentsEnabled', isEnabled)
+      trigger()
+    } 
+  }
+
   return (
     <>
       <FormField
         control={control}
         name="isContentsEnabled"
-        render={({ field }) => {
+        render={({ field, fieldState: {error} }) => {
           return (
             <FormItem className="flex flex-col justify-start gap-y-2">
               <div className="flex items-center gap-x-2">
@@ -218,20 +242,15 @@ export default function Contents({
                   <Switch
                     dir="ltr"
                     checked={!!field.value}
-                    onCheckedChange={(e) => {
-                      if (e) {
-                        if (getValues().contents?.length === 0) {
-                          appendContents({
-                            text: "",
-                            haveConsent: false,
-                          });
-                        }
-                      }
-                      return field.onChange(e);
-                    }}
+                    onCheckedChange={addContent}
                   />
                 </FormControl>
                 <FormLabel className="">{t("label")}</FormLabel>
+                {error?.message === 'at_least' && (
+                <ErrorMessage>
+                  {t_errors(`contents.${error?.message}`)}
+                </ErrorMessage>
+              )}
               </div>
               {field.value && (
                 <div className="space-y-3">
@@ -270,9 +289,6 @@ export default function Contents({
                               key={content._xid}
                               id={content._xid}
                               index={index}
-                              control={control}
-                              getValues={getValues}
-                              formState={formState}
                               contentsField={contentsField}
                               removeContents={removeContents}
                               updateContents={updateContents}
@@ -283,6 +299,11 @@ export default function Contents({
                     </SortableContext>
                   </DndContext>
                 </div>
+              )}
+              {formState.errors.contents?.message === 'at_least' && (
+                <ErrorMessage>
+                  {t_errors(`contents.${formState.errors.contents.message}`)}
+                </ErrorMessage>
               )}
             </FormItem>
           );
