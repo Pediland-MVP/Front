@@ -155,6 +155,7 @@ export default function Catalogue() {
                   <Switch
                     dir="ltr"
                     checked={!!field.value}
+                    type="button"
                     onCheckedChange={(isEnable) => {
                       if (isEnable) {
                         if (getValues().products?.length === 0) {

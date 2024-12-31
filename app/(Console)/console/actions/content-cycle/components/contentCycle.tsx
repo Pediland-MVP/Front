@@ -76,6 +76,11 @@ export const contentCycleFormSchema = z
           .optional()
           .nullable()
           .transform((data) => data || false),
+        haveInstagramPost: z
+          .boolean()
+          .optional()
+          .nullable()
+          .transform((data) => undefined),
         consentText: z
           .string()
           .optional()
@@ -107,7 +112,11 @@ export const contentCycleFormSchema = z
       .transform((data) => data || false),
     isDirect: z.boolean(),
     isComment: z.boolean(),
-    commentStartText: z.string().optional().nullable().transform((data) => data || undefined),
+    commentStartText: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((data) => data || undefined),
     commentStartTitle: z.string().optional().nullable(),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
@@ -141,20 +150,20 @@ export const contentCycleFormSchema = z
 
     if (!data.contents.length && !data.products.length && !data.cta) {
       ctx.addIssue({
-        path: ['isContentsEnabled'],
-        code: 'custom',
-        message: "at_least"
-      })
+        path: ["isContentsEnabled"],
+        code: "custom",
+        message: "at_least",
+      });
       ctx.addIssue({
-        path: ['isProductsEnabled'],
-        code: 'custom',
-        message: "at_least"
-      })
+        path: ["isProductsEnabled"],
+        code: "custom",
+        message: "at_least",
+      });
       ctx.addIssue({
-        path: ['cta'],
-        code: 'custom',
-        message: "at_least"
-      })
+        path: ["cta"],
+        code: "custom",
+        message: "at_least",
+      });
     }
   });
 
@@ -192,7 +201,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       cta: "",
     },
   });
-
 
   useEffect(() => {
     if (!id) return;
@@ -311,8 +319,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const t = useTranslations("Automations");
 
   useEffect(() => {
-    logger.log(form.getValues())
-  }, [form.watch(['isProductsEnabled', 'isContentsEnabled'])])
+    logger.log(form.getValues());
+  }, [form.watch(["isProductsEnabled", "isContentsEnabled"])]);
 
   useEffect(() => {
     logger.log(form.formState.errors);
@@ -358,7 +366,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Catalogue/>
+                  <Catalogue />
 
                   <hr className="border-gray-100" />
 

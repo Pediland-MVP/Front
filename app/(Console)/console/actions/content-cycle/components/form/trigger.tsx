@@ -42,6 +42,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
             render={({ field }) => (
               <div className="flex gap-2 items-center">
                 <Switch
+                  type="button"
                   dir="ltr"
                   id="direct"
                   checked={field.value}

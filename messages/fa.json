@@ -320,11 +320,13 @@
         },
         "Contents": {
             "consent": "کسب اجازه برای پیام بعدی",
+            "consentTooltip": "برای فعال سازی این قابلیت حداقل باید دو پیام بسازی",
             "removeContent": "حذف محتوا",
             "enterYourMessage": "پیام خود را وارد کنید",
-            "consentMessage": "پیام کسب اجازه: آیا مایل به ادامه هستید؟...",
+            "consentMessage": "بریم بعدی؟",
             "addContent": "افزودن محتوا",
-            "label": "ارسال محتوا"
+            "label": "ارسال محتوا",
+            "haveInstagramPost": "ارسال یک پست اینستاگرام"
         },
         "Cta": {
             "label": "متن پایانی",

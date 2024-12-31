@@ -39,6 +39,7 @@ export default function GetUserData({ control }: GetUserDataProps) {
             <FormControl>
               <Switch
                 dir="ltr"
+                type="button"
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
