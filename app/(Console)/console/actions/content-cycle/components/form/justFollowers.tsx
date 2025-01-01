@@ -34,6 +34,7 @@ export default function JustFollowers({
             <div className="flex items-center gap-x-2">
               <FormControl>
                 <Switch
+                  type="button"
                   dir="ltr"
                   checked={field.value}
                   onCheckedChange={field.onChange}

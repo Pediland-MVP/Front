@@ -26,7 +26,6 @@
             "enterConfirmPassword": "تکرار رمز عبور خود را وارد کنید.",
             "signupFailed": "امکان ثبت نام وجود ندارد",
             "mobileAlreadyRegistered": "این شماره همراه قبلا ثبت شده است.",
-
             "firstnameRequired": "نام الزامیست",
             "pleaseSignIn": "لطفا وارد شوید",
             "lastnameRequired": "نام خانوادگی الزامیست",
@@ -54,7 +53,7 @@
                 "welcomeMessage": "به حساب کاربری خود خوش آمدید",
                 "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
                 "resendOk": "کد تایید جدید ارسال شد",
-                "checkConnection":"اتصال خود را چک کنید"
+                "checkConnection": "اتصال خود را چک کنید"
             }
         },
         "Signin": {
@@ -73,7 +72,6 @@
             "loginErrorDescription": "شماره همراه یا رمز عبور اشتباه است.",
             "loginSuccess": "خوش آمدید",
             "loginWelcome": "با موفقیت به حساب کاربری وارد شدید.",
-            
             "mobileRequired": "شماره همراه الزامیست",
             "passwordRequired": "رمز عبور الزامیست",
             "loginError": "خطا",
@@ -92,12 +90,10 @@
             "resetRequestSent": "درخواست بازنشانی ارسال شد.",
             "checkMobile": "لطفا تلفن همراه خود را بررسی کنید.",
             "resend": "ارسال مجدد کد",
-
             "mobileInvalid": "لطفا یک شماره همراه معتبر وارد کنید",
             "resetRequestError": "خطایی رخ داد",
             "resetRequestErrorDescription": "نتونستیم کد رو برات بفرستیم. دوباره امتحان کن",
             "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کن",
-
             "ChangePassword": {
                 "resetPassword": "بازنشانی رمز عبور",
                 "enterMobile": "برای بازنشانی رمز عبور شماره همراه خود را وارد کنید.",
@@ -108,7 +104,6 @@
                 "codeLength": "کد دریافتی را بطور کامل وارد کنید.",
                 "passwordValidation": "رمز عبور باید حداقل ۸ کاراکتر، شامل یک عدد، یک حرف انگلیسی بزرگ و یک حرف ویژه(!@#$%^&*) باشد.",
                 "invalidCode": "کد وارد شده صحیح نیست.",
-                
                 "mobileRequired": "شماره همراه الزامیست",
                 "mobileInvalid": "لطفا یک شماره همراه معتبر وارد کنید",
                 "sendResetLink": "بازنشانی رمز عبور",
@@ -260,7 +255,6 @@
             "previous": "قبلی",
             "next": "بعدی",
             "pageOf": "صفحه {current} از {total}",
-
             "deleteErrorRetry": "خطا در حذف مورد. لطفاً دوباره تلاش کنید.",
             "fetchError": "خطا در دریافت اطلاعات",
             "fetchErrorRetry": "خطا در دریافت اطلاعات. لطفاً دوباره تلاش کنید.",
@@ -294,7 +288,9 @@
             "direct": "دایرکت",
             "comment": "کامنت",
             "startRequestMessage": "پیام درخواست شروع",
-            "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید"
+            "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید",
+            "commentStartTitlePlaceholder": "شروع",
+            "commentStartTitle": "متن دکمه شروع"
         },
         "Title": {
             "title": "عنوان",
@@ -323,10 +319,14 @@
             "sendMessageBelow": "را ارسال کند، موارد زیر برایش ارسال می‌شود."
         },
         "Contents": {
+            "consent": "کسب اجازه برای پیام بعدی",
+            "consentTooltip": "برای فعال سازی این قابلیت حداقل باید دو پیام بسازی",
             "removeContent": "حذف محتوا",
             "enterYourMessage": "پیام خود را وارد کنید",
-            "consentMessage": "پیام کسب اجازه: آیا مایل به ادامه هستید؟...",
-            "addContent": "افزودن محتوا"
+            "consentMessage": "بریم بعدی؟",
+            "addContent": "افزودن محتوا",
+            "label": "ارسال محتوا",
+            "haveInstagramPost": "ارسال یک پست اینستاگرام"
         },
         "Cta": {
             "label": "متن پایانی",
@@ -347,7 +347,19 @@
         },
         "likeCommand": "لایک کردن اولین پیام کاربر",
         "submit": "ایجاد",
-        "update": "آپدیت"
+        "update": "آپدیت",
+        "Errors": {
+            "cta": {
+                "custom": "متن پایانی را مشخص کنید"
+            },
+            "contents": {
+                "at_least": "حداقل باید یک محتوا یا یک محصول اضافه کنید",
+                "too_small": "پیام الزامی است"
+            },
+            "products": {
+                "at_least":"حداقل باید یک محتوا یا یک محصول اضافه کنید"
+            }
+        }
     },
     "InstagramPostDialog": {
         "changePost": "تعویض پست",
@@ -433,10 +445,10 @@
                 "invalid_data": "اطلاعات نامعتبر",
                 "cancelled": "لغو شده"
             }
-          },
-          "EditDialog": {
+        },
+        "EditDialog": {
             "editInformation": "ویرایش سفارش"
-          }
+        }
     },
     "Products": {
         "dashboard": "داشبورد",
@@ -507,8 +519,8 @@
     "Checkout": {
         "customerDetails": "اطلاعات خریدار",
         "gender": "جنسیت",
-        "male":"مرد",
-        "female":"زن",
+        "male": "مرد",
+        "female": "زن",
         "firstName": "نام",
         "lastName": "نام خانوادگی",
         "email": "ایمیل",
@@ -554,7 +566,6 @@
             "deleteConfirmation": "این عمل قابل بازگشت نیست. این اکانت از لیست شما حذف خواهد شد.",
             "cancel": "انصراف",
             "delete": "حذف",
-
             "errorOccurred": "خطایی پیش آمد",
             "tryAgain": "لطفا دوباره امتحان کنید",
             "deleteSuccess": "حذف موفق",
@@ -593,7 +604,7 @@
     "Profile": {
         "dashboard": "داشبورد",
         "title": "حساب کاربری",
-        "Form":{
+        "Form": {
             "gender": "جنسیت",
             "genderSelect": "انتخاب کنید",
             "birthDate": "تاریخ تولد",
@@ -611,7 +622,7 @@
             "save": "ذخیره",
             "cancel": "انصراف",
             "profileUpdated": "حساب کاربری بروز شد.",
-            "Errors":{
+            "Errors": {
                 "firstname": {
                     "invalid_type": "نام فقط می‌تواند حروف فارسی باشد"
                 },
@@ -645,7 +656,7 @@
             "whatsapp": "واتساپ",
             "telegram": "تلگرام",
             "privacy": "حریم خصوصی",
-            "terms": "قوانین و مقررات",            
+            "terms": "قوانین و مقررات",
             "copyright": "تمامی حقوق ناشی از این وب‌سایت برای بـِفـروش محفوظ است."
         }
     },
@@ -791,10 +802,6 @@
             "paragraph1": "اگر سوال یا نگرانی در مورد این سیاست حفظ حریم خصوصی دارید، لطفاً با ما تماس بگیرید: support@pediland.com."
         }
     },
-
-
-
-
     "PricingTable": {
         "plan": "طرح",
         "base": "پایه",

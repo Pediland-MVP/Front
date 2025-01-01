@@ -15,7 +15,7 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
-import { Control, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
+import { Control, useFormContext, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
 import { useTranslations } from 'next-intl'
@@ -23,16 +23,12 @@ import { useTranslations } from 'next-intl'
 const PAGE_SIZE = 9;
 
 export type InstagramPostsDialogProps = {
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
   index: number;
   updateContents: any;
   contents: any;
 };
 
 const InstagramPostsDialog = ({
-  getValues,
-  formState,
   index,
   updateContents,
   contents,
@@ -42,6 +38,8 @@ const InstagramPostsDialog = ({
   const [hasMore, setHasMore] = useState(true);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { getValues, formState: {errors} } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
@@ -111,9 +109,9 @@ const InstagramPostsDialog = ({
             <Button type="button" variant="outline">
               {t('selectPost')}
             </Button>
-            {formState?.errors?.contents?.[index]?.id && (
+            {errors?.contents?.[index]?.id && (
               <ErrorMessage>
-                {formState.errors.contents[index].id.message}
+                {errors.contents[index].id.message}
               </ErrorMessage>
             )}
           </div>

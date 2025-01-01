@@ -1,5 +1,4 @@
-'use client'
-import React from 'react';
+import React from "react";
 import {
   DndContext,
   closestCenter,
@@ -7,16 +6,15 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent
-} from '@dnd-kit/core';
+  DragEndEvent,
+} from "@dnd-kit/core";
 import {
-  arrayMove,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
   SortableContext,
-  useSortable
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   FormField,
   FormItem,
@@ -25,17 +23,13 @@ import {
 } from "@/components/ui/form";
 import { PlusCircle, Trash, ArrowsOutCardinal } from "@phosphor-icons/react";
 import ProductsDialog from "../products.dialog";
-import {
-  Control,
-  useFieldArray,
-  UseFormGetValues,
-  UseFormStateReturn,
-} from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/theme/ui/button";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 type SortableItemProps = {
   id: string;
@@ -43,7 +37,6 @@ type SortableItemProps = {
   productsField: any[];
   removeProducts: (index: number) => void;
   updateProducts: (index: number, value: any) => void;
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
 };
 
 function SortableItem({
@@ -52,19 +45,24 @@ function SortableItem({
   productsField,
   removeProducts,
   updateProducts,
-  formState
 }: SortableItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  const { setValue, trigger } =
+    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+
+  const deleteProduct = () => {
+    removeProducts(index);
+    if (index === 0) {
+      setValue("isProductsEnabled", false);
+      trigger();
+    }
   };
 
   return (
@@ -80,37 +78,33 @@ function SortableItem({
           size={18}
           className="cursor-move"
         />
-        {productsField.length > 1 && (
-          <Trash
-            size={20}
-            className="text-red-600 cursor-pointer"
-            onClick={() => removeProducts(index)}
-          />
-        )}
+        {/* {getValues().products.length > 1 && ( */}
+        <Trash
+          size={20}
+          className="text-red-600 cursor-pointer"
+          onClick={deleteProduct}
+        />
+        {/* )} */}
       </div>
       <div className="flex justify-center items-center h-full w-full">
         <ProductsDialog
           index={index}
           productsField={productsField}
           updateProducts={updateProducts}
-          formState={formState}
         />
       </div>
     </div>
   );
 }
 
-type CatalogueProps = {
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
-};
+export default function Catalogue() {
+  const {
+    control,
+    getValues,
+    trigger,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
-export default function Catalogue({
-  control,
-  getValues,
-  formState,
-}: CatalogueProps) {
   const {
     fields: productsField,
     remove: removeProducts,
@@ -134,14 +128,19 @@ export default function Catalogue({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = productsField.findIndex(item => item._xid === active.id);
-      const newIndex = productsField.findIndex(item => item._xid === over?.id);
+      const oldIndex = productsField.findIndex(
+        (item) => item._xid === active.id
+      );
+      const newIndex = productsField.findIndex(
+        (item) => item._xid === over?.id
+      );
 
       moveProducts(oldIndex, newIndex);
     }
   };
 
-  const t = useTranslations('Automations.Catalogue')
+  const t = useTranslations("Automations.Catalogue");
+  const t_errors = useTranslations("Automations.Errors");
 
   return (
     <>
@@ -156,29 +155,41 @@ export default function Catalogue({
                   <Switch
                     dir="ltr"
                     checked={!!field.value}
-                    onCheckedChange={(e) => {
-                      if (e) {
+                    type="button"
+                    onCheckedChange={(isEnable) => {
+                      if (isEnable) {
                         if (getValues().products?.length === 0) {
                           appendProducts({});
                         }
+                      } else {
+                        removeProducts(0);
                       }
-                      return field.onChange(e);
+                      field.onChange(isEnable);
+                      trigger(); // Re-validate the form
                     }}
                   />
                 </FormControl>
-                <FormLabel className="">{t('label')}</FormLabel>
+                <FormLabel className="">{t("label")}</FormLabel>
+                {errors.isProductsEnabled && (
+                <ErrorMessage>
+                  {t_errors(`products.${errors.isProductsEnabled?.message}`)}
+                </ErrorMessage>
+              )}
               </div>
               {field.value && (
-                <div className='space-y-3'>
+                <div className="space-y-3">
                   <Button
                     variant="ghost"
-                    onClick={() => appendProducts({})}
+                    onClick={() => {
+                      appendProducts({});
+                      trigger(); // Re-validate the form
+                    }}
                     type="button"
                     className="flex items-center gap-2 cursor-pointer w-full"
                   >
                     <PlusCircle size={22} className="text-blue-600" />
                     <span className="text-sm font-semibold text-blue-600">
-                      {t('add')}
+                      {t("add")}
                     </span>
                   </Button>
                   <DndContext
@@ -187,7 +198,7 @@ export default function Catalogue({
                     onDragEnd={handleDragEnd}
                   >
                     <SortableContext
-                      items={productsField.map(item => item._xid)}
+                      items={productsField.map((item) => item._xid)}
                       strategy={rectSortingStrategy}
                     >
                       <div
@@ -203,9 +214,11 @@ export default function Catalogue({
                             id={product._xid}
                             index={index}
                             productsField={productsField}
-                            removeProducts={removeProducts}
+                            removeProducts={(index) => {
+                              removeProducts(index);
+                              trigger(); // Re-validate the form
+                            }}
                             updateProducts={updateProducts}
-                            formState={formState}
                           />
                         ))}
                       </div>

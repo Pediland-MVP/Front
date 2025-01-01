@@ -9,7 +9,7 @@ export default function Reply({ reply }: { reply: CommentNamespace.GET.Comment['
   }
 
   return (
-    <div key={reply.id} className="flex items-end gap-3">
+    <div key={reply.id} className="flex items-end gap-3 my-2">
       <div className="flex-1 space-y-1">
         <div className="flex items-center gap-2">
           <span className="font-semibold">{reply.leadInstagram?.username}</span>
