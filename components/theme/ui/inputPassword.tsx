@@ -1,20 +1,20 @@
 import * as React from "react";
-import { EyeClosed, EyeSlash } from "@phosphor-icons/react";
+import { Eye, EyeClosed } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "next-intl";
 
 interface InputProps extends React.ComponentProps<"input"> {
-  iconName?: "EyeClosed" | "EyeSlash";
+  iconName?: "Eye" | "EyeClosed";
   messages?: Record<string, string>;
 }
 
 const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, iconName = "EyeSlash", messages, ...props }, ref) => {
+  ({ className, type, iconName = "EyeClosed", messages, ...props }, ref) => {
     const [isVisible, setIsVisible] = React.useState(false);
     const toggleVisibility = () => {
       setIsVisible((prev) => !prev);
     };
-    const Icon = isVisible ? EyeClosed : EyeSlash;
+    const Icon = isVisible ? Eye : EyeClosed;
     const hasButton = true;
     const locale = useLocale();
 

@@ -109,7 +109,7 @@
                 "sendResetLink": "بازنشانی رمز عبور",
                 "sending": "ارسال...",
                 "resetRequestSent": "رمز عبور شما بازنشانی شد",
-                "checkMobile": "اکنون می‌توانید با رمز عبور جدید وارد شوید",
+                "checkMobile": "اکنون می‌توانید با رمز عبور جدید وارد شوید.",
                 "resetRequestError": "خطا در بازنشانی رمز عبور",
                 "resetRequestErrorDescription": "خطایی رخ داد، لطفا دوباره امتحان کنید",
                 "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کنید",

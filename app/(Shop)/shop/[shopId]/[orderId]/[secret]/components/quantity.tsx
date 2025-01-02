@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 // UI
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr";
 
