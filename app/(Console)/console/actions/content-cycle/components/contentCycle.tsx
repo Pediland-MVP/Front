@@ -21,6 +21,8 @@ import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
+import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { ConversationsContextType } from '../../../inbox/layout';
 
 export type ContentType = {
   id: string;
@@ -62,6 +64,7 @@ export const contentCycleFormSchema = z
       .min(1, "حداقل یک شرط الزامی است"),
     contents: z.array(
       z.object({
+        type: z.nativeEnum(ContentCycleContentTypesEnum),
         text: z.string().min(1, "پیام الزامی است"),
         instagramPost: z
           .object({
@@ -70,6 +73,10 @@ export const contentCycleFormSchema = z
           })
           .optional()
           .nullable(),
+        file: z.object({
+          id: z.string().optional().nullable(),
+          url: z.string().optional().nullable(),
+        }).optional().nullable(),
         id: z.string().optional().nullable(),
         haveConsent: z
           .boolean()
@@ -358,11 +365,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Contents
-                    control={form.control}
-                    getValues={form.getValues}
-                    formState={form.formState}
-                  />
+                  <Contents  />
 
                   <hr className="border-gray-100" />
 

@@ -2,10 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import {
-  Control, useFieldArray,
+  Control,
+  useFieldArray,
   useFormContext,
   UseFormGetValues,
-  UseFormStateReturn
+  UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
@@ -22,7 +23,7 @@ import {
 import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
-  SortableContext
+  SortableContext,
 } from "@dnd-kit/sortable";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
@@ -30,14 +31,14 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
-import {
-  PlusCircle
-} from "@phosphor-icons/react/dist/ssr";
+import { PlusCircle } from "@phosphor-icons/react/dist/ssr";
 import { Switch } from "@/components/ui/switch";
 import ErrorMessage from "@/components/ui/errorMessage";
 import ContentItem from "./contentItem";
+import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { FileUploaderProvider } from "@/components/theme/ui/fileUploader";
 
 type ContentsProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -46,13 +47,13 @@ type ContentsProps = {
 };
 
 // Sortable Item Component
-export default function Contents({
-  control,
-  getValues,
-  formState,
-}: ContentsProps) {
-  const t = useTranslations("Automations.Contents");
-  const t_errors = useTranslations("Automations.Errors");
+export default function Contents() {
+  const {
+    control,
+    getValues,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+
   const {
     fields: contentsField,
     remove: removeContents,
@@ -64,6 +65,9 @@ export default function Contents({
     name: "contents",
     keyName: "_xid",
   });
+
+  const t = useTranslations("Automations.Contents");
+  const t_errors = useTranslations("Automations.Errors");
 
   const { setValue, trigger } =
     useFormContext<z.infer<typeof contentCycleFormSchema>>();
@@ -97,6 +101,7 @@ export default function Contents({
       if (isEnabled) {
         if (getValues().contents?.length === 0) {
           appendContents({
+            type: ContentCycleContentTypesEnum.TEXT,
             text: "",
             haveConsent: false,
           });
@@ -145,18 +150,17 @@ export default function Contents({
                       strategy={rectSortingStrategy}
                     >
                       {contentsField.length > 0 && (
-                        <div className="space-y-3">
-                          {contentsField.map((content, index) => (
-                            <ContentItem
-                              key={content._xid}
-                              id={content._xid}
-                              index={index}
-                              contentsField={contentsField}
-                              removeContents={removeContents}
-                              updateContents={updateContents}
-                            />
-                          ))}
-                        </div>
+                        <FileUploaderProvider>
+                          <div className="space-y-3">
+                            {contentsField.map((content, index) => (
+                              <ContentItem
+                                key={content._xid}
+                                id={content._xid}
+                                index={index}
+                              />
+                            ))}
+                          </div>
+                        </FileUploaderProvider>
                       )}
                     </SortableContext>
                   </DndContext>
@@ -164,9 +168,8 @@ export default function Contents({
                     variant="ghost"
                     onClick={() =>
                       appendContents({
+                        type: ContentCycleContentTypesEnum.TEXT,
                         text: "",
-                        // instagramPost: { mediaId: "" },
-                        // consentText: "",
                         haveConsent: false,
                       })
                     }
@@ -180,9 +183,9 @@ export default function Contents({
                   </Button>
                 </div>
               )}
-              {formState.errors.contents?.message === "at_least" && (
+              {errors.contents?.message === "at_least" && (
                 <ErrorMessage>
-                  {t_errors(`contents.${formState.errors.contents.message}`)}
+                  {t_errors(`contents.${errors.contents.message}`)}
                 </ErrorMessage>
               )}
             </FormItem>

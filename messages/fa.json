@@ -953,5 +953,16 @@
         "title": "آپلود تصویر",
         "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
         "dropIt": "رها کنید"
+    },
+    "MessageTypes": {
+        "text": "متن",
+        "instagram_post": "پست",
+        "audio": "صدا",
+        "video": "ویدیو",
+        "image": "تصویر"
+    },
+    "fileUploader": {
+        "dragDropText": "فایلتان را به اینجا بکشید یا روی دکمه کلیک کنید",
+        "selectFiles": "انتخاب فایل‌"
     }
 }
