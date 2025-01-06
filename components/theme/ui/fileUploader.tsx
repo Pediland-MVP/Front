@@ -1,319 +1,148 @@
-'use client'
-import React, { useCallback, useState, useRef, createContext, useContext } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { X, FileIcon, ImageIcon, MusicIcon, VideoIcon, PlayCircle, PauseCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Skeleton } from "@/components/ui/skeleton"
-import { Progress } from "@/components/ui/progress"
-import dynamic from 'next/dynamic'
-import { useTranslations } from 'next-intl'
-import CircularProgress from '@/components/ui/circularProgress'
-import { Control, useController } from 'react-hook-form'
+import React, { useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useFileUpload, UploadedFile, FileOrUploadedFile } from '../hooks/useFileUpload';
+import { UseFormSetValue, UseFormGetValues, FieldValues, Path } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { X, File, Image, Video, FileAudio, FilePdf, Play, PlayCircle, Pause } from '@phosphor-icons/react/dist/ssr';
 
-// Create a wrapper type instead of extending File
-export interface FileWithMetadata {
-  file: File;
-  id: string;
-  progress: number
-  data?: any
-}
-
-interface UploadProgressData {
-  fileId: string;
-  progress: number;
-}
-
-interface FileUploaderProps {
+interface FileUploaderProps<TFieldValues extends FieldValues> {
+  setValue: UseFormSetValue<TFieldValues>;
+  getValues: UseFormGetValues<TFieldValues>;
+  fieldName: Path<TFieldValues>;
+  uploadUrl: string;
+  uploadMethod?: 'POST' | 'PUT';
+  fileFieldName?: string;
+  defaultFiles?: UploadedFile[];
+  accept?: string;
   multiple?: boolean;
-  uploadHandler: (data: { file: File; fileId: string }) => void;
-  defaultFiles?: FileWithMetadata[];
-  acceptedFileTypes?: string[];
 }
 
-// Update FilePreview to use the new type
-const FilePreview: React.FC<{ fileData: FileWithMetadata; progress: number }> = ({ fileData, progress }) => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const t = useTranslations()
-  const file = fileData.file
+export const FileUploader = <TFieldValues extends FieldValues>({
+  setValue,
+  getValues,
+  fieldName,
+  uploadUrl,
+  uploadMethod,
+  fileFieldName,
+  defaultFiles = [],
+  accept,
+  multiple = false,
+}: FileUploaderProps<TFieldValues>): React.ReactElement => {
+  const t = useTranslations('FileUploader');
+  const { files, addFiles, removeFile, setDefaultFiles } = useFileUpload<TFieldValues>({
+    setValue,
+    getValues,
+    fieldName,
+    uploadUrl,
+    uploadMethod,
+    fileFieldName,
+  });
 
-  const isImage = file.type.startsWith('image/')
-  const isVideo = file.type.startsWith('video/')
-  const isAudio = file.type.startsWith('audio/')
-  const isPDF = file.type === 'application/pdf'
+  React.useEffect(() => {
+    if (defaultFiles.length > 0) {
+      setDefaultFiles(defaultFiles);
+    }
+  }, [defaultFiles, setDefaultFiles]);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause()
-      } else {
-        audioRef.current.play()
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      if (multiple) {
+        addFiles(event.target.files);
       }
-      setIsPlaying(!isPlaying)
     }
-  }
+  };
 
-  const renderPreview = () => {
-    if (isImage) {
-      return (
-        <img
-          src={URL.createObjectURL(file)}
-          alt={file.name}
-          className="w-24 h-24 object-cover rounded"
-        />
-      )
-    }
+  const renderFilePreview = (file: FileOrUploadedFile, index: number) => {
+    const isUploadedFile = 'url' in file;
+    const fileType = isUploadedFile ? file.memeType.split('/')[0] : file.type.split('/')[0];
+    const fileUrl = isUploadedFile ? file.url : file.preview;
 
-    if (isVideo) {
-      return (
-        <video
-          src={URL.createObjectURL(file)}
-          className="w-24 h-24 object-cover rounded"
-          controls
-        />
-      )
-    }
-
-    if (isAudio) {
-      return (
-        <div className="w-24 h-24 flex flex-col items-center justify-center bg-muted rounded">
-          <MusicIcon className="w-12 h-12 text-primary" />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mt-2"
-            onClick={togglePlay}
-          >
-            {isPlaying ? (
-              <PauseCircle className="h-6 w-6" />
-            ) : (
-              <PlayCircle className="h-6 w-6" />
-            )}
-          </Button>
-          <audio
-            ref={audioRef}
-            src={URL.createObjectURL(file)}
-            onEnded={() => setIsPlaying(false)}
-            className="hidden"
-          />
-        </div>
-      )
-    }
-
-    if (isPDF) {
-      return (
-        <div className="w-24 h-24 flex flex-col items-center justify-center bg-muted rounded">
-          <FileIcon className="w-12 h-12 text-primary" />
-          <span className="text-xs font-thin truncate w-[15ch]">{file.name}</span>
-        </div>
-      )
+    let preview: React.ReactNode;
+    switch (fileType) {
+      case 'image':
+        preview = <img src={fileUrl} alt={file.name} className="w-full h-full object-cover" />;
+        break;
+      case 'video':
+        preview = <video src={fileUrl} className="w-full h-full object-cover" />;
+        break;
+      case 'audio':
+        preview = <AudioPreview url={fileUrl} />
+        break;
+      case 'application/pdf':
+        preview = <FilePdf size={48} />;
+        break;
+      default:
+        preview = <File size={48} />;
     }
 
     return (
-      <div className="w-24 h-24 flex flex-col items-center justify-center bg-muted rounded">
-        <FileIcon className="w-12 h-12 text-primary" />
-        <span className="text-xs font-thin truncate w-[15ch]">{file.name}</span>
+      <Card key={index} className="relative w-24 h-24 m-2">
+        <CardContent className="p-2 flex items-center justify-center h-full duration-75">
+          {preview}
+        </CardContent>
+        <button
+          onClick={() => removeFile(index)}
+          className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full -mt-2 -mr-2"
+        >
+          <X size={16} />
+        </button>
+      </Card>
+    );
+  };
+
+  return (
+    <div className="w-full">
+      <div className="flex flex-wrap justify-center items-center">
+        {files.map((file, index) => renderFilePreview(file, index))}
       </div>
-    )
-  }
-
-  return (
-    <div className="relative w-24 h-24">
-      {renderPreview()}
-      {progress < 100 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-40">
-          <CircularProgress value={progress} size={48} strokeWidth={4} />
-        </div>
-      )}
-      {progress === 100 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-green-500/50 rounded">
-          <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-      )}
-    </div>
-  )
-}
-
-const FileUploader: React.FC<FileUploaderProps> = ({
-  multiple = false,
-  uploadHandler,
-  defaultFiles = [],
-  acceptedFileTypes = [],
-}) => {
-  const {files, setFiles, removeFile} = useFileUploadProvider()
-  const t = useTranslations()
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const newFiles = acceptedFiles.map(file => ({
-        file,  // Keep the original File object intact
-        id: Math.random().toString(36).substr(2, 9),
-        progress: 0
-      }));
-      
-      const updatedFiles = multiple ? [...files, ...newFiles] : newFiles;
-      setFiles(updatedFiles);
-      
-      newFiles.forEach(fileData => {
-        uploadHandler({ file: fileData.file, fileId: fileData.id });
-      });
-    },
-    [files, multiple, uploadHandler]
-  )
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple,
-    accept: acceptedFileTypes.length
-      ? acceptedFileTypes.reduce((acc, curr) => ({ ...acc, [curr]: [] }), {})
-      : undefined,
-  })
-
-
-  return (
-    <Card
-      {...getRootProps()}
-      className={`p-4 border-dashed cursor-pointer ${
-        isDragActive ? 'border-primary' : 'border-muted'
-      }`}
-    >
-      <input {...getInputProps()} />
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
-          {t('fileUploader.dragDropText')}
-        </p>
-        <Button variant="outline" className="mt-2">
-          {t('fileUploader.selectFiles')}
+      <div className="mt-4 flex justify-center">
+        <Button asChild>
+          <label htmlFor="file-upload" className="cursor-pointer">
+            {t('selectFiles')}
+            <input
+              id="file-upload"
+              type="file"
+              className="hidden"
+              onChange={handleFileChange}
+              accept={accept}
+              multiple={multiple}
+            />
+          </label>
         </Button>
       </div>
-      <div className="mt-4 h-[120px] overflow-y-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {files.map((fileData) => (
-            <div key={fileData.id} className="relative">
-              <FilePreview 
-                fileData={fileData} 
-                progress={fileData.progress}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-0 right-0 rounded-full p-0 w-6 h-6"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  removeFile(fileData.id)
-                }}
-              >
-                <X className="h-3 w-3 text-gray-500" />
-              </Button>
-            </div>
-          ))}
+    </div>
+  );
+};
+
+
+
+export const AudioPreview = ({url}: {url: string}) => {
+
+    const [isPlaying, setIsPlaying] = useState(false)
+    const audioRef = useRef<HTMLAudioElement>(null)
+
+    const handlePlayPause = () => {
+        if (isPlaying) {
+            audioRef.current?.pause()
+        } else {
+            audioRef.current?.play()
+        }
+        setIsPlaying(!isPlaying)
+    }
+
+    return (
+        <div className="w-full h-full object-cover relative flex flex-col gap-y-2  justify-center items-center">
+            <audio src={url} ref={audioRef} />
+            <FileAudio size={48} />
+
+            {
+                isPlaying ?
+                <Pause className='hover:text-gray-300' onClick={handlePlayPause} />
+                : 
+                <Play className='hover:text-gray-300' onClick={handlePlayPause} />
+            }
         </div>
-      </div>
-    </Card>
-  )
-}
+    )
 
-export function FileUploaderSkeleton() {
-  return (
-    <Card className="p-4 border-dashed">
-      <div className="flex flex-col items-center space-y-2">
-        <Skeleton className="h-4 w-[250px]" />
-        <Skeleton className="h-4 w-[200px]" />
-        <Skeleton className="h-10 w-[150px]" />
-      </div>
-      <div className="mt-4 h-[120px]">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          <Skeleton className="h-24 w-24 rounded" />
-          <Skeleton className="h-24 w-24 rounded" />
-          <Skeleton className="h-24 w-24 rounded" />
-        </div>
-      </div>
-    </Card>
-  )
-}
-
-export const LazyFileUploader = dynamic(() => Promise.resolve(FileUploader), {
-  loading: () => <FileUploaderSkeleton />,
-  ssr: false,
-})
-
-export default FileUploader
-
-
-
-interface FileUploaderContextType {
-  files: FileWithMetadata[]
-  setFiles: React.Dispatch<React.SetStateAction<FileWithMetadata[]>>
-  addFiles: (newFiles: File[], multiple?: boolean) => void
-  removeFile: (id: string) => void
-  clearFiles: () => void
-}
-
-const FileUploaderContext = createContext<FileUploaderContextType | undefined>(undefined)
-
-interface FileUploaderProviderProps {
-  children: React.ReactNode
-  onFileUpload?: (data: { file: File; fileId: string }) => void
-}
-
-export function FileUploaderProvider({ 
-  children,
-  onFileUpload 
-}: FileUploaderProviderProps) {
-  const [files, setFiles] = useState<FileWithMetadata[]>([])
-
-  const addFiles = useCallback((newFiles: File[], multiple = false) => {
-    const filesWithMetadata = newFiles.map(file => ({
-      file,
-      id: Math.random().toString(36).substr(2, 9),
-      progress: 0
-    }))
-
-    setFiles(prevFiles => {
-      const updatedFiles = multiple ? [...prevFiles, ...filesWithMetadata] : filesWithMetadata
-      
-      // If onFileUpload is provided, call it for each new file
-      if (onFileUpload) {
-        filesWithMetadata.forEach(fileData => {
-          onFileUpload({ file: fileData.file, fileId: fileData.id })
-        })
-      }
-
-      return updatedFiles
-    })
-  }, [onFileUpload])
-
-  const removeFile = useCallback((id: string) => {
-    setFiles(prevFiles => prevFiles.filter(fileData => fileData.id !== id))
-  }, [])
-
-  const clearFiles = useCallback(() => {
-    setFiles([])
-  }, [])
-
-  const value = {
-    files,
-    setFiles,
-    addFiles,
-    removeFile,
-    clearFiles
-  }
-
-  return (
-    <FileUploaderContext.Provider value={value}>
-      {children}
-    </FileUploaderContext.Provider>
-  )
-}
-
-
-export const useFileUploadProvider = () => {
-  const context = useContext(FileUploaderContext)
-  if (!context) {
-    throw new Error("useFileUploadProvider must be used within a FileUploaderProvider")
-  }
-  return context
 }

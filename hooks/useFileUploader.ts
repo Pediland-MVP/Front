@@ -1,6 +1,6 @@
 'use client'
 
-import { useFileUploadProvider } from '@/components/theme/ui/fileUploader';
+import { useFileUploadProvider } from '@/components/theme/ui/fileUploaderxxx';
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 

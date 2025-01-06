@@ -6,7 +6,7 @@ import { z } from "zod";
 import JustFollowers from "./form/justFollowers";
 import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
-import Contents from "./form/contents";
+import Contents from "./form/contents/contents";
 import Cta from "./form/cta";
 import Catalogue from "./form/catalogue";
 import GetUserData from "./form/getUserData";
@@ -65,7 +65,7 @@ export const contentCycleFormSchema = z
     contents: z.array(
       z.object({
         type: z.nativeEnum(ContentCycleContentTypesEnum),
-        text: z.string().min(1, "پیام الزامی است"),
+        text: z.string().min(1, "پیام الزامی است").optional().nullable().transform((data) => data || undefined),
         instagramPost: z
           .object({
             mediaUrl: z.string().optional().nullable(),
@@ -74,8 +74,10 @@ export const contentCycleFormSchema = z
           .optional()
           .nullable(),
         file: z.object({
-          id: z.string().optional().nullable(),
-          url: z.string().optional().nullable(),
+          id: z.number(),
+          url: z.string().url().optional().nullable(),
+          name: z.string().optional().nullable(),
+          memeType: z.string().optional().nullable(),
         }).optional().nullable(),
         id: z.string().optional().nullable(),
         haveConsent: z
@@ -180,6 +182,7 @@ export const contentCycleFormSchema = z
  * @returns
  */
 export default function ContentCycle({ id }: ContentCycleProps) {
+  const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState<boolean>(id ? true : false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
@@ -188,7 +191,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
-      title: "",
       conditions: [{ type: "EQUAL", value: "", id: "" }],
       contents: [],
       products: [],
@@ -202,10 +204,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       isDirect: true,
       isComment: false,
       justFollowers: false,
-      followCheckMessage: "",
-      followMessage: "",
       likeDirect: false,
-      cta: "",
     },
   });
 
@@ -296,11 +295,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        // Delete Empty values
+
         body: JSON.stringify({
-          // ..._.omitBy(values, (value: any) =>
-          //   typeof value === "boolean" ? false : Array.isArray(value) ? false : _.isEmpty(value)
-          // ),
           ...values,
           ...(values.isProductsEnabled && { productsIds }),
         }),
@@ -309,6 +305,16 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     );
 
     if (!result.ok) {
+      const json = await result.json();
+      const errMessage = t_ec(json.code)
+      if (errMessage) {
+        toast({
+          title: errMessage,
+          variant: "destructive"
+        })
+      setIsSubmitting(false);
+        return 
+      }
       toast({
         title: "خطایی رخ داد",
         description: "لطفا مجددا امتحان کنید",

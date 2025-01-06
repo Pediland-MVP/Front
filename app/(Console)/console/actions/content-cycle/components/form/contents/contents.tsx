@@ -9,7 +9,7 @@ import {
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { contentCycleFormSchema } from "../../contentCycle";
 
 import {
   DndContext,
@@ -38,7 +38,7 @@ import { Switch } from "@/components/ui/switch";
 import ErrorMessage from "@/components/ui/errorMessage";
 import ContentItem from "./contentItem";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
-import { FileUploaderProvider } from "@/components/theme/ui/fileUploader";
+import { FileUploaderProvider } from "@/components/theme/ui/fileUploaderxxx";
 
 type ContentsProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -102,7 +102,6 @@ export default function Contents() {
         if (getValues().contents?.length === 0) {
           appendContents({
             type: ContentCycleContentTypesEnum.TEXT,
-            text: "",
             haveConsent: false,
           });
         }
@@ -169,7 +168,6 @@ export default function Contents() {
                     onClick={() =>
                       appendContents({
                         type: ContentCycleContentTypesEnum.TEXT,
-                        text: "",
                         haveConsent: false,
                       })
                     }
