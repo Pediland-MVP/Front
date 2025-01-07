@@ -56,8 +56,9 @@ type MessageByTypeProps = {
 export function MessageByType({ index, type }: MessageByTypeProps) {
   const {files, setFiles} = useContentsUploaderContext()
   const t_ec = useTranslations("ERROR_CODES");
+  const t_err = useTranslations('Automations.Errors')
 
-  const { control, setValue } =
+  const { control, setValue, formState: {errors} } =
     useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
           render={({ field, fieldState: { error } }) => (
             <FormItem>
               <Textarea placeholder={t("enterYourMessage")} {...field} />
-              {error && <FormMessage> {error.message} </FormMessage>}
+              {error && <FormMessage> {t_err(`contents.text.${error.message}`)} </FormMessage>}
             </FormItem>
           )}
         />
@@ -140,32 +141,40 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
 
     case ContentCycleContentTypesEnum.AUDIO:
       return (
+        <>
         <FileUploader
           multiple={false}
           value={files}
           onChange={setFiles}
           accept="audio/*"
         />
+        {errors.contents?.[index]?.file && <FormMessage> {t_err(`contents.audio.${errors.contents?.[index]?.file.message}`)} </FormMessage>}
+        </>
       );
 
     case ContentCycleContentTypesEnum.VIDEO:
       return (
+        <>
         <FileUploader
           multiple={false}
           value={files}
           onChange={setFiles}
           accept="video/*"
         />
+        {errors.contents?.[index]?.file && <FormMessage> {t_err(`contents.video.${errors.contents?.[index]?.file.message}`)} </FormMessage>}
+        </>
       );
-
     case ContentCycleContentTypesEnum.IMAGE:
       return (
+        <>
         <FileUploader
           multiple={false}
           value={files}
           onChange={setFiles}
           accept="image/*"
         />
+        {errors.contents?.[index]?.file && <FormMessage> {t_err(`contents.image.${errors.contents?.[index]?.file.message}`)} </FormMessage>}
+        </>
       );
   }
 }

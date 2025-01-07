@@ -170,9 +170,11 @@ export const contentCycleFormSchema = z
         ctx.addIssue({
           path: ["contents", index, "text"],
           code: "custom",
+          message: "required",
         });
         return;
-      }
+      } 
+      
       if (
         content.type === ContentCycleContentTypesEnum.INSTAGRAM_POST &&
         !content.instagramPost
@@ -180,15 +182,19 @@ export const contentCycleFormSchema = z
         ctx.addIssue({
           path: ["contents", index, "instagramPost"],
           code: "custom",
+          message: "required",
         });
         return;
+      } 
+      
+      if ((content.type !== ContentCycleContentTypesEnum.TEXT && content.type !== ContentCycleContentTypesEnum.INSTAGRAM_POST && !content.file) && !content.file) {
+        // For files: video, image, voice
+        ctx.addIssue({
+          path: ["contents", index, "file"],
+          code: "custom",
+          message: "required",
+        });
       }
-
-      // For files: video, image, voice
-      ctx.addIssue({
-        path: ["contents", index, "file"],
-        code: "custom",
-      });
     });
 
     if (!data.contents.length && !data.products.length && !data.cta) {
