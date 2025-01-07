@@ -1,3 +1,4 @@
+import logger from '@/app/utils/logger';
 import { useState, useCallback } from 'react';
 import { UseFormSetValue, UseFormGetValues, Path, FieldValues } from 'react-hook-form';
 
@@ -46,6 +47,7 @@ export const useFileUpload = <TFieldValues extends FieldValues>({
     const response = await fetch(uploadUrl, {
       method: uploadMethod,
       body: formData,
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -66,6 +68,7 @@ export const useFileUpload = <TFieldValues extends FieldValues>({
 
     const uploadedFiles = await Promise.all(fileArray.map(uploadFile));
     const currentValue = getValues(fieldName) || [];
+    logger.log(fieldName, [...currentValue, ...uploadedFiles])
     setValue(fieldName, [...currentValue, ...uploadedFiles] as any);
   }, [uploadFile, setValue, getValues, fieldName]);
 

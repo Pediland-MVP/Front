@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
 
@@ -36,56 +35,93 @@ import {
 } from "@/components/ui/tooltip";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import { Button } from "@/components/theme/ui/button";
-import {
-  FileUploaderProvider,
-  LazyFileUploader,
-  useFileUploadProvider,
-} from "@/components/theme/ui/fileUploaderxxx";
-import { useFileUpload } from "@/hooks/useFileUploader";
-import { use, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FileUploader } from "@/components/theme/ui/fileUploader";
+import { UploadedFile } from "@/components/theme/types/fileUploader";
+import logger from "@/app/utils/logger";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { toast } from "@/components/ui/use-toast";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { FileNamespace } from "@/types/file";
+import { useContentsUploaderContext } from "./useContentsUploaderContext";
+import { useContentsContext } from "./useContentsContext";
 
 type MessageByTypeProps = {
   index: number;
   type: ContentCycleContentTypesEnum;
+  // contents: z.infer<typeof  contentCycleFormSchema>['contents']
+  // updateContents: (index: number, content: z.infer<typeof  contentCycleFormSchema>['contents'][number]) => void
 };
 
 export function MessageByType({ index, type }: MessageByTypeProps) {
-  const {
-    control,
-    formState: { errors },
-    setValue,
-    getValues,
-    handleSubmit,
-    register,
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  const {files, setFiles} = useContentsUploaderContext()
+  const t_ec = useTranslations("ERROR_CODES");
 
-  const { fields: contentsField, update: updateContents } = useFieldArray({
-    control: control,
-    name: "contents",
-    keyName: "_xid",
-  });
-
-  const t = useTranslations("Automations.Contents");
-  const { clearFiles } = useFileUploadProvider();
-
-  const { uploadFile, progress, isUploading } = useFileUpload({
-    url: `${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/any`,
-  });
+  const { control, setValue } =
+    useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
   useEffect(() => {
-    clearFiles();
-  }, [type]);
+      if (files.length === 0) {
+      return;
+    }
+    if ("file" in files[0]) {
+      logger.log("Files", files)
+      const formData = new FormData();
+      formData.append("file", files[0].file);
+      const res = axios
+        .post(`${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/any`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        })
+        .then((res: AxiosResponse<FileNamespace.File>) => {
+          setFiles([
+            {
+              id: res.data.id,
+              url: res.data.url,
+              mimeType: res.data.mimeType,
+            },
+          ]);
+
+          setValue(`contents.${index}.file`, {
+            id: res.data.id,
+            url: res.data.url,
+            mimeType: res.data.mimeType,
+          });
+          // updateContents(index, {
+          //   ...contents[index],
+          //   file: {
+          //     id: res.data.id,
+          //     url: res.data.url,
+          //   }
+          // })
+        })
+        .catch((err: AxiosError) => {
+          const errorCode = t_ec(
+            (err.response?.data as ExceptionMessage)?.code
+          );
+          if (errorCode) {
+            toast({
+              title: errorCode,
+              variant: "destructive",
+            });
+          }
+        });
+    }
+  }, [files]);
+
+  const t = useTranslations("Automations.Contents");
 
   switch (type) {
     case ContentCycleContentTypesEnum.INSTAGRAM_POST:
       return (
         <div className="relative flex justify-center items-center">
-          <InstagramPostsDialog
+          {/* <InstagramPostsDialog
             index={index}
             updateContents={updateContents}
-            contents={contentsField}
-          />
+            contents={contents}
+          /> */}
         </div>
       );
     case ContentCycleContentTypesEnum.TEXT:
@@ -105,54 +141,30 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
     case ContentCycleContentTypesEnum.AUDIO:
       return (
         <FileUploader
-          setValue={setValue}
-          accept="audio/*"
-          //@ts-ignore
-          defaultFiles={
-            contentsField[index].file ? [contentsField[index].file] : []
-          }
-          fieldName={`contents.${index}.file`}
-          getValues={getValues}
-          uploadUrl={`${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/any`}
-          uploadMethod="POST"
-          fileFieldName="file"
           multiple={false}
+          value={files}
+          onChange={setFiles}
+          accept="audio/*"
         />
       );
 
     case ContentCycleContentTypesEnum.VIDEO:
       return (
         <FileUploader
-          setValue={setValue}
-          accept="video/*"
-          //@ts-ignore
-          defaultFiles={
-            contentsField[index].file ? [contentsField[index].file] : []
-          }
-          fieldName={`contents.${index}.file`}
-          getValues={getValues}
-          uploadUrl={`${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/any`}
-          uploadMethod="POST"
-          fileFieldName="file"
           multiple={false}
+          value={files}
+          onChange={setFiles}
+          accept="video/*"
         />
       );
 
     case ContentCycleContentTypesEnum.IMAGE:
       return (
         <FileUploader
-          setValue={setValue}
-          accept="image/*"
-          //@ts-ignore
-          defaultFiles={
-            contentsField[index].file ? [contentsField[index].file] : []
-          }
-          fieldName={`contents.${index}.file`}
-          getValues={getValues}
-          uploadUrl={`${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/any`}
-          uploadMethod="POST"
-          fileFieldName="file"
           multiple={false}
+          value={files}
+          onChange={setFiles}
+          accept="image/*"
         />
       );
   }
@@ -195,9 +207,11 @@ const messageTypeOptions: MessageTypeOption[] = [
 export default function ContentItem({
   id,
   index,
+  defaultUploaderValue
 }: {
   id: string;
   index: number;
+  defaultUploaderValue?: UploadedFile | null;
 }) {
   const {
     control,
@@ -207,19 +221,8 @@ export default function ContentItem({
     trigger,
   } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
-  const {
-    fields: contentsField,
-    remove: removeContents,
-    append: appendContents,
-    update: updateContents,
-    move: moveContents,
-  } = useFieldArray({
-    control: control,
-    name: "contents",
-    keyName: "_xid",
-  });
+  const { removeContents, updateContents, contents } = useContentsContext()
 
-  const { files } = useFileUploadProvider();
 
   const t = useTranslations("Automations.Contents");
   const t_messageTypes = useTranslations("MessageTypes");
@@ -248,21 +251,24 @@ export default function ContentItem({
     trigger();
   };
 
-  useEffect(() => {
-    if (!files?.[0]?.data) {
-      updateContents(index, {
-        ...contentsField[index],
-        file: null,
-      });
-      return;
-    }
-    updateContents(index, {
-      ...contentsField[index],
-      file: {
-        id: files[0].data.id,
-      },
-    });
-  }, [files]);
+  const handleMessageTypeChange = (type: ContentCycleContentTypesEnum) => {
+    // Create a new content object with the selected type
+    const updatedContent = {
+      ...contents[index],
+      type,
+      // Reset content-specific fields when changing type
+      ...type !== ContentCycleContentTypesEnum.TEXT && { text: undefined },
+      ...(type === ContentCycleContentTypesEnum.TEXT || type === ContentCycleContentTypesEnum.INSTAGRAM_POST )&& {
+        file: null
+      }
+    };
+
+    // Update the form field
+    updateContents(index, updatedContent);
+
+    // Trigger form validation
+    trigger(`contents.${index}`);
+  };
 
   return (
     <div
@@ -290,19 +296,14 @@ export default function ContentItem({
             key={option.value}
             type="button"
             variant={
-              contentsField[index].type === option.value ? "default" : "outline"
+              contents[index].type === option.value ? "default" : "outline"
             }
             className={`h-15 flex flex-col items-center justify-cente ${
-              contentsField[index].type === option.value
+              contents[index].type === option.value
                 ? "ring-2 ring-primary"
                 : ""
             }`}
-            onClick={() =>
-              updateContents(index, {
-                ...contentsField[index],
-                type: option.value,
-              })
-            } // updateContents}
+            onClick={() => handleMessageTypeChange(option.value)}
           >
             {option.icon}
             <span className="text-sm">{t_messageTypes(option.value)}</span>
@@ -312,7 +313,7 @@ export default function ContentItem({
 
       <div className="_content gap-3 flex flex-col w-full">
         <div className="flex flex-col gap-2 w-full">
-          <MessageByType index={index} type={contentsField[index].type} />
+          <MessageByType index={index} type={contents[index].type} />
 
           <FormField
             name={`contents.${index}.haveConsent`}
@@ -323,14 +324,14 @@ export default function ContentItem({
                   <FormControl>
                     <TooltipProvider>
                       <Tooltip
-                        {...(contentsField.length > 1 && { open: false })}
+                        {...(contents.length > 1 && { open: false })}
                       >
                         <TooltipTrigger
                           asChild
-                          disabled={contentsField.length > 1}
+                          disabled={contents.length > 1}
                         >
                           <Checkbox
-                            disabled={contentsField.length <= 1}
+                            disabled={contents.length <= 1}
                             dir="ltr"
                             checked={field.value || false}
                             onCheckedChange={field.onChange}

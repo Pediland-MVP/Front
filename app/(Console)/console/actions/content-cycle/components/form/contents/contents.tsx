@@ -9,7 +9,7 @@ import {
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
+import { contentCycleFormSchema } from '../../contentCycle';
 
 import {
   DndContext,
@@ -38,13 +38,9 @@ import { Switch } from "@/components/ui/switch";
 import ErrorMessage from "@/components/ui/errorMessage";
 import ContentItem from "./contentItem";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
-import { FileUploaderProvider } from "@/components/theme/ui/fileUploaderxxx";
-
-type ContentsProps = {
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
-};
+import { ContentsUploaderContextProvider } from "./useContentsUploaderContext";
+import { UploadedFile } from "@/components/theme/types/fileUploader";
+import { ContentsContext } from "./useContentsContext";
 
 // Sortable Item Component
 export default function Contents() {
@@ -55,7 +51,7 @@ export default function Contents() {
   } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
   const {
-    fields: contentsField,
+    fields: contents,
     remove: removeContents,
     append: appendContents,
     update: updateContents,
@@ -85,10 +81,10 @@ export default function Contents() {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = contentsField.findIndex(
+      const oldIndex = contents.findIndex(
         (field) => field._xid === active.id
       );
-      const newIndex = contentsField.findIndex(
+      const newIndex = contents.findIndex(
         (field) => field._xid === over?.id
       );
 
@@ -114,7 +110,7 @@ export default function Contents() {
   };
 
   return (
-    <>
+    <ContentsContext.Provider value={{ contents, updateContents, removeContents }}>
       <FormField
         control={control}
         name="isContentsEnabled"
@@ -145,21 +141,20 @@ export default function Contents() {
                     onDragEnd={handleDragEnd}
                   >
                     <SortableContext
-                      items={contentsField.map((field) => field._xid)}
+                      items={contents.map((field) => field._xid)}
                       strategy={rectSortingStrategy}
                     >
-                      {contentsField.length > 0 && (
-                        <FileUploaderProvider>
-                          <div className="space-y-3">
-                            {contentsField.map((content, index) => (
+                      {contents.length > 0 && (
+                        <div className="space-y-3">
+                            {contents.map((content, index) => (
+                            <ContentsUploaderContextProvider defaultValue={content.file as UploadedFile} key={content._xid}>
                               <ContentItem
-                                key={content._xid}
                                 id={content._xid}
                                 index={index}
                               />
+                            </ContentsUploaderContextProvider>
                             ))}
                           </div>
-                        </FileUploaderProvider>
                       )}
                     </SortableContext>
                   </DndContext>
@@ -190,6 +185,6 @@ export default function Contents() {
           );
         }}
       />
-    </>
+    </ContentsContext.Provider>
   );
 }

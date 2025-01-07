@@ -1,148 +1,123 @@
-import React, { useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useFileUpload, UploadedFile, FileOrUploadedFile } from '../hooks/useFileUpload';
-import { UseFormSetValue, UseFormGetValues, FieldValues, Path } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { X, File, Image, Video, FileAudio, FilePdf, Play, PlayCircle, Pause } from '@phosphor-icons/react/dist/ssr';
+'use client'
 
-interface FileUploaderProps<TFieldValues extends FieldValues> {
-  setValue: UseFormSetValue<TFieldValues>;
-  getValues: UseFormGetValues<TFieldValues>;
-  fieldName: Path<TFieldValues>;
-  uploadUrl: string;
-  uploadMethod?: 'POST' | 'PUT';
-  fileFieldName?: string;
-  defaultFiles?: UploadedFile[];
-  accept?: string;
-  multiple?: boolean;
-}
+import React, { useCallback, useEffect, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { useTranslations } from 'next-intl'
+import { v4 as uuidv4 } from 'uuid'
+import { File as FileIcon, Image, Video, MusicNote, FileText, X, UploadSimple } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { FileUploaderProps, FileWithPreview, UploadedFile } from '@/components/theme/types/fileUploader'
 
-export const FileUploader = <TFieldValues extends FieldValues>({
-  setValue,
-  getValues,
-  fieldName,
-  uploadUrl,
-  uploadMethod,
-  fileFieldName,
-  defaultFiles = [],
-  accept,
-  multiple = false,
-}: FileUploaderProps<TFieldValues>): React.ReactElement => {
-  const t = useTranslations('FileUploader');
-  const { files, addFiles, removeFile, setDefaultFiles } = useFileUpload<TFieldValues>({
-    setValue,
-    getValues,
-    fieldName,
-    uploadUrl,
-    uploadMethod,
-    fileFieldName,
-  });
+export function FileUploader({ multiple = false, value, onChange, accept }: FileUploaderProps) {
+  const t = useTranslations('FileUploader')
+  const [files, setFiles] = useState<UploadedFile[]>(value || [])
+  const [isDragActive, setIsDragActive] = useState(false)
 
-  React.useEffect(() => {
-    if (defaultFiles.length > 0) {
-      setDefaultFiles(defaultFiles);
-    }
-  }, [defaultFiles, setDefaultFiles]);
+  useEffect(() => {
+    setFiles(value || [])
+  }, [value])
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      if (multiple) {
-        addFiles(event.target.files);
-      }
-    }
-  };
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map(file => ({
+      file,
+      id: Math.floor(Math.random() * 1000000),
 
-  const renderFilePreview = (file: FileOrUploadedFile, index: number) => {
-    const isUploadedFile = 'url' in file;
-    const fileType = isUploadedFile ? file.memeType.split('/')[0] : file.type.split('/')[0];
-    const fileUrl = isUploadedFile ? file.url : file.preview;
+    }))
 
-    let preview: React.ReactNode;
+    const updatedFiles = multiple ? [...files, ...newFiles] : newFiles
+    setFiles(updatedFiles)
+    onChange(updatedFiles)
+  }, [files, multiple, onChange])
+
+  const { getRootProps, getInputProps, open } = useDropzone({
+    onDrop,
+    accept: accept ? { [accept]: [] } : undefined,
+    multiple,
+    noClick: true,
+    onDragEnter: () => setIsDragActive(true),
+    onDragLeave: () => setIsDragActive(false),
+    onDropAccepted: () => setIsDragActive(false),
+    onDropRejected: () => setIsDragActive(false),
+  })
+
+  const removeFile = (id: number) => {
+    const updatedFiles = files.filter((file): file is UploadedFile => 
+      'id' in file && file.id !== id
+    )
+    setFiles(updatedFiles)
+    onChange(updatedFiles)
+  }
+
+  const renderPreview = (file: UploadedFile) => {
+    // if ('url' in file) {
+    //   // Existing file from server
+    //   return <img src={file.url} alt="Preview" className="w-full h-full object-cover" />
+    // }
+
+    const isUploaded = 'url' in file
+    const { file: uploadedFile } = file as FileWithPreview
+    const fileType = isUploaded ? file?.mimeType?.split('/')?.[0] : uploadedFile.type.split('/')[0]
+
     switch (fileType) {
       case 'image':
-        preview = <img src={fileUrl} alt={file.name} className="w-full h-full object-cover" />;
-        break;
+        return <img src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)} alt="Preview" className="w-full h-full object-cover" />
       case 'video':
-        preview = <video src={fileUrl} className="w-full h-full object-cover" />;
-        break;
+        return <video src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)} controls className="w-full h-full object-cover" />
       case 'audio':
-        preview = <AudioPreview url={fileUrl} />
-        break;
-      case 'application/pdf':
-        preview = <FilePdf size={48} />;
-        break;
+        return <MusicNote size={48} weight="thin" />
+      case 'application':
+        return uploadedFile.type === 'application/pdf' ? (
+          <FileText size={48} weight="thin" />
+        ) : (
+          <FileIcon size={48} weight="thin" />
+        )
       default:
-        preview = <File size={48} />;
+        return <FileIcon size={48} weight="thin" />
     }
-
-    return (
-      <Card key={index} className="relative w-24 h-24 m-2">
-        <CardContent className="p-2 flex items-center justify-center h-full duration-75">
-          {preview}
-        </CardContent>
-        <button
-          onClick={() => removeFile(index)}
-          className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full -mt-2 -mr-2"
-        >
-          <X size={16} />
-        </button>
-      </Card>
-    );
-  };
+  }
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap justify-center items-center">
-        {files.map((file, index) => renderFilePreview(file, index))}
-      </div>
-      <div className="mt-4 flex justify-center">
-        <Button asChild>
-          <label htmlFor="file-upload" className="cursor-pointer">
-            {t('selectFiles')}
-            <input
-              id="file-upload"
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-              accept={accept}
-              multiple={multiple}
-            />
-          </label>
+      <div
+        {...getRootProps()}
+        className="relative"
+      >
+        <input {...getInputProps()} />
+        <Button 
+          type="button"
+          onClick={open} 
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <UploadSimple size={20} />
+          {t('uploadButton')}
         </Button>
+        {isDragActive && (
+          <div className="absolute inset-0 border-2 border-dashed border-primary bg-primary/10 rounded-lg flex items-center justify-center">
+            <p>{t('dropzone')}</p>
+          </div>
+        )}
       </div>
-    </div>
-  );
-};
-
-
-
-export const AudioPreview = ({url}: {url: string}) => {
-
-    const [isPlaying, setIsPlaying] = useState(false)
-    const audioRef = useRef<HTMLAudioElement>(null)
-
-    const handlePlayPause = () => {
-        if (isPlaying) {
-            audioRef.current?.pause()
-        } else {
-            audioRef.current?.play()
-        }
-        setIsPlaying(!isPlaying)
-    }
-
-    return (
-        <div className="w-full h-full object-cover relative flex flex-col gap-y-2  justify-center items-center">
-            <audio src={url} ref={audioRef} />
-            <FileAudio size={48} />
-
-            {
-                isPlaying ?
-                <Pause className='hover:text-gray-300' onClick={handlePlayPause} />
-                : 
-                <Play className='hover:text-gray-300' onClick={handlePlayPause} />
-            }
+      {files.length > 0 && (
+        <div className="mt-4 flex flex-wrap justify-center gap-4">
+          {files.map((file) => (
+            <div key={file.id} className="relative w-24 h-24">
+              <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
+                {renderPreview(file)}
+              </div>
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute -top-2 -right-2 w-6 h-6 rounded-full"
+                onClick={() => removeFile(file.id)}
+              >
+                <X size={12} weight="bold" />
+              </Button>
+            </div>
+          ))}
         </div>
-    )
-
+      )}
+    </div>
+  )
 }
+

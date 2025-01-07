@@ -22,7 +22,7 @@ import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
-import { ConversationsContextType } from '../../../inbox/layout';
+import { ConversationsContextType } from "../../../inbox/layout";
 
 export type ContentType = {
   id: string;
@@ -65,7 +65,12 @@ export const contentCycleFormSchema = z
     contents: z.array(
       z.object({
         type: z.nativeEnum(ContentCycleContentTypesEnum),
-        text: z.string().min(1, "پیام الزامی است").optional().nullable().transform((data) => data || undefined),
+        text: z
+          .string()
+          .min(1, "پیام الزامی است")
+          .optional()
+          .nullable()
+          .transform((data) => data || undefined),
         instagramPost: z
           .object({
             mediaUrl: z.string().optional().nullable(),
@@ -73,12 +78,15 @@ export const contentCycleFormSchema = z
           })
           .optional()
           .nullable(),
-        file: z.object({
-          id: z.number(),
-          url: z.string().url().optional().nullable(),
-          name: z.string().optional().nullable(),
-          memeType: z.string().optional().nullable(),
-        }).optional().nullable(),
+        file: z
+          .object({
+            id: z.number(),
+            url: z.string().url().optional().nullable(),
+            name: z.string().optional().nullable(),
+            mimeType: z.string().optional().nullable(),
+          })
+          .optional()
+          .nullable(),
         id: z.string().optional().nullable(),
         haveConsent: z
           .boolean()
@@ -156,6 +164,32 @@ export const contentCycleFormSchema = z
         code: "custom",
       });
     }
+
+    data.contents.forEach((content, index) => {
+      if (content.type === ContentCycleContentTypesEnum.TEXT && !content.text) {
+        ctx.addIssue({
+          path: ["contents", index, "text"],
+          code: "custom",
+        });
+        return;
+      }
+      if (
+        content.type === ContentCycleContentTypesEnum.INSTAGRAM_POST &&
+        !content.instagramPost
+      ) {
+        ctx.addIssue({
+          path: ["contents", index, "instagramPost"],
+          code: "custom",
+        });
+        return;
+      }
+
+      // For files: video, image, voice
+      ctx.addIssue({
+        path: ["contents", index, "file"],
+        code: "custom",
+      });
+    });
 
     if (!data.contents.length && !data.products.length && !data.cta) {
       ctx.addIssue({
@@ -306,14 +340,14 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
     if (!result.ok) {
       const json = await result.json();
-      const errMessage = t_ec(json.code)
+      const errMessage = t_ec(json.code);
       if (errMessage) {
         toast({
           title: errMessage,
-          variant: "destructive"
-        })
-      setIsSubmitting(false);
-        return 
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
       }
       toast({
         title: "خطایی رخ داد",
@@ -332,12 +366,12 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const t = useTranslations("Automations");
 
   useEffect(() => {
-    logger.log(form.getValues());
-  }, [form.watch(["isProductsEnabled", "isContentsEnabled"])]);
-
-  useEffect(() => {
     logger.log(form.formState.errors);
   }, [form.formState.errors]);
+
+  useEffect(() => {
+    logger.log(form.getValues());
+  }, [form.watch()]);
 
   return (
     <FormProvider {...form}>
@@ -371,7 +405,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Contents  />
+                  <Contents />
 
                   <hr className="border-gray-100" />
 

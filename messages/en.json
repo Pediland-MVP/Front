@@ -815,9 +815,7 @@
         "description": "Please connect your Instagram account to see the console.",
         "button": "Connect Instagram"
     },
-    "FileUpload": {
-        "title": "Image Upload",
-        "description": "Click here or drag your file to upload.",
-        "dropIt": "Drop it"
-    }
+    "FileUploader": {
+        "dropzone": "Drag 'n' drop some files here, or click to select files"
+      }
 }
