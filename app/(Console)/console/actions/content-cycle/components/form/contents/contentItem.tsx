@@ -57,6 +57,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
   const { files, setFiles } = useContentsUploaderContext();
   const t_ec = useTranslations("ERROR_CODES");
   const t_err = useTranslations("Automations.Errors");
+  const t_fileUploader = useTranslations('FileUploader')
 
   const {
     control,
@@ -75,7 +76,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
       const formData = new FormData();
       formData.append("file", files[0].file);
       const res = axios
-        .post(`${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/any`, formData, {
+        .post(`${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/upload`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -105,24 +106,27 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
             url: res.data.url,
             mimeType: res.data.mimeType,
           });
-          // updateContents(index, {
-          //   ...contents[index],
-          //   file: {
-          //     id: res.data.id,
-          //     url: res.data.url,
-          //   }
-          // })
         })
         .catch((err: AxiosError) => {
           const errorCode = t_ec(
             (err.response?.data as ExceptionMessage)?.code
           );
-          if (errorCode) {
+          if (errorCode !== 'ERROR_CODES') {
             toast({
               title: errorCode,
               variant: "destructive",
             });
+            return
           }
+
+          if (err.status === 400) {
+            toast({
+              title: `${t_fileUploader(`Limits.${type}.text`)}. ${t_fileUploader(`Limits.${type}.formats`)}`,
+              description: "لطفا یک فایل دیگر انتخاب کنید",
+              variant: "destructive"
+            })
+          }
+
         })
         .finally(() => {
           setFiles((prev) => {
