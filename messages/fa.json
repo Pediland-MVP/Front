@@ -321,6 +321,7 @@
         "Contents": {
             "consent": "کسب اجازه برای پیام بعدی",
             "consentTooltip": "برای فعال سازی این قابلیت حداقل باید دو پیام بسازی",
+            "consentTooltipType": "برای استفاده از قابلیت کسب اجازه، پیام باید متنی باشد",
             "removeContent": "حذف محتوا",
             "enterYourMessage": "پیام خود را وارد کنید",
             "consentMessage": "بریم بعدی؟",

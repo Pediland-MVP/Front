@@ -383,16 +383,16 @@ export default function ContentItem({
                 <div className="flex items-center gap-x-2">
                   <FormControl>
                     <TooltipProvider>
-                      <Tooltip {...(contents.length > 1 && { open: false })}>
-                        <TooltipTrigger asChild disabled={contents.length > 1}>
+                      <Tooltip {...((contents.length > 1 && contents[index].type === ContentCycleContentTypesEnum.TEXT) && { open: false })}>
+                        <TooltipTrigger asChild disabled={contents.length > 1 || contents[index].type !== ContentCycleContentTypesEnum.TEXT}>
                           <Checkbox
-                            disabled={contents.length <= 1}
+                            disabled={contents.length <= 1 || contents[index].type !== ContentCycleContentTypesEnum.TEXT}
                             dir="ltr"
                             checked={field.value || false}
                             onCheckedChange={field.onChange}
                           />
                         </TooltipTrigger>
-                        <TooltipContent>{t("consentTooltip")}</TooltipContent>
+                        <TooltipContent>{contents.length <= 1 ? t("consentTooltip") : (contents[index].type !== ContentCycleContentTypesEnum.TEXT && t("consentTooltipType"))}</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </FormControl>
