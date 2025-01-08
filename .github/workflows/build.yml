@@ -26,6 +26,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 54321
           script: |
+            whoami
             echo "Pulling latest changes..."
             cd /home/cicd/Front
             git pull origin main
