@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export type ContentsUploaderContextType = {
     files: UploadedFile[];
-    setFiles: (files: UploadedFile[]) => void;
+    setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>
 }
 const ContentsUploaderContext = createContext<ContentsUploaderContextType | null>(null);
 

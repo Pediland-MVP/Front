@@ -54,19 +54,24 @@ type MessageByTypeProps = {
 };
 
 export function MessageByType({ index, type }: MessageByTypeProps) {
-  const {files, setFiles} = useContentsUploaderContext()
+  const { files, setFiles } = useContentsUploaderContext();
   const t_ec = useTranslations("ERROR_CODES");
-  const t_err = useTranslations('Automations.Errors')
+  const t_err = useTranslations("Automations.Errors");
 
-  const { control, setValue, formState: {errors} } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  const {
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
-  useEffect(() => {
-      if (files.length === 0) {
-      return;
+  const onChange = (files: UploadedFile[]) => {
+    if (files.length === 0) {
+      setValue(`contents.${index}.file`, null);
     }
     if ("file" in files[0]) {
-      logger.log("Files", files)
+      setFiles((files) => {
+        return [{ ...files[0], isUploading: true, process: 0 }];
+      });
       const formData = new FormData();
       formData.append("file", files[0].file);
       const res = axios
@@ -75,6 +80,16 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const process = Math.round(
+                (progressEvent.loaded / progressEvent.total) * 100
+              );
+              setFiles((prev) => {
+                return [{ ...prev[0], process: process }];
+              });
+            }
+          },
         })
         .then((res: AxiosResponse<FileNamespace.File>) => {
           setFiles([
@@ -108,9 +123,14 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
               variant: "destructive",
             });
           }
+        })
+        .finally(() => {
+          setFiles((prev) => {
+            return [{ ...prev[0], isUploading: false }];
+          });
         });
     }
-  }, [files]);
+  };
 
   const t = useTranslations("Automations.Contents");
 
@@ -133,7 +153,12 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
           render={({ field, fieldState: { error } }) => (
             <FormItem>
               <Textarea placeholder={t("enterYourMessage")} {...field} />
-              {error && <FormMessage> {t_err(`contents.text.${error.message}`)} </FormMessage>}
+              {error && (
+                <FormMessage>
+                  {" "}
+                  {t_err(`contents.text.${error.message}`)}{" "}
+                </FormMessage>
+              )}
             </FormItem>
           )}
         />
@@ -142,38 +167,62 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
     case ContentCycleContentTypesEnum.AUDIO:
       return (
         <>
-        <FileUploader
-          multiple={false}
-          value={files}
-          onChange={setFiles}
-          accept="audio/*"
-        />
-        {errors.contents?.[index]?.file && <FormMessage> {t_err(`contents.audio.${errors.contents?.[index]?.file.message}`)} </FormMessage>}
+          <FileUploader
+            multiple={false}
+            files={files}
+            setFiles={setFiles}
+            onChange={onChange}
+            accept="audio/*"
+          />
+          {errors.contents?.[index]?.file && (
+            <FormMessage>
+              {" "}
+              {t_err(
+                `contents.audio.${errors.contents?.[index]?.file.message}`
+              )}{" "}
+            </FormMessage>
+          )}
         </>
       );
 
     case ContentCycleContentTypesEnum.VIDEO:
       return (
         <>
-        <FileUploader
-          multiple={false}
-          value={files}
-          onChange={setFiles}
-          accept="video/*"
-        />
-        {errors.contents?.[index]?.file && <FormMessage> {t_err(`contents.video.${errors.contents?.[index]?.file.message}`)} </FormMessage>}
+          <FileUploader
+            multiple={false}
+            files={files}
+            setFiles={setFiles}
+            onChange={onChange}
+            accept="video/*"
+          />
+          {errors.contents?.[index]?.file && (
+            <FormMessage>
+              {" "}
+              {t_err(
+                `contents.video.${errors.contents?.[index]?.file.message}`
+              )}{" "}
+            </FormMessage>
+          )}
         </>
       );
     case ContentCycleContentTypesEnum.IMAGE:
       return (
         <>
-        <FileUploader
-          multiple={false}
-          value={files}
-          onChange={setFiles}
-          accept="image/*"
-        />
-        {errors.contents?.[index]?.file && <FormMessage> {t_err(`contents.image.${errors.contents?.[index]?.file.message}`)} </FormMessage>}
+          <FileUploader
+            multiple={false}
+            files={files}
+            setFiles={setFiles}
+            onChange={onChange}
+            accept="image/*"
+          />
+          {errors.contents?.[index]?.file && (
+            <FormMessage>
+              {" "}
+              {t_err(
+                `contents.image.${errors.contents?.[index]?.file.message}`
+              )}{" "}
+            </FormMessage>
+          )}
         </>
       );
   }
@@ -216,7 +265,7 @@ const messageTypeOptions: MessageTypeOption[] = [
 export default function ContentItem({
   id,
   index,
-  defaultUploaderValue
+  defaultUploaderValue,
 }: {
   id: string;
   index: number;
@@ -230,8 +279,7 @@ export default function ContentItem({
     trigger,
   } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
-  const { removeContents, updateContents, contents } = useContentsContext()
-
+  const { removeContents, updateContents, contents } = useContentsContext();
 
   const t = useTranslations("Automations.Contents");
   const t_messageTypes = useTranslations("MessageTypes");
@@ -266,10 +314,11 @@ export default function ContentItem({
       ...contents[index],
       type,
       // Reset content-specific fields when changing type
-      ...type !== ContentCycleContentTypesEnum.TEXT && { text: undefined },
-      ...(type === ContentCycleContentTypesEnum.TEXT || type === ContentCycleContentTypesEnum.INSTAGRAM_POST )&& {
-        file: null
-      }
+      ...(type !== ContentCycleContentTypesEnum.TEXT && { text: undefined }),
+      ...((type === ContentCycleContentTypesEnum.TEXT ||
+        type === ContentCycleContentTypesEnum.INSTAGRAM_POST) && {
+        file: null,
+      }),
     };
 
     // Update the form field
@@ -308,9 +357,7 @@ export default function ContentItem({
               contents[index].type === option.value ? "default" : "outline"
             }
             className={`h-15 flex flex-col items-center justify-cente ${
-              contents[index].type === option.value
-                ? "ring-2 ring-primary"
-                : ""
+              contents[index].type === option.value ? "ring-2 ring-primary" : ""
             }`}
             onClick={() => handleMessageTypeChange(option.value)}
           >
@@ -332,13 +379,8 @@ export default function ContentItem({
                 <div className="flex items-center gap-x-2">
                   <FormControl>
                     <TooltipProvider>
-                      <Tooltip
-                        {...(contents.length > 1 && { open: false })}
-                      >
-                        <TooltipTrigger
-                          asChild
-                          disabled={contents.length > 1}
-                        >
+                      <Tooltip {...(contents.length > 1 && { open: false })}>
+                        <TooltipTrigger asChild disabled={contents.length > 1}>
                           <Checkbox
                             disabled={contents.length <= 1}
                             dir="ltr"
