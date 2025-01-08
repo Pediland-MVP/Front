@@ -1,0 +1,38 @@
+name: Befroosh CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 54321
+          script: |
+            echo "Pulling latest changes..."
+            cd /home/cicd/Front
+            git pull origin main
+
+            echo "Building Docker image..."
+            cd /home/cicd/
+
+            echo "Running new containers RD Loadbalancer..."
+            docker compose docker-compose-rd.yml up -d 
+
