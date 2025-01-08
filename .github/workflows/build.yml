@@ -22,8 +22,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd Front
           git pull origin main
-          docker-compose -f ../docker-compose-rd-Front.yml down --rmi all -v
-          docker-compose -f ../docker-compose-rd-Front.yml up -d
+          docker compose -f ../docker-compose-rd-Front.yml down --rmi all -v
+          docker compose -f ../docker-compose-rd-Front.yml up -d
           EOF
 
       - name: Deploy Front Main
@@ -31,8 +31,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd Front
           git pull origin main
-          docker-compose -f ../docker-compose-Front.yml down --rmi all -v
-          docker-compose -f ../docker-compose-Front.yml up -d
+          docker compose -f ../docker-compose-Front.yml down --rmi all -v
+          docker compose -f ../docker-compose-Front.yml up -d
           EOF
 
       - name: Remove SSH Key
