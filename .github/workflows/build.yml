@@ -12,28 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install
+      - name: Create SSH Key
+        run: |
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ssh_key.pem
+          chmod 600 ssh_key.pem
 
-      # - name: Run tests
-      #   run: npm test
-
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v0.1.1
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 54321
-          script: |
-            whoami
-            echo "Pulling latest changes..."
-            cd /home/cicd/Front
-            git pull origin main
-
-            echo "Building Docker image..."
-            cd /home/cicd/
-
-            echo "Running new containers RD Loadbalancer..."
-            docker compose docker-compose-rd.yml up -d 
+      - name: Deploy Front
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          cd Front
+          git pull origin main
+          docker compose -f ../docker-compose-rd-Front.yml up -d
+          EOF
 
