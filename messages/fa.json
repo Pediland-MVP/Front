@@ -994,6 +994,7 @@
                 "formats": "فرمت‌ها پشتیبانی شده: aac, m4a, wav, mp4"
             }
         }
+        
       },
     "ERROR_CODES": {
         "USER_NOT_FOUND": "کاربر پیدا نشد",
