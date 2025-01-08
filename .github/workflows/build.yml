@@ -27,7 +27,6 @@ jobs:
           EOF
 
       - name: Deploy Front Main
-        if: ${{ success() }}
 	run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
           cd Front
