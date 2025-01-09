@@ -45,6 +45,7 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { FileNamespace } from "@/types/file";
 import { useContentsUploaderContext } from "./useContentsUploaderContext";
 import { useContentsContext } from "./useContentsContext";
+import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
 
 type MessageByTypeProps = {
   index: number;
@@ -137,16 +138,17 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
   };
 
   const t = useTranslations("Automations.Contents");
+  const { updateContents, contents } = useContentsContext()
 
   switch (type) {
     case ContentCycleContentTypesEnum.INSTAGRAM_POST:
       return (
         <div className="relative flex justify-center items-center">
-          {/* <InstagramPostsDialog
+          <InstagramPostsDialog
             index={index}
             updateContents={updateContents}
             contents={contents}
-          /> */}
+          />
         </div>
       );
     case ContentCycleContentTypesEnum.TEXT:
