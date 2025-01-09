@@ -23,6 +23,8 @@ import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import { ConversationsContextType } from "../../../inbox/layout";
+import { REGEX_REMINDER_TIME } from "@/app/utils/regex";
+import Reminder from "./form/reminder";
 
 export type ContentType = {
   id: string;
@@ -156,6 +158,11 @@ export const contentCycleFormSchema = z
         enabled: z.boolean(),
       })
       .optional(),
+    reminder: z.object(({
+       isEnabled: z.boolean(),
+       text: z.string().optional().nullable().transform((data) => data || undefined),
+       time: z.string().optional().nullable().transform((data) => data ? `${data}` : undefined),
+    })).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.haveCta && !data.cta) {
@@ -169,7 +176,26 @@ export const contentCycleFormSchema = z
       ctx.addIssue({
         path: ["getUserData", "text"],
         code: "custom",
+        message: "required"
       });
+    }
+
+    if (data.reminder?.isEnabled) {
+      if (!data.reminder?.text){
+        ctx.addIssue({
+          path: ["reminder", "text"],
+          code: "custom",
+          message: "required"
+        });
+      }
+
+      if (!data.reminder?.time){
+        ctx.addIssue({
+          path: ["reminder", "time"],
+          code: "custom",
+          message: "required"
+        });
+      }
     }
 
 
@@ -286,6 +312,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       form.reset({
         ...contentCycle,
         ...(contentCycle.products?.length > 0 && { isProductsEnabled: true }),
+        ...contentCycle.reminder?.time && {
+          reminder: { ...contentCycle.reminder, time: `${contentCycle.reminder.time}` }
+        }
       });
     };
 
@@ -430,6 +459,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   <hr className="border-gray-100" />
 
                   <GetUserData control={form.control} />
+
+                  <hr className="border-gray-100" />
+
+                  <Reminder/>
 
                   <hr className="border-gray-100" />
 
