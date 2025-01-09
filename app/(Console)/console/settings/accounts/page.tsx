@@ -27,7 +27,7 @@ export default function AccountPage() {
         </Link>
       </div>
 
-      <div className="_cards p-5 grid sm:grid-cols-5 gap-5">
+      <div className="_cards p-5 grid sm:grid-cols-3 2xl:grid-cols-4 gap-5">
         <Suspense>
           <Accounts filteredInstagramPages={filteredInstagramPages} setFilteredInstagramPages={setfilteredInstagramPages} />
         </Suspense>

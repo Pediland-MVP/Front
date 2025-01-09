@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { OrderNamespace } from "@/types/order";
 // UI 
-import ImageUpload from "@/components/theme/ui/image-upload";
 import { Label } from "@/components/theme/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
 import { Copy, CreditCard } from "@phosphor-icons/react/dist/ssr";
@@ -31,28 +30,27 @@ export default function PaymentDetails({
         <CreditCard size={28} weight="duotone" className="text-primary" />
         {t("paymentMethod")}
       </h2>
+
       <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <RadioGroup
-            defaultValue="2"
-            dir="rtl"
-            className="gap-4 items-start flex flex-col"
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="1" id="r1" disabled />
-              <Label htmlFor="r1" className="text-base text-gray-400">
-                پرداخت آنلاین (زرین پال) - بزودی
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="2" id="r2" />
-              <Label htmlFor="r2" className="text-base">
-                کارت به کارت
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
-        <div>
+        <RadioGroup
+          dir="rtl"
+          className="gap-4 items-start flex flex-col"
+        >
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="1" id="r1" disabled />
+            <Label htmlFor="r1" className="text-base text-gray-400">
+              پرداخت آنلاین (زرین پال) - بزودی
+            </Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="2" id="r2" />
+            <Label htmlFor="r2" className="text-base">
+              کارت به کارت
+            </Label>
+          </div>
+        </RadioGroup>
+
+        <div className="_card-transfer-text">
           <p className="text-sm text-gray-600 leading-relaxed">لطفا مبلغ <span className="bg-yellow-100 font-semibold px-1 text-primary">250.000 تومان</span> به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد بارگزاری نمایید.</p>
           <div className="_card-template border-2 border-sky-600 border-b-[6px] border-b-sky-600 bg-sky-100/60 p-4 rounded-lg flex flex-col gap-8 mt-3">
             <p className="font-bold text-sky-900">بانک سامان</p>
@@ -64,26 +62,10 @@ export default function PaymentDetails({
           </div>
         </div>
 
-        <div className="mt-3 w-full">
+        <div className="mt-2 w-full">
           <Button className="w-full" variant={"success"}>
             {t("nextStep")}
           </Button>
-        </div>
-      </div>
-      <div className="_uploader mt-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="picture" className="font-normal mb-3">
-            لطفا تصویر رسید وجه پرداختی را بارگذاری نمایید.
-          </Label>
-          <ImageUpload
-            url={`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/cardToCard`}
-            fieldName="image"
-            {...orderCardToCard?.url && { defaultImageUrl: orderCardToCard.url }}
-          // className="max-w-[400px]"
-          // uploadProgress={uploadProgress}
-          // onUpload={handleFileUpload}
-          // multiple={false}
-          />
         </div>
       </div>
     </div>

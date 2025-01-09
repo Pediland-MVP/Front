@@ -4,24 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
 import { z } from "zod";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-// UI
-import { Card } from "@/components/theme/ui/card";
-import { Input } from "@/components/theme/ui/input";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/theme/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/theme/ui/select";
 import { GENDERS_ENUM } from "@/app/constants/gender.constant";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
@@ -34,10 +16,28 @@ import logger from "@/app/utils/logger";
 import useSWR, { mutate } from "swr";
 import { ProvinceNamespace } from "@/types/province";
 import { CityNamespace } from "@/types/city";
-import { toast } from "@/components/ui/use-toast";
 import { UserNamespace } from "@/types/user";
-import LoadingButton from "@/components/ui/button-loading";
 import { useRouter } from "next/navigation";
+// UI
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/theme/ui/select";
+import { Card } from "@/components/theme/ui/card";
+import { Input } from "@/components/theme/ui/input";
+import { Button } from "@/components/theme/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import LoadingButton from "@/components/ui/button-loading";
 
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
@@ -265,9 +265,9 @@ export function ProfileForm() {
                     value={
                       value
                         ? new DateObject(+value)
-                            .setLocale(persian_fa)
-                            .setCalendar(persian)
-                            .format("YYYY/MM/DD")
+                          .setLocale(persian_fa)
+                          .setCalendar(persian)
+                          .format("YYYY/MM/DD")
                         : ""
                     }
                     onChange={(date) => {
