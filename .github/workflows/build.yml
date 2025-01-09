@@ -17,11 +17,24 @@ jobs:
           echo "${{ secrets.SERVER_SSH_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
 
-      - name: Deploy Front
+      - name: Deploy Front RD
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd Front
           git pull origin main
+          docker compose -f ../docker-compose-rd-Front.yml down --rmi all -v
           docker compose -f ../docker-compose-rd-Front.yml up -d
           EOF
+
+      - name: Deploy Front Main
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
+          cd Front
+          git pull origin main
+          docker compose -f ../docker-compose-Front.yml down --rmi all -v
+          docker compose -f ../docker-compose-Front.yml up -d
+          EOF
+
+      - name: Remove SSH Key
+        run: rm ssh_key.pem
 
