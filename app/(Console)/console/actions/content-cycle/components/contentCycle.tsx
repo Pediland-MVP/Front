@@ -165,7 +165,17 @@ export const contentCycleFormSchema = z
       });
     }
 
+    if (data.getUserData?.enabled && !data.getUserData.text) {
+      ctx.addIssue({
+        path: ["getUserData", "text"],
+        code: "custom",
+      });
+    }
+
+
+
     data.contents.forEach((content, index) => {
+      // Type issues
       if (content.type === ContentCycleContentTypesEnum.TEXT && !content.text) {
         ctx.addIssue({
           path: ["contents", index, "text"],
