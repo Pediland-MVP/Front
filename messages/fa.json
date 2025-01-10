@@ -634,11 +634,25 @@
             }
         },
         "BankDetails": {
-            "bankName": "نام بانک",
-            "cardNumber": "شماره کارت",
-            "iban": "شبا",
-            "accountHolder": "دارنده حساب",
-            "save": "ذخیره"
+            "bankName": {
+                "label": "نام بانک",
+                "required": "نام بانک الزامی است"
+            },
+            "cardNumber": {
+                "label": "شماره کارت",
+                "required": "شماره کارت باید ۱۶ رقم باشد"
+            },
+            "iban": {
+                "label": "شماره شبا",
+                "required": "شماره شبا باید ۲۴ رقم باشد"
+            },
+            "accountHolder": {
+                "label": "دارنده حساب",
+                "required": "نام دارنده حساب الزامی است"
+            },
+            "save": "ذخیره",
+            "cardToCardUpdated": "اطلاعات آپدیت شد",
+            "cardToCardUpdateFailed": "خطایی در ذخیره اطلاعات پیش آمده است"
         }
     },
     "Profile": {
