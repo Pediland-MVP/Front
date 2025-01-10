@@ -69,10 +69,11 @@ export const orderFormSchema = z.object({
 export type CheckoutProps = {
   shopId: string;
   orderId: string;
-  secret: string
+  productId: string
+  token?: string
 }
 
-export default function CheckoutPage({ orderId, secret, shopId }: CheckoutProps) {
+export default function CheckoutPage({ orderId, token, shopId }: CheckoutProps) {
   const t = useTranslations("Checkout");
   const [isLoading, setIsLoading] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false)
@@ -82,7 +83,7 @@ export default function CheckoutPage({ orderId, secret, shopId }: CheckoutProps)
     isLoading: isLoadingOrder,
     error,
   } = useSWR<OrderNamespace.Order>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}`,
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}`,
     fetcher2
   );
 
@@ -123,7 +124,7 @@ export default function CheckoutPage({ orderId, secret, shopId }: CheckoutProps)
   const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
     setIsLoading(true);
     await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/process`,
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}/process`,
       {
         method: "POST",
         headers: {
@@ -179,11 +180,11 @@ export default function CheckoutPage({ orderId, secret, shopId }: CheckoutProps)
         <Card className="_checkout border rounded-xl p-0 md:p-10">
           <div className="grid md:grid-cols-4 gap-3">
             <Suspense fallback={<ProductDetailsSkeleton />}>
-              <ProductDetails
-                orderDetails={{ orderId, secret, shopId }}
+              {/* <ProductDetails
+                orderDetails={{ orderId, token, shopId }}
                 orderQuantity={order?.orderProducts[0].quantity}
                 product={order?.orderProducts?.[0]?.product}
-              />
+              /> */}
             </Suspense>
 
             <Suspense fallback={<CustomerDetailsSkeleton />}>
@@ -195,7 +196,7 @@ export default function CheckoutPage({ orderId, secret, shopId }: CheckoutProps)
             </Suspense>
 
             <Suspense fallback={<PaymentSkeleton />}>
-              <PaymentDetails orderDetails={{ orderId, secret, shopId }} orderCardToCard={order?.orderCardToCard} />
+              {/* <PaymentDetails orderDetails={{ orderId, token, shopId }} orderCardToCard={order?.orderCardToCard} /> */}
             </Suspense>
 
             <Suspense fallback={<OrderSubmitButtonSkeleton />}>
