@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ProductNamespace } from "@/types/product";
 import useDebounce from "@/hooks/useDebounce";
@@ -34,6 +34,9 @@ import {
   Pencil,
   Trash,
 } from "@phosphor-icons/react/dist/ssr";
+import { CardToCardNamespace } from "@/types/cardToCard";
+import { ExceptionMessage } from '../../../../../types/exceptionMessage';
+import { ERROR_CODES } from "@/app/constants/errorCodes.constant";
 
 
 interface ContentItem {
@@ -73,6 +76,35 @@ export default function ProductListTable() {
   const productsMeta = productsData?.meta || undefined;
 
   const router = useRouter();
+
+
+  // If products === 0 we check if user need add payment method
+  // If user have not payment method we show warning
+  const [isCheckUserPaymentMethodLoading, setIsCheckUserPaymentMethodLoading] = useState(true)
+  const [isUserNeedAddPaymentMethod, setIsUserNeedAddPaymentMethod] = useState(false)
+
+  useEffect(() => {
+    if (productsData) {
+      if (productsData.items.length === 0) {
+        setIsCheckUserPaymentMethodLoading(false)
+        return 
+      }
+      if (productsData.items.length === 0) {
+        fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/cardToCard`, {
+          credentials: 'include'
+        })
+        .then(async res => {
+          if (!res.ok) {
+            const json: ExceptionMessage = await res.json()
+            if (json.code === 'CARD_TO_CARD_USER_HAVE_NOT') {
+              setIsUserNeedAddPaymentMethod(true)
+            }
+          }
+        })
+        .catch(() => setIsCheckUserPaymentMethodLoading(true))
+      }
+    }
+  }, [productsData])
 
   const handleDeleteClick = (id: string) => {
     setItemToDelete(id);
@@ -136,7 +168,7 @@ export default function ProductListTable() {
           </TableRow>
         </TableHeader>
 
-        {isProductsLoading ? (
+        {isProductsLoading || isCheckUserPaymentMethodLoading ? (
           <ProductListSkeleton />
         ) : (
           <TableBody>

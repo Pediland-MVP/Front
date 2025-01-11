@@ -22,8 +22,6 @@ import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
-import { ConversationsContextType } from "../../../inbox/layout";
-import { REGEX_REMINDER_TIME } from "@/app/utils/regex";
 import Reminder from "./form/reminder";
 
 export type ContentType = {
@@ -189,7 +187,7 @@ export const contentCycleFormSchema = z
         });
       }
 
-      if (!data.reminder?.time){
+      if (data.reminder?.isEnabled && (!data.reminder?.time || !data.reminder?.text)){
         ctx.addIssue({
           path: ["reminder", "time"],
           code: "custom",
@@ -281,6 +279,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       isComment: false,
       justFollowers: false,
       likeDirect: false,
+      reminder: {
+        isEnabled: false,
+      }
     },
   });
 
