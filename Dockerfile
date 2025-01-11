@@ -9,7 +9,7 @@ RUN npm install --legacy-peer-deps
 # Copy the rest of the application files
 COPY . .
 
-RUN npm run builds 
+RUN npm run build
 # || echo "Build failed" && exit 1 
 
 EXPOSE 3000
