@@ -8,21 +8,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
 import { Copy, CreditCard } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/theme/ui/button";
 
-type PaymentDetailsProps = {
-  orderCardToCard: OrderNamespace.Order["orderCardToCard"] | undefined;
-  orderDetails: {
-    shopId: string;
-    orderId: string;
-    secret: string
-  }
-};
-export default function PaymentDetails({
-  orderCardToCard,
-  orderDetails
-}: PaymentDetailsProps) {
-  const t = useTranslations("Checkout");
 
-  const { orderId, secret, shopId } = orderDetails
+export default function PaymentDetails() {
+  const t = useTranslations("Checkout");
+  
 
   return (
     <div className="_customer-details md:col-span-4 p-3">

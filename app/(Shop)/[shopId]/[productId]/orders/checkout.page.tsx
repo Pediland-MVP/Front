@@ -17,7 +17,6 @@ import ProductDetails from "./components/productDetails";
 import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
 import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";
 import { PaymentSkeleton } from "./components/payment.skeleton";
-import { ProductDetailsSkeleton } from "./components/productDetails.skeleton";
 import { OrderSubmitButtonSkeleton } from "./components/orderSubmitButton.skeleton";
 import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skeleton";
 import OrderNotfound from "./components/order.notfound";
@@ -25,6 +24,12 @@ import OrderProcessing from "./components/order.processing";
 // UI
 import { Card } from "@/components/theme/ui/card";
 import { toast } from "@/components/ui/use-toast";
+import {
+  FormStep,
+  FormStepperProvider,
+} from "@/components/theme/ui/formStepper";
+import { House, User, CreditCard, UploadSimple } from "@phosphor-icons/react/dist/ssr";
+import { CheckoutContext } from "./useCheckout";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -41,10 +46,13 @@ const PaymentDetails = dynamic(() => import("./components/payment"), {
   ssr: false,
 });
 
-const FloatingTimeCircle = dynamic(() => import("./components/floatingTimeCircle"), {
-  loading: () => <FloatingTimeCircleSkeleton />,
-  ssr: false,
-})
+const FloatingTimeCircle = dynamic(
+  () => import("./components/floatingTimeCircle"),
+  {
+    loading: () => <FloatingTimeCircleSkeleton />,
+    ssr: false,
+  }
+);
 
 const OrderSubmitButton = dynamic(
   () => import("./components/orderSubmitButton"),
@@ -63,20 +71,25 @@ export const orderFormSchema = z.object({
   state: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
   address: z.string().min(1, "Address is required"),
-  postalcode: z.string().min(10, 'کد پستی باید ۱۰ رقمی باشد').max(10),
+  postalcode: z.string().min(10, "کد پستی باید ۱۰ رقمی باشد").max(10),
 });
 
 export type CheckoutProps = {
   shopId: string;
   orderId: string;
-  productId: string
-  token?: string
-}
+  productId: string;
+  token?: string;
+};
 
-export default function CheckoutPage({ orderId, token, shopId }: CheckoutProps) {
+export default function CheckoutPage({
+  orderId,
+  token,
+  shopId,
+  productId,
+}: CheckoutProps) {
   const t = useTranslations("Checkout");
   const [isLoading, setIsLoading] = useState(false);
-  const [orderCompleted, setOrderCompleted] = useState(false)
+  const [orderCompleted, setOrderCompleted] = useState(false);
 
   const {
     data: order,
@@ -145,9 +158,9 @@ export default function CheckoutPage({ orderId, token, shopId }: CheckoutProps) 
               });
               break;
           }
-          return
+          return;
         }
-        setOrderCompleted(true)
+        setOrderCompleted(true);
       })
       .finally(() => {
         setIsLoading(false);
@@ -155,56 +168,71 @@ export default function CheckoutPage({ orderId, token, shopId }: CheckoutProps) 
   };
 
   switch ((error?.data as ExceptionMessage)?.code) {
-    case 'ORDER_INVALID':
-      return <OrderNotfound />
-    case 'ORDER_EXPIRED':
-      return <OrderNotfound />
+    case "ORDER_INVALID":
+      return <OrderNotfound />;
+    case "ORDER_EXPIRED":
+      return <OrderNotfound />;
     case "ORDER_NOT_FOUND":
-      return <OrderNotfound />
+      return <OrderNotfound />;
   }
 
   if (order?.status === ORDER_STATUS.PROCESSING) {
-    return <OrderProcessing />
+    return <OrderProcessing />;
   }
 
   if (orderCompleted) {
-    return <OrderProcessing />
+    return <OrderProcessing />;
   }
 
   return (
-    <FormProvider {...form}>
-      <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
-        <Suspense fallback={<FloatingTimeCircleSkeleton />}>
-          <FloatingTimeCircle startDateString={order?.createDate} />
-        </Suspense>
-        <Card className="_checkout border rounded-xl p-0 md:p-10">
-          <div className="grid md:grid-cols-4 gap-3">
-            <Suspense fallback={<ProductDetailsSkeleton />}>
-              {/* <ProductDetails
-                orderDetails={{ orderId, token, shopId }}
-                orderQuantity={order?.orderProducts[0].quantity}
-                product={order?.orderProducts?.[0]?.product}
-              /> */}
-            </Suspense>
+    <CheckoutContext.Provider
+      value={{
+        orderId,
+        token,
+        shopId,
+        productId,
+        product: order?.orderProducts?.[0]?.product,
+        orderQuantity: order?.orderProducts?.[0]?.quantity,
+      }}
+    >
+      <FormProvider {...form}>
+        <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
+          <Suspense fallback={<FloatingTimeCircleSkeleton />}>
+            <FloatingTimeCircle startDateString={order?.createDate} />
+          </Suspense>
+          <Card className="_checkout border rounded-xl p-0 md:p-10">
+            <ProductDetails />
+            <FormStepperProvider className="mt-5" currentStep={1} disableNavigation>
+              <FormStep disableTitle step={1} icon={<User className="w-6 h-6" />} title="اطلاعات شخصی">
+                <Suspense fallback={<CustomerDetailsSkeleton />}>
+                  <CustomerDetails />
+                </Suspense>
+              </FormStep>
 
-            <Suspense fallback={<CustomerDetailsSkeleton />}>
-              <CustomerDetails />
-            </Suspense>
+              <FormStep disableTitle step={2} icon={<House className="w-6 h-6"/>} title="we شخصی">
+                <Suspense fallback={<CustomerAddressSkeleton />}>
+                  <Address />
+                </Suspense>
+              </FormStep>
 
-            <Suspense fallback={<CustomerAddressSkeleton />}>
-              <Address />
-            </Suspense>
+              <FormStep disableTitle step={3} icon={<CreditCard className="w-6 h-6"/>} title="پرداخت">
+                <Suspense fallback={<PaymentSkeleton />}>
+                  <PaymentDetails/>
+                </Suspense>
+              </FormStep>
 
-            <Suspense fallback={<PaymentSkeleton />}>
-              {/* <PaymentDetails orderDetails={{ orderId, token, shopId }} orderCardToCard={order?.orderCardToCard} /> */}
-            </Suspense>
+              <FormStep disableTitle step={4} icon={<UploadSimple className="w-6 h-6"/>} title="آپلود مدارک">
+              <Suspense fallback={<OrderSubmitButtonSkeleton />}>
+                <OrderSubmitButton isLoading={isLoading} />
+              </Suspense>
+              </FormStep>
 
-            <Suspense fallback={<OrderSubmitButtonSkeleton />}>
-              <OrderSubmitButton isLoading={isLoading} />
-            </Suspense>
-          </div>
-        </Card>
-      </form>
-    </FormProvider>
+
+
+            </FormStepperProvider>
+          </Card>
+        </form>
+      </FormProvider>
+    </CheckoutContext.Provider>
   );
 }

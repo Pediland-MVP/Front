@@ -2,22 +2,15 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { OrderNamespace } from "@/types/order";
 import { ProductDetailsSkeleton } from "./productDetails.skeleton";
 import { Quantity } from "./quantity";
 import { useState } from "react";
+import { useCheckout } from "../useCheckout";
 
-export type ProductDetailsProps = {
-  product: OrderNamespace.Order['orderProducts'][0]['product'] | undefined,
-  orderQuantity: number | undefined
-  orderDetails: {
-    shopId: string;
-    orderId: string;
-    secret: string
-  }
-}
 
-export default function ProductDetails({ product, orderQuantity, orderDetails: { orderId, secret, shopId } }: ProductDetailsProps) {
+export default function ProductDetails() {
+
+  const { product, orderQuantity,  } = useCheckout()
   const t = useTranslations("Products");
   const [isExpanded, setIsExpanded] = useState(false); // حالت برای نمایش یا مخفی‌کردن متن
 
@@ -69,7 +62,7 @@ export default function ProductDetails({ product, orderQuantity, orderDetails: {
           </p>
         </div>
 
-        <Quantity orderDetails={{ shopId, orderId, secret }} productQuantity={product.quantity} orderQuantity={orderQuantity} />
+        <Quantity />
       </div>
     </div>
   );

@@ -6,20 +6,14 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr";
+import { useCheckout } from "../useCheckout";
 
-type QuantityProps = {
-  orderQuantity: number;
-  productQuantity: number
-  orderDetails: {
-    shopId: string;
-    orderId: string;
-    secret: string
-  }
-}
 
-export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _productQuantity, orderDetails: { shopId, orderId, secret } }: QuantityProps) {
-  const [orderQuantity, setOrderQuantity] = useState(_orderQuantity);
-  const [productQuantity, setProductQuantity] = useState(_productQuantity)
+
+export function Quantity() {
+  const { orderId, token, shopId, product, orderQuantity: _orderQuantity } = useCheckout()
+  const [orderQuantity, setOrderQuantity] = useState(_orderQuantity || 1);
+  const [productQuantity, setProductQuantity] = useState(product?.quantity)
   const [isPending, setIsPending] = useState(false);
 
   const handleAdjustment = async (adjustment: "increment" | "decrement") => {
@@ -34,7 +28,7 @@ export function Quantity({ orderQuantity: _orderQuantity, productQuantity: _prod
     }
 
     await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${secret}/${adjustment === 'decrement' ? 'quantityDown' : 'quantityUp'}`,
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}/${adjustment === 'decrement' ? 'quantityDown' : 'quantityUp'}`,
       {
         method: "POST",
         credentials: "include",
