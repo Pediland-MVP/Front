@@ -202,7 +202,7 @@ export default function CheckoutPage({
           </Suspense>
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
-            <FormStepperProvider className="mt-5" currentStep={1} disableNavigation>
+            <FormStepperProvider className="mt-5" currentStep={1}>
               <FormStep disableTitle step={1} icon={<User className="w-6 h-6" />} title="اطلاعات شخصی">
                 <Suspense fallback={<CustomerDetailsSkeleton />}>
                   <CustomerDetails />

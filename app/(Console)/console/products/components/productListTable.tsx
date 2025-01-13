@@ -85,7 +85,7 @@ export default function ProductListTable() {
 
   useEffect(() => {
     if (productsData) {
-      if (productsData.items.length === 0) {
+      if (productsData.items.length > 0) {
         setIsCheckUserPaymentMethodLoading(false)
         return 
       }
@@ -193,7 +193,7 @@ export default function ProductListTable() {
                 </TableCell>
 
                 <TableCell className="text-center">
-                  11
+                  {product.quantity}
                 </TableCell>
 
                 <TableCell className="text-center">
