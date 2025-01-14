@@ -3,7 +3,6 @@ import { createContext, useContext } from "react";
 
 export type CheckoutContextType = {
     shopId: string
-    orderId: string
     productId: string
     token?: string
     product: OrderNamespace.Order['orderProducts'][0]['product'] | undefined,

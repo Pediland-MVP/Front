@@ -6,6 +6,6 @@ export default async function OrderPage(props: { params: Promise<{ shopId: strin
 
 
   return (
-    <CheckoutPage shopId={shopId} orderId={orderId} productId={productId} token={token} />
+    <CheckoutPage shopId={shopId} productId={productId} token={token} />
   )
 }

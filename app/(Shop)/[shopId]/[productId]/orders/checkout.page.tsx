@@ -28,8 +28,14 @@ import {
   FormStep,
   FormStepperProvider,
 } from "@/components/theme/ui/formStepper";
-import { House, User, CreditCard, UploadSimple } from "@phosphor-icons/react/dist/ssr";
+import {
+  House,
+  User,
+  CreditCard,
+  UploadSimple,
+} from "@phosphor-icons/react/dist/ssr";
 import { CheckoutContext } from "./useCheckout";
+import { headers } from "next/headers";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -76,13 +82,11 @@ export const orderFormSchema = z.object({
 
 export type CheckoutProps = {
   shopId: string;
-  orderId: string;
   productId: string;
   token?: string;
 };
 
 export default function CheckoutPage({
-  orderId,
   token,
   shopId,
   productId,
@@ -96,8 +100,13 @@ export default function CheckoutPage({
     isLoading: isLoadingOrder,
     error,
   } = useSWR<OrderNamespace.Order>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}`,
-    fetcher2
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
+    (url: string) =>
+      fetcher2(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
   );
 
   const form = useForm({
@@ -135,36 +144,36 @@ export default function CheckoutPage({
   }, [order]);
 
   const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
-    setIsLoading(true);
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}/process`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(values),
-      }
-    )
-      .then(async (res) => {
-        const response = await res.json();
-        if (!res.ok) {
-          switch ((response as ExceptionMessage).code) {
-            case "ORDER_CARD_TO_CARD_NOT_UPLOADED":
-              toast({
-                title: t("orderCardToCardNotUploaded"),
-                variant: "destructive",
-              });
-              break;
-          }
-          return;
-        }
-        setOrderCompleted(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    // setIsLoading(true);
+    // await fetch(
+    //   `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}/process`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     credentials: "include",
+    //     body: JSON.stringify(values),
+    //   }
+    // )
+    //   .then(async (res) => {
+    //     const response = await res.json();
+    //     if (!res.ok) {
+    //       switch ((response as ExceptionMessage).code) {
+    //         case "ORDER_CARD_TO_CARD_NOT_UPLOADED":
+    //           toast({
+    //             title: t("orderCardToCardNotUploaded"),
+    //             variant: "destructive",
+    //           });
+    //           break;
+    //       }
+    //       return;
+    //     }
+    //     setOrderCompleted(true);
+    //   })
+    //   .finally(() => {
+    //     setIsLoading(false);
+    //   });
   };
 
   switch ((error?.data as ExceptionMessage)?.code) {
@@ -187,7 +196,6 @@ export default function CheckoutPage({
   return (
     <CheckoutContext.Provider
       value={{
-        orderId,
         token,
         shopId,
         productId,
@@ -203,32 +211,49 @@ export default function CheckoutPage({
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
             <FormStepperProvider className="mt-5" currentStep={1}>
-              <FormStep disableTitle step={1} icon={<User className="w-6 h-6" />} title="اطلاعات شخصی">
+              <FormStep
+                disableTitle
+                step={1}
+                icon={<User className="w-6 h-6" />}
+                title="اطلاعات شخصی"
+              >
                 <Suspense fallback={<CustomerDetailsSkeleton />}>
                   <CustomerDetails />
                 </Suspense>
               </FormStep>
 
-              <FormStep disableTitle step={2} icon={<House className="w-6 h-6"/>} title="we شخصی">
+              <FormStep
+                disableTitle
+                step={2}
+                icon={<House className="w-6 h-6" />}
+                title="we شخصی"
+              >
                 <Suspense fallback={<CustomerAddressSkeleton />}>
                   <Address />
                 </Suspense>
               </FormStep>
 
-              <FormStep disableTitle step={3} icon={<CreditCard className="w-6 h-6"/>} title="پرداخت">
+              <FormStep
+                disableTitle
+                step={3}
+                icon={<CreditCard className="w-6 h-6" />}
+                title="پرداخت"
+              >
                 <Suspense fallback={<PaymentSkeleton />}>
-                  <PaymentDetails/>
+                  <PaymentDetails />
                 </Suspense>
               </FormStep>
 
-              <FormStep disableTitle step={4} icon={<UploadSimple className="w-6 h-6"/>} title="آپلود مدارک">
-              <Suspense fallback={<OrderSubmitButtonSkeleton />}>
-                <OrderSubmitButton isLoading={isLoading} />
-              </Suspense>
+              <FormStep
+                disableTitle
+                step={4}
+                icon={<UploadSimple className="w-6 h-6" />}
+                title="آپلود مدارک"
+              >
+                <Suspense fallback={<OrderSubmitButtonSkeleton />}>
+                  <OrderSubmitButton isLoading={isLoading} />
+                </Suspense>
               </FormStep>
-
-
-
             </FormStepperProvider>
           </Card>
         </form>
