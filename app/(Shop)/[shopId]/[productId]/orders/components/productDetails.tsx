@@ -10,11 +10,12 @@ import { useCheckout } from "../useCheckout";
 
 export default function ProductDetails() {
 
-  const { product, orderQuantity,  } = useCheckout()
+  const { product } = useCheckout()
   const t = useTranslations("Products");
   const [isExpanded, setIsExpanded] = useState(false); // حالت برای نمایش یا مخفی‌کردن متن
 
-  if (!product || typeof orderQuantity !== 'number') return <ProductDetailsSkeleton />
+
+  if (!product) return <ProductDetailsSkeleton />
 
   return (
     <div className="_product-details">

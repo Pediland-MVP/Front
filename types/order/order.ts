@@ -1,10 +1,5 @@
 import { GENDERS_ENUM } from "@/app/constants/gender.constant";
 
-export namespace OrderNamespace {
-    export type Order = IOrder
-    export type GET = IOrderGet
-}
-
 
 export interface IOrder {
     id:              string;
@@ -20,7 +15,7 @@ export interface IOrder {
     lead:            Lead;
 }
 
-export interface Instagram {
+interface Instagram {
     id:                string;
     createDate:        Date;
     updateDate:        Date;
@@ -42,12 +37,12 @@ export interface Instagram {
     allowFirstLeads:   boolean;
 }
 
-export interface Lead {
+interface Lead {
     id:      string;
     contact: Contact;
 }
 
-export interface Contact {
+interface Contact {
     id:         string;
     createDate: Date;
     updateDate: Date;
@@ -64,7 +59,7 @@ export interface Contact {
     state?:      string
 }
 
-export interface OrderCardToCard {
+interface OrderCardToCard {
     id:         string;
     createDate: Date;
     updateDate: Date;
@@ -72,13 +67,13 @@ export interface OrderCardToCard {
     key:        string;
 }
 
-export interface OrderProduct {
+interface OrderProduct {
     id:      string;
     product: Product;
     quantity: number
 }
 
-export interface Product {
+interface Product {
     id:          string;
     createDate:  Date;
     updateDate:  Date;
@@ -92,7 +87,7 @@ export interface Product {
     images:      Image[];
 }
 
-export interface Image {
+interface Image {
     id:          number;
     createDate:  Date;
     updateDate:  Date;
@@ -105,7 +100,7 @@ export interface Image {
 }
 
 
-export enum ORDER_STATUS {
+enum ORDER_STATUS {
     PENDING = 'pending',
     PROCESSING = 'processing',
     SENDING = 'sending',
@@ -115,11 +110,11 @@ export enum ORDER_STATUS {
 }
 
 
-export enum ORDER_FROM {
+enum ORDER_FROM {
     INSTAGRAM = 'instagram',
 }
 
-export enum ORDER_PAYMENT_METHODS {
+enum ORDER_PAYMENT_METHODS {
     CARD_TO_CARD = 'card_to_card',
     ZARINPAL = 'zarinpal',
 }
@@ -133,12 +128,12 @@ export enum ORDER_PAYMENT_METHODS {
 
 
 
-export interface IOrderGet {
+interface IOrderGet {
     items: Item[];
     meta:  GetMeta;
 }
 
-export interface Item {
+interface Item {
     id:              string;
     secret:          string;
     createDate:      Date;
@@ -151,11 +146,11 @@ export interface Item {
     lead:            GetLead;
     instagram: GetInstagram
 }
-export interface GetInstagram {
+interface GetInstagram {
     id: string
 }
 
-export interface GetLead {
+interface GetLead {
     id:         string;
     createDate: Date;
     updateDate: Date;
@@ -165,7 +160,7 @@ export interface GetLead {
     contact:    GetContact;
 }
 
-export interface GetContact {
+interface GetContact {
     id:         string;
     createDate: Date;
     updateDate: Date;
@@ -182,7 +177,7 @@ export interface GetContact {
     birthDate:  Date;
 }
 
-export interface GetOrderCardToCard {
+interface GetOrderCardToCard {
     id:         string;
     createDate: Date;
     updateDate: Date;
@@ -190,7 +185,7 @@ export interface GetOrderCardToCard {
     key:        string;
 }
 
-export interface GetOrderProduct {
+interface GetOrderProduct {
     id:         string;
     createDate: Date;
     updateDate: Date;
@@ -198,7 +193,7 @@ export interface GetOrderProduct {
     product:    GetProduct;
 }
 
-export interface GetProduct {
+interface GetProduct {
     id:          string;
     createDate:  Date;
     updateDate:  Date;
@@ -213,7 +208,7 @@ export interface GetProduct {
 }
 
 
-export interface GetProductImage {
+interface GetProductImage {
     id:          number;
     createDate:  Date;
     updateDate:  Date;
@@ -225,7 +220,7 @@ export interface GetProductImage {
     key:         string;
 }
 
-export interface GetMeta {
+interface GetMeta {
     currentPage:  number;
     itemCount:    number;
     itemsPerPage: number;

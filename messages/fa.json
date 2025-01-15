@@ -1064,7 +1064,10 @@
         "CONTENT_IMAGE_REQUIRED": "تصویر محتوا الزامی است",
         "FILE_NOT_FOUND": "فایل پیدا نشد",
         "CONDITION_EXISTS": "شرط موجود است",
-        "CONDITION_IS_ALREADY_EXIST": "شرطی که انتخاب کردید قبلا در اتومیشن دیگری استفاده شده است"
+        "CONDITION_IS_ALREADY_EXIST": "شرطی که انتخاب کردید قبلا در اتومیشن دیگری استفاده شده است",
+        "ERROR_CODES": "خطای ناشناخته",
+        "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
+        "CHECK_CONNECTION": "اتصال خود را چک کنید"
       }
       
 }

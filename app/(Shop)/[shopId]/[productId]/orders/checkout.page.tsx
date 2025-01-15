@@ -3,8 +3,6 @@
 import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import useSWR from "swr";
-import { ORDER_STATUS, OrderNamespace } from "@/types/order";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect } from "react";
@@ -23,7 +21,6 @@ import OrderNotfound from "./components/order.notfound";
 import OrderProcessing from "./components/order.processing";
 // UI
 import { Card } from "@/components/theme/ui/card";
-import { toast } from "@/components/ui/use-toast";
 import {
   FormStep,
   FormStepperProvider,
@@ -35,7 +32,8 @@ import {
   UploadSimple,
 } from "@phosphor-icons/react/dist/ssr";
 import { CheckoutContext } from "./useCheckout";
-import { headers } from "next/headers";
+import useSWRImmutable from "swr/immutable";
+import { ProductNamespace } from "@/types/product";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -94,20 +92,22 @@ export default function CheckoutPage({
   const t = useTranslations("Checkout");
   const [isLoading, setIsLoading] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
+  const [currentStep, setCurrentStep] = useState<number>(1)
+  const [quantity, setQuantity] = useState<number>(1);
+  const [orderId, setOrderId] = useState<string>();
+  const [outOfStock, setOutOfStock] = useState(false);
 
   const {
-    data: order,
-    isLoading: isLoadingOrder,
-    error,
-  } = useSWR<OrderNamespace.Order>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
-    (url: string) =>
-      fetcher2(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    data: product,
+    isLoading: isLoadingProduct,
+    error: productError,
+  } = useSWRImmutable<ProductNamespace.PublicProduct>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${productId}`,
+    fetcher2
   );
+
+
+  const { data: lead, isLoading: isLoadingLead, error: errorLead } = useSWRImmutable(`${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/my/contact`, fetcher2);
 
   const form = useForm({
     resolver: zodResolver(orderFormSchema),
@@ -125,23 +125,35 @@ export default function CheckoutPage({
   });
 
   useEffect(() => {
-    if (order) {
+    if (lead) {
       form.reset({
-        ...(order.lead.contact as unknown as Pick<
-          OrderNamespace.Order["lead"]["contact"],
-          | "gender"
-          | "firstname"
-          | "lastname"
-          | "email"
-          | "mobile"
-          | "state"
-          | "city"
-          | "address"
-          | "postalcode"
-        >),
-      });
+        ...lead.contact
+      })
     }
-  }, [order]);
+  }, [lead])
+
+  useEffect(() => {
+    console.log(form.getValues());
+    
+  }, [form.watch])
+  // useEffect(() => {
+  //   if (order) {
+  //     form.reset({
+  //       ...(order.lead.contact as unknown as Pick<
+  //         OrderNamespace.Order["lead"]["contact"],
+  //         | "gender"
+  //         | "firstname"
+  //         | "lastname"
+  //         | "email"
+  //         | "mobile"
+  //         | "state"
+  //         | "city"
+  //         | "address"
+  //         | "postalcode"
+  //       >),
+  //     });
+  //   }
+  // }, [order]);
 
   const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
     // setIsLoading(true);
@@ -176,7 +188,7 @@ export default function CheckoutPage({
     //   });
   };
 
-  switch ((error?.data as ExceptionMessage)?.code) {
+  switch ((productError?.data as ExceptionMessage)?.code) {
     case "ORDER_INVALID":
       return <OrderNotfound />;
     case "ORDER_EXPIRED":
@@ -185,9 +197,9 @@ export default function CheckoutPage({
       return <OrderNotfound />;
   }
 
-  if (order?.status === ORDER_STATUS.PROCESSING) {
-    return <OrderProcessing />;
-  }
+  // if (order?.status === ORDER_STATUS.PROCESSING) {
+  //   return <OrderProcessing />;
+  // }
 
   if (orderCompleted) {
     return <OrderProcessing />;
@@ -199,18 +211,25 @@ export default function CheckoutPage({
         token,
         shopId,
         productId,
-        product: order?.orderProducts?.[0]?.product,
-        orderQuantity: order?.orderProducts?.[0]?.quantity,
+        product,
+        step: currentStep,
+        setStep: setCurrentStep,
+        orderQuantity: quantity,
+        setOrderQuantity: setQuantity,
+        orderId,
+        setOrderId,
+        outOfStock,
+        setOutOfStock
       }}
     >
       <FormProvider {...form}>
         <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
           <Suspense fallback={<FloatingTimeCircleSkeleton />}>
-            <FloatingTimeCircle startDateString={order?.createDate} />
+            {/* <FloatingTimeCircle startDateString={order?.createDate} /> */}
           </Suspense>
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
-            <FormStepperProvider className="mt-5" currentStep={1}>
+            <FormStepperProvider className="mt-5" currentStep={currentStep}>
               <FormStep
                 disableTitle
                 step={1}

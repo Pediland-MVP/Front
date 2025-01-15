@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/drawer";
 import { useTranslations } from "next-intl";
 import OrderDetails from "./orderDetails";
-import { Item } from '@/types/order'
+import { Item } from '@/types/order/order'
 
 export interface EditOrderProps {
   open: boolean;

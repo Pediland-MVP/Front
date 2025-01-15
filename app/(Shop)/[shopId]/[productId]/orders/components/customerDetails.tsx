@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
@@ -8,15 +8,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // UI
 import { Input } from "@/components/theme/ui/input";
 import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/theme/ui/button";
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import LoadingButton from '@/components/ui/button-loading';
+import useOrder from "../hooks/useOrder";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
 
+
   const {
     register,
-    handleSubmit,
     control,
     formState: { errors },
   } = useFormContext<z.infer<typeof orderFormSchema>>();
@@ -24,6 +25,12 @@ export default function CustomerDetails() {
   const form = useForm<z.infer<typeof orderFormSchema>>({
     resolver: zodResolver(orderFormSchema),
   });
+
+  const { createOrder, loading: isCreateOrderLoading } = useOrder()
+
+  const createOrderHandler = async () => {
+    createOrder()
+  }
 
   return (
     <div className="_customer-details p-3">
@@ -87,9 +94,9 @@ export default function CustomerDetails() {
         </form>
       </FormProvider>
       <div className="mt-6 w-full">
-        <Button className="w-full" variant={"success"}>
+        <LoadingButton onClick={createOrderHandler} isLoading={isCreateOrderLoading} className="w-full" variant={"success"}>
           {t("nextStep")}
-        </Button>
+        </LoadingButton>
       </div>
     </div>
   );

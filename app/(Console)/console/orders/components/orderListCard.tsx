@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ORDER_STATUS, OrderNamespace } from "@/types/order";
+import { ORDER_STATUS, OrderNamespace } from "@/types/order/order";
 import { Pagination } from "./pagination";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";

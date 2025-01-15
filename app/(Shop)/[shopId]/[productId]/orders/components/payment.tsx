@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { OrderNamespace } from "@/types/order";
+import { OrderNamespace } from "@/types/order/order";
 // UI 
 import { Label } from "@/components/theme/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";

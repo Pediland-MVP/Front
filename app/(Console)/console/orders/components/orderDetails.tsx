@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Item, ORDER_STATUS } from "@/types/order";
+import { Item, ORDER_STATUS } from "@/types/order/order";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import LoadingButton from '@/components/ui/button-loading';

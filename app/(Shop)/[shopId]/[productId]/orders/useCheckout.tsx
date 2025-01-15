@@ -1,12 +1,19 @@
-import { OrderNamespace } from "@/types/order";
-import { createContext, useContext } from "react";
+import { ProductNamespace } from "@/types/product";
+import { createContext, Dispatch, useContext } from "react";
 
 export type CheckoutContextType = {
     shopId: string
     productId: string
+    product?: ProductNamespace.PublicProduct
     token?: string
-    product: OrderNamespace.Order['orderProducts'][0]['product'] | undefined,
-    orderQuantity: number | undefined
+    orderQuantity: number
+    setOrderQuantity: Dispatch<React.SetStateAction<number>>;
+    step: number,
+    setStep: Dispatch<React.SetStateAction<number>>,
+    orderId: string | undefined;
+    setOrderId: Dispatch<React.SetStateAction<string | undefined>>;
+    outOfStock: boolean;
+    setOutOfStock: Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const CheckoutContext = createContext<CheckoutContextType | null>(null)

@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "@/app/globals.css";
 // UI 
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/theme/ui/toaster";
 import { ShoppingBagOpen } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
