@@ -3,6 +3,7 @@
 import * as React from "react";
 import { createContext, useContext, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import {useEffect} from 'react';
 
 // Types
 interface FormStepperContextValue {
@@ -54,6 +55,10 @@ export function FormStepperProvider({
 }: FormStepperProviderProps) {
   const [activeStep, setActiveStep] = React.useState(currentStep);
   const [steps, setSteps] = React.useState<FormStepProps[]>([]);
+
+  useEffect(() => {
+    setActiveStep(currentStep)
+  }, [currentStep])
 
   const registerStep = React.useCallback((step: FormStepProps) => {
     setSteps((prev) => {
