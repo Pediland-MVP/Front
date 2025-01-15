@@ -10,24 +10,83 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/theme/ui/textarea";
 import { Package } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/theme/ui/input";
-import { Label } from "@/components/theme/ui/label";
-import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/theme/ui/select";
+import useSWRImmutable from "swr/immutable";
+import { ProvinceNamespace } from "@/types/province";
+import { CityNamespace } from "@/types/city";
+import { useEffect } from "react";
+import LoadingButton from '@/components/ui/button-loading';
+import useShipping from "../hooks/useShipping";
 
 export default function Address() {
   const t = useTranslations("Checkout");
 
-  const form = useForm<z.infer<typeof orderFormSchema>>({
-    resolver: zodResolver(orderFormSchema),
-  });
-
   const {
     register,
-    handleSubmit,
+    getValues,
     control,
     formState: { errors },
+    watch,
+    trigger
   } = useFormContext<z.infer<typeof orderFormSchema>>();
 
-  logger.debug(errors)
+  const {
+    data: provinces,
+    error: provincesError,
+    isLoading: provincesIsLoading,
+    mutate: fetchProvinces,
+  } = useSWRImmutable<ProvinceNamespace.GET>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities/provinces`,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  const {
+    data: cities,
+    error: citiesError,
+    isLoading: citiesIsLoading,
+    mutate: fetchCities,
+  } = useSWRImmutable<CityNamespace.GET>(
+    () =>
+      `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities?provinceId=` +
+      `${getValues().state}`,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  useEffect(() => {
+    if (getValues().state) {
+      fetchCities();
+    }
+  }, [watch("state")]);
+
+  const { updateShipping, loading: isUpdateShippingLoading } = useShipping()
+
+  const updateShippingHandler = () => {
+    trigger('address')
+    trigger('cityId')
+    trigger('postalcode')
+
+    if (errors.address || errors.cityId || errors.postalcode) {
+      return
+    }
+    updateShipping()
+  }
 
   return (
     <div className="_customer-address p-3">
@@ -36,10 +95,68 @@ export default function Address() {
         {t("address")}
       </h2>
 
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit((data) => console.log(data))}>
+      {/* <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit((data) => console.log(data))}> */}
           <div className="grid gap-2">
             <FormField
+              control={control}
+              name="state"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>{t("state")}</FormLabel>
+                  <Select
+                    onValueChange={(val) => val && field.onChange(val)}
+                    defaultValue={field.value}
+                    value={field.value}
+                    dir="rtl"
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("state")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {provinces?.map((province) => (
+                        <SelectItem key={province.id} value={`${province.id}`}>
+                          {province.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name="cityId"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>{t("city")}</FormLabel>
+                  <Select
+                    onValueChange={(val) => val && field.onChange(val)}
+                    defaultValue={field.value}
+                    dir="rtl"
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("city")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {cities?.map((city) => (
+                        <SelectItem key={city.id} value={`${city.id}`}>
+                          {city.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* <FormField
               control={control}
               name="state"
               render={({ field }) => (
@@ -71,7 +188,7 @@ export default function Address() {
                   )}
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={control}
@@ -80,10 +197,15 @@ export default function Address() {
                 <FormItem>
                   <FormLabel>{t("address")}</FormLabel>
                   <FormControl>
-                    <Textarea id="address" {...register("address", { required: true })} />
+                    <Textarea
+                      id="address"
+                      {...register("address", { required: true })}
+                    />
                   </FormControl>
                   {errors.address && (
-                    <span className="text-red-500 text-sm">{t("required")}</span>
+                    <span className="text-red-500 text-sm">
+                      {t("required")}
+                    </span>
                   )}
                 </FormItem>
               )}
@@ -96,17 +218,27 @@ export default function Address() {
                 <FormItem>
                   <FormLabel>{t("postalCode")}</FormLabel>
                   <FormControl>
-                    <Input id="postalcode" {...register("postalcode", { required: true })} />
+                    <Input
+                      id="postalcode"
+                      {...register("postalcode", { required: true })}
+                    />
                   </FormControl>
                   {errors.postalcode && (
-                    <span className="text-red-500 text-sm">{t("required")}</span>
+                    <span className="text-red-500 text-sm">
+                      {t("required")}
+                    </span>
                   )}
                 </FormItem>
               )}
             />
           </div>
-        </form>
-      </FormProvider>
+        {/* </form>
+      </FormProvider> */}
+      <div className="mt-6 w-full">
+        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-full" variant={"success"}>
+          {t("nextStep")}
+        </LoadingButton>
+      </div>
     </div>
   );
 }

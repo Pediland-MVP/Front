@@ -34,6 +34,7 @@ import {
 import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
+import logger from "@/app/utils/logger";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -73,7 +74,7 @@ export const orderFormSchema = z.object({
   email: z.string().email(),
   mobile: z.string().regex(REGEX_MOBILE, "Invalid mobile number"),
   state: z.string().min(1, "State is required"),
-  city: z.string().min(1, "City is required"),
+  cityId: z.string().min(1, "City is required"),
   address: z.string().min(1, "Address is required"),
   postalcode: z.string().min(10, "کد پستی باید ۱۰ رقمی باشد").max(10),
 });
@@ -118,7 +119,7 @@ export default function CheckoutPage({
       email: "",
       mobile: "",
       state: "",
-      city: "",
+      cityId: "",
       address: "",
       postalcode: "",
     },
@@ -126,8 +127,13 @@ export default function CheckoutPage({
 
   useEffect(() => {
     if (lead) {
+      logger.log(lead.contact)
+      const cityId = lead.contact.city?.id?.toString();
+      const state = lead.contact.city?.province?.id?.toString();
       form.reset({
-        ...lead.contact
+        ...lead.contact,
+        ...(cityId && { cityId }),
+        ...(state && { state }),
       })
     }
   }, [lead])
@@ -245,7 +251,7 @@ export default function CheckoutPage({
                 disableTitle
                 step={2}
                 icon={<House className="w-6 h-6" />}
-                title="we شخصی"
+                title="آدرس"
               >
                 <Suspense fallback={<CustomerAddressSkeleton />}>
                   <Address />

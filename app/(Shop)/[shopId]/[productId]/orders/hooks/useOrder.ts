@@ -11,7 +11,7 @@ import { orderFormSchema } from "../checkout.page"
 export default function useOrder() {
 
     const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>()
-    const { shopId, productId, orderQuantity, setStep,  } = useCheckout()
+    const { shopId, productId, orderQuantity, setStep, setOrderId } = useCheckout()
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setIsLoading] = useState(false)
 
@@ -33,6 +33,8 @@ export default function useOrder() {
         })
         .then(async (res) => {
           if (res.ok) {
+            const json = await res.json()
+            setOrderId(json.id)
             return setStep(2)
           }
           const resJson = await res.json() as ExceptionMessage

@@ -1052,6 +1052,7 @@
         "ORDER_INVALID": "سفارش نامعتبر است",
         "ORDER_QUANTITY_IS_ZERO": "تعداد سفارش صفر است",
         "ORDER_CARD_TO_CARD_NOT_UPLOADED": "کارت به کارت سفارش آپلود نشده است",
+        "ORDER_PENDING_EXIST": "یک سفارش انجام نشده دارید",
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
         "NO_INSTAGRAM": "اینستاگرامی وجود ندارد",
         "CITY_INVALID": "شهر نامعتبر است",
