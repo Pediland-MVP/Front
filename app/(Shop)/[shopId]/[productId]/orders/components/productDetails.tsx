@@ -57,19 +57,19 @@ export default function ProductDetails() {
 
       <div className="_price-info px-3 flex items-center gap-2 justify-around">
         <div className="_price-wrapper">
-          {product.discount && (
+          {product.discountPrice && (
             <p className="flex items-center justify-end gap-2 text-gray-700">
               <span className="text-gray-400 line-through">
                 {product.price}
               </span>
               <span className="bg-red-500 text-white flex items-center pt-1 pb-[2px] px-[5px] leading-4 rounded-md text-[13px]">
-                {calculateDiscountPercentage(product.price, product.discount)}%
+                {calculateDiscountPercentage(product.price, product.discountPrice)}%
               </span>
             </p>
           )}
           <p className="flex items-center gap-2 text-gray-700 leading-none">
             <span className="text-green-600 font-bold text-[22px]">
-              {product.discount ? product.discount * orderQuantity : product.price * orderQuantity}
+              {product.discountPrice ? product.discountPrice * orderQuantity : product.price * orderQuantity}
             </span>
             <span className="font-medium">تومان</span>
           </p>

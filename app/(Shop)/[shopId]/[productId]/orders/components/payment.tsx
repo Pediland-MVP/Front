@@ -65,7 +65,7 @@ export default function PaymentDetails() {
           <p className="text-sm text-gray-600 leading-relaxed">
             لطفا مبلغ{" "}
             <span className="bg-yellow-100 font-semibold px-1 text-primary">
-              {product?.discount ? product!.discount * orderQuantity : product!.price * orderQuantity} تومان
+              {product?.discountPrice ? product!.discountPrice * orderQuantity : product!.price * orderQuantity} تومان
             </span>{" "}
             به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
             بارگزاری نمایید.
