@@ -13,7 +13,7 @@ import LoadingButton from '@/components/ui/button-loading';
 
 export default function PaymentDetails() {
   const t = useTranslations("Checkout");
-  const { shop, product, orderQuantity } = useCheckout();
+  const { shop, product, orderQuantity, pendingOrder, setStep } = useCheckout();
   const cardToCard = shop?.user.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
 
@@ -42,6 +42,9 @@ export default function PaymentDetails() {
   }
 
   const startPaymentHandler = async () => {
+    if (pendingOrder!.step >= 4) {
+      return setStep(4)
+    }
     startPayment()
   }
 

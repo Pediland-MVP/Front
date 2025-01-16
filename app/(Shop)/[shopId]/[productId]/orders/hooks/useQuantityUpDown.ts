@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 export default function useQuantityUpDown() {
 
     const t_ec = useTranslations('ERROR_CODES')
-    const { pendingOrder, shopId } = useCheckout()
+    const { pendingOrder, shopId, setOrderQuantity } = useCheckout()
     const [loading, setLoading] = useState(false)
     async function updateQuantity(adjustment: 'increment' | 'decrement') {
         setLoading(true)
@@ -21,6 +21,11 @@ export default function useQuantityUpDown() {
         })
         .then (async res => {
             if (res.ok) {
+                if (adjustment === 'decrement') {
+                    setOrderQuantity(old => old - 1)   
+                } else {
+                    setOrderQuantity(old => old + 1)
+                }
                 return await res.json()
             }
 

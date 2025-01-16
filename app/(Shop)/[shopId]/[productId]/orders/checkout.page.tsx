@@ -146,6 +146,13 @@ export default function CheckoutPage({
   useEffect(() => {
     if (_pendingOrder) {
       console.log("pendingOrder", pendingOrder);
+
+      if (_pendingOrder.orderProducts?.length > 0) {
+        const orderProduct = _pendingOrder.orderProducts[0]
+        if (orderProduct.quantity) {
+          setQuantity(orderProduct.quantity)
+        }
+      }
       
       setCurrentStep(_pendingOrder.step)
       setPendingOrder(_pendingOrder)
