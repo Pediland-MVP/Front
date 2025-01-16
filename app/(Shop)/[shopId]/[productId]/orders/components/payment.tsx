@@ -11,7 +11,7 @@ import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
 
 export default function PaymentDetails() {
   const t = useTranslations("Checkout");
-  const { shop } = useCheckout();
+  const { shop, product, orderQuantity } = useCheckout();
   const cardToCard = shop?.user.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
 
@@ -65,7 +65,7 @@ export default function PaymentDetails() {
           <p className="text-sm text-gray-600 leading-relaxed">
             لطفا مبلغ{" "}
             <span className="bg-yellow-100 font-semibold px-1 text-primary">
-              250.000 تومان
+              {product?.discount ? product!.discount * orderQuantity : product!.price * orderQuantity} تومان
             </span>{" "}
             به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
             بارگزاری نمایید.

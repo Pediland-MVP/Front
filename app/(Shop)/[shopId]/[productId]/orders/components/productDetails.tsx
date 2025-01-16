@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -7,15 +7,17 @@ import { Quantity } from "./quantity";
 import { useState } from "react";
 import { useCheckout } from "../useCheckout";
 
-
 export default function ProductDetails() {
-
-  const { product } = useCheckout()
+  const { product, orderQuantity } = useCheckout();
   const t = useTranslations("Products");
   const [isExpanded, setIsExpanded] = useState(false); // حالت برای نمایش یا مخفی‌کردن متن
 
+  function calculateDiscountPercentage(originalPrice: number, priceAfterDiscount: number): number {
+    const discountPercentage = ((originalPrice - priceAfterDiscount) / originalPrice) * 100;
+    return discountPercentage;
+}
 
-  if (!product) return <ProductDetailsSkeleton />
+  if (!product) return <ProductDetailsSkeleton />;
 
   return (
     <div className="_product-details">
@@ -35,7 +37,9 @@ export default function ProductDetails() {
             {product.title}
           </h2>
           <div className="_text flex flex-col">
-            <p className={`text-gray-600 transition-all text-[15px] ${isExpanded ? "line-clamp-none" : "line-clamp-3"} overflow-hidden`}>
+            <p
+              className={`text-gray-600 transition-all text-[15px] ${isExpanded ? "line-clamp-none" : "line-clamp-3"} overflow-hidden`}
+            >
               {product.description}
             </p>
             <button
@@ -53,12 +57,20 @@ export default function ProductDetails() {
 
       <div className="_price-info px-3 flex items-center gap-2 justify-around">
         <div className="_price-wrapper">
-          <p className="flex items-center justify-end gap-2 text-gray-700">
-            <span className="text-gray-400 line-through">{product.price}</span>
-            <span className="bg-red-500 text-white flex items-center pt-1 pb-[2px] px-[5px] leading-4 rounded-md text-[13px]">23%</span>
-          </p>
+          {product.discount && (
+            <p className="flex items-center justify-end gap-2 text-gray-700">
+              <span className="text-gray-400 line-through">
+                {product.price}
+              </span>
+              <span className="bg-red-500 text-white flex items-center pt-1 pb-[2px] px-[5px] leading-4 rounded-md text-[13px]">
+                {calculateDiscountPercentage(product.price, product.discount)}%
+              </span>
+            </p>
+          )}
           <p className="flex items-center gap-2 text-gray-700 leading-none">
-            <span className="text-green-600 font-bold text-[22px]">{product.price}</span>
+            <span className="text-green-600 font-bold text-[22px]">
+              {product.discount ? product.discount * orderQuantity : product.price * orderQuantity}
+            </span>
             <span className="font-medium">تومان</span>
           </p>
         </div>
