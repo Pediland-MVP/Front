@@ -11,13 +11,13 @@ import { useState } from "react";
 export default function useShipping() {
 
     const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>()
-    const { setStep, orderId } = useCheckout()
+    const { setStep, pendingOrder } = useCheckout()
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setLoading] = useState(false)
     const updateShipping = async (values?: z.infer<typeof orderFormSchema>) => {
         setLoading(true)
         const {cityId, address, postalcode} = values || getValues()
-        await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${orderId}/updateShipping`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${pendingOrder?.id}/updateShipping`, {
           method: "PATCH",
           headers: {
             'Content-Type': 'application/json',

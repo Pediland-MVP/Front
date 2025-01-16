@@ -36,6 +36,7 @@ import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import logger from "@/app/utils/logger";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
+import { OrderNamespace } from "@/types/order/order.namespace";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -96,8 +97,8 @@ export default function CheckoutPage({
   const [orderCompleted, setOrderCompleted] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(1)
   const [quantity, setQuantity] = useState<number>(1);
-  const [orderId, setOrderId] = useState<string>();
   const [outOfStock, setOutOfStock] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState<OrderNamespace.GET.Pending>();
 
   const {
     data: product,
@@ -140,6 +141,16 @@ export default function CheckoutPage({
 
 
   const { data: shop, isLoading: isLoadingShop, error: errorShop } = useSWRImmutable<ShopNamespace.GET.Shop>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`)
+
+  const { data: _pendingOrder, isLoading: isLoadingPendingOrder, error: errorPendingOrder } = useSWRImmutable<OrderNamespace.GET.Pending>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`)
+  useEffect(() => {
+    if (_pendingOrder) {
+      console.log("pendingOrder", pendingOrder);
+      
+      setCurrentStep(_pendingOrder.step)
+      setPendingOrder(_pendingOrder)
+    }
+  }, [_pendingOrder])
 
 
 
@@ -227,8 +238,11 @@ export default function CheckoutPage({
         setStep: setCurrentStep,
         orderQuantity: quantity,
         setOrderQuantity: setQuantity,
-        orderId,
-        setOrderId,
+        pendingOrder,
+        setPendingOrder,
+        // orderId,
+        // order
+        // setOrderId,
         outOfStock,
         setOutOfStock,
         shop
@@ -241,7 +255,7 @@ export default function CheckoutPage({
           </Suspense>
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
-            <FormStepperProvider className="mt-5" currentStep={currentStep}>
+            <FormStepperProvider className="mt-5" setCurrentStep={setCurrentStep} currentStep={currentStep}>
               <FormStep
                 disableTitle
                 step={1}

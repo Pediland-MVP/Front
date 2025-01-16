@@ -8,6 +8,8 @@ import { Copy, CreditCard, Check } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
 import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
+import useStartPayment from "../hooks/useStartPayment";
+import LoadingButton from '@/components/ui/button-loading';
 
 export default function PaymentDetails() {
   const t = useTranslations("Checkout");
@@ -18,6 +20,7 @@ export default function PaymentDetails() {
   const [cardNumberCopied, setCardNumberCopied] = useState(false);
   const [ibanCopied, setIbanCopied] = useState(false);
 
+  const { startPayment, loading: isStartPaymentLoading } = useStartPayment()
   function separateTextBySpace(text: string | undefined): string {
     if (!text) return "";
     const cleanedText = text.replace(/\s/g, "");
@@ -36,6 +39,10 @@ export default function PaymentDetails() {
       setIbanCopied(true);
       setTimeout(() => setIbanCopied(false), 5000);
     }
+  }
+
+  const startPaymentHandler = async () => {
+    startPayment()
   }
 
   return (
@@ -110,9 +117,9 @@ export default function PaymentDetails() {
         </div>
 
         <div className="mt-2 w-full">
-          <Button className="w-full" variant={"success"}>
+          <LoadingButton isLoading={isStartPaymentLoading} onClick={startPaymentHandler} className="w-full" variant={"success"}>
             {t("nextStep")}
-          </Button>
+          </LoadingButton>
         </div>
       </div>
     </div>

@@ -7,29 +7,37 @@ import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr";
 import { useCheckout } from "../useCheckout";
 import { useCanQuantityUp } from "../hooks/useCanQuantityUp";
 import logger from "@/app/utils/logger";
+import useQuantityUpDown from "../hooks/useQuantityUpDown";
 
 
 
 export function Quantity() {
-  const { token, shopId, product, orderQuantity, setOrderQuantity, orderId, outOfStock, setOutOfStock } = useCheckout()
+  const { token, shopId, product, orderQuantity, setOrderQuantity, pendingOrder, outOfStock, setOutOfStock } = useCheckout()
   const [isPending, setIsPending] = useState(false);
   const { canQuantityUp } = useCanQuantityUp()
+  const { updateQuantity, loading: UpdateQuantityLoading } = useQuantityUpDown()
 
 
   const handleAdjustment = async (adjustment: "increment" | "decrement") => {
 
-    if (adjustment === 'increment' && !orderId) {
-      canQuantityUp(setIsPending)
-      return
-    }
-
-    if (adjustment === 'decrement') {
-      if (orderQuantity === 1) {
+    if (!pendingOrder) {
+      if (adjustment === 'increment') {
+        canQuantityUp(setIsPending)
         return
       }
-      setOutOfStock(false)
-      setOrderQuantity(old => old - 1)
+  
+      if (adjustment === 'decrement') {
+        if (orderQuantity === 1) {
+          return
+        }
+        setOutOfStock(false)
+        setOrderQuantity(old => old - 1)
+      }
     }
+
+    updateQuantity(adjustment)
+
+
 
     // setIsPending(true);
 

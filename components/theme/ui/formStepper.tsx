@@ -17,6 +17,7 @@ interface FormStepperContextValue {
 interface FormStepperProviderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   currentStep?: number;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   onStepChange?: (step: number) => void;
   disableNavigation?: boolean;
 }
@@ -48,17 +49,13 @@ export function useFormStepper() {
 export function FormStepperProvider({
   children,
   currentStep = 1,
+  setCurrentStep,
   onStepChange,
   disableNavigation = false,
   className,
   ...props
 }: FormStepperProviderProps) {
-  const [activeStep, setActiveStep] = React.useState(currentStep);
   const [steps, setSteps] = React.useState<FormStepProps[]>([]);
-
-  useEffect(() => {
-    setActiveStep(currentStep)
-  }, [currentStep])
 
   const registerStep = React.useCallback((step: FormStepProps) => {
     setSteps((prev) => {
@@ -68,23 +65,16 @@ export function FormStepperProvider({
     });
   }, []);
 
-  const setCurrentStep = React.useCallback(
-    (step: number) => {
-      setActiveStep(step);
-      onStepChange?.(step);
-    },
-    [onStepChange]
-  );
 
   const value = useMemo(
     () => ({
-      currentStep: activeStep,
+      currentStep: currentStep,
       setCurrentStep,
       steps,
       registerStep,
       disableNavigation,
     }),
-    [activeStep, setCurrentStep, steps, registerStep, disableNavigation]
+    [currentStep, setCurrentStep, steps, registerStep, disableNavigation]
   );
 
   return (
@@ -92,8 +82,8 @@ export function FormStepperProvider({
       <div className={cn("w-full", className)}>
         <div className="mb-8 flex items-center justify-center">
           {steps.map((step, index) => {
-            const isActive = step.step === activeStep;
-            const isCompleted = step.step < activeStep;
+            const isActive = step.step === currentStep;
+            const isCompleted = step.step < currentStep;
             const isLast = index === steps.length - 1;
 
             return (

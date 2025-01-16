@@ -1041,10 +1041,12 @@
         }
         
       },
-    "ERROR_CODES": {
+      "ERROR_CODES": {
         "USER_NOT_FOUND": "کاربر پیدا نشد",
         "PASSWORD_INVALID": "رمز عبور نامعتبر است",
         "PRODUCT_NOT_FOUND": "محصول پیدا نشد",
+        "PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE": "قیمت تخفیف محصول بیشتر از قیمت اصلی است",
+        "PRODUCT_DISCOUNT_PRICE_IS_ZERO": "قیمت تخفیف محصول صفر است",
         "PRODUCT_OUT_OF_STOCK": "محصول در انبار موجود نیست",
         "ORDER_NOT_FOUND": "سفارش پیدا نشد",
         "ORDER_EXPIRED": "سفارش منقضی شده است",
@@ -1053,9 +1055,11 @@
         "ORDER_QUANTITY_IS_ZERO": "تعداد سفارش صفر است",
         "ORDER_CARD_TO_CARD_NOT_UPLOADED": "کارت به کارت سفارش آپلود نشده است",
         "ORDER_PENDING_EXIST": "یک سفارش انجام نشده دارید",
+        "ORDER_STATUS_NOT_PENDING": "وضعیت سفارش در حال انتظار نیست",
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
         "NO_INSTAGRAM": "اینستاگرامی وجود ندارد",
         "CITY_INVALID": "شهر نامعتبر است",
+        "CITY_NOT_FOUND": "شهر پیدا نشد",
         "COMMENT_NOT_FOUND": "کامنت پیدا نشد",
         "CONTENT_TEXT_REQUIRED": "متن محتوا الزامی است",
         "CONTENT_FILE_REQUIRED": "فایل محتوا الزامی است",
@@ -1066,6 +1070,12 @@
         "FILE_NOT_FOUND": "فایل پیدا نشد",
         "CONDITION_EXISTS": "شرط موجود است",
         "CONDITION_IS_ALREADY_EXIST": "شرطی که انتخاب کردید قبلا در اتومیشن دیگری استفاده شده است",
+        "CONSENT_TEXT_REQUIRED": "متن رضایت الزامی است",
+        "USER_DATA_TEXT_REQUIRED": "متن داده کاربر الزامی است",
+        "REMINDER_TIME_REQUIRED": "زمان یادآوری الزامی است",
+        "CARD_TO_CARD_USER_HAVE_NOT": "کاربر کارت به کارت ندارد",
+        "ORDER_PENDING_NOT_FOUND": "سفارش در حال انتظار پیدا نشد",
+        "SHOP_NOT_FOUND": "فروشگاه پیدا نشد",
         "ERROR_CODES": "خطای ناشناخته",
         "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
         "CHECK_CONNECTION": "اتصال خود را چک کنید"
