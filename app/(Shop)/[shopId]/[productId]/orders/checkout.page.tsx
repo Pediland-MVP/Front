@@ -35,6 +35,7 @@ import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import logger from "@/app/utils/logger";
+import { ShopNamespace } from "@/types/shops/shop.namespace";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -127,7 +128,6 @@ export default function CheckoutPage({
 
   useEffect(() => {
     if (lead) {
-      logger.log(lead.contact)
       const cityId = lead.contact.city?.id?.toString();
       const state = lead.contact.city?.province?.id?.toString();
       form.reset({
@@ -137,6 +137,11 @@ export default function CheckoutPage({
       })
     }
   }, [lead])
+
+
+  const { data: shop, isLoading: isLoadingShop, error: errorShop } = useSWRImmutable<ShopNamespace.GET.Shop>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`)
+
+
 
   useEffect(() => {
     console.log(form.getValues());
@@ -225,7 +230,8 @@ export default function CheckoutPage({
         orderId,
         setOrderId,
         outOfStock,
-        setOutOfStock
+        setOutOfStock,
+        shop
       }}
     >
       <FormProvider {...form}>

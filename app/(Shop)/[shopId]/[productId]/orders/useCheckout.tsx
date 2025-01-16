@@ -1,11 +1,12 @@
 import { ProductNamespace } from "@/types/product";
+import { ShopNamespace } from "@/types/shops/shop.namespace";
 import { createContext, Dispatch, useContext } from "react";
 
 export type CheckoutContextType = {
     shopId: string
     productId: string
-    product?: ProductNamespace.PublicProduct
-    token?: string
+    product: ProductNamespace.PublicProduct | undefined
+    token: string | undefined
     orderQuantity: number
     setOrderQuantity: Dispatch<React.SetStateAction<number>>;
     step: number,
@@ -14,6 +15,7 @@ export type CheckoutContextType = {
     setOrderId: Dispatch<React.SetStateAction<string | undefined>>;
     outOfStock: boolean;
     setOutOfStock: Dispatch<React.SetStateAction<boolean>>;
+    shop: ShopNamespace.GET.Shop | undefined
 }
 
 export const CheckoutContext = createContext<CheckoutContextType | null>(null)
