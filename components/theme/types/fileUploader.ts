@@ -1,4 +1,3 @@
-import { UUID } from 'crypto'
 import React from 'react'
 
 export type FileWithPreview = {
