@@ -15,7 +15,7 @@ import ProductDetails from "./components/productDetails";
 import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
 import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";
 import { PaymentSkeleton } from "./components/payment.skeleton";
-import { OrderSubmitButtonSkeleton } from "./components/orderSubmitButton.skeleton";
+import { UploadTransactionSkeleton } from "./components/uploadTransaction.skeleton";
 import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skeleton";
 import OrderNotfound from "./components/order.notfound";
 import OrderProcessing from "./components/order.processing";
@@ -34,7 +34,6 @@ import {
 import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
-import logger from "@/app/utils/logger";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
 import { OrderNamespace } from "@/types/order/order.namespace";
 
@@ -61,10 +60,10 @@ const FloatingTimeCircle = dynamic(
   }
 );
 
-const OrderSubmitButton = dynamic(
-  () => import("./components/orderSubmitButton"),
+const UploadTransaction = dynamic(
+  () => import("./components/uploadTransaction"),
   {
-    loading: () => <OrderSubmitButtonSkeleton />,
+    loading: () => <UploadTransactionSkeleton />,
     ssr: false,
   }
 );
@@ -95,10 +94,11 @@ export default function CheckoutPage({
   const t = useTranslations("Checkout");
   const [isLoading, setIsLoading] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
-  const [currentStep, setCurrentStep] = useState<number>(1)
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
   const [outOfStock, setOutOfStock] = useState(false);
-  const [pendingOrder, setPendingOrder] = useState<OrderNamespace.GET.Pending>();
+  const [pendingOrder, setPendingOrder] =
+    useState<OrderNamespace.GET.Pending>();
 
   const {
     data: product,
@@ -109,8 +109,14 @@ export default function CheckoutPage({
     fetcher2
   );
 
-
-  const { data: lead, isLoading: isLoadingLead, error: errorLead } = useSWRImmutable(`${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/my/contact`, fetcher2);
+  const {
+    data: lead,
+    isLoading: isLoadingLead,
+    error: errorLead,
+  } = useSWRImmutable(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/my/contact`,
+    fetcher2
+  );
 
   const form = useForm({
     resolver: zodResolver(orderFormSchema),
@@ -135,36 +141,44 @@ export default function CheckoutPage({
         ...lead.contact,
         ...(cityId && { cityId }),
         ...(state && { state }),
-      })
+      });
     }
-  }, [lead])
+  }, [lead]);
 
+  const {
+    data: shop,
+    isLoading: isLoadingShop,
+    error: errorShop,
+  } = useSWRImmutable<ShopNamespace.GET.Shop>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`
+  );
 
-  const { data: shop, isLoading: isLoadingShop, error: errorShop } = useSWRImmutable<ShopNamespace.GET.Shop>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`)
-
-  const { data: _pendingOrder, isLoading: isLoadingPendingOrder, error: errorPendingOrder } = useSWRImmutable<OrderNamespace.GET.Pending>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`)
+  const {
+    data: _pendingOrder,
+    isLoading: isLoadingPendingOrder,
+    error: errorPendingOrder,
+  } = useSWRImmutable<OrderNamespace.GET.Pending>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`
+  );
   useEffect(() => {
     if (_pendingOrder) {
       console.log("pendingOrder", pendingOrder);
 
       if (_pendingOrder.orderProducts?.length > 0) {
-        const orderProduct = _pendingOrder.orderProducts[0]
+        const orderProduct = _pendingOrder.orderProducts[0];
         if (orderProduct.quantity) {
-          setQuantity(orderProduct.quantity)
+          setQuantity(orderProduct.quantity);
         }
       }
-      
-      setCurrentStep(_pendingOrder.step)
-      setPendingOrder(_pendingOrder)
+
+      setCurrentStep(_pendingOrder.step);
+      setPendingOrder(_pendingOrder);
     }
-  }, [_pendingOrder])
-
-
+  }, [_pendingOrder]);
 
   useEffect(() => {
     console.log(form.getValues());
-    
-  }, [form.watch])
+  }, [form.watch]);
   // useEffect(() => {
   //   if (order) {
   //     form.reset({
@@ -252,7 +266,7 @@ export default function CheckoutPage({
         // setOrderId,
         outOfStock,
         setOutOfStock,
-        shop
+        shop,
       }}
     >
       <FormProvider {...form}>
@@ -262,7 +276,11 @@ export default function CheckoutPage({
           </Suspense>
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
-            <FormStepperProvider className="mt-5" setCurrentStep={setCurrentStep} currentStep={currentStep}>
+            <FormStepperProvider
+              className="mt-5"
+              setCurrentStep={setCurrentStep}
+              currentStep={currentStep}
+            >
               <FormStep
                 disableTitle
                 step={1}
@@ -302,8 +320,8 @@ export default function CheckoutPage({
                 icon={<UploadSimple className="w-6 h-6" />}
                 title="آپلود مدارک"
               >
-                <Suspense fallback={<OrderSubmitButtonSkeleton />}>
-                  <OrderSubmitButton isLoading={isLoading} />
+                <Suspense fallback={<UploadTransactionSkeleton />}>
+                  <UploadTransaction isLoading={isLoading} />
                 </Suspense>
               </FormStep>
             </FormStepperProvider>

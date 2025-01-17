@@ -5,7 +5,7 @@ interface SkeletonButtonProps {
   className?: string
 }
 
-export function OrderSubmitButtonSkeleton({ className }: SkeletonButtonProps) {
+export function UploadTransactionSkeleton({ className }: SkeletonButtonProps) {
   return (
     <Skeleton
       className={cn(
