@@ -55,7 +55,8 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({ onUploadComplete, 
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1))
           setProgress(percentCompleted)
-        }
+        },
+        withCredentials: true
       })
 
       setUploadedUrl(response.data.url)
