@@ -1,10 +1,9 @@
 "use client";
 
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
-import { zodResolver } from "@hookform/resolvers/zod";
 // UI
 import { Input } from "@/components/theme/ui/input";
 import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
@@ -16,23 +15,33 @@ import {
 } from "@/components/ui/form";
 import LoadingButton from "@/components/ui/button-loading";
 import useOrder from "../hooks/useOrder";
+import { Button } from "@/components/theme/ui/button";
+import { useCheckout } from "../useCheckout";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
+  
+  const { setStep } = useCheckout()
 
   const {
     register,
     control,
     formState: { errors },
+    trigger,
   } = useFormContext<z.infer<typeof orderFormSchema>>();
 
-  const form = useForm<z.infer<typeof orderFormSchema>>({
-    resolver: zodResolver(orderFormSchema),
-  });
 
   const { createOrder, loading: isCreateOrderLoading } = useOrder();
 
   const createOrderHandler = async () => {
+    await trigger('firstname')
+    await trigger('lastname')
+    await trigger('mobile')
+
+    if (errors.firstname || errors.lastname || errors.mobile) {
+      return
+    }
+
     createOrder();
   };
 
@@ -101,7 +110,7 @@ export default function CustomerDetails() {
           )}
         />
       </div>
-      <div className="mt-6 w-full">
+      <div className="mt-6 w-full flex justify-center items-center gap-x-2">
         <LoadingButton
           onClick={createOrderHandler}
           isLoading={isCreateOrderLoading}

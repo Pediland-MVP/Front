@@ -1,26 +1,23 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-// UI
-import { cn } from "@/lib/utils";
-import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr";
-import { useCheckout } from "../useCheckout";
-import { useCanQuantityUp } from "../hooks/useCanQuantityUp";
-import logger from "@/app/utils/logger";
-import useQuantityUpDown from "../hooks/useQuantityUpDown";
-
-
+import { use, useState } from "react"
+import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr"
+import { useCheckout } from "../useCheckout"
+import { useCanQuantityUp } from "../hooks/useCanQuantityUp"
+import useQuantityUpDown from "../hooks/useQuantityUpDown"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { useTranslations } from "next-intl"
 
 export function Quantity() {
-  const { token, shopId, product, orderQuantity, setOrderQuantity, pendingOrder, outOfStock, setOutOfStock } = useCheckout()
-  const [isPending, setIsPending] = useState(false);
+  const t = useTranslations('Checkout')
+  const { orderQuantity, setOrderQuantity, pendingOrder, outOfStock, setOutOfStock } = useCheckout()
+  const [isPending, setIsPending] = useState(false)
   const { canQuantityUp } = useCanQuantityUp()
-  const { updateQuantity, loading: UpdateQuantityLoading } = useQuantityUpDown()
-
+  const { updateQuantity, loading: updateQuantityLoading } = useQuantityUpDown()
 
   const handleAdjustment = async (adjustment: "increment" | "decrement") => {
-
-    if (!pendingOrder) {
+    if (!pendingOrder || pendingOrder?.orderProducts?.length === 0) {
       if (adjustment === 'increment') {
         canQuantityUp(setIsPending)
         return
@@ -33,97 +30,61 @@ export function Quantity() {
         setOutOfStock(false)
         setOrderQuantity(old => old - 1)
       }
+      return
     }
 
     updateQuantity(adjustment)
+  }
 
-
-
-    // setIsPending(true);
-
-    // if (adjustment === 'increment' && orderQuantity === productQuantity) {
-    //   toast({
-    //     title: "موجودی انبار کافی نیست",
-    //     variant: "destructive",
-    //   });
-    //   return
-    // }
-
-    // await fetch(
-    //   `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}/${adjustment === 'decrement' ? 'quantityDown' : 'quantityUp'}`,
-    //   {
-    //     method: "POST",
-    //     credentials: "include",
-    //   }
-    // )
-    //   .then(async (res) => {
-    //     const response = await res.json()
-    //     if (!res.ok) {
-    //       switch ((response as ExceptionMessage).code) {
-    //         case "ORDER_EXPIRED":
-    //           toast({
-    //             title: "سفارش شما منقضی شده است",
-    //             variant: "destructive",
-    //           });
-    //           return;
-    //         case "PRODUCT_OUT_OF_STOCK":
-    //           toast({
-    //             title: "موجودی انبار کافی نیست",
-    //             variant: "destructive",
-    //           });
-    //           return;
-    //         case "ORDER_QUANTITY_IS_ZERO":
-    //           toast({
-    //             title: "موجودی نمیتواند کمتر از صفر باشد",
-    //             variant: "destructive",
-    //           });
-    //           return;
-    //       }
-    //     }
-
-    //     setOrderQuantity(response.data.orderQuantity);
-    //     setProductQuantity(response.productQuantity)
-    //   })
-    //   .catch((error) => {
-    //     toast({
-    //       title: "مشکلی پیش آمده است. ارتباط خود با شبکه را چک کنید",
-    //       variant: "destructive",
-    //     });
-    //   })
-    //   .finally(() => setIsPending(false));
-  };
+  const isDecrementDisabled = isPending || orderQuantity <= 1 || updateQuantityLoading
+  const isIncrementDisabled = isPending || outOfStock || updateQuantityLoading
 
   return (
-    <div className="flex items-center justify-start gap-x-2">
-      <div className="text-[13px] text-gray-700 text-center">تعداد</div>
+    <div className="flex flex-col items-center gap-2">
+      <Label htmlFor="quantity" className="text-sm font-medium text-gray-700">
+        تعداد
+      </Label>
+      <div className="flex items-center justify-start gap-x-2">
+        <Button
+          onClick={() => handleAdjustment("decrement")}
+          disabled={isDecrementDisabled}
+          size="icon"
+          variant={isDecrementDisabled ? "ghost" : "outline"}
+          className="h-8 w-8"
+        >
+          {isPending ? (
+            <Spinner size={16} className="animate-spin" />
+          ) : (
+            <Minus size={16} className={isDecrementDisabled ? "text-gray-400" : "text-gray-600"} />
+          )}
+        </Button>
 
-      <button
-        onClick={() => handleAdjustment("decrement")}
-        disabled={isPending || orderQuantity <= 1}
-        type="button"
-        className="rounded bg-gray-100 p-[3px] border"
-      >
-        {isPending ? (
-          <Spinner size={12} className="animate-spin" />
-        ) : (
-          <Minus size={12} className={orderQuantity <= 1 ? "text-gray-400" : undefined} />
-        )}
-      </button>
+        <div 
+          id="quantity"
+          className="flex items-center justify-center h-8 w-12 text-lg font-medium text-gray-900 bg-gray-100 rounded select-none"
+          aria-live="polite"
+        >
+          {orderQuantity}
+        </div>
 
-      <div className="text-lg font-medium text-gray-600 select-none">{orderQuantity}</div>
-
-      <button
-        onClick={() => handleAdjustment("increment")}
-        disabled={isPending || outOfStock}
-        type="button"
-        className="rounded bg-gray-100 p-[3px] border"
-      >
-        {isPending ? (
-          <Spinner size={12} className="animate-spin" />
-        ) : (
-          <Plus size={12} weight="bold" />
-        )}
-      </button>
+        <Button
+          onClick={() => handleAdjustment("increment")}
+          disabled={isIncrementDisabled}
+          size="icon"
+          variant={isIncrementDisabled ? "ghost" : "outline"}
+          className="h-8 w-8"
+        >
+          {isPending ? (
+            <Spinner size={16} className="animate-spin" />
+          ) : (
+            <Plus size={16} className={isIncrementDisabled ? "text-gray-400" : "text-gray-600"} />
+          )}
+        </Button>
+      </div>
+      {outOfStock && (
+        <p className="text-sm text-red-500 mt-1">{t('outOfStock')}</p>
+      )}
     </div>
-  );
+  )
 }
+

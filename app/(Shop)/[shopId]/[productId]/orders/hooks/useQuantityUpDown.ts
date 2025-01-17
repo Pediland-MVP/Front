@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 export default function useQuantityUpDown() {
 
     const t_ec = useTranslations('ERROR_CODES')
-    const { pendingOrder, shopId, setOrderQuantity } = useCheckout()
+    const { pendingOrder, shopId, setOrderQuantity,  setOutOfStock } = useCheckout()
     const [loading, setLoading] = useState(false)
     async function updateQuantity(adjustment: 'increment' | 'decrement') {
         setLoading(true)
@@ -22,20 +22,26 @@ export default function useQuantityUpDown() {
         .then (async res => {
             if (res.ok) {
                 if (adjustment === 'decrement') {
+                    setOutOfStock(false)
                     setOrderQuantity(old => old - 1)   
                 } else {
                     setOrderQuantity(old => old + 1)
+                    
                 }
-                return await res.json()
+                const json = await res.json()
+                if (!json.next) {
+                    setOutOfStock(true)
+                }
+                return
             }
 
             const jsonError = await res.json() as ExceptionMessage
-            toast({
-                title: t_ec(jsonError.code),
-                variant: 'destructive'
-            })
+            if (jsonError.code === 'PRODUCT_OUT_OF_STOCK') { 
+                setOutOfStock(true)
+            }
         })
-        .catch(() => {
+        .catch((e) => {
+            console.error(e)
             toast({
                 title: t_ec('CHECK_CONNECTION'),
                 variant: 'destructive'

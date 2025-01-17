@@ -35,7 +35,8 @@ import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
-import { OrderNamespace } from "@/types/order/order.namespace";
+import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
+
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -74,8 +75,8 @@ export const orderFormSchema = z.object({
   lastname: z.string(),
   email: z.string().email(),
   mobile: z.string().regex(REGEX_MOBILE, "Invalid mobile number"),
-  state: z.string().min(1, "State is required"),
-  cityId: z.string().min(1, "City is required"),
+  state: z.string(),
+  cityId: z.string(),
   address: z.string().min(1, "Address is required"),
   postalcode: z.string().min(10, "کد پستی باید ۱۰ رقمی باشد").max(10),
 });
@@ -96,7 +97,7 @@ export default function CheckoutPage({
   const [orderCompleted, setOrderCompleted] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
-  const [outOfStock, setOutOfStock] = useState(false);
+  const [outOfStock, setOutOfStock] = useState(false)
   const [pendingOrder, setPendingOrder] =
     useState<OrderNamespace.GET.Pending>();
 
@@ -244,7 +245,7 @@ export default function CheckoutPage({
   //   return <OrderProcessing />;
   // }
 
-  if (orderCompleted) {
+  if (pendingOrder && (pendingOrder?.status !== ORDER_STATUS.PENDING && pendingOrder?.status !== ORDER_STATUS.PAYMENT)) {
     return <OrderProcessing />;
   }
 
@@ -321,7 +322,7 @@ export default function CheckoutPage({
                 title="آپلود مدارک"
               >
                 <Suspense fallback={<UploadTransactionSkeleton />}>
-                  <UploadTransaction isLoading={isLoading} />
+                  <UploadTransaction/>
                 </Suspense>
               </FormStep>
             </FormStepperProvider>

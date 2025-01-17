@@ -30,9 +30,14 @@ import { CityNamespace } from "@/types/city";
 import { useEffect } from "react";
 import LoadingButton from '@/components/ui/button-loading';
 import useShipping from "../hooks/useShipping";
+import ErrorMessage from "@/components/ui/errorMessage";
+import { Button } from "@/components/theme/ui/button";
+import { useCheckout } from "../useCheckout";
 
 export default function Address() {
   const t = useTranslations("Checkout");
+
+  const { setStep } = useCheckout()
 
   const {
     register,
@@ -77,10 +82,10 @@ export default function Address() {
 
   const { updateShipping, loading: isUpdateShippingLoading } = useShipping()
 
-  const updateShippingHandler = () => {
-    trigger('address')
-    trigger('cityId')
-    trigger('postalcode')
+  const updateShippingHandler = async () => {
+    await trigger('address')
+    await trigger('cityId')
+    await trigger('postalcode')
 
     if (errors.address || errors.cityId || errors.postalcode) {
       return
@@ -101,7 +106,7 @@ export default function Address() {
             <FormField
               control={control}
               name="state"
-              render={({ field }) => (
+              render={({ field, fieldState: {error} }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>{t("state")}</FormLabel>
                   <Select
@@ -123,14 +128,18 @@ export default function Address() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                    {
+                      error && (
+                        <ErrorMessage>{t('CustomerAddress.state.Errors.required')}</ErrorMessage>
+                      )
+                    }
                 </FormItem>
               )}
             />
             <FormField
               control={control}
               name="cityId"
-              render={({ field }) => (
+              render={({ field, fieldState: {error} }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel>{t("city")}</FormLabel>
                   <Select
@@ -152,7 +161,11 @@ export default function Address() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {
+                    error && (
+                      <ErrorMessage>{t('CustomerAddress.cityId.Errors.required')}</ErrorMessage>
+                    )
+                  }
                 </FormItem>
               )}
             />
@@ -234,8 +247,12 @@ export default function Address() {
           </div>
         {/* </form>
       </FormProvider> */}
-      <div className="mt-6 w-full">
-        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-full" variant={"success"}>
+      <div className="mt-6 w-full flex justify-center items-center gap-x-2">
+      <Button onClick={() => setStep(1)} className="3/12 bg-gray-500">
+          {t('back')}
+        </Button>
+
+        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-9/12" variant={"success"}>
           {t("nextStep")}
         </LoadingButton>
       </div>

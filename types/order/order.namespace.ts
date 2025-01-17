@@ -16,3 +16,13 @@ export namespace OrderNamespace {
         export type CreateOrder = ICreateOrder
     }
 }
+
+export enum ORDER_STATUS {
+    PENDING = 'pending',
+    PAYMENT = 'payment',
+    PROCESSING = 'processing',
+    SENDING = 'sending',
+    COMPLETED = 'completed',
+    INVALID_DATA = 'invalid_data',
+    CANCELLED = 'cancelled',
+}

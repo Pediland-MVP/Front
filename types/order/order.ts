@@ -1,4 +1,5 @@
 import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import { ORDER_STATUS } from "./order.namespace";
 
 
 export interface IOrder {
@@ -98,17 +99,6 @@ interface Image {
     size:        number;
     key:         string;
 }
-
-
-enum ORDER_STATUS {
-    PENDING = 'pending',
-    PROCESSING = 'processing',
-    SENDING = 'sending',
-    COMPLETED = 'completed',
-    INVALID_DATA = 'invalid_data',
-    CANCELLED = 'cancelled',
-}
-
 
 enum ORDER_FROM {
     INSTAGRAM = 'instagram',

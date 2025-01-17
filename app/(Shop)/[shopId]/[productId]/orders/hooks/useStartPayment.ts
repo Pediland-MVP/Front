@@ -3,6 +3,7 @@ import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/theme/ui/use-toast";
+import { mutate } from "swr";
 
 export default function useStartPayment() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,6 +28,7 @@ export default function useStartPayment() {
     )
       .then(async (res) => {
         if (res.ok) {
+          await mutate(key => typeof key === 'string' && key.includes("pending"))
           setStep(4);
           return;
         }

@@ -557,6 +557,8 @@
         }
     },
     "Checkout": {
+        "back": "بازگشت",
+        "outOfStock": "حداکثر",
         "customerDetails": "اطلاعات خریدار",
         "gender": "جنسیت",
         "male": "مرد",
@@ -582,6 +584,23 @@
         "orderInvalid": "سفارش مورد نظر شما منقضی یا پرداخت شده است.",
         "invalidEmail": "ایمیل نامعتبر",
         "selectGender": "یک مورد انتخاب کنید",
+        "orderSubmitSuccessFull": "سفارش شما با موفقیت ثبت شد. پس از تایید ارسال خواهد شد",
+        "OrderSubmitted": {
+            "title": "سفارش شما ثبت شد",
+            "description": "پس از تایید، وضعیت سفارش برای شما ارسال خواهد شد"
+        },
+        "CustomerAddress": {
+            "state": {
+                "Errors": {
+                    "required": "لطفا استان را انتخاب کنید"
+                }
+            },
+            "cityId": {
+                "Errors": {
+                    "required": "لطفا شهر را انتخاب کنید"
+                }
+            }
+        },
         "Errors": {
             "postalcode": {
                 "invalid_type": "کدپستی باید ۱۰ رقم باشد",
@@ -1056,6 +1075,10 @@
         "ORDER_CARD_TO_CARD_NOT_UPLOADED": "کارت به کارت سفارش آپلود نشده است",
         "ORDER_PENDING_EXIST": "یک سفارش انجام نشده دارید",
         "ORDER_STATUS_NOT_PENDING": "وضعیت سفارش در حال انتظار نیست",
+        "ORDER_STATUS_NOT_PAYMENT": "وضعیت سفارش پرداخت نشده است",
+        "ORDER_SHOULD_HAVE_PRODUCTS": "سفارش باید حداقل یک محصول داشته باشد",
+        "ORDER_SHOULD_HAVE_CARD_TO_CARD": "تصویر کارت به کارت را آپلود کنید",
+        "ORDER_HAS_ALREADY_BEEN_SUBMITTED": "این سفارش قبلا ثبت شده است",
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
         "NO_INSTAGRAM": "اینستاگرامی وجود ندارد",
         "CITY_INVALID": "شهر نامعتبر است",

@@ -4,17 +4,21 @@ import LoadingButton from '@/components/ui/button-loading';
 import { useTranslations } from 'next-intl';
 import { useCheckout } from '../useCheckout';
 import { mutate } from 'swr';
+import useProcessOrder from '../hooks/useProcessOrder';
+import { Button } from '@/components/theme/ui/button';
 
-type UploadTransactionProps = {
-    isLoading: boolean
-}
 
-export default function UploadTransaction({ isLoading }: UploadTransactionProps) {
+export default function UploadTransaction() {
     const t = useTranslations("Checkout");
-    const { pendingOrder } = useCheckout()
+    const { pendingOrder, setStep } = useCheckout()
 
     const onUploaded =() => {
         mutate(key => typeof key === 'string' && key.includes("pending"))
+    }
+
+    const { processOrder, loading: isOrderProcessLoading } = useProcessOrder()
+    const processOrderHandler = () => {
+        processOrder()
     }
 
     return (
@@ -27,9 +31,16 @@ export default function UploadTransaction({ isLoading }: UploadTransactionProps)
                     <ImageUploader defaultImageUrl={pendingOrder?.orderCardToCard?.url ? pendingOrder?.orderCardToCard?.url : undefined} onUploadComplete={onUploaded} fieldName='image' url={`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${pendingOrder?.id}/cardToCard`} />
                 </div>
             </div>
-            <LoadingButton isLoading={isLoading} type="submit" className="w-full" variant={"success"}>
+            <div className='mt-6 w-full flex justify-center items-center gap-x-2'>
+            <Button onClick={() => setStep(3)} className="3/12 bg-gray-500">
+          {t('back')}
+        </Button>
+
+            <LoadingButton isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" variant={"success"}>
                 {t("paynow")}
             </LoadingButton>
+
+            </div>
         </div>
 
     )
