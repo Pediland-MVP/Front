@@ -252,7 +252,7 @@ export default function Address() {
           {t('back')}
         </Button>
 
-        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-9/12" variant={"success"}>
+        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-9/12" variant={"success"} type="button">
           {t("nextStep")}
         </LoadingButton>
       </div>

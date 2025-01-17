@@ -3,11 +3,12 @@ import { useCheckout } from "../useCheckout"
 import { useTranslations } from "next-intl"
 import { ExceptionMessage } from "@/types/exceptionMessage"
 import { useState } from "react"
+import { mutate } from "swr"
 
 
 export default function useProcessOrder() {
 
-    const { pendingOrder } = useCheckout()
+    const { pendingOrder, setIsCompleted } = useCheckout()
     const [loading, setLoading] = useState(false)
     const t = useTranslations('Checkout')
     const t_ec = useTranslations('ERROR_CODES')
@@ -23,9 +24,7 @@ export default function useProcessOrder() {
         })
         .then(async res => {
             if (res.ok) {
-                toast({
-                    title: t('orderSubmitSuccessFull'),
-                })
+                setIsCompleted(true)
                 return 
             }
 

@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
+import { z, set } from "zod";
 import { useEffect } from "react";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { fetcher2 } from "@/hooks/swr/fetcher2";
@@ -36,7 +36,6 @@ import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
 import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
-
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -93,13 +92,15 @@ export default function CheckoutPage({
   productId,
 }: CheckoutProps) {
   const t = useTranslations("Checkout");
-  const [isLoading, setIsLoading] = useState(false);
-  const [orderCompleted, setOrderCompleted] = useState(false);
+  const [isStepInitilized, setIsStepInitilized] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
-  const [outOfStock, setOutOfStock] = useState(false)
+  const [outOfStock, setOutOfStock] = useState(false);
   const [pendingOrder, setPendingOrder] =
     useState<OrderNamespace.GET.Pending>();
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  const [isOrderCompleted, setIsOrderCompleted] = useState(false);
 
   const {
     data: product,
@@ -172,7 +173,10 @@ export default function CheckoutPage({
         }
       }
 
-      setCurrentStep(_pendingOrder.step);
+      if (!isStepInitilized) {
+        setCurrentStep(_pendingOrder.step);
+        setIsStepInitilized(true);
+      }
       setPendingOrder(_pendingOrder);
     }
   }, [_pendingOrder]);
@@ -180,57 +184,6 @@ export default function CheckoutPage({
   useEffect(() => {
     console.log(form.getValues());
   }, [form.watch]);
-  // useEffect(() => {
-  //   if (order) {
-  //     form.reset({
-  //       ...(order.lead.contact as unknown as Pick<
-  //         OrderNamespace.Order["lead"]["contact"],
-  //         | "gender"
-  //         | "firstname"
-  //         | "lastname"
-  //         | "email"
-  //         | "mobile"
-  //         | "state"
-  //         | "city"
-  //         | "address"
-  //         | "postalcode"
-  //       >),
-  //     });
-  //   }
-  // }, [order]);
-
-  const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
-    // setIsLoading(true);
-    // await fetch(
-    //   `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${orderId}/${token}/process`,
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     credentials: "include",
-    //     body: JSON.stringify(values),
-    //   }
-    // )
-    //   .then(async (res) => {
-    //     const response = await res.json();
-    //     if (!res.ok) {
-    //       switch ((response as ExceptionMessage).code) {
-    //         case "ORDER_CARD_TO_CARD_NOT_UPLOADED":
-    //           toast({
-    //             title: t("orderCardToCardNotUploaded"),
-    //             variant: "destructive",
-    //           });
-    //           break;
-    //       }
-    //       return;
-    //     }
-    //     setOrderCompleted(true);
-    //   })
-    //   .finally(() => {
-    //     setIsLoading(false);
-    //   });
-  };
 
   switch ((productError?.data as ExceptionMessage)?.code) {
     case "ORDER_INVALID":
@@ -245,7 +198,8 @@ export default function CheckoutPage({
   //   return <OrderProcessing />;
   // }
 
-  if (pendingOrder && (pendingOrder?.status !== ORDER_STATUS.PENDING && pendingOrder?.status !== ORDER_STATUS.PAYMENT)) {
+  // Specified in useProcessOrder in uploadTransaction
+  if (isCompleted) {
     return <OrderProcessing />;
   }
 
@@ -268,10 +222,12 @@ export default function CheckoutPage({
         outOfStock,
         setOutOfStock,
         shop,
+        isCompleted,
+        setIsCompleted,
       }}
     >
       <FormProvider {...form}>
-        <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="w-full" onSubmit={form.handleSubmit(() =>{})}>
           <Suspense fallback={<FloatingTimeCircleSkeleton />}>
             {/* <FloatingTimeCircle startDateString={order?.createDate} /> */}
           </Suspense>
@@ -322,7 +278,7 @@ export default function CheckoutPage({
                 title="آپلود مدارک"
               >
                 <Suspense fallback={<UploadTransactionSkeleton />}>
-                  <UploadTransaction/>
+                  <UploadTransaction />
                 </Suspense>
               </FormStep>
             </FormStepperProvider>

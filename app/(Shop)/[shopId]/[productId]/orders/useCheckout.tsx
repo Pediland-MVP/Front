@@ -18,7 +18,9 @@ export type CheckoutContextType = {
     setPendingOrder: Dispatch<React.SetStateAction<OrderNamespace.GET.Pending | undefined>>;
     outOfStock: boolean;
     setOutOfStock: Dispatch<React.SetStateAction<boolean>>;
-    shop: ShopNamespace.GET.Shop | undefined
+    shop: ShopNamespace.GET.Shop | undefined;
+    isCompleted: boolean;
+    setIsCompleted: Dispatch<React.SetStateAction<boolean>>
 }
 
 export const CheckoutContext = createContext<CheckoutContextType | null>(null)

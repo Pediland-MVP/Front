@@ -51,6 +51,7 @@ export function Quantity() {
           size="icon"
           variant={isDecrementDisabled ? "ghost" : "outline"}
           className="h-8 w-8"
+          type="button"
         >
           {isPending ? (
             <Spinner size={16} className="animate-spin" />
@@ -73,6 +74,7 @@ export function Quantity() {
           size="icon"
           variant={isIncrementDisabled ? "ghost" : "outline"}
           className="h-8 w-8"
+          type="button"
         >
           {isPending ? (
             <Spinner size={16} className="animate-spin" />

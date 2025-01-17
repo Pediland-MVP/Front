@@ -17,11 +17,12 @@ import LoadingButton from "@/components/ui/button-loading";
 import useOrder from "../hooks/useOrder";
 import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
+import useUpdateContact from "../hooks/useUpdateContact";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
   
-  const { setStep } = useCheckout()
+  const { pendingOrder } = useCheckout()
 
   const {
     register,
@@ -33,12 +34,19 @@ export default function CustomerDetails() {
 
   const { createOrder, loading: isCreateOrderLoading } = useOrder();
 
+  const { updateContact, loading: isUpdateContactLoading } = useUpdateContact()
+
   const createOrderHandler = async () => {
     await trigger('firstname')
     await trigger('lastname')
     await trigger('mobile')
 
     if (errors.firstname || errors.lastname || errors.mobile) {
+      return
+    }
+
+    if (pendingOrder) {
+      await updateContact()
       return
     }
 
@@ -116,6 +124,7 @@ export default function CustomerDetails() {
           isLoading={isCreateOrderLoading}
           className="w-full"
           variant={"success"}
+          type="button"
         >
           {t("nextStep")}
         </LoadingButton>

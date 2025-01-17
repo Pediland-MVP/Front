@@ -6,7 +6,7 @@ export default function OrderProcessing() {
     return (
         <div className="_checkout flex flex-col justify-center items-center bg-white border h-[200px] rounded-xl p-5 md:p-10">
             <p className="text-xl font-medium">{t('orderProcessing')}</p>
-            <p className="text-lg w-[60ch] text-center">{t('orderProcessingDescription')}</p>
+            <p className="text-lg text-center">{t('orderProcessingDescription')}</p>
         </div>
     )
 
