@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { FormProvider, useForm } from "react-hook-form";
-import { z, set } from "zod";
+import { z } from "zod";
 import { useEffect } from "react";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { fetcher2 } from "@/hooks/swr/fetcher2";
@@ -35,7 +35,8 @@ import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
-import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
+import { OrderNamespace } from "@/types/order/order.namespace";
+import UnAuthorized from "./components/unAuthorized";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -99,8 +100,7 @@ export default function CheckoutPage({
   const [pendingOrder, setPendingOrder] =
     useState<OrderNamespace.GET.Pending>();
   const [isCompleted, setIsCompleted] = useState(false);
-
-  const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   const {
     data: product,
@@ -119,6 +119,17 @@ export default function CheckoutPage({
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/my/contact`,
     fetcher2
   );
+
+  useEffect(() => {
+    if (errorLead) {
+      if (errorLead.data) {
+        console.log(errorLead.data)
+        if (errorLead.data.statusCode === 401) {
+          setIsUnauthorized(true)
+        }
+      }
+    }
+  }, [errorLead])
 
   const form = useForm({
     resolver: zodResolver(orderFormSchema),
@@ -194,6 +205,8 @@ export default function CheckoutPage({
       return <OrderNotfound />;
   }
 
+  console.log('Unauthorized', isUnauthorized)
+
   // if (order?.status === ORDER_STATUS.PROCESSING) {
   //   return <OrderProcessing />;
   // }
@@ -202,6 +215,11 @@ export default function CheckoutPage({
   if (isCompleted) {
     return <OrderProcessing />;
   }
+
+  if (isUnauthorized) {
+    return <UnAuthorized/>
+  }
+
 
   return (
     <CheckoutContext.Provider

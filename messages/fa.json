@@ -589,6 +589,9 @@
             "title": "سفارش شما ثبت شد",
             "description": "پس از تایید، وضعیت سفارش برای شما ارسال خواهد شد"
         },
+        "UnAuthorized": {
+            "accessDenied": "شما به این صفحه دسترسی ندارید!"
+        },
         "CustomerAddress": {
             "state": {
                 "Errors": {
