@@ -8,10 +8,11 @@ import useQuantityUpDown from "../hooks/useQuantityUpDown"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useTranslations } from "next-intl"
+import { QuantitySkeleton } from "./quantity.skeleton"
 
 export function Quantity() {
   const t = useTranslations('Checkout')
-  const { orderQuantity, setOrderQuantity, pendingOrder, outOfStock, setOutOfStock } = useCheckout()
+  const { orderQuantity, setOrderQuantity, pendingOrder, outOfStock, setOutOfStock, product } = useCheckout()
   const [isPending, setIsPending] = useState(false)
   const { canQuantityUp } = useCanQuantityUp()
   const { updateQuantity, loading: updateQuantityLoading } = useQuantityUpDown()
@@ -38,6 +39,12 @@ export function Quantity() {
 
   const isDecrementDisabled = isPending || orderQuantity <= 1 || updateQuantityLoading
   const isIncrementDisabled = isPending || outOfStock || updateQuantityLoading
+
+  if (product?.quantity === 0) {
+    return (
+      <p className="font-bold text-lg text-red-500">موجودی تموم شد :(</p>
+    )
+  }
 
   return (
     <div className="flex flex-col items-center gap-2">
