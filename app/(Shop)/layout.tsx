@@ -29,7 +29,7 @@ export default async function ShopLayout({
         <SWRConfig value={{
             fetcher
           }}>
-          <header>
+          {/* <header>
             <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
               <div className="_wrap flex items-center justify-between py-3 lg:py-4">
                 <div className="_logo flex items-center gap-3">
@@ -42,7 +42,7 @@ export default async function ShopLayout({
                 </div>
               </div>
             </div>
-          </header>
+          </header> */}
           <NextIntlClientProvider messages={messages}>
             <main>
               <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">

@@ -6,7 +6,7 @@ export namespace ProductNamespace {
 
     export type Product = ProductItem
     export type Products = ProductItem[]
-    export type PublicProduct = Omit<ProductItem, 'quantity'>
+    export type PublicProduct = ProductItem
 }
 
 export interface ProductItem {
@@ -17,7 +17,7 @@ export interface ProductItem {
     price:       number;
     discountPrice:    number | null;
     description: string;
-    quantity:    number; 
+    quantity?:    number; 
     images:      Image[];
 }
 

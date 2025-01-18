@@ -30,6 +30,7 @@ import {
   User,
   CreditCard,
   UploadSimple,
+  ShoppingBagOpen,
 } from "@phosphor-icons/react/dist/ssr";
 import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
@@ -37,6 +38,7 @@ import { ProductNamespace } from "@/types/product";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import UnAuthorized from "./components/unAuthorized";
+import Image from "next/image";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -123,13 +125,13 @@ export default function CheckoutPage({
   useEffect(() => {
     if (errorLead) {
       if (errorLead.data) {
-        console.log(errorLead.data)
+        console.log(errorLead.data);
         if (errorLead.data.statusCode === 401) {
-          setIsUnauthorized(true)
+          setIsUnauthorized(true);
         }
       }
     }
-  }, [errorLead])
+  }, [errorLead]);
 
   const form = useForm({
     resolver: zodResolver(orderFormSchema),
@@ -205,7 +207,7 @@ export default function CheckoutPage({
       return <OrderNotfound />;
   }
 
-  console.log('Unauthorized', isUnauthorized)
+  console.log("Unauthorized", isUnauthorized);
 
   // if (order?.status === ORDER_STATUS.PROCESSING) {
   //   return <OrderProcessing />;
@@ -217,9 +219,8 @@ export default function CheckoutPage({
   }
 
   if (isUnauthorized) {
-    return <UnAuthorized/>
+    return <UnAuthorized />;
   }
-
 
   return (
     <CheckoutContext.Provider
@@ -244,8 +245,32 @@ export default function CheckoutPage({
         setIsCompleted,
       }}
     >
+      <header>
+        <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
+          <div className="_wrap flex items-center justify-between py-3 lg:py-4">
+            <div className="_logo flex items-center gap-3">
+              <Image
+                src={shop?.profilePicture?.url || "/images/befroosh-logo.svg"}
+                alt="logo"
+                width={50}
+                height={50}
+                className="rounded-lg"
+              />
+              <span className="text-xl font-bold text-primary">{shop?.name}</span>
+            </div>
+            <div className="_title flex items-center gap-2">
+              <ShoppingBagOpen
+                size={24}
+                weight="duotone"
+                className="text-secondary"
+              />
+              <h1 className="font-semibold text-secondary">ثبت سفارش</h1>
+            </div>
+          </div>
+        </div>
+      </header>
       <FormProvider {...form}>
-        <form className="w-full" onSubmit={form.handleSubmit(() =>{})}>
+        <form className="w-full" onSubmit={form.handleSubmit(() => {})}>
           <Suspense fallback={<FloatingTimeCircleSkeleton />}>
             {/* <FloatingTimeCircle startDateString={order?.createDate} /> */}
           </Suspense>

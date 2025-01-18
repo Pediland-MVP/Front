@@ -22,7 +22,7 @@ import useUpdateContact from "../hooks/useUpdateContact";
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
   
-  const { pendingOrder } = useCheckout()
+  const { pendingOrder, product } = useCheckout()
 
   const {
     register,
@@ -125,6 +125,7 @@ export default function CustomerDetails() {
           className="w-full"
           variant={"success"}
           type="button"
+          disabled={product?.quantity===0}
         >
           {t("nextStep")}
         </LoadingButton>
