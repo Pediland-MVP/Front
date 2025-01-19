@@ -161,10 +161,18 @@ export default function Catalogue({ index }: CatalogueProps) {
         onClick={addProduct}
         type="button"
         className="flex items-center gap-2 cursor-pointer w-full"
+        disabled={productsField.length >= 10}
       >
         <PlusCircle size={22} className="text-blue-600" />
         <span className="text-sm font-semibold text-blue-600">{t("add")}</span>
       </Button>
+
+      {productsField.length >= 10 && (
+        <p className="text-sm text-muted-foreground text-center">
+          {t('limit')}
+        </p>
+      )}
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -188,11 +196,6 @@ export default function Catalogue({ index }: CatalogueProps) {
           </div>
         </SortableContext>
       </DndContext>
-      {productsField.length >= 10 && (
-        <p className="text-sm text-muted-foreground text-center">
-          Maximum of 10 products reached
-        </p>
-      )}
     </div>
   );
 }
