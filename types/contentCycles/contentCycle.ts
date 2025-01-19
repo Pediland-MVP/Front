@@ -7,13 +7,14 @@ export interface IContentCycle {
     title:              string;
     isDirect:           boolean;
     isComment:          boolean;
-    commentStartText:   null;
-    commentStartTitle:  string;
+    commentStartText:   string | undefined;
+    commentStartTitle:  string | undefined
+    ;
     justFollowers:      boolean;
     followCheckMessage: null;
     followMessage:      null;
     likeDirect:         boolean;
-    cta:                null;
+    cta:                string | undefined;
     haveCta:            boolean;
     isContentsEnabled:  boolean;
     conditions:         Condition[];
@@ -34,8 +35,8 @@ interface Content {
     id:              string;
     createDate:      Date;
     updateDate:      Date;
-    text:            undefined | null | string;
-    consentText:     null | string;
+    text:            undefined | string;
+    consentText:     string | undefined;
     haveConsent:     boolean;
     step:            number;
     type:            ContentCycleContentTypesEnum;
@@ -81,7 +82,7 @@ interface InstagramPost {
 interface GetUserData {
     id:      string;
     enabled: boolean;
-    type:    "email" | "mobile" | null | undefined;
+    type:    "email" | "mobile" | undefined;
     text:    string;
 }
 

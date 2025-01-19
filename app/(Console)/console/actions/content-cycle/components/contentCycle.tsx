@@ -71,7 +71,7 @@ export const contentCycleFormSchema = z
           .min(1, "پیام الزامی است")
           .optional()
           .nullable()
-          .transform((data) => data || undefined).nullable(),
+          .transform((data) => data || undefined),
         instagramPost: z
           .object({
             mediaUrl: z.string().optional().nullable(),
@@ -119,7 +119,7 @@ export const contentCycleFormSchema = z
         consentText: z
           .string()
           .optional()
-          .transform((data) => data || undefined).nullable(),
+          .transform((data) => data || undefined),
         _xid: z.string().optional().nullable(),
       })
     ),
@@ -134,7 +134,7 @@ export const contentCycleFormSchema = z
     commentStartText: z
       .string()
       .optional()
-      .transform((data) => data || undefined).nullable(),
+      .transform((data) => data || undefined),
     commentStartTitle: z.string().optional().nullable(),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
@@ -143,7 +143,7 @@ export const contentCycleFormSchema = z
     cta: z
       .string()
       .optional()
-      .transform((data) => data || undefined).nullable(),
+      .transform((data) => data || undefined),
     haveCta: z
       .boolean()
       .optional()
