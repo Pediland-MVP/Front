@@ -1106,7 +1106,8 @@
         "SHOP_NOT_FOUND": "فروشگاه پیدا نشد",
         "ERROR_CODES": "خطای ناشناخته",
         "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
-        "CHECK_CONNECTION": "اتصال خود را چک کنید"
+        "CHECK_CONNECTION": "اتصال خود را چک کنید",
+        "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "محتوای باید حداقل یک محصول داشته باشد"
       }
       
 }

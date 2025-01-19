@@ -81,15 +81,20 @@ function SortableItem({
         >
           <GripVertical className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive/90"
-          type="button"
-          onClick={() => removeProducts(index)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        {
+          index !== 0 && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive/90"
+            type="button"
+            onClick={() => removeProducts(index)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+
+          )
+        }
       </div>
       <div className="flex justify-center items-center h-[calc(100%-2rem)]">
         <ProductsDialog

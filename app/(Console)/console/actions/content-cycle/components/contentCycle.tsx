@@ -23,6 +23,7 @@ import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import Reminder from "./form/reminder";
+import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
 
 export type ContentType = {
   id: string;
@@ -70,7 +71,7 @@ export const contentCycleFormSchema = z
           .min(1, "پیام الزامی است")
           .optional()
           .nullable()
-          .transform((data) => data || undefined),
+          .transform((data) => data || undefined).nullable(),
         instagramPost: z
           .object({
             mediaUrl: z.string().optional().nullable(),
@@ -101,7 +102,7 @@ export const contentCycleFormSchema = z
               .nullable(),
             _xid: z.string().optional().nullable(),
           }).nullable().optional(),
-        ),
+        ).nullable().optional(),
         // Just for sending data
         productIds: z.array(z.string()).optional().nullable(),
         id: z.string().optional().nullable(),
@@ -118,8 +119,7 @@ export const contentCycleFormSchema = z
         consentText: z
           .string()
           .optional()
-          .nullable()
-          .transform((data) => data || undefined),
+          .transform((data) => data || undefined).nullable(),
         _xid: z.string().optional().nullable(),
       })
     ),
@@ -134,8 +134,7 @@ export const contentCycleFormSchema = z
     commentStartText: z
       .string()
       .optional()
-      .nullable()
-      .transform((data) => data || undefined),
+      .transform((data) => data || undefined).nullable(),
     commentStartTitle: z.string().optional().nullable(),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
@@ -144,8 +143,7 @@ export const contentCycleFormSchema = z
     cta: z
       .string()
       .optional()
-      .nullable()
-      .transform((data) => data || undefined),
+      .transform((data) => data || undefined).nullable(),
     haveCta: z
       .boolean()
       .optional()
@@ -249,24 +247,6 @@ export const contentCycleFormSchema = z
         });
       }
     });
-
-    // if (!data.contents.length && !data.products.length && !data.cta) {
-    //   ctx.addIssue({
-    //     path: ["isContentsEnabled"],
-    //     code: "custom",
-    //     message: "at_least",
-    //   });
-    //   ctx.addIssue({
-    //     path: ["isProductsEnabled"],
-    //     code: "custom",
-    //     message: "at_least",
-    //   });
-    //   ctx.addIssue({
-    //     path: ["cta"],
-    //     code: "custom",
-    //     message: "at_least",
-    //   });
-    // }
   });
 
 /**
@@ -328,10 +308,14 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         return;
       }
 
-      const contentCycle = await response.json();
+      
+    const contentCycle = await response.json() as ContentCycleNamespace.GET.ContentCycle;
+    // for (const content of contentCycle.contents) {
+    //   for (const contnetProduct of )
+    // }
+      
       form.reset({
         ...contentCycle,
-        ...(contentCycle.products?.length > 0 && { isProductsEnabled: true }),
         ...(contentCycle.reminder?.time && {
           reminder: {
             ...contentCycle.reminder,
@@ -384,9 +368,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     for (const content of values.contents) {
       if (content.type === ContentCycleContentTypesEnum.PRODUCT) {
         content.productIds = []
-        for (const product of content.products) {
-          if (product?.id) {
-            content.productIds.push(product.id);
+        if (content.products) {
+          for (const product of content.products) {
+            if (product?.id) {
+              content.productIds.push(product.id);
+            }
           }
         }
       }

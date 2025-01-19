@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
 
@@ -36,10 +36,8 @@ import {
 } from "@/components/ui/tooltip";
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import { Button } from "@/components/theme/ui/button";
-import { useEffect, useState } from "react";
 import { FileUploader } from "@/components/theme/ui/fileUploader";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
-import logger from "@/app/utils/logger";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
@@ -48,6 +46,7 @@ import { useContentsUploaderContext } from "./useContentsUploaderContext";
 import { useContentsContext } from "./useContentsContext";
 import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
 import Catalogue from "../catalogue";
+import { v4 as UUID } from 'uuid'
 
 type MessageByTypeProps = {
   index: number;
@@ -336,6 +335,9 @@ export default function ContentItem({
       ...((type === ContentCycleContentTypesEnum.TEXT ||
         type === ContentCycleContentTypesEnum.INSTAGRAM_POST) && {
         file: null,
+      }),
+      ...(type === ContentCycleContentTypesEnum.PRODUCT && {
+        products: [{}]
       }),
     };
 
