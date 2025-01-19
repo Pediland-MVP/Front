@@ -389,45 +389,49 @@ export default function ContentItem({
         <div className="flex flex-col gap-2 w-full">
           <MessageByType index={index} type={contents[index].type} />
 
-          <FormField
-            name={`contents.${index}.haveConsent`}
-            control={control}
-            render={({ field }) => (
-              <FormItem className="flex flex-col justify-start gap-y-2">
-                <div className="flex items-center gap-x-2">
-                  <FormControl>
-                    <TooltipProvider>
-                      <Tooltip {...((contents.length > 1 && contents[index].type === ContentCycleContentTypesEnum.TEXT) && { open: false })}>
-                        <TooltipTrigger asChild disabled={contents.length > 1 || contents[index].type !== ContentCycleContentTypesEnum.TEXT}>
-                          <Checkbox
-                            disabled={contents.length <= 1 || contents[index].type !== ContentCycleContentTypesEnum.TEXT}
-                            dir="ltr"
-                            checked={field.value || false}
-                            onCheckedChange={field.onChange}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>{contents.length <= 1 ? t("consentTooltip") : (contents[index].type !== ContentCycleContentTypesEnum.TEXT && t("consentTooltipType"))}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </FormControl>
-                  <FormLabel className="">{t("consent")}</FormLabel>
-                </div>
-                {!!field.value && (
-                  <Controller
-                    name={`contents.${index}.consentText`}
-                    control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem>
-                        <Input placeholder={t("consentMessage")} {...field} />
-                        {error && <FormMessage> {error.message} </FormMessage>}
-                      </FormItem>
-                    )}
-                  />
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {
+          contents[index].type === ContentCycleContentTypesEnum.TEXT && (
+            <FormField
+              name={`contents.${index}.haveConsent`}
+              control={control}
+              render={({ field }) => (
+                <FormItem className="flex flex-col justify-start gap-y-2">
+                  <div className="flex items-center gap-x-2">
+                    <FormControl>
+                      <TooltipProvider>
+                        <Tooltip {...((contents.length > 1 && contents[index].type === ContentCycleContentTypesEnum.TEXT) && { open: false })}>
+                          <TooltipTrigger asChild disabled={contents.length > 1 || contents[index].type !== ContentCycleContentTypesEnum.TEXT}>
+                            <Checkbox
+                              disabled={contents.length <= 1 || contents[index].type !== ContentCycleContentTypesEnum.TEXT}
+                              dir="ltr"
+                              checked={field.value || false}
+                              onCheckedChange={field.onChange}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>{contents.length <= 1 ? t("consentTooltip") : (contents[index].type !== ContentCycleContentTypesEnum.TEXT && t("consentTooltipType"))}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormControl>
+                    <FormLabel className="">{t("consent")}</FormLabel>
+                  </div>
+                  {!!field.value && (
+                    <Controller
+                      name={`contents.${index}.consentText`}
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <Input placeholder={t("consentMessage")} {...field} />
+                          {error && <FormMessage> {error.message} </FormMessage>}
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )
+        }
         </div>
       </div>
     </div>
