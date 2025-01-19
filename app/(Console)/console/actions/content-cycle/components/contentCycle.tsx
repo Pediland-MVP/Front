@@ -87,6 +87,23 @@ export const contentCycleFormSchema = z
           })
           .optional()
           .nullable(),
+        products: z.array(
+          z.object({
+            id: z.string().optional().nullable(),
+            images: z
+              .array(
+                z.object({
+                  url: z.string().optional().nullable(),
+                  id: z.number().optional().nullable(),
+                })
+              )
+              .optional()
+              .nullable(),
+            _xid: z.string().optional().nullable(),
+          }).nullable().optional(),
+        ),
+        // Just for sending data
+        productIds: z.array(z.string()).optional().nullable(),
         id: z.string().optional().nullable(),
         haveConsent: z
           .boolean()
@@ -106,22 +123,7 @@ export const contentCycleFormSchema = z
         _xid: z.string().optional().nullable(),
       })
     ),
-    products: z.array(
-      z.object({
-        id: z.string().optional().nullable(),
-        images: z
-          .array(
-            z.object({
-              url: z.string().optional().nullable(),
-              id: z.number().optional().nullable(),
-            })
-          )
-          .optional()
-          .nullable(),
-        _xid: z.string().optional().nullable(),
-      })
-    ),
-    isProductsEnabled: z.boolean().nullable().optional(),
+    // isProductsEnabled: z.boolean().nullable().optional(),
     isContentsEnabled: z
       .boolean()
       .nullable()
@@ -156,11 +158,21 @@ export const contentCycleFormSchema = z
         enabled: z.boolean(),
       })
       .optional(),
-    reminder: z.object(({
-       isEnabled: z.boolean(),
-       text: z.string().optional().nullable().transform((data) => data || undefined),
-       time: z.string().optional().nullable().transform((data) => data ? `${data}` : undefined),
-    })).optional(),
+    reminder: z
+      .object({
+        isEnabled: z.boolean(),
+        text: z
+          .string()
+          .optional()
+          .nullable()
+          .transform((data) => data || undefined),
+        time: z
+          .string()
+          .optional()
+          .nullable()
+          .transform((data) => (data ? `${data}` : undefined)),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
     if (data.haveCta && !data.cta) {
@@ -174,29 +186,30 @@ export const contentCycleFormSchema = z
       ctx.addIssue({
         path: ["getUserData", "text"],
         code: "custom",
-        message: "required"
+        message: "required",
       });
     }
 
     if (data.reminder?.isEnabled) {
-      if (!data.reminder?.text){
+      if (!data.reminder?.text) {
         ctx.addIssue({
           path: ["reminder", "text"],
           code: "custom",
-          message: "required"
+          message: "required",
         });
       }
 
-      if (data.reminder?.isEnabled && (!data.reminder?.time || !data.reminder?.text)){
+      if (
+        data.reminder?.isEnabled &&
+        (!data.reminder?.time || !data.reminder?.text)
+      ) {
         ctx.addIssue({
           path: ["reminder", "time"],
           code: "custom",
-          message: "required"
+          message: "required",
         });
       }
     }
-
-
 
     data.contents.forEach((content, index) => {
       // Type issues
@@ -207,8 +220,8 @@ export const contentCycleFormSchema = z
           message: "required",
         });
         return;
-      } 
-      
+      }
+
       if (
         content.type === ContentCycleContentTypesEnum.INSTAGRAM_POST &&
         !content.instagramPost
@@ -219,9 +232,15 @@ export const contentCycleFormSchema = z
           message: "required",
         });
         return;
-      } 
-      
-      if ((content.type !== ContentCycleContentTypesEnum.TEXT && content.type !== ContentCycleContentTypesEnum.INSTAGRAM_POST && !content.file) && !content.file) {
+      }
+
+      if (
+        (content.type === ContentCycleContentTypesEnum.AUDIO ||
+        content.type === ContentCycleContentTypesEnum.VIDEO ||
+        content.type === ContentCycleContentTypesEnum.IMAGE)&&
+        !content.file &&
+        !content.file
+      ) {
         // For files: video, image, voice
         ctx.addIssue({
           path: ["contents", index, "file"],
@@ -231,23 +250,23 @@ export const contentCycleFormSchema = z
       }
     });
 
-    if (!data.contents.length && !data.products.length && !data.cta) {
-      ctx.addIssue({
-        path: ["isContentsEnabled"],
-        code: "custom",
-        message: "at_least",
-      });
-      ctx.addIssue({
-        path: ["isProductsEnabled"],
-        code: "custom",
-        message: "at_least",
-      });
-      ctx.addIssue({
-        path: ["cta"],
-        code: "custom",
-        message: "at_least",
-      });
-    }
+    // if (!data.contents.length && !data.products.length && !data.cta) {
+    //   ctx.addIssue({
+    //     path: ["isContentsEnabled"],
+    //     code: "custom",
+    //     message: "at_least",
+    //   });
+    //   ctx.addIssue({
+    //     path: ["isProductsEnabled"],
+    //     code: "custom",
+    //     message: "at_least",
+    //   });
+    //   ctx.addIssue({
+    //     path: ["cta"],
+    //     code: "custom",
+    //     message: "at_least",
+    //   });
+    // }
   });
 
 /**
@@ -267,8 +286,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     defaultValues: {
       conditions: [{ type: "EQUAL", value: "", id: "" }],
       contents: [],
-      products: [],
-      isProductsEnabled: false,
+      // products: [],
+      // isProductsEnabled: false,
       isContentsEnabled: false,
       getUserData: {
         enabled: false,
@@ -281,7 +300,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       likeDirect: false,
       reminder: {
         isEnabled: false,
-      }
+      },
     },
   });
 
@@ -313,9 +332,12 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       form.reset({
         ...contentCycle,
         ...(contentCycle.products?.length > 0 && { isProductsEnabled: true }),
-        ...contentCycle.reminder?.time && {
-          reminder: { ...contentCycle.reminder, time: `${contentCycle.reminder.time}` }
-        }
+        ...(contentCycle.reminder?.time && {
+          reminder: {
+            ...contentCycle.reminder,
+            time: `${contentCycle.reminder.time}`,
+          },
+        }),
       });
     };
 
@@ -358,7 +380,17 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       }
     }
 
-    const productsIds = values.products.map((p) => p.id);
+
+    for (const content of values.contents) {
+      if (content.type === ContentCycleContentTypesEnum.PRODUCT) {
+        content.productIds = []
+        for (const product of content.products) {
+          if (product?.id) {
+            content.productIds.push(product.id);
+          }
+        }
+      }
+    }
 
     if (haveError) {
       setIsSubmitting(false);
@@ -378,7 +410,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
         body: JSON.stringify({
           ...values,
-          ...(values.isProductsEnabled && { productsIds }),
         }),
         credentials: "include",
       }
@@ -455,7 +486,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Catalogue />
+                  {/* <Catalogue /> */}
 
                   <hr className="border-gray-100" />
 
@@ -463,7 +494,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Reminder/>
+                  <Reminder />
 
                   <hr className="border-gray-100" />
 

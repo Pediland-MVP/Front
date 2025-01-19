@@ -24,6 +24,7 @@ import {
   Waveform,
   Video,
   Image,
+  Storefront,
 } from "@phosphor-icons/react/dist/ssr";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/theme/ui/input";
@@ -46,6 +47,7 @@ import { FileNamespace } from "@/types/file";
 import { useContentsUploaderContext } from "./useContentsUploaderContext";
 import { useContentsContext } from "./useContentsContext";
 import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
+import Catalogue from "../catalogue";
 
 type MessageByTypeProps = {
   index: number;
@@ -231,6 +233,11 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
           )}
         </>
       );
+
+    case ContentCycleContentTypesEnum.PRODUCT:
+      return (
+        <Catalogue index={index}/>
+      )
   }
 }
 
@@ -250,6 +257,11 @@ const messageTypeOptions: MessageTypeOption[] = [
     value: ContentCycleContentTypesEnum.INSTAGRAM_POST,
     label: "Instagram Post",
     icon: <InstagramLogo className="h-6 w-6" />,
+  },
+  {
+    value: ContentCycleContentTypesEnum.PRODUCT,
+    label: 'Product',
+    icon: <Storefront className="h-6 w-6" />
   },
   {
     value: ContentCycleContentTypesEnum.AUDIO,
@@ -354,7 +366,7 @@ export default function ContentItem({
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-5 gap-x-2 shrink-0 items-center">
+      <div className="w-full grid grid-cols-6 gap-x-2 shrink-0 items-center">
         {messageTypeOptions.map((option) => (
           <Button
             key={option.value}
