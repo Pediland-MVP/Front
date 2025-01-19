@@ -5,5 +5,6 @@ export enum ContentCycleContentTypesEnum {
     IMAGE='image',
     VIDEO = 'video',
     AUDIO = 'audio',
-    INSTAGRAM_POST = 'instagram_post'
+    INSTAGRAM_POST = 'instagram_post',
+    PRODUCT='product'
 }
