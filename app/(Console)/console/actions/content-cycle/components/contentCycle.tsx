@@ -119,6 +119,7 @@ export const contentCycleFormSchema = z
         consentText: z
           .string()
           .optional()
+          .nullable()
           .transform((data) => data || undefined),
         _xid: z.string().optional().nullable(),
       })
@@ -134,8 +135,9 @@ export const contentCycleFormSchema = z
     commentStartText: z
       .string()
       .optional()
+      .nullable()
       .transform((data) => data || undefined),
-    commentStartTitle: z.string().optional().nullable(),
+    commentStartTitle: z.string().optional().nullable().transform((data) => data || undefined),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
     followMessage: z.string().optional().nullable(),
@@ -143,6 +145,7 @@ export const contentCycleFormSchema = z
     cta: z
       .string()
       .optional()
+      .nullable()
       .transform((data) => data || undefined),
     haveCta: z
       .boolean()
