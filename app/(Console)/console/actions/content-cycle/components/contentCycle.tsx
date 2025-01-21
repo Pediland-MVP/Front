@@ -8,7 +8,6 @@ import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
 import Contents from "./form/contents/contents";
 import Cta from "./form/cta";
-import Catalogue from "./form/catalogue";
 import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
 import ContentCycleTitle from "./form/title";
@@ -21,7 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
-import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum, ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import Reminder from "./form/reminder";
 import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
 
@@ -124,12 +123,6 @@ export const contentCycleFormSchema = z
         _xid: z.string().optional().nullable(),
       })
     ),
-    // isProductsEnabled: z.boolean().nullable().optional(),
-    isContentsEnabled: z
-      .boolean()
-      .nullable()
-      .optional()
-      .transform((data) => data || false),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     commentStartText: z
@@ -159,21 +152,74 @@ export const contentCycleFormSchema = z
         enabled: z.boolean(),
       })
       .optional(),
-    reminder: z
-      .object({
-        isEnabled: z.boolean(),
-        text: z
-          .string()
-          .optional()
-          .nullable()
-          .transform((data) => data || undefined),
-        time: z
-          .string()
-          .optional()
-          .nullable()
-          .transform((data) => (data ? `${data}` : undefined)),
-      })
-      .optional(),
+      isRemindersEnabled: z.boolean().nullable().optional().transform((data) => data || false),
+      reminderTime: z.string().optional().nullable().transform(data => data || undefined),
+      reminders: z.array(
+        z.object({
+          type: z.nativeEnum(ContentCycleContentTypesEnum),
+          text: z
+            .string()
+            .min(1, "پیام الزامی است")
+            .optional()
+            .nullable()
+            .transform((data) => data || undefined),
+          instagramPost: z
+            .object({
+              mediaUrl: z.string().optional().nullable(),
+              mediaId: z.string().min(1, "انتخاب پست الزامی است"),
+            })
+            .optional()
+            .nullable(),
+          file: z
+            .object({
+              id: z.number(),
+              url: z.string().url().optional().nullable(),
+              name: z.string().optional().nullable(),
+              mimeType: z.string().optional().nullable(),
+            })
+            .optional()
+            .nullable(),
+          products: z.array(
+            z.object({
+              id: z.string().optional().nullable(),
+              images: z
+                .array(
+                  z.object({
+                    url: z.string().optional().nullable(),
+                    id: z.number().optional().nullable(),
+                  })
+                )
+                .optional()
+                .nullable(),
+              _xid: z.string().optional().nullable(),
+            }).nullable().optional(),
+          ).nullable().optional(),
+          // Just for sending data
+          productIds: z.array(z.string()).optional().nullable(),
+          id: z.string().optional().nullable(),
+          haveInstagramPost: z
+            .boolean()
+            .optional()
+            .nullable()
+            .transform((data) => undefined),
+          _xid: z.string().optional().nullable(),
+        })
+      ),
+    // reminder: z
+    //   .object({
+    //     isEnabled: z.boolean(),
+    //     text: z
+    //       .string()
+    //       .optional()
+    //       .nullable()
+    //       .transform((data) => data || undefined),
+    //     time: z
+    //       .string()
+    //       .optional()
+    //       .nullable()
+    //       .transform((data) => (data ? `${data}` : undefined)),
+    //   })
+    //   .optional(),
   })
   .superRefine((data, ctx) => {
     if (data.haveCta && !data.cta) {
@@ -191,26 +237,33 @@ export const contentCycleFormSchema = z
       });
     }
 
-    if (data.reminder?.isEnabled) {
-      if (!data.reminder?.text) {
-        ctx.addIssue({
-          path: ["reminder", "text"],
-          code: "custom",
-          message: "required",
-        });
-      }
-
-      if (
-        data.reminder?.isEnabled &&
-        (!data.reminder?.time || !data.reminder?.text)
-      ) {
-        ctx.addIssue({
-          path: ["reminder", "time"],
-          code: "custom",
-          message: "required",
-        });
-      }
+    if (data.reminders.length > 0 && !data.reminderTime) {
+      ctx.addIssue({
+        path: ["reminderTime"],
+        code: "custom",
+        message: "required",
+      });
     }
+    // if (data.reminder?.isEnabled) {
+    //   if (!data.reminder?.text) {
+    //     ctx.addIssue({
+    //       path: ["reminder", "text"],
+    //       code: "custom",
+    //       message: "required",
+    //     });
+    //   }
+
+    //   if (
+    //     data.reminder?.isEnabled &&
+    //     (!data.reminder?.time || !data.reminder?.text)
+    //   ) {
+    //     ctx.addIssue({
+    //       path: ["reminder", "time"],
+    //       code: "custom",
+    //       message: "required",
+    //     });
+    //   }
+    // }
 
     data.contents.forEach((content, index) => {
       // Type issues
@@ -268,10 +321,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
       conditions: [{ type: "EQUAL", value: "", id: "" }],
-      contents: [],
-      // products: [],
-      // isProductsEnabled: false,
-      isContentsEnabled: false,
+      contents: [{
+        type: ContentCycleContentTypesEnum.TEXT,
+      }],
       getUserData: {
         enabled: false,
         text: "",
@@ -281,9 +333,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       isComment: false,
       justFollowers: false,
       likeDirect: false,
-      reminder: {
-        isEnabled: false,
-      },
+      isRemindersEnabled: false,
+      reminders: [],
     },
   });
 
@@ -319,12 +370,8 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       
       form.reset({
         ...contentCycle,
-        ...(contentCycle.reminder?.time && {
-          reminder: {
-            ...contentCycle.reminder,
-            time: `${contentCycle.reminder.time}`,
-          },
-        }),
+        ...contentCycle.reminders?.length > 0 && { isRemindersEnabled: true },
+        reminderTime: `${contentCycle.reminderTime}`
       });
     };
 
@@ -369,6 +416,19 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
 
     for (const content of values.contents) {
+      if (content.type === ContentCycleContentTypesEnum.PRODUCT) {
+        content.productIds = []
+        if (content.products) {
+          for (const product of content.products) {
+            if (product?.id) {
+              content.productIds.push(product.id);
+            }
+          }
+        }
+      }
+    }
+
+    for (const content of values.reminders) {
       if (content.type === ContentCycleContentTypesEnum.PRODUCT) {
         content.productIds = []
         if (content.products) {
@@ -471,7 +531,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Contents />
+                  <Contents mode={ContentCycleContentModeEnum.CONTENT_CYCLE} />
 
                   <hr className="border-gray-100" />
 

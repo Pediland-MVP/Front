@@ -34,7 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum, ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import { Button } from "@/components/theme/ui/button";
 import { FileUploader } from "@/components/theme/ui/fileUploader";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
@@ -51,11 +51,10 @@ import { v4 as UUID } from 'uuid'
 type MessageByTypeProps = {
   index: number;
   type: ContentCycleContentTypesEnum;
-  // contents: z.infer<typeof  contentCycleFormSchema>['contents']
-  // updateContents: (index: number, content: z.infer<typeof  contentCycleFormSchema>['contents'][number]) => void
+  mode: ContentCycleContentModeEnum;
 };
 
-export function MessageByType({ index, type }: MessageByTypeProps) {
+export function MessageByType({ index, type, mode }: MessageByTypeProps) {
   const { files, setFiles } = useContentsUploaderContext();
   const t_ec = useTranslations("ERROR_CODES");
   const t_err = useTranslations("Automations.Errors");
@@ -69,7 +68,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
 
   const onChange = (files: UploadedFile[]) => {
     if (files.length === 0) {
-      setValue(`contents.${index}.file`, null);
+      setValue(`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.${index}.file`, null);
     }
     if ("file" in files[0]) {
       setFiles((files) => {
@@ -103,7 +102,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
             },
           ]);
 
-          setValue(`contents.${index}.file`, {
+          setValue(`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.${index}.file`, {
             id: res.data.id,
             url: res.data.url,
             mimeType: res.data.mimeType,
@@ -155,7 +154,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
     case ContentCycleContentTypesEnum.TEXT:
       return (
         <Controller
-          name={`contents.${index}.text`}
+          name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.${index}.text`}
           control={control}
           render={({ field, fieldState: { error } }) => (
             <FormItem>
@@ -163,7 +162,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
               {error && (
                 <FormMessage>
                   {" "}
-                  {t_err(`contents.text.${error.message}`)}{" "}
+                  {t_err(`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.text.${error.message}`)}{" "}
                 </FormMessage>
               )}
             </FormItem>
@@ -185,7 +184,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
             <FormMessage>
               {" "}
               {t_err(
-                `contents.audio.${errors.contents?.[index]?.file.message}`
+                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.audio.${errors.contents?.[index]?.file.message}`
               )}{" "}
             </FormMessage>
           )}
@@ -206,7 +205,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
             <FormMessage>
               {" "}
               {t_err(
-                `contents.video.${errors.contents?.[index]?.file.message}`
+                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.video.${errors.contents?.[index]?.file.message}`
               )}{" "}
             </FormMessage>
           )}
@@ -226,7 +225,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
             <FormMessage>
               {" "}
               {t_err(
-                `contents.image.${errors.contents?.[index]?.file.message}`
+                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.image.${errors.contents?.[index]?.file.message}`
               )}{" "}
             </FormMessage>
           )}
@@ -235,7 +234,7 @@ export function MessageByType({ index, type }: MessageByTypeProps) {
 
     case ContentCycleContentTypesEnum.PRODUCT:
       return (
-        <Catalogue index={index}/>
+        <Catalogue mode={mode} index={index}/>
       )
   }
 }
@@ -282,10 +281,12 @@ const messageTypeOptions: MessageTypeOption[] = [
 export default function ContentItem({
   id,
   index,
+  mode,
   defaultUploaderValue,
 }: {
   id: string;
   index: number;
+  mode: ContentCycleContentModeEnum;
   defaultUploaderValue?: UploadedFile | null;
 }) {
   const {
@@ -311,14 +312,11 @@ export default function ContentItem({
 
   const deleteContent = () => {
     removeContents(index);
-    if (index === 0) {
-      setValue("isContentsEnabled", false);
-    }
 
     // if the index is 1, set the haveConsent to false because for consent we need at least 2 item
     if (index === 1) {
       updateContents(0, {
-        ...getValues().contents?.[0],
+        ...mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? getValues().contents?.[0] : getValues().reminders?.[0],
         haveConsent: false,
       });
     }
@@ -345,7 +343,7 @@ export default function ContentItem({
     updateContents(index, updatedContent);
 
     // Trigger form validation
-    trigger(`contents.${index}`);
+    trigger(`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.${index}`);
   };
 
   return (
@@ -389,10 +387,10 @@ export default function ContentItem({
 
       <div className="_content gap-3 flex flex-col w-full">
         <div className="flex flex-col gap-2 w-full">
-          <MessageByType index={index} type={contents[index].type} />
+          <MessageByType mode={mode} index={index} type={contents[index].type} />
 
         {
-          contents[index].type === ContentCycleContentTypesEnum.TEXT && (
+          contents[index].type === ContentCycleContentTypesEnum.TEXT && mode === ContentCycleContentModeEnum.CONTENT_CYCLE && (
             <FormField
               name={`contents.${index}.haveConsent`}
               control={control}

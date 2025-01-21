@@ -16,7 +16,7 @@ export default function Cta({ control }: CtaProps) {
   const t_errors = useTranslations('Automations.Errors')
   const form = useFormContext<z.infer<typeof contentCycleFormSchema>>()
 
-  const isCtaDisabled = !form.getValues().contents.length && !form.getValues().products.length
+  const isCtaDisabled = !form.getValues().contents.length
 
   return (
     <FormField

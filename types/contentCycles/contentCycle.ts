@@ -19,7 +19,8 @@ export interface IContentCycle {
     isContentsEnabled:  boolean;
     conditions:         Condition[];
     contents:           Content[];
-    reminder:           Reminder;
+    reminders:          Content[];
+    reminderTime:       number;
     getUserData:        GetUserData;
 }
 

@@ -5,7 +5,7 @@ import { z } from "zod";
 type ContentsContextType = {
     updateContents: (index: number, content: any) => void
     removeContents: (index: number) => void
-    contents: z.infer<typeof contentCycleFormSchema>['contents']
+    contents: z.infer<typeof contentCycleFormSchema>['contents'] | z.infer<typeof contentCycleFormSchema>['reminders']
 }
 export const ContentsContext = createContext<ContentsContextType | null>(null);
 

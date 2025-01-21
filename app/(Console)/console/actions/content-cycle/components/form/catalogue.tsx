@@ -27,9 +27,11 @@ import ProductsDialog from "../products.dialog";
 import { cn } from "@/lib/utils";
 import { PlusCircle } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
+import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
 
 type CatalogueProps = {
   index: number;
+  mode: ContentCycleContentModeEnum;
 };
 
 type SortableItemProps = {
@@ -107,7 +109,7 @@ function SortableItem({
   );
 }
 
-export default function Catalogue({ index }: CatalogueProps) {
+export default function Catalogue({ index, mode }: CatalogueProps) {
 
 
   const t = useTranslations("Automations.Catalogue");
@@ -124,7 +126,7 @@ export default function Catalogue({ index }: CatalogueProps) {
     move: moveProducts,
   } = useFieldArray({
     control: control,
-    name: `contents.${index}.products`,
+    name: `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.${index}.products`,
     keyName: "_xid",
   });
 
