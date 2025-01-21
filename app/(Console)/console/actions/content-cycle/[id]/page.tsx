@@ -1,7 +1,6 @@
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";
 import ContentCycle from "../components/contentCycle";
-import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import {
   Breadcrumb,
@@ -14,6 +13,7 @@ import {
 } from "@/components/theme/ui/breadcrumb";
 import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { getTranslations } from "next-intl/server";
 
 type ContentCycleEditPageProps = {
   params: Promise<{
@@ -29,7 +29,7 @@ export default async function ContentCycleEditPage({
   if (!isUUID(id, "4")) {
     redirect("/console/actions/content-cycle");
   }
-  const t = useTranslations("Automations");
+  const t = await getTranslations("Automations");
 
   return (
     <div className="_add-automation">
