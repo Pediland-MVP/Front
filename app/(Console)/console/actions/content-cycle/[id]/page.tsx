@@ -16,13 +16,16 @@ import SidebarTrigger from "@/components/theme/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 
 type ContentCycleEditPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>
 };
-export default function ContentCycleEditPage({
-  params: { id },
+export default async function ContentCycleEditPage({
+  params,
 }: ContentCycleEditPageProps) {
+
+  const { id } = await params
+
   if (!isUUID(id, "4")) {
     redirect("/console/actions/content-cycle");
   }
