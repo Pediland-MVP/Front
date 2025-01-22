@@ -535,7 +535,8 @@
         "chooseOneOption": "Please choose one option.",
         "Navigation": {
             "accounts": "Manage Instagram Accounts",
-            "bankAccounts": "Manage Bank Accounts"
+            "bankAccounts": "Manage Bank Accounts",
+            "zarinpal": "Manage ZarinPal"
         },
         "Accounts": {
             "add": "Add",

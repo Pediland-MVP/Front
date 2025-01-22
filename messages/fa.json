@@ -619,7 +619,8 @@
         "chooseOneOption": "لطفا یک گزینه را انتخاب کنید.",
         "Navigation": {
             "accounts": "مدیریت اکانت‌های اینستاگرام",
-            "bankAccounts": "مدیریت حساب‌های بانکی"
+            "bankAccounts": "مدیریت حساب‌های بانکی",
+            "zarinpal": "مدیریت زرین پال"
         },
         "Accounts": {
             "add": "افزودن",
@@ -676,6 +677,18 @@
             "save": "ذخیره",
             "cardToCardUpdated": "اطلاعات آپدیت شد",
             "cardToCardUpdateFailed": "خطایی در ذخیره اطلاعات پیش آمده است"
+        },
+        "Zarinpal": {
+            "title": "مدیریت زرین پال",
+            "description": "برای فعال سازی قابلیت پرداخت با زرین پال اطلاعات زیر را تکمیل کنید",
+            "merchantCode": {
+                "label": "کد merchant",
+                "Errors": {
+                    "required": "کد merchant صحیح نیست"   
+                }
+            },
+            "save": "ذخیره",
+            "success": "کد زرین پال آپدیت شد"
         }
     },
     "Profile": {
@@ -1104,10 +1117,10 @@
         "CARD_TO_CARD_USER_HAVE_NOT": "کاربر کارت به کارت ندارد",
         "ORDER_PENDING_NOT_FOUND": "سفارش در حال انتظار پیدا نشد",
         "SHOP_NOT_FOUND": "فروشگاه پیدا نشد",
+        "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "محتوای باید حداقل یک محصول داشته باشد",
         "ERROR_CODES": "خطای ناشناخته",
         "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
-        "CHECK_CONNECTION": "اتصال خود را چک کنید",
-        "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "محتوای باید حداقل یک محصول داشته باشد"
+        "CHECK_CONNECTION": "اتصال خود را چک کنید"
       }
       
 }
