@@ -7,7 +7,7 @@ import { mutate } from "swr";
 
 export default function useStartPayment() {
   const [loading, setLoading] = useState<boolean>(false);
-  const { pendingOrder, productId, shopId, orderQuantity, setStep } = useCheckout();
+  const { pendingOrder, productId, shopId, orderQuantity, setStep, paymentMethod } = useCheckout();
   const t_ec = useTranslations("ERROR_CODES");
 
   async function startPayment() {
@@ -22,6 +22,7 @@ export default function useStartPayment() {
         body: JSON.stringify({
           productId,
           quantity: orderQuantity,
+          paymentMethod
         }),
         credentials: "include",
       }

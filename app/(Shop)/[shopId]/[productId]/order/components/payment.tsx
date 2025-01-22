@@ -10,10 +10,12 @@ import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
 import useStartPayment from "../hooks/useStartPayment";
 import LoadingButton from "@/components/ui/button-loading";
 import { Button } from "@/components/theme/ui/button";
+import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 
 export default function PaymentDetails() {
+
   const t = useTranslations("Checkout");
-  const { shop, product, orderQuantity, pendingOrder, setStep } = useCheckout();
+  const { shop, product, orderQuantity, pendingOrder, setStep, setPaymentMethod, paymentMethod } = useCheckout();
   const cardToCard = shop?.user.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
 
@@ -21,6 +23,7 @@ export default function PaymentDetails() {
   const [ibanCopied, setIbanCopied] = useState(false);
 
   const { startPayment, loading: isStartPaymentLoading } = useStartPayment();
+
   function separateTextBySpace(text: string | undefined): string {
     if (!text) return "";
     const cleanedText = text.replace(/\s/g, "");
@@ -48,6 +51,10 @@ export default function PaymentDetails() {
     startPayment();
   };
 
+  const paymentMehodChangeHandler = (value: ORDER_PAYMENT_METHODS) => {
+      setPaymentMethod!(value);
+  }
+
   return (
     <div className="_customer-details md:col-span-4 p-3">
       <h2 className="text-lg font-semibold mb-4 border-b pb-2 flex items-center gap-2 text-primary">
@@ -56,15 +63,25 @@ export default function PaymentDetails() {
       </h2>
 
       <div className="grid md:grid-cols-2 gap-4">
-        <RadioGroup dir="rtl" className="gap-4 items-start flex flex-col">
+        <RadioGroup defaultValue={paymentMethod} onValueChange={paymentMehodChangeHandler} dir="rtl" className="gap-4 items-start flex flex-col">
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="1" id="r1" disabled />
-            <Label htmlFor="r1" className="text-base text-gray-400">
-              پرداخت آنلاین (زرین پال) - بزودی
+            <RadioGroupItem
+              value={ORDER_PAYMENT_METHODS.ZARINPAL}
+              id="r1"
+              disabled={!shop?.user?.paymentDetail?.zarinpal}
+            />
+            <Label
+              htmlFor="r1"
+              className={`text-base ${!shop?.user?.paymentDetail?.zarinpal && "text-black/30"}`}
+            >
+              زرین پال
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="2" id="r2" />
+            <RadioGroupItem
+              value={ORDER_PAYMENT_METHODS.CARD_TO_CARD}
+              id="r2"
+            />
             <Label htmlFor="r2" className="text-base">
               کارت به کارت
             </Label>

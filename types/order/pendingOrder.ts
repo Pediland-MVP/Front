@@ -1,3 +1,5 @@
+import { ORDER_PAYMENT_METHODS } from "./order.enum";
+
 export interface IPendingOrder {
   status: string;
   from: string;
@@ -6,7 +8,7 @@ export interface IPendingOrder {
   lead: Instagram;
   orderCardToCard: OrderCardToCard;
   startPaymentDate: null;
-  paymentMethod: null;
+  paymentMethod: ORDER_PAYMENT_METHODS;
   id: string;
   createDate: Date;
   updateDate: Date;

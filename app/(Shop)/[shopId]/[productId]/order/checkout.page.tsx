@@ -39,6 +39,7 @@ import { ShopNamespace } from "@/types/shops/shop.namespace";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import UnAuthorized from "./components/unAuthorized";
 import Image from "next/image";
+import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -95,6 +96,7 @@ export default function CheckoutPage({
   productId,
 }: CheckoutProps) {
   const t = useTranslations("Checkout");
+  const [paymentMethod, setPaymentMethod] = useState<ORDER_PAYMENT_METHODS>(ORDER_PAYMENT_METHODS.CARD_TO_CARD);
   const [isStepInitilized, setIsStepInitilized] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
@@ -243,6 +245,8 @@ export default function CheckoutPage({
         shop,
         isCompleted,
         setIsCompleted,
+        paymentMethod,
+        setPaymentMethod
       }}
     >
       <header>

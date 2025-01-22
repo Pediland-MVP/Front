@@ -1,4 +1,3 @@
-
 export interface IShop {
     id:             string;
     name:           string;
@@ -21,6 +20,9 @@ interface User {
 interface PaymentDetail {
     id:         string;
     cardToCard: CardToCard;
+    zarinpal:   {
+        id: string
+    }
 }
 
 interface CardToCard {
