@@ -225,9 +225,8 @@ export default function CheckoutPage({
       return <OrderNotfound />;
   }
 
-  console.log("Unauthorized", isUnauthorized);
-
-  if (shopError?.data?.code === 'SHOP_NOT_FOUND') {
+  if (shopError || productError) {
+    console.log(shopError, productError)
     return <CheckoutError/>
   }
 
