@@ -4,11 +4,15 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/theme/ui/use-toast";
 import { mutate } from "swr";
+import { useRouter } from "next/navigation";
+import { OrderNamespace } from "@/types/order/order.namespace";
+import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 
 export default function useStartPayment() {
   const [loading, setLoading] = useState<boolean>(false);
   const { pendingOrder, productId, shopId, orderQuantity, setStep, paymentMethod } = useCheckout();
   const t_ec = useTranslations("ERROR_CODES");
+  const router = useRouter()
 
   async function startPayment() {
     setLoading(true);
@@ -29,7 +33,12 @@ export default function useStartPayment() {
     )
       .then(async (res) => {
         if (res.ok) {
+          const json: OrderNamespace.POST.StartPayment = await res.json()
           await mutate(key => typeof key === 'string' && key.includes("pending"))
+          if (paymentMethod === ORDER_PAYMENT_METHODS.ZARINPAL) {
+            router.push(json.data.link!)
+            return
+          }
           setStep(4);
           return;
         }

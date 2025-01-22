@@ -53,7 +53,7 @@ export default function PaymentDetails() {
   };
 
   const startPaymentHandler = async () => {
-    if (pendingOrder!.step >= 4) {
+    if (pendingOrder!.step >= 4 && paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD) {
       return setStep(4);
     }
     startPayment();
@@ -87,7 +87,7 @@ export default function PaymentDetails() {
               htmlFor="r1"
               className={`text-base ${!shop?.user?.paymentDetail?.zarinpal && "text-black/30"}`}
             >
-              زرین پال
+              پرداخت اینترنتی
             </Label>
           </div>
           <div className="flex items-center gap-2">
@@ -190,7 +190,7 @@ export default function PaymentDetails() {
             className="w-full"
             variant={"success"}
           >
-            {t("nextStep")}
+            {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD ? t("nextStep") : t('payWithZarinpal')}
           </LoadingButton>
         </div>
       </div>
