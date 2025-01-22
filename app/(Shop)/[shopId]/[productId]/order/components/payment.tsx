@@ -53,9 +53,9 @@ export default function PaymentDetails() {
   };
 
   const startPaymentHandler = async () => {
-    if (pendingOrder!.step >= 4 && paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD) {
-      return setStep(4);
-    }
+    // if (pendingOrder!.step >= 4 && paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD) {
+    //   return setStep(4);
+    // }
     startPayment();
   };
 

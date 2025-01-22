@@ -36,7 +36,7 @@ export default function useOrder() {
           if (res.ok) {
             const json = await res.json()
             // setOrderId(json.id)
-            await mutate(key => typeof key === 'string' && key.includes("pending"))
+            await mutate(key => typeof key === 'string' && (key.includes("pending")))
             return setStep(2)
           }
           const resJson = await res.json() as ExceptionMessage
@@ -45,6 +45,7 @@ export default function useOrder() {
             description: 'لطفا تعداد را کم کنید یا یک محصول دیگر انتخاب کنید',
             variant: "destructive"
           })
+          await mutate(key => typeof key === 'string' && (key.includes("/products")))
         })
         .catch((err) => {
           toast({

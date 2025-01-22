@@ -6,14 +6,17 @@ import { useCheckout } from '../useCheckout';
 import { mutate } from 'swr';
 import useProcessOrder from '../hooks/useProcessOrder';
 import { Button } from '@/components/theme/ui/button';
+import { useState } from 'react';
 
 
 export default function UploadTransaction() {
     const t = useTranslations("Checkout");
     const { pendingOrder, setStep } = useCheckout()
+    const [uploaded, setUploaded] = useState(!!pendingOrder?.orderCardToCard?.url)
 
-    const onUploaded =() => {
-        mutate(key => typeof key === 'string' && key.includes("pending"))
+    const onUploaded = async () => {
+        await mutate(key => typeof key === 'string' && key.includes("pending"))
+        setUploaded(true)
     }
 
     const { processOrder, loading: isOrderProcessLoading } = useProcessOrder()
@@ -36,7 +39,7 @@ export default function UploadTransaction() {
           {t('back')}
         </Button>
 
-            <LoadingButton isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" variant={"success"} type="button">
+            <LoadingButton disabled={!uploaded} isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" variant={"success"} type="button">
                 {t("paynow")}
             </LoadingButton>
 

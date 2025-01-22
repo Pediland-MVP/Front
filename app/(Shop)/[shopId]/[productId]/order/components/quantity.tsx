@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useTranslations } from "next-intl"
 import { QuantitySkeleton } from "./quantity.skeleton"
+import { ORDER_STATUS } from "@/types/order/order.namespace"
 
 export function Quantity() {
   const t = useTranslations('Checkout')
@@ -40,7 +41,7 @@ export function Quantity() {
   const isDecrementDisabled = isPending || orderQuantity <= 1 || updateQuantityLoading
   const isIncrementDisabled = isPending || outOfStock || updateQuantityLoading
 
-  if (product?.quantity === 0) {
+  if (product?.quantity === 0 && pendingOrder?.status !== ORDER_STATUS.PAYMENT) {
     return (
       <p className="font-bold text-lg text-red-500">موجودی تموم شد :(</p>
     )
