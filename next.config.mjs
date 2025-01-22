@@ -39,6 +39,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'koochaa-cdn.s3.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.zarinpal.com'
+      }
     ],
   },
   eslint: {

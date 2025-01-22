@@ -23,7 +23,7 @@ export type CheckoutContextType = {
     isCompleted: boolean;
     setIsCompleted: Dispatch<React.SetStateAction<boolean>>,
     paymentMethod?: ORDER_PAYMENT_METHODS,
-    setPaymentMethod?: Dispatch<React.SetStateAction<ORDER_PAYMENT_METHODS>>,
+    setPaymentMethod?: Dispatch<React.SetStateAction<ORDER_PAYMENT_METHODS | undefined>>,
 }
 
 export const CheckoutContext = createContext<CheckoutContextType | null>(null)

@@ -40,6 +40,7 @@ import { OrderNamespace } from "@/types/order/order.namespace";
 import UnAuthorized from "./components/unAuthorized";
 import Image from "next/image";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
+import CheckoutError from "./components/checkout.error";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -96,14 +97,14 @@ export default function CheckoutPage({
   productId,
 }: CheckoutProps) {
   const t = useTranslations("Checkout");
-  const [paymentMethod, setPaymentMethod] = useState<ORDER_PAYMENT_METHODS>(ORDER_PAYMENT_METHODS.CARD_TO_CARD);
-  const [isStepInitilized, setIsStepInitilized] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<ORDER_PAYMENT_METHODS>();
+  const [outOfStock, setOutOfStock] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
-  const [outOfStock, setOutOfStock] = useState(false);
+  const [isStepInitilized, setIsStepInitilized] = useState(false);
   const [pendingOrder, setPendingOrder] =
     useState<OrderNamespace.GET.Pending>();
-  const [isCompleted, setIsCompleted] = useState(false);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   const {
@@ -165,10 +166,25 @@ export default function CheckoutPage({
   const {
     data: shop,
     isLoading: isLoadingShop,
-    error: errorShop,
+    error: shopError,
   } = useSWRImmutable<ShopNamespace.GET.Shop>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`
   );
+
+  useEffect(() => {
+    if(shop) {
+      if (shop.user.paymentDetail?.zarinpal && !shop.user.paymentDetail?.cardToCard) {
+        setPaymentMethod(ORDER_PAYMENT_METHODS.ZARINPAL)
+        return
+      }
+      if (!shop.user.paymentDetail?.zarinpal && shop.user.paymentDetail?.cardToCard) {
+        setPaymentMethod(ORDER_PAYMENT_METHODS.CARD_TO_CARD)
+        return
+      }
+      //Defautl payment method
+      setPaymentMethod(ORDER_PAYMENT_METHODS.ZARINPAL)
+    }
+  }, [shop])
 
   const {
     data: _pendingOrder,
@@ -210,6 +226,10 @@ export default function CheckoutPage({
   }
 
   console.log("Unauthorized", isUnauthorized);
+
+  if (shopError?.data?.code === 'SHOP_NOT_FOUND') {
+    return <CheckoutError/>
+  }
 
   // if (order?.status === ORDER_STATUS.PROCESSING) {
   //   return <OrderProcessing />;
