@@ -7,7 +7,6 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin();
 
 export default async function middleware(request: NextRequest) {
-  console.time('middleware')
   
   const currentRoute = request.nextUrl.pathname.split("/")[1];
   if (currentRoute === "en" || currentRoute === "fa") {
@@ -22,7 +21,6 @@ export default async function middleware(request: NextRequest) {
     response.cookies.set("NEXT_LOCALE", currentRoute, {
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10),
     })
-    console.timeEnd('middleware')
     return response
   }
 
@@ -74,23 +72,20 @@ async function authMiddleware(request: NextRequest) {
         request
       );
     }
-    console.timeEnd('middleware')
+
     return CustomResponse.next(request);
   }
 
   const jwt = await parseJwt(token.value, request);
 
   if (!jwt) {
-    console.timeEnd('middleware')
     return CustomResponse.next(request);
   }
 
   if (jwt.payload.isVerified) {
-    console.timeEnd('middleware')
 
     return CustomResponse.redirect(new URL("/console", request.url), request);
   }
-  console.timeEnd('middleware')
   return CustomResponse.next(request);
 }
 

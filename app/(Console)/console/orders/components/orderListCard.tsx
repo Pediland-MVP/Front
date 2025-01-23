@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ORDER_STATUS, OrderNamespace } from "@/types/order/order";
 import { Pagination } from "./pagination";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";
@@ -24,9 +23,10 @@ import { Card } from "@/components/theme/ui/card";
 import OrderListSkeleton from "./orderListSkeleton";
 import { Badge } from "@/components/ui/badge";
 import EditOrderDialog from "./editOrderDialog";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import CardToCardDialog from "./cardToCard.dialog";
+import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
+import useSWR from "swr";
+import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 
 type Lead = {
   profile: string;
@@ -60,7 +60,7 @@ export default function OrderListCard({
     error: ordersError,
     isLoading: isOrdersLoading,
     mutate: fetchOrders,
-  } = useSWRImmutable<OrderNamespace.GET>(
+  } = useSWR<OrderNamespace.GET.Orders>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
     fetcher
   );
@@ -97,11 +97,11 @@ export default function OrderListCard({
       <EditOrderDialog
         open={open}
         setOpen={setOpen}
-        order={orders.find((order) => order.id === orderId)!}
+        order={orders.find((order: any) => order.id === orderId)!}
       />
 
       <div className="_table">
-        <Table>
+        <Table className=" min-h-[1140]">
           <TableHeader>
             <TableRow>
               <TableHead
@@ -109,6 +109,10 @@ export default function OrderListCard({
                 className={`cursor-pointer hover:text-black lg:w-[10%] ${locale === "fa" ? "text-right" : "text-left"}`}
               >
                 {t("product")}
+              </TableHead>
+
+              <TableHead className="lg:w-[2%] text-center">
+                {t('paymentMethod')}
               </TableHead>
 
               <TableHead className="lg:w-[7%] text-center">
@@ -155,46 +159,50 @@ export default function OrderListCard({
                 >
                   <TableCell className="">
                     <Link
-                      href={`/console/products/${order.orderProducts[0].product.id}`}
+                      href={`/console/products/${order?.orderProducts[0]?.product?.id}`}
                       target="_blank"
                       className="hover:text-pink-700 flex justify-start items-center gap-x-3"
                     >
                       <ImageWithFallback
                         src={
-                          order.orderProducts[0].product.images[0].url ??
-                          "https://github.com/shadcn.png"
+                          order.orderProducts[0]?.product.images[0].url ??
+                          '/images/no-image.png'
                         }
-                        fallbackSrc="https://github.com/shadcn.png"
+                        fallbackSrc='/images/no-image.png'
                         alt={`${order.id} order`}
                         width={70}
                         height={70}
                         className="rounded-sm"
                       />
                       <p className="text-md font-medium">
-                        {order.orderProducts[0].product.title}
+                        {order.orderProducts[0]?.product.title}
                       </p>
                     </Link>
                   </TableCell>
 
+                  <TableCell>
+                        {order.paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD ? 'کارت به کارت' : 'زرین پال'}
+                  </TableCell>
+
                   <TableCell className="flex justify-center">
-                    <CardToCardDialog url={order.orderCardToCard.url} />
+                    <CardToCardDialog url={order?.orderCardToCard?.url || '/images/no-image.png'} />
                   </TableCell>
 
                   <TableCell className="text-center">
-                    {order.orderProducts[0].quantity}
+                    {order.orderProducts[0]?.quantity}
                   </TableCell>
 
                   <TableCell className="text-center">
                     <span dir="ltr">
                       {(
-                        order.orderProducts[0].quantity *
-                        order.orderProducts[0].product.price
+                        order.orderProducts[0]?.quantity *
+                        order.orderProducts[0]?.product.price
                       ).toLocaleString()}
                     </span>
                   </TableCell>
 
                   <TableCell className="_space">
-                    {`${order.lead.contact.firstname} ${order.lead.contact.lastname}\n${order.lead.contact.state}, ${order.lead.contact.city}`}
+                    {`${order.lead.contact.firstname} ${order.lead.contact.lastname}${(order?.shipping?.city?.name && order?.shipping?.city?.province?.name) && `\n ${order.shipping.city.name}, ${order.shipping.city.province.name}`}`}
                   </TableCell>
 
                   <TableCell className="_space">
@@ -222,17 +230,6 @@ export default function OrderListCard({
                           setOrderId(order.id);
                         }}
                       />
-
-                      <Link
-                        href={`/shop/${order.instagram.id}/${order.id}/${order.secret}`}
-                        target="_blank"
-                      >
-                        <Eye
-                          size={20}
-                          weight="light"
-                          className="text-gray-500 hover:text-pink-700 cursor-pointer"
-                        />
-                      </Link>
                     </div>
                   </TableCell>
                 </TableRow>

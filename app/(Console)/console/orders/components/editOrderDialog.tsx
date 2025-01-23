@@ -20,12 +20,12 @@ import {
 } from "@/components/ui/drawer";
 import { useTranslations } from "next-intl";
 import OrderDetails from "./orderDetails";
-import { Item } from '@/types/order/order'
+import { OrderNamespace } from "@/types/order/order.namespace";
 
 export interface EditOrderProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  order: Item
+  order: OrderNamespace.GET.Orders['items'][0]
 }
 
 export default function EditOrderDialog({

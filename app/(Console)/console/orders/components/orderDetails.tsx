@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Item, ORDER_STATUS } from "@/types/order/order";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import LoadingButton from '@/components/ui/button-loading';
 import { mutate } from "swr";
+import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
@@ -29,7 +29,7 @@ const statusSchema = z.object({
 type StatusFormData = z.infer<typeof statusSchema>;
 
 interface OrderDetailsProps {
-  order: Item;
+  order: OrderNamespace.GET.Orders['items'][0];
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -42,7 +42,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   const { control, handleSubmit } = useForm<StatusFormData>({
     resolver: zodResolver(statusSchema),
     defaultValues: {
-      status: order.status,
+      status: order!.status,
     },
   });
 
@@ -136,7 +136,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
               <DialogTrigger asChild>
                 <Button variant="ghost" className="w-full p-0 h-auto">
                   <Image
-                    src={order.orderCardToCard.url}
+                    src={order.orderCardToCard.url ?? '/images/no-image.png'}
                     alt={t("cardToCardImage")}
                     width={300}
                     height={200}
@@ -146,7 +146,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
               </DialogTrigger>
               <DialogContent className="max-w-3xl">
                 <Image
-                  src={order.orderCardToCard.url}
+                  src={order.orderCardToCard?.url ?? '/images/no-image.png'}
                   alt={t("cardToCardImage")}
                   width={1200}
                   height={800}
@@ -183,12 +183,12 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
             <p>
               {t("address")}: {order.lead.contact.address}
             </p>
-            <p>
+            {/* <p>
               {t("city")}: {order.lead.contact.city}
             </p>
             <p>
               {t("state")}: {order.lead.contact.state}
-            </p>
+            </p> */}
             <p>
               {t("postalCode")}: {order.lead.contact.postalcode}
             </p>

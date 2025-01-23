@@ -3,10 +3,12 @@ import { ICanQuantityUp } from './canQuantityUp';
 import { IStartPayment } from "./startPayment";
 import { ICreateOrder } from "./createOrder";
 import { IPendingOrder } from "./pendingOrder";
+import { IOrders } from "./orders";
 
 export namespace OrderNamespace {
     export namespace GET {
         export type Order = IOrder;
+        export type Orders = IOrders
         export type Pending = IPendingOrder
     }
 

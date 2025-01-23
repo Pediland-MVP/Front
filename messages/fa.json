@@ -449,6 +449,7 @@
             "details": "مشخصات",
             "actions": "عملیات",
             "status": "وضعیت",
+            "paymentMethod": "روش پرداخت",
             "cardToCardImage": "تصویر کارت به کارت",
             "orderStatus": {
                 "pending": "درحال پرداخت",

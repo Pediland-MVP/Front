@@ -21,7 +21,7 @@ export default function CardToCardDialog({ url }: CardToCardDialog) {
             <ImageWithFallback
               src={url}
               alt={t("cardToCardImage")}
-              fallbackSrc="https://github.com/shadcn.png"
+              fallbackSrc='/images/no-image.png'
               width={70}
               height={70}
               className=" rounded-md"
@@ -31,7 +31,7 @@ export default function CardToCardDialog({ url }: CardToCardDialog) {
         <DialogContent className="max-w-3xl">
           <ImageWithFallback
             src={url}
-            fallbackSrc="https://github.com/shadcn.png"
+            fallbackSrc='/images/no-image.png'
             alt={t("cardToCardImage")}
             width={1200}
             height={800}
