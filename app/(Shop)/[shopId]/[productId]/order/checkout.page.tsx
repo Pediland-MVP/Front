@@ -41,6 +41,7 @@ import UnAuthorized from "./components/unAuthorized";
 import Image from "next/image";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import CheckoutError from "./components/checkout.error";
+import useSWR from "swr";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -106,6 +107,8 @@ export default function CheckoutPage({
   const [pendingOrder, setPendingOrder] =
     useState<OrderNamespace.GET.Pending>();
   const [isUnauthorized, setIsUnauthorized] = useState(false);
+
+
 
   const {
     data: product,
