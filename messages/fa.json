@@ -452,7 +452,8 @@
             "paymentMethod": "روش پرداخت",
             "cardToCardImage": "تصویر کارت به کارت",
             "orderStatus": {
-                "pending": "درحال پرداخت",
+                "pending": "درحال خرید",
+                "payment": "درحال پرداخت",
                 "processing": "آماده پردازش",
                 "sending": "در حال ارسال",
                 "completed": "تکمیل شده",
@@ -462,6 +463,7 @@
         },
         "OrderDetails": {
             "productDetails": "جزئیات محصول",
+            "orderDetails": "جزئیات سفارش",
             "quantity": "تعداد",
             "price": "قیمت",
             "totalPrice": "قیمت کل",
@@ -478,9 +480,11 @@
             "selectStatus": "انتخاب وضعیت",
             "updateStatus": "به‌روزرسانی وضعیت",
             "cardToCardImage": "تصویر کارت به کارت",
+            "paidPrice": "پرداخت شده",
             "statusUpdated": "وضعیت با موفقیت بروز شد",
             "orderStatus": {
-                "pending": "درحال پرداخت",
+                "pending": "درحال خرید",
+                "payment": "درحال پرداخت",
                 "processing": "آماده پردازش",
                 "sending": "در حال ارسال",
                 "completed": "تکمیل شده",

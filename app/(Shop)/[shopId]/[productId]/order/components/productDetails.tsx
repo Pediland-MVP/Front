@@ -12,9 +12,9 @@ export default function ProductDetails() {
   const t = useTranslations("Products");
   const [isExpanded, setIsExpanded] = useState(false); // حالت برای نمایش یا مخفی‌کردن متن
 
-  function calculateDiscountPercentage(originalPrice: number, priceAfterDiscount: number): number {
+  function calculateDiscountPercentage(originalPrice: number, priceAfterDiscount: number): string {
     const discountPercentage = ((originalPrice - priceAfterDiscount) / originalPrice) * 100;
-    return discountPercentage;
+    return discountPercentage.toFixed(2);
 }
 
   if (!product) return <ProductDetailsSkeleton />;

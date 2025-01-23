@@ -152,7 +152,16 @@ export default function OrderListCard({
             {isOrdersLoading ? (
               <OrderListSkeleton rowCount={limit} />
             ) : (
-              orders.map((order) => (
+              orders.map((order) => {
+                const totalPrice = order.orderProducts[0]?.quantity *
+                order.orderProducts[0]?.price
+
+                const realPrice = order.orderProducts[0]?.quantity *
+                order.orderProducts[0]?.product.price
+
+                const isInDiscount = totalPrice !== realPrice
+
+                return(
                 <TableRow
                   key={order.id}
                   className={selectedLeads.includes(order.id) ? "bg-muted" : ""}
@@ -193,16 +202,17 @@ export default function OrderListCard({
                   </TableCell>
 
                   <TableCell className="text-center">
-                    <span dir="ltr">
+                    <span dir="ltr" className={`${isInDiscount && 'line-through'}`}>
                       {(
-                        order.orderProducts[0]?.quantity *
-                        order.orderProducts[0]?.product.price
+                        realPrice
                       ).toLocaleString()}
-                    </span>
+                      </span>
+                      <br />
+                      {isInDiscount && <span>{totalPrice}</span>}
                   </TableCell>
 
                   <TableCell className="_space">
-                    {`${order.lead.contact.firstname} ${order.lead.contact.lastname}${(order?.shipping?.city?.name && order?.shipping?.city?.province?.name) && `\n ${order.shipping.city.name}, ${order.shipping.city.province.name}`}`}
+                    {`${order.lead.contact.firstname} ${order.lead.contact.lastname}${(order?.shipping?.city?.name && order?.shipping?.city?.province?.name) ? `\n ${order.shipping.city.name}, ${order.shipping.city.province.name}` : ''}`}
                   </TableCell>
 
                   <TableCell className="_space">
@@ -233,7 +243,7 @@ export default function OrderListCard({
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
+              )})
             )}
           </TableBody>
         </Table>
