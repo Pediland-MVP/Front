@@ -7,11 +7,11 @@ export interface IPendingOrder {
   instagram: Instagram;
   lead: Instagram;
   orderCardToCard: OrderCardToCard;
-  startPaymentDate: null;
+  startPaymentDate: string | null;
   paymentMethod: ORDER_PAYMENT_METHODS;
   id: string;
-  createDate: Date;
-  updateDate: Date;
+  createDate: string;
+  updateDate: string;
   orderProducts: IOrderProduct[];
 }
 
@@ -32,4 +32,8 @@ interface IOrderProduct {
   createDate: Date;
   updateDate: Date;
   quantity: number;
+  product: {
+    id: string
+    title: string
+  }
 }

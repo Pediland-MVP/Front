@@ -5,13 +5,17 @@ import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/theme/ui/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 export default function useShipping() {
 
     const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>()
     const { setStep, pendingOrder } = useCheckout()
+
+    useEffect(() => {
+      console.log(pendingOrder)
+    }, [pendingOrder])
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setLoading] = useState(false)
     const updateShipping = async (values?: z.infer<typeof orderFormSchema>) => {

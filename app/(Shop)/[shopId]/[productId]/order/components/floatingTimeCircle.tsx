@@ -5,21 +5,26 @@ import { FloatingTimeCircleSkeleton } from './floatingTimeCircle.skeleton'
 // UI
 import { Card } from "@/components/theme/ui/card"
 import { Progress } from "@/components/theme/ui/progress"
+import { mutate } from 'swr'
+import { useCheckout } from '../useCheckout'
+import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from '@/config/configs'
 
 interface FloatingTimeCircleProps {
   startDateString: string | undefined
 }
 
+
 const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString }) => {
-  const [timeLeft, setTimeLeft] = useState(3600) // Initialize with 1 hour in seconds
-  const totalTime = 3600 // 1 hour in seconds
-  const progress = ((totalTime - timeLeft) / totalTime) * 100
+  const { timeLeft, setTimeLeft } = useCheckout()
+  // const [timeLeft, setTimeLeft] = useState(MAX_PAYMENT_LIFE_TIME_IN_SEC) // Initialize with 1 hour in seconds
+  const totalTime = MAX_PAYMENT_LIFE_TIME_IN_SEC // 1 hour in seconds
+  const progress = ((totalTime - timeLeft!) / totalTime) * 100
 
   useEffect(() => {
     if (!startDateString) return;
     const calculateTimeLeft = () => {
       const now = new Date()
-      const endTime = new Date(new Date(startDateString).getTime() + 60 * 60 * 1000) // 1 hour after start
+      const endTime = new Date(new Date(startDateString).getTime() + MAX_PAYMENT_LIFE_TIME_IN_SEC * 1000) // 1 hour after start
       const difference = endTime.getTime() - now.getTime()
 
       if (difference > 0) {
@@ -77,7 +82,7 @@ const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString
         {/* Linear progress and time display for mobile */}
         <div className="md:hidden w-full px-4 flex gap-x-3 items-center justify-center">
           <span className="font-semibold text-primary">
-            {formatTime(timeLeft)}
+            {formatTime(timeLeft!)}
           </span>
           <div className="flex-grow flex justify-center items-center">
             <Progress value={100 - progress} className="h-1" />
@@ -86,7 +91,7 @@ const FloatingTimeCircle: React.FC<FloatingTimeCircleProps> = ({ startDateString
         {/* Time display for desktop */}
         <div className="absolute top-0 left-0 w-full h-full md:flex hidden items-center justify-center">
           <span className="text-2xl font-bold text-primary">
-            {formatTime(timeLeft)}
+            {formatTime(timeLeft!)}
           </span>
         </div>
       </div>

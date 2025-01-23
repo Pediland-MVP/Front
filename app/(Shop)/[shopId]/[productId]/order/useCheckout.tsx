@@ -24,6 +24,8 @@ export type CheckoutContextType = {
     setIsCompleted: Dispatch<React.SetStateAction<boolean>>,
     paymentMethod?: ORDER_PAYMENT_METHODS,
     setPaymentMethod?: Dispatch<React.SetStateAction<ORDER_PAYMENT_METHODS | undefined>>,
+    timeLeft?: number,
+    setTimeLeft: Dispatch<React.SetStateAction<number>>,
 }
 
 export const CheckoutContext = createContext<CheckoutContextType | null>(null)
