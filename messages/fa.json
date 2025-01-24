@@ -41,6 +41,7 @@
             "otpDescription": "کد تاییدی که به موبایل شما ارسال شده را وارد کنید",
             "verifyButton": "تایید کد",
             "resendCode": "ارسال مجدد کد",
+            "logout": "خروج",
             "errors": {
                 "otpLength": "کد تایید باید 6 رقم باشد"
             },

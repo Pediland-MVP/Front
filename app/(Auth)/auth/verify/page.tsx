@@ -152,6 +152,29 @@ export default function VerifyOTP() {
     form.handleSubmit(onSubmit)();
   };
 
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false)
+
+  const logoutHandler = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
+    setIsLogoutLoading(true)
+    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/logout`, {
+      method: "DELETE",
+      credentials: "include",
+    })
+      .then(async (res) => {
+        router.push("/");
+      })
+      .catch(e => {
+        toast({
+          title: t("logoutFailed"),
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsLogoutLoading(false)
+      })
+  };
+
   return (
     <main className=" h-svh w-full flex justify-center items-center">
       <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
@@ -209,6 +232,13 @@ export default function VerifyOTP() {
                 onClick={resendHandler}
               >
                 { isResendLoading ? <CircleNotch className="animate-spin"/> : t("resendCode")}
+              </p>
+
+              <p
+                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
+                onClick={resendHandler}
+              >
+                { isLogoutLoading ? <CircleNotch className="animate-spin"/> : t("logout")}
               </p>
             </div>
           </div>
