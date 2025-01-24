@@ -371,7 +371,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       form.reset({
         ...contentCycle,
         ...contentCycle.reminders?.length > 0 && { isRemindersEnabled: true },
-        reminderTime: `${contentCycle.reminderTime}`
+        reminderTime: contentCycle.reminderTime ? `${contentCycle.reminderTime}` : undefined
       });
     };
 
