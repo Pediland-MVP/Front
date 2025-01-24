@@ -121,7 +121,7 @@
         }
     },
     "Console": {
-        "accessDenied": "زمان شما تمام شد. لطفا دوباره از طریق دکمه سفارش در اینستاگرام اقدام کنید",
+        "accessDenied": "اول باید اینستاگرام خود  را وصل نمایید",
         "accessNote": "لطفا اکانت اینستاگرام خود را متصل نمایید.",
         "dashboard": "داشبورد",
         "productCount": "تعداد کالاها / خدمات",
@@ -532,6 +532,7 @@
             "inactive": "غیرفعال",
             "price": "قیمت (تومان)",
             "discountPrice": "قیمت با تخفیف",
+            "activateDiscount": "اعمال تخفیف",
             "quantity": "تعداد",
             "limitedQuantity": "محدودیت تعداد",
             "unlimitedQuantity": "تعداد نامحدود",
