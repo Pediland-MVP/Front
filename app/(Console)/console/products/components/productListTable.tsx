@@ -37,6 +37,8 @@ import {
 import { CardToCardNamespace } from "@/types/cardToCard";
 import { ExceptionMessage } from '../../../../../types/exceptionMessage';
 import { ERROR_CODES } from "@/app/constants/errorCodes.constant";
+import CardToCardAlert from "./cardToCard.alert";
+import { PaymentNamespace } from "@/types/payments/payment.namespace";
 
 
 interface ContentItem {
@@ -90,16 +92,23 @@ export default function ProductListTable() {
         return 
       }
       if (productsData.items.length === 0) {
-        fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/cardToCard`, {
+        fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/methods`, {
           credentials: 'include'
         })
         .then(async res => {
           if (!res.ok) {
             const json: ExceptionMessage = await res.json()
-            if (json.code === 'CARD_TO_CARD_USER_HAVE_NOT') {
+            if (json.code === 'PAYMENT_METHODS_NOT_FOUND') {
               setIsUserNeedAddPaymentMethod(true)
             }
+            return
           }
+
+          const result = await res.json() as PaymentNamespace.GET.PaymentMethods
+          if (!result.cardToCard && !result.zarinpal) {
+            setIsUserNeedAddPaymentMethod(true)
+          }
+
         })
         .catch(() => setIsCheckUserPaymentMethodLoading(true))
       }
@@ -150,6 +159,12 @@ export default function ProductListTable() {
     }
   };
   const locale = useLocale();
+
+  if (isUserNeedAddPaymentMethod) {
+      return (
+        <CardToCardAlert/>
+      ) 
+  }
 
   return (
     <Card className="border-b-2 border-gray-100">
