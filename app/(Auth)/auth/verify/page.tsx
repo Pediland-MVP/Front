@@ -26,7 +26,7 @@ import ButtonLoading from "@/components/ui/button-loading";
 import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
 
 export default function VerifyOTP() {
-  const t = useTranslations("Verify");
+  const t = useTranslations("Auth.Verify");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isResendLoading, setIsResendLoading] = useState(false);
@@ -153,7 +153,7 @@ export default function VerifyOTP() {
   };
 
   return (
-    <main className=" h-full">
+    <main className=" h-svh w-full flex justify-center items-center">
       <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
         <div className="flex items-center justify-center h-full">
           <div className="text-center w-full sm:w-1/3 mx-auto">
