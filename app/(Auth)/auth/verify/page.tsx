@@ -236,7 +236,7 @@ export default function VerifyOTP() {
 
               <p
                 className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
-                onClick={resendHandler}
+                onClick={logoutHandler}
               >
                 { isLogoutLoading ? <CircleNotch className="animate-spin"/> : t("logout")}
               </p>
