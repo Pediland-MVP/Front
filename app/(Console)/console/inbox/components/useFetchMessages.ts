@@ -72,7 +72,6 @@ export default function useFetchMessages(
     messagesSocket.emit(WsMessageEvents.CONVERSATION, {
       leadId: lead?.id,
       page: page + 1,
-      after: lastMessageDate,
     });
     setPage((old) => old + 1);
   };
