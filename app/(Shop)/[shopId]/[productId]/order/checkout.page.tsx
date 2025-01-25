@@ -371,6 +371,7 @@ export default function CheckoutPage({
               className="mt-5"
               setCurrentStep={setCurrentStep}
               currentStep={currentStep}
+              disableNavigation
             >
               <FormStep
                 disableTitle
