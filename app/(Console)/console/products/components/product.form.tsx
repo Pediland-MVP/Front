@@ -68,14 +68,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       isDigital: z.boolean(),
     })
     .superRefine((data, ctx) => {
-      if (!data.isInfinite && (!data.quantity || data.quantity <= 0)) {
-        console.log("Adding issue for quantity");
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "وقتی تعداد نامحدود نیست، تعداد نمی‌تواند خالی یا صفر باشد.",
-          path: ["quantity"],
-        });
-      }
+      // if (!data.isInfinite && (!data.quantity || data.quantity <= 0)) {
+      //   console.log("Adding issue for quantity");
+      //   ctx.addIssue({
+      //     code: z.ZodIssueCode.custom,
+      //     message: "وقتی تعداد نامحدود نیست، تعداد نمی‌تواند خالی یا صفر باشد.",
+      //     path: ["quantity"],
+      //   });
+      // }
 
       if (data.isDiscount && !data.discountPrice) {
         ctx.addIssue({
@@ -147,7 +147,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   const [isLoading, setLoading] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!values.isInfinite && !values.quantity) {
+
+    //TODO: Move to superRefine
+    if (!values.isInfinite && (typeof values.quantity == 'undefined' || values.quantity == null)) {
       form.setError("quantity", {
         message: t("quantityError"),
       });

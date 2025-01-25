@@ -125,7 +125,7 @@ export default function CustomerDetails() {
           className="w-full"
           variant={"success"}
           type="button"
-          disabled={product?.quantity===0}
+          disabled={!product?.isInfinite && product?.quantity===0}
         >
           {t("nextStep")}
         </LoadingButton>

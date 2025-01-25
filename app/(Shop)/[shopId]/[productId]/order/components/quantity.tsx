@@ -41,7 +41,7 @@ export function Quantity() {
   const isDecrementDisabled = isPending || orderQuantity <= 1 || updateQuantityLoading
   const isIncrementDisabled = isPending || outOfStock || updateQuantityLoading
 
-  if (product?.quantity === 0 && pendingOrder?.status !== ORDER_STATUS.PAYMENT) {
+  if (product?.quantity === 0 && !product.isInfinite && pendingOrder?.status !== ORDER_STATUS.PAYMENT) {
     return (
       <p className="font-bold text-lg text-red-500">موجودی تموم شد :(</p>
     )

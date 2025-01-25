@@ -14,7 +14,7 @@ export default function ProductDetails() {
 
   function calculateDiscountPercentage(originalPrice: number, priceAfterDiscount: number): string {
     const discountPercentage = ((originalPrice - priceAfterDiscount) / originalPrice) * 100;
-    return discountPercentage.toString();
+    return discountPercentage.toFixed(0).toString();
 }
 
   if (!product) return <ProductDetailsSkeleton />;

@@ -19,6 +19,7 @@ export interface ProductItem {
     description: string;
     quantity?:    number; 
     images:      Image[];
+    isInfinite:  boolean;
 }
 
 export interface Image {
