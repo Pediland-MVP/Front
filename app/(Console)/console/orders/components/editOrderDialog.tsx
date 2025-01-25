@@ -73,7 +73,7 @@ export default function EditOrderDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[560px]">
+      <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>{t('editInformation')}</DialogTitle>
           <DialogDescription></DialogDescription>

@@ -97,7 +97,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 md:grid-cols-2">
-            <div>
+            <div className="w-full">
               <h3 className="text-lg font-semibold mb-2 flex items-center">
                 <Package className="mr-2" size={20} />
                 {t("productDetails")}
@@ -105,7 +105,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
               {order.orderProducts.map((op) => (
                 <div
                   key={op.id}
-                  className="flex items-center space-x-4 mb-4 p-2 rounded-md hover:bg-accent/10 transition-colors duration-200"
+                  className="flex gap-x-3 items-center space-x-4 mb-4 p-2 rounded-md hover:bg-accent/10 transition-colors duration-200"
                 >
                   <Image
                     src={op.product.images[0]?.url || "/placeholder.svg"}
