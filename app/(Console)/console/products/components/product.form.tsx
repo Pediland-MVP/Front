@@ -52,7 +52,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       // .transform((data) => data || undefined),
       // .transform((data) => data || undefined),
       isInfinite: z.boolean(),
-      quantity: z.number().optional(),
+      quantity: z.number().positive().optional(),
       description: z
         .string({
           message: t("Alerts.description"),
