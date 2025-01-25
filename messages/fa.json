@@ -483,6 +483,7 @@
             "cardToCardImage": "تصویر کارت به کارت",
             "paidPrice": "پرداخت شده",
             "statusUpdated": "وضعیت با موفقیت بروز شد",
+            "updating": "درحال آپدیت...",
             "orderStatus": {
                 "pending": "درحال خرید",
                 "payment": "درحال پرداخت",

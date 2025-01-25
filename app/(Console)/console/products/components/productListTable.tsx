@@ -166,6 +166,8 @@ export default function ProductListTable() {
       ) 
   }
 
+
+
   return (
     <Card className="border-b-2 border-gray-100">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
@@ -204,7 +206,9 @@ export default function ProductListTable() {
                 <TableCell className="text-center">کالای فیزیکی</TableCell>
 
                 <TableCell className="text-center">
-                  {product.price.toLocaleString()}
+                  <span className={`${product.discountPrice ? "line-through" : ""}`} >{product.price.toLocaleString()}</span>
+                  <br/>
+                  {product.discountPrice && <span>{product.discountPrice?.toLocaleString()}</span>}
                 </TableCell>
 
                 <TableCell className="text-center">

@@ -208,7 +208,7 @@ export default function OrderListCard({
                       ).toLocaleString()}
                       </span>
                       <br />
-                      {isInDiscount && <span>{totalPrice}</span>}
+                      {isInDiscount && <span>{totalPrice.toLocaleString()}</span>}
                   </TableCell>
 
                   <TableCell className="_space">
