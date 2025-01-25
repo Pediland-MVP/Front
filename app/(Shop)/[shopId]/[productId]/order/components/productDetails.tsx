@@ -14,7 +14,7 @@ export default function ProductDetails() {
 
   function calculateDiscountPercentage(originalPrice: number, priceAfterDiscount: number): string {
     const discountPercentage = ((originalPrice - priceAfterDiscount) / originalPrice) * 100;
-    return discountPercentage.toFixed(2);
+    return discountPercentage.toString();
 }
 
   if (!product) return <ProductDetailsSkeleton />;
@@ -60,7 +60,7 @@ export default function ProductDetails() {
           {product.discountPrice && (
             <p className="flex items-center justify-end gap-2 text-gray-700">
               <span className="text-gray-400 line-through">
-                {product.price}
+                {product.price.toLocaleString()}
               </span>
               <span className="bg-red-500 text-white flex items-center pt-1 pb-[2px] px-[5px] leading-4 rounded-md text-[13px]">
                 {calculateDiscountPercentage(product.price, product.discountPrice)}%
@@ -69,7 +69,7 @@ export default function ProductDetails() {
           )}
           <p className="flex items-center gap-2 text-gray-700 leading-none">
             <span className="text-green-600 font-bold text-[22px]">
-              {product.discountPrice ? product.discountPrice * orderQuantity : product.price * orderQuantity}
+              {product.discountPrice ? (product.discountPrice * orderQuantity).toLocaleString() : (product.price * orderQuantity).toLocaleString()}
             </span>
             <span className="font-medium">تومان</span>
           </p>
