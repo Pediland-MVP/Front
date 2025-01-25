@@ -43,18 +43,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           message: t("Alerts.titleLenght"),
         }),
       status: z.boolean(),
-      price: z
-        .number({
-          message: t("Alerts.price"),
-        })
-        .min(0, {
-          message: t("Alerts.priceMinus"),
-        }),
+      price: z.union([z.number().int().positive(), z.nan()]),
       discountPrice: z
-        .number({
-          message: t("Alerts.discountPrice"),
-        })
-        .min(0, t("Alerts.discountPriceMinus"))
+        .union([z.number().int().positive(), z.nan()])
         .optional()
         .nullable(),
       isDiscount: z.boolean().default(false),
@@ -94,7 +85,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         });
       }
 
-      if (data.price < 1000) {
+      if (data.price! < 1000) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "قیمت کالا نمی‌تواند کمتر از 1000 تومان باشد.",
@@ -103,8 +94,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       }
 
       if (data.discountPrice) {
-
-        if (data.discountPrice > data.price) {
+        if (data.discountPrice > data.price!) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "قیمت تخفیف نمی‌تواند بیشتر از قیمت کالا باشد.",
@@ -127,10 +117,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             path: ["discountPrice"],
           });
         }
-
-
       }
-
     });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -168,7 +155,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
 
     if (!values.discountPrice || !values.isDiscount) {
-      values.discountPrice = null
+      values.discountPrice = null;
     }
 
     setLoading(true);
@@ -302,9 +289,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     <Input
                       placeholder="۰.۰۰"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
+                      onChange={(e) => field.onChange(+e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -342,7 +327,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                               {...field}
                               value={field.value || 0}
                               onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value))
+                                field.onChange(+(e.target.value))
                               }
                             />
                           </FormControl>
