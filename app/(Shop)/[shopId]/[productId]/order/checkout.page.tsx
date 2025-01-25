@@ -80,8 +80,8 @@ const UploadTransaction = dynamic(
 
 export const orderFormSchema = z.object({
   gender: z.nativeEnum(GENDERS_ENUM),
-  firstname: z.string(),
-  lastname: z.string(),
+  firstname: z.string().min(1),
+  lastname: z.string().min(1),
   email: z.string().email(),
   mobile: z.string().regex(REGEX_MOBILE, "Invalid mobile number"),
   state: z.string(),
