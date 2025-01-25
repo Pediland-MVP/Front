@@ -94,24 +94,33 @@ export default function PaymentDetails() {
             <RadioGroupItem
               value={ORDER_PAYMENT_METHODS.CARD_TO_CARD}
               id="r2"
+              disabled={!shop?.user?.paymentDetail?.cardToCard}
             />
-            <Label htmlFor="r2" className="text-base">
+            <Label
+              htmlFor="r2"
+              className={`text-base ${!shop?.user?.paymentDetail?.cardToCard && "text-black/30"}`}
+            >
               کارت به کارت
             </Label>
           </div>
         </RadioGroup>
 
         <div className="_card-transfer-text">
-          {
-            paymentMethod === ORDER_PAYMENT_METHODS.ZARINPAL && (
-              <div className="flex justify-center items-center gap-x-5 h-[245.5px]">
-                <Image width={80} height={190} src={'https://cdn.zarinpal.com/badges/trustLogo/1.svg'} alt="لوگوی زرین پال" quality={100} />
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  در مرحله بعد به درگاه پرداخت زرین پال منتقل خواهید شد و پرداخت شما با پرداخت ایمن زرین پال انجام میشود
-                </p>
-              </div>
-            )
-          }
+          {paymentMethod === ORDER_PAYMENT_METHODS.ZARINPAL && (
+            <div className="flex justify-center items-center gap-x-5 h-[245.5px]">
+              <Image
+                width={80}
+                height={190}
+                src={"https://cdn.zarinpal.com/badges/trustLogo/1.svg"}
+                alt="لوگوی زرین پال"
+                quality={100}
+              />
+              <p className="text-sm text-gray-600 leading-relaxed">
+                در مرحله بعد به درگاه پرداخت زرین پال منتقل خواهید شد و پرداخت
+                شما با پرداخت ایمن زرین پال انجام میشود
+              </p>
+            </div>
+          )}
 
           {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD && (
             <>
@@ -119,8 +128,8 @@ export default function PaymentDetails() {
                 لطفا مبلغ{" "}
                 <span className="bg-yellow-100 font-semibold px-1 text-primary">
                   {product?.discountPrice
-                    ? product!.discountPrice * orderQuantity
-                    : product!.price * orderQuantity}{" "}
+                    ? (product!.discountPrice * orderQuantity).toLocaleString()
+                    : (product!.price * orderQuantity).toLocaleString()}{" "}
                   تومان
                 </span>{" "}
                 به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
@@ -190,7 +199,9 @@ export default function PaymentDetails() {
             className="w-full"
             variant={"success"}
           >
-            {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD ? t("nextStep") : t('payWithZarinpal')}
+            {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
+              ? t("nextStep")
+              : t("payWithZarinpal")}
           </LoadingButton>
         </div>
       </div>
