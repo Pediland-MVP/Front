@@ -63,9 +63,6 @@ export default function Contents({ mode }: ContentsProps) {
   const t = useTranslations("Automations.Contents");
   const t_errors = useTranslations("Automations.Errors");
 
-  const { setValue, trigger } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
-
   // Configure sensors for drag and drop
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -86,23 +83,6 @@ export default function Contents({ mode }: ContentsProps) {
     }
   };
 
-  const addContent = (isEnabled: boolean) => {
-    {
-      if (isEnabled) {
-        if (getValues().contents?.length === 0) {
-          appendContents({
-            type: ContentCycleContentTypesEnum.TEXT,
-            ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE && {
-              haveConsent: false,
-            }),
-          });
-        }
-      } else {
-        removeContents(0);
-      }
-      trigger();
-    }
-  };
 
   return (
     <ContentsContext.Provider

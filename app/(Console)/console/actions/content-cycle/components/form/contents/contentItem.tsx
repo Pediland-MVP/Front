@@ -145,9 +145,8 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
       return (
         <div className="relative flex justify-center items-center">
           <InstagramPostsDialog
+            mode={mode}
             index={index}
-            updateContents={updateContents}
-            contents={contents}
           />
         </div>
       );

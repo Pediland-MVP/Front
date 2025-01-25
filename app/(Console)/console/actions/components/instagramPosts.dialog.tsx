@@ -15,31 +15,44 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
-import { Control, useFormContext, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
+import { Control, useFieldArray, useFormContext, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
 import { useTranslations } from 'next-intl'
+import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
 
 const PAGE_SIZE = 9;
 
 export type InstagramPostsDialogProps = {
   index: number;
-  updateContents: any;
-  contents: any;
+  mode: ContentCycleContentModeEnum
 };
 
 const InstagramPostsDialog = ({
   index,
-  updateContents,
-  contents,
+  mode
 }: InstagramPostsDialogProps) => {
+
+  const { getValues, control, formState: {errors} } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
+  
+
+  const {
+    fields: contents,
+    update: updateContents,
+  } = useFieldArray({
+    control: control,
+    name:
+      mode === ContentCycleContentModeEnum.REMINDER ? "reminders" : "contents",
+    keyName: "_xid",
+  });
+
+
   const [isOpen, setIsOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { getValues, formState: {errors} } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
@@ -80,7 +93,7 @@ const InstagramPostsDialog = ({
     console.log(`value before update`, getValues()?.contents?.[index]);
 
     updateContents(index, {
-      ...getValues()?.contents?.[index],
+      ...mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? getValues()?.contents?.[index] : getValues()?.reminders?.[index],
       instagramPost: { mediaUrl, mediaId: postId },
     });
     setIsOpen(false);
