@@ -266,13 +266,6 @@ export default function CheckoutPage({
   }, [_pendingOrder]);
 
   useEffect(() => {
-    console.log("P", pendingOrder);
-    console.log("_P", _pendingOrder);
-    
-    
-  }, [pendingOrder, _pendingOrder])
-
-  useEffect(() => {
     if (errorPendingOrder)
       setPendingOrder(undefined);
   }, [errorPendingOrder]);
