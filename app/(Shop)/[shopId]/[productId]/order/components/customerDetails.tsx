@@ -30,6 +30,7 @@ export default function CustomerDetails() {
     control,
     formState: { errors },
     trigger,
+    clearErrors
   } = useFormContext<z.infer<typeof orderFormSchema>>();
 
 
@@ -48,10 +49,13 @@ export default function CustomerDetails() {
 
     if (pendingOrder) {
       await updateContact()
+      clearErrors()
       return
     }
 
-    createOrder();
+    await createOrder();
+    clearErrors()
+
   };
 
   return (
