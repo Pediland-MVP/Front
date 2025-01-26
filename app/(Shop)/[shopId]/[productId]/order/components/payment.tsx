@@ -111,7 +111,7 @@ export default function PaymentDetails() {
               <Image
                 width={80}
                 height={190}
-                src={"https://cdn.zarinpal.com/badges/trustLogo/1.svg"}
+                src={"/images/zarinpal.svg"}
                 alt="لوگوی زرین پال"
                 quality={100}
               />
@@ -140,7 +140,7 @@ export default function PaymentDetails() {
                 <div className="flex flex-col gap-2 mb-3 text-sm text-gray-700">
                   <p className="flex items-center gap-2">
                     <span>شماره کارت:</span>{" "}
-                    <span className="font-medium">
+                    <span className="font-medium" dir="ltr">
                       {separateTextBySpace(cardToCard?.cardNumber)}
                     </span>
                     <button
