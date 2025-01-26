@@ -33,6 +33,7 @@ import useShipping from "../hooks/useShipping";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
+import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 export default function Address() {
   const t = useTranslations("Checkout");
@@ -233,6 +234,8 @@ export default function Address() {
                   <FormControl>
                     <Input
                       id="postalcode"
+                      inputMode="numeric"
+                      onInput={onInputP2EHandler}
                       {...register("postalcode", { required: true })}
                     />
                   </FormControl>

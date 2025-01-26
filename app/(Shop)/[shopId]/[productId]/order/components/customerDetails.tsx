@@ -18,6 +18,7 @@ import useOrder from "../hooks/useOrder";
 import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
 import useUpdateContact from "../hooks/useUpdateContact";
+import p2eNumbers, { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
@@ -108,6 +109,8 @@ export default function CustomerDetails() {
               <FormControl>
                 <Input
                   id="mobile"
+                  type="tel"
+                  onInput={onInputP2EHandler}
                   {...register("mobile", { required: true })}
                 />
               </FormControl>
