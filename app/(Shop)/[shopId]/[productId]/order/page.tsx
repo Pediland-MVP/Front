@@ -18,7 +18,7 @@ export default function OrderPage(props: {
   if (isAuthenticationLoading) {
     return (
       <div className="w-full h-svh flex items-center justify-center">
-        <span className="text-2xl font-semibold">درحال احراز هویت...</span>
+        <span className="text-2xl font-semibold">درحال بارگذاری...</span>
       </div>
     )
   }
