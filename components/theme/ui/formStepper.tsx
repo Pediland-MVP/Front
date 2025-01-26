@@ -20,6 +20,7 @@ interface FormStepperProviderProps extends React.HTMLAttributes<HTMLDivElement> 
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   onStepChange?: (step: number) => void;
   disableNavigation?: boolean;
+  disable?: boolean
 }
 
 interface FormStepProps  {
@@ -53,6 +54,7 @@ export function FormStepperProvider({
   onStepChange,
   disableNavigation = false,
   className,
+  disable = false,
   ...props
 }: FormStepperProviderProps) {
   const [steps, setSteps] = React.useState<FormStepProps[]>([]);
@@ -80,7 +82,7 @@ export function FormStepperProvider({
   return (
     <FormStepperContext.Provider value={value}>
       <div className={cn("w-full", className)}>
-        <div className="mb-8 flex items-center justify-center">
+        <div className={cn("mb-8 flex items-center justify-center", disable && 'hidden')} >
           {steps.map((step, index) => {
             const isActive = step.step === currentStep;
             const isCompleted = step.step < currentStep;

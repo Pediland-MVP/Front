@@ -367,11 +367,15 @@ export default function CheckoutPage({
 
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
+
+            
             <FormStepperProvider
               className="mt-5"
               setCurrentStep={setCurrentStep}
               currentStep={currentStep}
               disableNavigation
+              // Temporary disabled
+              disable={true}
             >
               <FormStep
                 disableTitle
