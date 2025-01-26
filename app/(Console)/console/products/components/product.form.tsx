@@ -26,6 +26,7 @@ import LoadingButton from "@/components/ui/button-loading";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/theme/ui/card";
+import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -52,7 +53,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       // .transform((data) => data || undefined),
       // .transform((data) => data || undefined),
       isInfinite: z.boolean(),
-      quantity: z.number().positive().optional(),
+      quantity: z.number().positive().optional().transform(data => data || 0),
       description: z
         .string({
           message: t("Alerts.description"),
@@ -289,6 +290,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   <FormLabel>{t("price")}</FormLabel>
                   <FormControl>
                     <Input
+                      onInput={onInputP2EHandler}
                       placeholder="۰.۰۰"
                       {...field}
                       onChange={(e) => field.onChange(+e.target.value)}
@@ -325,6 +327,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                           {/* <FormLabel>{t("discountPrice")}</FormLabel> */}
                           <FormControl>
                             <Input
+                              onInput={onInputP2EHandler}
                               placeholder="۰.۰۰"
                               {...field}
                               value={field.value || 0}
@@ -368,6 +371,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   <FormControl>
                     <Input
                       type="number"
+                      onInput={onInputP2EHandler}
                       placeholder="۰.۰۰"
                       {...field}
                       onChange={(e) =>
