@@ -1,36 +1,36 @@
 {
     "Auth": {
         "signup": "Sign Up",
-        "signin": "Sign In",
+        "signin": "Login",
         "Metadata": {
-            "title": "Befroosh, Smart Customer Management",
+            "title": "Sell, Smart Customer Management",
             "description": ""
         },
         "Signup": {
             "signupTitle": "New User Registration",
             "alreadyHaveAccount": "Already have an account?",
-            "signInHere": "Sign in here.",
+            "signInHere": "Login here.",
             "enterFirstnamePlaceholder": "First Name",
             "enterLastnamePlaceholder": "Last Name",
             "enterMobilePlaceholder": "Mobile Number",
             "enterPasswordPlaceholder": "Password",
             "enterConfirmPasswordPlaceholder": "Confirm Password",
             "signup": "Sign Up",
-            "orDivider": "Or",
+            "orDivider": "or",
             "continueWithFacebook": "Continue with Facebook",
             "continueWithGoogle": "Continue with Google",
             "enterFirstname": "Enter your first name.",
             "enterLastname": "Enter your last name.",
             "enterValidMobile": "Enter a valid mobile number.",
-            "passwordValidation": "Password must be at least 8 characters, including a number, an uppercase letter, and a special character (!@#$%^&*).",
+            "passwordValidation": "Password must be at least 8 characters, including one number, one uppercase letter, and one special character (!@#$%^&*).",
             "enterConfirmPassword": "Enter your confirm password.",
-            "signupFailed": "Sign-up is not possible",
+            "signupFailed": "Registration is not possible",
             "mobileAlreadyRegistered": "This mobile number is already registered.",
             "firstnameRequired": "First name is required",
-            "pleaseSignIn": "Please sign in",
+            "pleaseSignIn": "Please log in",
             "lastnameRequired": "Last name is required",
             "mobileRequired": "Mobile number is required",
-            "enterMobile": "Enter mobile number",
+            "enterMobile": "Enter your mobile number",
             "passwordRequired": "Password is required",
             "confirmPasswordRequired": "Confirm password is required",
             "error": "Error",
@@ -38,40 +38,41 @@
         },
         "Verify": {
             "title": "One-Time Code Verification",
-            "otpDescription": "Enter the verification code sent to your mobile.",
+            "otpDescription": "Enter the verification code sent to your mobile",
             "verifyButton": "Verify Code",
             "resendCode": "Resend Code",
+            "logout": "Logout",
             "errors": {
-                "otpLength": "Verification code must be 6 digits."
+                "otpLength": "Verification code must be 6 digits"
             },
             "toasts": {
-                "tryAgainLater": "Please try again in 2 minutes.",
-                "alreadyVerified": "You have already been verified.",
+                "tryAgainLater": "Please try again in 2 minutes",
+                "alreadyVerified": "You have already been verified",
                 "error": "Error",
-                "invalidOTP": "Invalid verification code.",
-                "loginSuccess": "Logged in successfully.",
-                "welcomeMessage": "Welcome to your account.",
-                "waitTwoMinutes": "Please wait for 2 minutes.",
-                "resendOk": "New verification code sent.",
-                "checkConnection": "Check your connection."
+                "invalidOTP": "Invalid verification code",
+                "loginSuccess": "Successfully logged in",
+                "welcomeMessage": "Welcome to your account",
+                "waitTwoMinutes": "Please wait for 2 minutes",
+                "resendOk": "New verification code sent",
+                "checkConnection": "Check your connection"
             }
         },
         "Signin": {
-            "loginTitle": "Log in to Your Account",
-            "noAccount": "Don’t have an account?",
+            "loginTitle": "Login to Your Account",
+            "noAccount": "Don't have an account?",
             "signUpHere": "Sign up here.",
             "login": "Login",
             "enterMobilePlaceholder": "Mobile Number",
             "enterPasswordPlaceholder": "Password",
-            "forgotPassword": "Forgot password?",
-            "orDivider": "Or",
+            "forgotPassword": "Forgot Password",
+            "orDivider": "or",
             "continueWithFacebook": "Continue with Facebook",
             "continueWithGoogle": "Continue with Google",
-            "enterMobile": "Enter mobile number.",
-            "passwordValidation": "Password must be at least 8 characters, including a number, an uppercase letter, and a special character (!@#$%^&*).",
+            "enterMobile": "Enter your mobile number.",
+            "passwordValidation": "Password must be at least 8 characters, including one number, one uppercase letter, and one special character (!@#$%^&*).",
             "loginErrorDescription": "Mobile number or password is incorrect.",
             "loginSuccess": "Welcome",
-            "loginWelcome": "Successfully logged into your account.",
+            "loginWelcome": "You have successfully logged in.",
             "mobileRequired": "Mobile number is required",
             "passwordRequired": "Password is required",
             "loginError": "Error",
@@ -85,67 +86,67 @@
             "enterMobile": "Enter your mobile number to reset your password.",
             "mobilePlaceholder": "Mobile Number",
             "sendResetLink": "Send Code",
-            "sending": "Sending ...",
+            "sending": "Sending...",
             "mobileRequired": "Enter your mobile number.",
-            "resetRequestSent": "Password reset request sent.",
+            "resetRequestSent": "Reset request sent.",
             "checkMobile": "Please check your mobile.",
             "resend": "Resend Code",
-            "mobileInvalid": "Enter a valid mobile number.",
-            "resetRequestError": "An error occurred.",
-            "resetRequestErrorDescription": "We couldn’t send the code. Please try again.",
-            "tryAgainLater": "Please try again in 2 minutes.",
+            "mobileInvalid": "Please enter a valid mobile number",
+            "resetRequestError": "An error occurred",
+            "resetRequestErrorDescription": "We couldn't send the code. Please try again.",
+            "tryAgainLater": "Please try again in 2 minutes",
             "ChangePassword": {
                 "resetPassword": "Reset Password",
                 "enterMobile": "Enter your mobile number to reset your password.",
                 "mobilePlaceholder": "Mobile Number",
-                "otpDescription": "Enter the code sent to your mobile.",
+                "otpDescription": "Enter the code sent to your mobile here.",
                 "enterPasswordPlaceholder": "Password",
                 "confirmPasswordPlaceholder": "Confirm Password",
-                "codeLength": "Enter the full received code.",
-                "passwordValidation": "Password must be at least 8 characters, including a number, an uppercase letter, and a special character (!@#$%^&*).",
+                "codeLength": "Enter the received code in full.",
+                "passwordValidation": "Password must be at least 8 characters, including one number, one uppercase letter, and one special character (!@#$%^&*).",
                 "invalidCode": "The entered code is incorrect.",
                 "mobileRequired": "Mobile number is required",
-                "mobileInvalid": "Enter a valid mobile number.",
+                "mobileInvalid": "Please enter a valid mobile number",
                 "sendResetLink": "Reset Password",
                 "sending": "Sending...",
-                "resetRequestSent": "Your password has been reset.",
+                "resetRequestSent": "Your password has been reset",
                 "checkMobile": "You can now log in with your new password.",
-                "resetRequestError": "Error resetting password.",
-                "resetRequestErrorDescription": "An error occurred, please try again.",
-                "tryAgainLater": "Please try again in 2 minutes.",
-                "passwordRequired": "Password is required.",
-                "codeExpired": "The code has expired.",
-                "passwordsDontMatch": "Password does not match the confirmation."
+                "resetRequestError": "Error resetting password",
+                "resetRequestErrorDescription": "An error occurred, please try again",
+                "tryAgainLater": "Please try again in 2 minutes",
+                "passwordRequired": "Password is required",
+                "codeExpired": "Code has expired",
+                "passwordsDontMatch": "Password and confirm password do not match"
             }
         }
     },
     "Console": {
-        "accessDenied": "You do not have access to this page!",
+        "accessDenied": "You must first connect your Instagram account",
         "accessNote": "Please connect your Instagram account.",
         "dashboard": "Dashboard",
-        "productCount": "Number of Products / Services",
-        "leadCount": "Number of Contacts",
+        "productCount": "Number of Products/Services",
+        "leadCount": "Number of Leads",
         "automations": "Number of Automated Messages",
         "responseCount": "Number of Responses",
         "growthFromLastMonth": "{growth}% from last month",
         "leadsGrowthChart": "Leads Growth Chart",
         "recentSessions": "Recent Sessions",
-        "noRecentSessions": "Nothing here for now :)",
+        "noRecentSessions": "No news for now :)",
         "Sidebar": {
-            "name": "Befroosh",
+            "name": "BeFroosh",
             "description": "Customer Management",
             "dashboard": "Dashboard",
             "contacts": "Contacts",
             "instagramConnections": "Instagram Connections",
-            "directs": "Directs",
+            "directs": "Direct Messages",
             "comments": "Comments",
             "automations": "Automated Messages",
             "shop": "Shop",
             "ordersList": "Orders",
-            "products": "Products / Services",
+            "products": "Products/Services",
             "settings": "Settings",
             "upgradeAccount": "Upgrade Account",
-            "soon": "Soon",
+            "soon": "Coming Soon",
             "profile": "Profile",
             "logout": "Logout"
         }
@@ -153,7 +154,7 @@
     "Contacts": {
         "dashboard": "Dashboard",
         "list": "Contacts List",
-        "searchPlaceholder": "Search ...",
+        "searchPlaceholder": "Search...",
         "List": {
             "image": "Image",
             "userName": "Username",
@@ -162,7 +163,7 @@
             "actions": "Actions"
         },
         "Pagination": {
-            "itemsCount": "Items Count",
+            "itemsCount": "Number of Items",
             "show": "Show",
             "page": "Page {page} of {pages}"
         },
@@ -188,15 +189,15 @@
             "postalcode": "Postal Code",
             "updated": "Information updated successfully",
             "errors": {
-                "firstname": "Please enter the first name",
-                "lastname": "Please enter the last name",
+                "firstname": "Please enter your first name",
+                "lastname": "Please enter your last name",
                 "mobile": "Please enter a valid mobile number",
                 "email": "Please enter a valid email address",
-                "country": "Please enter the country",
-                "city": "Please enter the city",
+                "country": "Please enter your country",
+                "city": "Please enter your city",
                 "postalcode": "Please enter a valid postal code",
-                "address": "Please enter the address",
-                "gender": "Please select the gender",
+                "address": "Please enter your address",
+                "gender": "Please select your gender",
                 "birthDate": "Please enter a valid birth date",
                 "birthDateRequired": "Birth date is required",
                 "update": "An error occurred"
@@ -205,12 +206,12 @@
     },
     "Inbox": {
         "dashboard": "Dashboard",
-        "list": "Directs List",
-        "noConversations": "No directs available.",
+        "list": "Direct Messages List",
+        "noConversations": "No direct messages available.",
         "ChatBottombar": {
             "textPlaceholder": "Message text",
             "errors": {
-                "send": "Error in sending"
+                "send": "Error sending"
             }
         },
         "ChatList": {
@@ -224,13 +225,14 @@
     "Comments": {
         "dashboard": "Dashboard",
         "list": "Comments List",
+        "commentsOf": "Comments: {caption}",
         "Footer": {
             "errors": {
                 "text": "Please enter your comment"
             },
             "placeholder": "Comment text",
             "success": "Comment sent successfully",
-            "error": "Error in sending comment"
+            "error": "Error sending comment"
         },
         "Comment": {
             "thereAreNoMoreMessages": "No more comments",
@@ -245,6 +247,7 @@
         "dashboard": "Dashboard",
         "list": "Automated Messages List",
         "add": "Add",
+        "addTitle": "Message Details",
         "List": {
             "title": "Title",
             "conditionValue": "Condition Value",
@@ -257,36 +260,38 @@
             "fetchError": "Error fetching data",
             "fetchErrorRetry": "Error fetching data. Please try again.",
             "error": "Error",
-            "problemOccurred": "A problem occurred",
+            "problemOccurred": "An error occurred",
             "deleted": "Deleted",
-            "notAvailable": "Not Available",
+            "notAvailable": "Not available",
             "responses": "Responses",
             "edit": "Edit",
             "delete": "Delete"
         },
         "ProductsDialog": {
             "fetchError": "Error fetching products:",
-            "coverImageAlt": "Cover Image",
+            "coverImageAlt": "Cover image",
             "changeProduct": "Change",
             "selectProduct": "Select",
             "selectProductDescription": "Select a product",
             "noMorePosts": "No more posts available.",
-            "instagramPostAlt": "Instagram Post",
+            "instagramPostAlt": "Instagram post",
             "price": "{price} Toman",
             "close": "Close"
         },
         "DeleteConfirmationDialog": {
             "title": "Are you sure you want to delete this item?",
-            "description": "This action is irreversible. The item will be permanently deleted from our servers.",
+            "description": "This action is irreversible. This item will be permanently deleted from our servers.",
             "delete": "Delete",
             "cancel": "Cancel"
         },
         "Trigger": {
             "userIn": "If your user is in",
-            "direct": "Direct",
+            "direct": "Direct Message",
             "comment": "Comment",
-            "startRequestMessage": "Start Request Message",
-            "commentPlaceholder": "Example: Please click the Start button to begin the process"
+            "startRequestMessage": "Start request message",
+            "commentPlaceholder": "Example: Please click the start button to begin the process",
+            "commentStartTitlePlaceholder": "Start",
+            "commentStartTitle": "Start button text"
         },
         "Title": {
             "title": "Title",
@@ -297,32 +302,37 @@
             "add": "Add Question"
         },
         "JustFollowers": {
-            "justFollowers": "Send if the page is followed",
-            "messageText": "Message Text",
-            "helper": "Enabling this option will send automation only if the user follows your page; otherwise, the message below will be displayed.",
+            "justFollowers": "Send only to followers",
+            "messageText": "Message text",
+            "helper": "By enabling this option, the automation will only send if the user follows your page. Otherwise, the message below will be shown to them.",
             "placeholder": "Example: Please follow our page to continue",
-            "retryButton": "Retry Button Text",
-            "retryPlaceholder": "Example: I have followed"
+            "retryButton": "Retry button text",
+            "retryPlaceholder": "Example: I followed"
         },
         "Conditions": {
-            "wordOrPhrase": "A word or phrase",
+            "wordOrPhrase": "Word or phrase",
             "equal": "Equal",
             "include": "Include",
             "with": "With",
             "value": "Value",
             "deleteCondition": "Delete Condition",
             "addNewCondition": "Add New Condition",
-            "sendMessageBelow": "The following will be sent."
+            "sendMessageBelow": "will send the following items."
         },
         "Contents": {
+            "consent": "Request consent for the next message",
+            "consentTooltip": "To enable this feature, at least two messages must be sent",
+            "consentTooltipType": "To use the consent feature, the message must be text",
             "removeContent": "Remove Content",
             "enterYourMessage": "Enter your message",
-            "consentMessage": "Permission message: Are you willing to continue?...",
-            "addContent": "Add Content"
+            "consentMessage": "Next?",
+            "addContent": "Add Content",
+            "label": "Send Content",
+            "haveInstagramPost": "Send an Instagram post"
         },
         "Cta": {
-            "label": "Ending Text",
-            "placeholder": "This text will be displayed at the end"
+            "label": "Final Text",
+            "placeholder": "This text will be shown at the end"
         },
         "GetUserData": {
             "getUserData": "Get User Data",
@@ -333,13 +343,65 @@
             "questionText": "Question Text",
             "enterMobileNumber": "Example: Please enter your mobile number"
         },
+        "Reminder": {
+            "isEnabled": {
+                "label": "Send Reminder Message",
+                "Errors": {
+                    "required": "This field is required"
+                }
+            },
+            "text": {
+                "label": "Reminder Message",
+                "placeholder": "Hello, this is a reminder message",
+                "Errors": {
+                    "required": "This field is required",
+                    "invalid": "This field is required"
+                }
+            },
+            "time": {
+                "label": "After",
+                "placeholder": "After how many hours should the reminder be sent?",
+                "Errors": {
+                    "required": "This field is required",
+                    "invalid": "This field is required"
+                }
+            }
+        },
         "Catalogue": {
             "label": "Send Product Catalogue",
-            "add": "Add Product"
+            "add": "Add Product",
+            "limit": "The maximum number of products that can be selected per message is 10"
         },
         "likeCommand": "Like the user's first message",
         "submit": "Create",
-        "update": "Update"
+        "update": "Update",
+        "Errors": {
+            "cta": {
+                "custom": "Specify the final text"
+            },
+            "contents": {
+                "at_least": "At least one content or product must be added",
+                "too_small": "Message is required",
+                "text": {
+                    "required": "Message is required and must be at least one character"
+                },
+                "instagramPost": {
+                    "required": "Please select a post"
+                },
+                "image": {
+                    "required": "Please select an image"
+                },
+                "video": {
+                    "required": "Please select a video"
+                },
+                "audio": {
+                    "required": "Please select an audio file"
+                }
+            },
+            "products": {
+                "at_least": "At least one content or product must be added"
+            }
+        }
     },
     "InstagramPostDialog": {
         "changePost": "Change Post",
@@ -349,7 +411,7 @@
         "close": "Close"
     },
     "Sessions": {
-        "title": "Session List",
+        "title": "Sessions List",
         "dashboard": "Dashboard",
         "automation": "Automation",
         "List": {
@@ -378,7 +440,7 @@
     },
     "Orders": {
         "dashboard": "Dashboard",
-        "list": "Order List",
+        "list": "Orders List",
         "searchPlaceholder": "Search",
         "List": {
             "image": "Card-to-Card",
@@ -388,10 +450,12 @@
             "details": "Details",
             "actions": "Actions",
             "status": "Status",
+            "paymentMethod": "Payment Method",
             "cardToCardImage": "Card-to-Card Image",
             "orderStatus": {
-                "pending": "Pending Payment",
-                "processing": "Ready to Process",
+                "pending": "Pending",
+                "payment": "Payment in Progress",
+                "processing": "Ready for Processing",
                 "sending": "Sending",
                 "completed": "Completed",
                 "invalid_data": "Invalid Data",
@@ -400,6 +464,7 @@
         },
         "OrderDetails": {
             "productDetails": "Product Details",
+            "orderDetails": "Order Details",
             "quantity": "Quantity",
             "price": "Price",
             "totalPrice": "Total Price",
@@ -416,10 +481,13 @@
             "selectStatus": "Select Status",
             "updateStatus": "Update Status",
             "cardToCardImage": "Card-to-Card Image",
+            "paidPrice": "Paid Price",
             "statusUpdated": "Status updated successfully",
+            "updating": "Updating...",
             "orderStatus": {
-                "pending": "Pending Payment",
-                "processing": "Ready to Process",
+                "pending": "Pending",
+                "payment": "Payment in Progress",
+                "processing": "Ready for Processing",
                 "sending": "Sending",
                 "completed": "Completed",
                 "invalid_data": "Invalid Data",
@@ -432,11 +500,17 @@
     },
     "Products": {
         "dashboard": "Dashboard",
-        "title": "Product / Service List",
+        "title": "Products/Services List",
         "add": "Add",
-        "addTitle": "Register New Product / Service",
-        "editTitle": "Edit Product / Service",
+        "addTitle": "Add New Product/Service",
+        "editTitle": "Edit Product/Service",
         "List": {
+            "Alert": {
+                "title": "You must first enter your bank information",
+                "description": "You must enter at least one of the card-to-card or Zarinpal methods.",
+                "cardToCard": "Add Card Information",
+                "zarinpal": "Add Zarinpal"
+            },
             "image": "Image",
             "title": "Title",
             "type": "Type",
@@ -450,59 +524,68 @@
             "next": "Next",
             "pageOf": "Page {current} of {total}",
             "error": "Error",
-            "problemOccurred": "An issue occurred",
-            "deleted": "The selected product or service was deleted."
+            "problemOccurred": "An error occurred",
+            "deleted": "The product/service has been deleted."
         },
         "Form": {
-            "uploadProductImage": "Upload product or service image.",
+            "uploadProductImage": "Upload product/service image.",
             "quantityError": "Quantity cannot be less than zero",
             "errorOccurred": "An error occurred",
-            "productAddedSuccess": "Product successfully added",
+            "productAddedSuccess": "Product added successfully",
             "checkConnection": "Check your connection",
             "title": "Title",
-            "productTitle": "Enter the title of your product or service",
+            "productTitle": "Enter your product/service title",
             "active": "Active",
             "inactive": "Inactive",
             "price": "Price (Toman)",
+            "discountPrice": "Discounted Price",
+            "activateDiscount": "Apply Discount",
             "quantity": "Quantity",
             "limitedQuantity": "Limited Quantity",
             "unlimitedQuantity": "Unlimited Quantity",
             "physicalProduct": "Physical Product",
             "digitalService": "Digital Service",
             "description": "Description",
-            "describeProduct": "Enter the description of your product or service",
-            "submitProduct": "Submit Product or Service",
+            "describeProduct": "Enter your product/service description",
+            "submitProduct": "Submit Product/Service",
             "uploadImage": "Upload Images",
             "Alerts": {
-                "title": "Please enter the title of your product or service.",
+                "title": "Please enter your product/service title.",
                 "titleLenght": "Too short",
-                "price": "Please enter the price of your product or service.",
-                "priceMinus": "Price cannot be less than zero.",
-                "quantity": "Please enter the stock quantity of your product or service.",
-                "description": "Please enter the description of your product or service.",
-                "descrptionLength": "Description length must be more than 5 characters.",
-                "image": "Please select an image for your product or service."
+                "price": "Please enter your product/service price.",
+                "priceMinus": "Price cannot be less than 1000 Toman.",
+                "discountPrice": "Discount cannot be less than 1000 Toman",
+                "discountPriceMinus": "Please enter the discounted price",
+                "quantity": "Please enter the available quantity of your product/service.",
+                "description": "Please enter your product/service description.",
+                "descrptionLength": "The product/service description must be more than 5 characters.",
+                "image": "Please select your product/service image."
             }
         },
         "Edit": {
             "editContact": "Edit Contact",
-            "editContactDescription": "You can edit the contact from here",
+            "editContactDescription": "From here, we can edit the contact",
             "cancel": "Cancel"
         },
         "Delete": {
             "areYouSure": "Are you sure?",
-            "deleteConfirmation": "This operation is irreversible. Your product or service will be deleted.",
+            "deleteConfirmation": "This action is irreversible. Your product/service will be deleted.",
             "cancel": "Cancel",
             "delete": "Delete"
         }
     },
     "Checkout": {
+        "back": "Back",
+        "outOfStock": "Out of Stock",
         "customerDetails": "Customer Details",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
         "firstName": "First Name",
         "lastName": "Last Name",
-        "gender": "Gender",
         "email": "Email",
         "mobile": "Mobile",
+        "nextStep": "Next Step",
         "person": "Recipient Name",
         "address": "Address",
         "city": "City",
@@ -510,68 +593,120 @@
         "country": "Country",
         "postalCode": "Postal Code",
         "paymentMethod": "Payment Method",
-        "paynow": "Pay Now",
-        "male": "Male",
-        "female": "Female",
-        "uploadSuccess": "Your receipt was uploaded",
+        "paynow": "Pay and Register Order",
+        "uploadSuccess": "Your receipt has been uploaded",
         "required": "This field is required",
-        "orderCardToCardNotUploaded": "Please upload your card-to-card receipt first",
-        "orderProcessing": "Your order was successfully placed",
-        "orderProcessingDescription": "Your purchase will be reviewed by the store, and if approved, order details will be sent to your Instagram.",
-        "orderInvalid": "The order you are looking for is expired or has already been paid.",
+        "orderCardToCardNotUploaded": "Please first upload your card-to-card receipt",
+        "orderProcessing": "Your order has been successfully registered",
+        "orderProcessingDescription": "Your purchase will be reviewed by the store and, if approved, the order details will be sent to your Instagram.",
+        "orderInvalid": "Your order has expired or has been paid.",
         "invalidEmail": "Invalid email",
         "selectGender": "Select an option",
+        "orderSubmitSuccessFull": "Your order has been successfully registered. It will be sent after approval.",
+        "OrderSubmitted": {
+            "title": "Your order has been registered",
+            "description": "After approval, the order status will be sent to you."
+        },
+        "UnAuthorized": {
+            "accessDenied": "Your time has expired. Please try again via the order button on Instagram."
+        },
+        "CustomerAddress": {
+            "state": {
+                "Errors": {
+                    "required": "Please select a state"
+                }
+            },
+            "cityId": {
+                "Errors": {
+                    "required": "Please select a city"
+                }
+            }
+        },
         "Errors": {
             "postalcode": {
                 "invalid_type": "Postal code must be 10 digits",
                 "required": "This field is required",
                 "too_small": "Postal code must be 10 digits"
             }
-        }
+        },
+        "payWithZarinpal": "Pay with Zarinpal"
     },
     "Settings": {
         "dashboard": "Dashboard",
         "title": "Settings",
-        "chooseOneOption": "Please choose one option.",
+        "chooseOneOption": "Please select one option.",
         "Navigation": {
             "accounts": "Manage Instagram Accounts",
             "bankAccounts": "Manage Bank Accounts",
-            "zarinpal": "Manage ZarinPal"
+            "zarinpal": "Manage Zarinpal"
         },
         "Accounts": {
             "add": "Add",
             "addAccount": "Add Account",
             "viewAccount": "View Account",
             "areYouSure": "Are you sure?",
-            "deleteConfirmation": "This action is irreversible. The account will be removed from your list.",
+            "deleteConfirmation": "This action is irreversible. This account will be deleted from your list.",
             "cancel": "Cancel",
             "delete": "Delete",
             "errorOccurred": "An error occurred",
             "tryAgain": "Please try again",
-            "deleteSuccess": "Deleted successfully",
-            "accountDeletedSuccess": "Account deleted successfully",
+            "deleteSuccess": "Successfully deleted",
+            "accountDeletedSuccess": "Account successfully deleted",
             "deleteError": "Error deleting",
-            "deleteErrorDescription": "An issue occurred while deleting the account. Please try again.",
-            "connectAccount": "Connect Account",
+            "deleteErrorDescription": "An error occurred while deleting the account. Please try again.",
+            "connectAccount": "Connect to Account",
             "noAccountsFound": "No accounts found.",
             "Error": {
-                "errorOccurred": "Unfortunately, an issue occurred!",
+                "errorOccurred": "Sorry, an error occurred!",
                 "goTo": "Go to",
                 "accounts": "Manage Instagram Accounts",
-                "goToEnd": "to continue"
+                "goToEnd": ""
             },
             "SelectInstagram": {
-                "selectAccount": "Select an Account",
+                "selectAccount": "Select an account",
                 "accountsDescription": "These Instagram accounts are connected to your Facebook account. You can select one.",
                 "cancel": "Cancel"
             },
             "SelectPagesForm": {
-                "serverConnectionError": "Could not connect to server",
+                "serverConnectionError": "Connection to server failed",
                 "accountAlreadySelected": "This account has already been selected",
                 "selectDifferentAccount": "Select a different account",
-                "accountSelectedSuccess": "Account selected successfully",
+                "accountSelectedSuccess": "Account successfully selected",
                 "select": "Select"
             }
+        },
+        "BankDetails": {
+            "bankName": {
+                "label": "Bank Name",
+                "required": "Bank name is required"
+            },
+            "cardNumber": {
+                "label": "Card Number",
+                "required": "Card number must be 16 digits"
+            },
+            "iban": {
+                "label": "IBAN",
+                "required": "IBAN must be 24 digits"
+            },
+            "accountHolder": {
+                "label": "Account Holder",
+                "required": "Account holder name is required"
+            },
+            "save": "Save",
+            "cardToCardUpdated": "Information updated",
+            "cardToCardUpdateFailed": "An error occurred while saving information"
+        },
+        "Zarinpal": {
+            "title": "Manage Zarinpal",
+            "description": "To activate Zarinpal payment, fill in the following information.",
+            "merchantCode": {
+                "label": "Merchant Code",
+                "Errors": {
+                    "required": "Merchant code is invalid"
+                }
+            },
+            "save": "Save",
+            "success": "Zarinpal code updated"
         }
     },
     "Profile": {
@@ -594,13 +729,13 @@
             "city": "City",
             "save": "Save",
             "cancel": "Cancel",
-            "profileUpdated": "Profile updated successfully.",
+            "profileUpdated": "Profile updated.",
             "Errors": {
                 "firstname": {
-                    "invalid_type": "First name can only contain Persian letters."
+                    "invalid_type": "First name can only contain Persian letters"
                 },
                 "lastname": {
-                    "invalid_type": "Last name can only contain Persian letters."
+                    "invalid_type": "Last name can only contain Persian letters"
                 },
                 "email": {
                     "required": "This field is required",
@@ -625,47 +760,47 @@
     "Site": {
         "Footer": {
             "contactUs": "Contact Us",
-            "contactUsText": "For any questions or support needs, please contact us via the methods below.",
+            "contactUsText": "Currently, if you have any questions or need support, you can contact us through the following methods.",
             "whatsapp": "WhatsApp",
             "telegram": "Telegram",
-            "privacy": "Privacy Policy",
+            "privacy": "Privacy",
             "terms": "Terms and Conditions",
-            "copyright": "All rights reserved for Befroosh."
+            "copyright": "All rights reserved for BeFroosh."
         }
     },
     "Home": {
-        "heroSectionTitle": "We have made connecting, selling, shipping, and managing customers on social media easier!",
-        "crm": "CRM sales based on messaging",
-        "trialButton": "Free Registration",
+        "heroSectionTitle": "We have made communication, sales, delivery, and customer management on social networks easy!",
+        "crm": "CRM Sales Based on Messaging",
+        "trialButton": "Free Trial Registration",
         "Section1": {
-            "title": "Focus on creating content and supply!",
-            "subTitle": "We connect, sell, ship, and manage your customers."
+            "title": "You just focus on content production and supply!",
+            "subTitle": "We build connections, sell, deliver, and manage your customers."
         },
         "Section2": {
-            "title": "Experience more sales and productivity with less cost and effort!"
+            "title": "Experience more sales and productivity with less cost and energy!"
         },
         "Features": {
             "title": "Features",
-            "title1": "Automatic Saving of Customer Information",
-            "text1": "Customer information such as phone numbers and emails is automatically saved in their profiles.",
-            "title2": "Dedicated Database",
-            "text2": "Don't worry about losing access to Instagram. Customer information will be transferred to your dedicated database, so even if your page is removed, you'll still have access to your customers.",
+            "title1": "Automatic Customer Data Storage",
+            "text1": "Customer information such as mobile number and email is automatically saved in their profile.",
+            "title2": "Private Database",
+            "text2": "Don't worry about Instagram access limits, your customer data is transferred from Instagram to your private database and if your page is deleted for any reason, you still have access to your customers.",
             "title3": "Easy Sales on Instagram",
-            "text3": "Don't worry about losing customer messages, payment receipts, or orders. Customers can place orders easily without needing to register.",
-            "title4": "Easy Order Shipping",
-            "text4": "After placing an order, purchase information is automatically sent to the post office, and a shipping receipt is issued.",
-            "title5": "New Version of Smart Direct Messaging",
-            "text5": "Respond to customers smarter and create message automation to boost sales.",
-            "title6": "360-Degree Customer Engagement",
-            "text6": "Engage with customers through multiple channels like direct messages, automation, SMS, and more."
+            "text3": "Don't worry about losing customer messages, payment issues, and order registration, customers can easily start and register their orders without needing to sign up.",
+            "title4": "Easy Order Delivery",
+            "text4": "After registering the order, the purchase information is automatically sent to the post office and a postal receipt is issued.",
+            "title5": "New Version of Smart Direct",
+            "text5": "Respond to customers more intelligently and build message automations for more customer purchases.",
+            "title6": "360-Degree Communication with Customers",
+            "text6": "Communicate with customers through various channels such as direct messages, automation, SMS, etc."
         },
         "BigSection": {
-            "xs": "Incomprehensible Simplicity",
+            "xs": "Simple Content Production",
             "imageAlt": "CRM Pipeline",
-            "title": "Enhance Your CRM Experience",
-            "description1": "Manage your sales effectively with our CRM tools.",
+            "title": "Improve Your CRM Experience",
+            "description1": "Manage your sales efficiently with our CRM tools.",
             "description2": "Customize your workflow and increase productivity.",
-            "badge1": "Simple Interface",
+            "badge1": "Simple User Interface",
             "badge2": "Fully Customizable",
             "badge3": "Support"
         },
@@ -685,258 +820,323 @@
         "title": "Terms and Conditions of Service",
         "introduction": {
             "title": "Introduction",
-            "paragraph1": "Welcome to our website. Please read these terms and conditions carefully before using the services and content of this website. By using this website, you indicate your agreement to these terms. If you do not agree, please do not use the website."
+            "paragraph1": "Welcome to our website. Please read these terms and conditions carefully before using our services and content. By using this website, you agree to these terms. If you do not agree, please do not use the website."
         },
         "sections": [
             {
                 "title": "Acceptance of Terms",
-                "paragraph1": "By accessing the website and using its services, you confirm that you have accepted all the terms and conditions and agree to comply with them."
+                "paragraph1": "By accessing the website and using its services, you confirm that you have accepted all the terms and conditions and are committed to complying with them."
             },
             {
                 "title": "Changes to Terms",
-                "paragraph1": "We may modify these terms at any time without prior notice. You are required to regularly review this page to stay informed of any changes. Your continued use of the website after any changes implies acceptance of those changes."
+                "paragraph1": "We may change these terms at any time without prior notice. You are responsible for regularly reviewing this page to be aware of any changes. Continued use of the website after changes means you accept them."
             },
             {
                 "title": "Intellectual Property",
-                "paragraph1": "All content, designs, images, and texts on this website are owned by us or authorized providers. Any commercial use or distribution without written permission is prohibited."
+                "paragraph1": "All content, designs, images, and texts on this website belong to us or authorized providers, and any commercial use or distribution without written permission is prohibited."
             },
             {
                 "title": "Use of Services",
-                "paragraph1": "You are required to use the services of this website legally and in a way that does not harm other users or the website owners. Any misuse of the website, including hacking or sending viruses, is considered a violation."
+                "paragraph1": "You are required to use the services of this website legally and in a way that does not harm other users or website owners. Any misuse of the website, including hacking or sending viruses, is a violation."
             },
             {
                 "title": "Responsibilities",
-                "paragraph1": "This website is provided 'as is', and we make no guarantees for flawless performance or the absence of errors in the services. You agree that the responsibility for using the website lies with you."
+                "paragraph1": "This website is provided 'as is' and we do not guarantee flawless performance or absence of errors in the services. You agree that the responsibility for using the website is yours."
             },
             {
                 "title": "Dispute Resolution",
-                "paragraph1": "In case of any disputes, we will try to resolve the matter through friendly negotiations. If an agreement cannot be reached, legal matters will be handled according to the laws of United Arabs Emirates."
+                "paragraph1": "In case of disputes, we will try to resolve the issue through friendly negotiations. If no agreement is reached, legal issues will be handled according to the laws of the United Arab Emirates."
             },
             {
                 "title": "Contact Us",
-                "paragraph1": "If you have any questions or concerns regarding these terms, please contact us via support@pediland.com."
+                "paragraph1": "If you have any questions or concerns about these terms, please contact us at support@pediland.com."
             }
         ],
         "last_updated": "20/11/2024",
         "disclaimer": {
             "title": "Disclaimer",
-            "paragraph1": "This text is a general template and may need further adjustments based on the specific needs of your business or services. I recommend consulting with a legal advisor to ensure compliance with all local regulations."
+            "paragraph1": "This text is a general template and may need further adjustments based on your specific business or service needs. We recommend consulting a legal advisor to ensure compliance with all local laws."
         }
     },
     "PrivacyPolicy": {
-        "title": "Privacy Policy",
+        "title": "Privacy policy",
         "introduction": {
             "title": "Introduction",
-            "paragraph1": "We respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard the information you provide when you use our services to manage your Instagram direct messages and comments. By using our website and services, you agree to the terms outlined in this policy."
+            "paragraph1": "We respect your privacy and are committed to protecting your personal information. "
         },
         "informationWeCollect": {
-            "title": "Information We Collect",
-            "paragraph1": "We may collect the following types of information when you use our services:",
+            "title": "Information we collect",
+            "paragraph1": "We may collect the following types of information when you use our Services:",
             "point1Title": "Personal Information",
-            "point1Text": "This includes your name, email address, and other information you provide when you register or contact us.",
-            "point2Title": "Instagram Data",
-            "point2Text": "To provide our services, we may access information from your Instagram account, such as your direct messages, comments, and profile details. We only collect the data necessary to fulfill the service requirements.",
-            "point3Title": "Usage Data",
-            "point3Text": "Information such as your IP address, browser type, and usage patterns may also be collected for analytical purposes to improve our services."
+            "point1Text": "This includes name, email address and other information you provide when registering or contacting us.",
+            "point2Title": "Instagram information",
+            "point2Text": "To provide our services, we may access your Instagram account information such as direct messages, comments and profile details. ",
+            "point3Title": "Use data",
+            "point3Text": "Information such as your IP address, the type of browser, and use patterns may also be collected for analytical purposes and improvement of our services."
         },
         "howWeUseYourInformation": {
-            "title": "How We Use Your Information",
-            "paragraph1": "We use the collected information for the following purposes:",
+            "title": "How we use your information",
+            "paragraph1": "We use the information collected for the following purposes:",
             "point1Text": "To provide and improve our services.",
-            "point2Text": "To personalize your experience by tailoring our services based on your preferences.",
-            "point3Text": "To communicate with you regarding updates, support, and promotional offers.",
-            "point4Text": "To ensure compliance with Instagram's policies and protect against unauthorized use."
+            "point2Text": "To personalize your experience by setting up services based on your preferences.",
+            "point3Text": "To communicate with you about updates, support and promotional offers.",
+            "point4Text": "To ensure that Instagram policies and prevent unauthorized use."
         },
         "sharingYourInformation": {
-            "title": "Sharing Your Information",
-            "paragraph1": "We do not sell or share your personal information with third parties for marketing purposes. We may share your information in the following circumstances:",
-            "point1Title": "Service Providers",
-            "point1Text": "We may share data with trusted service providers who assist us in delivering our services.",
-            "point2Title": "Legal Requirements",
-            "point2Text": "We may disclose your information to comply with applicable laws, regulations, or legal processes."
+            "title": "Share your information",
+            "paragraph1": "We do not sell or share your personal information for marketing goals with third parties. ",
+            "point1Title": "Service providers",
+            "point1Text": "We may share data with trusted service providers who help us deliver the Services.",
+            "point2Title": "Legal requirements",
+            "point2Text": "We may disclose your information to comply with laws, regulations or legal processes."
         },
         "dataSecurity": {
-            "title": "Data Security",
-            "paragraph1": "We are committed to securing your data and have implemented appropriate technical and organizational measures to prevent unauthorized access, use, or disclosure of your personal information."
+            "title": "Data security",
+            "paragraph1": "We are committed to securing your data and have implemented appropriate technical and organizational measures to prevent unauthorized access, use or disclosure of your personal information."
         },
         "yourRights": {
-            "title": "Your Rights",
+            "title": "Your rights",
             "paragraph1": "You have the right to:",
-            "point1Text": "Access the personal information we hold about you.",
-            "point2Text": "Request corrections or updates to your information.",
-            "point3Text": "Request deletion of your data, subject to applicable legal requirements."
+            "point1Text": "Have access to the personal information we have about you.",
+            "point2Text": "Request to correct or update your information.",
+            "point3Text": "Request to delete your information in accordance with the applicable legal requirements."
         },
         "changesToThisPrivacyPolicy": {
-            "title": "Changes to This Privacy Policy",
-            "paragraph1": "We may update this Privacy Policy from time to time. Any changes will be posted on this page, and we encourage you to review it periodically."
+            "title": "Changes to this Privacy Policy",
+            "paragraph1": "We may update this privacy policy from time to time. "
         },
         "contactUs": {
-            "title": "Contact Us",
+            "title": "Contact us",
             "paragraph1": "If you have any questions or concerns about this Privacy Policy, please contact us at: support@pediland.com."
         }
     },
-
-
-
-
-
-
-
     "PricingTable": {
-        "plan": "Plan",
-        "base": "Basic",
+        "plan": "Design",
+        "base": "base",
         "professional": "Professional",
         "custom": "Custom",
         "features": {
             "accountLimit": {
-                "title": "Account Connection Limit",
-                "description": "The total number of accounts you can connect to supported networks in Novinhub.",
-                "base": "5 accounts",
-                "professional": "10 accounts",
-                "custom": "25 accounts"
+                "title": "Account connection limit",
+                "description": "The total number of accounts that you can connect to Navin Hub from the covered networks.",
+                "base": "۱ Account",
+                "professional": "2 Accounts",
+                "custom": "۱۵ Account"
             },
             "contentPlanning": {
-                "title": "Content Planning and Publishing",
-                "description": "Schedule and publish content. Schedule posts for the future to be automatically published."
+                "title": "Planning and publishing content",
+                "description": "Content scheduling and publishing. "
             },
             "storage": {
-                "title": "File Storage Space",
-                "description": "The amount of space to upload your files and have them always available. You can delete files anytime to free up space.",
+                "title": "File storage space",
+                "description": "The amount of space you can upload your files so that they are always available to you. ",
                 "base": "2 GB",
                 "professional": "4 GB",
-                "custom": "10 GB"
+                "custom": "1 GB"
             }
         }
     },
     "PricingPage": {
-        "header": "Manage your social networks at the most reasonable cost.",
-        "subheader": "With one purchase, you can have scheduling, message and comment management, AI assistants, and more.",
-        "faqTitle": "Frequently Asked Questions",
+        "header": "Manage social networks at the most reasonable cost.",
+        "subheader": "With one purchase, you can have scheduling, management of messages and comments, artificial intelligence assistant, etc.",
+        "faqTitle": "Frequently asked questions",
         "faq": {
-            "q1": "Can I upgrade my subscription after payment?",
-            "a1": "Yes, you can upgrade your subscription at any time, and if upgraded, half the remaining time of your current subscription will be added to the higher plan.",
-            "q2": "Will scheduled content be published if the subscription is not renewed?",
-            "a2": "When your subscription expires, your account's activities will stop, and Novinhub features will be deactivated for you.",
-            "q3": "Why are WhatsApp and some social networks not available?",
-            "a3": "Due to API limitations or the absence of channels and pages in all social networks, it's not possible to add them all.",
-            "q4": "Does unused subscription time get preserved?",
-            "a4": "No, after activation and the start of your subscription, the time decreases automatically regardless of usage."
+            "q1": "Is it possible to upgrade the subscription after payment?",
+            "a1": "Yes, you can upgrade your subscription at any time and if you upgrade, half of the current subscription time will be added to the higher subscription.",
+            "q2": "If the subscription is not renewed, the scheduling content will be published?",
+            "a2": "At the time of the subscription, your account will stop and the new hubs will be disabled for you.",
+            "q3": "Why WhatsApp and some social networks do not exist?",
+            "a3": "It is not possible to add all of them on all social networks due to the limitations on the API or the lack of channels and pages.",
+            "q4": "If not used, will the subscription time be kept?",
+            "a4": "No, after activating and starting your subscription time if you use or not use, your subscription time will be automatically reduced."
         }
     },
     "Features": {
-        "p": "Lorem Ipsum is a dummy text with incomprehensible simplicity derived from the printing industry, used by graphic designers, printers, and publications.",
-        "s": "Lorem Ipsum dummy text derived from the printing industry with incomprehensible simplicity.",
-        "xs": "Incomprehensible simplicity",
+        "p": "Lorem Epsom is a fake text produced with incomprehensible simplicity from the printing industry using graphic designers, printers and text as well as newspapers and magazines in columns and rows as needed.",
+        "s": "Fake Lorem Epsom text by producing incomprehensible simplicity from the printing industry and using graphic designers and magazines",
+        "xs": "Production of inappropriate simplicity",
         "tasks": {
             "title": "Tasks",
-            "description": "Set reminders on customer profiles and manage your calendar."
+            "description": "Set reminders on customer profiles and manage your calendar"
         },
         "chat": {
-            "title": "Team Chat",
-            "description": "Chat with colleagues privately, in group chats, or directly in customer profiles."
+            "title": "Team chat",
+            "description": "Chat with colleagues privately, in group chats or directly on customer profiles"
         },
         "analytics": {
-            "title": "Analytics",
-            "description": "Track performance with real-time reports and customizable dashboards."
+            "title": "Analyzes",
+            "description": "Track performance with real-time reports and customizable dashboards"
         },
         "form": {
-            "title": "Web Forms",
-            "description": "Design beautiful forms that direct customers straight to your sales pipeline."
+            "title": "Web forms",
+            "description": "Design beautiful forms to direct customers directly to your sales pipeline"
         },
         "chatButton": {
-            "title": "Chat Button",
-            "description": "Customize your multi-messenger chat button, like the one on this page."
+            "title": "Chat button",
+            "description": "Customize your multiple messenger chat button like what you see on this page"
         },
         "merge": {
-            "title": "Integrations",
-            "description": "The apps you love integrate directly with Como for a seamless workflow."
+            "title": "Mergers",
+            "description": "The apps you love integrate directly with Como to make your workflow seamless"
         }
     },
     "UsersComments": {
-        "see": "Read what others are saying about us",
-        "p": "Lorem Ipsum dummy text created with incomprehensible simplicity from the printing industry, used by graphic designers and publications.",
+        "see": "Read others' comments on us",
+        "p": "Lorem Ipsom is a fabricated text with the simplicity of the printing industry and using graphic designers, printers and texts, but newspapers and magazines in the column and line as needed",
         "sina": "Sina Pirani"
     },
     "Prices": {
         "periods": {
             "monthly": "Monthly",
-            "yearly": "Yearly"
+            "yearly": "Annually"
         },
         "plans": {
             "basic": {
-                "title": "Basic",
+                "title": "base",
                 "price": {
-                    "monthly": "499,000 Toman / Monthly",
-                    "yearly": "4,990,000 Toman / Yearly"
+                    "monthly": "499 thousand tomans/month",
+                    "yearly": "4,990 thousand tomans/year"
                 },
                 "features": [
-                    "Connect up to 5 social media accounts",
-                    "1 user (no team access)",
-                    "2 GB storage",
-                    "Smart response (Telegram, Instagram): 1 account with 10,000 monthly responses"
+                    "Connect up to 5 social network accounts",
+                    "1 user (without a teammate)",
+                    "1 GB of storage space",
+                    "Smart Answer (Telegram, Instagram): 1 Account with 6,000 Monthly Responses"
                 ]
             },
             "professional": {
-                "title": "Professional",
+                "title": "professional",
                 "price": {
-                    "monthly": "999,000 Toman / Monthly",
-                    "yearly": "9,990,000 Toman / Yearly"
+                    "monthly": "999 thousand tomans/month",
+                    "yearly": "4.3 thousand Tomans / annually"
                 },
                 "features": [
-                    "Connect up to 10 social media accounts",
-                    "2 users (1 teammate access to panel)",
-                    "4 GB storage",
-                    "Smart response (Telegram, Instagram): 1 account with unlimited responses"
+                    "Connect up to 5 social network accounts",
+                    "2 users (1 teammate access to the panel)",
+                    "2GB of storage space",
+                    "Smart Reply (Telegram, Instagram): 1 account with unlimited replies"
                 ]
             },
             "advanced": {
                 "title": "Advanced",
                 "price": {
-                    "monthly": "2,999,000 Toman / Monthly",
-                    "yearly": "29,990,000 Toman / Yearly"
+                    "monthly": "2,999 thousand tomans/month",
+                    "yearly": "4.3 thousand Tomans / annually"
                 },
                 "features": [
-                    "Connect up to 25 social media accounts",
-                    "4 users (3 teammates access to panel)",
-                    "10 GB storage",
-                    "Smart response (Telegram, Instagram): 3 accounts with unlimited responses"
+                    "Connect up to 3 social network accounts",
+                    "1 user (Access 2 teams to panel)",
+                    "10 GB of storage space",
+                    "Smart Answer (Telegram, Instagram): ۲ Unlimited Reply Account"
                 ]
             }
         },
-        "viewAllFeatures": "View All Features",
-        "subscribe": "Subscribe"
+        "viewAllFeatures": "View all features",
+        "subscribe": "Buy a subscription"
     },
     "Error": {
         "dashboard": "Dashboard",
         "accounts": "Accounts",
-        "title": "Error"
+        "title": "error"
     },
     "ERRORS": {
-        "USER_NOT_FOUND": "User not found",
-        "PASSWORD_INVALID": "Invalid password",
+        "USER_NOT_FOUND": "The user was not found",
+        "PASSWORD_INVALID": "The password is wrong.",
         "PRODUCT_NOT_FOUND": "Product not found",
-        "PRODUCT_OUT_OF_STOCK": "Product out of stock",
+        "PRODUCT_OUT_OF_STOCK": "The product is not available",
         "ORDER_NOT_FOUND": "Order not found",
-        "ORDER_EXPIRED": "Order expired",
-        "ORDER_SHOP_IS_NOT_VALID": "Invalid shop",
-        "ORDER_INVALID": "Invalid order",
-        "ORDER_QUANTITY_IS_ZERO": "Order quantity cannot be less than 1",
-        "ORDER_CARD_TO_CARD_NOT_UPLOADED": "Card-to-card receipt not uploaded",
-        "LEAD_INSTAGRAM_NOT_FOUND": "Instagram account not found",
+        "ORDER_EXPIRED": "The order has expired.",
+        "ORDER_SHOP_IS_NOT_VALID": "The store is invalid",
+        "ORDER_INVALID": "The order is invalid",
+        "ORDER_QUANTITY_IS_ZERO": "The number of orders cannot be less than 1",
+        "ORDER_CARD_TO_CARD_NOT_UPLOADED": "The card receipt has not been uploaded to the card",
+        "LEAD_INSTAGRAM_NOT_FOUND": "Instagram not found",
         "NO_INSTAGRAM": "Please connect your Instagram account"
     },
     "Lorem": {
-        "title": "Lorem Ipsum dummy text created with incomprehensible simplicity from the printing industry",
-        "p": "Lorem Ipsum dummy text created with incomprehensible simplicity from the printing industry and used by graphic designers.",
-        "s": "Lorem Ipsum dummy text created with incomprehensible simplicity from the printing industry.",
-        "xs": "Incomprehensible simplicity"
+        "title": "Lorem Ipsum Fictitious Text Production Simplicity of the Printing Industry",
+        "p": "Lorem Epsom is a fake text produced with incomprehensible simplicity from the printing industry and using graphic designers, printers and texts, but also newspapers and magazines in columns and rows as necessary.",
+        "s": "Lorem Epsom fake text by producing incomprehensible simplicity from the printing industry and using graphic and magazine designers",
+        "xs": "Production of inappropriate simplicity"
     },
     "Skeleton": {
-        "title": "No access :(",
-        "description": "Please connect your Instagram account to see the console.",
+        "title": "You have no access to :(",
+        "description": "Please connect to your Instagram account to see the console",
         "button": "Connect Instagram"
     },
+    "FileUpload": {
+        "title": "Upload image",
+        "description": "Click here or drag your file here",
+        "dropIt": "let go"
+    },
+    "MessageTypes": {
+        "text": "text",
+        "instagram_post": "post",
+        "audio": "Sound",
+        "video": "Video",
+        "image": "Image",
+        "product": "product"
+    },
     "FileUploader": {
-        "dropzone": "Drag 'n' drop some files here, or click to select files"
-      }
+        "dropzone": "Release the files here or click on to select the files",
+        "uploadButton": "File upload",
+        "Limits": {
+            "image": {
+                "text": "The maximum image size is 1 MB",
+                "formats": "Supported formats: PNG, JPEG, GIF"
+            },
+            "video": {
+                "text": "The maximum video size is 25 MB",
+                "formats": "Supported formats: MP4, OGG, AVI, Mo, Webm"
+            },
+            "audio": {
+                "text": "The maximum volume of Weiss/Music is 1 MB",
+                "formats": "Supported formats: AAC, M4A, WAV, MP4"
+            }
+        }
+    },
+    "ERROR_CODES": {
+        "USER_NOT_FOUND": "The user was not found",
+        "PASSWORD_INVALID": "The password is invalid.",
+        "PRODUCT_NOT_FOUND": "The product was not found",
+        "PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE": "Product discount price is higher than original price",
+        "PRODUCT_DISCOUNT_PRICE_IS_ZERO": "The product price is zero",
+        "PRODUCT_OUT_OF_STOCK": "Product is not available in warehouse",
+        "ORDER_NOT_FOUND": "The order was not found",
+        "ORDER_EXPIRED": "The order has expired",
+        "ORDER_SHOP_IS_NOT_VALID": "The order store is not valid.",
+        "ORDER_INVALID": "Invalid order",
+        "ORDER_QUANTITY_IS_ZERO": "The number of order is zero",
+        "ORDER_CARD_TO_CARD_NOT_UPLOADED": "The card is not uploaded to the order card",
+        "ORDER_PENDING_EXIST": "You have an outstanding order",
+        "ORDER_STATUS_NOT_PENDING": "Order status is not pending",
+        "ORDER_STATUS_NOT_PAYMENT": "The order status is unpaid",
+        "ORDER_SHOULD_HAVE_PRODUCTS": "The order must have at least one product",
+        "ORDER_SHOULD_HAVE_CARD_TO_CARD": "Upload card to card image",
+        "ORDER_HAS_ALREADY_BEEN_SUBMITTED": "This order has already been registered",
+        "LEAD_INSTAGRAM_NOT_FOUND": "The Lid Instagram was not found",
+        "NO_INSTAGRAM": "There is no Instagram",
+        "CITY_INVALID": "The city is invalid",
+        "CITY_NOT_FOUND": "The city was not found",
+        "COMMENT_NOT_FOUND": "No comment found",
+        "CONTENT_TEXT_REQUIRED": "Content text is required",
+        "CONTENT_FILE_REQUIRED": "Content file is required",
+        "CONTENT_INSTAGRAMPOST_REQUIRED": "Instagram post is required",
+        "CONTENT_AUDIO_REQUIRED": "The voice of content is required",
+        "CONTENT_VIDEO_REQUIRED": "Video content is required",
+        "CONTENT_IMAGE_REQUIRED": "Content image is required",
+        "FILE_NOT_FOUND": "The file could not be found",
+        "CONDITION_EXISTS": "Condition is available",
+        "CONDITION_IS_ALREADY_EXIST": "The condition you selected has already been used in another automation",
+        "CONSENT_TEXT_REQUIRED": "The text of satisfaction is required",
+        "USER_DATA_TEXT_REQUIRED": "User data text is required",
+        "REMINDER_TIME_REQUIRED": "Reminder time is required.",
+        "CARD_TO_CARD_USER_HAVE_NOT": "User has no card to card.",
+        "ORDER_PENDING_NOT_FOUND": "Pending order not found",
+        "SHOP_NOT_FOUND": "The store could not be found",
+        "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "Content must have at least one product",
+        "ERROR_CODES": "Unknown error",
+        "ERROR_CODES_DESCRIPTION": "Please try again later",
+        "CHECK_CONNECTION": "Check your connection"
+    }
 }
