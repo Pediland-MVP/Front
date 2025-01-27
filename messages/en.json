@@ -678,8 +678,8 @@
             }
         },
         "BankDetails": {
-            "description": "برای فعال شدن شیوه پرداخت کارت به کارت اطلاعات زیر را تکمیل کنید.",
-            "title": "کارت‌به‌کارت",
+            "description": "To activate card-to-card payment method, please fill in the information below.",
+            "title": "Card-to-Card",
             "bankName": {
                 "label": "Bank Name",
                 "required": "Bank name is required"
