@@ -1,89 +1,116 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { toast } from "@/components/ui/use-toast"
-import type { ExceptionMessage } from "@/types/exceptionMessage"
-import { Loader2, Package, User, MapPin, CreditCard } from "lucide-react"
-import { mutate } from "swr"
-import { ORDER_STATUS, type OrderNamespace } from "@/types/order/order.namespace"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { OrderInstagramProfile } from "./orderInstagramProfile"
+import type React from "react";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import Image from "next/image";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
+import type { ExceptionMessage } from "@/types/exceptionMessage";
+import { Loader2, Package, User, MapPin, CreditCard } from "lucide-react";
+import { mutate } from "swr";
+import {
+  ORDER_STATUS,
+  type OrderNamespace,
+} from "@/types/order/order.namespace";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { OrderInstagramProfile } from "./orderInstagramProfile";
+import ImageWithFallback from "@/components/ui/imageWithCallback";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
-})
+});
 
-type StatusFormData = z.infer<typeof statusSchema>
+type StatusFormData = z.infer<typeof statusSchema>;
 
 interface OrderDetailsProps {
-  order: OrderNamespace.GET.Orders["items"][0]
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  order: OrderNamespace.GET.Orders["items"][0];
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
-  const t = useTranslations("Orders.OrderDetails")
-  const Errors = useTranslations("ERRORS")
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const t = useTranslations("Orders.OrderDetails");
+  const Errors = useTranslations("ERRORS");
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { control, handleSubmit } = useForm<StatusFormData>({
     resolver: zodResolver(statusSchema),
     defaultValues: {
       status: order!.status,
     },
-  })
+  });
 
   const onSubmit = async (data: StatusFormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${order.id}/updateStatus`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      })
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${order.id}/updateStatus`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
+        }
+      );
       if (data.status === ORDER_STATUS.PENDING) {
-        setOpen(false)
+        setOpen(false);
       }
       toast({
         title: t("statusUpdated"),
-      })
-      await mutate((key: any) => typeof key === "string" && key.includes("/orders?page="))
+      });
+      await mutate(
+        (key: any) => typeof key === "string" && key.includes("/orders?page=")
+      );
     } catch (err) {
       switch ((err as ExceptionMessage).code) {
         case "ORDER_NOT_FOUND":
           toast({
             title: Errors("ORDER_NOT_FOUND"),
             variant: "destructive",
-          })
-          break
+          });
+          break;
         case "NO_INSTAGRAM":
           toast({
             title: Errors("NO_INSTAGRAM"),
             variant: "destructive",
-          })
-          break
+          });
+          break;
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const totalPrice = order.orderProducts.reduce((sum, op) => sum + op.product.price * op.quantity, 0)
-  const paidPrice = order.orderProducts.reduce((sum, op) => sum + op.price * op.quantity, 0)
+  const totalPrice = order.orderProducts.reduce(
+    (sum, op) => sum + op.product.price * op.quantity,
+    0
+  );
+  const paidPrice = order.orderProducts.reduce(
+    (sum, op) => sum + op.price * op.quantity,
+    0
+  );
 
   return (
     <div className="space-y-10 p-6 bg-background w-full">
@@ -118,7 +145,8 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   <div>
                     <h4 className="font-medium">{op.product.title}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("quantity")}: {op.quantity} | {t("price")}: {op.product.price.toLocaleString()}
+                      {t("quantity")}: {op.quantity} | {t("price")}:{" "}
+                      {op.product.price.toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -148,12 +176,21 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   <MapPin className="mr-2" size={20} />
                   {t("shippingAddress")}
                 </h3>
-                <p>{order.orderShipping?.firstname} {order.orderShipping?.lastname}</p>
-                <p>{order.orderShipping?.city?.province?.name}، {order.orderShipping?.city?.name}</p>
-                <p>{order.orderShipping?.address}، {t('postalCode')}: {order.orderShipping?.postalcode}</p>
+                <p>
+                  {order.orderShipping?.firstname}{" "}
+                  {order.orderShipping?.lastname}
+                </p>
+                <p>
+                  {order.orderShipping?.city?.province?.name}،{" "}
+                  {order.orderShipping?.city?.name}
+                </p>
+                <p>
+                  {order.orderShipping?.address}، {t("postalCode")}:{" "}
+                  {order.orderShipping?.postalcode}
+                </p>
               </div>
             </div>
-          <OrderInstagramProfile lead={order.lead}/>
+            <OrderInstagramProfile lead={order.lead} />
           </div>
         </CardContent>
       </Card>
@@ -169,7 +206,10 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
           <CardContent>
             <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full p-0 h-auto hover:shadow-md transition-shadow duration-300">
+                <Button
+                  variant="outline"
+                  className="w-full p-0 h-auto hover:shadow-md transition-shadow duration-300"
+                >
                   <Image
                     src={order.orderCardToCard.url ?? "/images/no-image.png"}
                     alt={t("cardToCardImage")}
@@ -179,12 +219,12 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
-                <Image
+              <DialogContent className="max-w-3xl h-[90vh] max-h-[90vh]">
+                <ImageWithFallback
                   src={order.orderCardToCard?.url ?? "/images/no-image.png"}
+                  fallbackSrc="/images/no-image.png"
                   alt={t("cardToCardImage")}
-                  width={1200}
-                  height={800}
+                  fill
                   className="w-full h-auto object-contain"
                 />
               </DialogContent>
@@ -202,7 +242,10 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                 name="status"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder={t("selectStatus")} />
                     </SelectTrigger>
@@ -235,6 +278,5 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
         </Card>
       </div>
     </div>
-  )
+  );
 }
-
