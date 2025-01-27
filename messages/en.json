@@ -701,7 +701,7 @@
             "cardToCardUpdateFailed": "An error occurred while saving information"
         },
         "Zarinpal": {
-            "title": "Manage Zarinpal",
+            "title": "Manage Paypal",
             "description": "To activate Zarinpal payment, fill in the following information.",
             "merchantCode": {
                 "label": "Merchant Code",
