@@ -27,13 +27,12 @@ export default function CardToCardDialog({ url }: CardToCardDialog) {
             />
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl h-[90vh] max-h-[90vh]">
           <ImageWithFallback
             src={url}
             fallbackSrc='/images/no-image.png'
             alt={t("cardToCardImage")}
-            width={1200}
-            height={800}
+            fill
             className="w-full h-auto object-contain"
           />
         </DialogContent>
