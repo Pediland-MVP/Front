@@ -445,6 +445,7 @@
         "list": "Orders List",
         "searchPlaceholder": "Search",
         "List": {
+            "date": "Date",
             "image": "Card-to-Card",
             "product": "Product",
             "price": "Total Price",
@@ -465,6 +466,7 @@
             }
         },
         "OrderDetails": {
+            "chat": "chat",
             "productDetails": "Product Details",
             "orderDetails": "Order Details",
             "quantity": "Quantity",

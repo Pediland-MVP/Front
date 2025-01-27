@@ -445,6 +445,7 @@
         "list": "لیست سفارشات",
         "searchPlaceholder": "جست‌جو",
         "List": {
+            "date": "تاریخ",
             "image": "کارت‌ به کارت",
             "product": "محصول",
             "price": "قیمت کل",
@@ -465,6 +466,7 @@
             }
         },
         "OrderDetails": {
+            "chat": "چت",
             "productDetails": "جزئیات محصول",
             "orderDetails": "جزئیات سفارش",
             "quantity": "تعداد",

@@ -18,6 +18,7 @@ import { mutate } from "swr"
 import { ORDER_STATUS, type OrderNamespace } from "@/types/order/order.namespace"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { OrderInstagramProfile } from "./orderInstagramProfile"
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
@@ -147,10 +148,12 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   <MapPin className="mr-2" size={20} />
                   {t("shippingAddress")}
                 </h3>
-                <p>{order.lead.contact.address}</p>
-                <p>{order.lead.contact.postalcode}</p>
+                <p>{order.orderShipping?.firstname} {order.orderShipping?.lastname}</p>
+                <p>{order.orderShipping?.city?.province?.name}، {order.orderShipping?.city?.name}</p>
+                <p>{order.orderShipping?.address}، {t('postalCode')}: {order.orderShipping?.postalcode}</p>
               </div>
             </div>
+          <OrderInstagramProfile lead={order.lead}/>
           </div>
         </CardContent>
       </Card>

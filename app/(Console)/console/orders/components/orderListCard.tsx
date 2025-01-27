@@ -27,6 +27,8 @@ import CardToCardDialog from "./cardToCard.dialog";
 import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
 import useSWR from "swr";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
+import moment from "moment-jalaali";
+import { cn } from "@/lib/utils";
 
 type Lead = {
   profile: string;
@@ -106,43 +108,59 @@ export default function OrderListCard({
             <TableRow>
               <TableHead
                 onClick={() => handleSort("name")}
-                className={`cursor-pointer hover:text-black lg:w-[10%] ${locale === "fa" ? "text-right" : "text-left"}`}
+                className={cn(
+                  `cursor-pointer hover:text-black lg:w-[8%]`,
+                  `text-center`
+                )}
               >
                 {t("product")}
               </TableHead>
 
-              <TableHead className="lg:w-[2%] text-center">
-                {t('paymentMethod')}
+              <TableHead className={cn("lg:w-[2%]", `text-center`)}>
+                {t("paymentMethod")}
               </TableHead>
 
-              <TableHead className="lg:w-[7%] text-center">
+              <TableHead className={cn("lg:w-[3%]", `text-center`)}>
                 {t("image")}
               </TableHead>
 
               <TableHead
-                className="cursor-pointer text-center hover:text-black lg:w-[4%]"
-                onClick={() => handleSort("username")}
+                className={cn(
+                  "cursor-pointer hover:text-black lg:w-[2%]",
+                  `text-center`
+                )}
               >
                 {t("quantity")}
               </TableHead>
 
               <TableHead
-                className="cursor-pointer text-center hover:text-black lg:w-[8%]"
-                onClick={() => handleSort("messages")}
+                className={cn(
+                  "cursor-pointer hover:text-black lg:w-[4%]",
+                  `text-center`
+                )}
               >
                 {t("price")}
               </TableHead>
 
               <TableHead
-                className="cursor-pointer text-center hover:text-black lg:w-[8%]"
+                className={cn(
+                  "cursor-pointer hover:text-black lg:w-[8%]",
+                  `text-center`
+                )}
                 onClick={() => handleSort("messages")}
               >
                 {t("details")}
               </TableHead>
 
-              <TableHead className="lg:w-[3%] _space">{t('status')}</TableHead>
+              <TableHead className={cn("lg:w-[3%] _space", `text-center`)}>
+                {t("status")}
+              </TableHead>
 
-              <TableHead className="text-center lg:w-[7%]">
+              <TableHead className={cn("lg:w-[3%] _space", `text-center`)}>
+                {t("date")}
+              </TableHead>
+
+              <TableHead className={cn("lg:w-[2%]", `text-center`)}>
                 {t("actions")}
               </TableHead>
             </TableRow>
@@ -153,97 +171,117 @@ export default function OrderListCard({
               <OrderListSkeleton rowCount={limit} />
             ) : (
               orders.map((order) => {
-                const totalPrice = order.orderProducts[0]?.quantity *
-                order.orderProducts[0]?.price
+                const totalPrice =
+                  order.orderProducts[0]?.quantity *
+                  order.orderProducts[0]?.price;
 
-                const realPrice = order.orderProducts[0]?.quantity *
-                order.orderProducts[0]?.product.price
+                const realPrice =
+                  order.orderProducts[0]?.quantity *
+                  order.orderProducts[0]?.product.price;
 
-                const isInDiscount = totalPrice !== realPrice
+                const isInDiscount = totalPrice !== realPrice;
 
-                return(
-                <TableRow
-                  key={order.id}
-                  className={selectedLeads.includes(order.id) ? "bg-muted" : ""}
-                >
-                  <TableCell className="">
-                    <Link
-                      href={`/console/products/${order?.orderProducts[0]?.product?.id}`}
-                      target="_blank"
-                      className="hover:text-pink-700 flex justify-start items-center gap-x-3"
-                    >
-                      <ImageWithFallback
-                        src={
-                          order.orderProducts[0]?.product.images[0].url ??
-                          '/images/no-image.png'
+                return (
+                  <TableRow
+                    key={order.id}
+                    className={
+                      selectedLeads.includes(order.id) ? "bg-muted" : ""
+                    }
+                  >
+                    <TableCell className="">
+                      <Link
+                        href={`/console/products/${order?.orderProducts[0]?.product?.id}`}
+                        target="_blank"
+                        className="hover:text-pink-700 flex justify-start items-center gap-x-3"
+                      >
+                        <div className="relative w-16 h-16 roundedlg">
+                          <ImageWithFallback
+                            fill={true}
+                            src={
+                              order.orderProducts[0]?.product.images[0].url ??
+                              "/images/no-image.png"
+                            }
+                            fallbackSrc="/images/no-image.png"
+                            alt={`${order.id} order`}
+                            className="rounded-sm fill-background"
+                          />
+                        </div>
+                        <p className="text-md font-medium">
+                          {order.orderProducts[0]?.product.title}
+                        </p>
+                      </Link>
+                    </TableCell>
+
+                    <TableCell>
+                      {order.paymentMethod ===
+                      ORDER_PAYMENT_METHODS.CARD_TO_CARD
+                        ? "کارت به کارت"
+                        : "زرین پال"}
+                    </TableCell>
+
+                    <TableCell className="flex justify-center">
+                      <CardToCardDialog
+                        url={
+                          order?.orderCardToCard?.url || "/images/no-image.png"
                         }
-                        fallbackSrc='/images/no-image.png'
-                        alt={`${order.id} order`}
-                        width={70}
-                        height={70}
-                        className="rounded-sm"
                       />
-                      <p className="text-md font-medium">
-                        {order.orderProducts[0]?.product.title}
-                      </p>
-                    </Link>
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell>
-                        {order.paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD ? 'کارت به کارت' : 'زرین پال'}
-                  </TableCell>
+                    <TableCell className="text-center">
+                      {order.orderProducts[0]?.quantity}
+                    </TableCell>
 
-                  <TableCell className="flex justify-center">
-                    <CardToCardDialog url={order?.orderCardToCard?.url || '/images/no-image.png'} />
-                  </TableCell>
-
-                  <TableCell className="text-center">
-                    {order.orderProducts[0]?.quantity}
-                  </TableCell>
-
-                  <TableCell className="text-center">
-                    <span dir="ltr" className={`${isInDiscount && 'line-through'}`}>
-                      {(
-                        realPrice
-                      ).toLocaleString()}
+                    <TableCell className="text-center">
+                      <span
+                        dir="ltr"
+                        className={`${isInDiscount && "line-through"}`}
+                      >
+                        {realPrice.toLocaleString()}
                       </span>
                       <br />
-                      {isInDiscount && <span>{totalPrice.toLocaleString()}</span>}
-                  </TableCell>
+                      {isInDiscount && (
+                        <span>{totalPrice.toLocaleString()}</span>
+                      )}
+                    </TableCell>
 
-                  <TableCell className="_space">
-                    {`${order.lead.contact.firstname} ${order.lead.contact.lastname}${(order?.shipping?.city?.name && order?.shipping?.city?.province?.name) ? `\n ${order.shipping.city.name}, ${order.shipping.city.province.name}` : ''}`}
-                  </TableCell>
+                    <TableCell className="_space text-center">
+                      {`${order.lead.contact.firstname} ${order.lead.contact.lastname}${order?.orderShipping?.city?.name && order?.orderShipping?.city?.province?.name ? `\n ${order.orderShipping.city.name}, ${order.orderShipping.city.province.name}` : ""}`}
+                    </TableCell>
 
-                  <TableCell className="_space">
-                    <Badge
-                      variant={
-                        order.status === ORDER_STATUS.COMPLETED
-                          ? "success"
-                          : order.status === ORDER_STATUS.CANCELLED
-                            ? "destructive"
-                            : "outline"
-                      }
-                    >
-                      {t(`orderStatus.${order.status}`)}
-                    </Badge>
-                  </TableCell>
+                    <TableCell className="_space">
+                      <Badge
+                        variant={
+                          order.status === ORDER_STATUS.COMPLETED
+                            ? "success"
+                            : order.status === ORDER_STATUS.CANCELLED
+                              ? "destructive"
+                              : "outline"
+                        }
+                      >
+                        {t(`orderStatus.${order.status}`)}
+                      </Badge>
+                    </TableCell>
 
-                  <TableCell className="text-center">
-                    <div className="flex gap-2 justify-center">
-                      <Pencil
-                        size={20}
-                        weight="light"
-                        className="text-gray-500 hover:text-pink-700 cursor-pointer"
-                        onClick={() => {
-                          setOpen(true);
-                          setOrderId(order.id);
-                        }}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )})
+                    <TableCell className="_space">
+                      {moment(order.createDate).format("HH:MM jYYYY/jMM/jDD")}
+                    </TableCell>
+
+                    <TableCell className="text-center">
+                      <div className="flex gap-2 justify-center">
+                        <Pencil
+                          size={20}
+                          weight="light"
+                          className="text-gray-500 hover:text-pink-700 cursor-pointer"
+                          onClick={() => {
+                            setOpen(true);
+                            setOrderId(order.id);
+                          }}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

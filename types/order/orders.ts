@@ -1,116 +1,109 @@
+import { ORDER_PAYMENT_METHODS } from "./order.enum";
 import { ORDER_STATUS } from "./order.namespace";
-
 export interface IOrders {
     items: Item[];
     meta:  Meta;
 }
 
+
 interface Item {
     id:               string;
-    createDate:       Date;
-    updateDate:       Date;
-    startPaymentDate: Date | null;
+    createDate:       string;
+    updateDate:       string;
+    startPaymentDate: string;
     status:           ORDER_STATUS;
-    from:             From;
+    from:             'instagram';
     step:             number;
-    paymentMethod:    null | string;
+    paymentMethod:    ORDER_PAYMENT_METHODS;
     orderCardToCard:  OrderCardToCard;
     orderProducts:    OrderProduct[];
-    lead:             Lead;
+    orderShipping:    OrderShipping;
+    lead:             OrdersLead;
     instagram:        Instagram;
-    shipping:         Shipping
-}
-
-export interface Shipping {
-    id:         string;
-    createDate: Date;
-    updateDate: Date;
-    firstname:  string;
-    lastname:   string;
-    mobile:     string;
-    email:      string;
-    country:    string;
-    postalcode: string;
-    address:    string;
-    city: {
-        id: number,
-        name: string,
-        province: {
-            id: number,
-            name: string
-        }
-    }
-    cityId:     string;
-    orderId:    string;
-}
-
-
-enum From {
-    Instagram = "instagram",
 }
 
 interface Instagram {
     id: string;
 }
 
-interface Lead {
-    id:         string;
-    createDate: Date;
-    updateDate: Date;
-    firstname:  LeadFirstname;
-    lastname:   null;
-    profilePic: string;
-    contact:    Contact;
+interface OrdersLead {
+    id:            string;
+    createDate:    string;
+    updateDate:    string;
+    firstname:     string;
+    lastname:      null;
+    profilePic:    string;
+    contact:       OrderShipping;
+    leadInstagram: LeadInstagram;
 }
 
-interface Contact {
+interface OrderShipping {
     id:         string;
-    createDate: Date;
-    updateDate: Date;
-    firstname:  ContactFirstname;
-    lastname:   Lastname;
+    createDate: string;
+    updateDate: string;
+    firstname:  string;
+    lastname:   string;
     mobile:     string;
-    email:      null | string;
+    email:      null;
     country:    null;
     postalcode: string;
-    address:    Address;
-    gender:     null | string;
-    birthDate:  Date | null;
+    address:    string;
+    gender?:    null;
+    birthDate?: null;
     cityId:     number;
+    orderId?:   null;
+    city?:      City;
 }
 
-enum Address {
-    Ffsdfsdfsdfgsdgdfg = "ffsdfsdfsdfgsdgdfg",
-    Sdfsdfsdffsdf = "sdfsdfsdffsdf",
+interface City {
+    id:          number;
+    name:        string;
+    slug:        string;
+    province?:   City;
+    tel_prefix?: string;
 }
 
-enum ContactFirstname {
-    سینا = "سینا",
-    علیAsdfas = "علیasdfas",
+interface LeadInstagram {
+    id:                   string;
+    createDate:           string;
+    updateDate:           string;
+    ASID:                 string;
+    isAdmin:              boolean;
+    lastUpdate:           string;
+    name:                 string;
+    username:             string;
+    isVerifiedUser:       boolean;
+    followerCount:        number;
+    isUserFollowBusiness: boolean;
+    isBusinessFollowUser: boolean;
+    PSID:                 null;
+    leadId:               string;
+    profilePicture:       ProfilePicture
 }
 
-enum Lastname {
-    سریزدی = "سریزدی",
-    پیرانیErsdfsdf = "پیرانیersdfsdf",
+interface ProfilePicture {
+    id: number;
+    createDate: string;
+    updateDate: string;
+    mimeType: string;
+    name: string;
+    url: string;
+    tubmnailUrl: string;
+    size: number;
+    key: string;
 }
-
-enum LeadFirstname {
-    Mahnaz = "Mahnaz",
-    SinaPirani = "Sina Pirani",
-}
-
 interface OrderCardToCard {
     id:         string;
-    createDate: Date;
-    updateDate: Date;
-    url:        null;
-    key:        null;
+    createDate: string;
+    updateDate: string;
+    url:        string;
+    key:        string;
 }
 
 interface OrderProduct {
     id:         string;
-    createDate: Date;
-    updateDate: Date;
+    createDate: string;
+    updateDate: string;
     price:      number;
     quantity:   number;
     product:    Product;
@@ -118,11 +111,11 @@ interface OrderProduct {
 
 interface Product {
     id:            string;
-    createDate:    Date;
-    updateDate:    Date;
+    createDate:    string;
+    updateDate:    string;
     title:         string;
     price:         number;
-    discountPrice: null;
+    discountPrice: number;
     quantity:      number;
     status:        boolean;
     isInfinite:    boolean;
@@ -131,10 +124,10 @@ interface Product {
     images:        Image[];
 }
 
-export interface Image {
+interface Image {
     id:          number;
-    createDate:  Date;
-    updateDate:  Date;
+    createDate:  string;
+    updateDate:  string;
     mimeType:    string;
     name:        string;
     url:         string;
@@ -143,12 +136,8 @@ export interface Image {
     key:         string;
 }
 
-export enum Status {
-    Cancelled = "cancelled",
-    Processing = "processing",
-}
 
-export interface Meta {
+interface Meta {
     currentPage:  number;
     itemCount:    number;
     itemsPerPage: number;

@@ -17,13 +17,12 @@ export default function CardToCardDialog({ url }: CardToCardDialog) {
         onOpenChange={setIsImageModalOpen}
       >
         <DialogTrigger asChild>
-          <Button variant="ghost" className="w-full p-0 h-auto">
+          <Button variant="ghost" className="relative h-16 w-16 p-0">
             <ImageWithFallback
+              fill
               src={url}
               alt={t("cardToCardImage")}
               fallbackSrc='/images/no-image.png'
-              width={70}
-              height={70}
               className=" rounded-md"
             />
           </Button>
