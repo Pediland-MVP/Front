@@ -336,6 +336,7 @@
         },
         "GetUserData": {
             "getUserData": "Get User Data",
+            "description": "By enabling this option, you can request the contact's mobile number or email. This question will be asked at the end of the process and the received response will be validated and stored in the contact's profile.",
             "selectDataType": "Select Data Type",
             "select": "Select",
             "email": "Email",
@@ -344,6 +345,7 @@
             "enterMobileNumber": "Example: Please enter your mobile number"
         },
         "Reminder": {
+            "hour": "h",
             "isEnabled": {
                 "label": "Send Reminder Message",
                 "Errors": {
@@ -676,6 +678,8 @@
             }
         },
         "BankDetails": {
+            "description": "برای فعال شدن شیوه پرداخت کارت به کارت اطلاعات زیر را تکمیل کنید.",
+            "title": "کارت‌به‌کارت",
             "bankName": {
                 "label": "Bank Name",
                 "required": "Bank name is required"

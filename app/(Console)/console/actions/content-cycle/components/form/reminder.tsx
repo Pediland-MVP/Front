@@ -70,7 +70,7 @@ export default function Reminder() {
                             {Array.from({ length: 23 }, (_, i) => i + 1).map(
                               (hour) => (
                                 <SelectItem key={hour} value={`${hour}`}>
-                                  {hour} ساعت
+                                  {hour} {t('hour')}
                                 </SelectItem>
                               )
                             )}

@@ -48,7 +48,7 @@ export default function GetUserData({ control }: GetUserDataProps) {
           </div>
           {field.value && (
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">با فعال کردن این گزینه می‌توانید شماره موبایل یا ایمیل مخاطب را درخواست کنید. این سوال در پایان فرآیند پرسیده می‌شود و پاسخ دریافتی آن اعتبارسنجی شده و در پروفایل مخاطب ذخیره می‌‌شود.</p>
+              <p className="text-sm text-muted-foreground">{t('description')}</p>
               <FormField
                 control={control}
                 name="getUserData.type"

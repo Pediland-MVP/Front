@@ -116,9 +116,9 @@ export default function BankDetails() {
       <div className="w-3/5 h-full">
         <Card className="border-l-2 border-gray-100 h-full p-6">
           <div className="mb-6">
-            <h2 className="font-semibold text-primary">کارت به کارت</h2>
+            <h2 className="font-semibold text-primary">{t('title')}</h2>
             <p className="text-sm text-muted-foreground">
-              برای فعال شدن شیوه پرداخت کارت به کارت اطلاعات زیر را تکمیل کنید.
+              <p>{t('description')}</p>
             </p>
           </div>
           <FormProvider {...form}>
