@@ -485,7 +485,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       return;
     }
 
-    toast({ title: t('ContentCycle.success') });
+    toast({ title: t('success') });
     router.push("/console/actions/content-cycle");
     setIsSubmitting(false);
   };
