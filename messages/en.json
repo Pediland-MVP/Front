@@ -642,7 +642,7 @@
         "Navigation": {
             "accounts": "Manage Instagram Accounts",
             "bankAccounts": "Manage Bank Accounts",
-            "zarinpal": "Manage Zarinpal"
+            "zarinpal": "Manage PayPal"
         },
         "Accounts": {
             "add": "Add",
