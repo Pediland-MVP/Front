@@ -138,7 +138,7 @@ function CommentsList({ children }: CommentsListProps) {
                   >
                     <Image
                       src={
-                        comment.leadInstagram?.profilePicture.url ||
+                        comment.leadInstagram?.profilePicture?.url ||
                         "/images/profile.png"
                       }
                       alt={comment.leadInstagram?.name}

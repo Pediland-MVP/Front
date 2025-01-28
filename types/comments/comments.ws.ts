@@ -33,7 +33,7 @@ export interface LeadInstagram {
 }
 
 export interface ProfilePicture {
-    url: string;
+    url?: string;
 }
 
 export interface Meta {
