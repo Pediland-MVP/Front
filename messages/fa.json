@@ -403,7 +403,8 @@
             "products": {
                 "at_least":"حداقل باید یک محتوا یا یک محصول اضافه کنید"
             }
-        }
+        },
+        "success": "با موفقیت ساخته شد"
     },
     "InstagramPostDialog": {
         "changePost": "تعویض پست",

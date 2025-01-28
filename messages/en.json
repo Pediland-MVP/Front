@@ -368,6 +368,7 @@
                     "invalid": "This field is required"
                 }
             }
+            
         },
         "Catalogue": {
             "label": "Send Product Catalogue",
@@ -403,7 +404,8 @@
             "products": {
                 "at_least": "At least one content or product must be added"
             }
-        }
+        },
+        "success": "Successfully created"
     },
     "InstagramPostDialog": {
         "changePost": "Change Post",

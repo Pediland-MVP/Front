@@ -312,6 +312,7 @@ export const contentCycleFormSchema = z
  */
 export default function ContentCycle({ id }: ContentCycleProps) {
   const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations("Automations");
   const [isLoading, setIsLoading] = useState<boolean>(id ? true : false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
@@ -484,12 +485,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       return;
     }
 
-    toast({ title: "با موفقیت ساخته شد" });
+    toast({ title: t('ContentCycle.success') });
     router.push("/console/actions/content-cycle");
     setIsSubmitting(false);
   };
 
-  const t = useTranslations("Automations");
 
   useEffect(() => {
     logger.log(form.formState.errors);
