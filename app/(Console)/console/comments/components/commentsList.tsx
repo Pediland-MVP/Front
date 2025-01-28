@@ -6,7 +6,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { commentsSocket } from "@/app/utils/socket";
 import { useParams, useRouter } from "next/navigation";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/theme/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,6 +17,7 @@ import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";
 import logger from "@/app/utils/logger";
+import InfiniteScroll from "@/components/theme/ui/infinite-scroll";
 
 interface CommentsListProps {
   children?: React.ReactNode;
@@ -36,13 +36,13 @@ function CommentsList({ children }: CommentsListProps) {
   const sidebar = useSidebar();
   const t = useTranslations("Comments.List");
 
-
   const fetchComments = useCallback(() => {
     setIsLoading(true);
     setError(null);
 
     setPage((prevPage) => {
       const updatedPage = prevPage + 1;
+      logger.debug(`Get new comments page: ${updatedPage}, limit: ${LIMIT}`);
       commentsSocket.emit("comments", {
         page: updatedPage,
         limit: LIMIT,
@@ -123,53 +123,53 @@ function CommentsList({ children }: CommentsListProps) {
               />
             </div>
             <div
-              id="chats-container"
-              className="flex-grow overflow-y-auto w-full"
+              id="comments-container"
+              className="w-full _wrap min-h-[600px] max-h-[calc(100vh - 900px)] overflow-y-auto "
             >
-              <InfiniteScroll
-                dataLength={comments.length}
-                next={fetchComments}
-                hasMore={hasMore}
-                loader={
-                  <div className="w-full flex justify-center items-center text-center py-4">
-                    <LoadingSpinner />
-                  </div>
-                }
-                scrollableTarget="chats-container"
-                className="overflow-hidden"
-              >
-                <div className="w-full">
-                  {comments.map((comment, index) => (
-                    <Link
-                      key={comment.id || index}
-                      href={`/console/comments/${comment.id}`}
-                      className={cn(
-                        "flex p-2 items-center gap-4 box-border rounded-lg hover:bg-accent duration-300 cursor-pointer",
-                        comment.id === selectedCommentId && "bg-zinc-100"
-                      )}
-                    >
-                      <Image
-                        src={
-                          comment.leadInstagram?.profilePicture.url ||
-                          "/images/profile.png"
-                        }
-                        alt={comment.leadInstagram?.name}
-                        width={48}
-                        height={48}
-                        className="rounded-full"
-                      />
-                      <div className="flex flex-col overflow-hidden">
-                        <span className="font-medium">
-                          {comment.leadInstagram?.name}
-                        </span>
-                        <span className="text-muted-foreground text-xs truncate">
-                          {comment.text}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </InfiniteScroll>
+              <div className="w-full flex flex-col">
+                {comments.map((comment, index) => (
+                  <Link
+                    key={comment.id || index}
+                    href={`/console/comments/${comment.id}`}
+                    className={cn(
+                      "flex p-2 items-center gap-4 box-border rounded-lg hover:bg-accent duration-300 cursor-pointer",
+                      comment.id === selectedCommentId && "bg-zinc-100"
+                    )}
+                  >
+                    <Image
+                      src={
+                        comment.leadInstagram?.profilePicture.url ||
+                        "/images/profile.png"
+                      }
+                      alt={comment.leadInstagram?.name}
+                      width={48}
+                      height={48}
+                      className="rounded-full"
+                    />
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="font-medium">
+                        {comment.leadInstagram?.name}
+                      </span>
+                      <span className="text-muted-foreground text-xs truncate">
+                        {comment.text}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+                <InfiniteScroll
+                  threshold={1}
+                  isLoading={isLoading}
+                  next={fetchComments}
+                  hasMore={hasMore}
+                >
+                  {hasMore && (
+                    <div className="w-full flex justify-center items-center text-center py-4">
+                      <LoadingSpinner />
+                    </div>
+                  )}
+                </InfiniteScroll>
+              </div>
+              {/* <div className="w-full"> */}
               {error && (
                 <div className="text-center py-4 text-destructive">{error}</div>
               )}

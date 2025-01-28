@@ -3,7 +3,6 @@
 import { memo, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { messagesSocket } from "@/app/utils/socket";
-import InfiniteScroll from "react-infinite-scroll-component";
 import ConversationsListSkeleton from "./conversationsList.skeleton";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -11,20 +10,19 @@ import { Card } from "@/components/theme/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@/components/theme/ui/sidebar";
-import {
-  ArrowLeft, Sidebar
-} from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
 import { useConversations } from "../context/conversations.context";
 import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
-
+import InfiniteScroll from "@/components/theme/ui/infinite-scroll";
 
 const LIMIT = 15;
 function ConversationsList() {
   const router = useRouter();
-  const { conversations, setConversations, addNewConversation } = useConversations()
+  const { conversations, setConversations, addNewConversation } =
+    useConversations();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
@@ -49,7 +47,9 @@ function ConversationsList() {
 
   const handleConversations = useCallback((conversationsData: string) => {
     try {
-      const newConversations = JSON.parse(conversationsData) as ConversationNamespace.WS.Conversations;
+      const newConversations = JSON.parse(
+        conversationsData
+      ) as ConversationNamespace.WS.Conversations;
       setConversations((prevConversations) => [
         ...prevConversations,
         ...newConversations.items,
@@ -65,8 +65,10 @@ function ConversationsList() {
 
   const handleNewConversation = useCallback((conversationData: string) => {
     try {
-      const newConversation = JSON.parse(conversationData) as ConversationNamespace.WS.NewConversation;
-      addNewConversation(newConversation)
+      const newConversation = JSON.parse(
+        conversationData
+      ) as ConversationNamespace.WS.NewConversation;
+      addNewConversation(newConversation);
     } catch (error) {
       console.error("Error handling new conversation:", error);
     }
@@ -75,13 +77,16 @@ function ConversationsList() {
   useEffect(() => {
     messagesSocket.on(WsMessageEvents.CONVERSATIONS, handleConversations);
     messagesSocket.on(WsMessageEvents.NEW_CONVERSATION, handleNewConversation);
-    if(conversations.length === 0) {
-      fetchConversations()
+    if (conversations.length === 0) {
+      fetchConversations();
     }
 
     return () => {
       messagesSocket.off(WsMessageEvents.CONVERSATIONS, handleConversations);
-      messagesSocket.off(WsMessageEvents.NEW_CONVERSATION, handleNewConversation);
+      messagesSocket.off(
+        WsMessageEvents.NEW_CONVERSATION,
+        handleNewConversation
+      );
     };
   }, []);
 
@@ -114,7 +119,7 @@ function ConversationsList() {
       <div className="w-full h-full flex justify-center items-center">
         <p className="text-muted-foreground">{t("noConversations")}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -146,19 +151,11 @@ function ConversationsList() {
               id="chats-container"
               className="flex-grow overflow-y-auto w-full"
             >
-              <InfiniteScroll
-                dataLength={conversations.length}
-                next={fetchConversations}
-                hasMore={hasMore}
-                loader={
-                  <div className="w-full flex justify-center items-center text-center py-4">
-                    <LoadingSpinner />
-                  </div>
-                }
-                scrollableTarget="chats-container"
-                className="overflow-hidden"
+              <div
+                id="comments-container"
+                className="w-full _wrap min-h-[600px] max-h-[calc(100vh - 900px)] overflow-y-auto "
               >
-                <div className="w-full">
+                <div className="w-full flex flex-col">
                   {conversations.map((chat, index) => (
                     <div
                       onClick={conversationClickHandler(chat.id)}
@@ -187,11 +184,26 @@ function ConversationsList() {
                       </div>
                     </div>
                   ))}
+                  <InfiniteScroll
+                    threshold={1}
+                    isLoading={isLoading}
+                    next={fetchConversations}
+                    hasMore={hasMore}
+                  >
+                    {hasMore && (
+                      <div className="w-full flex justify-center items-center text-center py-4">
+                        <LoadingSpinner />
+                      </div>
+                    )}
+                  </InfiniteScroll>
                 </div>
-              </InfiniteScroll>
-              {error && (
-                <div className="text-center py-4 text-destructive">{error}</div>
-              )}
+                {/* <div className="w-full"> */}
+                {error && (
+                  <div className="text-center py-4 text-destructive">
+                    {error}
+                  </div>
+                )}
+              </div>
             </div>
           </Card>
         </motion.div>
