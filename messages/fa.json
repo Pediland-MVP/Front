@@ -239,6 +239,7 @@
             "comments": "کامنت‌ها"
         },
         "List": {
+            "noComments": "هیچ کامنتی وجود ندارد",
             "loading": "در حال بارگذاری...",
             "thereAreNoMoreComments": "تموم شد :)"
         }

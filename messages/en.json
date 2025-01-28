@@ -239,6 +239,7 @@
             "comments": "Comments"
         },
         "List": {
+            "noComments": "No comments available",
             "loading": "Loading...",
             "thereAreNoMoreComments": "That's all :)"
         }
