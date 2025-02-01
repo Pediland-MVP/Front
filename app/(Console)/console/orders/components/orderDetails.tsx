@@ -198,28 +198,28 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle className="flex items-center gap-x-1">
               <CreditCard className="mr-2" size={20} />
               {t("cardToCardImage")}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center items-center">
             <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full p-0 h-auto hover:shadow-md transition-shadow duration-300"
+                  className="relative h-40 w-40 p-0 hover:shadow-md transition-shadow duration-300"
                 >
                   <Image
                     src={order.orderCardToCard.url ?? "/images/no-image.png"}
                     alt={t("cardToCardImage")}
-                    width={300}
-                    height={200}
+                    fill
                     className="w-full h-auto object-cover rounded-md"
                   />
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-3xl h-[90vh] max-h-[90vh]">
+                {/** Image zoomer inside cardToCard image*/}
                 <ImageWithFallback
                   src={order.orderCardToCard?.url ?? "/images/no-image.png"}
                   fallbackSrc="/images/no-image.png"
