@@ -60,7 +60,7 @@ export default function ProductDetails() {
           {product.discountPrice && (
             <p className="flex items-center justify-end gap-2 text-gray-700">
               <span className="text-gray-400 line-through">
-                {product.price.toLocaleString()}
+                {(product.price * orderQuantity).toLocaleString()}
               </span>
               <span className="bg-red-500 text-white flex items-center pt-1 pb-[2px] px-[5px] leading-4 rounded-md text-[13px]">
                 {calculateDiscountPercentage(product.price, product.discountPrice)}%
