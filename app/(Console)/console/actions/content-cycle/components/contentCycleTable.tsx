@@ -163,7 +163,7 @@ export default function ContentCycleTable() {
                     <TableHead className="text-center">
                       {t("conditionValue")}
                     </TableHead>
-                    <TableHead className="text-center">
+                    <TableHead className="text-center lg:w-[20%]">
                       {t("firstMessage")}
                     </TableHead>
                     <TableHead className="lg:w-[10%] text-center">{t("actions")}</TableHead>
@@ -175,10 +175,14 @@ export default function ContentCycleTable() {
                     <TableRow key={item.id}>
                       <TableCell className="text-center py-3">{item.title}</TableCell>
                       <TableCell className="text-center">
-                        {item.conditions[0]?.value || t("notAvailable")}
+                        {item.conditions.length > 0
+                          ? item.conditions.map((c) => c.value).join(", ")
+                          : t("notAvailable")}
                       </TableCell>
                       <TableCell className="text-center">
-                        {item.contents[0]?.text || t("notAvailable")}
+                        <div className="max-w-[50ch] overflow-hidden text-ellipsis whitespace-nowrap">
+                          {item.contents[0]?.text || t("notAvailable")}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center gap-3">
