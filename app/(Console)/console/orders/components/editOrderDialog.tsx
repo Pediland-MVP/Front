@@ -1,14 +1,9 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import type React from "react"
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   Drawer,
   DrawerClose,
@@ -17,70 +12,63 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
-import { useTranslations } from "next-intl";
-import OrderDetails from "./orderDetails";
-import { OrderNamespace } from "@/types/order/order.namespace";
+} from "@/components/ui/drawer"
+import { useTranslations } from "next-intl"
+import OrderDetails from "./orderDetails"
+import type { OrderNamespace } from "@/types/order/order.namespace"
 
 export interface EditOrderProps {
-  open: boolean;
+  open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  order: OrderNamespace.GET.Orders['items'][0]
+  order: OrderNamespace.GET.Orders["items"][0]
 }
 
-export default function EditOrderDialog({
-  open,
-  setOpen,
-  order
-}: EditOrderProps) {
-  const [isMobile, setIsMobile] = useState(false);
+export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps) {
+  const [isMobile, setIsMobile] = useState(false)
 
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
-  const t = useTranslations('Orders.EditDialog')
+  const t = useTranslations("Orders.EditDialog")
 
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <DrawerHeader className="text-right">
-            <DrawerTitle>{t('editOrder')}</DrawerTitle>
-            <DrawerDescription>
-              {t('editOrderDescription')}
-            </DrawerDescription>
+        <DrawerContent className="fixed inset-0 h-full max-h-[100dvh] flex flex-col">
+          <DrawerHeader className="text-right flex-shrink-0">
+            <DrawerTitle>{t("editOrder")}</DrawerTitle>
           </DrawerHeader>
-          <div className="p-4 pb-0">
-            <OrderDetails setOpen={setOpen} order={order}  />
+          <div className="flex-grow overflow-y-auto p-4 pb-0">
+            <OrderDetails setOpen={setOpen} order={order} />
           </div>
-          <DrawerFooter className="pt-2">
+          <DrawerFooter className="pt-2 flex-shrink-0">
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
-                {t('cancel')}
+                {t("cancel")}
               </Button>
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-    );
+    )
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>{t('editInformation')}</DialogTitle>
+          <DialogTitle>{t("editOrder")}</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <OrderDetails setOpen={setOpen} order={order}  />
-
+        <OrderDetails setOpen={setOpen} order={order} />
       </DialogContent>
     </Dialog>
-  );
+  )
 }
+
