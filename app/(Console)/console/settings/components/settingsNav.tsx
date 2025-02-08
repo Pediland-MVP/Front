@@ -1,7 +1,7 @@
 import { Card } from "@/components/theme/ui/card";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { CreditCard, PaypalLogo, Plug } from "@phosphor-icons/react/dist/ssr";
+import { CreditCard, PaypalLogo, Plug, Rocket } from "@phosphor-icons/react/dist/ssr";
 
 export default function SettingsNav() {
     const t = useTranslations('Settings.Navigation');
@@ -22,6 +22,11 @@ export default function SettingsNav() {
             title: t('zarinpal'),
             url: "/console/settings/zarinpal",
             icon: PaypalLogo
+        },
+        {
+            title: t('upgradePlan'),
+            url: '/console/settings/upgrade',
+            icon: Rocket
         }
     ];
 

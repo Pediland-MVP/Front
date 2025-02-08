@@ -402,7 +402,7 @@
                 }
             },
             "products": {
-                "at_least":"حداقل باید یک محتوا یا یک محصول اضافه کنید"
+                "at_least": "حداقل باید یک محتوا یا یک محصول اضافه کنید"
             }
         },
         "success": "با موفقیت ساخته شد"
@@ -644,7 +644,8 @@
         "Navigation": {
             "accounts": "مدیریت اکانت‌های اینستاگرام",
             "bankAccounts": "مدیریت حساب‌های بانکی",
-            "zarinpal": "مدیریت زرین پال"
+            "zarinpal": "مدیریت زرین پال",
+            "upgradePlan": "ارتقا اشتراک"
         },
         "Accounts": {
             "add": "افزودن",
@@ -710,7 +711,7 @@
             "merchantCode": {
                 "label": "کد merchant",
                 "Errors": {
-                    "required": "کد merchant صحیح نیست"   
+                    "required": "کد merchant صحیح نیست"
                 }
             },
             "save": "ذخیره",
@@ -1102,9 +1103,16 @@
                 "formats": "فرمت‌ها پشتیبانی شده: aac, m4a, wav, mp4"
             }
         }
-        
-      },
-      "ERROR_CODES": {
+    },
+    "Upgrade": {
+        "Verify": {
+            "error": "پرداخت با خطا مواجه شد",
+            "sucessFull": "عملیات با موفقیت انجام شد",
+            "sucessFullDescription": "پرداخت شما موفق بود و سرویس برای شما فعال شد",
+            "refId": "شماره پیگیری: {refId}"
+        }
+    },
+    "ERROR_CODES": {
         "USER_NOT_FOUND": "کاربر پیدا نشد",
         "PASSWORD_INVALID": "رمز عبور نامعتبر است",
         "PRODUCT_NOT_FOUND": "محصول پیدا نشد",
@@ -1144,9 +1152,13 @@
         "ORDER_PENDING_NOT_FOUND": "سفارش در حال انتظار پیدا نشد",
         "SHOP_NOT_FOUND": "فروشگاه پیدا نشد",
         "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "محتوای باید حداقل یک محصول داشته باشد",
+        "ORDER_QUANTITY_IS_MAX": "تعداد سفارش از حداکثر مجاز بیشتر است",
+        "VERIFY_PAYMENT_AMOUNT_NOT_MATCH": "مبلغ پرداختی با مبلغ سفارش همخوانی ندارد",
+        "VERIFY_PAYMENT_CANCELED": "عملیات پرداخت لغو شد",
+        "PLAN_ALREADY_SUBSCRIBED": "قبلا خریداری شده",
+        "SUBSCRIPTION_ALREADY_PAID": "این اشتراک قبلا پرداخت شده است",
         "ERROR_CODES": "خطای ناشناخته",
         "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
         "CHECK_CONNECTION": "اتصال خود را چک کنید"
-      }
-      
+    }
 }
