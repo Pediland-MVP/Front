@@ -16,6 +16,7 @@ export interface IUser {
     email:      string;
     mobile:     string;
     city:       City;
+    subscriptions: Subscription[]
 }
 
 export interface City {
@@ -24,4 +25,26 @@ export interface City {
     slug:        string;
     province?:   City;
     tel_prefix?: string;
+}
+
+
+export interface Subscription {
+    id:             string;
+    createDate:     Date;
+    updateDate:     Date;
+    expire:         Date | null;
+    status:         string;
+    planDurationId: number;
+    userId:         string;
+    planDuration:   PlanDuration;
+}
+
+export interface PlanDuration {
+    id:           number;
+    createDate:   Date;
+    updateDate:   Date;
+    name:         string;
+    price:        number;
+    durationDays: number;
+    planId:       number;
 }

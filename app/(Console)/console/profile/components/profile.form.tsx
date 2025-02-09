@@ -116,6 +116,7 @@ export function ProfileForm() {
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
     {
       revalidateOnMount: true,
+      refreshInterval: 30_000
     }
   );
 

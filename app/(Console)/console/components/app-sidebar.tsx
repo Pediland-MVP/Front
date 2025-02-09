@@ -19,6 +19,8 @@ import logger from "@/app/utils/logger";
 import dynamic from "next/dynamic";
 import { NavUserSkeleton } from "./nav-user.skeleton";
 import { Suspense } from "react";
+import useSWRImmutable from "swr/immutable";
+import { UserNamespace } from "@/types/user";
 
 const NavUser = dynamic(() => import("./nav-user"), {
   loading: () => <NavUserSkeleton />,
@@ -89,9 +91,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('Console.Sidebar')
   const data = generateData(t)
   
-  const {data: userData, isLoading: userIsLoading, error: userError} = useSWR(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`, {
-    revalidateOnMount: true
-  })
+  const {
+    data: userData,
+    error: userError,
+    isLoading: userIsLoading,
+  } = useSWRImmutable<UserNamespace.GET>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
+    {
+      revalidateOnMount: true,
+      refreshInterval: 30_000
+    }
+  );
   
   return (
     <Sidebar variant="inset" {...props}>

@@ -29,7 +29,7 @@ export default function NavUser({
   user,
   isLoading
 }: {
-  user: UserNamespace.GET
+  user: UserNamespace.GET | undefined
   isLoading: boolean
 }) {
   const { isMobile } = useSidebar();
@@ -59,7 +59,7 @@ export default function NavUser({
       })
   };
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return <NavUserSkeleton/>
   }
 
