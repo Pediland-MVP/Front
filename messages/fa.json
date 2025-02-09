@@ -1123,7 +1123,8 @@
             "pending": "در انتظار",
             "cancelled": "لغو شده",
             "daysRemaining": "روز باقی مانده",
-            "reserve": "رزرو پلن"
+            "reserve": "رزرو پلن",
+            "lastDay": "روز آخر!"
         },
         "PlanSelection": {
             "selectPlan": "پلن خود را انتخاب کنید",

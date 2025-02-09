@@ -9,6 +9,7 @@ import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscription
 import { useUpgradeContext } from "../context/upgrade.context"
 import { Button } from "@/components/theme/ui/button"
 import { Plus } from "@phosphor-icons/react/dist/ssr"
+import { useCallback } from "react"
 
 
 export default function SubscriptionInfo(){
@@ -19,12 +20,14 @@ export default function SubscriptionInfo(){
   const activeSubscription = subscriptions?.find((sub) => sub.status === SubscriptionStatusEnum.ACTIVE)
   const reservedSubscriptions = subscriptions?.filter((sub) => sub.status === SubscriptionStatusEnum.RESERVED)
 
-  const getRemainingDays = (expireDate: string) => {
+  const getRemainingDays = useCallback((expireDate: string) => {
     const now = new Date()
     const expire = new Date(expireDate)
     const diffTime = expire.getTime() - now.getTime()
     return Math.ceil(diffTime / (1000 * 3600 * 24))
-  }
+  }, [])
+
+  const remainingDays = activeSubscription ? getRemainingDays(activeSubscription.expire) : 0
 
   const getPlanById = (planId: number) => {
     return plans.find((plan) => plan.id === planId)
@@ -85,7 +88,7 @@ export default function SubscriptionInfo(){
                 color="#10B981"
               />
               <p className="mt-2 text-sm font-medium">
-                {getRemainingDays(activeSubscription.expire!)} {t("daysRemaining")}
+                {(remainingDays === 1 || remainingDays === 0) ? t('lastDay') : `${getRemainingDays(activeSubscription.expire!)} ${t("daysRemaining")}`}
               </p>
             </div>
           </motion.div>
