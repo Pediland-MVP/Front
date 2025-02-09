@@ -1110,7 +1110,33 @@
             "sucessFull": "عملیات با موفقیت انجام شد",
             "sucessFullDescription": "پرداخت شما موفق بود و سرویس برای شما فعال شد",
             "refId": "شماره پیگیری: {refId}"
-        }
+        },
+        "Subscriptions": {
+            "subscriptionInfo": "اطلاعات اشتراک",
+            "subscriptionStatus": "وضعیت اشتراک‌های فعال و رزرو شده",
+            "activeSubscription": "اشتراک فعال",
+            "reservedSubscriptions": "اشتراک‌های رزرو شده",
+            "noActiveSubscription": "هیچ اشتراک فعالی وجود ندارد.",
+            "active": "فعال",
+            "reserved": "رزرو شده",
+            "expired": "منقضی شده",
+            "pending": "در انتظار",
+            "cancelled": "لغو شده",
+            "daysRemaining": "روز باقی مانده",
+            "reserve": "رزرو پلن"
+        },
+        "PlanSelection": {
+            "selectPlan": "پلن خود را انتخاب کنید",
+            "planDescription": "در این قسمت میتوانید پلن خود را انتخاب کنید",
+            "followers": "دنبال‌کننده",
+            "currency": "تومان",
+            "for": "برای",
+            "months": "ماه",
+            "selectDuration": "مدت زمان را انتخاب کنید",
+            "choosePlan": "انتخاب پلن",
+            "back": "بازگشت",
+            "totalPayment": "مبلغ قابل پرداخت"
+          }
     },
     "ERROR_CODES": {
         "USER_NOT_FOUND": "کاربر پیدا نشد",

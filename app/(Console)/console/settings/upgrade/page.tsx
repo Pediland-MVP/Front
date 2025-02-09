@@ -1,11 +1,16 @@
-import { PlanSelection } from "./components/planSelection";
+import PlanSelection from "./components/planSelection";
+import SubscriptionInfo from "./components/subscriptionInfo";
+import { UpgradeProvider } from "./context/upgrade.context";
 
 export default function Upgrade() {
 
     return (
-        <div className="w-full mt-10">
-            <PlanSelection/>
-        </div>
+        <UpgradeProvider>
+            <div className="w-full min-h-full flex flex-col justify-center items-center">
+                <SubscriptionInfo/>
+                <PlanSelection/>
+            </div>
+        </UpgradeProvider>
     )
 
 }
