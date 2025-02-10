@@ -1,9 +1,11 @@
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 import { toast } from "@/components/theme/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { mutate } from "swr";
 
 export default function useVerifyPlanPayment() {
 
@@ -24,6 +26,7 @@ export default function useVerifyPlanPayment() {
                 return
             }
             const json = await res.json() as PaymentNamespace.GET.SubscriptionPaymentVerify
+            await mutate(mutateIncludeStringKey('me'))
             return json.data.ref_id
         }
         catch (e) {

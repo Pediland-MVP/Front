@@ -82,7 +82,7 @@ export default function PlanSelection() {
     return null;
   }
 
-  if (!plans) {
+  if (!plans || !subscriptions) {
     return <LoadingSpinner />;
   }
 
@@ -93,7 +93,7 @@ export default function PlanSelection() {
           <CardTitle className="">{t("selectPlan")}</CardTitle>
           <CardDescription>{t("planDescription")}</CardDescription>
         </div>
-        {subscriptions.length ? (
+        {subscriptions?.length ? (
           <Button
             onClick={() =>
               setActive({ subscriptionInfo: true, planSelection: false })

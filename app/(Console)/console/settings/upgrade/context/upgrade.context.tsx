@@ -27,7 +27,10 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         planSelection: false
     })
 
-    const { data: subscriptionsData, isLoading: isSubscriptionsLoading, error: subscriptionsError  } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`)
+    const { data: subscriptionsData, isLoading: isSubscriptionsLoading, error: subscriptionsError  } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`, {
+        revalidateOnMount: true,
+        refreshInterval: 30_000
+    })
     const { plans, isPlansLoading } = usePlanSelection();
 
     useEffect(() => {
