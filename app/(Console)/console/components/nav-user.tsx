@@ -92,9 +92,9 @@ export default function NavUser({
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="text-gray-400">
-                <Sparkle size={22} className="text-gray-400" />
-                <span>{t("upgradeAccount")} <span className="font-light">({t("soon")})</span></span>
+              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => router.push("/console/settings/upgrade")}>
+                <Sparkle size={22} />
+                <span>{t("upgradeAccount")}</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
 

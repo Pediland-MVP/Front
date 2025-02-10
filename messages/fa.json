@@ -1,4 +1,9 @@
 {
+    "ConsoleLayout": {
+        "youDontHaveSubscription": "شما  اشتراک ندارید",
+        "youShouldBuySubscription": "برای استفاده از تمام خدمات باید اشتراک تهیه کنید"
+
+    },
     "Auth": {
         "signup": "ثبت نام",
         "signin": "حساب کاربری",
@@ -1189,3 +1194,4 @@
         "CHECK_CONNECTION": "اتصال خود را چک کنید"
     }
 }
+

@@ -4,13 +4,14 @@ import { AppSidebar } from "./components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
 import { UserNamespace } from "@/types/user";
 import { Rocket } from "@phosphor-icons/react/dist/ssr";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const t = useTranslations('ConsoleLayout')
   const locale = useLocale()
   const [isLimited, setIsLimited] = useState(false)
 
@@ -36,18 +37,27 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [userData, userError, userIsLoading])
 
+  
   const pathname = usePathname()
+
+  const lockedPaths = [
+    '/console/inbox',
+    '/console/comments'
+  ]
+
+  const isLocked = lockedPaths.some((path) => pathname.startsWith(path))
+
 
   return (
     <SidebarProvider>
       <AppSidebar side={locale==='fa'?'right':'left'} />
       <SidebarInset className="relative">
         {
-          (isLimited && !pathname.startsWith('/console/settings')) &&
+          (isLimited && isLocked) &&
           <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-white z-50">
               <Rocket className="w-40 h-40" />
-              <h1 className="text-4xl font-bold">شما اشتراکی ندارید</h1>
-              <p className="text-lg">برای استفاده از تمام خدمات باید اشتراک تهیه کنید</p>
+              <h1 className="text-4xl font-bold">{t('youDontHaveSubscription')}</h1>
+              <p className="text-lg">{t('youShouldBuySubscription')}</p>
               <Link href="/console/settings/upgrade" className="mt-5 w-full flex justify-center items-center">
                 <Button className="w-40 flex justify-center items-center gap-y-1">
                     <Rocket size={22}/>
