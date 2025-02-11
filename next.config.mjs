@@ -42,6 +42,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn.zarinpal.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'trustseal.enamad.ir'
       }
     ],
   },

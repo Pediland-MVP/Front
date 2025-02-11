@@ -1,6 +1,4 @@
-import React from "react";
 import { Metadata } from "next";
-import { useTranslations } from "next-intl";
 import HeroSection from "./components/heroSection";
 import SecOne from "./components/secOne";
 import Features from "./components/features";
@@ -12,7 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const t = useTranslations("General");
 
   return (
     <main className="mt-20">

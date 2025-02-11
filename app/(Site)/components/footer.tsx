@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 // UI
 import { Button } from "@/components/theme/ui/button";
 import { TelegramLogo, Headset, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 
 export default function Footer() {
   const t = useTranslations("Site.Footer");
@@ -48,6 +49,23 @@ export default function Footer() {
                 </Button>
               </div>
             </div>
+          </div>
+          <div className="w-full flex justify-center items-center">{/**@ts-ignore*/}
+          <Link
+         href="https://trustseal.enamad.ir/?id=blahblahblahblah"
+         target="_blank"
+         referrerPolicy="origin"
+         className={''}
+      >
+         <Image
+            src="https://trustseal.enamad.ir/logo.aspx?id=blahblahblahblah"
+            alt="e-namad"
+            width={100}
+            height={20}
+            loading="lazy"
+            className="cursor-pointer"
+         />
+ </Link>
           </div>
           <div className="_links flex flex-col items-center gap-2 py-6 text-sm font-light text-gray-300">
             <ul className="flex items-center justify-center gap-6">
