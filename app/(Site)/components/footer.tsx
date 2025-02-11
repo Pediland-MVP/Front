@@ -52,18 +52,20 @@ export default function Footer() {
           </div>
           <div className="w-full flex justify-center items-center">{/**@ts-ignore*/}
           <Link
-         href="https://trustseal.enamad.ir/?id=blahblahblahblah"
+         href='https://trustseal.enamad.ir/?id=579451&Code=yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8'
          target="_blank"
          referrerPolicy="origin"
          className={''}
       >
          <Image
-            src="https://trustseal.enamad.ir/logo.aspx?id=blahblahblahblah"
+            src='https://trustseal.enamad.ir/logo.aspx?id=579451&Code=yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8' 
             alt="e-namad"
             width={100}
             height={20}
             loading="lazy"
             className="cursor-pointer"
+            /**@ts-ignore */
+            code='yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8'
          />
  </Link>
           </div>
