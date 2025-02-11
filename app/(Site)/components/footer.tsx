@@ -57,11 +57,9 @@ export default function Footer() {
          referrerPolicy="origin"
          className={''}
       >
-         <Image
+         <img
             src='https://trustseal.enamad.ir/logo.aspx?id=579451&Code=yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8' 
             alt="e-namad"
-            width={100}
-            height={20}
             loading="lazy"
             className="cursor-pointer"
             /**@ts-ignore */
