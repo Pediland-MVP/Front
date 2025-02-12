@@ -1142,7 +1142,10 @@
             "selectDuration": "مدت زمان را انتخاب کنید",
             "choosePlan": "انتخاب پلن",
             "back": "بازگشت",
-            "totalPayment": "مبلغ قابل پرداخت"
+            "totalPayment": "مبلغ قابل پرداخت",
+            "monthly": "ماهانه",
+            "threeMonths": "سه ماهه (۲۰٪تخفیف)",
+            "month": "ماه"
           }
     },
     "ERROR_CODES": {

@@ -13,6 +13,7 @@ export interface IPlan {
     minFollowers: number;
     maxFollowers: number;
     durations:    IDuration[];
+    features:     string[]
 }
 
 export interface IDuration {
