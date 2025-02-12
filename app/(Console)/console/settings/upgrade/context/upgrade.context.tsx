@@ -16,7 +16,7 @@ export interface UpgradeContext {
         planSelection: boolean
     }>>,
     subscriptions: SubscriptionNamespace.GET.Subscriptions['items'],
-    plans: PlanNamespace.GET.Plans['plans']
+    plans: PlanNamespace.GET.PlansData['plans']
 }
 
 export const UpgradeContext = createContext<UpgradeContext | null>(null)

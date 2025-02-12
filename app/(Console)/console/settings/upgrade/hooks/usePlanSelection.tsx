@@ -3,10 +3,10 @@ import { useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
 
 export function usePlanSelection() {
-  const [selectedPlan, setSelectedPlan] = useState<PlanNamespace.GET.Plans['plans']>()
-  const [selectedDuration, setSelectedDuration] = useState<PlanNamespace.GET.Plans['plans'][0]['durations']>()
+  const [selectedPlan, setSelectedPlan] = useState<PlanNamespace.GET.PlansData['plans'][0]>()
+  const [selectedDuration, setSelectedDuration] = useState<PlanNamespace.GET.PlansData['plans'][0]['durations'][0]>()
 
-  const { data: plansData, isLoading: isPlansLoading, error: plansError } = useSWRImmutable<PlanNamespace.GET.Plans>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/plans`)
+  const { data: plansData, isLoading: isPlansLoading, error: plansError } = useSWRImmutable<PlanNamespace.GET.PlansData>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/plans`)
 
   useEffect(() => {
     if (plansData) {

@@ -1,4 +1,4 @@
-export interface IPlans {
+export interface IPlansData {
     plans:        IPlan[];
     haveDiscount: boolean;
 }
