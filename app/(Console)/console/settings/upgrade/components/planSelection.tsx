@@ -85,7 +85,7 @@ export default function PlanSelection() {
               className={cn(
                 "px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
                 period === 0
-                  ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
+                  ? "bg-primary dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
                   : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900"
               )}
             >
@@ -97,7 +97,7 @@ export default function PlanSelection() {
               className={cn(
                 "px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
                 period === 1
-                  ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
+                  ? "bg-primary dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
                   : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900"
               )}
             >
@@ -192,7 +192,7 @@ export default function PlanSelection() {
                     className={cn(
                       "w-full h-12 relative transition-all duration-300",
                       index === 1
-                        ? "bg-zinc-900 text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl font-semibold"
+                        ? "bg-primary text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl font-semibold"
                         : "bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 shadow-sm hover:shadow-md"
                     )}
                     disabled={isPayLoading && loadingPlanId === plan.id}
