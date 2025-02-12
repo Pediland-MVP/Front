@@ -139,10 +139,10 @@ export default function PlanSelection() {
               >
                 <div className="p-8 flex-1">
                   <h3 className="text-xl font-semibold mb-4">
-                    {e2pNumber(numberToK(plan.minFollowers))} -{" "}
-                    {plan.maxFollowers === Number.POSITIVE_INFINITY
-                      ? "∞"
-                      : e2pNumber(numberToK(plan.maxFollowers))}{" "}
+                    {plan.maxFollowers > 100_000
+                      ? "+"
+                      : `${e2pNumber(numberToK(plan.maxFollowers))} - `}
+                    {e2pNumber(numberToK(plan.minFollowers))} {" "}
                     {t("followers")}
                   </h3>
 
