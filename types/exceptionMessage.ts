@@ -49,6 +49,7 @@ export type ERROR_CODES =
 | 'VERIFY_PAYMENT_AMOUNT_NOT_MATCH'
 | 'PLAN_ALREADY_SUBSCRIBED'
 | 'SUBSCRIPTION_ALREADY_PAID'
+| 'REFERRALCODE_NOT_FOUND'
 
 export interface ExceptionMessage {
   message: string;

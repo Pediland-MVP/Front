@@ -39,7 +39,8 @@
             "passwordRequired": "رمز عبور الزامیست",
             "confirmPasswordRequired": "تکرار رمز عبور الزامیست",
             "error": "خطا",
-            "generalError": "خطایی رخ داده است"
+            "generalError": "خطایی رخ داده است",
+            "referralCodeRequired": "کد معرف برای ثبت‌نام الزامی است"
         },
         "Verify": {
             "title": "تایید کد یکبار مصرف",
@@ -1191,7 +1192,8 @@
         "SUBSCRIPTION_ALREADY_PAID": "این اشتراک قبلا پرداخت شده است",
         "ERROR_CODES": "خطای ناشناخته",
         "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
-        "CHECK_CONNECTION": "اتصال خود را چک کنید"
+        "CHECK_CONNECTION": "اتصال خود را چک کنید",
+        "REFERRALCODE_NOT_FOUND": "کد معرف وارد شده معتبر نیست"
     },
     "RESPONSE_CODES": {
         "PAID_FREE": "پرداخت رایگان انجام شد",

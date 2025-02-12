@@ -1,17 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ToastAction } from "@radix-ui/react-toast";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/app/utils/regex";
 import { useTranslations } from "next-intl";
 // UI
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import TextDivider from "@/components/theme/ui/textDivider";
 import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/theme/ui/input";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
@@ -27,11 +25,14 @@ import { UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginWith, setLoginWith] = useState<"mobile" | "google" | "facebook">();
+  const [loginWith, setLoginWith] = useState<
+    "mobile" | "google" | "facebook"
+  >();
 
   const formSchema = z.object({
     firstname: z
@@ -40,6 +41,9 @@ export default function Signup() {
     lastname: z
       .string({ message: t("lastnameRequired") })
       .min(1, t("enterLastname")),
+    referralCode: z
+      .string({ message: t("referralCodeRequired") })
+      .min(1, { message: t("referralCodeRequired") }),
     mobile: z
       .string({ message: t("mobileRequired") })
       .regex(REGEX_MOBILE, t("enterValidMobile"))
@@ -57,12 +61,13 @@ export default function Signup() {
     defaultValues:
       process.env.NODE_ENV === "development"
         ? {
-          firstname: "Test",
-          lastname: "TestUser",
-          mobile: "09210246947",
-          password: "123Sina@",
-          confirmPassword: "123Sina@",
-        }
+            firstname: "Test",
+            lastname: "TestUser",
+            mobile: "09210246947",
+            password: "123Sina@",
+            confirmPassword: "123Sina@",
+            referralCode: "11313"
+          }
         : undefined,
   });
 
@@ -96,7 +101,7 @@ export default function Signup() {
 
           toast({
             title: t("error"),
-            description: resJson.message,
+            description: t_ec(resJson.code),
             variant: "destructive",
           });
           return;
@@ -235,6 +240,22 @@ export default function Signup() {
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="referralCode"
+                    render={({ field }) => (
+                      <FormItem className="col-span-4 sm:col-span-4">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder={t("enterFirstnamePlaceholder")}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <Button
                     type="submit"
                     className="col-span-4"
@@ -272,4 +293,3 @@ export default function Signup() {
     </main>
   );
 }
-
