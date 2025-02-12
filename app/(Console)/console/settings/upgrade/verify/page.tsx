@@ -4,6 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { useEffect } from "react";
+import { mutate } from "swr";
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 
 export default function VerifyPage() {
   const searchParams = useSearchParams();
@@ -18,6 +21,10 @@ export default function VerifyPage() {
   );
   const t = useTranslations("Upgrade.Verify");
   const t_ec = useTranslations("ERROR_CODES");
+
+  useEffect(() => {
+    mutate(mutateIncludeStringKey("plans"))
+  }, [])
 
   return (
     <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center">

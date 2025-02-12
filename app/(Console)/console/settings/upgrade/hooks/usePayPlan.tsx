@@ -35,6 +35,7 @@ export default function usePayPlan() {
                         title: t_rc(json.code)
                     })
                     await mutate(mutateIncludeStringKey('subscriptions'))
+                    mutate(mutateIncludeStringKey('plans'))
                     setActive({
                         planSelection: false,
                         subscriptionInfo: true
