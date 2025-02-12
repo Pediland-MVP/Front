@@ -29,7 +29,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!userIsLoading && userData) {
-      if (userData.subscriptions.length === 0) {
+      if (userData?.subscriptions?.length === 0) {
         setIsLimited(true)
       }else {
         setIsLimited(false)
@@ -52,7 +52,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <AppSidebar side={locale==='fa'?'right':'left'} />
       <SidebarInset className="relative">
-        {
+        {/* {
           (isLimited && isLocked) &&
           <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-white z-50">
               <Rocket className="w-40 h-40" />
@@ -65,7 +65,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </Button>
               </Link>
           </div>
-        }
+        } */}
         {children}
       </SidebarInset>
     </SidebarProvider>

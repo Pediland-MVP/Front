@@ -27,7 +27,7 @@ export default function SubscriptionInfo(){
     return Math.ceil(diffTime / (1000 * 3600 * 24))
   }, [])
 
-  const remainingDays = activeSubscription ? getRemainingDays(activeSubscription.expire) : 0
+  const remainingDays = activeSubscription ? getRemainingDays(activeSubscription?.expire) : 0
 
   const getPlanById = (planId: number) => {
     return plans.find((plan) => plan.id === planId)
@@ -73,22 +73,22 @@ export default function SubscriptionInfo(){
           >
             <div className="text-center md:text-right mb-4 md:mb-0">
               <h3 className="text-xl font-semibold mb-2">{t("activeSubscription")}</h3>
-              <p className="text-lg mb-2">{activeSubscription.planDuration.name}</p>
-              <Badge className={`${getStatusColor(activeSubscription.status)} text-white px-3 py-1 rounded-full`}>
-                {t(activeSubscription.status)}
+              <p className="text-lg mb-2">{activeSubscription?.planDuration.name}</p>
+              <Badge className={`${getStatusColor(activeSubscription?.status)} text-white px-3 py-1 rounded-full`}>
+                {t(activeSubscription?.status)}
               </Badge>
             </div>
             <div className="flex flex-col items-center">
               <CircularProgress
                 percentage={
-                  (getRemainingDays(activeSubscription.expire!) / activeSubscription.planDuration.durationDays) * 100
+                  (getRemainingDays(activeSubscription?.expire!) / activeSubscription?.planDuration.durationDays) * 100
                 }
                 size={120}
                 strokeWidth={12}
                 color="#10B981"
               />
               <p className="mt-2 text-sm font-medium">
-                {(remainingDays === 1 || remainingDays === 0) ? t('lastDay') : `${getRemainingDays(activeSubscription.expire!)} ${t("daysRemaining")}`}
+                {(remainingDays === 1 || remainingDays === 0) ? t('lastDay') : `${getRemainingDays(activeSubscription?.expire!)} ${t("daysRemaining")}`}
               </p>
             </div>
           </motion.div>
