@@ -68,7 +68,7 @@ export default function PlanSelection() {
     }
   };
 
-  if (!active.planSelection || !plans) return null;
+  if (!active.planSelection || !plans?.length) return null;
 
   return (
     <section
