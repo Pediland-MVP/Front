@@ -1192,6 +1192,11 @@
         "ERROR_CODES": "خطای ناشناخته",
         "ERROR_CODES_DESCRIPTION": "لطفا بعدا امتحان کنید",
         "CHECK_CONNECTION": "اتصال خود را چک کنید"
+    },
+    "RESPONSE_CODES": {
+        "PAID_FREE": "پرداخت رایگان انجام شد",
+        "PAID_BY_GATEWAY": "پرداخت از طریق درگاه",
+        "PAYMENT_LINK_GENERATED": "لینک پرداخت ایجاد شد"
     }
 }
 

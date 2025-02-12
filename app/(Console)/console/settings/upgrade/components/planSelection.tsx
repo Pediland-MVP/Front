@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,9 +23,9 @@ import e2pNumber from "@/app/utils/e2pNumber";
 import numberToK from "@/app/utils/numberToK";
 import usePayPlan from "../hooks/usePayPlan";
 import { useUpgradeContext } from "../context/upgrade.context";
-import { ArrowRight, Plus } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
-import usePlanDurationMap from "../hooks/usePlanDurationMap";
+import { IDuration } from "@/types/plans/plans";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -51,7 +51,7 @@ export default function PlanSelection() {
   useEffect(() => {
     const selectedPlan = plans.find((p) => p.id === form.watch("planId"));
     const selectedDuration = selectedPlan?.durations.find(
-      (d) => d.id === form.watch("durationId")
+      (d: IDuration) => d.id === form.watch("durationId")
     );
 
     if (selectedDuration) {
@@ -75,7 +75,7 @@ export default function PlanSelection() {
   };
 
   const onSubmit = (data: FormValues) => {
-    pay(data);
+    pay(data, setActive);
   };
 
   if (!active.planSelection) {
@@ -174,7 +174,7 @@ export default function PlanSelection() {
                       >
                         {plans
                           .find((p) => p.id === form.watch("planId"))
-                          ?.durations.map((duration) => (
+                          ?.durations.map((duration: IDuration) => (
                             <div
                               key={duration.id}
                               className={cn(

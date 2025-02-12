@@ -1,3 +1,8 @@
+export interface IPlans {
+    plans:        IPlan[];
+    haveDiscount: boolean;
+}
+
 export interface IPlan {
     id:           number;
     createDate:   Date;
@@ -7,7 +12,7 @@ export interface IPlan {
     description:  string;
     minFollowers: number;
     maxFollowers: number;
-    durations:    Duration[];
+    durations:    IDuration[];
 }
 
 export interface IDuration {

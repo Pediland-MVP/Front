@@ -1,17 +1,21 @@
-import { toast } from "@/components/theme/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspace";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { UpgradeContext } from "../context/upgrade.context";
+import { mutate } from "swr";
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 
 export default function usePayPlan() {
 
     const [isPayLoading, setIsPayLoading] = useState<boolean>(false)
     const router = useRouter()
     const t_ec = useTranslations('ERROR_CODES')
+    const t_rc = useTranslations('RESPONSE_CODES')
 
-    const pay = async (values: {planId: number, durationId: number}) => {
+    const pay = async (values: {planId: number, durationId: number}, setActive: UpgradeContext['setActive']) => {
         setIsPayLoading(true)
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions/subscribe`, {
@@ -26,6 +30,17 @@ export default function usePayPlan() {
             
             if (res.ok){
                 const json = await res.json() as SubscriptionNamespace.POST.Subscribe
+                if (json.code === 'PAID_FREE') {
+                    toast({
+                        title: t_rc(json.code)
+                    })
+                    await mutate(mutateIncludeStringKey('subscriptions'))
+                    setActive({
+                        planSelection: false,
+                        subscriptionInfo: true
+                    })
+                    return
+                }
                 router.push(json.data.link)
                 return
             }
@@ -34,7 +49,7 @@ export default function usePayPlan() {
             const error = t_ec(json.code)
             toast({
                 title: error,
-                variant: "Success"
+                variant: "destructive"
             })
 
         }

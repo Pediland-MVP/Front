@@ -1,23 +1,23 @@
 import { PlanNamespace } from "@/types/plans/plan.namespace"
-import { IDuration, IPlan } from "@/types/plans/plans"
 import { useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
 
 export function usePlanSelection() {
-  const [selectedPlan, setSelectedPlan] = useState<IPlan>()
-  const [selectedDuration, setSelectedDuration] = useState<IDuration>()
+  const [selectedPlan, setSelectedPlan] = useState<PlanNamespace.GET.Plans['plans']>()
+  const [selectedDuration, setSelectedDuration] = useState<PlanNamespace.GET.Plans['plans'][0]['durations']>()
 
-  const { data: plans, isLoading: isPlansLoading, error: plansError } = useSWRImmutable<PlanNamespace.GET.Plans>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/plans`)
+  const { data: plansData, isLoading: isPlansLoading, error: plansError } = useSWRImmutable<PlanNamespace.GET.Plans>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/plans`)
 
   useEffect(() => {
-    if (plans) {
-      setSelectedPlan(plans[0])
-      setSelectedDuration(plans[0].durations[0])
+    if (plansData) {
+      setSelectedPlan(plansData.plans[0])
+      setSelectedDuration(plansData.plans[0].durations[0])
     }
-  }, [plans])
+  }, [plansData])
 
   return {
-    plans,
+    plansData,
+    plans: plansData?.plans,
     isPlansLoading,
     selectedPlan,
     setSelectedPlan,

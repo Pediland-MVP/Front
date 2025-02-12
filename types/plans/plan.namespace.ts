@@ -1,7 +1,7 @@
-import { IPlan } from "./plans";
+import { IPlans } from "./plans";
 
 export namespace PlanNamespace {
     export namespace GET {
-        export type Plans = IPlan[]
+        export type Plans = IPlans
     }
 }
