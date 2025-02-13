@@ -248,7 +248,7 @@ export default function Signup() {
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder={t("enterFirstnamePlaceholder")}
+                            placeholder={t("enterReferralCodePlaceholder")}
                           />
                         </FormControl>
                         <FormMessage />
