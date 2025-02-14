@@ -68,7 +68,7 @@ function SortableItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "p-4 h-48 transition-all duration-200 group hover:border-primary",
+        "p-4 transition-all duration-200 group hover:border-primary",
         isDragging && "ring-2 ring-primary ring-offset-2"
       )}
     >
@@ -76,7 +76,7 @@ function SortableItem({
         <Button
           variant="ghost"
           size="icon"
-          className="cursor-move opacity-0 group-hover:opacity-100 transition-opacity"
+          className="cursor-move lg:opacity-0 group-hover:opacity-100 transition-opacity"
           type="button"
           {...attributes}
           {...listeners}
@@ -88,7 +88,7 @@ function SortableItem({
           <Button
             variant="ghost"
             size="icon"
-            className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive/90"
+            className="text-destructive lg:opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive/90"
             type="button"
             onClick={() => removeProducts(index)}
           >
@@ -98,7 +98,7 @@ function SortableItem({
           )
         }
       </div>
-      <div className="flex justify-center items-center h-[calc(100%-2rem)]">
+      <div className="flex justify-center items-center">
         <ProductsDialog
           index={index}
           productsField={productsField}

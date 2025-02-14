@@ -88,9 +88,9 @@ const ProductsDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger className='relative'>
         {productsField[index]?.id ? (
-          <div className="relative rounded-lg overflow-hidden">
+          <div className="relative rounded-lg">
             <Image
               src={productsField[index]?.images?.[0]?.url}
               alt={t('coverImageAlt')}
