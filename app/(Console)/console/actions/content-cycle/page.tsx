@@ -39,10 +39,10 @@ export default function ContentCyclePage() {
           </Breadcrumb>
         </div>
 
-        <div className="_tools">
+        <div className="_tools hidden lg:inline">
           <Link href="/console/actions/content-cycle/add">
             <Button size={"sm"}>
-              <span className="hidden sm:inline">{t("add")}</span>{" "}
+              <span>{t("add")}</span>{" "}
               <Plus size={20} />
             </Button>
           </Link>

@@ -23,6 +23,7 @@ import {
   CaretLeft,
   Mailbox,
   EnvelopeSimple,
+  Plus,
 } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/theme/ui/card";
 
@@ -156,6 +157,11 @@ export default function ContentCycleTable() {
         ) : (
           <>
             <div className="overflow-x-auto">
+              <Link href="/console/actions/content-cycle/add" className="lg:hidden block mb-2">
+                <Button size={"sm"}>
+                  <Plus size={20} />
+                </Button>
+              </Link>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -163,26 +169,22 @@ export default function ContentCycleTable() {
                     <TableHead className="text-center">
                       {t("conditionValue")}
                     </TableHead>
-                    <TableHead className="text-center lg:w-[20%]">
-                      {t("firstMessage")}
+                    <TableHead className="lg:w-[10%] text-center">
+                      {t("actions")}
                     </TableHead>
-                    <TableHead className="lg:w-[10%] text-center">{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
                   {data?.items.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell className="text-center py-3">{item.title}</TableCell>
+                      <TableCell className="text-center py-3">
+                        {item.title}
+                      </TableCell>
                       <TableCell className="text-center">
                         {item.conditions.length > 0
                           ? item.conditions.map((c) => c.value).join(", ")
                           : t("notAvailable")}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="max-w-[50ch] overflow-hidden text-ellipsis whitespace-nowrap">
-                          {item.contents[0]?.text || t("notAvailable")}
-                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center gap-3">
@@ -192,8 +194,8 @@ export default function ContentCycleTable() {
                             <EnvelopeSimple
                               size={20}
                               weight="light"
-                              className="text-gray-500 hover:text-primary cursor-pointer" />
-
+                              className="text-gray-500 hover:text-primary cursor-pointer"
+                            />
                           </Link>
                           <Link
                             href={`/console/actions/content-cycle/${item.id}`}
@@ -201,14 +203,15 @@ export default function ContentCycleTable() {
                             <Pencil
                               size={20}
                               weight="light"
-                              className="text-gray-500 hover:text-green-600 cursor-pointer" />
-
+                              className="text-gray-500 hover:text-green-600 cursor-pointer"
+                            />
                           </Link>
                           <Trash
                             size={20}
                             weight="light"
                             className="text-gray-500 hover:text-red-600 cursor-pointer"
-                            onClick={() => handleDeleteClick(item.id)} />
+                            onClick={() => handleDeleteClick(item.id)}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>
@@ -224,7 +227,11 @@ export default function ContentCycleTable() {
                   onClick={() => fetchData(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
-                  {locale === "fa" ? <CaretRight size={18} /> : <CaretLeft size={18} />}
+                  {locale === "fa" ? (
+                    <CaretRight size={18} />
+                  ) : (
+                    <CaretLeft size={18} />
+                  )}
                   {t("previous")}
                 </Button>
                 <span className="text-sm text-muted-foreground">
@@ -239,7 +246,11 @@ export default function ContentCycleTable() {
                   disabled={currentPage === data.meta.totalPages}
                 >
                   {t("next")}
-                  {locale === "fa" ? <CaretLeft size={18} /> : <CaretRight size={18} />}
+                  {locale === "fa" ? (
+                    <CaretLeft size={18} />
+                  ) : (
+                    <CaretRight size={18} />
+                  )}
                 </Button>
               </div>
             )}

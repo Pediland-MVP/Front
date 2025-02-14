@@ -65,7 +65,7 @@ export default async function ContentCycleEditPage({
         <div className="_tools"></div>
       </header>
       
-      <div className="p-4">
+      <div className="lg:p-4 pt-4">
         <ContentCycle id={id} />
       </div>
     </div>

@@ -157,7 +157,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
           control={control}
           render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <Textarea placeholder={t("enterYourMessage")} {...field} />
+              <Textarea rows={5} placeholder={t("enterYourMessage")} {...field} />
               {error && (
                 <FormMessage>
                   {" "}
