@@ -680,7 +680,8 @@
                 "selectDifferentAccount": "Select a different account",
                 "accountSelectedSuccess": "Account successfully selected",
                 "select": "Select"
-            }
+            },
+            "relogin": "ReLogin"
         },
         "BankDetails": {
             "description": "To activate card-to-card payment method, please fill in the information below.",

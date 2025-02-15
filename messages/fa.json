@@ -687,7 +687,8 @@
                 "selectDifferentAccount": "اکانت دیگری انتخاب کنید",
                 "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
                 "select": "انتخاب"
-            }
+            },
+            "relogin": "ورود مجدد"
         },
         "BankDetails": {
             "description": "برای فعال شدن شیوه پرداخت کارت به کارت اطلاعات زیر را تکمیل کنید.",

@@ -25,7 +25,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/theme/ui/alert-dialog";
-import { InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
+import { DotsThreeVertical, InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/theme/ui/dropdown-menu";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -163,11 +164,28 @@ export default function Accounts({
               className="_card bg-white shadow hover:shadow-lg duration-200 border rounded-lg"
             >
               <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
+                <div className="w-full flex justify-end">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <DotsThreeVertical className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Link href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}> 
+                          {t('relogin')}
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
                 <div>
                   {instagram.profilePictureUrl ? (
                     <Image
                       className="rounded-full"
-                      src={instagram.profilePictureUrl}
+                      src={instagram.profilePictureUrl || "/placeholder.svg"}
                       width={75}
                       height={75}
                       alt={instagram.name}
@@ -176,14 +194,14 @@ export default function Accounts({
                     <InstagramLogo size={75} />
                   )}
                 </div>
-
+          
                 <div className="flex flex-col justify-center items-center">
                   <span>{instagram.name}</span>
                   <span className="text-[15px] text-gray-500">
                     {instagram.username}@
                   </span>
                 </div>
-
+          
                 <div className="flex gap-2">
                   {instagram.instagramId ? (
                     <Link
@@ -203,14 +221,14 @@ export default function Accounts({
                       {t("connectAccount")}
                     </Button>
                   )}
-
+          
                   <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" size="icon">
                         <Trash size={22} />
                       </Button>
                     </AlertDialogTrigger>
-
+          
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
