@@ -1,3 +1,5 @@
+import { IResponseMessage } from "../responseMessage";
+
 export interface ICreateOrder {
     status:           string;
     from:             string;
@@ -24,3 +26,5 @@ interface OrderCardToCard {
     createDate: Date;
     updateDate: Date;
 }
+
+export type OrderTypestrategyExportType = IResponseMessage<{order: ICreateOrder, step: number}>

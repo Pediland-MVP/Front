@@ -230,8 +230,11 @@ export default function CheckoutPage({
     data: _pendingOrder,
     isLoading: isLoadingPendingOrder,
     error: errorPendingOrder,
-  } = useSWRImmutable<OrderNamespace.GET.Pending>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`
+  } = useSWR<OrderNamespace.GET.Pending>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
+    {
+      refreshInterval: 30_000
+    }
   );
   useEffect(() => {
     if (!_pendingOrder && currentStep > 1) {

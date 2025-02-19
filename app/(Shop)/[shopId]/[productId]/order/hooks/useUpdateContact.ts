@@ -5,6 +5,10 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/theme/ui/use-toast";
 import { useState } from "react";
+import useCheckoutStep from "./useCheckoutStep";
+import { IResponseMessage } from "@/types/responseMessage";
+import { OrderNamespace } from "@/types/order/order.namespace";
+import { useRouter } from "next/navigation";
 
 
 export default function useUpdateContact() {
@@ -13,6 +17,11 @@ export default function useUpdateContact() {
     const { pendingOrder, setStep } = useCheckout()
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setLoading] = useState(false)
+
+    const router = useRouter()
+
+    const {nextStep} = useCheckoutStep()
+
     async function updateContact() {
         setLoading(true)
         await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${pendingOrder?.id}/updateContact`, {
@@ -27,8 +36,13 @@ export default function useUpdateContact() {
         })
         .then (async res => {
             if (res.ok) {
+                const json = await res.json() as OrderNamespace.POST.UpdateContact
+                if (json.code === 'PAID_FREE') {
+                    router.push('/payments/verify?ItsFree=true')
+                    return
+                }
                 mutate(key => typeof key === 'string' && key.includes("pending"))
-                setStep(2)
+                setStep(nextStep())
                 return
             }
 

@@ -34,11 +34,13 @@ import ErrorMessage from "@/components/ui/errorMessage";
 import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
+import useCheckoutStep from "../hooks/useCheckoutStep";
 
 export default function Address() {
   const t = useTranslations("Checkout");
 
   const { setStep } = useCheckout()
+  const { nextStep, prevStep } = useCheckoutStep()
 
   const {
     register,
@@ -251,11 +253,11 @@ export default function Address() {
         {/* </form>
       </FormProvider> */}
       <div className="mt-6 w-full flex justify-center items-center gap-x-2">
-      <Button onClick={() => setStep(1)} className="3/12 bg-gray-500">
+      <Button onClick={() => setStep(prevStep())} className="3/12 bg-gray-500">
           {t('back')}
         </Button>
 
-        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-9/12" variant={"success"} type="button">
+        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-9/12" type="button">
           {t("nextStep")}
         </LoadingButton>
       </div>

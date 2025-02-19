@@ -130,7 +130,6 @@ export default function CustomerDetails() {
           onClick={createOrderHandler}
           isLoading={isCreateOrderLoading}
           className="w-full"
-          variant={"success"}
           type="button"
           disabled={!product?.isInfinite && product?.quantity===0}
         >

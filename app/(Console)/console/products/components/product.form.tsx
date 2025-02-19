@@ -44,16 +44,16 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           message: t("Alerts.titleLenght"),
         }),
       status: z.boolean(),
-      price: z.union([z.number().int().positive(), z.nan()]),
+      price: z.union([z.number().int().nonnegative(), z.nan()]),
       discountPrice: z
-        .union([z.number().int().positive(), z.nan()])
+        .union([z.number().int().nonnegative(), z.nan()])
         .optional()
         .nullable(),
       isDiscount: z.boolean().default(false),
       // .transform((data) => data || undefined),
       // .transform((data) => data || undefined),
       isInfinite: z.boolean(),
-      quantity: z.number().positive().optional().transform(data => data || 0),
+      quantity: z.number().nonnegative().optional().transform(data => data || 0),
       description: z
         .string({
           message: t("Alerts.description"),
@@ -78,7 +78,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       //   });
       // }
 
-      if (data.isDiscount && !data.discountPrice) {
+      if (data.isDiscount && (data.discountPrice === undefined || data.discountPrice === null)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "وقتی کالا تخفیف دارد، قیمت تخفیف نمی‌تواند خالی باشد.",
@@ -86,19 +86,19 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         });
       }
 
-      if (data.price! < 1000) {
+      if (data.price! < 1000 && data.price !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "قیمت کالا نمی‌تواند کمتر از 1000 تومان باشد.",
+          message: "قیمت کالا نمی‌تواند کمتر از ۱۰۰۰ تومان باشد. باید یا ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد",
           path: ["price"],
         });
       }
 
-      if (data.discountPrice) {
-        if (data.discountPrice > data.price!) {
+      if (data.discountPrice && data.isDiscount) {
+        if (data.discountPrice >= data.price!) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "قیمت تخفیف نمی‌تواند بیشتر از قیمت کالا باشد.",
+            message: "قیمت تخفیف نمی‌تواند بیشتر یا مساوی قیمت کالا باشد.",
             path: ["discountPrice"],
           });
         }
@@ -107,14 +107,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "قیمت تخفیف نمی‌تواند کمتر از 1000 تومان باشد.",
-            path: ["discountPrice"],
-          });
-        }
-
-        if (data.discountPrice === data.price) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "قیمت تخفیف نمی‌تواند برابر با قیمت کالا باشد.",
             path: ["discountPrice"],
           });
         }
@@ -129,10 +121,15 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       isInfinite: false,
       ...(shouldBeEdit || {}), // اطمینان از مقدار پیش‌فرض
       imageId: shouldBeEdit?.images?.[0]?.id || undefined,
-      isDiscount: !!shouldBeEdit?.discountPrice,
-      discountPrice: shouldBeEdit?.discountPrice || undefined,
+      isDiscount: typeof shouldBeEdit?.discountPrice === 'number' ? (shouldBeEdit.discountPrice >= 0 ? true : false) : false,
+      discountPrice: typeof shouldBeEdit?.discountPrice === 'number' ? (shouldBeEdit.discountPrice >= 0 ? shouldBeEdit?.discountPrice : undefined) : undefined,
     },
   });
+
+  useEffect(() => {
+    console.log(form.formState.errors);
+    
+  }, [form?.formState.errors])
 
   useEffect(() => {
     if (form.formState?.errors?.imageId) {
@@ -157,7 +154,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       return;
     }
 
-    if (!values.discountPrice || !values.isDiscount) {
+    if (values.isDiscount === undefined || values.isDiscount === null) {
       values.discountPrice = null;
     }
 

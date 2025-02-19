@@ -1,9 +1,11 @@
 import { IOrder } from "./order";
-import { ICanQuantityUp } from './canQuantityUp';
+import { ICanQuantityUpResponse } from './canQuantityUp';
 import { IStartPayment } from "./startPayment";
-import { ICreateOrder } from "./createOrder";
+import { OrderTypestrategyExportType } from "./createOrder";
 import { IPendingOrder } from "./pendingOrder";
 import { IOrders } from "./orders";
+import { UpdateShippingResponse } from "./updateShipping";
+import { UpdateContactResponse } from "./updateContact";
 
 export namespace OrderNamespace {
     export namespace GET {
@@ -13,9 +15,11 @@ export namespace OrderNamespace {
     }
 
     export namespace POST {
-        export type CanQuantityUp = ICanQuantityUp
+        export type CanQuantityUp = ICanQuantityUpResponse
         export type StartPayment = IStartPayment
-        export type CreateOrder = ICreateOrder
+        export type CreateOrder = OrderTypestrategyExportType
+        export type UpdateShipping = UpdateShippingResponse
+        export type UpdateContact = UpdateContactResponse
     }
 }
 

@@ -39,7 +39,7 @@ export default function UploadTransaction() {
           {t('back')}
         </Button>
 
-            <LoadingButton disabled={!uploaded} isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" variant={"success"} type="button">
+            <LoadingButton disabled={!uploaded} isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" type="button">
                 {t("paynow")}
             </LoadingButton>
 

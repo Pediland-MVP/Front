@@ -26,7 +26,7 @@ export function useCanQuantityUp() {
             })
         })
         .then(async res => {
-            const json = await res.json() as OrderNamespace.POST.CanQuantityUp
+            const json = (await res.json() as OrderNamespace.POST.CanQuantityUp)[0]
             if (!res.ok) {
                 setOutOfStock(true)
                 return false
