@@ -206,7 +206,7 @@ export default function ProductListTable() {
                 <TableCell className="text-center">کالای فیزیکی</TableCell>
 
                 <TableCell className="text-center">
-                  <span className={`${typeof product.discountPrice === 'number' ? "line-through" : ""}`} >{product.price.toLocaleString()}</span>
+                  <span className={`${typeof product?.discountPrice === 'number' ? "line-through" : ""}`} >{product.price.toLocaleString()}</span>
                   <br/>
                   {typeof product.discountPrice === 'number' && <span>{product.discountPrice?.toLocaleString()}</span>}
                 </TableCell>

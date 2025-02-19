@@ -25,7 +25,7 @@ export default function ProductDetails() {
 
   const price = useMemo(() => {
     if (pendingOrder) {
-      return typeof pendingOrder.orderProducts[0].discountPrice === 'number' ? (pendingOrder.orderProducts[0].discountPrice * orderQuantity).toLocaleString() : (pendingOrder.orderProducts[0].price * orderQuantity).toLocaleString();
+      return typeof pendingOrder.orderProducts[0]?.discountPrice === 'number' ? (pendingOrder.orderProducts[0]?.discountPrice * orderQuantity).toLocaleString() : (pendingOrder.orderProducts[0].price * orderQuantity).toLocaleString();
     }
     if (product) {
       return typeof product?.discountPrice === 'number'
@@ -75,7 +75,7 @@ export default function ProductDetails() {
 
       <div className="_price-info px-3 flex items-center gap-2 justify-around">
         <div className="_price-wrapper">
-          {(typeof product.discountPrice === 'number') ? (
+          {(typeof product?.discountPrice === 'number') ? (
             <p className="flex items-center justify-end gap-2 text-gray-700">
               <span className="text-gray-400 line-through">
                 {(product.price * orderQuantity).toLocaleString()}
