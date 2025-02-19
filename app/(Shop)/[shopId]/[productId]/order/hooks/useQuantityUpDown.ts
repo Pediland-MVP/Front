@@ -9,7 +9,7 @@ import { mutate } from "swr";
 export default function useQuantityUpDown() {
 
     const t_ec = useTranslations('ERROR_CODES')
-    const { pendingOrder, shopId, setOrderQuantity,  setOutOfStock } = useCheckout()
+    const { pendingOrder, shopId, setOrderQuantity,  setOutOfStock,productId } = useCheckout()
     const [loading, setLoading] = useState(false)
     async function updateQuantity(adjustment: 'increment' | 'decrement') {
         setLoading(true)
@@ -18,7 +18,10 @@ export default function useQuantityUpDown() {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            method: 'POST'
+            method: 'POST',
+            body: JSON.stringify({
+                productId
+            })
         })
         .then (async res => {
             if (res.ok) {

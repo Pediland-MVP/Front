@@ -12,6 +12,7 @@ import LoadingButton from "@/components/ui/button-loading";
 import { Button } from "@/components/theme/ui/button";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import Image from "next/image";
+import useCheckoutStep from "../hooks/useCheckoutStep";
 
 export default function PaymentDetails() {
   const t = useTranslations("Checkout");
@@ -26,6 +27,8 @@ export default function PaymentDetails() {
   } = useCheckout();
   const cardToCard = shop?.user.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
+
+  const { prevStep, nextStep } = useCheckoutStep()
 
   const [cardNumberCopied, setCardNumberCopied] = useState(false);
   const [ibanCopied, setIbanCopied] = useState(false);
@@ -189,7 +192,7 @@ export default function PaymentDetails() {
         </div>
 
         <div className="mt-2 w-full flex justify-center items-center gap-x-2">
-          <Button onClick={() => setStep(2)} className="3/12 bg-gray-500">
+          <Button onClick={() => setStep(prevStep())} className="3/12 bg-gray-500">
             {t("back")}
           </Button>
 
@@ -197,7 +200,6 @@ export default function PaymentDetails() {
             isLoading={isStartPaymentLoading}
             onClick={startPaymentHandler}
             className="w-full"
-            variant={"success"}
           >
             {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
               ? t("nextStep")

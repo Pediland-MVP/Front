@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState } from "react"
+import { useState } from "react"
 import { Minus, Plus, Spinner } from "@phosphor-icons/react/dist/ssr"
 import { useCheckout } from "../useCheckout"
 import { useCanQuantityUp } from "../hooks/useCanQuantityUp"
@@ -8,7 +8,6 @@ import useQuantityUpDown from "../hooks/useQuantityUpDown"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useTranslations } from "next-intl"
-import { QuantitySkeleton } from "./quantity.skeleton"
 import { ORDER_STATUS } from "@/types/order/order.namespace"
 
 export function Quantity() {

@@ -6,6 +6,9 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/theme/ui/use-toast";
 import { useEffect, useState } from "react";
+import useCheckoutStep from "./useCheckoutStep";
+import { OrderNamespace } from "@/types/order/order.namespace";
+import { useRouter } from "next/navigation";
 
 
 export default function useShipping() {
@@ -13,11 +16,17 @@ export default function useShipping() {
     const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>()
     const { setStep, pendingOrder } = useCheckout()
 
+    const { nextStep } = useCheckoutStep()
+
     useEffect(() => {
       console.log(pendingOrder)
     }, [pendingOrder])
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setLoading] = useState(false)
+
+    const { productId } = useCheckout()
+    const router = useRouter()
+
     const updateShipping = async (values?: z.infer<typeof orderFormSchema>) => {
         setLoading(true)
         const {cityId, address, postalcode} = values || getValues()
@@ -29,13 +38,19 @@ export default function useShipping() {
           body: JSON.stringify({
             cityId,
             address,
-            postalcode
+            postalcode,
+            productIds: [productId]
           }),
           credentials: 'include'
         })
         .then(async res => {
           if (res.ok) {
-            setStep(3)
+            const json = await res.json() as OrderNamespace.POST.UpdateShipping
+            if (json.code === 'PAID_FREE') {
+              router.push('/payments/verify?ItsFree=true')
+              return;
+            }
+            setStep(nextStep())
             return
           }
           const resJson = await res.json() as ExceptionMessage

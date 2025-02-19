@@ -6,20 +6,25 @@ import { use, useEffect, useState } from "react";
 
 type VerifyPageProps = {
   searchParams: Promise<{
-    Authority: string;
-    Status: "OK" | "NOK";
+    ItsFree?: boolean;
+    Authority?: string;
+    Status?: "OK" | "NOK";
   }>;
 };
 export default function VerifyPage({ searchParams }: VerifyPageProps) {
-  const { Authority, Status } = use(searchParams);
+  const { Authority, Status, ItsFree } = use(searchParams);
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
   const [isOk, setIsOk] = useState<boolean>();
   const [refId, setRefId] = useState();
-  const t = useTranslations('Checkout');
-
+  const t = useTranslations("Checkout");
 
   useEffect(() => {
+    if (ItsFree) {
+      setIsOk(true);
+      return;
+    }
+
     if (!Authority && !Status) return;
     setIsLoading(true);
     fetch(
@@ -46,7 +51,7 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [Authority, Status]);
+  }, [Authority, Status, ItsFree]);
 
   if (isLoading) {
     return (
@@ -72,9 +77,12 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
           <p className="text-lg text-center">
             {t("orderProcessingDescription")}
           </p>
-          <span className="text-xs text-black/40">
-            کد رهگیری درگاه پرداخت:‌ {refId}
-          </span>
+
+          {refId && (
+            <span className="text-xs text-black/40">
+              کد رهگیری درگاه پرداخت:‌ {refId}
+            </span>
+          )}
         </div>
       ) : (
         isOk === false && (

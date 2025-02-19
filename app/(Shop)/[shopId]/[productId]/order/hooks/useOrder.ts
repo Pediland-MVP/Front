@@ -7,6 +7,10 @@ import { useState } from "react"
 import { z } from "zod"
 import { orderFormSchema } from "../checkout.page"
 import { mutate } from "swr"
+import { IResponseMessage } from "@/types/responseMessage"
+import { OrderNamespace } from "@/types/order/order.namespace"
+import useCheckoutStep from "./useCheckoutStep"
+import { useRouter } from "next/navigation"
 
 
 export default function useOrder() {
@@ -16,10 +20,13 @@ export default function useOrder() {
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setIsLoading] = useState(false)
 
+    const { nextStep } = useCheckoutStep()
+    const router = useRouter()
+
     async function createOrder(values?: z.infer<typeof orderFormSchema>) {
         setIsLoading(true)
         const {firstname, lastname, mobile} = values || getValues()
-        await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${productId}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -29,15 +36,19 @@ export default function useOrder() {
             firstname,
             lastname,
             mobile,
-            quantity: orderQuantity
+            quantity: orderQuantity,
+            products: [{productId, quantity: orderQuantity}]
           })
         })
         .then(async (res) => {
           if (res.ok) {
-            const json = await res.json()
-            // setOrderId(json.id)
+            const json = await res.json() as OrderNamespace.POST.CreateOrder
+            if (json.code === 'PAID_FREE') {
+              router.push('/payments/verify?ItsFree=true')
+              return
+            }
             await mutate(key => typeof key === 'string' && (key.includes("pending")))
-            return setStep(2)
+            return setStep(nextStep())
           }
           const resJson = await res.json() as ExceptionMessage
           toast({

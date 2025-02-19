@@ -206,9 +206,9 @@ export default function ProductListTable() {
                 <TableCell className="text-center">کالای فیزیکی</TableCell>
 
                 <TableCell className="text-center">
-                  <span className={`${product.discountPrice ? "line-through" : ""}`} >{product.price.toLocaleString()}</span>
+                  <span className={`${typeof product.discountPrice === 'number' ? "line-through" : ""}`} >{product.price.toLocaleString()}</span>
                   <br/>
-                  {product.discountPrice && <span>{product.discountPrice?.toLocaleString()}</span>}
+                  {typeof product.discountPrice === 'number' && <span>{product.discountPrice?.toLocaleString()}</span>}
                 </TableCell>
 
                 <TableCell className="text-center">

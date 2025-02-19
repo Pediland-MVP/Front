@@ -32,6 +32,8 @@ interface IOrderProduct {
   createDate: Date;
   updateDate: Date;
   quantity: number;
+  price: number;
+  discountPrice: number | null;
   product: {
     id: string
     title: string

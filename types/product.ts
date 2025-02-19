@@ -20,6 +20,7 @@ export interface ProductItem {
     quantity?:    number; 
     images:      Image[];
     isInfinite:  boolean;
+    isDigital:   boolean;
 }
 
 export interface Image {
