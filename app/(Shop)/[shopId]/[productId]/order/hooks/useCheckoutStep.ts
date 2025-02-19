@@ -29,8 +29,8 @@ const useCheckoutStep = () => {
     // The price to be used for step validation
     // It is either the pending order's price or the product's price
     const price = pendingOrder
-      ? typeof pendingOrder.orderProducts[0].discountPrice === 'number'
-        ? pendingOrder.orderProducts[0].discountPrice
+      ? typeof pendingOrder.orderProducts[0]?.discountPrice === 'number'
+        ? pendingOrder.orderProducts[0]?.discountPrice
         : pendingOrder.orderProducts[0].price
       : typeof product.discountPrice === 'number'
         ? product.discountPrice
