@@ -45,23 +45,42 @@ export function NavMain({
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                tooltip={item.title}
-                className={
-                  pathname === item.url
-                    ? "text-primary hover:text-primary bg-blue-100"
-                    : "text-gray-700 hover:text-primary"
-                }
-                onClick={() => {
-                  if (isMobile) toggleSidebar();
-                }}
-              >
-                <Link href={item.url}>
-                  <item.icon size={24} weight="duotone" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+              {item.items?.length ? (
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    className={
+                      pathname === item.url
+                        ? "text-primary hover:text-primary bg-blue-100"
+                        : "text-gray-700 hover:text-primary"
+                    }
+                  >
+                    <button type="button">
+                      <item.icon size={24} weight="duotone" />
+                      <span>{item.title}</span>
+                    </button>
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+              ) : (
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  className={
+                    pathname === item.url
+                      ? "text-primary hover:text-primary bg-blue-100"
+                      : "text-gray-700 hover:text-primary"
+                  }
+                  onClick={() => {
+                    if (isMobile) toggleSidebar();
+                  }}
+                >
+                  <Link href={item.url}>
+                    <item.icon size={24} weight="duotone" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )}
 
               {item.items?.length ? (
                 <>

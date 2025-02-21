@@ -25,8 +25,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/theme/ui/alert-dialog";
-import { DotsThreeVertical, InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
+import { DotsThreeOutlineVertical, Eye, InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/theme/ui/dropdown-menu";
+import { ArrowClockwise } from "@phosphor-icons/react";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -163,97 +164,112 @@ export default function Accounts({
               key={instagram.id}
               className="_card bg-white shadow hover:shadow-lg duration-200 border rounded-lg"
             >
-              <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full hover:cursor-pointer">
-                <div className="w-full flex justify-end">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <DotsThreeVertical className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Link href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}> 
-                          {t('relogin')}
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 group h-full hover:cursor-pointer">
+                <div className="flex gap-4 items-center">
+                  <div className="_avatar">
+                    {instagram.profilePictureUrl ? (
+                      <Image
+                        className="rounded-full"
+                        src={instagram.profilePictureUrl || "/placeholder.svg"}
+                        width={75}
+                        height={75}
+                        alt={instagram.name}
+                      />
+                    ) : (
+                      <InstagramLogo size={75} />
+                    )}
+                  </div>
+
+                  <div className="_info flex flex-col justify-center">
+                    <span>{instagram.name}</span>
+                    <span className="text-[15px] text-gray-500">
+                      {instagram.username}@
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  {instagram.profilePictureUrl ? (
-                    <Image
-                      className="rounded-full"
-                      src={instagram.profilePictureUrl || "/placeholder.svg"}
-                      width={75}
-                      height={75}
-                      alt={instagram.name}
-                    />
-                  ) : (
-                    <InstagramLogo size={75} />
-                  )}
+
+                <div className="_tools flex gap-2">
+                  <div className="w-full flex justify-end">
+                    <DropdownMenu dir="rtl">
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <DotsThreeOutlineVertical className="h-6 w-6 text-primary" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          {instagram.instagramId ? (
+                            <Link className="flex items-center gap-2" href={`https://instagram.com/${instagram.username}`} target="_blank">
+                              <Eye size={18} />{t('view')}
+                            </Link>
+                          ) : (
+                            <Button
+                              onClick={() => {
+                                setOpenSelectInstagramDialog(true);
+                                setFacebookAccountId(instagram.facebookAccountId);
+                              }}
+                              variant={"outline"}
+                            >
+                              {t("connectAccount")}
+                            </Button>
+                          )}
+
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link className="flex items-center gap-2" href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
+                            <ArrowClockwise size={18} />
+                            {t('relogin')}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href={`#`}>
+                            <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+                              <AlertDialogTrigger asChild>
+                                <div className="flex items-center gap-2 text-red-600"><Trash size={18} />{t('delete')}</div>
+                              </AlertDialogTrigger>
+
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {t("deleteConfirmation")}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogAction
+                                    type="button"
+                                    onClick={(e) => handleDelete(e, instagram.id)}
+                                  >
+                                    {isDeleteLoading ? <Spinner className="h-5 w-5 animate-spin" /> : t("delete")}
+                                  </AlertDialogAction>
+                                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+
                 </div>
-          
-                <div className="flex flex-col justify-center items-center">
-                  <span>{instagram.name}</span>
-                  <span className="text-[15px] text-gray-500">
-                    {instagram.username}@
-                  </span>
-                </div>
-          
-                <div className="flex gap-2">
-                  {instagram.instagramId ? (
-                    <Link
-                      href={`https://instagram.com/${instagram.username}`}
-                      target="_blank"
-                    >
-                      <Button variant={"success"}>{t("viewAccount")}</Button>
-                    </Link>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        setOpenSelectInstagramDialog(true);
-                        setFacebookAccountId(instagram.facebookAccountId);
-                      }}
-                      variant={"outline"}
-                    >
-                      {t("connectAccount")}
-                    </Button>
-                  )}
-          
-                  <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="icon">
-                        <Trash size={22} />
-                      </Button>
-                    </AlertDialogTrigger>
-          
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t("deleteConfirmation")}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogAction
-                          type="button"
-                          onClick={(e) => handleDelete(e, instagram.id)}
-                        >
-                          {isDeleteLoading ? <Spinner className="h-5 w-5 animate-spin" /> :t("delete")}
-                        </AlertDialogAction>
-                        <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+
+
+
+
+
+
+
               </div>
             </div>
           );
         })
       ) : (
-        <p className="text-gray-600">{t("noAccountsFound")}</p>
+        <div className="w-full flex items-center justify-center">
+          <p className="text-gray-600">{t("noAccountsFound")}</p>
+        </div>
       )}
 
 

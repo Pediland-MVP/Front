@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/theme/ui/input";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/theme/ui/card";
 import {
   Form,
   FormControl,
@@ -16,11 +16,10 @@ import { z } from "zod";
 import LoadingButton from "@/components/ui/button-loading";
 import { useEffect, useState } from "react";
 import ErrorMessage from "@/components/ui/errorMessage";
-import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
-import { ZarinpalSkeleton } from "./zarinpal.skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 
 export default function Zarinpal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -87,16 +86,16 @@ export default function Zarinpal() {
   };
 
   if (isZarinpalLoading) {
-    return <ZarinpalSkeleton />;
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="flex h-full">
-      <div className="w-3/5 h-full">
+      <div className="w-3/5 h-full"> 
         <Card className="border-l-2 border-gray-100 h-full p-6">
           <div className="mb-6">
-            <h2 className="font-semibold text-primary">{t("title")}</h2>
-            <p className="text-sm text-muted-foreground">{t("description")}</p>
+            <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
+            <p className="text-[15px] text-muted-foreground">{t("description")}</p>
           </div>
 
           <Form {...form}>

@@ -39,9 +39,9 @@ export default function SettingsNav() {
             <ul className="flex flex-col gap-2">
                 {items.map((item, index) => (
                     <li key={index}>
-                        <Link href={item.url} className={cn("flex items-center gap-2 p-2.5 rounded-md bg-gray-100/50 hover:bg-gray-200 duration-300 group", pathname.startsWith(item.url) && "bg-gray-200 text-black")}>
-                            <item.icon size={20} className="text-gray-500 group-hover:text-black duration-300" />
-                            <span className="text-[15px] text-gray-500 group-hover:text-black duration-300">{item.title}</span>
+                        <Link href={item.url} className={cn("flex items-center gap-2 p-2.5 rounded-md bg-gray-100/50 hover:bg-gray-200 duration-300 group text-gray-500", pathname.startsWith(item.url) && "bg-gray-200 text-black")}>
+                            <item.icon size={20} className=" group-hover:text-black duration-300" />
+                            <span className="text-[15px] group-hover:text-black duration-300">{item.title}</span>
                         </Link>
                     </li>
                 ))}

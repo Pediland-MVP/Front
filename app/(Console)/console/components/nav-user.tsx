@@ -66,7 +66,7 @@ export default function NavUser({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu dir="rtl">
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"

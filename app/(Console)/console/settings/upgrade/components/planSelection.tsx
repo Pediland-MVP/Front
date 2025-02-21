@@ -7,14 +7,13 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import e2pNumber from "@/app/utils/e2pNumber";
 import usePayPlan from "../hooks/usePayPlan";
 import { useUpgradeContext } from "../context/upgrade.context";
 import numberToK from "@/app/utils/numberToK";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Check, CheckCircle, CheckSquare } from "@phosphor-icons/react/dist/ssr";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -72,21 +71,27 @@ export default function PlanSelection() {
 
   return (
     <section
-      className="relative h-full box-border max-h-full text-foreground"
+      className="_plan-selection-page relative h-full box-border max-h-full text-foreground"
       dir="rtl"
     >
-      <div className="w-full max-w-5xl mx-auto">
-        <div className="flex flex-col items-center gap-4 mb-12 relative">
-          <h2 className="text-3xl font-bold">{t("selectPlan")}</h2>
-          <div className="inline-flex items-center p-1.5 dark:bg-zinc-800/50 rounded-full border dark:border-zinc-700 shadow-sm">
+      <div className="_wrapper 2xl:max-w-[860px] mx-auto">
+        <div className="mb-6">
+          <h2 className="font-semibold text-primary mb-1">{t('title')}</h2>
+          <p className="text-[15px] text-muted-foreground">
+            {t('description')}
+          </p>
+        </div>
+
+        <div className="_selector flex justify-center">
+          <div className="inline-flex items-center p-1.5 rounded-full border shadow-sm gap-1.5">
             <button
               type="button"
               onClick={() => handlePeriodChange(0)}
               className={cn(
-                "px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
+                "px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
                 period === 0
-                  ? "bg-primary dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900"
+                  ? "bg-primary text-white shadow-lg"
+                  : "text-zinc-600 hover:text-zinc-900"
               )}
             >
               {t("monthly")}
@@ -95,10 +100,10 @@ export default function PlanSelection() {
               type="button"
               onClick={() => handlePeriodChange(1)}
               className={cn(
-                "px-8 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
+                "px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
                 period === 1
-                  ? "bg-primary dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-lg"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900"
+                  ? "bg-primary text-white shadow-lg"
+                  : "text-zinc-600 hover:text-zinc-900"
               )}
             >
               {t("threeMonths")}
@@ -121,56 +126,53 @@ export default function PlanSelection() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
           >
             {plans.map((plan, index) => (
               <div
                 key={plan.id}
                 className={cn(
-                  "min-w-80 h-[500px]",
                   "relative group backdrop-blur-sm",
-                  "rounded-3xl transition-all duration-300",
+                  "rounded-xl transition-all duration-300",
                   "flex flex-col",
-                  "bg-gradient-to-b from-zinc-100/80 to-transparent dark:from-zinc-400/[0.15]",
-                  "border",
-                  "border-zinc-400/50 dark:border-zinc-400/20 shadow-xl",
-                  "hover:translate-y-0 hover:shadow-lg"
+                  "bg-gradient-to-b from-green-100/25 to-transparent",
+                  "border shadow-md hover:shadow-lg",
                 )}
               >
-                <div className="p-8 flex-1">
-                  <h3 className="text-xl font-semibold mb-4">
+                <div className="p-4">
+                  <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
                     {plan.maxFollowers > 100_000
-                      ? "+"
-                      : `${e2pNumber(numberToK(plan.maxFollowers))} - `}
-                    {e2pNumber(numberToK(plan.minFollowers))} {" "}
-                    {t("followers")}
+                      ? `${e2pNumber(numberToK(plan.minFollowers))}+`
+                      : `${e2pNumber(numberToK(plan.minFollowers))} تا ${e2pNumber(numberToK(plan.maxFollowers))}`}
+                    {` ${t("followers")}`}
                   </h3>
 
                   <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold">
-                        {e2pNumber(
-                          plan.durations[period].price.toLocaleString()
-                        )}
+                    <div className="flex flex-col items-center">
+                      <span className="text-3xl font-bold text-green-700">
+                        {period === 0
+                          ? e2pNumber(plan.durations[period].price.toLocaleString())
+                          : e2pNumber((+(plan.durations[period].price / 3).toFixed(0)).toLocaleString())
+                        }
                       </span>
                       <span className="text-sm text-muted-foreground">
                         {t("currency")} / {t("month")}
                       </span>
                     </div>
                     {period === 1 && (
-                      <p className="mt-2 text-md text-muted-foreground">
+                      <p className="mt-2 font-semibold text-muted-foreground text-center">
                         {period > 0
-                          ? `${e2pNumber((+(plan.durations[period].price / 3).toFixed(0)).toLocaleString())} در ماه`
+                          ? `سه ماهه ${e2pNumber(plan.durations[period].price.toLocaleString())} تومان`
                           : null}
                       </p>
                     )}
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-2.5">
                     {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex gap-4">
-                        <div className="mt-1 p-0.5 rounded-full text-emerald-600">
-                          <CheckIcon className="w-4 h-4" />
+                      <div key={idx} className="flex items-center gap-2">
+                        <div className="mt-1 p-0.5 rounded-full text-green-600">
+                          <Check size={14} weight="bold" />
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {feature}
@@ -180,7 +182,7 @@ export default function PlanSelection() {
                   </div>
                 </div>
 
-                <div className="p-8 pt-0">
+                <div className="p-6 pt-4">
                   <Button
                     type="button"
                     onClick={() => {
@@ -190,10 +192,10 @@ export default function PlanSelection() {
                       form.handleSubmit(onSubmit)();
                     }}
                     className={cn(
-                      "w-full h-12 relative transition-all duration-300",
-                      index === 1
-                        ? "bg-primary text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl font-semibold"
-                        : "bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 shadow-sm hover:shadow-md"
+                      "w-full h-10 relative transition-all duration-300 bg-primary text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md",
+                      // index === 1
+                      //   ? "bg-primary text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl font-semibold"
+                      //   : "bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 shadow-sm hover:shadow-md"
                     )}
                     disabled={isPayLoading && loadingPlanId === plan.id}
                   >

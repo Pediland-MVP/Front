@@ -22,12 +22,11 @@ export function BreadcrumbGenerator() {
         <Breadcrumb>
             <BreadcrumbList>
                 {pathSegments.map((segment, index) => {
-                    const path = `/${pathSegments.slice(0, index + 1).join("/")}`
-                    const isLast = index === pathSegments.length - 1
+                    const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
+                    const isLast = index === pathSegments.length - 1;
 
                     return (
                         <React.Fragment key={path}>
-                            <BreadcrumbSeparator />
                             <BreadcrumbItem>
                                 {isLast ? (
                                     <span>{t(path) || segment}</span>
@@ -37,8 +36,9 @@ export function BreadcrumbGenerator() {
                                     </BreadcrumbLink>
                                 )}
                             </BreadcrumbItem>
+                            {!isLast && <BreadcrumbSeparator />}
                         </React.Fragment>
-                    )
+                    );
                 })}
             </BreadcrumbList>
         </Breadcrumb>

@@ -1,4 +1,3 @@
-
 import { IconWeight } from "@phosphor-icons/react";
 import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
 import { FC } from "react";
@@ -10,7 +9,9 @@ export interface LoadingSpinner {
 }
 const LoadingSpinner: FC<LoadingSpinner> = ({ className, ...props }) => {
     return (
-        <CircleNotch {...props} className={`animate-spin ${className}`} size={24} />
+        <div className="h-full w-full flex items-center justify-center">
+            <CircleNotch {...props} className={`animate-spin text-primary ${className}`} size={28} />
+        </div>
     )
 }
 

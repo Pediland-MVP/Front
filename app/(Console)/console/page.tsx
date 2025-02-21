@@ -41,7 +41,6 @@ export default function Dashboard() {
     <div className="_dashboard h-full">
       <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
-          {statsError?.data && statsError.data.code === 6 && (<p>Pedram</p>)}
           <Card className="border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">{t("productCount")}</CardTitle>

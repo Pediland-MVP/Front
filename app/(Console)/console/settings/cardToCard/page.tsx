@@ -13,14 +13,13 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { FormProvider, useForm } from "react-hook-form";
-import { Button } from "@/components/theme/ui/button";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import { CardToCardSkeleton } from "./cardToCard.skeleton";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from '@/components/ui/button-loading';
 import { REGEX_NUMBERICAL_STRING } from "@/app/utils/regex";
+import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 
 export const bankDetailsSchema = z.object({
   bankName: z
@@ -62,10 +61,8 @@ export default function BankDetails() {
   })
 
   useEffect(() => {
-
     if (!cardToCardData) return;
     form.reset(cardToCardData)
-
   }, [cardToCardData])
 
   const onSubmit = async (data: z.infer<typeof bankDetailsSchema>) => {
@@ -78,27 +75,27 @@ export default function BankDetails() {
       credentials: "include",
       body: JSON.stringify(data),
     })
-    .then(async (res) => {
-      if (res.ok) {
+      .then(async (res) => {
+        if (res.ok) {
+          toast({
+            title: t("cardToCardUpdated"),
+          });
+          return;
+        }
         toast({
-          title: t("cardToCardUpdated"),
+          title: t("cardToCardUpdateFailed"),
+          variant: "destructive"
         });
-        return;
-      }
-      toast({
-        title: t("cardToCardUpdateFailed"),
-        variant: "destructive"
-      });
-    })
-    .catch(e => {
-      toast({
-        title: t("cardToCardUpdateFailed"),
-        variant: "destructive"
-      });
-    })
-    .finally(() => {
-      setIsSubmitting(false)
-    })
+      })
+      .catch(e => {
+        toast({
+          title: t("cardToCardUpdateFailed"),
+          variant: "destructive"
+        });
+      })
+      .finally(() => {
+        setIsSubmitting(false)
+      })
   };
 
   const {
@@ -108,17 +105,17 @@ export default function BankDetails() {
   } = form;
 
   if (cardToCardLoading) {
-    return (<CardToCardSkeleton/>)
+    return (<LoadingSpinner />)
   }
 
   return (
-    <div className="flex h-full">
+    <div className="_card-to-card-page flex h-full">
       <div className="w-3/5 h-full">
         <Card className="border-l-2 border-gray-100 h-full p-6">
           <div className="mb-6">
-            <h2 className="font-semibold text-primary">{t('title')}</h2>
-            <p className="text-sm text-muted-foreground">
-              <p>{t('description')}</p>
+            <h2 className="font-semibold text-primary mb-1">{t('title')}</h2>
+            <p className="text-[15px] text-muted-foreground">
+              {t('description')}
             </p>
           </div>
           <FormProvider {...form}>
@@ -164,7 +161,7 @@ export default function BankDetails() {
                       <FormItem>
                         <FormLabel>{t("cardNumber.label")}</FormLabel>
                         <FormControl>
-                          <Input id="cardnumber" {...field} />
+                          <Input id="cardnumber" dir="ltr" {...field} />
                         </FormControl>
                         {error && (
                           <ErrorMessage>
@@ -182,8 +179,8 @@ export default function BankDetails() {
                         <FormLabel>{t("iban.label")}</FormLabel>
                         <FormControl>
                           <div className="w-full relative">
-                            <Input id="iban" {...field} />
-                            <p className="absolute top-1/2 transform -translate-y-1/2 left-2 text-gray-500">IR</p>
+                            <Input id="iban" {...field} className="text-left pl-10" dir="ltr" />
+                            <p className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-500" dir="ltr">IR -</p>
                           </div>
                         </FormControl>
                         {error && (

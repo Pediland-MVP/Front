@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Suspense } from "react";
@@ -6,9 +7,9 @@ import Accounts from "./components/accounts";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { InstagramNamespace } from "@/types/instagram";
-// Just UI Imports Below
+// UI Imports Here
 import { Button } from "@/components/theme/ui/button";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
+import { Card } from "@/components/theme/ui/card";
 
 
 export default function AccountPage() {
@@ -17,20 +18,26 @@ export default function AccountPage() {
   const [filteredInstagramPages, setfilteredInstagramPages] = useState<InstagramNamespace.GET['Accounts'] | null>()
 
   return (
-    <div className="_accounts-page">
-      <div className="_tools px-5 py-3 flex flex-col xl:flex-row xl:justify-end xl:items-center gap-4">
-        <Link href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
-          <Button size={"sm"}>
-            <span className="hidden sm:inline">{t("add")}</span>{" "}
-            <Plus size={20} />
-          </Button>
-        </Link>
-      </div>
+    <div className="_accounts-page flex h-full">
+      <div className="w-3/5 h-full">
+        <Card className="border-l-2 border-gray-100 h-full p-6">
+          <div className="mb-6">
+            <h2 className="font-semibold text-primary mb-1">{t('title')}</h2>
+            <p className="text-[15px] text-muted-foreground">
+              {t('description')}
+            </p>
+          </div>
 
-      <div className="_cards p-5 grid sm:grid-cols-3 2xl:grid-cols-4 gap-5">
-        <Suspense>
-          <Accounts filteredInstagramPages={filteredInstagramPages} setFilteredInstagramPages={setfilteredInstagramPages} />
-        </Suspense>
+          <Suspense>
+            <Accounts filteredInstagramPages={filteredInstagramPages} setFilteredInstagramPages={setfilteredInstagramPages} />
+          </Suspense>
+
+          <Link className="flex mt-6" href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
+            <Button size={"sm"} className="w-full" variant={"success"}>
+              {t("add")}
+            </Button>
+          </Link>
+        </Card>
       </div>
     </div>
   );

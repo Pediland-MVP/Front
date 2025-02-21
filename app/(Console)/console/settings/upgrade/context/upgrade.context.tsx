@@ -5,6 +5,7 @@ import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspa
 import { createContext, useState, use, useContext, useEffect } from 'react';
 import { usePlanSelection } from "../hooks/usePlanSelection";
 import useSWRImmutable from "swr/immutable";
+import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 
 export interface UpgradeContext {
     active: {
@@ -27,7 +28,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         planSelection: false
     })
 
-    const { data: subscriptionsData, isLoading: isSubscriptionsLoading, error: subscriptionsError  } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`, {
+    const { data: subscriptionsData, isLoading: isSubscriptionsLoading, error: subscriptionsError } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`, {
         revalidateOnMount: true,
         refreshInterval: 30_000
     })
@@ -40,7 +41,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
                 subscriptionInfo: false,
                 planSelection: true
             })
-            return 
+            return
         }
 
         if (subscriptionsData?.items.length) {
@@ -54,9 +55,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
 
     if (isSubscriptionsLoading || isPlansLoading) {
         return (
-            <div className="w-full h-full flex items-center justify-center">
-                <span className="text-2xl font-semibold">درحال بارگذاری...</span>
-            </div>
+            <LoadingSpinner />
         )
     }
 
