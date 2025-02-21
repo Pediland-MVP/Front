@@ -1211,6 +1211,23 @@
         "PAID_FREE": "پرداخت رایگان انجام شد",
         "PAID_BY_GATEWAY": "پرداخت از طریق درگاه",
         "PAYMENT_LINK_GENERATED": "لینک پرداخت ایجاد شد"
+    },
+    "Breadcrumbs": {
+        "/console": "داشبورد",
+        "/console/contacts": "مخاطبین",
+        "/console/inbox": "دایرکت‌ها",
+        "/console/comments": "کامنت‌ها",
+        "/console/actions": "پیام‌های خودکار",
+        "/console/actions/content-cycle": "لیست پیام‌ها",
+        "/console/actions/content-cycle/add": "جزئیات پیام",
+        "/console/orders": "لیست سفارشات",
+        "/console/products": "لیست کالاها / خدمات",
+        "/console/products/add": "جزئیات کالا / خدمت",
+        "/console/settings": "تنظیمات",
+        "/console/settings/accounts": "مدیریت اکانت‌های اینستاگرام",
+        "/console/settings/cardToCard": "مدیریت حساب‌های بانکی",
+        "/console/settings/zarinpal": "مدیریت زرین پال",
+        "/console/settings/upgrade": "ارتقا اشتراک"
     }
 }
 
