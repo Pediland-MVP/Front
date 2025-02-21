@@ -57,19 +57,25 @@ const BreadcrumbLink = React.forwardRef<
 });
 BreadcrumbLink.displayName = "BreadcrumbLink";
 
-const BreadcrumbPage = React.forwardRef<
-  HTMLSpanElement,
-  React.ComponentPropsWithoutRef<"span">
->(({ className, ...props }, ref) => (
-  <span
-    ref={ref}
-    role="link"
-    aria-disabled="true"
-    aria-current="page"
-    className={cn("font-semibold text-primary", className)}
-    {...props}
-  />
-));
+// Breadcrumb Page
+type BreadcrumbPageProps = React.ComponentPropsWithoutRef<"span"> & {
+  isCurrent?: boolean;
+};
+
+const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
+  ({ className, isCurrent, ...props }, ref) => {
+    return (
+      <span
+        ref={ref}
+        role="link"
+        aria-disabled="true"
+        aria-current={isCurrent ? "page" : undefined}
+        className={cn("font-semibold text-primary", className)}
+        {...props}
+      />
+    );
+  }
+);
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
 const BreadcrumbSeparator = ({

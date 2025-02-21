@@ -8,11 +8,6 @@ import DashboardSkeleton from "./components/dashboard.skeleton";
 import LeadsGrowsChart from "./components/leadsGrows.chart";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
-import SidebarTrigger from "@/components/theme/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb, BreadcrumbItem, BreadcrumbList
-} from "@/components/theme/ui/breadcrumb";
 import {
   Card,
   CardContent,
@@ -27,6 +22,8 @@ import {
   Users,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
+import Header from "./components/header";
+import Link from "next/link";
 
 export default function Dashboard() {
   const {
@@ -40,36 +37,11 @@ export default function Dashboard() {
 
   const t = useTranslations("Console");
 
-  if (isStatsLoading) {
-    return <DashboardSkeleton />;
-  }
-
-  if (statsError) {
-    const data = statsError?.data;
-    if (data?.code === 6) {
-      return <DashboardSkeleton accessDenied={true} />;
-    }
-  }
-
   return (
     <div className="_dashboard h-full">
-      <header className="bg-white px-4 py-3 h-16 flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 border-b-2 border-gray-100">
-        <div className="_wrap flex items-center gap-4">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="h-6" />
-
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>{t("dashboard")}</BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-
-        <div className="_tools"></div>
-      </header>
-
       <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
+          {statsError?.data && statsError.data.code === 6 && (<p>Pedram</p>)}
           <Card className="border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">{t("productCount")}</CardTitle>
