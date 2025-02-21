@@ -6,6 +6,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 // Just UI Imports Below
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
+import { GoftinoSnippet } from "@/components/third-party/goftino";
 
 export default async function RootLayout({
   children,
@@ -16,7 +18,11 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
+    <html
+      lang={locale}
+      dir={locale === "fa" ? "rtl" : "ltr"}
+      className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}
+    >
       <head>
         <link
           rel="icon"
@@ -42,6 +48,10 @@ export default async function RootLayout({
           <Toaster />
           <Footer />
         </NextIntlClientProvider>
+
+        <GoftinoSnippet
+          goftinoKey="amN3YU"
+        />
       </body>
     </html>
   );

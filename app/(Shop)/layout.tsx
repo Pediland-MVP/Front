@@ -3,12 +3,14 @@ import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "@/app/globals.css";
-// UI 
+// UI
 import { Toaster } from "@/components/theme/ui/toaster";
 import { ShoppingBagOpen } from "@phosphor-icons/react/dist/ssr";
 import { SWRConfig } from "swr";
-import { fetcher } from '../../hooks/swr/fetcher';
+import { fetcher } from "../../hooks/swr/fetcher";
 import SWRProvider from "./swr.prvider";
+import Script from "next/script";
+import { GoftinoSnippet } from "@/components/third-party/goftino";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -24,24 +26,33 @@ export default async function ShopLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === "fa" ? "rtl" : "ltr"} className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}>
+    <html
+      lang={locale}
+      dir={locale === "fa" ? "rtl" : "ltr"}
+      className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}
+    >
       <body className="bg-fuchsia-50/75">
-        <Toaster/>
+        <Toaster />
 
-          <SWRProvider>
-            <NextIntlClientProvider messages={messages}>
-              <main>
-                <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
-                  {children}
-                </div>
-              </main>
-            </NextIntlClientProvider>
-          </SWRProvider>
-          <footer>
-            <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 pt-6 pb-4 mx-auto">
-              <p className="text-center text-sm text-gray-500">تمامی حقوق ناشی از این وب‌سایت برای بـفـروش محفوظ است.</p>
-            </div>
-          </footer>
+        <SWRProvider>
+          <NextIntlClientProvider messages={messages}>
+            <main>
+              <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
+                {children}
+              </div>
+            </main>
+          </NextIntlClientProvider>
+        </SWRProvider>
+        <footer>
+          <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 pt-6 pb-4 mx-auto">
+            <p className="text-center text-sm text-gray-500">
+              تمامی حقوق ناشی از این وب‌سایت برای بـفـروش محفوظ است.
+            </p>
+          </div>
+        </footer>
+        <GoftinoSnippet
+          goftinoKey="amN3YU"
+        />
       </body>
     </html>
   );
