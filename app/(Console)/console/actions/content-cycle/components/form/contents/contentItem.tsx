@@ -23,6 +23,7 @@ import {
   InstagramLogo,
   Paperclip,
   Storefront,
+  RadioButton,
 } from "@phosphor-icons/react/dist/ssr";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/theme/ui/input";
@@ -47,6 +48,7 @@ import { useContentsUploaderContext } from "./useContentsUploaderContext";
 import { useContentsContext } from "./useContentsContext";
 import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
 import Catalogue from "../catalogue";
+import ButtonTemplate from "../buttonTemplate";
 
 type MessageByTypeProps = {
   index: number;
@@ -196,6 +198,9 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
     case ContentCycleContentTypesEnum.PRODUCT:
       return <Catalogue mode={mode} index={index} />;
 
+    case ContentCycleContentTypesEnum.BUTTON_TEMPLATE:
+      return <ButtonTemplate mode={mode} index={index}/>
+
     default:
       return (
         <>
@@ -243,6 +248,12 @@ const messageTypeOptions: MessageTypeOption[] = [
     label: "Product",
     icon: <Storefront className="h-6 w-6" />,
   },
+  {
+    value: ContentCycleContentTypesEnum.BUTTON_TEMPLATE,
+    label: 'Button',
+    icon: <RadioButton className="h-6 w-6"/>
+  },
+  //BUG: Dont change my order!
   {
     value: "media",
     label: "Media",
@@ -344,7 +355,7 @@ export default function ContentItem({
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-4 gap-x-2 shrink-0 items-center">
+      <div className="w-full grid grid-cols-5 gap-x-2 shrink-0 items-center">
         {/**FIXME: Should be refactor */}
         {messageTypeOptions.map((option) => (
           <Button

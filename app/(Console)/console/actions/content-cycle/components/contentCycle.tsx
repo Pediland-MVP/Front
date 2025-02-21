@@ -121,7 +121,11 @@ export const contentCycleFormSchema = z
           .nullable()
           .transform((data) => data || undefined),
         _xid: z.string().optional().nullable(),
-      })
+      }),
+      z.array(z.object({
+        title: z.string(),
+        url: z.string().url(),
+      }))
     ),
     isDirect: z.boolean(),
     isComment: z.boolean(),
