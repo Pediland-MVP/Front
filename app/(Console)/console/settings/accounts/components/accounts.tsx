@@ -12,7 +12,6 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
@@ -28,6 +27,7 @@ import {
 import { DotsThreeOutlineVertical, Eye, InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/theme/ui/dropdown-menu";
 import { ArrowClockwise } from "@phosphor-icons/react";
+import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -138,31 +138,20 @@ export default function Accounts({
     }
   };
 
+  if (isInstagramPagesLoading) {
+    return (
+      <LoadingSpinner />
+    );
+  }
+
   return (
     <>
-      {isInstagramPagesLoading && !instagramPages ? (
-        Array.from({ length: 1 }).map((_, index) => (
-          <div
-            key={index}
-            className="_card bg-white shadow hover:shadow-lg duration-200 border rounded-lg"
-          >
-            <div className="flex flex-col items-center justify-center gap-4 p-5 group h-full">
-              <Skeleton className="w-[75px] h-[75px] rounded-full" />
-              <Skeleton className="w-[50%] h-4 mt-2" />
-              <Skeleton className="w-[40%] h-4 mt-1" />
-              <div className="flex gap-2 mt-4">
-                <Skeleton className="w-[100px] h-8 rounded" />
-                <Skeleton className="w-[40px] h-8 rounded" />
-              </div>
-            </div>
-          </div>
-        ))
-      ) : filteredInstagramPages && filteredInstagramPages.length > 0 ? (
+      {filteredInstagramPages && filteredInstagramPages.length > 0 ? (
         filteredInstagramPages?.map((instagram) => {
           return (
             <div
               key={instagram.id}
-              className="_card bg-white shadow hover:shadow-lg duration-200 border rounded-lg"
+              className="_card bg-blue-50/35 shadow hover:shadow-lg duration-200 border rounded-lg"
             >
               <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 group h-full hover:cursor-pointer">
                 <div className="flex gap-4 items-center">
@@ -252,16 +241,7 @@ export default function Accounts({
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-
-
                 </div>
-
-
-
-
-
-
-
               </div>
             </div>
           );
@@ -271,8 +251,7 @@ export default function Accounts({
           <p className="text-gray-600">{t("noAccountsFound")}</p>
         </div>
       )}
-
-
+      
       <SelectInstagram
         facebookAccountId={facebookAccountId!}
         open={openSelectInstagramDialog}

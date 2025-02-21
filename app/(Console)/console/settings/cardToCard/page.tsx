@@ -105,7 +105,7 @@ export default function BankDetails() {
   } = form;
 
   if (cardToCardLoading) {
-    return (<LoadingSpinner />)
+    return (<LoadingSpinner className="h-full" />)
   }
 
   return (

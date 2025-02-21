@@ -10,12 +10,26 @@ import { InstagramNamespace } from "@/types/instagram";
 // UI Imports Here
 import { Button } from "@/components/theme/ui/button";
 import { Card } from "@/components/theme/ui/card";
-
+import useSWR from "swr";
+import { fetcher } from "@/hooks/swr/fetcher";
 
 export default function AccountPage() {
   const t = useTranslations("Settings.Accounts");
   const router = useRouter();
   const [filteredInstagramPages, setfilteredInstagramPages] = useState<InstagramNamespace.GET['Accounts'] | null>()
+
+  const {
+    data: instagramPages,
+    isLoading: isInstagramPagesLoading,
+    error: instagramPagesError,
+    mutate,
+  } = useSWR<InstagramNamespace.GET["Accounts"]>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
+    fetcher,
+    {
+      refreshInterval: 0,
+    }
+  );
 
   return (
     <div className="_accounts-page flex h-full">
@@ -32,11 +46,13 @@ export default function AccountPage() {
             <Accounts filteredInstagramPages={filteredInstagramPages} setFilteredInstagramPages={setfilteredInstagramPages} />
           </Suspense>
 
-          <Link className="flex mt-6" href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
-            <Button size={"sm"} className="w-full" variant={"success"}>
-              {t("add")}
-            </Button>
-          </Link>
+          {instagramPages && instagramPages?.length === 0 && (
+            <Link className="flex mt-6" href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
+              <Button size={"sm"} className="w-full" variant={"success"}>
+                {t("add")}
+              </Button>
+            </Link>
+          )}
         </Card>
       </div>
     </div>

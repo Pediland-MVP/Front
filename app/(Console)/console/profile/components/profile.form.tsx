@@ -38,6 +38,7 @@ import { Input } from "@/components/theme/ui/input";
 import { Button } from "@/components/theme/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
+import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
@@ -212,7 +213,7 @@ export function ProfileForm() {
     router.push('/console')
   };
 
-  if (userIsLoading) return <ProfileFormSkeleton />;
+  if (userIsLoading) return <LoadingSpinner className="h-full" />;
 
   return (
     <Card className="h-full md:border-l-2 border-gray-100 p-6 md:p-10">

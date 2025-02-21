@@ -55,7 +55,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
 
     if (isSubscriptionsLoading || isPlansLoading) {
         return (
-            <LoadingSpinner />
+            <LoadingSpinner className="h-full" />
         )
     }
 
@@ -65,7 +65,6 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         </UpgradeContext.Provider>
     )
 }
-
 
 export function useUpgradeContext() {
     const context = useContext(UpgradeContext)

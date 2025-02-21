@@ -86,7 +86,7 @@ export default function Zarinpal() {
   };
 
   if (isZarinpalLoading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner className="h-full" />;
   }
 
   return (

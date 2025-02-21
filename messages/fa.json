@@ -1230,7 +1230,8 @@
         "/console/settings/accounts": "مدیریت اکانت‌های اینستاگرام",
         "/console/settings/cardToCard": "مدیریت حساب‌های بانکی",
         "/console/settings/zarinpal": "مدیریت زرین پال",
-        "/console/settings/upgrade": "مدیریت اشتراک کاربری"
+        "/console/settings/upgrade": "مدیریت اشتراک کاربری",
+        "/console/profile": "حساب کاربری"
     }
 }
 
