@@ -20,27 +20,30 @@ export function BreadcrumbGenerator() {
 
     return (
         <Breadcrumb>
-            <BreadcrumbList>
-                {pathSegments.map((segment, index) => {
-                    const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
-                    const isLast = index === pathSegments.length - 1;
-
-                    return (
-                        <React.Fragment key={path}>
-                            <BreadcrumbItem>
-                                {isLast ? (
-                                    <span>{t(path) || segment}</span>
-                                ) : (
-                                    <BreadcrumbLink asChild>
-                                        <Link href={path}>{t(path) || segment}</Link>
-                                    </BreadcrumbLink>
-                                )}
-                            </BreadcrumbItem>
-                            {!isLast && <BreadcrumbSeparator />}
-                        </React.Fragment>
-                    );
-                })}
-            </BreadcrumbList>
-        </Breadcrumb>
+        <BreadcrumbList className="flex w-full overflow-hidden">
+          {pathSegments.map((segment, index) => {
+            const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
+            const isLast = index === pathSegments.length - 1;
+      
+            return (
+              <React.Fragment key={path}>
+                <BreadcrumbItem className={isLast ? "flex-1 min-w-0" : ""}>
+                  {isLast ? (
+                    <span className="block truncate whitespace-nowrap">
+                      {t(path) || segment}
+                    </span>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link href={path}>{t(path) || segment}</Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+                {!isLast && <BreadcrumbSeparator />}
+              </React.Fragment>
+            );
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
+      
     )
 }

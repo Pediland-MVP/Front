@@ -153,8 +153,8 @@ export default function Accounts({
               key={instagram.id}
               className="_card bg-blue-50/35 shadow hover:shadow-lg duration-200 border rounded-lg"
             >
-              <div className="flex flex-col xl:flex-row items-center justify-between gap-4 p-4 group h-full hover:cursor-pointer">
-                <div className="flex gap-4 items-center">
+              <div className="flex flex-row items-center justify-between gap-4 p-3 md:p-4 group h-full hover:cursor-pointer">
+                <div className="flex gap-3 md:gap-4 items-center">
                   <div className="_avatar">
                     {instagram.profilePictureUrl ? (
                       <Image
@@ -181,7 +181,7 @@ export default function Accounts({
                   <div className="w-full flex justify-end">
                     <DropdownMenu dir="rtl">
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="w-6">
                           <DotsThreeOutlineVertical className="h-6 w-6 text-primary" />
                           <span className="sr-only">Open menu</span>
                         </Button>

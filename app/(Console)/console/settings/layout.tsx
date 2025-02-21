@@ -9,7 +9,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
     return (
         <div className="_settings-page">
             <div className="_wrapper flex w-full min-h-[calc(100vh-5.5rem)]">
-                <div className="_settings-nav w-full md:w-1/4">
+                <div className="_settings-nav hidden sm:block w-full md:w-1/4">
                     <SettingsNav />
                 </div>
                 <div className="_settings-content w-full md:w-3/4 ">

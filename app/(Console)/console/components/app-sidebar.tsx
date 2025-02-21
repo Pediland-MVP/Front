@@ -31,7 +31,7 @@ const NavUser = dynamic(() => import("./nav-user"), {
   ssr: false,
 });
 
-const generateData = (t: any) => ({
+const generateData = (t: any, isMobile: boolean) => ({
   navMain: [
     {
       title: t('dashboard'),
@@ -49,7 +49,7 @@ const generateData = (t: any) => ({
       title: t('instagramConnections'),
       url: "#",
       icon: ChatCircleText,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: t('directs'),
@@ -70,7 +70,7 @@ const generateData = (t: any) => ({
       title: t('shop'),
       url: '#',
       icon: Basket,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: t('ordersList'),
@@ -82,18 +82,44 @@ const generateData = (t: any) => ({
         }
       ],
     },
-    {
+    ...(!isMobile ? [{
       title: t('settings'),
       url: "/console/settings",
       icon: Sliders,
       isActive: true,
-    },
+    }] : [
+      {
+        title: t('settings'),
+        url: "#",
+        icon: Sliders,
+        isActive: false,
+        items: [
+          {
+            title: t('accounts'),
+            url: "/console/settings/accounts",
+          },
+          {
+            title: t('cardToCard'),
+            url: "/console/settings/cardToCard",
+          },
+          {
+            title: t('zarinpal'),
+            url: "/console/settings/zarinpal",
+          },
+          {
+            title: t('upgrade'),
+            url: "/console/settings/upgrade",
+          },
+        ],
+      }
+    ]),
   ],
 })
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations('Console.Sidebar')
-  const data = generateData(t)
+  const t = useTranslations('Console.Sidebar');
+  const { isMobile, toggleSidebar } = useSidebar();
+  const data = generateData(t, isMobile);
 
   const {
     data: userData,
@@ -115,8 +141,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`,
     fetcher
   );
-
-  const { toggleSidebar, isMobile } = useSidebar();
 
   return (
     <Sidebar variant="inset" {...props}>
