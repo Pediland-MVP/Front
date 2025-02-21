@@ -2,7 +2,6 @@
     "ConsoleLayout": {
         "youDontHaveSubscription": "شما  اشتراک ندارید",
         "youShouldBuySubscription": "برای استفاده از تمام خدمات باید اشتراک تهیه کنید"
-
     },
     "Auth": {
         "signup": "ثبت نام",
@@ -385,6 +384,23 @@
             "label": "ارسال کاتالوگ  محصولات",
             "add": "افزودن محصول",
             "limit": "حداکثر تعداد محصولات قابل انتخاب در هر پیام ۱۰ تاست"
+        },
+        "ButtonTemplates": {
+            "add": "افزودن دکمه",
+            "text": {
+                "label": "متن",
+                "placeholder": "مثلا: این لیستی از شبکه‌های اجتماعی ماست"
+            },
+            "title": {
+                "label": "متن دکمه",
+                "description": "متن دکمه که به کاربر نمایش داده میشود",
+                "placeholder": "لینک سایت ما"
+            },
+            "url": {
+                "label": "لینک",
+                "description": "کاربر با کلیک بر روی این دکمه به این لینک منتقل میشود",
+                "placeholder": "مثلا: https://befroosh.app"
+            }
         },
         "likeCommand": "لایک کردن اولین پیام کاربر",
         "submit": "ایجاد",
@@ -1100,7 +1116,8 @@
         "video": "ویدیو",
         "image": "تصویر",
         "product": "محصول",
-        "media": "رسانه"
+        "media": "رسانه",
+        "button_template": "دکمه"
     },
     "FileUploader": {
         "dropzone": "فایل‌ها را در اینجا رها کنید یا روی آن کلیک کنید تا فایل‌ها را انتخاب کنید",
@@ -1162,7 +1179,7 @@
             "monthly": "ماهیانه",
             "threeMonths": "سه ماهه (۲۰٪ تخفیف)",
             "month": "ماه"
-          }
+        }
     },
     "ERROR_CODES": {
         "USER_NOT_FOUND": "کاربر پیدا نشد",
@@ -1235,7 +1252,137 @@
         "/console/settings/cardToCard": "مدیریت حساب‌های بانکی",
         "/console/settings/zarinpal": "مدیریت زرین پال",
         "/console/settings/upgrade": "مدیریت اشتراک کاربری",
-        "/console/profile": "حساب کاربری"
+        "/console/profile": "حساب کاربری",
+        "/console/settings/upgrade/verify": "تایید اشتراک"
+    },
+    "zod": {
+        "errors": {
+            "invalid_type": "مقدار مورد انتظار {expected} بود، اما {received} دریافت شد",
+            "invalid_type_received_undefined": "ضروری است",
+            "invalid_literal": "مقدار وارد شده نامعتبر است، مقدار مورد انتظار {expected} بود",
+            "unrecognized_keys": "کلید(های) ناشناخته در شیء: {keys}",
+            "invalid_union": "ورودی نامعتبر",
+            "invalid_union_discriminator": "مقدار متمایزکننده نامعتبر. مقادیر مورد انتظار {options}",
+            "invalid_enum_value": "مقدار شمارشی نامعتبر. مقدار مورد انتظار {options} بود، اما {received} دریافت شد",
+            "invalid_arguments": "آرگومان‌های تابع نامعتبرند",
+            "invalid_return_type": "نوع مقدار بازگشتی تابع نامعتبر است",
+            "invalid_date": "تاریخ نامعتبر",
+            "custom": "ورودی نامعتبر",
+            "invalid_intersection_types": "نتایج تقاطع قابل ترکیب نیستند",
+            "not_multiple_of": "عدد باید مضربی از {multipleOf} باشد",
+            "not_finite": "عدد باید متناهی باشد",
+            "invalid_string": {
+                "email": "{validation} نامعتبر",
+                "emoji": "{validation} نامعتبر",
+                "url": "{validation} نامعتبر",
+                "uuid": "{validation} نامعتبر",
+                "ulid": "{validation} نامعتبر",
+                "ip": "{validation} نامعتبر",
+                "cuid": "{validation} نامعتبر",
+                "cuid2": "{validation} نامعتبر",
+                "regex": "نامعتبر",
+                "datetime": "{validation} نامعتبر",
+                "startsWith": "ورودی نامعتبر: باید با \"{startsWith}\" شروع شود",
+                "endsWith": "ورودی نامعتبر: باید با \"{endsWith}\" تمام شود"
+            },
+            "too_small": {
+                "array": {
+                    "exact": "باید دقیقا {minimum} عنصر داشته باشد",
+                    "inclusive": "باید حداقل {minimum} عنصر داشته باشد",
+                    "not_inclusive": "باید بیش از {minimum} عنصر داشته باشد"
+                },
+                "string": {
+                    "exact": "باید دقیقا {minimum} کاراکتر داشته باشد",
+                    "inclusive": "باید حداقل {minimum} کاراکتر داشته باشد",
+                    "not_inclusive": "باید بیشتر از {minimum} کاراکتر داشته باشد"
+                },
+                "number": {
+                    "exact": "باید دقیقا {minimum} باشد",
+                    "inclusive": "باید بزرگ‌تر یا مساوی {minimum} باشد",
+                    "not_inclusive": "باید بزرگ‌تر از {minimum} باشد"
+                },
+                "bigint": {
+                    "exact": "باید دقیقا {minimum} باشد",
+                    "inclusive": "باید بزرگ‌تر یا مساوی {minimum} باشد",
+                    "not_inclusive": "باید بزرگ‌تر از {minimum} باشد"
+                },
+                "set": {
+                    "exact": "ورودی نامعتبر",
+                    "inclusive": "ورودی نامعتبر",
+                    "not_inclusive": "ورودی نامعتبر"
+                },
+                "date": {
+                    "exact": "تاریخ باید دقیقا {minimum, date, short} باشد",
+                    "inclusive": "تاریخ باید بزرگ‌تر یا مساوی {minimum, date, short} باشد",
+                    "not_inclusive": "تاریخ باید بزرگ‌تر از {minimum, date, short} باشد"
+                }
+            },
+            "too_big": {
+                "array": {
+                    "exact": "باید دقیقا {maximum} عنصر داشته باشد",
+                    "inclusive": "باید حداکثر {maximum} عنصر داشته باشد",
+                    "not_inclusive": "باید کمتر از {maximum} عنصر داشته باشد"
+                },
+                "string": {
+                    "exact": "باید دقیقا {maximum} کاراکتر داشته باشد",
+                    "inclusive": "باید حداکثر {maximum} کاراکتر داشته باشد",
+                    "not_inclusive": "باید کمتر از {maximum} کاراکتر داشته باشد"
+                },
+                "number": {
+                    "exact": "باید دقیقا {maximum} باشد",
+                    "inclusive": "باید کوچکتر یا مساوی {maximum} باشد",
+                    "not_inclusive": "باید کمتر از {maximum} باشد"
+                },
+                "bigint": {
+                    "exact": "باید دقیقا {maximum} باشد",
+                    "inclusive": "باید کوچکتر یا مساوی {maximum} باشد",
+                    "not_inclusive": "باید کمتر از {maximum} باشد"
+                },
+                "set": {
+                    "exact": "ورودی نامعتبر",
+                    "inclusive": "ورودی نامعتبر",
+                    "not_inclusive": "ورودی نامعتبر"
+                },
+                "date": {
+                    "exact": "تاریخ باید دقیقا {maximum, date, short} باشد",
+                    "inclusive": "تاریخ باید کوچکتر یا مساوی {maximum, date, short} باشد",
+                    "not_inclusive": "تاریخ باید کمتر از {maximum, date, short} باشد"
+                }
+            }
+        },
+        "validations": {
+            "email": "ایمیل",
+            "emoji": "ایموجی",
+            "url": "آدرس اینترنتی",
+            "uuid": "UUID",
+            "ulid": "ULID",
+            "ip": "آی‌پی",
+            "cuid": "CUID",
+            "cuid2": "CUID2",
+            "regex": "عبارت منظم",
+            "datetime": "تاریخ و زمان"
+        },
+        "types": {
+            "function": "تابع",
+            "number": "عدد",
+            "string": "رشته",
+            "nan": "NaN",
+            "integer": "عدد صحیح",
+            "float": "عدد اعشاری",
+            "boolean": "بولی",
+            "date": "تاریخ",
+            "bigint": "BigInt",
+            "undefined": "تعریف نشده",
+            "symbol": "نماد",
+            "null": "تهی",
+            "array": "آرایه",
+            "object": "شیء",
+            "unknown": "ناشناخته",
+            "promise": "وعده",
+            "void": "void",
+            "never": "never",
+            "map": "نقشه",
+            "set": "مجموعه"
+        }
     }
 }
-
