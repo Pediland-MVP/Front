@@ -18,6 +18,7 @@ export interface UpgradeContext {
     }>>,
     subscriptions: SubscriptionNamespace.GET.Subscriptions['items'],
     plans: PlanNamespace.GET.PlansData['plans']
+    plansData?: PlanNamespace.GET.PlansData
 }
 
 export const UpgradeContext = createContext<UpgradeContext | null>(null)
@@ -32,7 +33,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         revalidateOnMount: true,
         refreshInterval: 30_000
     })
-    const { plans, isPlansLoading } = usePlanSelection();
+    const { plans, isPlansLoading, plansData } = usePlanSelection();
 
     useEffect(() => {
 
@@ -60,7 +61,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <UpgradeContext.Provider value={{ active, setActive, subscriptions: subscriptionsData?.items!, plans: plans! }}>
+        <UpgradeContext.Provider value={{ active, setActive, subscriptions: subscriptionsData?.items!, plans: plans!, plansData }}>
             {children}
         </UpgradeContext.Provider>
     )

@@ -1178,7 +1178,8 @@
             "totalPayment": "مبلغ قابل پرداخت",
             "monthly": "ماهیانه",
             "threeMonths": "سه ماهه (۲۰٪ تخفیف)",
-            "month": "ماه"
+            "month": "ماه",
+            "referralDiscountDescription": "شما به دلیل استفاده از کد معرف، تخفیف ویژه دارید"
         }
     },
     "ERROR_CODES": {

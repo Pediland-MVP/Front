@@ -5,7 +5,12 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 // UI
 import { Button } from "@/components/theme/ui/button";
-import { TelegramLogo, Headset, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import {
+  TelegramLogo,
+  Headset,
+  WhatsappLogo,
+} from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 
 export default function Footer() {
   const t = useTranslations("Site.Footer");
@@ -30,7 +35,7 @@ export default function Footer() {
                   size="contact"
                   className="bg-green-600 hover:bg-green-600/90 w-full"
                 >
-                  <Link href="#" target="_blank">
+                  <Link href="https://api.whatsapp.com/send/?phone=989360226688" target="_blank">
                     <WhatsappLogo size={24} weight="fill" />
                     {t("whatsapp")}
                   </Link>
@@ -41,7 +46,7 @@ export default function Footer() {
                   size="contact"
                   className="bg-sky-600 hover:bg-sky-600/90 w-full"
                 >
-                  <Link href="#" target="_blank">
+                  <Link href="https://T.me/+989360226688" target="_blank">
                     <TelegramLogo size={24} weight="fill" />
                     {t("telegram")}
                   </Link>
@@ -50,6 +55,24 @@ export default function Footer() {
             </div>
           </div>
           <div className="_links flex flex-col items-center gap-2 py-6 text-sm font-light text-gray-300">
+            <div className="w-full flex justify-center items-center">
+              {/**@ts-ignore*/}
+              <Link
+                href="https://trustseal.enamad.ir/?id=579451&Code=yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8"
+                target="_blank"
+                referrerPolicy="origin"
+                className={""}
+              >
+                <img
+                  src="https://trustseal.enamad.ir/logo.aspx?id=579451&Code=yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8"
+                  alt="e-namad"
+                  loading="lazy"
+                  className="cursor-pointer"
+                  /**@ts-ignore */
+                  code="yuXQ2gBXngcpeKDlI446TF4Ph7X3xTy8"
+                />
+              </Link>
+            </div>
             <ul className="flex items-center justify-center gap-6">
               <li>
                 <Link

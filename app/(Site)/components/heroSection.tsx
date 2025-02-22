@@ -78,7 +78,7 @@ export default function HeroSection() {
             </h1>
 
             <Button className="bg-primary" size="lg" asChild>
-              <Link href="/console">{t("trialButton")}</Link>
+              <Link href="/auth/signup">{t("trialButton")}</Link>
             </Button>
           </div>
 
