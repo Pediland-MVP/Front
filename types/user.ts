@@ -2,7 +2,9 @@ import { GENDERS_ENUM } from "@/app/constants/gender.constant";
 
 export namespace UserNamespace {
     export type user = IUser
-    export type GET = IUser
+    export namespace GET {
+        export type User = IUser
+    }
 }
 export interface IUser {
     id:         string;
@@ -17,6 +19,13 @@ export interface IUser {
     mobile:     string;
     city:       City;
     subscriptions: Subscription[]
+    instagrams: {
+        id: string,
+        username: string,
+        profilePicture: {
+            url?: string
+        } | null
+    }[]
 }
 
 export interface City {
