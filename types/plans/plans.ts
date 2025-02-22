@@ -22,6 +22,7 @@ export interface IDuration {
     updateDate:   Date;
     name:         string;
     price:        number;
+    discountPrice?: number | null;
     durationDays: number;
     planId:       number;
 }

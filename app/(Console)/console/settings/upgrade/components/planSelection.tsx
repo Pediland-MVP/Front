@@ -13,7 +13,12 @@ import e2pNumber from "@/app/utils/e2pNumber";
 import usePayPlan from "../hooks/usePayPlan";
 import { useUpgradeContext } from "../context/upgrade.context";
 import numberToK from "@/app/utils/numberToK";
-import { ArrowRight, Check, CheckCircle, CheckSquare } from "@phosphor-icons/react/dist/ssr";
+import {
+  ArrowRight,
+  Check,
+  CheckCircle,
+  CheckSquare,
+} from "@phosphor-icons/react/dist/ssr";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -24,7 +29,7 @@ type FormValues = z.infer<typeof planSchema>;
 
 export default function PlanSelection() {
   const t = useTranslations("Upgrade.PlanSelection");
-  const { plans, active, setActive, subscriptions } = useUpgradeContext();
+  const { plans, active, setActive, subscriptions, plansData } = useUpgradeContext();
   const [period, setPeriod] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loadingPlanId, setLoadingPlanId] = useState<number | null>(null);
@@ -76,14 +81,14 @@ export default function PlanSelection() {
     >
       <div className="_wrapper 2xl:max-w-[860px] mx-auto">
         <div className="mb-6">
-          <h2 className="font-semibold text-primary mb-1">{t('title')}</h2>
+          <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
           <p className="text-[15px] text-muted-foreground">
-            {t('description')}
+            {t("description")}
           </p>
         </div>
 
-        <div className="_selector flex justify-center">
-          <div className="inline-flex items-center p-1.5 rounded-full border shadow-sm gap-1.5">
+        <div className="_selector flex flex-col justify-center items-center">
+          <div className="inline-flex items-center p-1.5 rounded-full border shadow-sm gap-1.5 w-fit">
             <button
               type="button"
               onClick={() => handlePeriodChange(0)}
@@ -110,6 +115,10 @@ export default function PlanSelection() {
             </button>
           </div>
 
+          {
+            plansData?.haveDiscount && <p className="text-green-600 mt-3">{t('referralDiscountDescription')}</p>
+          }
+
           {subscriptions.length ? (
             <Button
               onClick={() =>
@@ -128,86 +137,116 @@ export default function PlanSelection() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
           >
-            {plans.map((plan, index) => (
-              <div
-                key={plan.id}
-                className={cn(
-                  "relative group backdrop-blur-sm",
-                  "rounded-xl transition-all duration-300",
-                  "flex flex-col",
-                  "bg-gradient-to-b from-green-100/25 to-transparent",
-                  "border shadow-md hover:shadow-lg",
-                )}
-              >
-                <div className="p-4">
-                  <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
-                    {plan.maxFollowers > 100_000
-                      ? `${e2pNumber(numberToK(plan.minFollowers))}+`
-                      : `${e2pNumber(numberToK(plan.minFollowers))} تا ${e2pNumber(numberToK(plan.maxFollowers))}`}
-                    {` ${t("followers")}`}
-                  </h3>
+            {plans.map((plan, index) => {
+              const price = plan.durations[period].price.toLocaleString();
+              const discountPrice = plan.durations[period].discountPrice;
+              const haveDiscount =
+                typeof discountPrice === "number" && discountPrice >= 0;
+              return (
+                <div
+                  key={plan.id}
+                  className={cn(
+                    "relative group backdrop-blur-sm",
+                    "rounded-xl transition-all duration-300",
+                    "flex flex-col",
+                    "bg-gradient-to-b from-green-100/25 to-transparent",
+                    "border shadow-md hover:shadow-lg"
+                  )}
+                >
+                  <div className="p-4">
+                    <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
+                      {plan.maxFollowers > 100_000
+                        ? `${e2pNumber(numberToK(plan.minFollowers))}+`
+                        : `${e2pNumber(numberToK(plan.minFollowers))} تا ${e2pNumber(numberToK(plan.maxFollowers))}`}
+                      {` ${t("followers")}`}
+                    </h3>
 
-                  <div className="mb-6">
-                    <div className="flex flex-col items-center">
-                      <span className="text-3xl font-bold text-green-700">
-                        {period === 0
-                          ? e2pNumber(plan.durations[period].price.toLocaleString())
-                          : e2pNumber((+(plan.durations[period].price / 3).toFixed(0)).toLocaleString())
-                        }
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {t("currency")} / {t("month")}
-                      </span>
-                    </div>
-                    {period === 1 && (
-                      <p className="mt-2 font-semibold text-muted-foreground text-center">
-                        {period > 0
-                          ? `سه ماهه ${e2pNumber(plan.durations[period].price.toLocaleString())} تومان`
-                          : null}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2.5">
-                    {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <div className="mt-1 p-0.5 rounded-full text-green-600">
-                          <Check size={14} weight="bold" />
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {feature}
-                        </div>
+                    <div className="mb-6">
+                      <div className="flex flex-col items-center">
+                        <span
+                          className={cn(
+                            "text-3xl font-bold text-green-700",
+                            haveDiscount && period === 0 && "line-through"
+                          )}
+                        >
+                          {period === 0
+                            ? e2pNumber(price)
+                            : e2pNumber(
+                                (+(plan.durations[period].price / 3).toFixed(
+                                  0
+                                )).toLocaleString()
+                              )}
+                        </span>{" "}
+                        {haveDiscount && period === 0 && (
+                          <span
+                            className={cn("text-3xl font-bold text-green-700")}
+                          >
+                            {e2pNumber(`${discountPrice?.toLocaleString()}`)}
+                          </span>
+                        )}
+                        <span className="text-sm text-muted-foreground">
+                          {t("currency")} / {t("month")}
+                        </span>
                       </div>
-                    ))}
+                      {period === 1 && (
+                        <p className={cn('mt-2 font-semibold text-muted-foreground text-center', haveDiscount && 'line-through')}>
+                          {period > 0
+                            ? `سه ماهه ${e2pNumber(price)} تومان`
+                            : null}
+                        </p>
+                      )}
+                      {
+                        haveDiscount && period === 1 && (
+                          <p className="mt-2 font-semibold text-muted-foreground text-center">
+                            {period > 0
+                              ? `سه ماهه ${e2pNumber(`${discountPrice?.toLocaleString()}`)} تومان`
+                              : null}
+                          </p>
+                        )
+                      }
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {plan.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <div className="mt-1 p-0.5 rounded-full text-green-600">
+                            <Check size={14} weight="bold" />
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {feature}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-6 pt-4">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        form.setValue("planId", plan.id);
+                        form.setValue("durationId", plan.durations[period].id);
+                        setTotalPrice(plan.durations[period].price);
+                        form.handleSubmit(onSubmit)();
+                      }}
+                      className={cn(
+                        "w-full h-10 relative transition-all duration-300 bg-primary text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md"
+                        // index === 1
+                        //   ? "bg-primary text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl font-semibold"
+                        //   : "bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 shadow-sm hover:shadow-md"
+                      )}
+                      disabled={isPayLoading && loadingPlanId === plan.id}
+                    >
+                      {isPayLoading && loadingPlanId === plan.id ? (
+                        <LoadingSpinner />
+                      ) : (
+                        t("choosePlan")
+                      )}
+                    </Button>
                   </div>
                 </div>
-
-                <div className="p-6 pt-4">
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      form.setValue("planId", plan.id);
-                      form.setValue("durationId", plan.durations[period].id);
-                      setTotalPrice(plan.durations[period].price);
-                      form.handleSubmit(onSubmit)();
-                    }}
-                    className={cn(
-                      "w-full h-10 relative transition-all duration-300 bg-primary text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md",
-                      // index === 1
-                      //   ? "bg-primary text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl font-semibold"
-                      //   : "bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 shadow-sm hover:shadow-md"
-                    )}
-                    disabled={isPayLoading && loadingPlanId === plan.id}
-                  >
-                    {isPayLoading && loadingPlanId === plan.id ? (
-                      <LoadingSpinner />
-                    ) : (
-                      t("choosePlan")
-                    )}
-                  </Button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </form>
         </Form>
       </div>

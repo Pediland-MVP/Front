@@ -45,7 +45,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     "/console/inbox",
     "/console/comments",
     "/console/actions/content-cycle/",
-    "/console/automations",
+    "/console/automations",,
+    '/console/actions/content-cycle/',
+    '/console/automations'
   ];
 
   const isLocked = lockedPaths.some((path) => pathname.startsWith(path));

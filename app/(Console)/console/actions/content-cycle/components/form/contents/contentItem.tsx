@@ -23,6 +23,7 @@ import {
   InstagramLogo,
   Paperclip,
   Storefront,
+  RadioButton,
 } from "@phosphor-icons/react/dist/ssr";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/theme/ui/input";
@@ -47,6 +48,7 @@ import { useContentsUploaderContext } from "./useContentsUploaderContext";
 import { useContentsContext } from "./useContentsContext";
 import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
 import Catalogue from "../catalogue";
+import ButtonTemplate from "../buttonTemplate/buttonTemplate";
 
 type MessageByTypeProps = {
   index: number;
@@ -170,7 +172,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
       );
     case ContentCycleContentTypesEnum.TEXT:
       return (
-        <Controller
+        <FormField
           name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.text`}
           control={control}
           render={({ field, fieldState: { error } }) => (
@@ -178,16 +180,9 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
               <Textarea
                 rows={5}
                 placeholder={t("enterYourMessage")}
-                {...field}
+                {...field} // Keep only this spread
               />
-              {error && (
-                <FormMessage>
-                  {" "}
-                  {t_err(
-                    `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.text.${error.message}`
-                  )}{" "}
-                </FormMessage>
-              )}
+              {error && <FormMessage>{t_err(error.message)}</FormMessage>}
             </FormItem>
           )}
         />
@@ -195,6 +190,9 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
 
     case ContentCycleContentTypesEnum.PRODUCT:
       return <Catalogue mode={mode} index={index} />;
+
+    case ContentCycleContentTypesEnum.BUTTON_TEMPLATE:
+      return <ButtonTemplate mode={mode} contentIndex={index} />;
 
     default:
       return (
@@ -244,6 +242,12 @@ const messageTypeOptions: MessageTypeOption[] = [
     icon: <Storefront className="h-6 w-6" />,
   },
   {
+    value: ContentCycleContentTypesEnum.BUTTON_TEMPLATE,
+    label: "Button",
+    icon: <RadioButton className="h-6 w-6" />,
+  },
+  //BUG: Dont change my order!
+  {
     value: "media",
     label: "Media",
     icon: <Paperclip className="h-6 w-6" />,
@@ -266,6 +270,7 @@ export default function ContentItem({
     getValues,
     formState: { errors },
     setValue,
+    clearErrors,
     trigger,
   } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
@@ -297,15 +302,15 @@ export default function ContentItem({
     trigger();
   };
 
-  const handleMessageTypeChange = (
+  const handleMessageTypeChange = async (
     type: ContentCycleContentTypesEnum | "media"
   ) => {
     // Create a new content object with the selected type
+    //NOTE: Default values of the new content
     const updatedContent = {
       ...contents[index],
       type,
       // Reset content-specific fields when changing type
-      ...(type !== ContentCycleContentTypesEnum.TEXT && { text: undefined }),
       ...((type === ContentCycleContentTypesEnum.TEXT ||
         type === ContentCycleContentTypesEnum.INSTAGRAM_POST) && {
         file: null,
@@ -313,15 +318,33 @@ export default function ContentItem({
       ...(type === ContentCycleContentTypesEnum.PRODUCT && {
         products: [{}],
       }),
+      ...(type === ContentCycleContentTypesEnum.BUTTON_TEMPLATE
+        ? {
+            buttonTemplate: {
+              text: "",
+              buttons: [
+                {
+                  url: "",
+                  text: "",
+                },
+              ],
+            },
+          }
+        : {
+            buttonTemplate: null,
+          }),
+      ...(type !== ContentCycleContentTypesEnum.TEXT && { text: undefined }),
     };
 
     // Update the form field
     updateContents(index, updatedContent);
 
     // Trigger form validation
-    trigger(
+    await trigger(
       `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`
     );
+
+    clearErrors("contents.0.buttonTemplate");
   };
 
   return (
@@ -344,17 +367,25 @@ export default function ContentItem({
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-4 gap-x-2 shrink-0 items-center">
+      <div className="w-full grid grid-cols-5 gap-x-2 shrink-0 items-center">
         {/**FIXME: Should be refactor */}
         {messageTypeOptions.map((option) => (
           <Button
             key={option.value}
             type="button"
             variant={
-              ((option.value === 'media' && ["image", "video", "audio"].includes(contents[index].type)) || contents[index].type === option.value) ? "default" : "outline"
+              (option.value === "media" &&
+                ["image", "video", "audio"].includes(contents[index].type)) ||
+              contents[index].type === option.value
+                ? "default"
+                : "outline"
             }
             className={`h-15 flex flex-col items-center justify-cente ${
-              ((option.value === 'media' && ["image", "video", "audio"].includes(contents[index].type)) || contents[index].type === option.value) ? "ring-2 ring-primary" : ""
+              (option.value === "media" &&
+                ["image", "video", "audio"].includes(contents[index].type)) ||
+              contents[index].type === option.value
+                ? "ring-2 ring-primary"
+                : ""
             }`}
             onClick={() => handleMessageTypeChange(option.value)}
           >

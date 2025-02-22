@@ -157,11 +157,6 @@ export default function ContentCycleTable() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <Link href="/console/actions/content-cycle/add" className="lg:hidden block mb-2">
-                <Button size={"sm"}>
-                  <Plus size={20} />
-                </Button>
-              </Link>
               <Table>
                 <TableHeader>
                   <TableRow>

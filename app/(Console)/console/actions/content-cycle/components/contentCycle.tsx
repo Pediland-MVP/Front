@@ -20,9 +20,13 @@ import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
 import logger from "@/app/utils/logger";
-import { ContentCycleContentModeEnum, ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import {
+  ContentCycleContentModeEnum,
+  ContentCycleContentTypesEnum,
+} from "@/app/constants/contentCycleContent.enum";
 import Reminder from "./form/reminder";
 import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
+import { REGEX_URL } from "@/app/utils/regex";
 
 export type ContentType = {
   id: string;
@@ -87,21 +91,27 @@ export const contentCycleFormSchema = z
           })
           .optional()
           .nullable(),
-        products: z.array(
-          z.object({
-            id: z.string().optional().nullable(),
-            images: z
-              .array(
-                z.object({
-                  url: z.string().optional().nullable(),
-                  id: z.number().optional().nullable(),
-                })
-              )
+        products: z
+          .array(
+            z
+              .object({
+                id: z.string().optional().nullable(),
+                images: z
+                  .array(
+                    z.object({
+                      url: z.string().optional().nullable(),
+                      id: z.number().optional().nullable(),
+                    })
+                  )
+                  .optional()
+                  .nullable(),
+                _xid: z.string().optional().nullable(),
+              })
+              .nullable()
               .optional()
-              .nullable(),
-            _xid: z.string().optional().nullable(),
-          }).nullable().optional(),
-        ).nullable().optional(),
+          )
+          .nullable()
+          .optional(),
         // Just for sending data
         productIds: z.array(z.string()).optional().nullable(),
         id: z.string().optional().nullable(),
@@ -121,6 +131,17 @@ export const contentCycleFormSchema = z
           .nullable()
           .transform((data) => data || undefined),
         _xid: z.string().optional().nullable(),
+        buttonTemplate: z.object({
+          text: z.string().min(1),
+          buttons: z.array(
+            z.object({
+              title: z.string().min(1),
+              url: z.string().regex(REGEX_URL),
+              _xid: z.string().optional().nullable(),
+            })
+          ),
+        }).optional()
+        .nullable(),
       })
     ),
     isDirect: z.boolean(),
@@ -130,7 +151,11 @@ export const contentCycleFormSchema = z
       .optional()
       .nullable()
       .transform((data) => data || undefined),
-    commentStartTitle: z.string().optional().nullable().transform((data) => data || undefined),
+    commentStartTitle: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((data) => data || undefined),
     justFollowers: z.boolean(),
     likeDirect: z.boolean(),
     followMessage: z.string().optional().nullable(),
@@ -152,59 +177,86 @@ export const contentCycleFormSchema = z
         enabled: z.boolean(),
       })
       .optional(),
-      isRemindersEnabled: z.boolean().nullable().optional().transform((data) => data || false),
-      reminderTime: z.string().optional().nullable().transform(data => data || undefined),
-      reminders: z.array(
-        z.object({
-          type: z.nativeEnum(ContentCycleContentTypesEnum),
-          text: z
-            .string()
-            .min(1, "پیام الزامی است")
-            .optional()
-            .nullable()
-            .transform((data) => data || undefined),
-          instagramPost: z
-            .object({
-              mediaUrl: z.string().optional().nullable(),
-              mediaId: z.string().min(1, "انتخاب پست الزامی است"),
-            })
-            .optional()
-            .nullable(),
-          file: z
-            .object({
-              id: z.number(),
-              url: z.string().url().optional().nullable(),
-              name: z.string().optional().nullable(),
-              mimeType: z.string().optional().nullable(),
-            })
-            .optional()
-            .nullable(),
-          products: z.array(
-            z.object({
-              id: z.string().optional().nullable(),
-              images: z
-                .array(
-                  z.object({
-                    url: z.string().optional().nullable(),
-                    id: z.number().optional().nullable(),
-                  })
-                )
-                .optional()
-                .nullable(),
-              _xid: z.string().optional().nullable(),
-            }).nullable().optional(),
-          ).nullable().optional(),
-          // Just for sending data
-          productIds: z.array(z.string()).optional().nullable(),
-          id: z.string().optional().nullable(),
-          haveInstagramPost: z
-            .boolean()
-            .optional()
-            .nullable()
-            .transform((data) => undefined),
-          _xid: z.string().optional().nullable(),
-        })
-      ),
+    isRemindersEnabled: z
+      .boolean()
+      .nullable()
+      .optional()
+      .transform((data) => data || false),
+    reminderTime: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((data) => data || undefined),
+    reminders: z.array(
+      z.object({
+        type: z.nativeEnum(ContentCycleContentTypesEnum),
+        text: z
+          .string()
+          .min(1, "پیام الزامی است")
+          .optional()
+          .nullable()
+          .transform((data) => data || undefined),
+        instagramPost: z
+          .object({
+            mediaUrl: z.string().optional().nullable(),
+            mediaId: z.string().min(1, "انتخاب پست الزامی است"),
+          })
+          .optional()
+          .nullable(),
+        file: z
+          .object({
+            id: z.number(),
+            url: z.string().url().optional().nullable(),
+            name: z.string().optional().nullable(),
+            mimeType: z.string().optional().nullable(),
+          })
+          .optional()
+          .nullable(),
+        products: z
+          .array(
+            z
+              .object({
+                id: z.string().optional().nullable(),
+                images: z
+                  .array(
+                    z.object({
+                      url: z.string().optional().nullable(),
+                      id: z.number().optional().nullable(),
+                    })
+                  )
+                  .optional()
+                  .nullable(),
+                _xid: z.string().optional().nullable(),
+              })
+              .nullable()
+              .optional()
+          )
+          .nullable()
+          .optional(),
+        // Just for sending data
+        productIds: z.array(z.string()).optional().nullable(),
+        id: z.string().optional().nullable(),
+        haveInstagramPost: z
+          .boolean()
+          .optional()
+          .nullable()
+          .transform((data) => undefined),
+        _xid: z.string().optional().nullable(),
+        buttonTemplate: z
+          .object({
+            text: z.string().min(1),
+            buttons: z.array(
+              z.object({
+                title: z.string().min(1),
+                url: z.string().regex(REGEX_URL),
+                _xid: z.string().optional().nullable(),
+              })
+            ),
+          })
+          .optional()
+          .nullable(),
+      })
+    ),
     // reminder: z
     //   .object({
     //     isEnabled: z.boolean(),
@@ -290,8 +342,8 @@ export const contentCycleFormSchema = z
 
       if (
         (content.type === ContentCycleContentTypesEnum.AUDIO ||
-        content.type === ContentCycleContentTypesEnum.VIDEO ||
-        content.type === ContentCycleContentTypesEnum.IMAGE)&&
+          content.type === ContentCycleContentTypesEnum.VIDEO ||
+          content.type === ContentCycleContentTypesEnum.IMAGE) &&
         !content.file &&
         !content.file
       ) {
@@ -322,9 +374,11 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
       conditions: [{ type: "EQUAL", value: "", id: "" }],
-      contents: [{
-        type: ContentCycleContentTypesEnum.TEXT,
-      }],
+      contents: [
+        {
+          type: ContentCycleContentTypesEnum.TEXT,
+        },
+      ],
       getUserData: {
         enabled: false,
         text: "",
@@ -363,16 +417,18 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         return;
       }
 
-      
-    const contentCycle = await response.json() as ContentCycleNamespace.GET.ContentCycle;
-    // for (const content of contentCycle.contents) {
-    //   for (const contnetProduct of )
-    // }
-      
+      const contentCycle =
+        (await response.json()) as ContentCycleNamespace.GET.ContentCycle;
+      // for (const content of contentCycle.contents) {
+      //   for (const contnetProduct of )
+      // }
+
       form.reset({
         ...contentCycle,
-        ...contentCycle.reminders?.length > 0 && { isRemindersEnabled: true },
-        reminderTime: contentCycle.reminderTime ? `${contentCycle.reminderTime}` : undefined
+        ...(contentCycle.reminders?.length > 0 && { isRemindersEnabled: true }),
+        reminderTime: contentCycle.reminderTime
+          ? `${contentCycle.reminderTime}`
+          : undefined,
       });
     };
 
@@ -415,10 +471,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       }
     }
 
-
     for (const content of values.contents) {
       if (content.type === ContentCycleContentTypesEnum.PRODUCT) {
-        content.productIds = []
+        content.productIds = [];
         if (content.products) {
           for (const product of content.products) {
             if (product?.id) {
@@ -431,7 +486,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
     for (const content of values.reminders) {
       if (content.type === ContentCycleContentTypesEnum.PRODUCT) {
-        content.productIds = []
+        content.productIds = [];
         if (content.products) {
           for (const product of content.products) {
             if (product?.id) {
@@ -485,11 +540,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       return;
     }
 
-    toast({ title: t('success') });
+    toast({ title: t("success") });
     router.push("/console/actions/content-cycle");
     setIsSubmitting(false);
   };
-
 
   useEffect(() => {
     logger.log(form.formState.errors);
