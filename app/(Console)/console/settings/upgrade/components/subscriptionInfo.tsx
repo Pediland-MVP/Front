@@ -1,18 +1,19 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CircularProgress } from "./circularProgress"
-import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
+import { motion } from "framer-motion"
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum"
 import { useUpgradeContext } from "../context/upgrade.context"
+import { CircularProgress } from "./circularProgress"
+import { useCallback, useEffect, useState } from "react"
+// UI 
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/theme/ui/button"
-import { Plus } from "@phosphor-icons/react/dist/ssr"
-import { useCallback } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/theme/ui/card"
+import { ClockCounterClockwise, Plus } from "@phosphor-icons/react/dist/ssr"
 
 
-export default function SubscriptionInfo(){
+export default function SubscriptionInfo() {
   const t = useTranslations("Upgrade.Subscriptions")
 
   const { subscriptions, active, setActive, plans } = useUpgradeContext()
@@ -50,91 +51,103 @@ export default function SubscriptionInfo(){
     }
   }
 
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
+
   if (!active.subscriptionInfo) {
     return null
   }
 
   return (
-    <Card className="w-full max-w-5xl box-border rtl">
-      <div className="flex justify-between items-center p-7">
-        <div>
-          <CardTitle>{t("subscriptionInfo")}</CardTitle>
-          <CardDescription>{t("subscriptionStatus")}</CardDescription>
-        </div>
-        <Button onClick={() => setActive({ subscriptionInfo: false, planSelection: true })}><Plus/> {t('reserve')}</Button>
-      </div>
-      <CardContent>
-        {activeSubscription ? (
-          <motion.div
-            className="flex flex-col md:flex-row items-center justify-between mb-6 bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg shadow-md"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="text-center md:text-right mb-4 md:mb-0">
-              <h3 className="text-xl font-semibold mb-2">{t("activeSubscription")}</h3>
-              <p className="text-lg mb-2">{activeSubscription.planDuration.name}</p>
-              <Badge className={`${getStatusColor(activeSubscription.status)} text-white px-3 py-1 rounded-full`}>
-                {t(activeSubscription.status)}
-              </Badge>
-            </div>
-            <div className="flex flex-col items-center">
-              <CircularProgress
-                percentage={
-                  (getRemainingDays(activeSubscription.expire!) / activeSubscription.planDuration.durationDays) * 100
-                }
-                size={120}
-                strokeWidth={12}
-                color="#10B981"
-              />
-              <p className="mt-2 text-sm font-medium">
-                {(remainingDays === 1 || remainingDays === 0) ? t('lastDay') : `${getRemainingDays(activeSubscription.expire!)} ${t("daysRemaining")}`}
-              </p>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.p
-            className="mb-6 text-center text-gray-600"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            {t("noActiveSubscription")}
-          </motion.p>
-        )}
+    <div className="_subscription-info-page flex h-full">
+      <div className="sm:w-3/5 h-full">
+        <Card className="border-l-2 border-gray-100 h-full p-6">
+          <div className="mb-6">
+            <h2 className="font-semibold text-primary mb-1">{t('title')}</h2>
+            <p className="text-[15px] text-muted-foreground">
+              {t("subscriptionStatus")}
+            </p>
+          </div>
 
-        {reservedSubscriptions?.length ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <h3 className="text-xl font-semibold mb-4">{t("reservedSubscriptions")}</h3>
-            <ul className="space-y-3">
-              {reservedSubscriptions?.map((sub, index) => (
-                <motion.li
-                  key={sub.id}
-                  className="flex items-center justify-between bg-gray-50 p-3 rounded-lg shadow-sm"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
+          <div className="_wrapper">
+            {activeSubscription ? (
+              <div className="_active-subscription mb-6">
+                <h3 className="text-base font-semibold mb-3">{t("activeSubscription")}</h3>
+                <div className="_subscription-card flex bg-green-50/50 items-center justify-between p-4 rounded-lg border-2 border-green-200">
+                  <div className="_info flex flex-col gap-2 text-sm text-green-700">
+                    <div className="flex items-center gap-1">
+                      <span>وضعیت:</span><span>{t(activeSubscription.status)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>نوع اشتراک:</span><span>{getPlanById(activeSubscription.planDuration.planId)?.name}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>مدت اشتراک:</span><span>{activeSubscription.planDuration.name}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>زمان باقی مانده:</span><span>{(remainingDays === 1 || remainingDays === 0) ? t('lastDay') : `${getRemainingDays(activeSubscription.expire!)} روز`}
+                      </span>
+                    </div>
 
-                  <div className="flex flex-col">
-                    <span>{getPlanById(sub.planDuration.planId)?.name}</span>
-                    <span className="font-medium">{sub.planDuration.name}</span>
                   </div>
+                  <div className="flex flex-col items-center">
+                    <CircularProgress
+                      percentage={
+                        (getRemainingDays(activeSubscription.expire!) / activeSubscription.planDuration.durationDays) * 100
+                      }
+                      size={isMobile ? 90 : 100}
+                      strokeWidth={8}
+                      color="oklch(0.723 0.219 149.579)"
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p>{t("noActiveSubscription")}</p>
+            )}
 
-                  <Badge className={`${getStatusColor(sub.status)} text-white px-3 py-1 rounded-full`}>
-                    {t(sub.status)}
-                  </Badge>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        ) : null}
-      </CardContent>
-    </Card>
+            {reservedSubscriptions?.length ? (
+              <div className="_reserved-subscription mb-6">
+                <h3 className="text-base font-semibold mb-1">{t("reservedSubscriptions")}</h3>
+                <p className="text-[15px] text-muted-foreground mb-3">اشتراک‌های زیر به ترتیب اولویت و بعد از اتمام اشتراک فعال شما، فعال خواهند شد.</p>
+                {reservedSubscriptions?.map((sub, index) => (
+                  <div className="_subscription-card flex bg-stone-50/50 items-center justify-between mb-4 last:mb-0 p-4 rounded-lg border-2 border-stone-200/80" key={sub.id}>
+
+                    <div className="_info flex flex-col gap-2 text-sm text-stone-500">
+                      <div className="flex items-center gap-1">
+                        <span>نوع اشتراک:</span><span>{getPlanById(sub.planDuration.planId)?.name}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span>مدت اشتراک:</span><span>{sub.planDuration.name}</span>
+                      </div>
+                    </div>
+                    <Badge className={`${getStatusColor(sub.status)} text-white px-3 py-1 rounded-full`}>
+                      {t(sub.status)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            <Button
+              variant={"link"}
+              size={"lg"}
+              onClick={() =>
+                setActive({ subscriptionInfo: false, planSelection: true })
+              }>
+              <ClockCounterClockwise className="w-6 h-6" />
+              {t('reserve')}
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </div>
   )
 }
 

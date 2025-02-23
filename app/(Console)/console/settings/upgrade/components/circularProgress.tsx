@@ -41,6 +41,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({ percentage, 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
+        style={{ fill: color }}
       >
         {`${Math.round(percentage)}%`}
       </motion.text>

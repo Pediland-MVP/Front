@@ -20,6 +20,7 @@ import { toast } from "@/components/ui/use-toast";
 import LoadingButton from '@/components/ui/button-loading';
 import { REGEX_NUMBERICAL_STRING } from "@/app/utils/regex";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import { CardContent } from "@/components/ui/card";
 
 export const bankDetailsSchema = z.object({
   bankName: z
@@ -105,7 +106,15 @@ export default function BankDetails() {
   } = form;
 
   if (cardToCardLoading) {
-    return (<LoadingSpinner className="h-full" />)
+    return (
+      <div className="_card-to-card-page flex h-full">
+        <div className="w-full sm:w-3/5 h-full">
+          <Card className="border-l-2 border-gray-100 h-full p-6">
+            <LoadingSpinner className="h-full" />
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (

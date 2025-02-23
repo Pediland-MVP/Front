@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/theme/ui/input";
-import { Card } from "@/components/theme/ui/card";
+import { Card, CardContent } from "@/components/theme/ui/card";
 import {
   Form,
   FormControl,
@@ -20,6 +20,7 @@ import useSWRImmutable from "swr/immutable";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import useUser from "@/hooks/useUser";
 
 export default function Zarinpal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,12 +87,20 @@ export default function Zarinpal() {
   };
 
   if (isZarinpalLoading) {
-    return <LoadingSpinner className="h-full" />;
+    return (
+      <div className="flex h-full">
+        <div className="w-full sm:w-3/5 h-full">
+          <Card className="border-l-2 border-gray-100 h-full w-full p-6">
+            <LoadingSpinner className="h-full" />
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="flex h-full">
-      <div className="sm:w-3/5 h-full"> 
+      <div className="sm:w-3/5 h-full">
         <Card className="border-l-2 border-gray-100 h-full p-6">
           <div className="mb-6">
             <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>

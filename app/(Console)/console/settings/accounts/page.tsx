@@ -11,6 +11,8 @@ import { Button } from "@/components/theme/ui/button";
 import { Card } from "@/components/theme/ui/card";
 import UserStateHandler from "@/components/userStateHandler";
 import useUser from "@/hooks/useUser";
+import StartKit from "../../components/startKit";
+import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 
 export default function AccountPage() {
   const t = useTranslations("Settings.Accounts");
@@ -21,14 +23,12 @@ export default function AccountPage() {
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
-  if (isLoading) {
-    return <></>;
-  }
-
   return (
     <div className="_accounts-page flex h-full">
       <div className="sm:w-3/5 h-full">
         <Card className="border-l-2 border-gray-100 h-full p-6">
+          {isLoading && <LoadingSpinner className="h-full" />}
+
           {(hasSubscription ? (
             <>
               <div className="mb-6">
@@ -60,7 +60,7 @@ export default function AccountPage() {
             </>
           ) : (
             !hasSubscription && !hasInstagram
-          )) && <>تست</>}
+          )) && <StartKit />}
         </Card>
       </div>
     </div>

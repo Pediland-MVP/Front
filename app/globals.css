@@ -225,3 +225,14 @@ body::-webkit-scrollbar-thumb:hover,
 ._wrap::-webkit-scrollbar-thumb:hover {
   background-color: #c1c1c1;
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
