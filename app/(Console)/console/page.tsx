@@ -9,6 +9,7 @@ import useUser from "@/hooks/useUser";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StartKit from "./components/startKit";
 import DashboardHome from "./components/dashboardHome";
+import { Card } from "@/components/theme/ui/card";
 
 export default function Dashboard() {
   const {
@@ -34,25 +35,17 @@ export default function Dashboard() {
     );
   }
 
-  if (!hasSubscription && !hasInstagram) {
-    return (
-      <div className="_dashboard h-full">
-        <div className="_wrapper min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)] h-full">
-          <StartKit />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="_dashboard h-full">
       <div className="_wrapper min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)]">
-        {!hasSubscription ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            test
-          </div>
-        ) : (
+        {hasInstagram ? (
           <DashboardHome />
+        ) : (
+          <div className="_dashboard h-full">
+            <div className="_wrapper min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)] h-full bg-white">
+              <StartKit />
+            </div>
+          </div>
         )}
       </div>
     </div>

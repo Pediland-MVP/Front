@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Suspense } from "react";
 import Accounts from "./components/accounts";
 import { useTranslations } from "next-intl";
@@ -23,13 +23,21 @@ export default function AccountPage() {
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
+  if (isLoading) return (
+    <div className="_accounts-page flex h-full">
+      <div className="sm:w-3/5 h-full">
+        <Card className="border-l-2 border-gray-100 h-full p-6">
+          <LoadingSpinner className="h-full" />
+        </Card>
+      </div>
+    </div>
+  );
+
   return (
     <div className="_accounts-page flex h-full">
       <div className="sm:w-3/5 h-full">
         <Card className="border-l-2 border-gray-100 h-full p-6">
-          {isLoading && <LoadingSpinner className="h-full" />}
-
-          {(hasSubscription ? (
+          {hasSubscription ? (
             <>
               <div className="mb-6">
                 <h2 className="font-semibold text-primary mb-1">
@@ -60,7 +68,7 @@ export default function AccountPage() {
             </>
           ) : (
             !hasSubscription && !hasInstagram
-          )) && <StartKit />}
+          ) && <StartKit />}
         </Card>
       </div>
     </div>

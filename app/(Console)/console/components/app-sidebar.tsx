@@ -3,7 +3,8 @@
 import {
   AddressBookTabs, ChatCircleText,
   HouseSimple, Sliders, Basket,
-  WarningCircle, Plug
+  WarningCircle, Plug,
+  ShoppingCartSimple
 } from "@phosphor-icons/react/dist/ssr";
 
 import { NavMain } from "./nav-main";
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { StatsNamespace } from "@/types/stats";
 import { fetcher } from "@/hooks/swr/fetcher";
+import useUser from "@/hooks/useUser";
 
 const NavUser = dynamic(() => import("./nav-user"), {
   loading: () => <NavUserSkeleton />,
@@ -121,6 +123,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isMobile, toggleSidebar } = useSidebar();
   const data = generateData(t, isMobile);
 
+  const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+
   const {
     data: userData,
     error: userError,
@@ -166,23 +170,44 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
 
-      {statsError?.data && statsError.data.code === 6 && (
-        <div className="col-span-4 flex flex-col items-center justify-center gap-2 bg-red-500/90 text-white pt-2 p-3 mx-2 text-sm rounded-md">
+      {!hasSubscription || !hasInstagram ? (
+        <div className={`
+          col-span-4 flex flex-col items-center justify-center gap-2 text-white pt-2 p-3 mx-2 text-sm rounded-md
+          ${!hasSubscription ? 'bg-red-500/90' : 'bg-orange-500/90'}
+        `}>
           <div className="flex items-center xl:flex-col gap-2">
             <div><WarningCircle size={28} weight="duotone" /></div>
-            <p className="">برای استفاده از امکانات بفروش، ابتدا لازم است که یک اکانت اینستاگرام به پنل خود متصل کنید.</p>
+            {!hasSubscription ? <p>برای استفاده از امکانات بفروش، لازم است که یک اشتراک کاربری فعال داشته باشید.</p> : <p>برای استفاده از امکانات بفروش، لازم است که یک اکانت اینستاگرام به پنل خود متصل کنید.</p>}
           </div>
-          <Button className="w-full bg-sidebar hover:bg-blue-100 text-black" asChild><Link href={'/console/settings/accounts'} onClick={() => {
-            if (isMobile) toggleSidebar();
-          }}><Plug weight="duotone" />اتصال اکانت</Link></Button>
+          <Button className="w-full bg-sidebar hover:bg-blue-100 text-black" asChild>
+            <Link
+              href={!hasSubscription ? '/console/settings/upgrade' : '/console/settings/accounts'}
+              onClick={() => {
+                if (isMobile) toggleSidebar();
+              }}>
+              {!hasSubscription ? (
+                <>
+                  <Basket weight="duotone" />
+                  خرید اشتراک
+                </>
+              ) : (
+                <>
+                  <Plug weight="duotone" />
+                  اتصال اکانت
+                </>
+              )}
+            </Link>
+          </Button>
         </div>
+      ) : (
+        null
       )}
 
-      <SidebarFooter>
+      < SidebarFooter >
         <Suspense fallback={<NavUserSkeleton />}>
           <NavUser user={userData} isLoading={userIsLoading} />
         </Suspense>
       </SidebarFooter>
-    </Sidebar>
+    </Sidebar >
   );
 }

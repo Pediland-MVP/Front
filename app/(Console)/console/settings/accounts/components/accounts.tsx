@@ -248,7 +248,7 @@ export default function Accounts({
         })
       ) : (
         <div className="w-full flex items-center justify-center">
-          <p className="text-gray-600">{t("noAccountsFound")}</p>
+          <p className="text-gray-600 text-[15px]">{t("noAccountsFound")}</p>
         </div>
       )}
       
