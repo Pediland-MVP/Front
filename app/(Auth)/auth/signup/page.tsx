@@ -21,7 +21,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -61,13 +61,13 @@ export default function Signup() {
     defaultValues:
       process.env.NODE_ENV === "development"
         ? {
-            firstname: "Test",
-            lastname: "TestUser",
-            mobile: "09210246947",
-            password: "123Sina@",
-            confirmPassword: "123Sina@",
-            referralCode: "11313"
-          }
+          firstname: "Test",
+          lastname: "TestUser",
+          mobile: "09210246947",
+          password: "123Sina@",
+          confirmPassword: "123Sina@",
+          referralCode: "11313"
+        }
         : undefined,
   });
 
@@ -147,10 +147,10 @@ export default function Signup() {
                   {t("signupTitle")}
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-[15px] text-gray-500 text-center">
                 {t("alreadyHaveAccount")}{" "}
                 <Link
-                  className="text-gray-500 hover:text-secondary underline underline-offset-8 duration-300"
+                  className="font-medium text-secondary underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
                   {t("signInHere")}
@@ -268,6 +268,15 @@ export default function Signup() {
                   </Button>
                 </form>
               </Form>
+
+              <Button
+                variant="link"
+                className="w-full text-muted-foreground mt-10"
+                onClick={() => router.push("/")}
+              >
+                {t("backToSite")}
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
 
               {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
 

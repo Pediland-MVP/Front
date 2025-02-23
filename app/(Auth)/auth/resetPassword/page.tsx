@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/theme/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 
 export default function ResetPasswordForm() {
   const t = useTranslations("Auth.ResetPassword");
@@ -132,6 +132,15 @@ export default function ResetPasswordForm() {
                 </Button>
               </form>
             </Form>
+
+            <Button
+              variant="link"
+              className="w-full text-muted-foreground mt-10"
+              onClick={() => router.push("/auth/signin")}
+            >
+              {t("backToLogin")}
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
           </div>
         </div>
       </div>

@@ -40,7 +40,8 @@
             "confirmPasswordRequired": "تکرار رمز عبور الزامیست",
             "error": "خطا",
             "generalError": "خطایی رخ داده است",
-            "referralCodeRequired": "کد معرف برای ثبت‌نام الزامی است"
+            "referralCodeRequired": "کد معرف برای ثبت‌نام الزامی است",
+            "backToSite": "بازگشت به سایت"
         },
         "Verify": {
             "title": "تایید کد یکبار مصرف",
@@ -83,6 +84,7 @@
             "passwordRequired": "رمز عبور الزامیست",
             "loginError": "خطا",
             "generalError": "خطایی رخ داده است",
+            "backToSite": "بازگشت به سایت",
             "Error": {
                 "invalidCredentials": "شماره همراه یا رمز عبور اشتباه است."
             }
@@ -101,6 +103,7 @@
             "resetRequestError": "خطایی رخ داد",
             "resetRequestErrorDescription": "نتونستیم کد رو برات بفرستیم. دوباره امتحان کن",
             "tryAgainLater": "لطفا ۲ دقیقه بعد دوباره امتحان کن",
+            "backToLogin": "بازگشت",
             "ChangePassword": {
                 "resetPassword": "بازنشانی رمز عبور",
                 "enterMobile": "برای بازنشانی رمز عبور شماره همراه خود را وارد کنید.",
@@ -811,7 +814,7 @@
     "Home": {
         "heroSectionTitle": "ارتباط، فروش، ارسال و مدیریت مشتریان در شبکه های اجتماعی را آسان کرده ایم!",
         "crm": "فروش crm مبتنی بر پیام رسان",
-        "trialButton": "ثـبـت نـام رایـگـان",
+        "trialButton": "ثـبـت نـام کـنـیـد!",
         "Section1": {
             "title": "شما فقط به فکر تولید محتـوا و تامیـن باشیـد!",
             "subTitle": "ما ارتباط می‌سازیم، می‌فروشیم، می‌فرستیم و مشتریاتون رو مدیریت می‌کنیم."
@@ -845,13 +848,12 @@
             "badge3": "پشتیبانی"
         },
         "Header": {
-            "freeRegistration": "ثبت نام رایگان",
             "features": "امکانات",
             "contactUs": "تماس با ما",
             "dashboard": "داشبورد",
             "products": "محصولات",
             "pricing": "تعرفه ها",
-            "login": "ورود",
+            "signin": "ورود به پنل",
             "signup": "ثبت نام",
             "loremIpsum": "لورم اپیزوم"
         }

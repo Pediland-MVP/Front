@@ -50,11 +50,6 @@ function Header() {
           <div className="_navigation flex flex-1 items-center justify-center">
             <ul className="flex gap-5 lg:gap-10 font-semibold text-primary text-[15px] sm:text-base">
               <li>
-                <Link href="/auth/signup" className="hover:text-secondary">
-                  {t("freeRegistration")}
-                </Link>
-              </li>
-              <li>
                 <Link href="/#features" className="hover:text-secondary">
                   {t("features")}
                 </Link>
@@ -62,6 +57,16 @@ function Header() {
               <li>
                 <Link href="/#contact" className="hover:text-secondary">
                   {t("contactUs")}
+                </Link>
+              </li>
+              <li className="hidden lg:block">
+                <Link href="/auth/signup" className="hover:text-secondary">
+                  {t("signup")}
+                </Link>
+              </li>
+              <li className="lg:hidden">
+                <Link href="/auth/signin" className="hover:text-secondary">
+                  {t("signin")}
                 </Link>
               </li>
             </ul>
@@ -95,7 +100,7 @@ function Header() {
 
           <div className="_buttons hidden sm:flex items-center gap-3 sm:gap-4 xl:gap-6">
             <Button className="hidden sm:flex" asChild>
-              <Link href="/console">{t("dashboard")}</Link>
+              <Link href="/auth/signin">{t("signin")}</Link>
             </Button>
 
             <button

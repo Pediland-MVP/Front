@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { InputPassword } from "@/components/theme/ui/inputPassword";
-import { Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "@/components/ui/use-toast";
 
 export default function SignIn() {
@@ -109,10 +109,10 @@ export default function SignIn() {
                   {t("loginTitle")}
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-[15px] text-gray-500 text-center">
                 {t("noAccount")}{" "}
                 <Link
-                  className="text-gray-500 hover:text-secondary underline underline-offset-8 duration-300"
+                  className="text-secondary font-medium underline underline-offset-8 duration-300"
                   href="/auth/signup"
                 >
                   {t("signUpHere")}
@@ -159,7 +159,7 @@ export default function SignIn() {
                   <div className="flex col-span-4">
                     <Link
                       href={"/auth/resetPassword"}
-                      className="py-1 text-sm text-gray-400 hover:text-secondary duration-300"
+                      className="py-1 text-sm text-muted-foreground hover:text-secondary duration-300"
                     >
                       {t("forgotPassword")}
                     </Link>
@@ -177,6 +177,15 @@ export default function SignIn() {
                   </Button>
                 </form>
               </Form>
+
+              <Button
+                variant="link"
+                className="w-full text-muted-foreground mt-10"
+                onClick={() => router.push("/")}
+              >
+                {t("backToSite")}
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
 
               {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
 
