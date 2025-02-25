@@ -14,3 +14,7 @@ export function p2eLocaleString(value: number | string): string {
 export function onInputP2EHandler(e: React.FormEvent<HTMLInputElement>) {
   e.currentTarget.value = p2eNumbers(e.currentTarget.value);
 }
+
+export function enNumberToFAString(value?: number) {{
+  return value ? value?.toLocaleString('fa-IR') : null
+}}

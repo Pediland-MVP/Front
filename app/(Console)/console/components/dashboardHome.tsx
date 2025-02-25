@@ -49,9 +49,9 @@ export default function DashboardHome() {
                             />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats?.products.count}</div>
+                            <div className="text-2xl font-bold">{stats?.products.count.toLocaleString('fa-IR')}</div>
                             <p className="text-sm text-muted-foreground">
-                                {t("growthFromLastMonth", { growth: stats?.products.growth })}
+                                {t("growthFromLastMonth", { growth: stats?.products.growth.toLocaleString('fa-IR') })}
                             </p>
                         </CardContent>
                     </Card>
@@ -66,9 +66,9 @@ export default function DashboardHome() {
                             />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats?.leads.count}</div>
+                            <div className="text-2xl font-bold">{stats?.leads.count.toLocaleString('fa-IR')}</div>
                             <p className="text-sm text-muted-foreground">
-                                {t("growthFromLastMonth", { growth: stats?.leads.growth })}
+                                {t("growthFromLastMonth", { growth: stats?.leads.growth.toLocaleString('fa-IR') })}
                             </p>
                         </CardContent>
                     </Card>
@@ -84,7 +84,7 @@ export default function DashboardHome() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                {stats?.contentCycles.count}
+                                {stats?.contentCycles.count.toLocaleString('fa-IR')}
                             </div>
                         </CardContent>
                     </Card>
@@ -100,9 +100,9 @@ export default function DashboardHome() {
                             />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats?.sessions.count}</div>
+                            <div className="text-2xl font-bold">{stats?.sessions.count.toLocaleString('fa-IR')}</div>
                             <p className="text-sm text-muted-foreground">
-                                {t("growthFromLastMonth", { growth: stats?.sessions.growth })}
+                                {t("growthFromLastMonth", { growth: stats?.sessions.growth.toLocaleString('fa-IR') })}
                             </p>
                         </CardContent>
                     </Card>
