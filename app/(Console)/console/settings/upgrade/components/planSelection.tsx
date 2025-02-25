@@ -35,9 +35,9 @@ export default function PlanSelection() {
   const t = useTranslations("Upgrade.PlanSelection");
 
   const { plans, active, setActive, subscriptions, plansData } = useUpgradeContext();
-  const discountFrom = plansData?.discount.from
-  const discount = plansData?.discount.discount
-  const referralCodeType = plansData?.discount.type
+  const discountFrom = plansData?.discount?.from
+  const discount = plansData?.discount?.discount
+  const referralCodeType = plansData?.discount?.type
 
 
   const [period, setPeriod] = useState(0);

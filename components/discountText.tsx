@@ -3,9 +3,9 @@ import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 
 export default function DiscountText() {
   const { plansData } = usePlanSelection();
-  const discountFrom = plansData?.discount.from;
-  const discount = plansData?.discount.discount;
-  const referralCodeType = plansData?.discount.type;
+  const discountFrom = plansData?.discount?.from;
+  const discount = plansData?.discount?.discount;
+  const referralCodeType = plansData?.discount?.type;
 
   return (
     <>
