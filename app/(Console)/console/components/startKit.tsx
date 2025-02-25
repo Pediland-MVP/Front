@@ -3,6 +3,8 @@ import useUser from "@/hooks/useUser";
 import { Basket, Plug } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { usePlanSelection } from "../settings/upgrade/hooks/usePlanSelection";
+import DiscountText from "@/components/discountText";
 
 
 export default function StartKit() {
@@ -29,7 +31,7 @@ export default function StartKit() {
                 </h2>
                 <p className="mb-4 text-[15px]">لطفا برای استفاده از خدمات بفروش ابتدا ویدئو زیر را تماشا کنید.</p>
                 <div id="17718987968" ref={divRef} />
-                {!hasSubscription && <p className="text-green-600 mt-4 text-center border border-green-200 bg-green-50 rounded-xl p-3 md:py-3 md:px-1 text-[15px]">🎁 ۸۰ درصد تخفیف بر روی اولین خرید شما اعمال خواهد شد. این تخفیف از طرف علی سریزدی به شما هدیه داده شده است. 🎁</p>}
+                <DiscountText/>
                 <div className="text-center">
                     <Button className="bg-green-500 text-white hover:bg-blue-100 mt-4" asChild>
                         <Link href={!hasSubscription ? '/console/settings/upgrade' : '/console/settings/accounts'}>

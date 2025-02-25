@@ -1,6 +1,8 @@
+import { ReferralCodeTypeEnum } from "./plans.enum";
+
 export interface IPlansData {
     plans:        IPlan[];
-    haveDiscount: boolean;
+    discount: IDiscount;
 }
 
 export interface IPlan {
@@ -25,4 +27,14 @@ export interface IDuration {
     discountPrice?: number | null;
     durationDays: number;
     planId:       number;
+}
+
+interface IDiscount {
+    haveDiscount: boolean;
+    from?: {
+        firstname: string,
+        lastname: string
+    },
+    discount?: number,
+    type?: ReferralCodeTypeEnum
 }

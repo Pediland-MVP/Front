@@ -20,6 +20,8 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Card } from "@/components/theme/ui/card";
+import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
+import DiscountText from "@/components/discountText";
 
 
 const planSchema = z.object({
@@ -31,7 +33,13 @@ type FormValues = z.infer<typeof planSchema>;
 
 export default function PlanSelection() {
   const t = useTranslations("Upgrade.PlanSelection");
+
   const { plans, active, setActive, subscriptions, plansData } = useUpgradeContext();
+  const discountFrom = plansData?.discount.from
+  const discount = plansData?.discount.discount
+  const referralCodeType = plansData?.discount.type
+
+
   const [period, setPeriod] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loadingPlanId, setLoadingPlanId] = useState<number | null>(null);
@@ -83,7 +91,7 @@ export default function PlanSelection() {
         <div className="mb-6">
           <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
           <p className="text-[15px] text-muted-foreground">{t("description")}</p>
-          {plansData?.haveDiscount && <p className="text-green-600 mt-3 text-center border border-green-200 bg-green-50 rounded-xl p-3 md:py-3 md:px-1 text-[15px]">🎁 ۸۰ درصد تخفیف بر روی اولین خرید شما اعمال خواهد شد. این تخفیف از طرف علی سریزدی به شما هدیه داده شده است. 🎁</p>}
+          <DiscountText/>
         </div>
 
         <div className="_plans-wrapper">
