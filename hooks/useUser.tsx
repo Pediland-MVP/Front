@@ -9,7 +9,7 @@ export default function useUser() {
     user: data,
     isLoading: !data && !error,
     error,
-    hasSubscription: false,
-    hasInstagram: false,
+    hasSubscription: Boolean(data?.subscriptions?.length),
+    hasInstagram: Boolean(data?.instagrams?.length),
   };
 }
