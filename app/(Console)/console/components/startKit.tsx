@@ -1,56 +1,80 @@
+"use client";
 import { Button } from "@/components/theme/ui/button";
 import useUser from "@/hooks/useUser";
-import { Basket, Plug } from "@phosphor-icons/react/dist/ssr";
+import { Basket, Play, Plug } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { usePlanSelection } from "../settings/upgrade/hooks/usePlanSelection";
+import { useRef, useState } from "react";
 import DiscountText from "@/components/discountText";
+import { cn } from "@/lib/utils";
+// import '@vidstack/react/player/styles/base.css';
 
 
 export default function StartKit() {
-    const divRef = useRef<HTMLDivElement>(null);
 
-    const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+  const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+  const [isPlaying, setIsPlaying] = useState(false)
 
-    useEffect(() => {
-        if (divRef.current) {
-            const script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src =
-                "https://www.aparat.com/embed/b916r5v?data[rnddiv]=17718987968&data[responsive]=yes&titleShow=true";
-            script.async = true;
-            divRef.current.appendChild(script);
-        }
-    }, []);
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying)
+    const video = document.getElementById("welcome-video") as HTMLVideoElement
+    if (video) {
+      isPlaying ? video.pause() : video.play()
+    }
+  }
 
-    return (
-        <div className="_startkit-page h-full flex items-center justify-center md:max-w-[480px] mx-auto">
-            <div className="p-6">
-                <h2 className="font-semibold text-primary mb-1">
-                    سینا پیرانی عزیز، خوش آمدید!
-                </h2>
-                <p className="mb-4 text-[15px]">لطفا برای استفاده از خدمات بفروش ابتدا ویدئو زیر را تماشا کنید.</p>
-                <div id="17718987968" ref={divRef} />
-                <DiscountText/>
-                <div className="text-center">
-                    <Button className="bg-green-500 text-white hover:bg-blue-100 mt-4" asChild>
-                        <Link href={!hasSubscription ? '/console/settings/upgrade' : '/console/settings/accounts'}>
-                            {!hasSubscription ? (
-                                <>
-                                    <Basket weight="duotone" className="w-5 h-5" />
-                                    خرید اشتراک
-                                </>
-                            ) : (
-                                <>
-                                    <Plug weight="duotone" className="w-5 h-5" />
-                                    اتصال اکانت
-                                </>
-                            )}
-                        </Link>
-                    </Button>
-                </div>
-            </div>
+  return (
+    <div className="_startkit-page h-full flex items-center justify-center md:max-w-[480px] mx-auto">
+      <div className="p-6">
+        <h2 className="font-semibold text-primary mb-1">
+          سینا پیرانی عزیز، خوش آمدید!
+        </h2>
+        <p className="mb-4 text-[15px]">
+          لطفا برای استفاده از خدمات بفروش ابتدا ویدئو زیر را تماشا کنید.
+        </p>
+        <div className="relative aspect-[9/16] w-full max-w-[250px] mx-auto overflow-hidden rounded-lg shadow-md">
+            <video
+              id="welcome-video"
+              className="w-full h-full object-cover"
+              src="https://befroosh.storage.iran.liara.space/IMG_2277.MOV"
+              playsInline
+              loop
+              controls
+            />
+            <Button
+              className={cn("absolute inset-0 m-auto w-16 h-16 rounded-full bg-primary/80 hover:bg-primary text-white", `${isPlaying ? "hidden" : "block"}`)}
+              onClick={handlePlayPause}
+            >
+              <Play className={cn(`w-8 h-8`)} />
+            </Button>
+          </div>
+        <DiscountText />
+        <div className="text-center">
+          <Button
+            className="bg-green-500 text-white hover:bg-green-400 mt-4 w-full"
+            asChild
+          >
+            <Link
+              href={
+                !hasSubscription
+                  ? "/console/settings/upgrade"
+                  : "/console/settings/accounts"
+              }
+            >
+              {!hasSubscription ? (
+                <>
+                  <Basket weight="duotone" className="w-5 h-5" />
+                  خرید اشتراک
+                </>
+              ) : (
+                <>
+                  <Plug weight="duotone" className="w-5 h-5" />
+                  اتصال اکانت
+                </>
+              )}
+            </Link>
+          </Button>
         </div>
-    );
-
+      </div>
+    </div>
+  );
 }

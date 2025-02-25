@@ -6,8 +6,8 @@ import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { SWRConfig } from "swr";
 import { fetcher } from "@/hooks/swr/fetcher";
-import Script from "next/script";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
+
 
 export const metadata: Metadata = {
   title: "Befroosh Application",

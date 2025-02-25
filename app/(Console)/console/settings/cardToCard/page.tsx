@@ -200,7 +200,7 @@ export default function BankDetails() {
                   />
                 </div>
                 <div className="mt-6">
-                  <LoadingButton isLoading={isSubmitting} className="w-full" variant={"success"}>
+                  <LoadingButton isLoading={isSubmitting} className="w-full">
                     {t("save")}
                   </LoadingButton>
                 </div>

@@ -132,7 +132,6 @@ export default function Zarinpal() {
                 <LoadingButton
                   isLoading={isSubmitting}
                   className="w-full"
-                  variant={"success"}
                 >
                   {t("save")}
                 </LoadingButton>
