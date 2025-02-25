@@ -13,7 +13,7 @@ export default function DiscountText() {
         <p className="text-green-600 mt-4 text-center border border-green-200 bg-green-50 rounded-xl p-3 md:py-3 md:px-1 text-[15px]">
           🎁{" "}
           {`${discount?.toLocaleString("fa-IR")} ${referralCodeType === ReferralCodeTypeEnum.FIXED ? "تومان" : "درصد"}`}{" "}
-          تخفیف بر روی اولین خرید شما اعمال خواهد شد. این تخفیف از طرف{" "}
+          تخفیف بر روی اولین خرید شما اعمال شده است. این تخفیف از طرف{" "}
           {`${discountFrom?.firstname} ${discountFrom?.lastname}`} به شما هدیه
           داده شده است. 🎁
         </p>
