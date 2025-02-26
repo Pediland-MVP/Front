@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
+import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -202,6 +203,7 @@ export default function Signup() {
                         <FormControl>
                           <Input
                             {...field}
+                            onInput={onInputP2EHandler}
                             placeholder={t("enterMobilePlaceholder")}
                           />
                         </FormControl>
