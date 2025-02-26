@@ -13,6 +13,7 @@ import UserStateHandler from "@/components/userStateHandler";
 import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import { Plug } from "@phosphor-icons/react/dist/ssr";
 
 export default function AccountPage() {
   const t = useTranslations("Settings.Accounts");
@@ -21,17 +22,18 @@ export default function AccountPage() {
     InstagramNamespace.GET["Accounts"] | null
   >();
 
-  const { hasSubscription, hasInstagram, isLoading, error, } = useUser();
+  const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
-  if (isLoading) return (
-    <div className="_accounts-page flex h-full">
-      <div className="sm:w-3/5 h-full">
-        <Card className="border-l-2 border-gray-100 h-full p-6">
-          <LoadingSpinner className="h-full" />
-        </Card>
+  if (isLoading)
+    return (
+      <div className="_accounts-page flex h-full">
+        <div className="sm:w-3/5 h-full">
+          <Card className="border-l-2 border-gray-100 h-full p-6">
+            <LoadingSpinner className="h-full" />
+          </Card>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <div className="_accounts-page flex h-full">
@@ -56,19 +58,22 @@ export default function AccountPage() {
               </Suspense>
 
               {!hasInstagram && (
-                <Link
-                  className="flex mt-6"
-                  href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+                <Button
+                  className="bg-green-500 text-white hover:bg-green-400 mt-4 w-full"
+                  asChild
                 >
-                  <Button size={"sm"} className="w-full" variant={"success"}>
-                    {t("add")}
-                  </Button>
-                </Link>
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+                  >
+                    <Plug weight="duotone" className="w-5 h-5" />
+                    اتصال اکانت
+                  </Link>
+                </Button>
               )}
             </>
           ) : (
-            !hasSubscription && !hasInstagram
-          ) && <StartKit />}
+            !hasSubscription && !hasInstagram && <StartKit />
+          )}
         </Card>
       </div>
     </div>
