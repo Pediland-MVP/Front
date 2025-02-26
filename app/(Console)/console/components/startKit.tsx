@@ -35,7 +35,8 @@ export default function StartKit() {
             <video
               id="welcome-video"
               className="w-full h-full object-cover"
-              src="https://befroosh.storage.iran.liara.space/IMG_2277.MOV"
+              poster="/images/photo_2025-02-26_19-47-35.jpg"
+              src="https://befroosh.storage.iran.liara.space/bef.MOV"
               playsInline
               loop
               controls
@@ -63,7 +64,7 @@ export default function StartKit() {
               {!hasSubscription ? (
                 <>
                   <Basket weight="duotone" className="w-5 h-5" />
-                  خرید اشتراک
+                  فعال‌سازی اشتراک
                 </>
               ) : (
                 <>
