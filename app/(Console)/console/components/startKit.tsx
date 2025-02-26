@@ -29,7 +29,7 @@ export default function StartKit() {
           {user?.firstname} {user?.lastname} عزیز، خوش آمدید!
         </h2>
         <p className="mb-4 text-[15px]">
-          لطفا برای استفاده از خدمات بفروش ابتدا ویدئو زیر را تماشا کنید.
+        برای استفاده از خدمات، لطفا ویدئو زیر را مشاهده کنید
         </p>
         <div className="relative aspect-[9/16] w-full max-w-[250px] mx-auto overflow-hidden rounded-lg shadow-md">
             <video

@@ -21,7 +21,7 @@ export default function AccountPage() {
     InstagramNamespace.GET["Accounts"] | null
   >();
 
-  const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+  const { hasSubscription, hasInstagram, isLoading, error, } = useUser();
 
   if (isLoading) return (
     <div className="_accounts-page flex h-full">
