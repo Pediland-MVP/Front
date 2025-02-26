@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 export default function StartKit() {
 
-  const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+  const { hasSubscription, hasInstagram, isLoading, error, user } = useUser();
   const [isPlaying, setIsPlaying] = useState(false)
 
   const handlePlayPause = () => {
@@ -26,7 +26,7 @@ export default function StartKit() {
     <div className="_startkit-page h-full flex items-center justify-center md:max-w-[480px] mx-auto">
       <div className="p-6">
         <h2 className="font-semibold text-primary mb-1">
-          سینا پیرانی عزیز، خوش آمدید!
+          {user?.firstname} {user?.lastname} عزیز، خوش آمدید!
         </h2>
         <p className="mb-4 text-[15px]">
           لطفا برای استفاده از خدمات بفروش ابتدا ویدئو زیر را تماشا کنید.
