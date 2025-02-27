@@ -1183,7 +1183,8 @@
             "threeMonths": "سه ماهه (۲۰٪ تخفیف)",
             "oneYear": "یک ساله (۵۰٪ تخفیف)",
             "month": "ماه",
-            "referralDiscountDescription": "شما به دلیل استفاده از کد معرف، تخفیف ویژه دارید"
+            "referralDiscountDescription": "شما به دلیل استفاده از کد معرف، تخفیف ویژه دارید",
+            "free": "رایگان برای شما"
         }
     },
     "ERROR_CODES": {

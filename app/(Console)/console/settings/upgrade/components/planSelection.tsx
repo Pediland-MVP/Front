@@ -22,6 +22,7 @@ import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Card } from "@/components/theme/ui/card";
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 import DiscountText from "@/components/discountText";
+import logger from "@/app/utils/logger";
 
 
 const planSchema = z.object({
@@ -80,6 +81,15 @@ export default function PlanSelection() {
     } finally {
       setLoadingPlanId(null);
     }
+  };
+
+  const getPriceString = (price: number, period: number) => {
+    if (price === 0) return t("free");
+    if (period === 0) return e2pNumber(price.toLocaleString());
+    logger.debug("period", period, price)
+    if (period === 1) return e2pNumber((+(price / 3).toFixed(0)).toLocaleString());
+    if (period === 2) return e2pNumber((+(price / 12).toFixed(0)).toLocaleString());
+    return null;
   };
 
   if (!active.planSelection || !plans?.length) return null;
@@ -142,7 +152,7 @@ export default function PlanSelection() {
               className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
             >
               {plans.map((plan, index) => {
-                const price = plan.durations[period].price.toLocaleString();
+                const price = plan.durations[period].price
                 const discountPrice = plan.durations[period].discountPrice;
                 const haveDiscount =
                   typeof discountPrice === "number" && discountPrice >= 0;
@@ -159,10 +169,7 @@ export default function PlanSelection() {
                   >
                     <div className="p-4">
                       <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
-                        {plan.maxFollowers > 100_000
-                          ? `${e2pNumber(numberToK(plan.minFollowers))}+`
-                          : `${e2pNumber(numberToK(plan.minFollowers))} تا ${e2pNumber(numberToK(plan.maxFollowers))}`}
-                        {` ${t("followers")}`}
+                        {plan.name}
                       </h3>
                       <div className="flex flex-col items-center">
                         <span
@@ -171,20 +178,14 @@ export default function PlanSelection() {
                             haveDiscount && "line-through text-2xl font-medium text-muted-foreground"
                           )}
                         >
-                          {period === 0
-                            ? e2pNumber(price)
-                            : period === 1
-                              ? e2pNumber((+(plan.durations[1].price / 3).toFixed(0)).toLocaleString())
-                              : period === 2
-                                ? e2pNumber((+(plan.durations[2].price / 12).toFixed(0)).toLocaleString())
-                                : null}
+                          {getPriceString(price, period)}
                         </span>
 
                         {haveDiscount && (
                           <span
-                            className={cn("text-3xl font-bold text-green-700")}
+                            className={cn("font-bold text-green-700", discountPrice === 0 ? "text-xl" : "text-3xl")}
                           >
-                            {e2pNumber(`${discountPrice?.toLocaleString()}`)}
+                            {discountPrice === 0 ? t("free") : e2pNumber(`${discountPrice?.toLocaleString()}`)}
                           </span>
                         )}
                         <span className="text-lg text-muted-foreground font-medium">
