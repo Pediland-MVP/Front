@@ -23,12 +23,26 @@ export default function StartKit() {
   return (
     <div className="_startkit-page h-full flex items-center justify-center md:max-w-[480px] mx-auto">
       <div className="p-6">
-        <h2 className="font-semibold text-primary mb-1">
-          حالا وقت اتصال اینستاگرامه!
-        </h2>
-        <p className="mb-4 text-[15px]">
-          حالا باید اکانت اینستاگرام خودتون رو با توجه به این آموزش متصل کنید
-        </p>
+        {!hasInstagram && hasSubscription ? (
+          <>
+            <h2 className="font-semibold text-primary mb-1">
+              حالا وقت اتصال اینستاگرامه!
+            </h2>
+            <p className="mb-4 text-[15px]">
+              حالا باید اکانت اینستاگرام خودتون رو با توجه به این آموزش متصل
+              کنید
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="font-semibold text-primary mb-1">
+              {user?.firstname} {user?.lastname} عزیز، خوش آمدید!
+            </h2>
+            <p className="mb-4 text-[15px]">
+              برای استفاده از خدمات، لطفا ویدئو زیر را مشاهده کنید
+            </p>
+          </>
+        )}
         <div className="relative aspect-[9/16] w-full max-w-[250px] mx-auto overflow-hidden rounded-lg shadow-md">
           {!hasInstagram && hasSubscription ? (
             <video
