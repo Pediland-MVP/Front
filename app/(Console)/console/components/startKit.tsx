@@ -8,7 +8,11 @@ import DiscountText from "@/components/discountText";
 import { cn } from "@/lib/utils";
 // import '@vidstack/react/player/styles/base.css';
 
-export default function StartKit() {
+type StartKitProps = {
+  isAfterPurchasingPlan?: boolean;
+}
+
+export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
   const { hasSubscription, hasInstagram, isLoading, error, user } = useUser();
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -26,7 +30,7 @@ export default function StartKit() {
         {!hasInstagram && hasSubscription ? (
           <>
             <h2 className="font-semibold text-primary mb-1">
-              حالا وقت اتصال اینستاگرامه!
+              حالا وقت اتصال اینستاگرامه! {isAfterPurchasingPlan && 'اشتراکت رو خریدی '}
             </h2>
             <p className="mb-4 text-[15px]">
               حالا باید اکانت اینستاگرام خودتون رو با توجه به این آموزش متصل

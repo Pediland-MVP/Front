@@ -7,6 +7,7 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useEffect } from "react";
 import { mutate } from "swr";
 import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
+import { useRouter } from "next/navigation";
 
 export default function VerifyPage() {
   const searchParams = useSearchParams();
@@ -25,6 +26,14 @@ export default function VerifyPage() {
   useEffect(() => {
     mutate(mutateIncludeStringKey("plans"))
   }, [])
+
+  const router = useRouter()
+
+  useEffect(() => {
+    if (refId) {
+      router.push(`/console/settings/accounts?isAfterPurchasingPlan`)
+    }
+  })
 
   return (
     <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center">
