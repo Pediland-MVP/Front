@@ -9,7 +9,7 @@ export default function DiscountText() {
 
   return (
     <>
-      {plansData?.discount.haveDiscount && (
+      {plansData?.discount?.haveDiscount && (
         <p className="text-green-600 mt-4 text-center border border-green-200 bg-green-50 rounded-xl p-3 md:py-3 md:px-1 text-[15px]">
           🎁{" "}
           {`${discount?.toLocaleString("fa-IR")} ${referralCodeType === ReferralCodeTypeEnum.FIXED ? "تومان" : "درصد"}`}{" "}
