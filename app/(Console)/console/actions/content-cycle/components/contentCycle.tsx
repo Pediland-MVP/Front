@@ -7,7 +7,6 @@ import JustFollowers from "./form/justFollowers";
 import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
 import Contents from "./form/contents/contents";
-import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
 import ContentCycleTitle from "./form/title";
 import { useTranslations } from "next-intl";
@@ -159,13 +158,6 @@ export const contentCycleFormSchema = z
     likeDirect: z.boolean(),
     followMessage: z.string().optional().nullable(),
     followCheckMessage: z.string().optional().nullable(),
-    getUserData: z
-      .object({
-        type: z.enum(["email", "mobile"]).optional().nullable(),
-        text: z.string().optional().nullable(),
-        enabled: z.boolean(),
-      })
-      .optional(),
     isRemindersEnabled: z
       .boolean()
       .nullable()
@@ -264,14 +256,6 @@ export const contentCycleFormSchema = z
   })
   .superRefine((data, ctx) => {
 
-    if (data.getUserData?.enabled && !data.getUserData.text) {
-      ctx.addIssue({
-        path: ["getUserData", "text"],
-        code: "custom",
-        message: "required",
-      });
-    }
-
     if (data.reminders.length > 0 && !data.reminderTime) {
       ctx.addIssue({
         path: ["reminderTime"],
@@ -362,11 +346,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
           type: ContentCycleContentTypesEnum.TEXT,
         },
       ],
-      getUserData: {
-        enabled: false,
-        text: "",
-        type: "email",
-      },
       isDirect: true,
       isComment: false,
       justFollowers: false,
@@ -572,14 +551,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  {/* <Catalogue /> */}
-
-                  <hr className="border-gray-100" />
-
-                  <GetUserData control={form.control} />
-
-                  <hr className="border-gray-100" />
-
                   <Reminder />
 
                   <hr className="border-gray-100" />
@@ -592,8 +563,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   <hr className="border-gray-100" />
 
                   <LikeDirect control={form.control} />
-
-                  <hr className="border-gray-100" />
 
                   {/* Submit button */}
                   <LoadingButton isLoading={isSubmitting}>
