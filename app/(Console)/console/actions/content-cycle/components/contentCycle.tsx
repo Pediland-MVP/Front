@@ -7,7 +7,6 @@ import JustFollowers from "./form/justFollowers";
 import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
 import Contents from "./form/contents/contents";
-import Cta from "./form/cta";
 import GetUserData from "./form/getUserData";
 import LikeDirect from "./form/likeDirect";
 import ContentCycleTitle from "./form/title";
@@ -160,16 +159,6 @@ export const contentCycleFormSchema = z
     likeDirect: z.boolean(),
     followMessage: z.string().optional().nullable(),
     followCheckMessage: z.string().optional().nullable(),
-    cta: z
-      .string()
-      .optional()
-      .nullable()
-      .transform((data) => data || undefined),
-    haveCta: z
-      .boolean()
-      .optional()
-      .nullable()
-      .transform((data) => data || false),
     getUserData: z
       .object({
         type: z.enum(["email", "mobile"]).optional().nullable(),
@@ -274,12 +263,6 @@ export const contentCycleFormSchema = z
     //   .optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.haveCta && !data.cta) {
-      ctx.addIssue({
-        path: ["cta"],
-        code: "custom",
-      });
-    }
 
     if (data.getUserData?.enabled && !data.getUserData.text) {
       ctx.addIssue({
@@ -611,8 +594,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   <LikeDirect control={form.control} />
 
                   <hr className="border-gray-100" />
-
-                  <Cta control={form.control} />
 
                   {/* Submit button */}
                   <LoadingButton isLoading={isSubmitting}>
