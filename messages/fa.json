@@ -305,7 +305,8 @@
             "startRequestMessage": "پیام درخواست شروع",
             "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید",
             "commentStartTitlePlaceholder": "شروع",
-            "commentStartTitle": "متن دکمه شروع"
+            "commentStartTitle": "متن دکمه شروع",
+            "startRequestMessageDescription": ""
         },
         "Title": {
             "title": "عنوان",

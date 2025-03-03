@@ -25,6 +25,7 @@ import {
 import Reminder from "./form/reminder";
 import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
 import { REGEX_URL } from "@/app/utils/regex";
+import CommentTriggerInputs from "./form/commentTriggerInputs";
 
 export type ContentType = {
   id: string;
@@ -129,17 +130,19 @@ export const contentCycleFormSchema = z
           .nullable()
           .transform((data) => data || undefined),
         _xid: z.string().optional().nullable(),
-        buttonTemplate: z.object({
-          text: z.string().min(1),
-          buttons: z.array(
-            z.object({
-              title: z.string().min(1),
-              url: z.string().regex(REGEX_URL),
-              _xid: z.string().optional().nullable(),
-            })
-          ),
-        }).optional()
-        .nullable(),
+        buttonTemplate: z
+          .object({
+            text: z.string().min(1),
+            buttons: z.array(
+              z.object({
+                title: z.string().min(1),
+                url: z.string().regex(REGEX_URL),
+                _xid: z.string().optional().nullable(),
+              })
+            ),
+          })
+          .optional()
+          .nullable(),
       })
     ),
     isDirect: z.boolean(),
@@ -255,7 +258,6 @@ export const contentCycleFormSchema = z
     //   .optional(),
   })
   .superRefine((data, ctx) => {
-
     if (data.reminders.length > 0 && !data.reminderTime) {
       ctx.addIssue({
         path: ["reminderTime"],
@@ -548,6 +550,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   <hr className="border-gray-100" />
 
                   <Contents mode={ContentCycleContentModeEnum.CONTENT_CYCLE} />
+
+                  <hr className="border-gray-100" />
+
+                  <CommentTriggerInputs />
 
                   <hr className="border-gray-100" />
 
