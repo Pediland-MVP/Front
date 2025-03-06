@@ -54,41 +54,6 @@ export default function Trigger({ control, getValues }: TriggerProps) {
           ></FormField>
         </div>
       </div>
-
-      {getValues().isComment && (
-        <>
-          <FormField
-            control={control}
-            name="commentStartText"
-            render={({ field, fieldState: { error } }) => (
-              <div className="space-y-1">
-                <FormLabel>{t("startRequestMessage")}</FormLabel>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ""}
-                  placeholder={t("commentPlaceholder")}
-                ></Textarea>
-                {error && <FormMessage>{error.message}</FormMessage>}
-              </div>
-            )}
-          />
-          <FormField
-            control={control}
-            name="commentStartTitle"
-            render={({ field, fieldState: { error } }) => (
-              <div className="space-y-1">
-                <FormLabel>{t("commentStartTitle")}</FormLabel>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ""}
-                  placeholder={t("commentStartTitlePlaceholder")}
-                ></Textarea>
-                {error && <FormMessage>{error.message}</FormMessage>}
-              </div>
-            )}
-          />
-        </>
-      )}
     </>
   );
 }
