@@ -21,6 +21,7 @@ import LoadingButton from '@/components/ui/button-loading';
 import { REGEX_NUMBERICAL_STRING } from "@/app/utils/regex";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import { CardContent } from "@/components/ui/card";
+import api from "@/hooks/swr/api-client";
 
 export const bankDetailsSchema = z.object({
   bankName: z
@@ -57,7 +58,7 @@ export default function BankDetails() {
     resolver: zodResolver(bankDetailsSchema),
   });
 
-  const { data: cardToCardData, isLoading: cardToCardLoading, error: cardToCardError } = useSWRImmutable(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/cardToCard`, {
+  const { data: cardToCardData, isLoading: cardToCardLoading, error: cardToCardError } = useSWRImmutable(`/payments/cardToCard`, {
     revalidateOnMount: true
   })
 
@@ -68,35 +69,21 @@ export default function BankDetails() {
 
   const onSubmit = async (data: z.infer<typeof bankDetailsSchema>) => {
     setIsSubmitting(true)
-    fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/cardToCard`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(data),
+    await api.post('/payments/cardToCard', data)
+    .then(res => {
+      toast({
+        title: t("cardToCardUpdated"),
+      });
     })
-      .then(async (res) => {
-        if (res.ok) {
-          toast({
-            title: t("cardToCardUpdated"),
-          });
-          return;
-        }
-        toast({
-          title: t("cardToCardUpdateFailed"),
-          variant: "destructive"
-        });
-      })
-      .catch(e => {
-        toast({
-          title: t("cardToCardUpdateFailed"),
-          variant: "destructive"
-        });
-      })
-      .finally(() => {
-        setIsSubmitting(false)
-      })
+    .catch(e => {
+      toast({
+        title: t("cardToCardUpdateFailed"),
+        variant: "destructive"
+      });
+    })
+    .finally(() => {
+      setIsSubmitting(false)
+    })
   };
 
   const {

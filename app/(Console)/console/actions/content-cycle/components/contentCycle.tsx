@@ -17,16 +17,13 @@ import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
-import logger from "@/app/utils/logger";
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
 } from "@/app/constants/contentCycleContent.enum";
 import Reminder from "./form/reminder";
-import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
 import { REGEX_URL } from "@/app/utils/regex";
 import CommentTriggerInputs from "./form/commentTriggerInputs";
-import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
@@ -270,26 +267,6 @@ export const contentCycleFormSchema = z
         message: "required",
       });
     }
-    // if (data.reminder?.isEnabled) {
-    //   if (!data.reminder?.text) {
-    //     ctx.addIssue({
-    //       path: ["reminder", "text"],
-    //       code: "custom",
-    //       message: "required",
-    //     });
-    //   }
-
-    //   if (
-    //     data.reminder?.isEnabled &&
-    //     (!data.reminder?.time || !data.reminder?.text)
-    //   ) {
-    //     ctx.addIssue({
-    //       path: ["reminder", "time"],
-    //       code: "custom",
-    //       message: "required",
-    //     });
-    //   }
-    // }
 
     data.contents.forEach((content, index) => {
       // Type issues
@@ -446,7 +423,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
     setIsSubmitting(true);
     await api({
-      method: id ? "PUT" : "POST",
+      method: id ? "PATCH" : "POST",
       url: `/contentCycle${id ? `/${id}` : ""}`,
       data: values,
     })

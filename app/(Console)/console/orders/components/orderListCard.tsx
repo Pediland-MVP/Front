@@ -63,8 +63,7 @@ export default function OrderListCard({
     isLoading: isOrdersLoading,
     mutate: fetchOrders,
   } = useSWR<OrderNamespace.GET.Orders>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
-    fetcher
+    `/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
   );
   const orders = ordersData?.items || [];
   const ordersMeta = ordersData?.meta || undefined;
@@ -103,7 +102,7 @@ export default function OrderListCard({
       />
 
       <div className="_table">
-        <Table className=" min-h-[1140]">
+        <Table className="">
           <TableHeader>
             <TableRow>
               <TableHead
@@ -184,11 +183,11 @@ export default function OrderListCard({
                 return (
                   <TableRow
                     key={order.id}
-                    className={
-                      selectedLeads.includes(order.id) ? "bg-muted" : ""
+                    className={cn(
+                      selectedLeads.includes(order.id) ? "bg-muted" : "", )
                     }
                   >
-                    <TableCell className="">
+                    <TableCell>
                       <Link
                         href={`/console/products/${order?.orderProducts[0]?.product?.id}`}
                         target="_blank"

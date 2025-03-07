@@ -40,6 +40,9 @@ import { ERROR_CODES } from "@/app/constants/errorCodes.constant";
 import CardToCardAlert from "./cardToCard.alert";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
 import useSWRImmutable from "swr/immutable";
+import api from "@/hooks/swr/api-client";
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
+import { AxiosError } from "axios";
 
 interface ContentItem {
   id: number;
@@ -51,6 +54,7 @@ interface ContentItem {
 
 export default function ProductListTable() {
   const t = useTranslations("Products.List");
+  const t_ec = useTranslations("ERROR_CODES");
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState("");
@@ -78,42 +82,25 @@ export default function ProductListTable() {
 
   const router = useRouter();
 
-  // If products === 0 we check if user need add payment method
-  // If user have not payment method we show warning
-  const [isCheckUserPaymentMethodLoading, setIsCheckUserPaymentMethodLoading] =
-    useState(true);
   const [isUserNeedAddPaymentMethod, setIsUserNeedAddPaymentMethod] =
     useState(false);
 
-  useEffect(() => {
-    if (productsData) {
-      if (productsData.items.length > 0) {
-        setIsCheckUserPaymentMethodLoading(false);
-        return;
-      }
-      if (productsData.items.length === 0) {
-        fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/methods`, {
-          credentials: "include",
-        })
-          .then(async (res) => {
-            if (!res.ok) {
-              const json: ExceptionMessage = await res.json();
-              if (json.code === "PAYMENT_METHODS_NOT_FOUND") {
-                setIsUserNeedAddPaymentMethod(true);
-              }
-              return;
-            }
+  const shouldCheckPaymentMethod: boolean = Boolean(
+    productsData && productsData.items.length === 0
+  );
 
-            const result =
-              (await res.json()) as PaymentNamespace.GET.PaymentMethods;
-            if (!result.cardToCard && !result.zarinpal) {
-              setIsUserNeedAddPaymentMethod(true);
-            }
-          })
-          .catch(() => setIsCheckUserPaymentMethodLoading(true));
-      }
+  const {
+    data: paymentMethods,
+    error: paymentMethodsError,
+    isLoading: isPaymentMethodsLoading,
+  } = useSWRImmutable(`/payments/methods`);
+
+  useEffect(() => {
+    if (!paymentMethods) return;
+    if (!paymentMethods.cardToCard && !paymentMethods.zarinpal) {
+      setIsUserNeedAddPaymentMethod(true);
     }
-  }, [productsData]);
+  }, [paymentMethods]);
 
   const handleDeleteClick = (id: string) => {
     setItemToDelete(id);
@@ -126,36 +113,35 @@ export default function ProductListTable() {
 
   const handleDeleteConfirm = async () => {
     if (itemToDelete) {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${itemToDelete}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
-
-        if (!res.ok) {
-          toast({
-            title: t("error"),
-            description: t("problemOccurred"),
-            variant: "destructive",
-          });
-          return;
-        }
-
+      await api.delete(`/products/${itemToDelete}`)
+      .then((res) => {
         toast({
           title: t("deleted"),
         });
-        await mutate(
-          (key) => typeof key === "string" && key.includes("products")
-        );
-      } catch (error) {
-        console.error("Error deleting item:", error);
-      } finally {
+        mutate(mutateIncludeStringKey('products'))
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        const code = e.response?.data?.code;
+        if (code === 'PRODUCT_IS_IN_CONTENT_CYCLE') {
+          e.response?.data.data?.contentCycles?.forEach((cc: any) => {
+            toast({
+              title: t_ec(code),
+              description: t('productInAutomation', {automationTitle: cc?.title}),
+              variant: "destructive",
+            });
+          })
+          return 
+        }
+        toast({
+          title: t_ec(code),
+          description: t("problemOccurred"),
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
         setDeleteDialogOpen(false);
         setItemToDelete(null);
-      }
+      })
     }
   };
   const locale = useLocale();
@@ -189,7 +175,7 @@ export default function ProductListTable() {
           </TableRow>
         </TableHeader>
 
-        {isProductsLoading || isCheckUserPaymentMethodLoading ? (
+        {isProductsLoading || isPaymentMethodsLoading ? (
           <ProductListSkeleton />
         ) : (
           <TableBody>

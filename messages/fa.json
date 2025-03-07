@@ -562,7 +562,8 @@
             "pageOf": "صفحه {current} از {total}",
             "error": "خطا",
             "problemOccurred": "مشکلی پیش آمده است",
-            "deleted": "کالا یا خدمت مورد نظر حذف شد."
+            "deleted": "کالا یا خدمت مورد نظر حذف شد.",
+            "productInAutomation": "این کالا رو در اتومیشن {automationTitle} استفاده کرده‌اید. اول باید کالا رو از این اتومیشن حذف کنید"
         },
         "Form": {
             "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
@@ -1195,6 +1196,7 @@
         "PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE": "قیمت تخفیف محصول بیشتر از قیمت اصلی است",
         "PRODUCT_DISCOUNT_PRICE_IS_ZERO": "قیمت تخفیف محصول صفر است",
         "PRODUCT_OUT_OF_STOCK": "محصول در انبار موجود نیست",
+        "PRODUCT_IS_IN_CONTENT_CYCLE": "این محصول در یک اتومیشن وجود دارد",
         "ORDER_NOT_FOUND": "سفارش پیدا نشد",
         "ORDER_EXPIRED": "سفارش منقضی شده است",
         "ORDER_SHOP_IS_NOT_VALID": "فروشگاه سفارش معتبر نیست",

@@ -24,6 +24,12 @@ import {
 } from "@/components/theme/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
+import useSWRImmutable from "swr/immutable";
+import api from "@/hooks/swr/api-client";
+import { AxiosError } from "axios";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { mutate } from "swr";
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 
 export type ContactFormProps = {
   contactId: string;
@@ -54,38 +60,15 @@ export default function ContactForm({
 }: ContactFormProps) {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
-  const [contact, setContact] = useState<ContactNamespace.Contact | null>(null);
-  const [contactError, setContactError] = useState<Error | null>(null);
-  const [isContactLoading, setIsContactLoading] = useState(true);
+  const t = useTranslations("Contacts.Form");
+  const t_ec = useTranslations("ERROR_CODES");
 
-  const t = useTranslations('Contacts.Form')
-
-
-  const fetchContact = async () => {
-    setIsContactLoading(true);
-    setContact(null);
-    setContactError(null);
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts/${contactId}`,
-        {
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch contact");
-      }
-
-      const data = (await response.json()) as ContactNamespace.Contact;
-      setContact(data);
-    } catch (error) {
-      setContactError(error as Error);
-    } finally {
-      setIsContactLoading(false);
-    }
-  };
+  const {
+    data: contact,
+    error: contactError,
+    isLoading: isContactLoading,
+    mutate: mutateContact
+  } = useSWRImmutable(`/contacts/${contactId}`);
 
   const {
     register,
@@ -98,20 +81,13 @@ export default function ContactForm({
   });
 
   useEffect(() => {
-    fetchContact();
     return () => {
-      setContact(null);
       form.reset();
     };
   }, []);
 
-  //   useEffect(() => {
-  //     console.log('Contact', form.getValues());
-  //   }, [form.watch()]);
-
   useEffect(() => {
-    if (!contact || open === false || isContactLoading) return;
-    console.log("Data Set");
+    if (!contact || open === false) return;
     form.reset({
       ...contact,
       ...(contact.birthDate && {
@@ -120,36 +96,26 @@ export default function ContactForm({
     });
   }, [contact]);
 
-  const onDateChange = (e: any) => {
-    console.log(e);
-  };
-
   const onSubmit = async (values: UpdateContactFormData) => {
     setIsSubmitLoading(true);
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts/${contactId}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(values),
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    setIsSubmitLoading(false);
-    if (!response.ok) {
-      toast({
-        title: t('errors.update'),
+    await api
+      .put(`/contacts/${contactId}`, values)
+      .then(async(res) => {
+        toast({
+          title: t("updated"),
+        });
+        await mutate(mutateIncludeStringKey('contacts'));
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        toast({
+          title: t_ec(e.response?.data?.code),
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsSubmitLoading(false);
       });
-      return;
-    }
-    toast({
-      title: t('updated'),
-    });
-    setOpen(false);
   };
-
 
   if (isContactLoading || !contact) {
     return <ContactSkeleton />;
@@ -159,7 +125,7 @@ export default function ContactForm({
       <div className="grid grid-cols-4 gap-4">
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="firstname" className="text-right">
-            {t('firstname')}
+            {t("firstname")}
           </Label>
           <Input
             id="firstname"
@@ -168,14 +134,14 @@ export default function ContactForm({
           />
           {errors.firstname && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.firstname')}
+              {t("errors.firstname")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="lastname" className="text-right">
-            {t('lastname')}
+            {t("lastname")}
           </Label>
           <Input
             id="lastname"
@@ -184,14 +150,14 @@ export default function ContactForm({
           />
           {errors.lastname && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.lastname')}
+              {t("errors.lastname")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="gender" className="text-right">
-            {t('gender')}
+            {t("gender")}
           </Label>
           <Controller
             name="gender"
@@ -208,12 +174,12 @@ export default function ContactForm({
                   value={field.value!}
                 >
                   <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder={t('genderPlaceholder')} />
+                    <SelectValue placeholder={t("genderPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="female">{t('female')}</SelectItem>
-                    <SelectItem value="male">{t('male')}</SelectItem>
-                    <SelectItem value="other">{t('other')}</SelectItem>
+                    <SelectItem value="female">{t("female")}</SelectItem>
+                    <SelectItem value="male">{t("male")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
                   </SelectContent>
                 </Select>
               );
@@ -221,14 +187,14 @@ export default function ContactForm({
           />
           {errors.gender && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.gender')}
+              {t("errors.gender")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="birthDate" className="text-right mb-3">
-            {t('birthDate')}
+            {t("birthDate")}
           </Label>
           <Controller
             control={control}
@@ -246,9 +212,9 @@ export default function ContactForm({
                   value={
                     value
                       ? new DateObject(+value)
-                        .setLocale(persian_fa)
-                        .setCalendar(persian)
-                        .format("YYYY/MM/DD")
+                          .setLocale(persian_fa)
+                          .setCalendar(persian)
+                          .format("YYYY/MM/DD")
                       : ""
                   }
                   onChange={(date) => {
@@ -262,81 +228,81 @@ export default function ContactForm({
                   render={<Input name="birthDate" />}
                 />
                 {errors && errors[name] && errors[name].type === "required" && (
-                  <span>{t('errors.birthDateRequired')}</span>
+                  <span>{t("errors.birthDateRequired")}</span>
                 )}
               </>
             )}
           />
           {errors.birthDate && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.birthDate')}
+              {t("errors.birthDate")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="mobile" className="text-right">
-            {t('mobile')}
+            {t("mobile")}
           </Label>
           <Input id="mobile" {...register("mobile")} className="col-span-3" />
           {errors.mobile && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.mobile')}
+              {t("errors.mobile")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="email" className="text-right">
-            {t('email')}
+            {t("email")}
           </Label>
           <Input id="email" {...register("email")} className="col-span-3" />
           {errors.email && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.email')}
+              {t("errors.email")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="country" className="text-right">
-            {t('state')}
+            {t("state")}
           </Label>
           <Input id="state" {...register("state")} className="col-span-3" />
           {errors.state && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.state')}
+              {t("errors.state")}
             </p>
           )}
         </div>
 
         <div className="col-span-4 md:col-span-2">
           <Label htmlFor="city" className="text-right">
-            {t('city')}
+            {t("city")}
           </Label>
           <Input id="city" {...register("city")} className="col-span-3" />
           {errors.city && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.city')}
+              {t("errors.city")}
             </p>
           )}
         </div>
 
         <div className="col-span-4">
           <Label htmlFor="address" className="text-right">
-            {t('address')}
+            {t("address")}
           </Label>
           <Input id="address" {...register("address")} className="col-span-3" />
           {errors.address && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.address')}
+              {t("errors.address")}
             </p>
           )}
         </div>
 
         <div className="col-span-4">
           <Label htmlFor="postalcode" className="text-right">
-            {t('postalcode')}
+            {t("postalcode")}
           </Label>
           <Input
             id="postalcode"
@@ -345,14 +311,14 @@ export default function ContactForm({
           />
           {errors.postalcode && (
             <p className="col-span-4 text-sm text-red-500">
-              {t('errors.postalcode')}
+              {t("errors.postalcode")}
             </p>
           )}
         </div>
       </div>
 
       <Button type="submit" className="w-full">
-        {t('save')}
+        {t("save")}
         {isSubmitLoading && <LoadingSpinner className="mr-1" size={20} />}
       </Button>
     </form>

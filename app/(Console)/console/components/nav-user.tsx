@@ -24,12 +24,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavUserSkeleton } from "./nav-user.skeleton";
 import { UserNamespace } from "@/types/user";
+import api from "@/hooks/swr/api-client";
+import { AxiosResponse } from "axios";
 
 export default function NavUser({
   user,
   isLoading
 }: {
-  user: UserNamespace.GET | undefined
+  user: UserNamespace.GET.User | undefined
   isLoading: boolean
 }) {
   const { isMobile } = useSidebar();
@@ -41,22 +43,19 @@ export default function NavUser({
   const logoutHandler = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     setIsLogoutLoading(true)
-    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/logout`, {
-      method: "DELETE",
-      credentials: "include",
+    await api.delete("/auth/logout")
+    .then(async (res: AxiosResponse) => {
+      router.push("/");
     })
-      .then(async (res) => {
-        router.push("/");
-      })
-      .catch(e => {
-        toast({
-          title: t("logoutFailed"),
-          variant: "destructive",
-        });
-      })
-      .finally(() => {
-        setIsLogoutLoading(false)
-      })
+    .catch(e => {
+      toast({
+        title: t("logoutFailed"),
+        variant: "destructive",
+      });
+    })
+    .finally(() => {
+      setIsLogoutLoading(false)
+    })
   };
 
   if (isLoading || !user) {
