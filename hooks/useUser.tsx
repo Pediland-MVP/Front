@@ -4,8 +4,7 @@ import { UserNamespace } from '@/types/user';
 
 export default function useUser() {
   const { data, error, isLoading, mutate } = useSWR<UserNamespace.GET.User>(
-    // Only fetch user profile if we have an access token
-    getAccessToken() ? '/api/user/profile' : null
+    '/users/me'
   );
   
   return {

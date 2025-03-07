@@ -56,8 +56,7 @@ export default function ContactListCard({
     isLoading: isContactsLoading,
     mutate: fetchContacts,
   } = useSWRImmutable<ContactNamespace.GET>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
-    fetcher
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/contacts?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`
   );
   const contacts = contactsData?.items || [];
   const contactsMeta = contactsData?.meta || undefined;

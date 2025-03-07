@@ -28,6 +28,7 @@ import { DotsThreeOutlineVertical, Eye, InstagramLogo, Spinner, Trash } from "@p
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/theme/ui/dropdown-menu";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import useSWRImmutable from "swr/immutable";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -52,11 +53,10 @@ export default function Accounts({
     isLoading: isInstagramPagesLoading,
     error: instagramPagesError,
     mutate,
-  } = useSWR<InstagramNamespace.GET["Accounts"]>(
+  } = useSWRImmutable<InstagramNamespace.GET["Accounts"]>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
-    fetcher,
     {
-      refreshInterval: 0,
+      revalidateOnMount: true
     }
   );
 

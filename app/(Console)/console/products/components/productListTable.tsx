@@ -35,11 +35,11 @@ import {
   Trash,
 } from "@phosphor-icons/react/dist/ssr";
 import { CardToCardNamespace } from "@/types/cardToCard";
-import { ExceptionMessage } from '../../../../../types/exceptionMessage';
+import { ExceptionMessage } from "../../../../../types/exceptionMessage";
 import { ERROR_CODES } from "@/app/constants/errorCodes.constant";
 import CardToCardAlert from "./cardToCard.alert";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
-
+import useSWRImmutable from "swr/immutable";
 
 interface ContentItem {
   id: number;
@@ -65,13 +65,12 @@ export default function ProductListTable() {
     error: productsError,
     isLoading: isProductsLoading,
     mutate: fetchproducts,
-  } = useSWR<ProductNamespace.GET>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL
-    }/products?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""
+  } = useSWRImmutable<ProductNamespace.GET>(
+    `/products?page=${page}&limit=${limit}${
+      search ? `&search=${debouncedSearchTerm}` : ""
     }`,
-    fetcher,
     {
-      revalidateOnFocus: false,
+      revalidateOnMount: true,
     }
   );
   const products = productsData?.items || [];
@@ -79,41 +78,42 @@ export default function ProductListTable() {
 
   const router = useRouter();
 
-
   // If products === 0 we check if user need add payment method
   // If user have not payment method we show warning
-  const [isCheckUserPaymentMethodLoading, setIsCheckUserPaymentMethodLoading] = useState(true)
-  const [isUserNeedAddPaymentMethod, setIsUserNeedAddPaymentMethod] = useState(false)
+  const [isCheckUserPaymentMethodLoading, setIsCheckUserPaymentMethodLoading] =
+    useState(true);
+  const [isUserNeedAddPaymentMethod, setIsUserNeedAddPaymentMethod] =
+    useState(false);
 
   useEffect(() => {
     if (productsData) {
       if (productsData.items.length > 0) {
-        setIsCheckUserPaymentMethodLoading(false)
-        return 
+        setIsCheckUserPaymentMethodLoading(false);
+        return;
       }
       if (productsData.items.length === 0) {
         fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/methods`, {
-          credentials: 'include'
+          credentials: "include",
         })
-        .then(async res => {
-          if (!res.ok) {
-            const json: ExceptionMessage = await res.json()
-            if (json.code === 'PAYMENT_METHODS_NOT_FOUND') {
-              setIsUserNeedAddPaymentMethod(true)
+          .then(async (res) => {
+            if (!res.ok) {
+              const json: ExceptionMessage = await res.json();
+              if (json.code === "PAYMENT_METHODS_NOT_FOUND") {
+                setIsUserNeedAddPaymentMethod(true);
+              }
+              return;
             }
-            return
-          }
 
-          const result = await res.json() as PaymentNamespace.GET.PaymentMethods
-          if (!result.cardToCard && !result.zarinpal) {
-            setIsUserNeedAddPaymentMethod(true)
-          }
-
-        })
-        .catch(() => setIsCheckUserPaymentMethodLoading(true))
+            const result =
+              (await res.json()) as PaymentNamespace.GET.PaymentMethods;
+            if (!result.cardToCard && !result.zarinpal) {
+              setIsUserNeedAddPaymentMethod(true);
+            }
+          })
+          .catch(() => setIsCheckUserPaymentMethodLoading(true));
       }
     }
-  }, [productsData])
+  }, [productsData]);
 
   const handleDeleteClick = (id: string) => {
     setItemToDelete(id);
@@ -161,12 +161,8 @@ export default function ProductListTable() {
   const locale = useLocale();
 
   if (isUserNeedAddPaymentMethod) {
-      return (
-        <CardToCardAlert/>
-      ) 
+    return <CardToCardAlert />;
   }
-
-
 
   return (
     <Card className="border-b-2 border-gray-100">
@@ -174,14 +170,22 @@ export default function ProductListTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="lg:w-[7%] text-center">{t("image")}</TableHead>
-            <TableHead className={cn(locale === "fa" ? "text-right" : "text-left")}>{t("title")}</TableHead>
+            <TableHead className="lg:w-[7%] text-center">
+              {t("image")}
+            </TableHead>
+            <TableHead
+              className={cn(locale === "fa" ? "text-right" : "text-left")}
+            >
+              {t("title")}
+            </TableHead>
             <TableHead className="text-center">{t("type")}</TableHead>
             <TableHead className="text-center">{t("price")}</TableHead>
             <TableHead className="text-center">{t("quantity")}</TableHead>
             <TableHead className="text-center">{t("creationDate")}</TableHead>
             <TableHead className="text-center">{t("status")}</TableHead>
-            <TableHead className="text-center lg:w-[7%]">{t("actions")}</TableHead>
+            <TableHead className="text-center lg:w-[7%]">
+              {t("actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
 
@@ -206,9 +210,15 @@ export default function ProductListTable() {
                 <TableCell className="text-center">کالای فیزیکی</TableCell>
 
                 <TableCell className="text-center">
-                  <span className={`${typeof product?.discountPrice === 'number' ? "line-through" : ""}`} >{product.price.toLocaleString()}</span>
-                  <br/>
-                  {typeof product.discountPrice === 'number' && <span>{product.discountPrice?.toLocaleString()}</span>}
+                  <span
+                    className={`${typeof product?.discountPrice === "number" ? "line-through" : ""}`}
+                  >
+                    {product.price.toLocaleString()}
+                  </span>
+                  <br />
+                  {typeof product.discountPrice === "number" && (
+                    <span>{product.discountPrice?.toLocaleString()}</span>
+                  )}
                 </TableCell>
 
                 <TableCell className="text-center">
@@ -222,9 +232,7 @@ export default function ProductListTable() {
                     .format("YYYY/MM/DD")}
                 </TableCell>
 
-                <TableCell className="text-center">
-                  فعال
-                </TableCell>
+                <TableCell className="text-center">فعال</TableCell>
 
                 <TableCell>
                   <div className="flex gap-2 justify-center">
@@ -254,7 +262,7 @@ export default function ProductListTable() {
         <Button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          variant={'ghost'}
+          variant={"ghost"}
         >
           {locale === "fa" ? <CaretRight size={18} /> : <CaretLeft size={18} />}
           {t("previous")}
@@ -267,7 +275,7 @@ export default function ProductListTable() {
             setPage((prev) => Math.min(prev + 1, productsMeta?.totalPages || 1))
           }
           disabled={page === productsMeta?.totalPages}
-          variant={'ghost'}
+          variant={"ghost"}
         >
           {t("next")}
           {locale === "fa" ? <CaretLeft size={18} /> : <CaretRight size={18} />}

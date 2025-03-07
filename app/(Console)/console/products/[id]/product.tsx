@@ -26,7 +26,7 @@ export default function Product({ id }: { id: string }) {
   const router = useRouter();
 
   const { data: product, error: productError } = useSWRImmutable(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${id}`,
+    `/products/${id}`,
     {
       refreshInterval: 30_000,
       revalidateOnMount: true,
