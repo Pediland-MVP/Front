@@ -1,6 +1,10 @@
 import { Meta } from "./meta";
+import { IResponseMessage } from "./responseMessage";
 
 export namespace InstagramNamespace {
+  export namespace GET {
+    export type RedirectLink = IResponseMessage<{ link: string}>
+  }
   export interface Account {
     id: string;
     createDate: string;

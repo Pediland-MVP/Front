@@ -716,7 +716,9 @@
                 "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
                 "select": "انتخاب"
             },
-            "relogin": "ورود مجدد"
+            "relogin": "ورود مجدد",
+            "instagramConnected": "حساب شما با موفقیت اضافه شد",
+            "instagramConnectionError": "ارتباط با اینستاگرام برقرار نشد"
         },
         "BankDetails": {
             "description": "برای فعال شدن شیوه پرداخت کارت به کارت، اطلاعات زیر را تکمیل کنید.",

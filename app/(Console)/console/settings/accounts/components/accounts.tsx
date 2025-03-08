@@ -1,11 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { fetcher } from "@/hooks/swr/fetcher";
 import { InstagramNamespace } from "@/types/instagram";
 import Link from "next/link";
 import { MouseEvent, useEffect, useState } from "react";
-import useSWR from "swr";
 import { SelectInstagram } from "./selectInstagram";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -41,6 +39,7 @@ import { ArrowClockwise } from "@phosphor-icons/react";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -71,6 +70,7 @@ export default function Accounts({
       revalidateOnMount: true,
     }
   );
+
 
   useEffect(() => {
     if (!instagramPages) return;
@@ -116,15 +116,15 @@ export default function Accounts({
     e.preventDefault();
     setIsDeleteLoading(true);
 
-    api
+    await api
       .delete(`/instagram/${id}`)
-      .then((res) => {
+      .then(async (res) => {
         toast({
           title: t("deleteSuccess"),
           description: t("accountDeletedSuccess"),
         });
 
-        mutate();
+        await mutate(mutateIncludeStringKey('me'));
       })
       .catch(() => {
         toast({
@@ -143,6 +143,7 @@ export default function Accounts({
     return <LoadingSpinner />;
   }
 
+  
   return (
     <>
       {filteredInstagramPages && filteredInstagramPages.length > 0 ? (

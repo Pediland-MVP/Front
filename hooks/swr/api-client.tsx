@@ -31,6 +31,8 @@ const processQueue = (error: any, token = null) => {
 // Set the access token in memory
 export const setAccessToken = (token: string) => {
   accessToken = token;
+  console.log(accessToken);
+  
 };
 
 // Get the current access token
@@ -61,8 +63,6 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log('Original Request', originalRequest);
-    
     // If error is 401 and we haven't tried to refresh the token yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {

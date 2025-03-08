@@ -3,8 +3,6 @@ import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
-import { SWRConfig } from "swr";
-import { fetcher } from "@/hooks/swr/fetcher";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { SWRProvider } from "@/hooks/swr/api-client";
 
