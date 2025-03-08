@@ -96,14 +96,14 @@ api.interceptors.response.use(
           processQueue(new Error('Failed to refresh token'));
           // Clear token and redirect to login
           clearAccessToken();
-          window.location.href = '/login';
+          window.location.href = '/auth/signin';
           return Promise.reject(error);
         }
       } catch (refreshError) {
         processQueue(refreshError);
         // Clear token and redirect to login
         clearAccessToken();
-        window.location.href = '/login';
+        window.location.href = '/auth/signin';
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
