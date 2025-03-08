@@ -27,7 +27,7 @@ export default function QuestionAndAnswerDialog({questionId, leadInstagram}:Ques
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const { data: sessionData, error: sessionError, isLoading: isSessionLoading } = useSWRImmutable<SessionNamespace.SessionAnswers>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/sessions/answers/${questionId}`, fetcher)
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/sessions/answers/${questionId}`)
 
   const ChatSkeleton = () => (
     <Card className="border-0 shadow-none">

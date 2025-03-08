@@ -25,7 +25,6 @@ export function Chat({ leadId }: ChatProps) {
     error: leadError,
   } = useSWR<leadNamespace.GET["One"]>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/${leadId}?leadInstagram=true`,
-    fetcher
   );
 
   useEffect(() => {
