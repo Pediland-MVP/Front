@@ -227,7 +227,7 @@ export default function Accounts({
                               open={showDeleteModal}
                               onOpenChange={setShowDeleteModal}
                             >
-                              <AlertDialogTrigger asChild>
+                              <AlertDialogTrigger>
                                 <div className="flex items-center gap-2 text-red-600">
                                   <Trash size={18} />
                                   {t("delete")}
