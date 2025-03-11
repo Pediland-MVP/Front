@@ -49,6 +49,7 @@ import { useContentsContext } from "./useContentsContext";
 import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
 import Catalogue from "../catalogue";
 import ButtonTemplate from "../buttonTemplate/buttonTemplate";
+import api from "@/hooks/swr/api-client";
 
 type MessageByTypeProps = {
   index: number;
@@ -82,7 +83,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
       });
       const formData = new FormData();
       formData.append("file", files[0].file);
-      const res = axios
+      const res = api
         .post(
           `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/upload`,
           formData,
