@@ -563,7 +563,9 @@
             "error": "خطا",
             "problemOccurred": "مشکلی پیش آمده است",
             "deleted": "کالا یا خدمت مورد نظر حذف شد.",
-            "productInAutomation": "این کالا رو در اتومیشن {automationTitle} استفاده کرده‌اید. اول باید کالا رو از این اتومیشن حذف کنید"
+            "productInAutomation": "این کالا رو در اتومیشن {automationTitle} استفاده کرده‌اید. اول باید کالا رو از این اتومیشن حذف کنید",
+            "regularProduct": "کالای فیزیکی",
+            "digitalProduct": "کالای دیجیتال"
         },
         "Form": {
             "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",

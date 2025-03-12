@@ -193,7 +193,7 @@ export default function ProductListTable() {
 
                 <TableCell>{product.title}</TableCell>
 
-                <TableCell className="text-center">کالای فیزیکی</TableCell>
+                <TableCell className="text-center">{product.isDigital ? t('digitalProduct') : t('regularProduct')}</TableCell>
 
                 <TableCell className="text-center">
                   <span
