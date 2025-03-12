@@ -37,6 +37,7 @@ import { OrderInstagramProfile } from "./orderInstagramProfile";
 import ImageWithFallback from "@/components/ui/imageWithCallback";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
@@ -45,7 +46,7 @@ const statusSchema = z.object({
 type StatusFormData = z.infer<typeof statusSchema>;
 
 interface OrderDetailsProps {
-  order: OrderNamespace.GET.Orders["items"][0];
+  order: OrderNamespace.GET.OneItemOfOrders;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -57,10 +58,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { control, handleSubmit } = useForm<StatusFormData>({
-    resolver: zodResolver(statusSchema),
-    defaultValues: {
-      status: order!.status,
-    },
+    resolver: zodResolver(statusSchema)
   });
 
   const onSubmit = async (data: StatusFormData) => {
@@ -85,6 +83,10 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
     })
     .finally(() => setIsLoading(false))
   };
+
+  if (!order) {
+    return <LoadingSpinner/>
+  }
 
   const totalPrice = order.orderProducts.reduce(
     (sum, op) => sum + op.product.price * op.quantity,

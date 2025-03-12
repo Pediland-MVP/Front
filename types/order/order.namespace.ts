@@ -11,6 +11,7 @@ export namespace OrderNamespace {
     export namespace GET {
         export type Order = IOrder;
         export type Orders = IOrders
+        export type OneItemOfOrders = IOrders['items'][0]
         export type Pending = IPendingOrder
     }
 
