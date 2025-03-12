@@ -36,7 +36,11 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
 
   const t = useTranslations("Orders.EditDialog")
 
-  if (!order) {
+  if (!open) {
+    return null
+  }
+
+  if (open && !order) {
     return <LoadingSpinner/>
   }
 
@@ -48,7 +52,7 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
             <DrawerTitle>{t("editOrder")}</DrawerTitle>
           </DrawerHeader>
           <div className="flex-grow overflow-y-auto p-4 pb-0">
-            <OrderDetails setOpen={setOpen} order={order} />
+            <OrderDetails setOpen={setOpen} order={order!} />
           </div>
           <DrawerFooter className="pt-2 flex-shrink-0">
             <DrawerClose asChild>
@@ -69,7 +73,7 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
           <DialogTitle>{t("editOrder")}</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <OrderDetails setOpen={setOpen} order={order} />
+        <OrderDetails setOpen={setOpen} order={order!} />
       </DialogContent>
     </Dialog>
   )
