@@ -43,22 +43,7 @@ async function consoleMiddleware(request: NextRequest) {
       request
     );
   }
-
-  const jwt = await parseJwt(token.value, request);
-
-  if (!jwt) {
-    return CustomResponse.redirect(
-      new URL("/auth/signin", request.url),
-      request
-    );
-  }
-
-  if (!jwt.payload.isVerified) {
-    return CustomResponse.redirect(
-      new URL("/auth/verify?fromSignIn=true", request.url),
-      request
-    );
-  }
+  
   return CustomResponse.next(request);
 }
 

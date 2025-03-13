@@ -26,6 +26,9 @@ import {
   Plus,
 } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/theme/ui/card";
+import useSWRImmutable from "swr/immutable";
+import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
+import api from "@/hooks/swr/api-client";
 
 type ContentCycle = {
   title: string;
@@ -50,51 +53,34 @@ type ContentCycleResponse = {
 
 export default function ContentCycleTable() {
   const t = useTranslations("Automations.List");
-  const [data, setData] = useState<ContentCycleResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const LIMIT = 15;
 
-  const fetchData = async (
-    page: number = 1,
-    limit: number = 10,
-    force: boolean = false
-  ) => {
-    if (
-      (currentPage === data?.meta?.totalPages || currentPage === 0) &&
-      !force
-    ) {
-      // Last page and first page
-      return;
+  // TODO: Better type for ContentCycleResponse
+  const {
+    data: contentCycles,
+    isLoading: isContentCycleLoading,
+    error: contentCycleError,
+    mutate: contentCycleMutate,
+  } = useSWRImmutable<ContentCycleResponse | null>(
+    `/contentCycle?page=${currentPage}&limit=${LIMIT}`,
+    {
+      revalidateOnMount: true,
     }
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle?page=${page}&limit=${limit}`,
-        {
-          credentials: "include",
-        }
-      );
-      if (!response.ok) {
-        throw new Error(t("fetchError"));
-      }
-      const result = await response.json();
-      setData(result);
-      setCurrentPage(page);
-    } catch (error) {
-      setError(t("fetchErrorRetry"));
-      console.error("Error fetching data:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  );
+
+  const nextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+    contentCycleMutate();
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const prevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+    contentCycleMutate();
+  };
 
   const handleDeleteClick = (id: string) => {
     setItemToDelete(id);
@@ -103,39 +89,26 @@ export default function ContentCycleTable() {
 
   const handleDeleteConfirm = async () => {
     if (itemToDelete) {
-      console.log("itemToDelete", itemToDelete);
-
-      setIsLoading(true);
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/${itemToDelete}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
-
-        if (!res.ok) {
+      await api
+        .delete(`/contentCycle/${itemToDelete}`)
+        .then((res) => {
+          toast({
+            title: t("deleted"),
+          });
+          contentCycleMutate();
+        })
+        .catch((e) => {
           toast({
             title: t("error"),
             description: t("problemOccurred"),
             variant: "destructive",
           });
-          return;
-        }
-
-        toast({
-          title: t("deleted"),
+        })
+        .finally(() => {
+          setIsDeleteLoading(false);
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
         });
-        await fetchData(currentPage, undefined, true); // Refresh data after deletion
-      } catch (error) {
-        setError(t("deleteErrorRetry"));
-        console.error("Error deleting item:", error);
-      } finally {
-        setIsLoading(false);
-        setDeleteDialogOpen(false);
-        setItemToDelete(null);
-      }
     }
   };
 
@@ -148,12 +121,10 @@ export default function ContentCycleTable() {
   return (
     <Card className="border-b-2 border-gray-100">
       <div>
-        {isLoading ? (
+        {isContentCycleLoading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner className="h-8 w-8 animate-spin" />
           </div>
-        ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -171,7 +142,7 @@ export default function ContentCycleTable() {
                 </TableHeader>
 
                 <TableBody>
-                  {data?.items.map((item) => (
+                  {contentCycles?.items.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="text-center py-3">
                         {item.title}
@@ -215,11 +186,11 @@ export default function ContentCycleTable() {
               </Table>
             </div>
 
-            {data?.meta && (
+            {contentCycles?.meta && (
               <div className="flex justify-between items-center mt-4">
                 <Button
                   variant="ghost"
-                  onClick={() => fetchData(currentPage - 1)}
+                  onClick={prevPage}
                   disabled={currentPage === 1}
                 >
                   {locale === "fa" ? (
@@ -232,13 +203,13 @@ export default function ContentCycleTable() {
                 <span className="text-sm text-muted-foreground">
                   {t("pageOf", {
                     current: currentPage,
-                    total: data.meta.totalPages,
+                    total: contentCycles.meta.totalPages,
                   })}
                 </span>
                 <Button
                   variant="ghost"
-                  onClick={() => fetchData(currentPage + 1)}
-                  disabled={currentPage === data.meta.totalPages}
+                  onClick={nextPage}
+                  disabled={currentPage === contentCycles.meta.totalPages}
                 >
                   {t("next")}
                   {locale === "fa" ? (

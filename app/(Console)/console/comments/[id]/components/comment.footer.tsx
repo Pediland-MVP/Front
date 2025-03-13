@@ -14,7 +14,7 @@ import { PaperPlaneRight } from "@phosphor-icons/react";
 import { FormField, Form } from "@/components/ui/form";
 import { KeyedMutator, mutate } from "swr";
 import { useTranslations } from "next-intl";
-import logger from "@/app/utils/logger";
+import api from "@/hooks/swr/api-client";
 
 
 
@@ -47,31 +47,15 @@ export default function RedesignedCommentFooter({
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await fetch(
+      const response = await api.post<{ message: string[] }>(
         `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/reply/${commentId}`,
+        data,
         {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
+          withCredentials: true,
         }
       );
 
-      if (!response.ok) {
-        const json = await response.json();
-        json.message.forEach((m: string) => {
-          toast({
-            title: m,
-            variant: "destructive",
-          });
-        });
-        return;
-      }
-
-
-      addReply(await response.json())
+      addReply(response.data);
       await mutate((key) => typeof key === "string" && key.includes(`comments/${commentId}`));
       toast({ title: t('success') });
       form.reset();

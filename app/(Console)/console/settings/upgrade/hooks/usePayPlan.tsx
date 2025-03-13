@@ -7,68 +7,54 @@ import { useState } from "react";
 import { UpgradeContext } from "../context/upgrade.context";
 import { mutate } from "swr";
 import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
+import api from "@/hooks/swr/api-client";
+import { AxiosError, AxiosResponse } from "axios";
 
 export default function usePayPlan() {
+  const [isPayLoading, setIsPayLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const t_ec = useTranslations("ERROR_CODES");
+  const t_rc = useTranslations("RESPONSE_CODES");
 
-    const [isPayLoading, setIsPayLoading] = useState<boolean>(false)
-    const router = useRouter()
-    const t_ec = useTranslations('ERROR_CODES')
-    const t_rc = useTranslations('RESPONSE_CODES')
-
-    const pay = async (values: {planId: number, durationId: number}, setActive: UpgradeContext['setActive']) => {
-        setIsPayLoading(true)
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions/subscribe`, {
-                method: "POST",
-                credentials: "include",
-                body: JSON.stringify(values),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-
-            
-            if (res.ok){
-                const json = await res.json() as SubscriptionNamespace.POST.Subscribe
-                if (json.code === 'PAID_FREE') {
-                    toast({
-                        title: t_rc(json.code)
-                    })
-                    await mutate(mutateIncludeStringKey('subscriptions'))
-                    mutate(mutateIncludeStringKey('plans'))
-                    setActive({
-                        planSelection: false,
-                        subscriptionInfo: true
-                    })
-                    return
-                }
-                router.push(json.data.link)
-                return
-            }
-
-            const json = await res.json() as ExceptionMessage
-            const error = t_ec(json.code)
+  const pay = async (
+    values: { planId: number; durationId: number },
+    setActive: UpgradeContext["setActive"]
+  ) => {
+    setIsPayLoading(true);
+    await api
+      .post("/subscriptions/subscribe", values)
+      .then(
+        async (res: AxiosResponse<SubscriptionNamespace.POST.Subscribe>) => {
+          if (res.data.code === "PAID_FREE") {
             toast({
-                title: error,
-                variant: "destructive"
-            })
-
+              title: t_rc(res.data.code),
+            });
+            await mutate(mutateIncludeStringKey("subscriptions"));
+            mutate(mutateIncludeStringKey("plans"));
+            setActive({
+              planSelection: false,
+              subscriptionInfo: true,
+            });
+            return;
+          }
+          router.push(res.data.data.link);
+          return;
         }
-        catch(e) {
-           toast({
-            title: t_ec('CHECK_CONNECTION'),
-            variant: "destructive"
-           })
-        }
-        
-        finally {
-            setIsPayLoading(false)
-        }
-    }
+      )
+      .catch(async (e: AxiosError<ExceptionMessage>) => {
+        const error = t_ec(e.response?.data.code);
+        toast({
+          title: error,
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsPayLoading(false);
+      });
+  };
 
-    return {
-        isPayLoading,
-        pay
-    }
-
+  return {
+    isPayLoading,
+    pay,
+  };
 }

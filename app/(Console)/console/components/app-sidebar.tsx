@@ -129,7 +129,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     data: userData,
     error: userError,
     isLoading: userIsLoading,
-  } = useSWRImmutable<UserNamespace.GET>(
+  } = useSWRImmutable<UserNamespace.GET.User>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
     {
       revalidateOnMount: true,
@@ -142,8 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     error: statsError,
     isLoading: isStatsLoading,
   } = useSWRImmutable<StatsNamespace.Overall>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`,
-    fetcher
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`
   );
 
   return (

@@ -1,11 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { fetcher } from "@/hooks/swr/fetcher";
 import { InstagramNamespace } from "@/types/instagram";
 import Link from "next/link";
 import { MouseEvent, useEffect, useState } from "react";
-import useSWR from "swr";
 import { SelectInstagram } from "./selectInstagram";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -24,10 +22,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/theme/ui/alert-dialog";
-import { DotsThreeOutlineVertical, Eye, InstagramLogo, Spinner, Trash } from "@phosphor-icons/react/dist/ssr";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/theme/ui/dropdown-menu";
+import {
+  DotsThreeOutlineVertical,
+  Eye,
+  InstagramLogo,
+  Spinner,
+  Trash,
+} from "@phosphor-icons/react/dist/ssr";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/theme/ui/dropdown-menu";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import useSWRImmutable from "swr/immutable";
+import api from "@/hooks/swr/api-client";
+import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -44,7 +56,7 @@ export default function Accounts({
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");
-  const [isDeleteLoading, setIsDeleteLoading] = useState(false)
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const {
@@ -52,13 +64,13 @@ export default function Accounts({
     isLoading: isInstagramPagesLoading,
     error: instagramPagesError,
     mutate,
-  } = useSWR<InstagramNamespace.GET["Accounts"]>(
+  } = useSWRImmutable<InstagramNamespace.GET["Accounts"]>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
-    fetcher,
     {
-      refreshInterval: 0,
+      revalidateOnMount: true,
     }
   );
+
 
   useEffect(() => {
     if (!instagramPages) return;
@@ -66,10 +78,10 @@ export default function Accounts({
     setFilteredInstagramPages(
       isFromFacebook
         ? instagramPages?.filter(
-          (page) =>
-            page.facebookAccountId ===
-            searchParams.get("facebookAccountId") && !page.instagramId
-        )
+            (page) =>
+              page.facebookAccountId ===
+                searchParams.get("facebookAccountId") && !page.instagramId
+          )
         : !!instagramPages?.length
           ? instagramPages.filter((account) => account.instagramId)
           : null
@@ -101,49 +113,37 @@ export default function Accounts({
   }, [filteredInstagramPages]);
 
   const handleDelete = async (e: MouseEvent<HTMLButtonElement>, id: string) => {
-    e.preventDefault()
-    setIsDeleteLoading(true)
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+    e.preventDefault();
+    setIsDeleteLoading(true);
 
-      if (!response.ok) {
+    await api
+      .delete(`/instagram/${id}`)
+      .then(async (res) => {
         toast({
-          title: t("errorOccurred"),
+          title: t("deleteSuccess"),
+          description: t("accountDeletedSuccess"),
+        });
+
+        await mutate(mutateIncludeStringKey('me'));
+      })
+      .catch(() => {
+        toast({
+          title: t("deleteError"),
+          description: t("deleteErrorDescription"),
           variant: "destructive",
         });
-        return;
-      }
-
-      toast({
-        title: t("deleteSuccess"),
-        description: t("accountDeletedSuccess"),
+      })
+      .finally(() => {
+        setShowDeleteModal(false);
+        setIsDeleteLoading(false);
       });
-
-      mutate();
-    } catch (error) {
-      toast({
-        title: t("deleteError"),
-        description: t("deleteErrorDescription"),
-        variant: "destructive",
-      });
-    } finally {
-      setShowDeleteModal(false)
-      setIsDeleteLoading(false)
-    }
   };
 
   if (isInstagramPagesLoading) {
-    return (
-      <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
+  
   return (
     <>
       {filteredInstagramPages && filteredInstagramPages.length > 0 ? (
@@ -190,38 +190,55 @@ export default function Accounts({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>
                           {instagram.instagramId ? (
-                            <Link className="flex items-center gap-2" href={`https://instagram.com/${instagram.username}`} target="_blank">
-                              <Eye size={18} />{t('view')}
+                            <Link
+                              className="flex items-center gap-2"
+                              href={`https://instagram.com/${instagram.username}`}
+                              target="_blank"
+                            >
+                              <Eye size={18} />
+                              {t("view")}
                             </Link>
                           ) : (
                             <Button
                               onClick={() => {
                                 setOpenSelectInstagramDialog(true);
-                                setFacebookAccountId(instagram.facebookAccountId);
+                                setFacebookAccountId(
+                                  instagram.facebookAccountId
+                                );
                               }}
                               variant={"outline"}
                             >
                               {t("connectAccount")}
                             </Button>
                           )}
-
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <Link className="flex items-center gap-2" href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}>
+                          <Link
+                            className="flex items-center gap-2"
+                            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+                          >
                             <ArrowClockwise size={18} />
-                            {t('relogin')}
+                            {t("relogin")}
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Link href={`#`}>
-                            <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-                              <AlertDialogTrigger asChild>
-                                <div className="flex items-center gap-2 text-red-600"><Trash size={18} />{t('delete')}</div>
+                            <AlertDialog
+                              open={showDeleteModal}
+                              onOpenChange={setShowDeleteModal}
+                            >
+                              <AlertDialogTrigger>
+                                <div className="flex items-center gap-2 text-red-600">
+                                  <Trash size={18} />
+                                  {t("delete")}
+                                </div>
                               </AlertDialogTrigger>
 
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
+                                  <AlertDialogTitle>
+                                    {t("areYouSure")}
+                                  </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     {t("deleteConfirmation")}
                                   </AlertDialogDescription>
@@ -229,14 +246,23 @@ export default function Accounts({
                                 <AlertDialogFooter>
                                   <AlertDialogAction
                                     type="button"
-                                    onClick={(e) => handleDelete(e, instagram.id)}
+                                    onClick={(e) =>
+                                      handleDelete(e, instagram.id)
+                                    }
                                   >
-                                    {isDeleteLoading ? <Spinner className="h-5 w-5 animate-spin" /> : t("delete")}
+                                    {isDeleteLoading ? (
+                                      <Spinner className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                      t("delete")
+                                    )}
                                   </AlertDialogAction>
-                                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                                  <AlertDialogCancel>
+                                    {t("cancel")}
+                                  </AlertDialogCancel>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
-                            </AlertDialog>                          </Link>
+                            </AlertDialog>{" "}
+                          </Link>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -251,7 +277,7 @@ export default function Accounts({
           <p className="text-gray-600 text-[15px]">{t("noAccountsFound")}</p>
         </div>
       )}
-      
+
       <SelectInstagram
         facebookAccountId={facebookAccountId!}
         open={openSelectInstagramDialog}

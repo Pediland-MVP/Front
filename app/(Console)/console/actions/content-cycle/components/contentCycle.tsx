@@ -17,15 +17,17 @@ import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
-import logger from "@/app/utils/logger";
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
 } from "@/app/constants/contentCycleContent.enum";
 import Reminder from "./form/reminder";
-import { ContentCycleNamespace } from "@/types/contentCycles/contentCycle.namespace";
 import { REGEX_URL } from "@/app/utils/regex";
 import CommentTriggerInputs from "./form/commentTriggerInputs";
+import useSWRImmutable from "swr/immutable";
+import api from "@/hooks/swr/api-client";
+import { AxiosError } from "axios";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 
 export type ContentType = {
   id: string;
@@ -265,26 +267,6 @@ export const contentCycleFormSchema = z
         message: "required",
       });
     }
-    // if (data.reminder?.isEnabled) {
-    //   if (!data.reminder?.text) {
-    //     ctx.addIssue({
-    //       path: ["reminder", "text"],
-    //       code: "custom",
-    //       message: "required",
-    //     });
-    //   }
-
-    //   if (
-    //     data.reminder?.isEnabled &&
-    //     (!data.reminder?.time || !data.reminder?.text)
-    //   ) {
-    //     ctx.addIssue({
-    //       path: ["reminder", "time"],
-    //       code: "custom",
-    //       message: "required",
-    //     });
-    //   }
-    // }
 
     data.contents.forEach((content, index) => {
       // Type issues
@@ -334,7 +316,6 @@ export const contentCycleFormSchema = z
 export default function ContentCycle({ id }: ContentCycleProps) {
   const t_ec = useTranslations("ERROR_CODES");
   const t = useTranslations("Automations");
-  const [isLoading, setIsLoading] = useState<boolean>(id ? true : false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -357,47 +338,20 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     },
   });
 
+  const { data: contentCycle, isLoading: isContentCycleLoading, error: contentCycleError } = useSWRImmutable(`/contentCycle/${id}`, {
+    revalidateOnMount: true
+  })
+
   useEffect(() => {
-    if (!id) return;
-    setIsLoading(true);
-    const fetchData = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/${id}`,
-        {
-          credentials: "include",
-          method: "GET",
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Error in fetching contentCycle data", response.json());
-
-        toast({
-          title: "خطا",
-          description: "مشکلی پیش آمده است",
-          variant: "destructive",
-        });
-        router.push("/console/actions/content-cycle");
-        return;
-      }
-
-      const contentCycle =
-        (await response.json()) as ContentCycleNamespace.GET.ContentCycle;
-      // for (const content of contentCycle.contents) {
-      //   for (const contnetProduct of )
-      // }
-
-      form.reset({
-        ...contentCycle,
-        ...(contentCycle.reminders?.length > 0 && { isRemindersEnabled: true }),
-        reminderTime: contentCycle.reminderTime
-          ? `${contentCycle.reminderTime}`
-          : undefined,
-      });
-    };
-
-    fetchData().finally(() => setIsLoading(false));
-  }, [id]);
+    if (!contentCycle) return;
+    form.reset({
+      ...contentCycle,
+      ...(contentCycle.reminders?.length > 0 && { isRemindersEnabled: true }),
+      reminderTime: contentCycle.reminderTime
+        ? `${contentCycle.reminderTime}`
+        : undefined,
+    });
+  }, [contentCycle, form])
 
   const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
     // Validate Optionals
@@ -465,63 +419,34 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       setIsSubmitting(false);
       return;
     }
+
+
     setIsSubmitting(true);
-
-    const result = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle${
-        id ? `/${id}` : ""
-      }`,
-      {
-        method: id ? "PATCH" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          ...values,
-        }),
-        credentials: "include",
-      }
-    );
-
-    if (!result.ok) {
-      const json = await result.json();
-      const errMessage = t_ec(json.code);
-      if (errMessage) {
-        toast({
-          title: errMessage,
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
+    await api({
+      method: id ? "PATCH" : "POST",
+      url: `/contentCycle${id ? `/${id}` : ""}`,
+      data: values,
+    })
+    .then(res => {
+      toast({ title: t("success") });
+      router.push("/console/actions/content-cycle");
+    })
+    .catch((e: AxiosError<ExceptionMessage>) => {
       toast({
-        title: "خطایی رخ داد",
-        description: "لطفا مجددا امتحان کنید",
+        title: t_ec(e.response?.data?.code),
+        description: t("problemOccurred"),
         variant: "destructive",
       });
-      setIsSubmitting(false);
-      return;
-    }
+    })
+    .then(() => setIsSubmitting(false))
 
-    toast({ title: t("success") });
-    router.push("/console/actions/content-cycle");
-    setIsSubmitting(false);
   };
-
-  useEffect(() => {
-    logger.log(form.formState.errors);
-  }, [form.formState.errors]);
-
-  useEffect(() => {
-    logger.log(form.getValues());
-  }, [form.watch()]);
 
   return (
     <FormProvider {...form}>
       <div className="_add-automation w-full xl:w-1/2 2xl:w-1/3 h-full">
         <Card className="border-l-2 border-gray-100 px-8 py-6 h-full">
-          {isLoading ? (
+          {isContentCycleLoading ? (
             <div className="min-h-screen w-full flex justify-center items-center">
               <LoadingSpinner className="h-20 w-20 text-gray-500" />
             </div>

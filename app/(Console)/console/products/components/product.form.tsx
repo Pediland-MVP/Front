@@ -27,6 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/theme/ui/card";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
+import api from "@/hooks/swr/api-client";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -34,6 +35,8 @@ export type ProductFormProps = {
 
 export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const t = useTranslations("Products.Form");
+  const t_ec = useTranslations("ERROR_CODES");
+
   const formSchema = z
     .object({
       title: z
@@ -53,7 +56,11 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       // .transform((data) => data || undefined),
       // .transform((data) => data || undefined),
       isInfinite: z.boolean(),
-      quantity: z.number().nonnegative().optional().transform(data => data || 0),
+      quantity: z
+        .number()
+        .nonnegative()
+        .optional()
+        .transform((data) => data || 0),
       description: z
         .string({
           message: t("Alerts.description"),
@@ -78,7 +85,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       //   });
       // }
 
-      if (data.isDiscount && (data.discountPrice === undefined || data.discountPrice === null)) {
+      if (
+        data.isDiscount &&
+        (data.discountPrice === undefined || data.discountPrice === null)
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "وقتی کالا تخفیف دارد، قیمت تخفیف نمی‌تواند خالی باشد.",
@@ -89,7 +99,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       if (data.price! < 1000 && data.price !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "قیمت کالا نمی‌تواند کمتر از ۱۰۰۰ تومان باشد. باید یا ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد",
+          message:
+            "قیمت کالا نمی‌تواند کمتر از ۱۰۰۰ تومان باشد. باید یا ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد",
           path: ["price"],
         });
       }
@@ -121,15 +132,20 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       isInfinite: false,
       ...(shouldBeEdit || {}), // اطمینان از مقدار پیش‌فرض
       imageId: shouldBeEdit?.images?.[0]?.id || undefined,
-      isDiscount: typeof shouldBeEdit?.discountPrice === 'number' ? (shouldBeEdit.discountPrice >= 0 ? true : false) : false,
-      discountPrice: typeof shouldBeEdit?.discountPrice === 'number' ? (shouldBeEdit.discountPrice >= 0 ? shouldBeEdit?.discountPrice : undefined) : undefined,
+      isDiscount:
+        typeof shouldBeEdit?.discountPrice === "number"
+          ? shouldBeEdit.discountPrice >= 0
+            ? true
+            : false
+          : false,
+      discountPrice:
+        typeof shouldBeEdit?.discountPrice === "number"
+          ? shouldBeEdit.discountPrice >= 0
+            ? shouldBeEdit?.discountPrice
+            : undefined
+          : undefined,
     },
   });
-
-  useEffect(() => {
-    console.log(form.formState.errors);
-    
-  }, [form?.formState.errors])
 
   useEffect(() => {
     if (form.formState?.errors?.imageId) {
@@ -145,9 +161,11 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   const [isLoading, setLoading] = useState(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-
     //TODO: Move to superRefine
-    if (!values.isInfinite && (typeof values.quantity == 'undefined' || values.quantity == null)) {
+    if (
+      !values.isInfinite &&
+      (typeof values.quantity == "undefined" || values.quantity == null)
+    ) {
       form.setError("quantity", {
         message: t("quantityError"),
       });
@@ -159,45 +177,26 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
 
     setLoading(true);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/products${
-          shouldBeEdit ? `/${shouldBeEdit.id}` : ""
-        }`,
-        {
-          method: shouldBeEdit ? "PUT" : "POST",
-          body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        toast({
-          title: t("errorOccurred"),
-          variant: "destructive",
-        });
-        return;
-      }
-
+    await api({
+      method: shouldBeEdit ? "PUT" : "POST",
+      url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
+      data: values,
+    }).then(async (res) => {
       toast({
         title: t("productAddedSuccess"),
       });
-
       await mutate(
         (key) => typeof key === "string" && key.includes("products")
       );
       router.push("/console/products");
-    } catch (error) {
+    })
+    .catch(e => {
       toast({
-        title: t("checkConnection"),
+        title: t_ec(e.response?.data.code),
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
-    }
+    }).
+    finally(() => setLoading(false))
   }
 
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -215,8 +214,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     const signal = controller.signal;
 
     try {
-      const response = await axios.post<UploadNamespace.POST["Image"]>(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/upload/image`,
+      const response = await api.post<UploadNamespace.POST["Image"]>(
+        `/upload/image`,
         formData,
         {
           signal,
@@ -328,9 +327,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                               placeholder="۰.۰۰"
                               {...field}
                               value={field.value || 0}
-                              onChange={(e) =>
-                                field.onChange(+(e.target.value))
-                              }
+                              onChange={(e) => field.onChange(+e.target.value)}
                             />
                           </FormControl>
                           <FormMessage />

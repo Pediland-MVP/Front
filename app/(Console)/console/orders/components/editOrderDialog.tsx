@@ -16,17 +16,16 @@ import {
 import { useTranslations } from "next-intl"
 import OrderDetails from "./orderDetails"
 import type { OrderNamespace } from "@/types/order/order.namespace"
+import LoadingSpinner from "@/components/ui/loadingSpinner"
 
 export interface EditOrderProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  order: OrderNamespace.GET.Orders["items"][0]
+  order?: OrderNamespace.GET.OneItemOfOrders
 }
 
 export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps) {
   const [isMobile, setIsMobile] = useState(false)
-
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -37,6 +36,14 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
 
   const t = useTranslations("Orders.EditDialog")
 
+  if (!open) {
+    return null
+  }
+
+  if (open && !order) {
+    return <LoadingSpinner/>
+  }
+
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
@@ -45,7 +52,7 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
             <DrawerTitle>{t("editOrder")}</DrawerTitle>
           </DrawerHeader>
           <div className="flex-grow overflow-y-auto p-4 pb-0">
-            <OrderDetails setOpen={setOpen} order={order} />
+            <OrderDetails setOpen={setOpen} order={order!} />
           </div>
           <DrawerFooter className="pt-2 flex-shrink-0">
             <DrawerClose asChild>
@@ -66,7 +73,7 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
           <DialogTitle>{t("editOrder")}</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <OrderDetails setOpen={setOpen} order={order} />
+        <OrderDetails setOpen={setOpen} order={order!} />
       </DialogContent>
     </Dialog>
   )

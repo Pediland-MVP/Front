@@ -5,6 +5,7 @@ export type ERROR_CODES =
 | 'PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE'
 | 'PRODUCT_DISCOUNT_PRICE_IS_ZERO'
 | 'PRODUCT_OUT_OF_STOCK'
+| 'PRODUCT_IS_IN_CONTENT_CYCLE'
 | 'ORDER_NOT_FOUND'
 | 'ORDER_EXPIRED'
 | 'ORDER_SHOP_IS_NOT_VALID'
@@ -56,4 +57,5 @@ export interface ExceptionMessage {
   statusCode: 400 | 401 | 404 | 500;
   code: ERROR_CODES;
   error: "Not Found" | "Bad Request" | "Internal Server Error" | (string & {});
+  data: any
 }

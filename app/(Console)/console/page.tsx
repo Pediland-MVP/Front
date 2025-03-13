@@ -17,8 +17,7 @@ export default function Dashboard() {
     error: statsError,
     isLoading: isStatsLoading,
   } = useSWRImmutable<StatsNamespace.Overall>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`,
-    fetcher
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`
   );
 
   const t = useTranslations("Console");

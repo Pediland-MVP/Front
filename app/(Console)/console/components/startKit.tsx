@@ -6,15 +6,28 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import DiscountText from "@/components/discountText";
 import { cn } from "@/lib/utils";
+import useConnectInstagram from "@/hooks/useConnectInstagram";
+import { useRouter } from "next/navigation";
 // import '@vidstack/react/player/styles/base.css';
 
 type StartKitProps = {
   isAfterPurchasingPlan?: boolean;
-}
+};
 
 export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
   const { hasSubscription, hasInstagram, isLoading, error, user } = useUser();
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const router = useRouter();
+
+  const { connectIG } = useConnectInstagram();
+  const handle = () => {
+    if (!hasSubscription) {
+      router.push(`/console/settings/upgrade`);
+      return
+    }
+    connectIG();
+  };
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -30,7 +43,8 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
         {!hasInstagram && hasSubscription ? (
           <>
             <h2 className="font-semibold text-primary mb-1">
-              حالا وقت اتصال اینستاگرامه! {isAfterPurchasingPlan && 'اشتراکت رو خریدی '}
+              حالا وقت اتصال اینستاگرامه!{" "}
+              {isAfterPurchasingPlan && "اشتراکت رو خریدی "}
             </h2>
             <p className="mb-4 text-[15px]">
               حالا باید اکانت اینستاگرام خودتون رو با توجه به این آموزش متصل
@@ -83,27 +97,19 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
         <div className="text-center">
           <Button
             className="bg-green-500 text-white hover:bg-green-400 mt-4 w-full"
-            asChild
+            onClick={handle}
           >
-            <Link
-              href={
-                !hasSubscription
-                  ? "/console/settings/upgrade"
-                  : `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`
-              }
-            >
-              {!hasSubscription ? (
-                <>
-                  <Basket weight="duotone" className="w-5 h-5" />
-                  فعال‌سازی اشتراک
-                </>
-              ) : (
-                <>
-                  <Plug weight="duotone" className="w-5 h-5" />
-                  اتصال اکانت
-                </>
-              )}
-            </Link>
+            {!hasSubscription ? (
+              <>
+                <Basket weight="duotone" className="w-5 h-5" />
+                فعال‌سازی اشتراک
+              </>
+            ) : (
+              <>
+                <Plug weight="duotone" className="w-5 h-5" />
+                اتصال اکانت
+              </>
+            )}
           </Button>
         </div>
       </div>

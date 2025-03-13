@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { Suspense } from "react";
 import Accounts from "./components/accounts";
 import { useTranslations } from "next-intl";
@@ -13,12 +13,14 @@ import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import { Plug } from "@phosphor-icons/react/dist/ssr";
+import ConnectInstagram from "./components/connectInstagram";
 
 type AccountPageProps = {
-  searchParams: Promise<{ isAfterPurchasingPlan?: string }>;
+  searchParams: Promise<{ isAfterPurchasingPlan?: string, code: string }>;
 };
 export default function AccountPage({ searchParams }: AccountPageProps) {
   const isAfterPurchasingPlan = use(searchParams)?.isAfterPurchasingPlan;
+  const code = use(searchParams)?.code
 
   const t = useTranslations("Settings.Accounts");
 
@@ -27,6 +29,16 @@ export default function AccountPage({ searchParams }: AccountPageProps) {
   >();
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+
+  useEffect(() => {
+    console.log('code', code)
+  }, [searchParams])
+
+  if (code) {
+    return (
+      <ConnectInstagram/>
+    )
+  }
 
   if (isLoading)
     return (

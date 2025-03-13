@@ -35,6 +35,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { OrderInstagramProfile } from "./orderInstagramProfile";
 import ImageWithFallback from "@/components/ui/imageWithCallback";
+import api from "@/hooks/swr/api-client";
+import { AxiosError } from "axios";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
@@ -43,65 +46,47 @@ const statusSchema = z.object({
 type StatusFormData = z.infer<typeof statusSchema>;
 
 interface OrderDetailsProps {
-  order: OrderNamespace.GET.Orders["items"][0];
+  order: OrderNamespace.GET.OneItemOfOrders;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   const t = useTranslations("Orders.OrderDetails");
-  const Errors = useTranslations("ERRORS");
+  const t_ec = useTranslations("ERROR_CODES");
+
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { control, handleSubmit } = useForm<StatusFormData>({
-    resolver: zodResolver(statusSchema),
-    defaultValues: {
-      status: order!.status,
-    },
+    resolver: zodResolver(statusSchema)
   });
 
   const onSubmit = async (data: StatusFormData) => {
     setIsLoading(true);
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${order.id}/updateStatus`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(data),
-        }
-      );
-      if (data.status === ORDER_STATUS.PENDING) {
-        setOpen(false);
-      }
+
+    await api.post(`orders/${order.id}/updateStatus`, {
+      ...data
+    })
+    .then(async res => {
       toast({
         title: t("statusUpdated"),
       });
       await mutate(
         (key: any) => typeof key === "string" && key.includes("/orders?page=")
       );
-    } catch (err) {
-      switch ((err as ExceptionMessage).code) {
-        case "ORDER_NOT_FOUND":
-          toast({
-            title: Errors("ORDER_NOT_FOUND"),
-            variant: "destructive",
-          });
-          break;
-        case "NO_INSTAGRAM":
-          toast({
-            title: Errors("NO_INSTAGRAM"),
-            variant: "destructive",
-          });
-          break;
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    })
+    .catch((e: AxiosError<ExceptionMessage>) => {
+      toast({
+        title: t_ec(e.response?.data.code),
+        variant: "destructive",
+      });
+    })
+    .finally(() => setIsLoading(false))
   };
+
+  if (!order) {
+    return <LoadingSpinner/>
+  }
 
   const totalPrice = order.orderProducts.reduce(
     (sum, op) => sum + op.product.price * op.quantity,

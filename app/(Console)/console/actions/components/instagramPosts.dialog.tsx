@@ -15,67 +15,68 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
-import { Control, useFieldArray, useFormContext, UseFormGetValues, UseFormStateReturn } from "react-hook-form";
+import {
+  Control,
+  useFieldArray,
+  useFormContext,
+  UseFormGetValues,
+  UseFormStateReturn,
+} from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
-import { useTranslations } from 'next-intl'
+import { useTranslations } from "next-intl";
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import api from "@/hooks/swr/api-client";
+import { AxiosError } from "axios";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { toast } from "@/components/theme/ui/use-toast";
 
 const PAGE_SIZE = 9;
 
 export type InstagramPostsDialogProps = {
   index: number;
-  mode: ContentCycleContentModeEnum
+  mode: ContentCycleContentModeEnum;
 };
 
-const InstagramPostsDialog = ({
-  index,
-  mode
-}: InstagramPostsDialogProps) => {
-
-  const { getValues, control, formState: {errors} } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
-  
-
+const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
   const {
-    fields: contents,
-    update: updateContents,
-  } = useFieldArray({
+    getValues,
+    control,
+    formState: { errors },
+  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+
+  const { fields: contents, update: updateContents } = useFieldArray({
     control: control,
     name:
       mode === ContentCycleContentModeEnum.REMINDER ? "reminders" : "contents",
     keyName: "_xid",
   });
 
-
   const [isOpen, setIsOpen] = useState(false);
-  const [posts, setPosts] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [posts, setPosts] = useState<any[]>([]);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
-    try {
-      const url = afterCursor
-        ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure?after=${afterCursor}`
-        : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`;
-      const response = await fetch(url, { credentials: "include" });
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Error fetching posts:", response.statusText);
-        return;
-      }
-
-      setPosts((prevPosts) => [...prevPosts, ...data.media.data]);
-      setHasMore(data.media.data.length === PAGE_SIZE);
-      setAfter(data.media.paging.cursors.after || null);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    await api
+      .get(
+        afterCursor
+          ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure?after=${afterCursor}`
+          : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`
+      )
+      .then(async (res) => {
+        setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
+        setHasMore(res.data.media.data.length === PAGE_SIZE);
+        setAfter(res.data.media.paging.cursors.after || null);
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -93,13 +94,15 @@ const InstagramPostsDialog = ({
     console.log(`value before update`, getValues()?.contents?.[index]);
 
     updateContents(index, {
-      ...mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? getValues()?.contents?.[index] : getValues()?.reminders?.[index],
+      ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE
+        ? getValues()?.contents?.[index]
+        : getValues()?.reminders?.[index]),
       instagramPost: { mediaUrl, mediaId: postId },
     });
     setIsOpen(false);
   };
 
-  const t = useTranslations('InstagramPostDialog')
+  const t = useTranslations("InstagramPostDialog");
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -120,29 +123,25 @@ const InstagramPostsDialog = ({
         ) : (
           <div className="flex flex-col gap-y-2">
             <Button type="button" variant="outline">
-              {t('selectPost')}
+              {t("selectPost")}
             </Button>
             {errors?.contents?.[index]?.id && (
-              <ErrorMessage>
-                {errors.contents[index].id.message}
-              </ErrorMessage>
+              <ErrorMessage>{errors.contents[index].id.message}</ErrorMessage>
             )}
           </div>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>{t('selectPost')}</DialogTitle>
-          <DialogDescription>
-            {t('seeYourLastPosts')}
-          </DialogDescription>
+          <DialogTitle>{t("selectPost")}</DialogTitle>
+          <DialogDescription>{t("seeYourLastPosts")}</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={posts.length}
           next={() => fetchPosts(after)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>{t('thereIsNoMore')}</p>}
+          endMessage={<p>{t("thereIsNoMore")}</p>}
           scrollableTarget="scrollableDiv"
         >
           <div
@@ -185,7 +184,7 @@ const InstagramPostsDialog = ({
           </div>
         </InfiniteScroll>
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
+          <Button onClick={() => setIsOpen(false)}>{t("close")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

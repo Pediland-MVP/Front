@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { useState, useEffect, MouseEvent } from "react";
 import Image from "next/image";
 import { Button } from "@/components/theme/ui/button";
@@ -20,6 +20,9 @@ import { ProductNamespace } from "@/types/product";
 import { useFormContext, UseFormStateReturn } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "./contentCycle";
+import api from "@/hooks/swr/api-client";
+import { AxiosError, AxiosResponse } from "axios";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 
 const PAGE_SIZE = 9;
 
@@ -34,38 +37,34 @@ const ProductsDialog = ({
   updateProducts,
   productsField,
 }: InstagramProductsDialogProps) => {
-  const t = useTranslations('Automations.ProductsDialog');
+  const t = useTranslations("Automations.ProductsDialog");
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState<ProductNamespace.Products>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-
-  const { formState: {errors} } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  const {
+    formState: { errors },
+  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
   const fetchProducts = async (pageNumber: number = 1) => {
     setIsLoading(true);
-    try {
-      const url = `${process.env.NEXT_PUBLIC_BACK_API_URL}/products?page=${pageNumber}&limit=${PAGE_SIZE}`;
-      const response = await fetch(url, { credentials: "include" });
-      const data: ProductNamespace.GET = await response.json();
-
-      if (!response.ok) {
-        console.error(t('fetchError'), response.statusText);
-        return;
-      }
-
-      setProducts((prevProducts) => [...prevProducts, ...data.items]);
-      setHasMore(data.meta.totalPages === PAGE_SIZE);
-      setPage((prevPage) => prevPage + 1);
-    } catch (error) {
-      console.error(t('fetchError'), error);
-    } finally {
-      setIsLoading(false);
-    }
+    await api
+      .get(`/products?page=${pageNumber}&limit=${PAGE_SIZE}`)
+      .then((res: AxiosResponse<ProductNamespace.GET>) => {
+        setProducts((prevProducts) => [...prevProducts, ...res.data.items]);
+        setHasMore(res.data.meta.totalPages === PAGE_SIZE);
+        setPage((prevPage) => prevPage + 1);
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        console.error(t("fetchError"), e);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
+
 
   useEffect(() => {
     if (isOpen) {
@@ -81,50 +80,51 @@ const ProductsDialog = ({
 
     updateProducts(index, {
       id: productId,
-      images: [{url}],
+      images: [{ url }],
     });
     setIsOpen(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger className='relative'>
+      <DialogTrigger className="relative">
         {productsField[index]?.id ? (
           <div className="relative rounded-lg">
             <Image
               src={productsField[index]?.images?.[0]?.url}
-              alt={t('coverImageAlt')}
+              alt={t("coverImageAlt")}
               width={300}
-              height={300}            
+              height={300}
             />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
               <Button type="button" className="text-white text-xs">
-                {t('changeProduct')}
+                {t("changeProduct")}
               </Button>
             </div>
           </div>
         ) : (
           <div className="flex justify-center w-full gap-y-2">
-            <Button type="button" variant="outline" className='text-xs'>{t('selectProduct')}</Button>
-            {errors?.products?.[index]?.id && (
-              <ErrorMessage>
-                {errors.products?.[index].id.message}
-              </ErrorMessage>
+            <Button type="button" variant="outline" className="text-xs">
+              {t("selectProduct")}
+            </Button>
+            {/*TODO: Check types*/}
+            {(errors as any)?.products?.[index]?.id && (
+              <ErrorMessage>{(errors as any).products?.[index].id.message}</ErrorMessage>
             )}
           </div>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>{t('selectProduct')}</DialogTitle>
-          <DialogDescription>{t('selectProductDescription')}</DialogDescription>
+          <DialogTitle>{t("selectProduct")}</DialogTitle>
+          <DialogDescription>{t("selectProductDescription")}</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={products.length}
           next={() => fetchProducts(page)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>{t('noMorePosts')}</p>}
+          endMessage={<p>{t("noMorePosts")}</p>}
           scrollableTarget="scrollableDiv"
         >
           <div
@@ -149,21 +149,25 @@ const ProductsDialog = ({
                   >
                     <Image
                       src={product.images[0].url}
-                      alt={product.title || t('instagramPostAlt')}
+                      alt={product.title || t("instagramPostAlt")}
                       layout="fill"
                       objectFit="cover"
                       className="hover:opacity-80 duration-150"
                     />
                     <div className="absolute inset-x-0 bottom-0 px-2 py-1 bg-black bg-opacity-50">
-                      <div className="text-white text-sm font-bold">{product.title}</div>
-                      <div className="text-white text-sm">{t('price', { price: product.price })}</div>
+                      <div className="text-white text-sm font-bold">
+                        {product.title}
+                      </div>
+                      <div className="text-white text-sm">
+                        {t("price", { price: product.price })}
+                      </div>
                     </div>
                   </div>
                 ))}
           </div>
         </InfiniteScroll>
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
+          <Button onClick={() => setIsOpen(false)}>{t("close")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -171,4 +175,3 @@ const ProductsDialog = ({
 };
 
 export default ProductsDialog;
-

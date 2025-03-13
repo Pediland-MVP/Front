@@ -26,8 +26,7 @@ export default function Component({ id }: { id: string }) {
     isLoading,
     mutate: mutateComments,
   } = useSWR<CommentNamespace.GET.Comment>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/${id}?includeReplies=true`,
-    fetcher
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/${id}?includeReplies=true`
   );
 
   useEffect(() => {

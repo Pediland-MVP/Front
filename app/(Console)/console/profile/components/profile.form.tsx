@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
@@ -39,6 +39,7 @@ import { Button } from "@/components/theme/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import api from "@/hooks/swr/api-client";
 
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
@@ -113,11 +114,11 @@ export function ProfileForm() {
     data: userData,
     error: userError,
     isLoading: userIsLoading,
-  } = useSWRImmutable<UserNamespace.GET>(
+  } = useSWRImmutable<UserNamespace.GET.User>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
     {
       revalidateOnMount: true,
-      refreshInterval: 30_000
+      refreshInterval: 30_000,
     }
   );
 
@@ -177,25 +178,15 @@ export function ProfileForm() {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users`, {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          toast({
-            title: t("profileUpdated"),
-          });
-          mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`);
-          return;
-        }
+    await api
+      .post("/users", {
+        ...data,
+      })
+      .then((res) => {
         toast({
-          title: t("profileUpdateFailed"),
+          title: t("profileUpdated"),
         });
+        mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`);
       })
       .catch((e) => {
         toast({
@@ -208,9 +199,9 @@ export function ProfileForm() {
       });
   };
 
-  const router = useRouter()
+  const router = useRouter();
   const onCancel = () => {
-    router.push('/console')
+    router.push("/console");
   };
 
   if (userIsLoading) return <LoadingSpinner className="h-full" />;
@@ -267,9 +258,9 @@ export function ProfileForm() {
                     value={
                       value
                         ? new DateObject(+value)
-                          .setLocale(persian_fa)
-                          .setCalendar(persian)
-                          .format("YYYY/MM/DD")
+                            .setLocale(persian_fa)
+                            .setCalendar(persian)
+                            .format("YYYY/MM/DD")
                         : ""
                     }
                     onChange={(date) => {
@@ -438,7 +429,12 @@ export function ProfileForm() {
             >
               {t("save")}
             </LoadingButton>
-            <Button onClick={onCancel} type="button" className="w-full" variant="outline">
+            <Button
+              onClick={onCancel}
+              type="button"
+              className="w-full"
+              variant="outline"
+            >
               {t("cancel")}
             </Button>
           </div>

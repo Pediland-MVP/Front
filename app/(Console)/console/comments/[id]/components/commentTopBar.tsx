@@ -1,7 +1,5 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Info, Phone, Video } from "lucide-react";
-import { leadNamespace } from "@/types/lead";
-import { ArrowLeft, X } from "@phosphor-icons/react/dist/ssr";
+import { X } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import { useTranslations } from "next-intl";
@@ -35,7 +33,7 @@ export default function CommentTopBar({ instagramPost }: CommentTopbarProps) {
             height={25}
             quality={100}
             className="w-10 h-10 rounded-sm"
-            alt={instagramPost.caption}
+            alt={instagramPost.caption || 'پست اینستاگرام'}
             src={instagramPost.picture?.url || ""}
           />
           <div className="flex flex-col">
@@ -46,12 +44,12 @@ export default function CommentTopBar({ instagramPost }: CommentTopbarProps) {
           </div>
         </div>
       </Link>
-        <X
-          onClick={() => router.push("/console/comments")}
-          className="text-gray-300 cursor-pointer hover:text-gray-700 duration-300"
-          height={24}
-          width={24}
-        />
+      <X
+        onClick={() => router.push("/console/comments")}
+        className="text-gray-300 cursor-pointer hover:text-gray-700 duration-300"
+        height={24}
+        width={24}
+      />
     </div>
   );
 }

@@ -3,11 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Pagination } from "./pagination";
-import useSWRImmutable from "swr/immutable";
-import { fetcher } from "@/hooks/swr/fetcher";
 import useDebounce from "@/hooks/useDebounce";
 // import EditContactDialog from "./editContactDialog";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import {
   Table,
@@ -18,7 +16,7 @@ import {
   TableHead,
 } from "@/components/theme/ui/table";
 import ImageWithFallback from "@/components/ui/imageWithCallback";
-import { Eye, Pencil } from "@phosphor-icons/react/dist/ssr";
+import { Pencil } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/theme/ui/card";
 import OrderListSkeleton from "./orderListSkeleton";
 import { Badge } from "@/components/ui/badge";
@@ -51,11 +49,11 @@ export default function OrderListCard({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [limit, setLimit] = useState<number>(10);
-  // const [orders, setContacts] = useState<ContactNamespace.Contacts>([]);
   const [page, setPage] = useState<number>(1);
   const debouncedSearchTerm = useDebounce(search, 500);
   const [open, setOpen] = useState<boolean>(false);
-  const [orderId, setOrderId] = useState<string>("");
+  const [selectedOrder, setSelectedOrder] =
+    useState<OrderNamespace.GET.OneItemOfOrders>();
 
   const {
     data: ordersData,
@@ -63,8 +61,7 @@ export default function OrderListCard({
     isLoading: isOrdersLoading,
     mutate: fetchOrders,
   } = useSWR<OrderNamespace.GET.Orders>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
-    fetcher
+    `/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`
   );
   const orders = ordersData?.items || [];
   const ordersMeta = ordersData?.meta || undefined;
@@ -82,16 +79,12 @@ export default function OrderListCard({
     setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  const handleSelect = (orderId: string) => {
-    setSelectedLeads((prev) =>
-      prev.includes(orderId)
-        ? prev.filter((id) => id !== orderId)
-        : [...prev, orderId]
-    );
+  const editOrderHandler = (order: OrderNamespace.GET.OneItemOfOrders) => {
+    setOpen(true);
+    setSelectedOrder(order);
   };
 
   const t = useTranslations("Orders.List");
-  const locale = useLocale();
 
   return (
     <Card className="border-b-2 border-gray-100">
@@ -99,11 +92,11 @@ export default function OrderListCard({
       <EditOrderDialog
         open={open}
         setOpen={setOpen}
-        order={orders.find((order: any) => order.id === orderId)!}
+        order={selectedOrder}
       />
 
       <div className="_table">
-        <Table className=" min-h-[1140]">
+        <Table className="">
           <TableHeader>
             <TableRow>
               <TableHead
@@ -184,11 +177,11 @@ export default function OrderListCard({
                 return (
                   <TableRow
                     key={order.id}
-                    className={
+                    className={cn(
                       selectedLeads.includes(order.id) ? "bg-muted" : ""
-                    }
+                    )}
                   >
-                    <TableCell className="">
+                    <TableCell>
                       <Link
                         href={`/console/products/${order?.orderProducts[0]?.product?.id}`}
                         target="_blank"
@@ -272,10 +265,7 @@ export default function OrderListCard({
                           size={20}
                           weight="light"
                           className="text-gray-500 hover:text-pink-700 cursor-pointer"
-                          onClick={() => {
-                            setOpen(true);
-                            setOrderId(order.id);
-                          }}
+                          onClick={() => editOrderHandler(order)}
                         />
                       </div>
                     </TableCell>

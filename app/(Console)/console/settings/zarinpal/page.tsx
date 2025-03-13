@@ -21,6 +21,8 @@ import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import useUser from "@/hooks/useUser";
+import api from "@/hooks/swr/api-client";
+import { AxiosError } from "axios";
 
 export default function Zarinpal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,9 +44,7 @@ export default function Zarinpal() {
     data: zarinpal,
     isLoading: isZarinpalLoading,
     error: zarinpalError,
-  } = useSWRImmutable(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/zarinpal`
-  );
+  } = useSWRImmutable(`/payments/zarinpal`);
 
   useEffect(() => {
     if (zarinpal) {
@@ -53,32 +53,17 @@ export default function Zarinpal() {
   }, [zarinpal]);
 
   const onSubmit = async (values: z.infer<typeof zarinpalFormSchema>) => {
-    setIsSubmitting(true)
-    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/zarinpal`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(values),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          toast({
-            title: t("success"),
-          });
-          return;
-        }
-
-        const json = (await res.json()) as ExceptionMessage;
-        const errMessage = t_ec(json.code);
+    setIsSubmitting(true);
+    await api.post(`/payments/zarinpal`, values)
+      .then(res => {
         toast({
-          title: errMessage,
+          title: t("success"),
         });
       })
-      .catch((err) => {
+      .catch((e: AxiosError<ExceptionMessage>) => {
         toast({
-          title: t_ec("CHECK_CONNECTION"),
+          title: t_ec(e.response?.data?.code),
+          variant: "destructive",
         });
       })
       .finally(() => {
@@ -104,7 +89,9 @@ export default function Zarinpal() {
         <Card className="border-l-2 border-gray-100 h-full p-6">
           <div className="mb-6">
             <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
-            <p className="text-[15px] text-muted-foreground">{t("description")}</p>
+            <p className="text-[15px] text-muted-foreground">
+              {t("description")}
+            </p>
           </div>
 
           <Form {...form}>
@@ -129,10 +116,7 @@ export default function Zarinpal() {
                 />
               </div>
               <div className="mt-6">
-                <LoadingButton
-                  isLoading={isSubmitting}
-                  className="w-full"
-                >
+                <LoadingButton isLoading={isSubmitting} className="w-full">
                   {t("save")}
                 </LoadingButton>
               </div>

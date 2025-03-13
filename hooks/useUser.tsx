@@ -1,15 +1,20 @@
-// hooks/useUserStatus.ts
-import { UserNamespace } from '@/types/user';
 import useSWR from 'swr';
+import { getAccessToken } from './swr/api-client';
+import { UserNamespace } from '@/types/user';
 
 export default function useUser() {
-  const { data, error, isLoading } = useSWR<UserNamespace.GET.User>(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`);
-
+  const { data, error, isLoading, mutate } = useSWR<UserNamespace.GET.User>(
+    '/users/me'
+  );
+  
   return {
     user: data,
-    isLoading: !data && !error,
-    error,
+    isLoading,
+    isError: !!error,
+    isAuthenticated: !!getAccessToken(),
+    mutate,
     hasSubscription: Boolean(data?.subscriptions?.length),
     hasInstagram: Boolean(data?.instagrams?.length),
+    error
   };
 }

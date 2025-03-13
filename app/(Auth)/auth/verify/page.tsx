@@ -24,9 +24,13 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import ButtonLoading from "@/components/ui/button-loading";
 import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
+import api from "@/hooks/swr/api-client";
+import { AxiosError } from "axios";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 
 export default function VerifyOTP() {
   const t = useTranslations("Auth.Verify");
+  const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isResendLoading, setIsResendLoading] = useState(false);
@@ -52,96 +56,42 @@ export default function VerifyOTP() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/verifyOtp`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(values),
-        }
-      );
-
-      if (!res.ok) {
-        if (res.status === 429) {
-          toast({
-            title: t("toasts.tryAgainLater"),
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (res.status === 409) {
-          toast({
-            title: t("toasts.alreadyVerified"),
-            variant: "destructive",
-          });
-          return;
-        }
-
+    await api
+      .post("/auth/mobile/verifyOtp", values)
+      .then((res) => {
         toast({
-          title: t("toasts.error"),
-          description: t("toasts.invalidOTP"),
+          title: t("toasts.loginSuccess"),
+          description: t("toasts.welcomeMessage"),
+        });
+        router.push("/console");
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        const message = t_ec(e.response?.data?.code);
+        toast({
+          title: message,
           variant: "destructive",
         });
-        return;
-      }
-
-      toast({
-        title: t("toasts.loginSuccess"),
-        description: t("toasts.welcomeMessage"),
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-      router.push("/console");
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: t("toasts.error"),
-        description: t("toasts.invalidOTP"),
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const resendHandler = async () => {
     setIsResendLoading(true);
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/resendOtp`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    )
-      .then(async (res) => {
-        if (!res.ok) {
-          if (res.status === 429) {
-            toast({
-              title: t("toasts.waitTwoMinutes"),
-              variant: "destructive",
-            });
-            return;
-          }
-
-          if (res.status === 409) {
-            toast({
-              title: t("toasts.alreadyVerified"),
-              variant: "destructive",
-            });
-            return;
-          }
-        }
-
+    await api
+      .post("/auth/mobile/resendOtp")
+      .then((res) => {
         toast({
-          title: t('toasts.resendOk'),
+          title: t("toasts.resendOk"),
         });
-      }).catch(e =>{
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        const message = t_ec(e.response?.data?.code);
         toast({
-          title: t('checkConnection')
-        })
+          title: message,
+          variant: "destructive",
+        });
       })
       .finally(() => {
         setIsResendLoading(false);
@@ -152,27 +102,27 @@ export default function VerifyOTP() {
     form.handleSubmit(onSubmit)();
   };
 
-  const [isLogoutLoading, setIsLogoutLoading] = useState(false)
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
-  const logoutHandler = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const logoutHandler = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    setIsLogoutLoading(true)
-    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/logout`, {
-      method: "DELETE",
-      credentials: "include",
-    })
+    setIsLogoutLoading(true);
+    await api
+      .delete("/auth/logout")
       .then(async (res) => {
         router.push("/");
       })
-      .catch(e => {
+      .catch((e) => {
         toast({
           title: t("logoutFailed"),
           variant: "destructive",
         });
       })
       .finally(() => {
-        setIsLogoutLoading(false)
-      })
+        setIsLogoutLoading(false);
+      });
   };
 
   return (
@@ -231,14 +181,22 @@ export default function VerifyOTP() {
                 className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
                 onClick={resendHandler}
               >
-                { isResendLoading ? <CircleNotch className="animate-spin"/> : t("resendCode")}
+                {isResendLoading ? (
+                  <CircleNotch className="animate-spin" />
+                ) : (
+                  t("resendCode")
+                )}
               </p>
 
               <p
                 className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
                 onClick={logoutHandler}
               >
-                { isLogoutLoading ? <CircleNotch className="animate-spin"/> : t("logout")}
+                {isLogoutLoading ? (
+                  <CircleNotch className="animate-spin" />
+                ) : (
+                  t("logout")
+                )}
               </p>
             </div>
           </div>
