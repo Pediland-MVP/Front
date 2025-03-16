@@ -28,16 +28,16 @@ const config = {
         Roboto: ["Roboto", "sans-serif"],
       },
       colors: {
+        foreground: "hsl(var(--foreground))",
+        background: "hsl(var(--background))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
+        label: "hsl(var(--label))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-        blueKommo: "#0E0142",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",

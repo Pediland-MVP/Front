@@ -7,7 +7,7 @@ export default function Page() {
   const t = useTranslations("Products");
 
   return (
-    <div className="_add-product">
+    <div className="_add-product h-full">
       <ProductForm />
     </div>
   );

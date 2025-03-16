@@ -1,15 +1,19 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import axios from "axios";
-import { UploadNamespace } from "@/types/upload";
+import { useForm, useWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { ProductNamespace } from "@/types/product";
 import { mutate } from "swr";
+import api from "@/hooks/swr/api-client";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UploadNamespace } from "@/types/upload";
+import { ProductNamespace } from "@/types/product";
+import { onInputP2EHandler } from "@/app/utils/p2eNumber";
+
+// UI Components from shadcn and custom theme
+import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
 import { Input } from "@/components/theme/ui/input";
 import { Textarea } from "@/components/theme/ui/textarea";
 import {
@@ -19,15 +23,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/theme/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { FileUpload } from "@/components/file-upload";
 import LoadingButton from "@/components/ui/button-loading";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/theme/ui/switch";
+import { Label } from "@/components/theme/ui/label";
 import { Card } from "@/components/theme/ui/card";
-import { onInputP2EHandler } from "@/app/utils/p2eNumber";
-import api from "@/hooks/swr/api-client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/theme/ui/select";
+import MultipleSelector, { Option } from "@/components/theme/ui/multi-selector";
+import React from "react";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -36,55 +47,42 @@ export type ProductFormProps = {
 export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const t = useTranslations("Products.Form");
   const t_ec = useTranslations("ERROR_CODES");
+  const router = useRouter();
 
+  // تعریف اسکیما با استفاده از zod
   const formSchema = z
     .object({
-      title: z
-        .string({
-          message: t("Alerts.title"),
-        })
-        .min(1, {
-          message: t("Alerts.titleLenght"),
-        }),
       status: z.boolean(),
-      price: z.union([z.number().int().nonnegative(), z.nan()]),
-      discountPrice: z
-        .union([z.number().int().nonnegative(), z.nan()])
-        .optional()
-        .nullable(),
-      isDiscount: z.boolean().default(false),
-      // .transform((data) => data || undefined),
-      // .transform((data) => data || undefined),
-      isInfinite: z.boolean(),
-      quantity: z
+      type: z.string(),
+      title: z
+        .string({ message: t("Alerts.title") })
+        .min(1, { message: t("Alerts.titleLenght") }),
+      isStock: z.string(), // "unlimited" یا "limited"
+      stock: z
         .number()
         .nonnegative()
         .optional()
         .transform((data) => data || 0),
+      price: z.union([z.number().int().nonnegative(), z.nan()]),
+      isDiscount: z.boolean().default(false),
+      discountPrice: z
+        .union([z.number().int().nonnegative(), z.nan()])
+        .optional()
+        .nullable(),
       description: z
-        .string({
-          message: t("Alerts.description"),
-        })
-        .min(5, {
-          message: t("Alerts.descrptionLength"),
-        }),
+        .string({ message: t("Alerts.description") })
+        .min(5, { message: t("Alerts.descrptionLength") }),
       imageId: z
-        .number({
-          message: t("Alerts.image"),
-        })
+        .number({ message: t("Alerts.image") })
         .min(1, t("Alerts.image")),
       isDigital: z.boolean(),
+      // فیلدهای مرتبط با انتخاب رنگ و سایز
+      isColor: z.boolean().default(false),
+      colorsVariants: z.string().optional(),
+      isSize: z.boolean().default(false),
+      sizesVariants: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-      // if (!data.isInfinite && (!data.quantity || data.quantity <= 0)) {
-      //   console.log("Adding issue for quantity");
-      //   ctx.addIssue({
-      //     code: z.ZodIssueCode.custom,
-      //     message: "وقتی تعداد نامحدود نیست، تعداد نمی‌تواند خالی یا صفر باشد.",
-      //     path: ["quantity"],
-      //   });
-      // }
-
       if (
         data.isDiscount &&
         (data.discountPrice === undefined || data.discountPrice === null)
@@ -95,8 +93,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           path: ["discountPrice"],
         });
       }
-
-      if (data.price! < 1000 && data.price !== 0) {
+      if (data.price < 1000 && data.price !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -104,16 +101,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           path: ["price"],
         });
       }
-
       if (data.discountPrice && data.isDiscount) {
-        if (data.discountPrice >= data.price!) {
+        if (data.discountPrice >= data.price) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "قیمت تخفیف نمی‌تواند بیشتر یا مساوی قیمت کالا باشد.",
             path: ["discountPrice"],
           });
         }
-
         if (data.discountPrice < 1000) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -124,31 +119,35 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       }
     });
 
+  // مقداردهی اولیه فرم با در نظر گرفتن حالت ایجاد یا ویرایش
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      isDigital: false,
       status: true,
-      isInfinite: false,
-      ...(shouldBeEdit || {}), // اطمینان از مقدار پیش‌فرض
+      type: "product",
+      title: "",
+      isStock: "unlimited",
+      stock: 0,
+      price: 0,
+      isDiscount: false,
+      discountPrice: undefined,
+      description: "",
       imageId: shouldBeEdit?.images?.[0]?.id || undefined,
-      isDiscount:
-        typeof shouldBeEdit?.discountPrice === "number"
-          ? shouldBeEdit.discountPrice >= 0
-            ? true
-            : false
-          : false,
-      discountPrice:
-        typeof shouldBeEdit?.discountPrice === "number"
-          ? shouldBeEdit.discountPrice >= 0
-            ? shouldBeEdit?.discountPrice
-            : undefined
-          : undefined,
+      isDigital: false,
+      isColor: false,
+      colorsVariants: "",
+      isSize: false,
+      sizesVariants: "",
+      ...(shouldBeEdit || {}),
     },
   });
 
+  // نظارت بر تغییر فیلد "type" برای نمایش عنوان صحیح
+  const selectedType = useWatch({ control: form.control, name: "type" });
+
+  // نمایش توست در صورت بروز خطای imageId
   useEffect(() => {
-    if (form.formState?.errors?.imageId) {
+    if (form.formState.errors.imageId) {
       toast({
         title: t("uploadProductImage"),
         variant: "destructive",
@@ -157,68 +156,61 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     console.log("Form errors:", form.formState.errors);
   }, [form.formState.errors.imageId]);
 
-  const router = useRouter();
-
   const [isLoading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [images, setImages] = useState<string[]>(
+    shouldBeEdit?.images?.[0]?.url ? [shouldBeEdit.images[0].url] : []
+  );
+
+  // تابع ارسال فرم
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    //TODO: Move to superRefine
     if (
-      !values.isInfinite &&
-      (typeof values.quantity == "undefined" || values.quantity == null)
+      values.isStock === "limited" &&
+      (values.stock === undefined || values.stock === null)
     ) {
-      form.setError("quantity", {
-        message: t("quantityError"),
-      });
+      form.setError("stock", { message: t("stockError") });
       return;
     }
-
     if (values.isDiscount === undefined || values.isDiscount === null) {
       values.discountPrice = null;
     }
-
     setLoading(true);
-    await api({
-      method: shouldBeEdit ? "PUT" : "POST",
-      url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
-      data: values,
-    }).then(async (res) => {
-      toast({
-        title: t("productAddedSuccess"),
+    try {
+      await api({
+        method: shouldBeEdit ? "PUT" : "POST",
+        url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
+        data: values,
       });
+      toast({ title: t("productAddedSuccess") });
       await mutate(
         (key) => typeof key === "string" && key.includes("products")
       );
       router.push("/console/products");
-    })
-    .catch(e => {
+    } catch (e: any) {
       toast({
         title: t_ec(e.response?.data.code),
         variant: "destructive",
       });
-    }).
-    finally(() => setLoading(false))
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [isUploading, setIsUploading] = useState(false);
-  const [images, setImages] = useState<string[]>(
-    shouldBeEdit?.images?.[0].url ? [shouldBeEdit?.images?.[0].url] : []
-  );
+  // تابع آپلود فایل
   const handleFileUpload = async (files: File[]) => {
     setIsUploading(true);
     const file = files[0];
     const formData = new FormData();
     formData.append("image", file);
-
     const controller = new AbortController();
-    const signal = controller.signal;
 
     try {
       const response = await api.post<UploadNamespace.POST["Image"]>(
         `/upload/image`,
         formData,
         {
-          signal,
+          signal: controller.signal,
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percentCompleted = Math.round(
@@ -244,90 +236,160 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
   };
 
+  const OPTIONS: Option[] = [
+    { label: "قرمز", value: "red" },
+    { label: "آبی", value: "blue" },
+    { label: "سبز", value: "green" },
+    { label: "زرد", value: "yellow" },
+    { label: "صورتی", value: "pink" },
+    { label: "بنفش", value: "purple" },
+    { label: "نارنجی", value: "orange" },
+    { label: "سیاه", value: "black" },
+    { label: "سفید", value: "white" },
+    { label: "خاکستری", value: "gray" },
+    { label: "قهوه‌ای", value: "brown" },
+    { label: "فیروزه‌ای", value: "turquoise" },
+    { label: "سرمه‌ای", value: "navy" },
+    { label: "آبی روشن", value: "skyblue" },
+    { label: "سبز تیره", value: "darkgreen" },
+  ];
+
+  const [value, setValue] = React.useState<Option[]>([]);
+
   return (
-    <div className="w-full xl:w-1/2 2xl:w-1/3">
-      <Card className="border-l-2 border-gray-100 px-8 py-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+    <Card className="h-full p-4 xl:p-5">
+      <div className="mb-6">
+        <h2 className="font-semibold text-foreground mb-1">{t("title")}</h2>
+        <p className="text-[15px] text-muted-foreground">{t("description")}</p>
+      </div>
+      <Form {...form}>
+        <form
+          className="grid grid-cols-1 xl:grid-cols-2 gap-10"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          {/* Item Details */}
+          <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
+            {/* Item Status */}
             <FormField
               control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("title")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("productTitle")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
               name="status"
-              control={form.control}
               render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Label htmlFor="direct">{t("active")}</Label>
-                  <Switch
-                    dir="ltr"
-                    id="status"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <Label htmlFor="direct">{t("inactive")}</Label>
-                </div>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("price")}</FormLabel>
+                <FormItem className="flex items-center gap-2 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t("status")}</FormLabel>
                   <FormControl>
-                    <Input
-                      onInput={onInputP2EHandler}
-                      placeholder="۰.۰۰"
-                      {...field}
-                      onChange={(e) => field.onChange(+e.target.value)}
-                    />
+                    <div className="flex gap-2 items-center">
+                      <Label htmlFor="status-active">{t("active")}</Label>
+                      <Switch
+                        id="status-active"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <Label htmlFor="status-inactive">{t("inactive")}</Label>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Item Type */}
             <FormField
+              name="type"
               control={form.control}
-              name="isDiscount"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("activateDiscount")}</FormLabel>
+                <FormItem className="flex items-center gap-2 xl:gap-3 mb-4 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">
+                    {t("typeItem")}
+                  </FormLabel>
                   <FormControl>
-                    <Switch
-                      dir="ltr"
-                      id="isinfinite"
-                      checked={field.value}
-                      onCheckedChange={(checked) => field.onChange(checked)}
-                      type="button"
-                      className="mx-2"
-                    />
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex items-center h-7"
+                    >
+                      <FormItem className="flex items-center gap-1.5 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="product" />
+                        </FormControl>
+                        <Label>{t("physicalProduct")}</Label>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-1.5 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="service" />
+                        </FormControl>
+                        <Label>{t("digitalService")}</Label>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
-                  {field.value && (
+                </FormItem>
+              )}
+            />
+
+            {/* Item Title */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">
+                    {selectedType === "product"
+                      ? t("titleProduct")
+                      : selectedType === "service"
+                        ? t("titleService")
+                        : t("titleNull")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Item Stock */}
+            <FormField
+              name="isStock"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-2 xl:gap-3 mb-4 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t("stock")}</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex items-center h-7"
+                    >
+                      <FormItem className="flex items-center gap-1.5 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="unlimited" />
+                        </FormControl>
+                        <Label>{t("unlimited")}</Label>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-1.5 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="limited" />
+                        </FormControl>
+                        <Label>{t("limited")}</Label>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                  {field.value === "limited" && (
                     <FormField
                       control={form.control}
-                      name="discountPrice"
+                      name="stock"
                       render={({ field }) => (
-                        <FormItem>
-                          {/* <FormLabel>{t("discountPrice")}</FormLabel> */}
+                        <FormItem className="space-y-0 flex-1">
                           <FormControl>
                             <Input
+                              type="number"
                               onInput={onInputP2EHandler}
-                              placeholder="۰.۰۰"
+                              placeholder="۰"
                               {...field}
-                              value={field.value || 0}
-                              onChange={(e) => field.onChange(+e.target.value)}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value))
+                              }
                             />
                           </FormControl>
                           <FormMessage />
@@ -339,39 +401,19 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               )}
             />
 
-            <Controller
-              name="isInfinite"
-              control={form.control}
-              render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Label htmlFor="direct">{t("unlimitedQuantity")}</Label>
-                  <Switch
-                    dir="ltr"
-                    id="isinfinite"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <Label htmlFor="direct">{t("limitedQuantity")}</Label>
-                </div>
-              )}
-            />
-
+            {/* Item Price */}
             <FormField
               control={form.control}
-              name="quantity"
+              name="price"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("quantity")}</FormLabel>
+                <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t("price")}</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
                       onInput={onInputP2EHandler}
-                      placeholder="۰.۰۰"
+                      placeholder="۰"
                       {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                      disabled={form.getValues().isInfinite}
+                      onChange={(e) => field.onChange(+e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -379,33 +421,161 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               )}
             />
 
-            <Controller
-              name="isDigital"
+            {/* Item Discount */}
+            <FormField
               control={form.control}
+              name="isDiscount"
               render={({ field }) => (
-                <div className="flex gap-2 items-center">
-                  <Label htmlFor="direct">{t("digitalService")}</Label>
-                  <Switch
-                    dir="ltr"
-                    id="direct"
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                  <Label htmlFor="direct">{t("physicalProduct")}</Label>
-                </div>
+                <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">
+                    {t("activateDiscount")}
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      id="isDiscount"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      type="button"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  {field.value && (
+                    <FormField
+                      control={form.control}
+                      name="discountPrice"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
+                          <FormLabel className="min-w-[88px] xl:min-w-fit">
+                            {t("discountPrice")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              onInput={onInputP2EHandler}
+                              placeholder="۰"
+                              {...field}
+                              value={
+                                field.value == null || field.value === 0
+                                  ? ""
+                                  : field.value
+                              }
+                              onChange={(e) => {
+                                const newValue = e.target.value;
+                                field.onChange(newValue === "" ? 0 : +newValue);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </FormItem>
               )}
             />
 
+            {/* Item Color Variants */}
+            <FormField
+              control={form.control}
+              name="isColor"
+              render={({ field }) => (
+                <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">
+                    {t("activateColor")}
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      id="isColor"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      type="button"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  {field.value && (
+                    <FormField
+                      control={form.control}
+                      name="colorsVariants"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
+                          <FormControl>
+                            <MultipleSelector
+                              value={value}
+                              onChange={setValue}
+                              defaultOptions={OPTIONS}
+                              placeholder={t("selectColor")}
+                              emptyIndicator={
+                                <p className="text-center text-gray-600 dark:text-gray-400">
+                                  موردی یافت نشد
+                                </p>
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </FormItem>
+              )}
+            />
+
+            {/* Item Color Variants */}
+            <FormField
+              control={form.control}
+              name="isSize"
+              render={({ field }) => (
+                <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
+                  <FormLabel className="min-w-[88px] xl:min-w-[80px]">
+                    {t("activateSize")}
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      id="isSize"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      type="button"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  {field.value && (
+                    <FormField
+                      control={form.control}
+                      name="colorsVariants"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
+                          <FormControl>
+                            <MultipleSelector
+                              value={value}
+                              onChange={setValue}
+                              defaultOptions={OPTIONS}
+                              placeholder={t("selectSize")}
+                              emptyIndicator={
+                                <p className="text-center text-gray-600 dark:text-gray-400">
+                                  موردی یافت نشد
+                                </p>
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </FormItem>
+              )}
+            />
+
+            {/* Item Description */}
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("description")}</FormLabel>
+                  <FormLabel>{t("descriptionLabel")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("describeProduct")}
-                      rows={5}
+                      placeholder={t("descriptionPlaceHolder")}
+                      rows={6}
                       {...field}
                     />
                   </FormControl>
@@ -413,24 +583,28 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 </FormItem>
               )}
             />
+          </div>
 
-            <div>
-              <FormLabel>{t("uploadImage")}</FormLabel>
-              <FileUpload
-                images={images}
-                accept="image/*"
-                onChange={handleFileUpload}
-                progress={uploadProgress}
-                isUploading={isUploading}
-              />
-            </div>
+          {/* Item Images */}
+          <div>
+            <FormLabel>{t("uploadImage")}</FormLabel>
+            <FileUpload
+              images={images}
+              accept="image/*"
+              onChange={handleFileUpload}
+              progress={uploadProgress}
+              isUploading={isUploading}
+            />
+          </div>
 
+          {/* دکمه ارسال فرم */}
+          <div className="xl:col-span-2">
             <LoadingButton isLoading={isLoading} type="submit">
               {t("submitProduct")}
             </LoadingButton>
-          </form>
-        </Form>
-      </Card>
-    </div>
+          </div>
+        </form>
+      </Form>
+    </Card>
   );
 }
