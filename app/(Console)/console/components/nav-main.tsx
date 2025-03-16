@@ -75,8 +75,8 @@ export function NavMain({
                       tooltip={item.title}
                       className={
                         pathname === item.url
-                          ? "text-primary hover:text-primary bg-blue-100"
-                          : "text-gray-700 hover:text-primary"
+                          ? "text-foreground hover:text-foreground bg-blue-100"
+                          : "text-gray-700 hover:text-foreground"
                       }
                       onClick={() => {
                         // اگر منو هنوز باز نیست، با کلیک بازش می‌کنیم
@@ -95,8 +95,8 @@ export function NavMain({
                     tooltip={item.title}
                     className={
                       pathname === item.url
-                        ? "text-primary hover:text-primary bg-blue-100"
-                        : "text-gray-700 hover:text-primary"
+                        ? "text-foreground hover:text-foreground bg-blue-100"
+                        : "text-gray-700 hover:text-foreground"
                     }
                     onClick={() => {
                       if (isMobile) toggleSidebar();
@@ -126,8 +126,8 @@ export function NavMain({
                               asChild
                               className={
                                 pathname.startsWith(subItem.url)
-                                  ? "text-primary hover:text-primary bg-blue-100"
-                                  : "text-gray-700 hover:text-primary"
+                                  ? "text-foreground hover:text-foreground bg-blue-100"
+                                  : "text-gray-700 hover:text-foreground"
                               }
                               onClick={() => {
                                 // وقتی روی زیرمنو کلیک می‌کنیم، openMenu را به منوی والد اختصاص می‌دهیم (و منوهای دیگر بسته می‌شوند)

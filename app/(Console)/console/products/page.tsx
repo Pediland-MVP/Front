@@ -4,24 +4,26 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ProductListTable from "./components/productListTable";
-import { useHeaderTools } from "../components/context/headerToolsContext";
+import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 
 export default function Page() {
-  const t = useTranslations('Products')
+  const t = useTranslations("Products");
 
-  const { setTools } = useHeaderTools();
+  const { setTools } = useHeaderFeatures();
   useEffect(() => {
-    setTools(<Link href="/console/products/add">
-      <Button size={"sm"}>
-        <span className="hidden sm:inline"> {t('add')}</span>{" "}
-        <Plus size={20} />
-      </Button>
-    </Link>);
+    setTools(
+      <Link href="/console/products/add">
+        <Button size={"sm"} className="mt-3 xl:mt-0">
+          {t("add")}
+          <Plus />
+        </Button>
+      </Link>
+    );
     return () => {
-      setTools(null)
+      setTools(null);
     };
   }, []);
 

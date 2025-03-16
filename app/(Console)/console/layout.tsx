@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import Header from "./components/header";
 import { AppSidebar } from "./components/app-sidebar";
-import { HeaderToolsProvider } from "./components/context/headerToolsContext";
+import { HeaderFeaturesProvider } from "./components/context/headerFeaturesContext";
 
 // UI Imports Here
 import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
@@ -41,10 +41,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <AppSidebar side={locale === "fa" ? "right" : "left"} />
       <SidebarInset>
-        <HeaderToolsProvider>
+        <HeaderFeaturesProvider>
           <Header />
           {children}
-        </HeaderToolsProvider>
+        </HeaderFeaturesProvider>
       </SidebarInset>
     </SidebarProvider>
   );

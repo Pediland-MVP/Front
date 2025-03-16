@@ -270,7 +270,7 @@ const SidebarTrigger = React.forwardRef<
       role="button"
       data-sidebar="trigger"
       className={cn(
-        "inline-flex items-center justify-center cursor-pointer text-primary hover:text-secondary duration-300 focus:outline-none",
+        "inline-flex items-center justify-center cursor-pointer text-foreground hover:text-secondary duration-300 focus:outline-none",
         className
       )}
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {

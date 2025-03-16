@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import ConversationsList from "./components/conversationsList";

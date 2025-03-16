@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ContentCycleTable from "./components/contentCycleTable";
-import { useHeaderTools } from "../../components/context/headerToolsContext";
+import { useHeaderFeatures } from "../../components/context/headerFeaturesContext";
 import Link from "next/link";
 // UI Imports Here
 import { Button } from "@/components/theme/ui/button";
@@ -12,19 +12,19 @@ import { Plus } from "@phosphor-icons/react/dist/ssr";
 export default function ContentCyclePage() {
   const t = useTranslations("Automations");
 
-  const { setTools } = useHeaderTools();
+  const { setTools } = useHeaderFeatures();
 
   useEffect(() => {
     setTools(
       <Link href="/console/actions/content-cycle/add">
-        <Button size={"sm"}>
-          <span>{t("add")}</span>{" "}
-          <Plus size={20} />
+        <Button size={'sm'} className="mt-3 xl:mt-0">
+          {t("add")}
+          <Plus />
         </Button>
       </Link>
     );
     return () => {
-      setTools(null)
+      setTools(null);
     };
   }, []);
 

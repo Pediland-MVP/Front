@@ -133,20 +133,6 @@ function ConversationsList() {
           className="lg:w-1/3 w-full h-full bg-white"
         >
           <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
-            <div className="w-full flex lg:hidden justify-between mb-4">
-              <Sidebar
-                onClick={() => sidebar.setOpenMobile(true)}
-                className="text-muted-foreground"
-                height={30}
-                width={30}
-              />
-              <ArrowLeft
-                onClick={() => router.push("/console")}
-                className="text-muted-foreground"
-                height={30}
-                width={30}
-              />
-            </div>
             <div
               id="chats-container"
               className="flex-grow overflow-y-auto w-full"

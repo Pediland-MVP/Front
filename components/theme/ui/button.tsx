@@ -21,9 +21,9 @@ const buttonVariants = cva(
         contact: "text-white",
       },
       size: {
-        default: "h-9 px-4 py-2 gap-1 [&_svg]:size-5",
-        sm: "h-8 rounded-md px-3 gap-1 text-xs [&_svg]:size-4",
-        lg: "h-10 rounded-md px-3 gap-[5px] text-[15px] [&_svg]:size-6",
+        default: "h-9 px-4 gap-2 [&_svg]:size-5 [&_svg]:-ml-1.5",
+        sm: "h-8 px-3 gap-1.5 text-xs [&_svg]:size-4 [&_svg]:-ml-1",
+        lg: "h-10 px-5 gap-[10px] text-[15px] [&_svg]:size-6 [&_svg]:-ml-2",
         icon: "h-9 w-9",
       },
     },

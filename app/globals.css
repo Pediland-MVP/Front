@@ -13,6 +13,7 @@
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --primary: 215 100% 60%;
+    --secondary: 296 98% 29%;
     /* Final Color Scheme End */
     
     --border: 240 5.9% 90%;
@@ -25,7 +26,6 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 297 63.6% 28%;
     --secondary-foreground: 240 5.9% 10%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
