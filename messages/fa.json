@@ -585,14 +585,14 @@
             "discountPrice": "قیمت با تخفیف",
             "activateColor": "تنوع رنگ",
             "selectColor": "انتخاب رنگ",
-
-
             "activateSize": "تنوع سایز",
             "selectSize": "انتخاب سایز",
-            "have": "دارد",
-            "notHave": "ندارد",
             "descriptionLabel": "توضیحات",
-            "descriptionPlaceHolder": "توضیحات کالا یا خدمت خود را بنویسید",        
+            "descriptionPlaceHolder": "توضیحات کالا یا خدمت خود را بنویسید",
+            "customFields": "فیلدهای سفارشی",
+            "customFieldsDescription": "در صورت نیاز می‌توانید تا 5 فیلد سفارشی را به فرم سفارش این کالا یا خدمات اضافه کنید.",
+            "addCustomField": "افزودن فیلد سفارشی",
+
 
 
             "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",

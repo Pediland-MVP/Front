@@ -10,7 +10,7 @@ export interface LoadingSpinner {
 const LoadingSpinner: FC<LoadingSpinner> = ({ className, ...props }) => {
     return (
         <div className={`w-full flex items-center justify-center ${className}`}>
-            <CircleNotch {...props} className={`animate-spin text-primary ${className}`} size={28} />
+            <CircleNotch {...props} className={`animate-spin text-secondary ${className}`} size={28} />
         </div>
     )
 }

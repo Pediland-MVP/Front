@@ -5,10 +5,7 @@ import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import { Input } from "@/components/theme/ui/input";
 import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
-import {
-  ListMagnifyingGlass,
-  MagnifyingGlass,
-} from "@phosphor-icons/react/dist/ssr";
+import { ListMagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
 
 export default function page() {
   const { setButtons, setTools } = useHeaderFeatures();
