@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import api from "@/hooks/swr/api-client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UploadNamespace } from "@/types/upload";
-import { ProductNamespace } from "@/types/product";
+import { ProductItem, ProductNamespace } from "@/types/product";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 // UI Components from shadcn and custom theme
@@ -47,6 +47,9 @@ import {
   PlusCircle,
   TrashSimple,
 } from "@phosphor-icons/react/dist/ssr";
+import useSWRImmutable from "swr/immutable";
+import { ProductVariationNamespace } from "@/types/variations/productVariation.namespace";
+import colors from "react-multi-date-picker/plugins/colors";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -57,6 +60,29 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const t_ec = useTranslations("ERROR_CODES");
   const router = useRouter();
 
+  const {
+    data: variations,
+    isLoading: isVariationsLoading,
+    error: variationsError,
+  } = useSWRImmutable<ProductVariationNamespace.GET.ProductVariationTypes>(
+    `/variations/variationTypes?page=1&limit=100`
+  );
+  const {
+    data: variationValues,
+    isLoading: isVariationValuesLoading,
+    error: variationValuesError,
+  } = useSWRImmutable<ProductVariationNamespace.GET.ProductVariationValues>(
+    `/variations/variationValues?page=1&limit=100`
+  );
+
+  // TODO: Dynamic
+  const colorVariationType = variations?.items?.find(
+    (vari) => vari.title === "رنگ"
+  );
+  const sizeVariationType = variations?.items?.find(
+    (vari) => vari.title === "اندازه"
+  );
+
   // تعریف اسکیما با استفاده از zod
   const formSchema = z
     .object({
@@ -65,12 +91,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       title: z
         .string({ message: t("Alerts.title") })
         .min(1, { message: t("Alerts.titleLenght") }),
-      isStock: z.string(), // "unlimited" یا "limited"
-      stock: z
-        .number()
-        .nonnegative()
-        .optional()
-        .transform((data) => data || 0),
+      isInfinite: z.boolean(),
+      quantity: z.number().nonnegative().optional(),
       price: z.union([z.number().int().nonnegative(), z.nan()]),
       isDiscount: z.boolean().default(false),
       discountPrice: z
@@ -84,11 +106,36 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         .number({ message: t("Alerts.image") })
         .min(1, t("Alerts.image")),
       isDigital: z.boolean(),
-      // فیلدهای مرتبط با انتخاب رنگ و سایز
-      isColor: z.boolean().default(false),
-      colorsVariants: z.string().optional(),
-      isSize: z.boolean().default(false),
-      sizesVariants: z.string().optional(),
+      haveColor: z.boolean().nullable(),
+      haveSize: z.boolean().nullable(),
+      sizes: z
+        .array(
+          z.object({
+            id: z.number(),
+            createDate: z.string(),
+            updateDate: z.string(),
+            value: z.string(),
+            label: z.string(),
+            colorHex: z.string().nullable(),
+            variationTypeId: z.number(),
+          })
+        )
+        .optional(),
+      colors: z
+        .array(
+          z.object({
+            id: z.number(),
+            createDate: z.string(),
+            updateDate: z.string(),
+            value: z.string(),
+            label: z.string(),
+            colorHex: z.string().nullable(),
+            variationTypeId: z.number(),
+          })
+        )
+        .optional(),
+      // Just used in final
+      variationValueIds: z.array(z.number()),
     })
     .superRefine((data, ctx) => {
       if (
@@ -134,22 +181,72 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       status: true,
       type: "product",
       title: "",
-      isStock: "unlimited",
-      stock: 0,
+      isInfinite: false,
+      quantity: 0,
       price: 0,
-      isDiscount: false,
-      discountPrice: undefined,
       description: "",
       imageId: shouldBeEdit?.images?.[0]?.id || undefined,
       isDigital: false,
-      isColor: false,
-      colorsVariants: "",
-      isSize: false,
-      sizesVariants: "",
+      haveColor: false,
+      haveSize: false,
+      colors: [],
+      sizes: [],
+      variationValueIds: [],
+      isDiscount:
+      typeof shouldBeEdit?.discountPrice === "number"
+        ? shouldBeEdit.discountPrice >= 0
+          ? true
+          : false
+        : false,
+    discountPrice:
+      typeof shouldBeEdit?.discountPrice === "number"
+        ? shouldBeEdit.discountPrice >= 0
+          ? shouldBeEdit?.discountPrice
+          : undefined
+        : undefined,
       ...(shouldBeEdit || {}),
     },
   });
 
+  useEffect(() => {
+    if (!shouldBeEdit) return;
+
+    if (sizeVariationType) {
+      if (!shouldBeEdit.productVariations?.length) return;
+      const sizes: NonNullable<ProductItem["productVariations"]>[0]["variationValues"][0][] = [];
+      shouldBeEdit.productVariations.map((productVariation) => {
+        productVariation.variationValues.forEach((variationValue) => {
+          if (variationValue.variationTypeId == sizeVariationType?.id) {
+            sizes.push(variationValue);
+          }
+        });
+      });
+      form.setValue("sizes", sizes);
+      if (sizes.length > 0) {
+        form.setValue("haveSize", true);
+      }
+    }
+
+    if (colorVariationType) {
+      if (!shouldBeEdit.productVariations?.length) return;
+      const colors: NonNullable<ProductItem["productVariations"]>[0]["variationValues"][0][] = [];
+      productVariations: shouldBeEdit.productVariations.map(
+        (productVariation) => {
+          variationValues: productVariation.variationValues.forEach(
+            (variationValue) => {
+              if (variationValue.variationTypeId == colorVariationType?.id) {
+                colors.push(variationValue);
+              }
+            }
+          );
+        }
+      );
+      form.setValue("colors", colors);
+      if (colors.length > 0) {
+        form.setValue("haveColor", true);
+      }
+    }
+  }, [shouldBeEdit, colorVariationType, sizeVariationType]);
   // نظارت بر تغییر فیلد "type" برای نمایش عنوان صحیح
   const selectedType = useWatch({ control: form.control, name: "type" });
 
@@ -174,15 +271,27 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   // تابع ارسال فرم
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (
-      values.isStock === "limited" &&
-      (values.stock === undefined || values.stock === null)
+      values.isInfinite &&
+      (values.quantity === undefined || values.quantity === null)
     ) {
-      form.setError("stock", { message: t("stockError") });
+      form.setError("quantity", { message: t("stockError") });
       return;
     }
-    if (values.isDiscount === undefined || values.isDiscount === null) {
+
+    if (!values.isDiscount) {
       values.discountPrice = null;
     }
+
+    if (values.sizes?.length && values.haveSize) {
+      values.variationValueIds = [...values.variationValueIds, ...values.sizes.filter(vari => vari.variationTypeId === sizeVariationType?.id).map((size) => size.id)];
+    }
+
+    if (values.colors?.length && values.haveColor) {
+      values.variationValueIds = [...values.variationValueIds, ...values.colors.filter(vari => vari.variationTypeId === colorVariationType?.id).map((color) => color.id)];
+    }
+
+
+
     setLoading(true);
     try {
       await api({
@@ -244,39 +353,49 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
   };
 
-  const OPTIONS: Option[] = [
-    { label: "قرمز", value: "red" },
-    { label: "آبی", value: "blue" },
-    { label: "سبز", value: "green" },
-    { label: "زرد", value: "yellow" },
-    { label: "صورتی", value: "pink" },
-    { label: "بنفش", value: "purple" },
-    { label: "نارنجی", value: "orange" },
-    { label: "سیاه", value: "black" },
-    { label: "سفید", value: "white" },
-    { label: "خاکستری", value: "gray" },
-    { label: "قهوه‌ای", value: "brown" },
-    { label: "فیروزه‌ای", value: "turquoise" },
-    { label: "سرمه‌ای", value: "navy" },
-    { label: "آبی روشن", value: "skyblue" },
-    { label: "سبز تیره", value: "darkgreen" },
-  ];
+  // const OPTIONS: Option[] = [
+  //   { label: "قرمز", value: "red" },
+  //   { label: "آبی", value: "blue" },
+  //   { label: "سبز", value: "green" },
+  //   { label: "زرد", value: "yellow" },
+  //   { label: "صورتی", value: "pink" },
+  //   { label: "بنفش", value: "purple" },
+  //   { label: "نارنجی", value: "orange" },
+  //   { label: "سیاه", value: "black" },
+  //   { label: "سفید", value: "white" },
+  //   { label: "خاکستری", value: "gray" },
+  //   { label: "قهوه‌ای", value: "brown" },
+  //   { label: "فیروزه‌ای", value: "turquoise" },
+  //   { label: "سرمه‌ای", value: "navy" },
+  //   { label: "آبی روشن", value: "skyblue" },
+  //   { label: "سبز تیره", value: "darkgreen" },
+  // ];
 
-  const [value, setValue] = React.useState<Option[]>([]);
+  // const [value, setValue] = React.useState<Option[]>([]);
 
-  const [customFields, setCustomFields] = useState<{ id: number }[]>([]);
+  // const [customFields, setCustomFields] = useState<{ id: number }[]>([]);
 
-  // افزودن فیلد جدید (حداکثر ۵ فیلد)
-  const addCustomField = () => {
-    if (customFields.length < 5) {
-      setCustomFields([...customFields, { id: Date.now() }]);
+  // // افزودن فیلد جدید (حداکثر ۵ فیلد)
+  // const addCustomField = () => {
+  //   if (customFields.length < 5) {
+  //     setCustomFields([...customFields, { id: Date.now() }]);
+  //   }
+  // };
+
+  // // حذف فیلد بر اساس شناسه
+  // const removeCustomField = (id: number) => {
+  //   setCustomFields(customFields.filter((field) => field.id !== id));
+  // };
+
+  useEffect(() => {
+    console.log(form.getValues());
+  }, [form.watch()]);
+
+  useEffect(() => {
+    if (form.formState.errors) {
+      console.log("Errors", form.formState.errors);
     }
-  };
-
-  // حذف فیلد بر اساس شناسه
-  const removeCustomField = (id: number) => {
-    setCustomFields(customFields.filter((field) => field.id !== id));
-  };
+  }, [form.formState.errors]);
 
   return (
     <Card className="h-full p-4 xl:p-5">
@@ -374,7 +493,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
                 {/* Item Stock */}
                 <FormField
-                  name="isStock"
+                  name="isInfinite"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2 xl:gap-3 mb-4 space-y-0">
@@ -383,34 +502,35 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       </FormLabel>
                       <FormControl>
                         <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
+                          onValueChange={(value) =>
+                            field.onChange(value === "true")
+                          }
+                          value={`${field.value}`}
                           className="flex items-center h-7"
                         >
                           <FormItem className="flex items-center gap-1.5 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="unlimited" />
+                              <RadioGroupItem value="true" />
                             </FormControl>
                             <Label>{t("unlimited")}</Label>
                           </FormItem>
                           <FormItem className="flex items-center gap-1.5 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="limited" />
+                              <RadioGroupItem value="false" />
                             </FormControl>
                             <Label>{t("limited")}</Label>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
-                      {field.value === "limited" && (
+                      {field.value === false && (
                         <FormField
                           control={form.control}
-                          name="stock"
+                          name="quantity"
                           render={({ field }) => (
                             <FormItem className="space-y-0 flex-1">
                               <FormControl>
                                 <Input
-                                  type="number"
                                   onInput={onInputP2EHandler}
                                   placeholder="۰"
                                   {...field}
@@ -507,7 +627,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 {/* Item Color Variants */}
                 <FormField
                   control={form.control}
-                  name="isColor"
+                  name="haveColor"
                   render={({ field }) => (
                     <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
@@ -515,8 +635,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       </FormLabel>
                       <FormControl>
                         <Switch
-                          id="isColor"
-                          checked={field.value}
+                          id="haveColor"
+                          checked={!!field.value}
                           onCheckedChange={field.onChange}
                           type="button"
                         />
@@ -525,14 +645,18 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       {field.value && (
                         <FormField
                           control={form.control}
-                          name="colorsVariants"
+                          name="colors"
                           render={({ field }) => (
                             <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
                               <FormControl>
                                 <MultipleSelector
-                                  value={value}
-                                  onChange={setValue}
-                                  defaultOptions={OPTIONS}
+                                  {...field}
+                                  //@ts-ignore
+                                  defaultOptions={variationValues?.items.filter(
+                                    (vv) =>
+                                      vv.variationTypeId ==
+                                      colorVariationType?.id
+                                  )}
                                   placeholder={t("selectColor")}
                                   emptyIndicator={
                                     <p className="text-center text-gray-600 dark:text-gray-400">
@@ -550,10 +674,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   )}
                 />
 
-                {/* Item Color Variants */}
                 <FormField
                   control={form.control}
-                  name="isSize"
+                  name="haveSize"
                   render={({ field }) => (
                     <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
@@ -562,7 +685,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       <FormControl>
                         <Switch
                           id="isSize"
-                          checked={field.value}
+                          checked={!!field.value}
                           onCheckedChange={field.onChange}
                           type="button"
                         />
@@ -571,14 +694,17 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       {field.value && (
                         <FormField
                           control={form.control}
-                          name="colorsVariants"
+                          name="sizes"
                           render={({ field }) => (
                             <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
                               <FormControl>
                                 <MultipleSelector
-                                  value={value}
-                                  onChange={setValue}
-                                  defaultOptions={OPTIONS}
+                                  {...field}
+                                  defaultOptions={variationValues?.items.filter(
+                                    (vv) =>
+                                      vv.variationTypeId ==
+                                      sizeVariationType?.id
+                                  )}
                                   placeholder={t("selectSize")}
                                   emptyIndicator={
                                     <p className="text-center text-gray-600 dark:text-gray-400">
@@ -616,7 +742,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 />
               </div>
 
-              <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
+              {/* <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
                 <FormLabel>{t("customFields")}</FormLabel>
                 <p className="text-muted-foreground text-[13px]">
                   {t("customFieldsDescription")}
@@ -682,7 +808,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     ))}
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}
