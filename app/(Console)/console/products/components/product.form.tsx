@@ -50,6 +50,9 @@ import {
 import useSWRImmutable from "swr/immutable";
 import { ProductVariationNamespace } from "@/types/variations/productVariation.namespace";
 import colors from "react-multi-date-picker/plugins/colors";
+import { ProductFieldTypeEnum } from "@/types/product.enum";
+import { v4 as UUID } from "uuid";
+import { ProductFields } from "./productFields";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -76,12 +79,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   );
 
   // TODO: Dynamic
-  const colorVariationType = variations?.items?.find(
-    (vari) => vari.title === "رنگ"
-  );
-  const sizeVariationType = variations?.items?.find(
-    (vari) => vari.title === "اندازه"
-  );
+  const colorVariationType =
+    variations?.items?.find((vari) => vari.title === "رنگ") ?? null;
+  const sizeVariationType =
+    variations?.items?.find((vari) => vari.title === "اندازه") ?? null;
 
   // تعریف اسکیما با استفاده از zod
   const formSchema = z
@@ -134,8 +135,20 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           })
         )
         .optional(),
-      // Just used in final
+      // Just used in submit
       variationValueIds: z.array(z.number()),
+      fields: z
+        .array(
+          z.object({
+            label: z.string(),
+            type: z.nativeEnum(ProductFieldTypeEnum),
+            isRequired: z.boolean(),
+            _xid: z.string().uuid().optional(),
+            id: z.string().uuid().optional(),
+          })
+        )
+        .nullable()
+        .optional(),
     })
     .superRefine((data, ctx) => {
       if (
@@ -193,27 +206,40 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       sizes: [],
       variationValueIds: [],
       isDiscount:
-      typeof shouldBeEdit?.discountPrice === "number"
-        ? shouldBeEdit.discountPrice >= 0
-          ? true
-          : false
-        : false,
-    discountPrice:
-      typeof shouldBeEdit?.discountPrice === "number"
-        ? shouldBeEdit.discountPrice >= 0
-          ? shouldBeEdit?.discountPrice
-          : undefined
-        : undefined,
+        typeof shouldBeEdit?.discountPrice === "number"
+          ? shouldBeEdit.discountPrice >= 0
+            ? true
+            : false
+          : false,
+      discountPrice:
+        typeof shouldBeEdit?.discountPrice === "number"
+          ? shouldBeEdit.discountPrice >= 0
+            ? shouldBeEdit?.discountPrice
+            : undefined
+          : undefined,
       ...(shouldBeEdit || {}),
     },
   });
 
+  const fields = form.getValues("fields");
+
+  const [isInitilized, setIsInitilized] = useState(false);
   useEffect(() => {
-    if (!shouldBeEdit) return;
+    if (!shouldBeEdit || colorVariationType === null || sizeVariationType === null || isInitilized) return;
+
+    if (shouldBeEdit.fields?.length) {
+      const fieldsWith_xid = shouldBeEdit.fields.map((f) => {
+        f._xid = f.id;
+        return f
+      });
+      form.setValue('fields', fieldsWith_xid)
+    }
 
     if (sizeVariationType) {
       if (!shouldBeEdit.productVariations?.length) return;
-      const sizes: NonNullable<ProductItem["productVariations"]>[0]["variationValues"][0][] = [];
+      const sizes: NonNullable<
+        ProductItem["productVariations"]
+      >[0]["variationValues"][0][] = [];
       shouldBeEdit.productVariations.map((productVariation) => {
         productVariation.variationValues.forEach((variationValue) => {
           if (variationValue.variationTypeId == sizeVariationType?.id) {
@@ -229,7 +255,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
     if (colorVariationType) {
       if (!shouldBeEdit.productVariations?.length) return;
-      const colors: NonNullable<ProductItem["productVariations"]>[0]["variationValues"][0][] = [];
+      const colors: NonNullable<
+        ProductItem["productVariations"]
+      >[0]["variationValues"][0][] = [];
       productVariations: shouldBeEdit.productVariations.map(
         (productVariation) => {
           variationValues: productVariation.variationValues.forEach(
@@ -246,6 +274,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         form.setValue("haveColor", true);
       }
     }
+
+    setIsInitilized(true);
   }, [shouldBeEdit, colorVariationType, sizeVariationType]);
   // نظارت بر تغییر فیلد "type" برای نمایش عنوان صحیح
   const selectedType = useWatch({ control: form.control, name: "type" });
@@ -283,14 +313,22 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
 
     if (values.sizes?.length && values.haveSize) {
-      values.variationValueIds = [...values.variationValueIds, ...values.sizes.filter(vari => vari.variationTypeId === sizeVariationType?.id).map((size) => size.id)];
+      values.variationValueIds = [
+        ...values.variationValueIds,
+        ...values.sizes
+          .filter((vari) => vari.variationTypeId === sizeVariationType?.id)
+          .map((size) => size.id),
+      ];
     }
 
     if (values.colors?.length && values.haveColor) {
-      values.variationValueIds = [...values.variationValueIds, ...values.colors.filter(vari => vari.variationTypeId === colorVariationType?.id).map((color) => color.id)];
+      values.variationValueIds = [
+        ...values.variationValueIds,
+        ...values.colors
+          .filter((vari) => vari.variationTypeId === colorVariationType?.id)
+          .map((color) => color.id),
+      ];
     }
-
-
 
     setLoading(true);
     try {
@@ -375,17 +413,31 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   // const [customFields, setCustomFields] = useState<{ id: number }[]>([]);
 
-  // // افزودن فیلد جدید (حداکثر ۵ فیلد)
-  // const addCustomField = () => {
-  //   if (customFields.length < 5) {
-  //     setCustomFields([...customFields, { id: Date.now() }]);
-  //   }
-  // };
+  // افزودن فیلد جدید (حداکثر ۵ فیلد)
+  const addCustomField = () => {
+    console.log("Fields", fields);
 
-  // // حذف فیلد بر اساس شناسه
-  // const removeCustomField = (id: number) => {
-  //   setCustomFields(customFields.filter((field) => field.id !== id));
-  // };
+    if (fields?.length === undefined || fields.length === null) return;
+    if (fields!.length < 5) {
+      form.setValue("fields", [
+        ...fields,
+        {
+          isRequired: false,
+          label: "",
+          type: ProductFieldTypeEnum.TEXT,
+        },
+      ]);
+    }
+  };
+
+  // حذف فیلد بر اساس شناسه
+  const removeCustomField = (label: string) => {
+    if (fields?.length === undefined || fields.length === null) return;
+    form.setValue(
+      "fields",
+      fields.filter((field) => field.label !== label)
+    );
+  };
 
   useEffect(() => {
     console.log(form.getValues());
@@ -742,6 +794,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                 />
               </div>
 
+              <ProductFields />
+
               {/* <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
                 <FormLabel>{t("customFields")}</FormLabel>
                 <p className="text-muted-foreground text-[13px]">
@@ -753,58 +807,78 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     size={"sm"}
                     variant={"outline"}
                     onClick={addCustomField}
-                    disabled={customFields.length >= 5}
+                    disabled={(fields?.length ?? 0) >= 5}
                   >
                     {t("addCustomField")}
                     <PlusCircle />
                   </Button>
                   <div className="_custom-fields space-y-2">
-                    {customFields.map((field) => (
-                      <div
-                        key={field.id}
-                        className="_item flex items-center gap-1.5"
-                      >
-                        <span>
-                          <ArrowsVertical size={16} className="text-gray-500" />
-                        </span>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="نوع فیلد" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectItem value="inputBox">
-                                متن کوتاه
-                              </SelectItem>
-                              <SelectItem value="textArea">متن بلند</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          placeholder="عنوان فیلد"
-                          value=""
-                          className="w-[160px]"
-                        />
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="وضعیت" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectItem value="optional">اختیاری</SelectItem>
-                              <SelectItem value="required">اجباری</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          type="button" // جلوگیری از ارسال فرم
-                          variant="ghost"
-                          size={"icon"}
-                          onClick={() => removeCustomField(field.id)}
-                        >
-                          <TrashSimple size={20} />
-                        </Button>
-                      </div>
+                    {fields?.map((field, index) => (
+                      <FormField
+                        control={form.control}
+                        name="fields"
+                        key={index}
+                        render={({ field }) => (
+                          <div className="_item flex items-center gap-1.5">
+                            <span>
+                              <ArrowsVertical
+                                size={16}
+                                className="text-gray-500"
+                              />
+                            </span>
+                            <Select>
+                              <SelectTrigger>
+                                <SelectValue placeholder="نوع فیلد" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectItem value="inputBox">
+                                    متن کوتاه
+                                  </SelectItem>
+                                  <SelectItem value="textArea">
+                                    متن بلند
+                                  </SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormField
+                              control={form.control}
+                              name={`fields.${index}.label`}
+                              render={({ field }) => (
+                                <Input
+                                  placeholder="عنوان فیلد"
+                                  {...field}
+                                  onChange={field.onChange}
+                                  className="w-[160px]"
+                                />
+                              )}
+                            />
+                            <Select>
+                              <SelectTrigger>
+                                <SelectValue placeholder="وضعیت" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectItem value="optional">
+                                    اختیاری
+                                  </SelectItem>
+                                  <SelectItem value="required">
+                                    اجباری
+                                  </SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              type="button" // جلوگیری از ارسال فرم
+                              variant="ghost"
+                              size={"icon"}
+                              onClick={() => removeCustomField(field.id)}
+                            >
+                              <TrashSimple size={20} />
+                            </Button>
+                          </div>
+                        )}
+                      />
                     ))}
                   </div>
                 </div>

@@ -1,3 +1,5 @@
+import { ProductFieldTypeEnum } from "./product.enum";
+
 export namespace ProductNamespace {
   export interface GET {
     items: ProductItem[];
@@ -38,9 +40,10 @@ export interface ProductItem {
   fields: {
     id: string;
     label: string;
-    type: string;
+    type: ProductFieldTypeEnum;
     isRequired: boolean;
     options?: any[];
+    [key: string]: string | boolean | number | (any[] | undefined) | null;
   }[];
 }
 
