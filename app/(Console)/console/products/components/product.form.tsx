@@ -140,7 +140,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       fields: z
         .array(
           z.object({
-            label: z.string(),
+            label: z.string().min(1),
             type: z.nativeEnum(ProductFieldTypeEnum),
             isRequired: z.boolean(),
             _xid: z.string().uuid().optional(),

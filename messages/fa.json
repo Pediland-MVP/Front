@@ -592,9 +592,6 @@
             "customFields": "فیلدهای سفارشی",
             "customFieldsDescription": "در صورت نیاز می‌توانید تا 5 فیلد سفارشی را به فرم سفارش این کالا یا خدمات اضافه کنید.",
             "addCustomField": "افزودن فیلد سفارشی",
-
-
-
             "uploadProductImage": "تصویر کالا یا خدمت را آپلود کنید.",
             "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
             "errorOccurred": "خطایی رخ داد",

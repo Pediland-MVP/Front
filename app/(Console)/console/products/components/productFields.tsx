@@ -36,9 +36,10 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { v4 as UUID } from 'uuid';
-
-
+import { v4 as UUID } from "uuid";
+import ErrorMessage from "@/components/ui/errorMessage";
+import { FormItem } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 
 // Sortable item component
 const SortableFieldItem = ({
@@ -99,12 +100,15 @@ const SortableFieldItem = ({
       <FormField
         control={form.control}
         name={`fields.${index}.label`}
-        render={({ field: labelField }) => (
-          <Input
-            placeholder="عنوان فیلد"
-            {...labelField}
-            className="w-[160px]"
-          />
+        render={({ field: labelField, fieldState: {error} }) => (
+          <FormItem>
+            <Input
+              
+              placeholder="عنوان فیلد"
+              {...labelField}
+              className={cn(`w-[160px]`, error && "border-red-600")}
+            />
+          </FormItem>
         )}
       />
 
@@ -114,7 +118,9 @@ const SortableFieldItem = ({
         render={({ field: statusField }) => (
           <Select
             value={`${statusField.value}`}
-            onValueChange={value => statusField.onChange(value === 'true' ? true : false)}
+            onValueChange={(value) =>
+              statusField.onChange(value === "true" ? true : false)
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="وضعیت" />
