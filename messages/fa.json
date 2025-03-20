@@ -529,7 +529,8 @@
                 "completed": "تکمیل شده",
                 "invalid_data": "اطلاعات نامعتبر",
                 "cancelled": "لغو شده"
-            }
+            },
+            "productFieldValues": "فیلدهای سفارشی"
         },
         "EditDialog": {
             "editOrder": "ویرایش سفارش"
