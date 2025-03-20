@@ -404,6 +404,16 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
   }, [form.formState.errors]);
 
+  const onHaveSizeChanged = (isChecked: boolean) => {
+    form.setValue('sizes', [])
+    form.setValue('haveSize', isChecked)
+  }
+
+  const onHaveColorChanged = (isChecked: boolean) => {
+    form.setValue('colors', [])
+    form.setValue('haveColor', isChecked)
+  }
+
   return (
     <Card className="h-full p-4 xl:p-5">
       <div className="mb-6">
@@ -644,7 +654,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                         <Switch
                           id="haveColor"
                           checked={!!field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={onHaveColorChanged}
                           type="button"
                         />
                       </FormControl>
@@ -693,7 +703,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                         <Switch
                           id="isSize"
                           checked={!!field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={onHaveSizeChanged}
                           type="button"
                         />
                       </FormControl>
@@ -751,7 +761,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
               <ProductFields />
 
-              
+
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}

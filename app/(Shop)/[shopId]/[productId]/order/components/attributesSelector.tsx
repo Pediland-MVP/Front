@@ -6,6 +6,7 @@ import type { z } from "zod"
 import type { orderFormSchema } from "../checkout.page"
 import { cn } from "@/lib/utils"
 import { Check } from "lucide-react"
+import { useCheckout } from "../useCheckout"
 
 type AttributeValue = {
   id: number
@@ -35,6 +36,8 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
   const { setValue, watch } = useFormContext<z.infer<typeof orderFormSchema>>()
   const selectedAttributeValueIds = watch("attributeValueIds") || []
 
+  const { pendingOrder } = useCheckout()
+
   // Initialize selected values with the first value of each attribute
   useEffect(() => {
     const initialSelectedIds = attributes.map((attr) => attr.attributeValues[0]?.id).filter(Boolean)
@@ -57,6 +60,8 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
     return selectedAttributeValueIds.includes(valueId)
   }
 
+  const isDisabled = pendingOrder?.status === 'payment'
+
   if (!attributes || attributes.length === 0) return null
 
   return (
@@ -70,12 +75,14 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
               ? // Color selector
                 attribute.attributeValues.map((value) => (
                   <button
+                    disabled={isDisabled}
                     key={value.id}
                     type="button"
                     onClick={() => handleAttributeValueSelect(attribute.id, value.id)}
                     className={cn(
                       "w-8 h-8 rounded-full relative flex items-center justify-center",
                       isSelected(value.id) ? "ring-2 ring-offset-2 ring-primary" : "",
+                      isDisabled ? "cursor-not-allowed opacity-50" : "",
                     )}
                     style={{ backgroundColor: value.colorHex || undefined }}
                     title={value.label}
@@ -88,6 +95,7 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
               : // Button selector
                 attribute.attributeValues.map((value) => (
                   <button
+                    disabled={isDisabled}
                     key={value.id}
                     type="button"
                     onClick={() => handleAttributeValueSelect(attribute.id, value.id)}
@@ -96,6 +104,7 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
                       isSelected(value.id)
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-background border-input hover:bg-muted",
+                      isDisabled ? "cursor-not-allowed opacity-50" : "",
                     )}
                   >
                     {value.label}
