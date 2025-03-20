@@ -23,20 +23,7 @@ export interface ProductItem {
   images: Image[];
   isInfinite: boolean;
   isDigital: boolean;
-  productVariations: {
-    id: string;
-    createDate: string;
-    updateDate: string;
-    variationValues: {
-      id: number;
-      createDate: string;
-      updateDate: string;
-      value: string;
-      label: string
-      colorHex: string | null;
-      variationTypeId: number;
-    }[];
-  }[] | null;
+  productVariations: ProductVariation[];
   fields: {
     id: string;
     label: string;
@@ -58,4 +45,28 @@ export interface Meta {
   itemsPerPage: number;
   totalItems: number;
   totalPages: number;
+}
+
+export interface ProductVariation {
+  id: string;
+  createDate: string;
+  updateDate: string;
+  attributes: Attribute[]
+}
+
+export interface Attribute {
+  id: number;
+  title: string;
+  style: "button" | "color";
+  attributeValues: AttributeValue[];
+}
+
+export interface AttributeValue {
+  id: number;
+  createDate: string;
+  updateDate: string;
+  value: string;
+  label: string;
+  colorHex: string | null;
+  attributeId: number;
 }

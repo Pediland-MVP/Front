@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 import api from "@/hooks/swr/api-client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UploadNamespace } from "@/types/upload";
-import { ProductItem, ProductNamespace } from "@/types/product";
+import { AttributeValue, ProductItem, ProductNamespace } from "@/types/product";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 // UI Components from shadcn and custom theme
@@ -30,28 +30,10 @@ import LoadingButton from "@/components/ui/button-loading";
 import { Switch } from "@/components/theme/ui/switch";
 import { Label } from "@/components/theme/ui/label";
 import { Card } from "@/components/theme/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/theme/ui/select";
-import MultipleSelector, { Option } from "@/components/theme/ui/multi-selector";
-import React from "react";
-import { Button } from "@/components/theme/ui/button";
-import {
-  ArrowsVertical,
-  PlusCircle,
-  TrashSimple,
-} from "@phosphor-icons/react/dist/ssr";
+import MultipleSelector from "@/components/theme/ui/multi-selector";
 import useSWRImmutable from "swr/immutable";
-import { ProductVariationNamespace } from "@/types/variations/productVariation.namespace";
-import colors from "react-multi-date-picker/plugins/colors";
+import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { v4 as UUID } from "uuid";
 import { ProductFields } from "./productFields";
 
 export type ProductFormProps = {
@@ -67,21 +49,21 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     data: variations,
     isLoading: isVariationsLoading,
     error: variationsError,
-  } = useSWRImmutable<ProductVariationNamespace.GET.ProductVariationTypes>(
-    `/variations/variationTypes?page=1&limit=100`
+  } = useSWRImmutable<ProductVariationNamespace.GET.ProductAttributes>(
+    `/variations/attributes?page=1&limit=100`
   );
   const {
-    data: variationValues,
-    isLoading: isVariationValuesLoading,
-    error: variationValuesError,
-  } = useSWRImmutable<ProductVariationNamespace.GET.ProductVariationValues>(
-    `/variations/variationValues?page=1&limit=100`
+    data: attributeValues,
+    isLoading: isAttributeValuesLoading,
+    error: attributeValuesError,
+  } = useSWRImmutable<ProductVariationNamespace.GET.ProductAttributeValues>(
+    `/variations/attributeValues?page=1&limit=100`
   );
 
   // TODO: Dynamic
-  const colorVariationType =
+  const colorAttribute =
     variations?.items?.find((vari) => vari.title === "رنگ") ?? null;
-  const sizeVariationType =
+  const sizeAttribute =
     variations?.items?.find((vari) => vari.title === "اندازه") ?? null;
 
   // تعریف اسکیما با استفاده از zod
@@ -118,7 +100,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             value: z.string(),
             label: z.string(),
             colorHex: z.string().nullable(),
-            variationTypeId: z.number(),
+            attributeId: z.number(),
           })
         )
         .optional(),
@@ -130,13 +112,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             updateDate: z.string(),
             value: z.string(),
             label: z.string(),
-            colorHex: z.string().nullable(),
-            variationTypeId: z.number(),
+            colorHex: z.string().nullable().optional(),
+            attributeId: z.number(),
           })
         )
         .optional(),
       // Just used in submit
-      variationValueIds: z.array(z.number()),
+      attributeValueIds: z.array(z.number()),
       fields: z
         .array(
           z.object({
@@ -204,7 +186,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       haveSize: false,
       colors: [],
       sizes: [],
-      variationValueIds: [],
+      attributeValueIds: [],
       isDiscount:
         typeof shouldBeEdit?.discountPrice === "number"
           ? shouldBeEdit.discountPrice >= 0
@@ -225,7 +207,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   const [isInitilized, setIsInitilized] = useState(false);
   useEffect(() => {
-    if (!shouldBeEdit || colorVariationType === null || sizeVariationType === null || isInitilized) return;
+    if (!shouldBeEdit || colorAttribute === null || sizeAttribute === null || isInitilized) return;
 
     if (shouldBeEdit.fields?.length) {
       const fieldsWith_xid = shouldBeEdit.fields.map((f) => {
@@ -235,40 +217,36 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       form.setValue('fields', fieldsWith_xid)
     }
 
-    if (sizeVariationType) {
+    if (sizeAttribute) {
       if (!shouldBeEdit.productVariations?.length) return;
-      const sizes: NonNullable<
-        ProductItem["productVariations"]
-      >[0]["variationValues"][0][] = [];
-      shouldBeEdit.productVariations.map((productVariation) => {
-        productVariation.variationValues.forEach((variationValue) => {
-          if (variationValue.variationTypeId == sizeVariationType?.id) {
-            sizes.push(variationValue);
+      const sizes: AttributeValue[]= []
+      shouldBeEdit.productVariations.forEach((variation) => {
+        variation.attributes.forEach((attribute) => {
+          if (attribute.id === sizeAttribute.id) {
+            attribute.attributeValues.forEach((value) => {
+              sizes.push(value);
+            })
           }
-        });
-      });
+        })
+      })
       form.setValue("sizes", sizes);
       if (sizes.length > 0) {
         form.setValue("haveSize", true);
       }
     }
 
-    if (colorVariationType) {
+    if (colorAttribute) {
       if (!shouldBeEdit.productVariations?.length) return;
-      const colors: NonNullable<
-        ProductItem["productVariations"]
-      >[0]["variationValues"][0][] = [];
-      productVariations: shouldBeEdit.productVariations.map(
-        (productVariation) => {
-          variationValues: productVariation.variationValues.forEach(
-            (variationValue) => {
-              if (variationValue.variationTypeId == colorVariationType?.id) {
-                colors.push(variationValue);
-              }
-            }
-          );
-        }
-      );
+      const colors: AttributeValue[] = [];
+      shouldBeEdit.productVariations.forEach((variation) => {
+        variation.attributes.forEach((attribute) => {
+          if (attribute.id === colorAttribute.id) {
+            attribute.attributeValues.forEach((value) => {
+              colors.push(value);
+            })
+          }
+        })
+      })
       form.setValue("colors", colors);
       if (colors.length > 0) {
         form.setValue("haveColor", true);
@@ -276,7 +254,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
 
     setIsInitilized(true);
-  }, [shouldBeEdit, colorVariationType, sizeVariationType]);
+  }, [shouldBeEdit, colorAttribute, sizeAttribute]);
   // نظارت بر تغییر فیلد "type" برای نمایش عنوان صحیح
   const selectedType = useWatch({ control: form.control, name: "type" });
 
@@ -313,19 +291,19 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
 
     if (values.sizes?.length && values.haveSize) {
-      values.variationValueIds = [
-        ...values.variationValueIds,
+      values.attributeValueIds = [
+        ...values.attributeValueIds,
         ...values.sizes
-          .filter((vari) => vari.variationTypeId === sizeVariationType?.id)
+          .filter((vari) => vari.attributeId === sizeAttribute?.id)
           .map((size) => size.id),
       ];
     }
 
     if (values.colors?.length && values.haveColor) {
-      values.variationValueIds = [
-        ...values.variationValueIds,
+      values.attributeValueIds = [
+        ...values.attributeValueIds,
         ...values.colors
-          .filter((vari) => vari.variationTypeId === colorVariationType?.id)
+          .filter((vari) => vari.attributeId === colorAttribute?.id)
           .map((color) => color.id),
       ];
     }
@@ -391,29 +369,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     }
   };
 
-  // const OPTIONS: Option[] = [
-  //   { label: "قرمز", value: "red" },
-  //   { label: "آبی", value: "blue" },
-  //   { label: "سبز", value: "green" },
-  //   { label: "زرد", value: "yellow" },
-  //   { label: "صورتی", value: "pink" },
-  //   { label: "بنفش", value: "purple" },
-  //   { label: "نارنجی", value: "orange" },
-  //   { label: "سیاه", value: "black" },
-  //   { label: "سفید", value: "white" },
-  //   { label: "خاکستری", value: "gray" },
-  //   { label: "قهوه‌ای", value: "brown" },
-  //   { label: "فیروزه‌ای", value: "turquoise" },
-  //   { label: "سرمه‌ای", value: "navy" },
-  //   { label: "آبی روشن", value: "skyblue" },
-  //   { label: "سبز تیره", value: "darkgreen" },
-  // ];
-
-  // const [value, setValue] = React.useState<Option[]>([]);
-
-  // const [customFields, setCustomFields] = useState<{ id: number }[]>([]);
-
-  // افزودن فیلد جدید (حداکثر ۵ فیلد)
   const addCustomField = () => {
     console.log("Fields", fields);
 
@@ -704,10 +659,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                                 <MultipleSelector
                                   {...field}
                                   //@ts-ignore
-                                  defaultOptions={variationValues?.items.filter(
+                                  defaultOptions={attributeValues?.items.filter(
                                     (vv) =>
-                                      vv.variationTypeId ==
-                                      colorVariationType?.id
+                                      vv.attributeId ==
+                                      colorAttribute?.id
                                   )}
                                   placeholder={t("selectColor")}
                                   emptyIndicator={
@@ -752,10 +707,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                               <FormControl>
                                 <MultipleSelector
                                   {...field}
-                                  defaultOptions={variationValues?.items.filter(
+                                  defaultOptions={attributeValues?.items.filter(
                                     (vv) =>
-                                      vv.variationTypeId ==
-                                      sizeVariationType?.id
+                                      vv.attributeId ==
+                                      sizeAttribute?.id
                                   )}
                                   placeholder={t("selectSize")}
                                   emptyIndicator={
@@ -796,93 +751,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
               <ProductFields />
 
-              {/* <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
-                <FormLabel>{t("customFields")}</FormLabel>
-                <p className="text-muted-foreground text-[13px]">
-                  {t("customFieldsDescription")}
-                </p>
-                <div className="space-y-3">
-                  <Button
-                    type="button" // جلوگیری از ارسال فرم
-                    size={"sm"}
-                    variant={"outline"}
-                    onClick={addCustomField}
-                    disabled={(fields?.length ?? 0) >= 5}
-                  >
-                    {t("addCustomField")}
-                    <PlusCircle />
-                  </Button>
-                  <div className="_custom-fields space-y-2">
-                    {fields?.map((field, index) => (
-                      <FormField
-                        control={form.control}
-                        name="fields"
-                        key={index}
-                        render={({ field }) => (
-                          <div className="_item flex items-center gap-1.5">
-                            <span>
-                              <ArrowsVertical
-                                size={16}
-                                className="text-gray-500"
-                              />
-                            </span>
-                            <Select>
-                              <SelectTrigger>
-                                <SelectValue placeholder="نوع فیلد" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectItem value="inputBox">
-                                    متن کوتاه
-                                  </SelectItem>
-                                  <SelectItem value="textArea">
-                                    متن بلند
-                                  </SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                            <FormField
-                              control={form.control}
-                              name={`fields.${index}.label`}
-                              render={({ field }) => (
-                                <Input
-                                  placeholder="عنوان فیلد"
-                                  {...field}
-                                  onChange={field.onChange}
-                                  className="w-[160px]"
-                                />
-                              )}
-                            />
-                            <Select>
-                              <SelectTrigger>
-                                <SelectValue placeholder="وضعیت" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectItem value="optional">
-                                    اختیاری
-                                  </SelectItem>
-                                  <SelectItem value="required">
-                                    اجباری
-                                  </SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                            <Button
-                              type="button" // جلوگیری از ارسال فرم
-                              variant="ghost"
-                              size={"icon"}
-                              onClick={() => removeCustomField(field.id)}
-                            >
-                              <TrashSimple size={20} />
-                            </Button>
-                          </div>
-                        )}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div> */}
+              
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}

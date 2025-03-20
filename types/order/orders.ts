@@ -107,6 +107,15 @@ interface OrderProduct {
   price: number;
   quantity: number;
   product: Product;
+  attributeValues: {
+    id: number;
+    createDate: string;
+    updateDate: string;
+    value: string;
+    label: string;
+    colorHex: string | null;
+    attributeId: number;
+  }[];
 }
 
 interface Product {

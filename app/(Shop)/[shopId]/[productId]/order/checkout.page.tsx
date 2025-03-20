@@ -100,6 +100,7 @@ export const orderFormSchema = z.object({
       })
     )
     .optional(),
+  attributeValueIds: z.array(z.number())
 });
 
 export type CheckoutProps = {
@@ -179,13 +180,14 @@ export default function CheckoutPage({
       address: "",
       postalcode: "",
       productFieldValues: [],
+      attributeValueIds: []
     },
   });
 
   useEffect(() => {
-    console.log('Simple log of errors', form.formState.errors);
+    console.log('Form.watch()', form.getValues());
     
-  }, [form.formState.errors])
+  }, [form.watch()])
 
   useEffect(() => {
     if (lead) {
@@ -273,7 +275,13 @@ export default function CheckoutPage({
       setCurrentStep(1);
     }
 
+    if (currentStep === 1) {
+      setCurrentStep(_pendingOrder?.step || 1)
+    }
+
     if (_pendingOrder) {
+      setPendingOrder(_pendingOrder);
+
       if (
         _pendingOrder.orderProducts?.length > 0 &&
         _pendingOrder?.orderProducts[0]?.product?.id !== product?.id
@@ -296,17 +304,12 @@ export default function CheckoutPage({
         setCurrentStep(_pendingOrder.step);
         setIsStepInitilized(true);
       }
-      setPendingOrder(_pendingOrder);
     }
   }, [_pendingOrder]);
 
   useEffect(() => {
     if (errorPendingOrder) setPendingOrder(undefined);
   }, [errorPendingOrder]);
-
-  useEffect(() => {
-    console.log("Checkout.page FormValues", form.getValues());
-  }, [form.watch()]);
 
   switch ((productError?.data as ExceptionMessage)?.code) {
     case "ORDER_INVALID":
@@ -347,9 +350,6 @@ export default function CheckoutPage({
         setOrderQuantity: setQuantity,
         pendingOrder,
         setPendingOrder,
-        // orderId,
-        // order
-        // setOrderId,
         outOfStock,
         setOutOfStock,
         shop,

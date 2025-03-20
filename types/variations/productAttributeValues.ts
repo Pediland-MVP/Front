@@ -1,4 +1,4 @@
-export interface IProductVariationValues {
+export interface IProductAttributeValues {
     items: Item[];
     meta:  Meta;
 }
@@ -10,7 +10,7 @@ export interface Item {
     value:           string;
     label:           string;
     colorHex:        null | string;
-    variationTypeId: number;
+    attributeId: number;
 }
 
 export interface Meta {

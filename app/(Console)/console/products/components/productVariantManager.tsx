@@ -13,7 +13,7 @@ import { Plus, Trash } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/theme/ui/select"
 
 // Types for our API responses
-export interface VariationType {
+export interface Attribute {
   id: number
   title: string
   style: string
@@ -22,11 +22,11 @@ export interface VariationType {
   isLocked: boolean
 }
 
-export interface VariationValue {
+export interface AttributeValue {
   id: number
   value: string
   colorHex?: string
-  variationTypeId: number
+  attributeId: number
   createDate: string
   updateDate: string
 }
@@ -47,7 +47,7 @@ export interface ProductVariation {
   id?: string
   createDate?: string
   updateDate?: string
-  variationValues: VariationValue[]
+  attributeValues: AttributeValue[]
 }
 
 interface ProductVariationManagerProps {
@@ -59,14 +59,14 @@ export default function ProductVariationManager({ initialVariations = [] }: Prod
   const form = useFormContext()
 
   // Fetch all variation types
-  const { data: variationTypesData } = useSWR<ApiResponse<VariationType>>(
-    "/variations/variationTypes?page=1&limit=35",
+  const { data: attributesData } = useSWR<ApiResponse<Attribute>>(
+    "/variations/attributes?page=1&limit=35",
     api,
   )
 
   // State to track selected variation types and their values
   const [variations, setVariations] = useState<ProductVariation[]>(
-    initialVariations.length > 0 ? initialVariations : [{ variationValues: [] }],
+    initialVariations.length > 0 ? initialVariations : [{ attributeValues: [] }],
   )
 
   // Update form value when variations change
@@ -76,7 +76,7 @@ export default function ProductVariationManager({ initialVariations = [] }: Prod
 
   // Add a new variation
   const addVariation = () => {
-    setVariations([...variations, { variationValues: [] }])
+    setVariations([...variations, { attributeValues: [] }])
   }
 
   // Remove a variation
@@ -88,11 +88,11 @@ export default function ProductVariationManager({ initialVariations = [] }: Prod
   }
 
   // Update variation values
-  const updateVariationValues = (index: number, typeId: number, selectedValues: VariationValue[]) => {
+  const updateAttributeValues = (index: number, typeId: number, selectedValues: AttributeValue[]) => {
     const newVariations = [...variations]
     newVariations[index] = {
       ...newVariations[index],
-      variationValues: selectedValues,
+      attributeValues: selectedValues,
     }
     setVariations(newVariations)
   }
@@ -113,8 +113,8 @@ export default function ProductVariationManager({ initialVariations = [] }: Prod
           index={index}
           variation={variation}
           onRemove={() => removeVariation(index)}
-          onValuesChange={(typeId, values) => updateVariationValues(index, typeId, values)}
-          variationTypes={variationTypesData?.items || []}
+          onValuesChange={(typeId, values) => updateAttributeValues(index, typeId, values)}
+          attributes={attributesData?.items || []}
           showRemoveButton={variations.length > 1}
         />
       ))}
@@ -129,8 +129,8 @@ interface VariationSelectorProps {
   index: number
   variation: ProductVariation
   onRemove: () => void
-  onValuesChange: (typeId: number, values: VariationValue[]) => void
-  variationTypes: VariationType[]
+  onValuesChange: (typeId: number, values: AttributeValue[]) => void
+  attributes: Attribute[]
   showRemoveButton: boolean
 }
 
@@ -139,23 +139,23 @@ function VariationSelector({
   variation,
   onRemove,
   onValuesChange,
-  variationTypes,
+  attributes,
   showRemoveButton,
 }: VariationSelectorProps) {
   const t = useTranslations("Products.Form")
   const [selectedTypeId, setSelectedTypeId] = useState<number | null>(
-    variation.variationValues[0]?.variationTypeId || null,
+    variation.attributeValues[0]?.attributeId || null,
   )
 
   // Fetch variation values when a type is selected
-  const { data: variationValuesData } = useSWR<ApiResponse<VariationValue>>(
-    selectedTypeId ? `/variations/variationValues?page=1&limit=35&variationTypeId=${selectedTypeId}` : null,
+  const { data: attributeValuesData } = useSWR<ApiResponse<AttributeValue>>(
+    selectedTypeId ? `/variations/attributeValues?page=1&limit=35&attributeId=${selectedTypeId}` : null,
     api,
   )
 
   // Convert API data to options for MultipleSelector
   const valueOptions: Option[] =
-    variationValuesData?.items.map((item) => ({
+    attributeValuesData?.items.map((item) => ({
       label: item.value,
       value: item.id.toString(),
       color: item.colorHex,
@@ -163,7 +163,7 @@ function VariationSelector({
     })) || []
 
   // Get the selected values
-  const selectedValues = variation.variationValues.map((value) => ({
+  const selectedValues = variation.attributeValues.map((value) => ({
     label: value.value,
     value: value.id.toString(),
     color: value.colorHex,
@@ -181,8 +181,8 @@ function VariationSelector({
   const handleValueChange = (options: Option[]) => {
     if (!selectedTypeId) return
 
-    // Convert selected options back to VariationValue objects
-    const values = options.map((option) => option.data as VariationValue)
+    // Convert selected options back to AttributeValue objects
+    const values = options.map((option) => option.data as AttributeValue)
     onValuesChange(selectedTypeId, values)
   }
 
@@ -201,16 +201,16 @@ function VariationSelector({
 
       <div className="space-y-3">
         <FormItem>
-          <Label>{t("variationType")}</Label>
+          <Label>{t("attribute")}</Label>
           <Select value={selectedTypeId?.toString() || ""} onValueChange={handleTypeChange}>
             <SelectTrigger>
-              <SelectValue placeholder={t("selectVariationType")} />
+              <SelectValue placeholder={t("selectAttribute")} />
             </SelectTrigger>
             <SelectContent>
-              {variationTypes.length === 0 ? (
-                <div className="p-2 text-center text-muted-foreground">{t("noVariationTypesAvailable")}</div>
+              {attributes.length === 0 ? (
+                <div className="p-2 text-center text-muted-foreground">{t("noAttributesAvailable")}</div>
               ) : (
-                variationTypes.map((type) => (
+                attributes.map((type) => (
                   <SelectItem key={type.id} value={type.id.toString()}>
                     {type.title}
                   </SelectItem>
@@ -222,12 +222,12 @@ function VariationSelector({
 
         {selectedTypeId && (
           <FormItem>
-            <Label>{t("variationValues")}</Label>
+            <Label>{t("attributeValues")}</Label>
             <MultipleSelector
               value={selectedValues}
               onChange={handleValueChange}
               defaultOptions={valueOptions}
-              placeholder={t("selectVariationValues")}
+              placeholder={t("selectAttributeValues")}
               emptyIndicator={<p className="text-center text-gray-600 dark:text-gray-400">{t("noValuesFound")}</p>}
             />
             {selectedValues.length === 0 && (

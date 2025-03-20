@@ -1,4 +1,4 @@
-export interface IProductVariationTypes {
+export interface IProductAttributes {
     items: Item[];
     meta:  Meta;
 }

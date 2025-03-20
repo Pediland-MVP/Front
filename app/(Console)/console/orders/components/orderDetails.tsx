@@ -1,54 +1,63 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useTranslations } from "next-intl"
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { toast } from "@/components/ui/use-toast"
-import type { ExceptionMessage } from "@/types/exceptionMessage"
-import { Loader2, Package, User, MapPin, CreditCard } from "lucide-react"
-import { mutate } from "swr"
-import { ORDER_STATUS, type OrderNamespace } from "@/types/order/order.namespace"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { OrderInstagramProfile } from "./orderInstagramProfile"
-import ImageWithFallback from "@/components/ui/imageWithCallback"
-import api from "@/hooks/swr/api-client"
-import type { AxiosError } from "axios"
-import LoadingSpinner from "@/components/ui/loadingSpinner"
-import { Pen } from "@phosphor-icons/react/dist/ssr"
+import type React from "react";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
+import type { ExceptionMessage } from "@/types/exceptionMessage";
+import { Loader2, Package, User, MapPin, CreditCard } from "lucide-react";
+import { mutate } from "swr";
+import {
+  ORDER_STATUS,
+  type OrderNamespace,
+} from "@/types/order/order.namespace";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { OrderInstagramProfile } from "./orderInstagramProfile";
+import ImageWithFallback from "@/components/ui/imageWithCallback";
+import api from "@/hooks/swr/api-client";
+import type { AxiosError } from "axios";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { Pen } from "@phosphor-icons/react/dist/ssr";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
-})
+});
 
-type StatusFormData = z.infer<typeof statusSchema>
+type StatusFormData = z.infer<typeof statusSchema>;
 
 interface OrderDetailsProps {
-  order: OrderNamespace.GET.OneItemOfOrders
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  order: OrderNamespace.GET.OneItemOfOrders;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
-  const t = useTranslations("Orders.OrderDetails")
-  const t_ec = useTranslations("ERROR_CODES")
+  const t = useTranslations("Orders.OrderDetails");
+  const t_ec = useTranslations("ERROR_CODES");
 
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { control, handleSubmit } = useForm<StatusFormData>({
     resolver: zodResolver(statusSchema),
-  })
+  });
 
   const onSubmit = async (data: StatusFormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     await api
       .post(`orders/${order.id}/updateStatus`, {
@@ -57,24 +66,32 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
       .then(async (res) => {
         toast({
           title: t("statusUpdated"),
-        })
-        await mutate((key: any) => typeof key === "string" && key.includes("/orders?page="))
+        });
+        await mutate(
+          (key: any) => typeof key === "string" && key.includes("/orders?page=")
+        );
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         toast({
           title: t_ec(e.response?.data.code),
           variant: "destructive",
-        })
+        });
       })
-      .finally(() => setIsLoading(false))
-  }
+      .finally(() => setIsLoading(false));
+  };
 
   if (!order) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
-  const totalPrice = order.orderProducts.reduce((sum, op) => sum + op.product.price * op.quantity, 0)
-  const paidPrice = order.orderProducts.reduce((sum, op) => sum + op.price * op.quantity, 0)
+  const totalPrice = order.orderProducts.reduce(
+    (sum, op) => sum + op.product.price * op.quantity,
+    0
+  );
+  const paidPrice = order.orderProducts.reduce(
+    (sum, op) => sum + op.price * op.quantity,
+    0
+  );
 
   return (
     <div className="w-full h-full overflow-y-auto max-h-[calc(100vh-10rem)]">
@@ -85,7 +102,9 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>{t("orderDetails")}</CardTitle>
-                <Badge className="px-2 py-1">{t(`orderStatus.${order.status}`)}</Badge>
+                <Badge className="px-2 py-1">
+                  {t(`orderStatus.${order.status}`)}
+                </Badge>
               </div>
             </CardHeader>
             <CardContent>
@@ -112,8 +131,14 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                         <div>
                           <h4 className="font-medium">{op.product.title}</h4>
                           <p className="text-sm text-muted-foreground">
-                            {t("quantity")}: {op.quantity} | {t("price")}: {op.product.price.toLocaleString()}
+                            {t("quantity")}: {op.quantity} | {t("price")}:{" "}
+                            {op.product.price.toLocaleString()}
                           </p>
+                          <div className="flex gap-x-1 mt-1">
+                            {op.attributeValues.map((av) => (
+                              <Badge variant={"outline"}>{av.value}</Badge>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -152,7 +177,9 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                         {order.productFieldValues?.map((pf, index) => (
                           <div key={index} className="mb-4">
                             <p className="font-medium">{pf.field.label}</p>
-                            <p className="text-sm break-words whitespace-pre-wrap">{pf.value}</p>
+                            <p className="text-sm break-words whitespace-pre-wrap">
+                              {pf.value}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -166,13 +193,16 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                       {t("shippingAddress")}
                     </h3>
                     <p>
-                      {order.orderShipping?.firstname} {order.orderShipping?.lastname}
+                      {order.orderShipping?.firstname}{" "}
+                      {order.orderShipping?.lastname}
                     </p>
                     <p>
-                      {order.orderShipping?.city?.province?.name}، {order.orderShipping?.city?.name}
+                      {order.orderShipping?.city?.province?.name}،{" "}
+                      {order.orderShipping?.city?.name}
                     </p>
                     <p className="break-words">
-                      {order.orderShipping?.address}، {t("postalCode")}: {order.orderShipping?.postalcode}
+                      {order.orderShipping?.address}، {t("postalCode")}:{" "}
+                      {order.orderShipping?.postalcode}
                     </p>
                   </div>
                 </div>
@@ -197,7 +227,10 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center">
-              <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+              <Dialog
+                open={isImageModalOpen}
+                onOpenChange={setIsImageModalOpen}
+              >
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
@@ -235,7 +268,10 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder={t("selectStatus")} />
                       </SelectTrigger>
@@ -269,6 +305,5 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
