@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { FormProvider, useForm } from "react-hook-form";
@@ -42,10 +42,10 @@ import Image from "next/image";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import CheckoutError from "./components/checkout.error";
 import useSWR, { mutate } from "swr";
-import { OrderConfirmationDrawer } from "./components/orderConfirmation.drawer";
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
 import { toast } from "@/components/theme/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { ProductFieldTypeEnum } from "@/types/product.enum";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
@@ -88,6 +88,18 @@ export const orderFormSchema = z.object({
   cityId: z.string(),
   address: z.string().min(1, "Address is required"),
   postalcode: z.string().min(10, "کد پستی باید ۱۰ رقمی باشد").max(10),
+  productFieldValues: z
+    .array(
+      z.object({
+        value: z.string().optional(),
+        id: z.string().uuid(),
+        isRequired: z.boolean(),
+        label: z.string(),
+        type: z.nativeEnum(ProductFieldTypeEnum),
+        fieldId: z.string().uuid(),
+      })
+    )
+    .optional(),
 });
 
 export type CheckoutProps = {
@@ -113,7 +125,18 @@ export default function CheckoutPage({
   const [isUnauthorized, setIsUnauthorized] = useState(false);
   const [timeLeft, setTimeLeft] = useState(MAX_PAYMENT_LIFE_TIME_IN_SEC); // Initialize with 1 hour in seconds
 
-  const router = useRouter()
+  const router = useRouter();
+
+  const {
+    data: _pendingOrder,
+    isLoading: isLoadingPendingOrder,
+    error: errorPendingOrder,
+  } = useSWR<OrderNamespace.GET.Pending>(
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
+    {
+      refreshInterval: 30_000,
+    }
+  );
 
   const {
     data: product,
@@ -136,7 +159,6 @@ export default function CheckoutPage({
   useEffect(() => {
     if (errorLead) {
       if (errorLead.data) {
-        console.log(errorLead.data);
         if (errorLead.data.statusCode === 401) {
           setIsUnauthorized(true);
         }
@@ -144,7 +166,7 @@ export default function CheckoutPage({
     }
   }, [errorLead]);
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof orderFormSchema>>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       gender: GENDERS_ENUM.MALE,
@@ -156,20 +178,46 @@ export default function CheckoutPage({
       cityId: "",
       address: "",
       postalcode: "",
+      productFieldValues: [],
     },
   });
+
+  useEffect(() => {
+    console.log('Simple log of errors', form.formState.errors);
+    
+  }, [form.formState.errors])
 
   useEffect(() => {
     if (lead) {
       const cityId = lead.contact.city?.id?.toString();
       const state = lead.contact.city?.province?.id?.toString();
       form.reset({
+        ...form.getValues(),
         ...lead.contact,
         ...(cityId && { cityId }),
         ...(state && { state }),
       });
     }
   }, [lead]);
+
+
+  const isProductFieldsInitialized = useRef(false);
+  useEffect(() => {
+    // Load field values
+    if (!product) return;
+    if (isLoadingPendingOrder) return;
+    if (isProductFieldsInitialized.current) return;
+    if ((form.getValues("productFieldValues")?.length || 0) > 0) return;
+
+    const productFieldsTemp = product.fields.map((f, index) => {
+      const pendingFieldValue = _pendingOrder?.productFieldValues?.find(
+        (v) => v.fieldId === f.id
+      )
+      return ({...f, value: pendingFieldValue?.value ?? '', fieldId: f.id})
+    });
+    form.setValue("productFieldValues", productFieldsTemp)
+    isProductFieldsInitialized.current = true
+  }, [product, _pendingOrder]);
 
   const {
     data: shop,
@@ -215,27 +263,11 @@ export default function CheckoutPage({
     };
 
     if (timeLeft === 0) {
-      orderCancleHandler()
-      // toast({
-      //   title: "مدت زمان سفارش شما منقضی شد",
-      //   description: "لطفا مجددا سفارش دهید",
-      //   variant: "destructive",
-      // });
-      // router.refresh()
+      orderCancleHandler();
     }
-    console.log(timeLeft);
   }, [timeLeft]);
 
-  const {
-    data: _pendingOrder,
-    isLoading: isLoadingPendingOrder,
-    error: errorPendingOrder,
-  } = useSWR<OrderNamespace.GET.Pending>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
-    {
-      refreshInterval: 30_000
-    }
-  );
+
   useEffect(() => {
     if (!_pendingOrder && currentStep > 1) {
       setCurrentStep(1);
@@ -269,13 +301,12 @@ export default function CheckoutPage({
   }, [_pendingOrder]);
 
   useEffect(() => {
-    if (errorPendingOrder)
-      setPendingOrder(undefined);
+    if (errorPendingOrder) setPendingOrder(undefined);
   }, [errorPendingOrder]);
 
   useEffect(() => {
-    console.log(form.getValues());
-  }, [form.watch]);
+    console.log("Checkout.page FormValues", form.getValues());
+  }, [form.watch()]);
 
   switch ((productError?.data as ExceptionMessage)?.code) {
     case "ORDER_INVALID":
@@ -287,7 +318,6 @@ export default function CheckoutPage({
   }
 
   if (shopError || productError) {
-    console.log(shopError, productError);
     return <CheckoutError />;
   }
 
@@ -371,7 +401,6 @@ export default function CheckoutPage({
           <Card className="_checkout border rounded-xl p-0 md:p-10">
             <ProductDetails />
 
-            
             <FormStepperProvider
               className="mt-5"
               setCurrentStep={setCurrentStep}

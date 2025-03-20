@@ -19,44 +19,70 @@ import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
 import useUpdateContact from "../hooks/useUpdateContact";
 import p2eNumbers, { onInputP2EHandler } from "@/app/utils/p2eNumber";
+import { ProductFieldTypeEnum } from "@/types/product.enum";
+import { useEffect, useState } from "react";
+import ErrorMessage from "@/components/ui/errorMessage";
+import { Textarea } from "@/components/theme/ui/textarea";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
-  
-  const { pendingOrder, product } = useCheckout()
+
+  const { pendingOrder, product } = useCheckout();
 
   const {
     register,
     control,
     formState: { errors },
     trigger,
-    clearErrors
+    clearErrors,
+    getValues,
+    setError
   } = useFormContext<z.infer<typeof orderFormSchema>>();
-
 
   const { createOrder, loading: isCreateOrderLoading } = useOrder();
 
-  const { updateContact, loading: isUpdateContactLoading } = useUpdateContact()
+  const { updateContact, loading: isUpdateContactLoading } = useUpdateContact();
+
+  const [isProductFieldsError, setIsProductFieldsError] = useState<{ [key: number]: boolean }>({});
+
+  console.log('isProductFieldsError', isProductFieldsError);
+  
 
   const createOrderHandler = async () => {
-    await trigger('firstname')
-    await trigger('lastname')
-    await trigger('mobile')
+    await trigger("firstname");
+    await trigger("lastname");
+    await trigger("mobile");
 
     if (errors.firstname || errors.lastname || errors.mobile) {
-      return
+      return;
+    }
+
+    const productFieldValues = getValues('productFieldValues')
+    if ((product?.fields?.length || 0) > 0) {
+      let haveError = false
+      productFieldValues?.forEach((pf, index) => {
+        if (pf.isRequired && !pf.value) {
+          setIsProductFieldsError((prevState: any) => ({
+            ...prevState,
+            [index]: true,
+          }));
+          haveError = true
+        }
+      })
+
+      if (haveError) return;
     }
 
     if (pendingOrder) {
-      await updateContact()
-      clearErrors()
-      return
+      await updateContact();
+      clearErrors();
+      return;
     }
 
     await createOrder();
-    clearErrors()
-
+    clearErrors();
   };
+
 
   return (
     <div className="_customer-details p-3">
@@ -124,6 +150,29 @@ export default function CustomerDetails() {
             </FormItem>
           )}
         />
+
+        {getValues('productFieldValues')?.map((f, index) => (
+          <FormField
+            key={index}
+            control={control}
+            name={`productFieldValues.${index}.value`}
+            render={({ field, fieldState: {error} }) => (
+              <FormItem>
+                <FormLabel>{f.label}</FormLabel>
+                <FormControl>
+                  {f.type === ProductFieldTypeEnum.TEXTAREA ? (
+                    <Textarea {...field} />
+                  ) : (
+                    f.type === ProductFieldTypeEnum.TEXT && <Input {...field} />
+                  )}
+                </FormControl>
+                  {
+                    isProductFieldsError[index] && <ErrorMessage>{t('required')}</ErrorMessage>
+                  }
+              </FormItem>
+            )}
+          />
+        ))}
       </div>
       <div className="mt-6 w-full flex justify-center items-center gap-x-2">
         <LoadingButton
@@ -131,7 +180,7 @@ export default function CustomerDetails() {
           isLoading={isCreateOrderLoading}
           className="w-full"
           type="button"
-          disabled={!product?.isInfinite && product?.quantity===0}
+          disabled={!product?.isInfinite && product?.quantity === 0}
         >
           {t("nextStep")}
         </LoadingButton>

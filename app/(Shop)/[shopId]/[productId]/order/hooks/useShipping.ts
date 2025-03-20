@@ -17,10 +17,7 @@ export default function useShipping() {
     const { setStep, pendingOrder } = useCheckout()
 
     const { nextStep } = useCheckoutStep()
-
-    useEffect(() => {
-      console.log(pendingOrder)
-    }, [pendingOrder])
+    
     const t_ec = useTranslations('ERROR_CODES')
     const [loading, setLoading] = useState(false)
 

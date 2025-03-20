@@ -11,8 +11,6 @@ export function useCanQuantityUp() {
     const [isLoading, setIsLoading] = useState(false)
     const { productId, outOfStock, setOutOfStock, setOrderQuantity, orderQuantity } = useCheckout()
 
-    logger.log("outOfStock", outOfStock)
-
     const canQuantityUp = async (setLoading: Dispatch<React.SetStateAction<boolean>>): Promise<boolean> => {
         setLoading(true)
         return await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${productId}/canQuantityUp`, {

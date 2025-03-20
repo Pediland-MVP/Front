@@ -13,6 +13,7 @@ export interface IPendingOrder {
   createDate: string;
   updateDate: string;
   orderProducts: IOrderProduct[];
+  productFieldValues: IProductFieldValues[]
 }
 
 interface Instagram {
@@ -38,4 +39,10 @@ interface IOrderProduct {
     id: string
     title: string
   }
+}
+
+interface IProductFieldValues {
+  id: string;
+  value: string
+  fieldId: string
 }

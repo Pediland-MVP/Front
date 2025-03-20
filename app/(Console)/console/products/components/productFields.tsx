@@ -127,8 +127,8 @@ const SortableFieldItem = ({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="true">اختیاری</SelectItem>
-                <SelectItem value="false">اجباری</SelectItem>
+                <SelectItem value="false">اختیاری</SelectItem>
+                <SelectItem value="true">اجباری</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
