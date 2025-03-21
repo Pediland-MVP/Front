@@ -36,7 +36,7 @@ export default function CustomerDetails() {
     trigger,
     clearErrors,
     getValues,
-    setError
+    watch
   } = useFormContext<z.infer<typeof orderFormSchema>>();
 
   const { createOrder, loading: isCreateOrderLoading } = useOrder();
@@ -57,7 +57,7 @@ export default function CustomerDetails() {
       return;
     }
 
-    const productFieldValues = getValues('productFieldValues')
+    const productFieldValues = watch('productFieldValues')
     if ((product?.fields?.length || 0) > 0) {
       let haveError = false
       productFieldValues?.forEach((pf, index) => {
@@ -151,7 +151,7 @@ export default function CustomerDetails() {
           )}
         />
 
-        {getValues('productFieldValues')?.map((f, index) => (
+        {watch('productFieldValues')?.map((f, index) => (
           <FormField
             key={index}
             control={control}
