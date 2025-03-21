@@ -24,6 +24,8 @@ export interface ProductItem {
   isInfinite: boolean;
   isDigital: boolean;
   productVariations: ProductVariation[];
+  orderButtonText: string;
+  orderProcessText: string;
   fields: {
     id: string;
     label: string;

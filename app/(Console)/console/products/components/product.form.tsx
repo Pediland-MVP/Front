@@ -35,6 +35,7 @@ import useSWRImmutable from "swr/immutable";
 import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { ProductFields } from "./productFields";
+import { FormDescription } from "@/components/ui/form";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -131,6 +132,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         )
         .nullable()
         .optional(),
+      orderButtonText: z.string().nullable().optional(),
+      orderProcessText: z.string().max(1000).nullable().optional(),
     })
     .superRefine((data, ctx) => {
       if (
@@ -200,6 +203,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             : undefined
           : undefined,
       ...(shouldBeEdit || {}),
+      orderButtonText: shouldBeEdit?.orderButtonText || "سفارش",
+      orderProcessText:
+        shouldBeEdit?.orderProcessText ||
+        `{{name}} پرداخت شما باموفقیت انجام شد. \nمبلغ: {{price}}}\nکد تراکنش: {{order_id}}`,
     },
   });
 
@@ -207,28 +214,34 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
   const [isInitilized, setIsInitilized] = useState(false);
   useEffect(() => {
-    if (!shouldBeEdit || colorAttribute === null || sizeAttribute === null || isInitilized) return;
+    if (
+      !shouldBeEdit ||
+      colorAttribute === null ||
+      sizeAttribute === null ||
+      isInitilized
+    )
+      return;
 
     if (shouldBeEdit.fields?.length) {
       const fieldsWith_xid = shouldBeEdit.fields.map((f) => {
         f._xid = f.id;
-        return f
+        return f;
       });
-      form.setValue('fields', fieldsWith_xid)
+      form.setValue("fields", fieldsWith_xid);
     }
 
     if (sizeAttribute) {
       if (!shouldBeEdit.productVariations?.length) return;
-      const sizes: AttributeValue[]= []
+      const sizes: AttributeValue[] = [];
       shouldBeEdit.productVariations.forEach((variation) => {
         variation.attributes.forEach((attribute) => {
           if (attribute.id === sizeAttribute.id) {
             attribute.attributeValues.forEach((value) => {
               sizes.push(value);
-            })
+            });
           }
-        })
-      })
+        });
+      });
       form.setValue("sizes", sizes);
       if (sizes.length > 0) {
         form.setValue("haveSize", true);
@@ -243,10 +256,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           if (attribute.id === colorAttribute.id) {
             attribute.attributeValues.forEach((value) => {
               colors.push(value);
-            })
+            });
           }
-        })
-      })
+        });
+      });
       form.setValue("colors", colors);
       if (colors.length > 0) {
         form.setValue("haveColor", true);
@@ -405,14 +418,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   }, [form.formState.errors]);
 
   const onHaveSizeChanged = (isChecked: boolean) => {
-    form.setValue('sizes', [])
-    form.setValue('haveSize', isChecked)
-  }
+    form.setValue("sizes", []);
+    form.setValue("haveSize", isChecked);
+  };
 
   const onHaveColorChanged = (isChecked: boolean) => {
-    form.setValue('colors', [])
-    form.setValue('haveColor', isChecked)
-  }
+    form.setValue("colors", []);
+    form.setValue("haveColor", isChecked);
+  };
 
   return (
     <Card className="h-full p-4 xl:p-5">
@@ -670,9 +683,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                                   {...field}
                                   //@ts-ignore
                                   defaultOptions={attributeValues?.items.filter(
-                                    (vv) =>
-                                      vv.attributeId ==
-                                      colorAttribute?.id
+                                    (vv) => vv.attributeId == colorAttribute?.id
                                   )}
                                   placeholder={t("selectColor")}
                                   emptyIndicator={
@@ -718,9 +729,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                                 <MultipleSelector
                                   {...field}
                                   defaultOptions={attributeValues?.items.filter(
-                                    (vv) =>
-                                      vv.attributeId ==
-                                      sizeAttribute?.id
+                                    (vv) => vv.attributeId == sizeAttribute?.id
                                   )}
                                   placeholder={t("selectSize")}
                                   emptyIndicator={
@@ -757,11 +766,52 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="orderButtonText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("orderButtonText.label")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t("orderButtonText.placeholder")}
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t("orderButtonText.description")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="orderProcessText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("orderProcessText.label")}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t("orderProcessText.placeholder")}
+                          {...field}
+                          value={field.value || ""}
+                          rows={4}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t("orderProcessText.description")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <ProductFields />
-
-
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}
