@@ -35,6 +35,8 @@ import { toast } from "@/components/theme/ui/use-toast";
 import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";
+import { useState } from "react";
+import LoadingButton from '@/components/ui/button-loading';
 
 // Define a proper type for DateObject
 type DateObjectType =
@@ -89,6 +91,8 @@ export function ExcelExportOrdersDrawer({
   const t = useTranslations("Orders.ExcelExport");
   const t_ec = useTranslations("ERROR_CODES");
 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   // Create the schema with translations
   const formSchema = createFormSchema(t);
   type FormValues = z.infer<typeof formSchema>;
@@ -111,6 +115,7 @@ export function ExcelExportOrdersDrawer({
 
   // Form submission handler
   async function onSubmit(values: FormValues) {
+    setIsLoading(true)
     await api.post('/orders/excelExport', values)
     .then((res: AxiosResponse<IResponseMessage>) => {
       toast({
@@ -124,6 +129,7 @@ export function ExcelExportOrdersDrawer({
         title: error,
       })
     })
+    .finally(() => setIsLoading(false))
     onOpenChange(false);
     form.reset();
   }
@@ -271,7 +277,7 @@ export function ExcelExportOrdersDrawer({
               />
 
               <DrawerFooter>
-                <Button type="submit">{t("buttons.export")}</Button>
+                <LoadingButton isLoading={isLoading} type="submit">{t("buttons.export")}</LoadingButton>
                 <DrawerClose asChild>
                   <Button variant="outline">{t("buttons.cancel")}</Button>
                 </DrawerClose>
