@@ -45,7 +45,7 @@ export default function CustomerDetails() {
 
   const [isProductFieldsError, setIsProductFieldsError] = useState<{ [key: number]: boolean }>({});
 
-  console.log('isProductFieldsError', isProductFieldsError);
+  
   
 
   const createOrderHandler = async () => {

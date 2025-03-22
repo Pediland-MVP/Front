@@ -208,18 +208,19 @@ export default function CheckoutPage({
     // Load field values
     if (!product) return;
     if (isLoadingPendingOrder) return;
-    if (isProductFieldsInitialized.current) return;
-    if ((form.watch("productFieldValues")?.length || 0) > 0) return;
+    if (isProductFieldsInitialized.current === true) return;
+    if ((form.getValues("productFieldValues")?.length || 0) > 0) return;
 
     const productFieldsTemp = product.fields.map((f, index) => {
       const pendingFieldValue = _pendingOrder?.productFieldValues?.find(
         (v) => v.fieldId === f.id
       )
+      
       return ({...f, value: pendingFieldValue?.value ?? '', fieldId: f.id})
     });
     form.setValue("productFieldValues", productFieldsTemp)
     isProductFieldsInitialized.current = true
-  }, [product, _pendingOrder]);
+  }, [product, _pendingOrder,isLoadingPendingOrder]);
 
   const {
     data: shop,
