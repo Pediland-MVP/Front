@@ -185,7 +185,7 @@ export default function CheckoutPage({
   });
 
   useEffect(() => {
-    console.log('Form.watch()', form.getValues());
+    console.log('Form.watch()', form.watch());
     
   }, [form.watch()])
 
@@ -209,7 +209,7 @@ export default function CheckoutPage({
     if (!product) return;
     if (isLoadingPendingOrder) return;
     if (isProductFieldsInitialized.current) return;
-    if ((form.getValues("productFieldValues")?.length || 0) > 0) return;
+    if ((form.watch("productFieldValues")?.length || 0) > 0) return;
 
     const productFieldsTemp = product.fields.map((f, index) => {
       const pendingFieldValue = _pendingOrder?.productFieldValues?.find(

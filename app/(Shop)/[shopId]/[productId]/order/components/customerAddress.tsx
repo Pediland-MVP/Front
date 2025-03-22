@@ -71,14 +71,14 @@ export default function Address() {
   } = useSWRImmutable<CityNamespace.GET>(
     () =>
       `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities?provinceId=` +
-      `${getValues().state}`,
+      `${watch('state')}`,
     {
       revalidateOnMount: true,
     }
   );
 
   useEffect(() => {
-    if (getValues().state) {
+    if (watch('state')) {
       fetchCities();
     }
   }, [watch("state")]);
