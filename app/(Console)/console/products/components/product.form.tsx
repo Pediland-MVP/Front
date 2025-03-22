@@ -71,7 +71,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const formSchema = z
     .object({
       status: z.boolean(),
-      type: z.string(),
       title: z
         .string({ message: t("Alerts.title") })
         .min(1, { message: t("Alerts.titleLenght") }),
@@ -177,7 +176,6 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       status: true,
-      type: "product",
       title: "",
       isInfinite: false,
       quantity: 0,
@@ -269,7 +267,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     setIsInitilized(true);
   }, [shouldBeEdit, colorAttribute, sizeAttribute]);
   // نظارت بر تغییر فیلد "type" برای نمایش عنوان صحیح
-  const selectedType = useWatch({ control: form.control, name: "type" });
+  const isDigital = form.watch("isDigital");
 
   // نمایش توست در صورت بروز خطای imageId
   useEffect(() => {
@@ -468,7 +466,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
                 {/* Item Type */}
                 <FormField
-                  name="type"
+                  name="isDigital"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2 xl:gap-3 mb-4 space-y-0">
@@ -477,19 +475,23 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                       </FormLabel>
                       <FormControl>
                         <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
+                          onValueChange={(val) =>
+                            val === "true"
+                              ? field.onChange(true)
+                              : field.onChange(false)
+                          }
+                          value={field.value?.toString()}
                           className="flex items-center h-7"
                         >
                           <FormItem className="flex items-center gap-1.5 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="product" />
+                              <RadioGroupItem value="false" />
                             </FormControl>
                             <Label>{t("physicalProduct")}</Label>
                           </FormItem>
                           <FormItem className="flex items-center gap-1.5 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="service" />
+                              <RadioGroupItem value="true" />
                             </FormControl>
                             <Label>{t("digitalService")}</Label>
                           </FormItem>
@@ -507,11 +509,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                        {selectedType === "product"
-                          ? t("titleProduct")
-                          : selectedType === "service"
-                            ? t("titleService")
-                            : t("titleNull")}
+                        {isDigital ? t("titleProduct") : t("titleService")}
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
