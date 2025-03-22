@@ -243,21 +243,8 @@ export const contentCycleFormSchema = z
           .nullable(),
       })
     ),
-    // reminder: z
-    //   .object({
-    //     isEnabled: z.boolean(),
-    //     text: z
-    //       .string()
-    //       .optional()
-    //       .nullable()
-    //       .transform((data) => data || undefined),
-    //     time: z
-    //       .string()
-    //       .optional()
-    //       .nullable()
-    //       .transform((data) => (data ? `${data}` : undefined)),
-    //   })
-    //   .optional(),
+    commentTexts: z.array(z.string().min(1)).nullable().optional(),
+    isReplyCommentEnabled: z.boolean()
   })
   .superRefine((data, ctx) => {
     if (data.reminders.length > 0 && !data.reminderTime) {
@@ -335,6 +322,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       likeDirect: false,
       isRemindersEnabled: false,
       reminders: [],
+      isReplyCommentEnabled: false
     },
   });
 
@@ -350,6 +338,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       reminderTime: contentCycle.reminderTime
         ? `${contentCycle.reminderTime}`
         : undefined,
+      isReplyCommentEnabled: !!contentCycle.commentTexts?.length
     });
   }, [contentCycle, form])
 

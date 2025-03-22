@@ -306,7 +306,12 @@
             "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید",
             "commentStartTitlePlaceholder": "شروع",
             "commentStartTitle": "متن دکمه شروع",
-            "startRequestMessageDescription": ""
+            "startRequestMessageDescription": "",
+            "isReplyCommentEnabled": {
+                "label": "ارسال کامنت بعد از ارسال دایرکت",
+                "description": "بعد از ارسال پیام در دایرکت، برای کامنت یک پاسخ به صورت تصادفی از بین پاسخ هایی که وارد می‌کنید کامنت و اسم کاربر در ابتدای متن اضافه می‌شود."
+            },
+            "addComment": "افزودن کامنت"
         },
         "Title": {
             "title": "عنوان",
