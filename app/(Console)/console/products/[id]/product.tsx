@@ -1,8 +1,6 @@
 "use client";
 
-import { ProductNamespace } from "@/types/product";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ProductFormSkeleton from "../components/product.form.skeleton";
 import ProductForm from "../components/product.form";
 import { useTranslations } from "next-intl";
@@ -20,13 +18,14 @@ import {
 } from "@/components/theme/ui/breadcrumb";
 import { toast } from "@/components/ui/use-toast";
 import useSWRImmutable from "swr/immutable";
+import useUser from "@/hooks/useUser";
 
 export default function Product({ id }: { id: string }) {
   const t = useTranslations("Products");
-  const router = useRouter();
+  const { isAuthenticated } = useUser()
 
-  const { data: product, error: productError } = useSWRImmutable(
-    `/products/${id}`,
+  const { data: product, error: productError, mutate: mutateProduct } = useSWRImmutable(
+    isAuthenticated ? `/products/${id}` : null,
     {
       refreshInterval: 30_000,
       revalidateOnMount: true,

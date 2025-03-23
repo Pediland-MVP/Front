@@ -27,12 +27,12 @@ export default async function ConsoleLayout({
     >
       <body className="bg-blue-50 h-screen">
         <SWRProvider>
-          <NextIntlClientProvider messages={messages}>
-            <ZodErrorsMapProvider>
-              {children}
-            </ZodErrorsMapProvider>
-            <Toaster />
-          </NextIntlClientProvider>
+            <NextIntlClientProvider messages={messages}>
+              <ZodErrorsMapProvider>
+                {children}
+              </ZodErrorsMapProvider>
+              <Toaster />
+            </NextIntlClientProvider>
         </SWRProvider>
         <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
