@@ -166,7 +166,7 @@ export default function OrderListCard({
               orders.map((order) => {
                 const totalPrice =
                   order.orderProducts[0]?.quantity *
-                  order.orderProducts[0]?.price;
+                  (order.orderProducts[0]?.discountPrice ? order.orderProducts[0]?.discountPrice : order.orderProducts[0]?.product.price);
 
                 const realPrice =
                   order.orderProducts[0]?.quantity *

@@ -105,6 +105,7 @@ interface OrderProduct {
   createDate: string;
   updateDate: string;
   price: number;
+  discountPrice: number | null
   quantity: number;
   product: Product;
   attributeValues: {
