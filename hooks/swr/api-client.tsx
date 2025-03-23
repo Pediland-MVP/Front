@@ -31,8 +31,6 @@ const processQueue = (error: any, token = null) => {
 // Set the access token in memory
 export const setAccessToken = (token: string) => {
   accessToken = token;
-  console.log(accessToken);
-  
 };
 
 // Get the current access token

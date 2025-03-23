@@ -27,6 +27,7 @@ import useSWR from "swr";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import moment from "moment-jalaali";
 import { cn } from "@/lib/utils";
+import { getOrderPrices } from "@/app/utils/getOrderPrices";
 
 type Lead = {
   profile: string;
@@ -164,15 +165,8 @@ export default function OrderListCard({
               <OrderListSkeleton rowCount={limit} />
             ) : (
               orders.map((order) => {
-                const totalPrice =
-                  order.orderProducts[0]?.quantity *
-                  (order.orderProducts[0]?.discountPrice ? order.orderProducts[0]?.discountPrice : order.orderProducts[0]?.product.price);
 
-                const realPrice =
-                  order.orderProducts[0]?.quantity *
-                  order.orderProducts[0]?.product.price;
-
-                const isInDiscount = totalPrice !== realPrice;
+                const { isDiscount, paidPrice, totalPrice } = getOrderPrices(order.orderProducts);
 
                 return (
                   <TableRow
@@ -227,12 +221,12 @@ export default function OrderListCard({
                     <TableCell className="text-center">
                       <span
                         dir="ltr"
-                        className={`${isInDiscount && "line-through"}`}
+                        className={`${isDiscount && "line-through"}`}
                       >
-                        {realPrice.toLocaleString()}
+                        {paidPrice.toLocaleString()}
                       </span>
                       <br />
-                      {isInDiscount && (
+                      {isDiscount && (
                         <span>{totalPrice.toLocaleString()}</span>
                       )}
                     </TableCell>

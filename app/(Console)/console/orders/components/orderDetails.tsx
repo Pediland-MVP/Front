@@ -33,6 +33,7 @@ import api from "@/hooks/swr/api-client";
 import type { AxiosError } from "axios";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Pen } from "@phosphor-icons/react/dist/ssr";
+import { getOrderPrices, useGetOrderPrices } from "@/app/utils/getOrderPrices";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
@@ -84,14 +85,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
     return <LoadingSpinner />;
   }
 
-  const totalPrice = order.orderProducts.reduce(
-    (sum, op) => sum + op.product.price * op.quantity,
-    0
-  );
-  const paidPrice = order.orderProducts.reduce(
-    (sum, op) => sum + op.price * op.quantity,
-    0
-  );
+  const { isDiscount, paidPrice, totalPrice } = useGetOrderPrices(order.orderProducts);
 
   return (
     <div className="w-full h-full overflow-y-auto max-h-[calc(100vh-10rem)]">
