@@ -7,9 +7,6 @@ import { mutate } from "swr";
 import { useRouter } from "next/navigation";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { orderFormSchema } from "../checkout.page";
 
 export default function useStartPayment() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -22,7 +19,6 @@ export default function useStartPayment() {
     paymentMethod,
   } = useCheckout();
 
-  const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>()
 
   const t_ec = useTranslations("ERROR_CODES");
   const router = useRouter();
@@ -40,7 +36,6 @@ export default function useStartPayment() {
           productId,
           quantity: orderQuantity,
           paymentMethod,
-          attributeValueIds: getValues('attributeValueIds')
         }),
         credentials: "include",
       }

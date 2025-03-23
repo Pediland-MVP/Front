@@ -1260,7 +1260,7 @@
         }
     },
     "ERROR_CODES": {
-        "USER_NOT_FOUND": "کاربر پیدا نشد",
+        "USER_NOT_FOUND": "کارب پیدا نشد",
         "USER_ALREADY_VERIFIED": "کاربر قبلاً تأیید شده است",
         "MOBILE_NUMBER_EXIST": "شماره موبایل از قبل وجود دارد",
         "PASSWORD_INVALID": "رمز عبور نامعتبر است",
@@ -1282,6 +1282,7 @@
         "ORDER_SHOULD_HAVE_CARD_TO_CARD": "تصویر کارت به کارت را آپلود کنید",
         "ORDER_HAS_ALREADY_BEEN_SUBMITTED": "این سفارش قبلا ثبت شده است",
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
+        "LEAD_SHOPPING_ACCESS_DENIED": "دسترسی خرید لید رد شد",
         "NO_INSTAGRAM": "اینستاگرامی وجود ندارد",
         "CITY_INVALID": "شهر نامعتبر است",
         "CITY_NOT_FOUND": "شهر پیدا نشد",
@@ -1320,7 +1321,16 @@
         "OTP_INVALID": "کد تأیید نامعتبر است",
         "OTP_EXPIRED": "کد تأیید منقضی شده است",
         "PHONE_NUBMER_NOT_FOUND": "شماره تلفن پیدا نشد",
-        "IGCONNECT_MALFORMED_CODE": "کد اتصال اینستاگرام نامعتبر است"
+        "IGCONNECT_MALFORMED_CODE": "کد اتصال اینستاگرام نامعتبر است",
+        "PRODUCT_FIELD_INVALID": "فیلد محصول نامعتبر است",
+        "PRODUCT_FIELD_MAX_REACHED": "حداکثر فیلد محصول مجاز تکمیل شده است",
+        "PRODUCT_FIELD_SELECT_NEEDS_OPTIONS": "فیلد انتخاب محصول به گزینه‌ها نیاز دارد",
+        "PRODUCT_FIELD_TOO_MANY_FIELDS": "تعداد فیلدهای محصول بیش از حد مجاز است",
+        "ATTRIBUTE_VALUE_NOT_FOUND": "مقدار ویژگی پیدا نشد",
+        "ATTRIBUTE_ALREADY_SELECTED": "ویژگی از قبل انتخاب شده است",
+        "ATTRIBUTE_CANT_BE_UPDATED_NOW": "ویژگی در حال حاضر قابل به روز رسانی نیست",
+        "ERROR_CODES": "خطای پیش آمد",
+        "CONNECTION_ERROR": "اتصال به اینترنت برقرار نشد"
     },
     "RESPONSE_CODES": {
         "PAID_FREE": "پرداخت رایگان انجام شد",

@@ -25,7 +25,7 @@ export default function useOrder() {
 
     async function createOrder(values?: z.infer<typeof orderFormSchema>) {
         setIsLoading(true)
-        const {firstname, lastname, mobile, productFieldValues} = values || getValues()
+        const {firstname, lastname, mobile, productFieldValues, attributeValueIds} = values || getValues()
         await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}`, {
           method: "POST",
           headers: {
@@ -38,7 +38,8 @@ export default function useOrder() {
             mobile,
             quantity: orderQuantity,
             products: [{productId, quantity: orderQuantity}],
-            productFieldValues: productFieldValues
+            productFieldValues: productFieldValues,
+            attributeValueIds
           })
         })
         .then(async (res) => {

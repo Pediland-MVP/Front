@@ -7,6 +7,7 @@ import type { orderFormSchema } from "../checkout.page"
 import { cn } from "@/lib/utils"
 import { Check } from "lucide-react"
 import { useCheckout } from "../useCheckout"
+import { useUpdateAttributes } from "../hooks/useUpdateAttributes"
 
 type AttributeValue = {
   id: number
@@ -33,8 +34,10 @@ interface AttributeSelectorProps {
 }
 
 export function AttributeSelector({ attributes }: AttributeSelectorProps) {
-  const { setValue, watch } = useFormContext<z.infer<typeof orderFormSchema>>()
+  const { setValue, watch, getValues } = useFormContext<z.infer<typeof orderFormSchema>>()
   const selectedAttributeValueIds = watch("attributeValueIds") || []
+
+  const { isUpdateAttributesLoading, updateAttributes } = useUpdateAttributes()
 
   const { pendingOrder } = useCheckout()
 
@@ -54,6 +57,13 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
 
     // Add the newly selected value
     setValue("attributeValueIds", [...filteredIds, valueId])
+
+
+    // Update attributes when order exist
+    if (pendingOrder) {
+      updateAttributes(getValues('attributeValueIds'))
+    }
+  
   }
 
   const isSelected = (valueId: number) => {
