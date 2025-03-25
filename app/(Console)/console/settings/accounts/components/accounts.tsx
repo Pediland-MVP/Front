@@ -40,6 +40,9 @@ import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
+import { AxiosError, AxiosResponse } from "axios";
+import { IResponseMessage } from "@/types/responseMessage";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -53,6 +56,8 @@ export default function Accounts({
   setFilteredInstagramPages,
 }: AccountsProps) {
   const t = useTranslations("Settings.Accounts");
+  const t_ec = useTranslations("ERROR_CODES");
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFromFacebook: boolean = !!searchParams.get("facebookAccountId");
@@ -139,6 +144,18 @@ export default function Accounts({
       });
   };
 
+  const reloginHandler = async () => {
+    await api.get("/instagram/connectIG").then(async (res: AxiosResponse<IResponseMessage>) => {
+      router.push(res.data.data.link);
+    })
+    .catch((e: AxiosError<ExceptionMessage>) => {
+      toast({
+        title: t_ec(e.response?.data.code),
+        variant: "destructive",
+      })
+    })
+  }
+
   if (isInstagramPagesLoading) {
     return <LoadingSpinner />;
   }
@@ -215,7 +232,8 @@ export default function Accounts({
                         <DropdownMenuItem>
                           <Link
                             className="flex items-center gap-2"
-                            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+                            onClick={reloginHandler}
+                            href={'#'}
                           >
                             <ArrowClockwise size={18} />
                             {t("relogin")}
