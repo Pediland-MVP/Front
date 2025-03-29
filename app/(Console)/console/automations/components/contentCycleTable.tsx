@@ -156,7 +156,7 @@ export default function ContentCycleTable() {
                           className="hover:text-primary cursor-pointer"
                         />
                       </Link>
-                      <Link href={`/console/actions/content-cycle/${item.id}`}>
+                      <Link href={`/console/automations/${item.id}`}>
                         <Pencil
                           size={20}
                           weight="light"

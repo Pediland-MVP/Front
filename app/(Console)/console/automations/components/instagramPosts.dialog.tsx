@@ -23,7 +23,7 @@ import {
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
+import { contentCycleFormSchema } from "./contentCycle";
 import { useTranslations } from "next-intl";
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
 import api from "@/hooks/swr/api-client";

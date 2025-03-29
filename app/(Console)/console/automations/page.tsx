@@ -16,7 +16,7 @@ export default function ContentCyclePage() {
 
   useEffect(() => {
     setTools(
-      <Link href="/console/actions/content-cycle/add">
+      <Link href="/console/automations/add">
         <Button size={"sm"} className="mt-3 xl:mt-0">
           {t("add")}
           <Plus />

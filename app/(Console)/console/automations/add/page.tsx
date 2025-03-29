@@ -1,4 +1,4 @@
-import ContentCycle from "@/app/(Console)/console/actions/content-cycle/components/contentCycle";
+import ContentCycle from "@/app/(Console)/console/automations/components/contentCycle";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
 
