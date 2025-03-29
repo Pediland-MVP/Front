@@ -17,7 +17,7 @@ export default function SettingsNav() {
         },
         {
             title: t('bankAccounts'),
-            url: "/console/settings/cardToCard",
+            url: "/console/settings/card",
             icon: CreditCard,
         },
         {

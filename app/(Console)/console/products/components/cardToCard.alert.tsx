@@ -19,7 +19,7 @@ export default function CardToCardAlert() {
           {t('description')}
         </AlertDescription>
         <div className="flex w-full justify-center items-center gap-x-2">
-            <Link href={'/console/settings/cardToCard'}>
+            <Link href={'/console/settings/card'}>
                 <Button className="w-full mt-5">
                 {t('cardToCard')}
                 </Button>

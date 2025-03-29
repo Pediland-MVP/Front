@@ -102,7 +102,7 @@ const generateData = (t: any, isMobile: boolean) => ({
           },
           {
             title: t('cardToCard'),
-            url: "/console/settings/cardToCard",
+            url: "/console/settings/card",
           },
           {
             title: t('zarinpal'),
