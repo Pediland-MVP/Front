@@ -15,7 +15,7 @@ export default function ConnectInstagram() {
   useEffect(() => {
     if (code) {
        callbackIG(code).then(async () => {
-        router.push('/console/settings/accounts')
+        router.push('/console/settings/instagram')
         await mutate(mutateIncludeStringKey('me'));
       })
     }

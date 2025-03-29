@@ -15,7 +15,7 @@ export default function DashboardSkeleton({ accessDenied = false }) {
       <div className="flex flex-col items-center justify-center h-screen">
         <img src="/images/emojies/emj-01.webp" alt="404" width={120} height={120} />
         <h2 className="text-xl font-semibold text-red-600 mt-3 mb-1">{t("accessDenied")}</h2>
-        <p className="text-muted-foreground"><Link href="/console/settings/accounts" className="text-blue-600 underline underline-offset-8 hover:text-primary">{t("accessNote")}</Link></p>
+        <p className="text-muted-foreground"><Link href="/console/settings/instagram" className="text-blue-600 underline underline-offset-8 hover:text-primary">{t("accessNote")}</Link></p>
       </div>
     );
   }

@@ -31,7 +31,7 @@ export default function VerifyPage() {
 
   useEffect(() => {
     if (refId) {
-      router.push(`/console/settings/accounts?isAfterPurchasingPlan`)
+      router.push(`/console/settings/instagram?isAfterPurchasingPlan`)
     }
   })
 

@@ -12,7 +12,7 @@ export default function SettingsNav() {
     const items = [
         {
             title: t('accounts'),
-            url: "/console/settings/accounts",
+            url: "/console/settings/instagram",
             icon: Plug,
         },
         {

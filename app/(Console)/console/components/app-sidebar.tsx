@@ -98,7 +98,7 @@ const generateData = (t: any, isMobile: boolean) => ({
         items: [
           {
             title: t('accounts'),
-            url: "/console/settings/accounts",
+            url: "/console/settings/instagram",
           },
           {
             title: t('cardToCard'),
@@ -180,7 +180,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
           <Button className="w-full bg-sidebar hover:bg-blue-100 text-black" asChild>
             <Link
-              href={!hasSubscription ? '/console/settings/upgrade' : '/console/settings/accounts'}
+              href={!hasSubscription ? '/console/settings/upgrade' : '/console/settings/instagram'}
               onClick={() => {
                 if (isMobile) toggleSidebar();
               }}>
