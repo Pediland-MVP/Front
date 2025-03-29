@@ -1340,7 +1340,7 @@
     "Breadcrumbs": {
         "/console": "داشبورد",
         "/console/contacts": "لیست مخاطبین",
-        "/console/inbox": "لیست دایرکت‌ها",
+        "/console/directs": "لیست دایرکت‌ها",
         "/console/comments": "لیست کامنت‌ها",
         "/console/actions": "پیام‌های خودکار",
         "/console/actions/content-cycle": "لیست پیام‌ها",

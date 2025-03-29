@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { EmojiPicker } from "../../../inbox/components/emojiPicker";
+import { EmojiPicker } from "../../../directs/components/emojiPicker";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { FormField, Form } from "@/components/ui/form";
 import { KeyedMutator, mutate } from "swr";

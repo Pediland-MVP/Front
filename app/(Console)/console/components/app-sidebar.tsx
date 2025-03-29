@@ -55,7 +55,7 @@ const generateData = (t: any, isMobile: boolean) => ({
       items: [
         {
           title: t('directs'),
-          url: "/console/inbox",
+          url: "/console/directs",
         },
         {
           title: t('comments'),

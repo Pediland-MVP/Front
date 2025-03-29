@@ -23,7 +23,7 @@ export function OrderInstagramProfile({ lead }: { lead: OrderNamespace.GET.Order
           <p className="text-xs text-muted-foreground truncate">@{lead.leadInstagram.username}</p>
         </div>
         <Button asChild size="sm" className="flex-shrink-0">
-          <Link href={`/console/inbox/${lead.id}`}>
+          <Link href={`/console/directs/${lead.id}`}>
             <ChatCircle className="w-4 h-4 mr-1" />
             {t('chat')}
           </Link>
