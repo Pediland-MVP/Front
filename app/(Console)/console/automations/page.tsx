@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ContentCycleTable from "./components/contentCycleTable";
-import { useHeaderFeatures } from "../../components/context/headerFeaturesContext";
+import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 import Link from "next/link";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
@@ -16,7 +16,7 @@ export default function ContentCyclePage() {
 
   useEffect(() => {
     setTools(
-      <Link href="/console/actions/content-cycle/add">
+      <Link href="/console/automations/add">
         <Button size={"sm"} className="mt-3 xl:mt-0">
           {t("add")}
           <Plus />

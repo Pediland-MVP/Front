@@ -46,7 +46,7 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { FileNamespace } from "@/types/file";
 import { useContentsUploaderContext } from "./useContentsUploaderContext";
 import { useContentsContext } from "./useContentsContext";
-import InstagramPostsDialog from "../../../../components/instagramPosts.dialog";
+import InstagramPostsDialog from "@/app/(Console)/console/automations/components/instagramPosts.dialog";
 import Catalogue from "../catalogue";
 import ButtonTemplate from "../buttonTemplate/buttonTemplate";
 import api from "@/hooks/swr/api-client";

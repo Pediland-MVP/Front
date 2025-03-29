@@ -63,7 +63,7 @@ const generateData = (t: any, isMobile: boolean) => ({
         },
         {
           title: t('automations'),
-          url: "/console/actions/content-cycle",
+          url: "/console/automations",
         },
       ],
     },

@@ -1,8 +1,7 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense } from "react";
 
-import { SessionStorageKeys } from "@/app/utils/sessionStorageKeys";
 import CommentsList from "./commentsList";
 
 interface ChatLayoutProps {

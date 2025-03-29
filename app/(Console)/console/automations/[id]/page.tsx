@@ -15,7 +15,7 @@ export default async function ContentCycleEditPage({
   const { id } = await params;
 
   if (!isUUID(id, "4")) {
-    redirect("/console/actions/content-cycle");
+    redirect("/console/automations");
   }
   const t = await getTranslations("Automations");
 

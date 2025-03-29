@@ -1,5 +1,3 @@
-import SessionTable from "../components/sessions.table";
-
 export default async function SessionPage({
   params
 }: {

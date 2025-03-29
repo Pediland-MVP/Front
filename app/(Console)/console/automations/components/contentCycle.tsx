@@ -418,7 +418,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     })
     .then(res => {
       toast({ title: t("success") });
-      router.push("/console/actions/content-cycle");
+      router.push("/console/automations");
     })
     .catch((e: AxiosError<ExceptionMessage>) => {
       toast({
