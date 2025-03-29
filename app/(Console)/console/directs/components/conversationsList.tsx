@@ -98,12 +98,12 @@ function ConversationsList() {
   );
 
   const conversationClickHandler = (chatId: string) => () => {
-    router.push(`/console/inbox/${chatId}`);
+    router.push(`/console/directs/${chatId}`);
   };
 
   useEffect(() => {
     if (selectedChatId) {
-      router.push(`/console/inbox/${selectedChatId}`);
+      router.push(`/console/directs/${selectedChatId}`);
     }
   }, [isSmallDevice, isMediumDevice, selectedChatId, router]);
 

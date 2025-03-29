@@ -127,7 +127,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                           leadInstagram={item.leadInstagram}
                         />
                         <Link
-                          href={`/console/inbox/${item.leadInstagram.lead.id}`}
+                          href={`/console/directs/${item.leadInstagram.lead.id}`}
                         >
                           <Button variant="ghost" size="sm">
                             <ChatCircleText className="h-4 w-4 ml-2" />

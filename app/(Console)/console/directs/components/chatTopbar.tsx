@@ -44,7 +44,7 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
         </div>
       </div>
       <X
-        onClick={() => router.push('/console/inbox')}
+        onClick={() => router.push('/console/directs')}
         className="text-gray-300 cursor-pointer hover:text-gray-700 duration-300"
         height={24}
         width={24} />
