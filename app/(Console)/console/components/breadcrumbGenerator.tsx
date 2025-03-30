@@ -24,13 +24,16 @@ export function BreadcrumbGenerator() {
         {pathSegments.map((segment, index) => {
           const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
           const isLast = index === pathSegments.length - 1;
+          const lastpart = pathSegments[pathSegments.length - 1];
+          const withoutLastpart = pathSegments.slice(0, -1).join("/");
+          
 
           return (
             <React.Fragment key={path}>
               <BreadcrumbItem className={isLast ? "flex-1 min-w-0" : ""}>
                 {isLast ? (
                   <span className="block truncate whitespace-nowrap">
-                    {t(path) || segment}
+                    {path.includes('-') ? t(`/${withoutLastpart}/item`) : t(path)}
                   </span>
                 ) : (
                   <BreadcrumbLink asChild>
