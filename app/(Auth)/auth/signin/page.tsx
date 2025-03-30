@@ -78,7 +78,7 @@ export default function SignIn() {
           title: t("loginSuccess"),
           description: t("loginWelcome"),
         });
-        router.push("/console");
+        router.push("/");
       })
       .catch((e) => {
         console.error(e);

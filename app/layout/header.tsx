@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
-import MegaMenuXl from "../(Site)/components/megaMenuXl";
 import Link from "next/link";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
@@ -22,6 +21,7 @@ import {
   X,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
+import MegaMenuXl from "@/components/megaMenuXl";
 
 function Header() {
   const t = useTranslations("Home.Header");

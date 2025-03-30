@@ -377,14 +377,6 @@ export default function CheckoutPage({
                 {shop?.name}
               </span>
             </div>
-            <div className="_title flex items-center gap-2">
-              <ShoppingBagOpen
-                size={24}
-                weight="duotone"
-                className="text-secondary"
-              />
-              <h1 className="font-semibold text-secondary">ثبت سفارش</h1>
-            </div>
           </div>
         </div>
       </header>

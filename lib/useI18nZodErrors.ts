@@ -1,3 +1,4 @@
+'use client'
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { makeZodI18nMap } from './zodErrorMap';

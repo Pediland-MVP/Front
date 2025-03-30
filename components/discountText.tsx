@@ -1,4 +1,4 @@
-import { usePlanSelection } from "@/app/(Console)/console/settings/upgrade/hooks/usePlanSelection";
+import { usePlanSelection } from "@/app/(Console)/settings/upgrade/hooks/usePlanSelection";
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 
 export default function DiscountText() {
