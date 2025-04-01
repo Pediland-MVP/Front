@@ -1,5 +1,6 @@
 "use client";
 import { toast } from "@/components/theme/ui/use-toast";
+import { PaymentNamespace } from "@/types/payments/payment.namespace";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
@@ -16,7 +17,7 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
   const [isOk, setIsOk] = useState<boolean>();
-  const [refId, setRefId] = useState();
+  const [response, setResponse] = useState<PaymentNamespace.GET.OrderpaymentVerify>()
   const t = useTranslations("Checkout");
 
   useEffect(() => {
@@ -35,9 +36,9 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
     )
       .then(async (res) => {
         if (res.ok) {
-          const json = await res.json();
+          const json = await res.json() as PaymentNamespace.GET.OrderpaymentVerify
           setIsOk(true);
-          setRefId(json?.data?.ref_id);
+          setResponse(json)
           return;
         }
         setIsOk(false);
@@ -75,12 +76,12 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
           />
           <p className="text-xl font-medium">{t("orderProcessing")}</p>
           <p className="text-lg text-center">
-            {t("orderProcessingDescription")}
+            {response?.data.orderProcessText || t("orderProcessingDescription")}
           </p>
 
-          {refId && (
+          {response?.data?.ref_id && (
             <span className="text-xs text-black/40">
-              کد رهگیری درگاه پرداخت:‌ {refId}
+              کد رهگیری درگاه پرداخت:‌ {response.data.ref_id}
             </span>
           )}
         </div>

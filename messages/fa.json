@@ -1361,6 +1361,11 @@
         "/profile": "حساب کاربری",
         "/settings/upgrade/verify": "تایید اشتراک"
     },
+    "Notfound": {
+        "title": "Page Not Found",
+        "description": "The page you are looking for does not exist.",
+        "redirect": "Redirect to main page"
+    },
     "zod": {
         "errors": {
             "invalid_type": "مقدار مورد انتظار {expected} بود، اما {received} دریافت شد",
