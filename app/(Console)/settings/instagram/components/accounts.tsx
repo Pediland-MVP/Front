@@ -128,8 +128,8 @@ export default function Accounts({
           title: t("deleteSuccess"),
           description: t("accountDeletedSuccess"),
         });
-
         await mutate(mutateIncludeStringKey('me'));
+        await mutate(mutateIncludeStringKey('instagram'));
       })
       .catch(() => {
         toast({
