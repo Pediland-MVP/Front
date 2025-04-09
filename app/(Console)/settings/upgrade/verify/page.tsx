@@ -42,7 +42,7 @@ export default function VerifyPage() {
       ) : error ? (
         <>
             <p className="text-4xl font-bold text-red-600">{t("error")}</p>
-            <p>{t_ec((error.data as ExceptionMessage).code)}</p>
+            <p>{t_ec((error.data as ExceptionMessage)?.code)}</p>
         </>
       ) :
       (
