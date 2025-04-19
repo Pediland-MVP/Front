@@ -20,21 +20,19 @@ jobs:
       - name: Deploy Front RD
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
-          cd Front
+          cd /home/cicd/Front
           git pull origin main
-          git reset --hard origin/main
-          docker compose -f ../docker-compose-rd-Front.yml down --rmi all -v
-          docker compose -f ../docker-compose-rd-Front.yml up -d
+          git reset --hard HEAD
+          cd /home/cicd/ && ./run.sh
           EOF
 
       - name: Deploy Front Main
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
-          cd Front
+          cd /home/cicd/Front
           git pull origin main
-          git reset --hard origin/main
-          docker compose -f ../docker-compose-Front.yml down --rmi all -v
-          docker compose -f ../docker-compose-Front.yml up -d
+          git reset --hard HEAD
+          cd /home/cicd/ && ./run.sh
           EOF
 
       - name: Remove SSH Key
