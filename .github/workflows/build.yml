@@ -23,7 +23,7 @@ jobs:
           cd /home/cicd/Front
           git pull origin main
           git reset --hard HEAD
-          cd /home/cicd/ && ./run.sh
+          cd /home/cicd/ && ./run2.sh
           EOF
 
       - name: Deploy Front Main
@@ -32,7 +32,7 @@ jobs:
           cd /home/cicd/Front
           git pull origin main
           git reset --hard HEAD
-          cd /home/cicd/ && ./run.sh
+          cd /home/cicd/ && sleep 20 && ./run.sh
           EOF
 
       - name: Remove SSH Key
