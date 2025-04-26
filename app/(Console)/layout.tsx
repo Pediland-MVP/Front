@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { SWRProvider } from "@/hooks/swr/api-client";
 import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
+import ConsoleProvider from "./components/consoleProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -29,7 +30,9 @@ export default async function ConsoleLayout({
         <SWRProvider>
             <NextIntlClientProvider messages={messages}>
               <ZodErrorsMapProvider>
-                {children}
+                <ConsoleProvider>
+                  {children}
+                </ConsoleProvider>
               </ZodErrorsMapProvider>
               <Toaster />
             </NextIntlClientProvider>

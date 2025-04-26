@@ -173,6 +173,7 @@ export default function Signup() {
                         <FormControl>
                           <Input
                             {...field}
+                            autoComplete="given-name"
                             placeholder={t("enterFirstnamePlaceholder")}
                           />
                         </FormControl>
@@ -188,6 +189,7 @@ export default function Signup() {
                         <FormControl>
                           <Input
                             {...field}
+                            autoComplete="family-name"
                             placeholder={t("enterLastnamePlaceholder")}
                           />
                         </FormControl>
@@ -203,6 +205,7 @@ export default function Signup() {
                         <FormControl>
                           <Input
                             {...field}
+                            autoComplete="username"
                             onInput={onInputP2EHandler}
                             placeholder={t("enterMobilePlaceholder")}
                           />
@@ -219,6 +222,7 @@ export default function Signup() {
                         <FormControl>
                           <InputPassword
                             {...field}
+                            autoComplete="new-password"
                             placeholder={t("enterPasswordPlaceholder")}
                           />
                         </FormControl>

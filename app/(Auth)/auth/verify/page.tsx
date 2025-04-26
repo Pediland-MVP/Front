@@ -24,7 +24,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import ButtonLoading from "@/components/ui/button-loading";
 import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
-import api from "@/hooks/swr/api-client";
+import api, { clearAccessToken } from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 
@@ -63,7 +63,7 @@ export default function VerifyOTP() {
           title: t("toasts.loginSuccess"),
           description: t("toasts.welcomeMessage"),
         });
-        router.push("/console");
+        router.push("/");
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         const message = t_ec(e.response?.data?.code);
@@ -112,7 +112,8 @@ export default function VerifyOTP() {
     await api
       .delete("/auth/logout")
       .then(async (res) => {
-        router.push("/");
+        clearAccessToken()
+        router.push(process.env.NEXT_PUBLIC_MAIN_SITE_URL);
       })
       .catch((e) => {
         toast({

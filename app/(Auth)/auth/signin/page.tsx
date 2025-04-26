@@ -78,7 +78,7 @@ export default function SignIn() {
           title: t("loginSuccess"),
           description: t("loginWelcome"),
         });
-        router.push("/console");
+        router.push("/");
       })
       .catch((e) => {
         console.error(e);
@@ -133,6 +133,7 @@ export default function SignIn() {
                       <FormItem className="col-span-4">
                         <FormControl>
                           <Input
+                            autoComplete="username"
                             placeholder={t("enterMobilePlaceholder")}
                             {...field}
                           />
@@ -149,6 +150,7 @@ export default function SignIn() {
                         <FormControl>
                           <InputPassword
                             {...field}
+                            autoComplete="current-password"
                             placeholder={t("enterPasswordPlaceholder")}
                           />
                         </FormControl>
