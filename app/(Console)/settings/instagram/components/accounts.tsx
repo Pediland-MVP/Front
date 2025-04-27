@@ -218,7 +218,7 @@ export default function Accounts({
                         <DropdownMenuItem>
                           <Link
                             className="flex items-center gap-2"
-                            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/v1/instagram/connectIG`}
+                            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
                             target="_self"
                             rel="noopener noreferrer"
                           >
