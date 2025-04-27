@@ -25,7 +25,8 @@ function createSocket(url: string) {
         withCredentials: true,
         extraHeaders: {
             Authorization: `Bearer ${getAccessToken()}`
-        }
+        },
+        // transports: ['websocket', 'polling']
     });
 }
 

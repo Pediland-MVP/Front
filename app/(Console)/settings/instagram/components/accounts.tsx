@@ -76,7 +76,6 @@ export default function Accounts({
     }
   );
 
-
   useEffect(() => {
     if (!instagramPages) return;
 
@@ -128,8 +127,8 @@ export default function Accounts({
           title: t("deleteSuccess"),
           description: t("accountDeletedSuccess"),
         });
-        await mutate(mutateIncludeStringKey('me'));
-        await mutate(mutateIncludeStringKey('instagram'));
+        await mutate(mutateIncludeStringKey("me"));
+        await mutate(mutateIncludeStringKey("instagram"));
       })
       .catch(() => {
         toast({
@@ -144,23 +143,10 @@ export default function Accounts({
       });
   };
 
-  const reloginHandler = async () => {
-    await api.get("/instagram/connectIG").then(async (res: AxiosResponse<IResponseMessage>) => {
-      router.push(res.data.data.link);
-    })
-    .catch((e: AxiosError<ExceptionMessage>) => {
-      toast({
-        title: t_ec(e.response?.data.code),
-        variant: "destructive",
-      })
-    })
-  }
-
   if (isInstagramPagesLoading) {
     return <LoadingSpinner />;
   }
 
-  
   return (
     <>
       {filteredInstagramPages && filteredInstagramPages.length > 0 ? (
@@ -232,8 +218,9 @@ export default function Accounts({
                         <DropdownMenuItem>
                           <Link
                             className="flex items-center gap-2"
-                            onClick={reloginHandler}
-                            href={'#'}
+                            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/v1/instagram/connectIG`}
+                            target="_self"
+                            rel="noopener noreferrer"
                           >
                             <ArrowClockwise size={18} />
                             {t("relogin")}
