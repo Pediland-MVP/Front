@@ -8,7 +8,6 @@ import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
 import Contents from "./form/contents/contents";
 import LikeDirect from "./form/likeDirect";
-import ContentCycleTitle from "./form/title";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
@@ -56,7 +55,6 @@ type ContentCycleProps = {
 
 export const contentCycleFormSchema = z
   .object({
-    title: z.string().min(1, "لطفا عنوان اتوماسیون رو مشخص کنید."),
     conditions: z
       .array(
         z.object({
@@ -447,8 +445,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="grid gap-3"
                 >
-                  <ContentCycleTitle control={form.control} />
-
                   <hr className="border-gray-100" />
 
                   <Trigger control={form.control} getValues={form.getValues} />
