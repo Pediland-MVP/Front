@@ -24,7 +24,7 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
   const handle = () => {
     if (!hasSubscription) {
       router.push(`/settings/upgrade`);
-      return
+      return;
     }
     connectIG();
   };
@@ -95,22 +95,26 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
         </div>
         <DiscountText />
         <div className="text-center">
-          <Button
-            className="bg-green-500 text-white hover:bg-green-400 mt-4 w-full"
-            onClick={handle}
-          >
-            {!hasSubscription ? (
-              <>
-                <Basket weight="duotone" className="w-5 h-5" />
-                فعال‌سازی اشتراک
-              </>
-            ) : (
-              <>
-                <Plug weight="duotone" className="w-5 h-5" />
-                اتصال اکانت
-              </>
-            )}
-          </Button>
+          {!hasSubscription ? (
+            <Button
+              className="bg-green-500 text-white hover:bg-green-400 mt-4 w-full"
+              onClick={handle}
+            >
+              <Basket weight="duotone" className="w-5 h-5" />
+              فعال‌سازی اشتراک
+            </Button>
+          ) : (
+            <Link
+              href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+            >
+              <Button className="bg-green-500 text-white hover:bg-green-400 mt-4 w-full">
+                <>
+                  <Plug weight="duotone" className="w-5 h-5" />
+                  اتصال اکانت
+                </>
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>
