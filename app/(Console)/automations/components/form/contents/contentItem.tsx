@@ -50,6 +50,7 @@ import InstagramPostsDialog from "@/app/(Console)/automations/components/instagr
 import Catalogue from "../catalogue";
 import ButtonTemplate from "../buttonTemplate/buttonTemplate";
 import api from "@/hooks/swr/api-client";
+import { Label } from "@/components/ui/label";
 
 type MessageByTypeProps = {
   index: number;
@@ -62,6 +63,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
   const t_ec = useTranslations("ERROR_CODES");
   const t_err = useTranslations("Automations.Errors");
   const t_fileUploader = useTranslations("FileUploader");
+  const t = useTranslations('Automations.Contents')
 
   const {
     control,
@@ -160,8 +162,6 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
         });
     }
   };
-
-  const t = useTranslations("Automations.Contents");
   const { updateContents, contents } = useContentsContext();
 
   switch (type) {
@@ -178,6 +178,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
           control={control}
           render={({ field, fieldState: { error } }) => (
             <FormItem>
+              <Label>{t('youCanUseVars')}</Label>
               <Textarea
                 rows={5}
                 placeholder={t("enterYourMessage")}
