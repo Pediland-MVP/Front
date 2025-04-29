@@ -348,7 +348,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       haveError = true;
     }
 
-    if (values.isComment && !values.commentStartText) {
+    if (values.isComment && !values.justFollowers && !values.commentStartText) {
       form.setError("commentStartText", {
         message: "در حالت کامنت، پیام درخواست شروع ضروری است",
       });
