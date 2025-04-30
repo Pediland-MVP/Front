@@ -28,6 +28,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/theme/ui/input";
+import { Textarea } from "@/components/theme/ui/textarea";
 
 type ButtonTemplateProps = {
   mode: ContentCycleContentModeEnum;
@@ -92,7 +93,7 @@ export default function ButtonTemplate({
         render={({ field, fieldState: { error } }) => (
           <FormItem className="w-full">
             <FormLabel>{t("text.label")}</FormLabel>
-            <Input
+            <Textarea
               {...field}
               className="w-full"
               placeholder={t("text.placeholder")}
