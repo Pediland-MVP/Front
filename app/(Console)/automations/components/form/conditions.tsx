@@ -65,23 +65,9 @@ export default function Conditions({
                   defaultValue="EQUAL"
                   render={({ field, fieldState: { error } }) => (
                     <FormItem className="w-full">
-                      <Select
-                        {...field}
-                        dir="rtl"
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={t("equal")} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="EQUAL">{t("equal")}</SelectItem>
-                            <SelectItem value="INCLUDE">
-                              {t("include")}
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <Button variant={'outline'} className="w-full" type="button">
+                        {t('equal')}
+                      </Button>
                       {error && <FormMessage>{error.message}</FormMessage>}
                     </FormItem>
                   )}

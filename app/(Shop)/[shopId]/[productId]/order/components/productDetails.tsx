@@ -76,7 +76,7 @@ export default function ProductDetails() {
         <div className="_image relative w-full h-full aspect-square">
           <Image
             src={product.images?.[0].url || "/placeholder.svg"}
-            alt={product.title}
+            alt={product?.title}
             fill
             className="rounded-tr-xl rounded-tl-xl object-cover"
             sizes="(max-width: 768px) 96px, (max-width: 1024px) 192px, 256px"
@@ -84,7 +84,7 @@ export default function ProductDetails() {
         </div>
 
         <div className="_description flex flex-col gap-1 p-3">
-          <h2 className="_title text-lg md:text-2xl font-semibold flex items-center">{product.title}</h2>
+          <h2 className="_title text-lg md:text-2xl font-semibold flex items-center">{product?.title}</h2>
           <div className="_text flex flex-col">
             <p
               className={`text-gray-600 transition-all text-[15px] ${isExpanded ? "line-clamp-none" : "line-clamp-3"} overflow-hidden`}

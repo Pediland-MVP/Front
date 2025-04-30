@@ -121,7 +121,6 @@ export default function ContentCycleTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("title")}</TableHead>
               <TableHead>{t("conditionValue")}</TableHead>
               <TableHead>{t("actions")}</TableHead>
             </TableRow>
@@ -139,7 +138,6 @@ export default function ContentCycleTable() {
             ) : (
               contentCycles?.items.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell>{item.title}</TableCell>
                   <TableCell>
                     {item.conditions.length > 0
                       ? item.conditions.map((c) => c.value).join(", ")

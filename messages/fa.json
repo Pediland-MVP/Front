@@ -348,7 +348,8 @@
             "consentMessage": "بریم بعدی؟",
             "addContent": "افزودن محتوا",
             "label": "ارسال محتوا",
-            "haveInstagramPost": "ارسال یک پست اینستاگرام"
+            "haveInstagramPost": "ارسال یک پست اینستاگرام",
+            "youCanUseVars": "میتوانید از متغیر '{{name}}' به جای اسم کاربر استفاده کنید"
         },
         "Cta": {
             "label": "متن پایانی",
@@ -541,6 +542,7 @@
             }
         },
         "OrderDetails": {
+            "productDeleted": "محصول حذف شده",
             "chat": "چت",
             "productDetails": "جزئیات محصول",
             "orderDetails": "جزئیات سفارش",

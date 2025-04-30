@@ -36,6 +36,7 @@ import { ProductVariationNamespace } from "@/types/variations/productAttribute.n
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { ProductFields } from "./productFields";
 import { FormDescription } from "@/components/ui/form";
+import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -425,6 +426,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     form.setValue("haveColor", isChecked);
   };
 
+  const { onFocus } = useSelectOnFocus()
+
   return (
     <Card className="h-full p-4 xl:p-5">
       <div className="mb-6">
@@ -561,6 +564,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                                 <Input
                                   onInput={onInputP2EHandler}
                                   placeholder="۰"
+                                  onFocus={onFocus}
                                   {...field}
                                   onChange={(e) =>
                                     field.onChange(parseFloat(e.target.value))
@@ -590,6 +594,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                           onInput={onInputP2EHandler}
                           placeholder="۰"
                           {...field}
+                          onFocus={onFocus}
                           onChange={(e) => field.onChange(+e.target.value)}
                         />
                       </FormControl>

@@ -7,8 +7,6 @@ import JustFollowers from "./form/justFollowers";
 import Trigger from "./form/trigger";
 import Conditions from "./form/conditions";
 import Contents from "./form/contents/contents";
-import LikeDirect from "./form/likeDirect";
-import ContentCycleTitle from "./form/title";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
@@ -56,7 +54,6 @@ type ContentCycleProps = {
 
 export const contentCycleFormSchema = z
   .object({
-    title: z.string().min(1, "لطفا عنوان اتوماسیون رو مشخص کنید."),
     conditions: z
       .array(
         z.object({
@@ -160,7 +157,6 @@ export const contentCycleFormSchema = z
       .nullable()
       .transform((data) => data || undefined),
     justFollowers: z.boolean(),
-    likeDirect: z.boolean(),
     followMessage: z.string().optional().nullable(),
     followCheckMessage: z.string().optional().nullable(),
     isRemindersEnabled: z
@@ -319,7 +315,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       isDirect: true,
       isComment: false,
       justFollowers: false,
-      likeDirect: false,
       isRemindersEnabled: false,
       reminders: [],
       isReplyCommentEnabled: false
@@ -353,7 +348,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       haveError = true;
     }
 
-    if (values.isComment && !values.commentStartText) {
+    if (values.isComment && !values.justFollowers && !values.commentStartText) {
       form.setError("commentStartText", {
         message: "در حالت کامنت، پیام درخواست شروع ضروری است",
       });
@@ -447,8 +442,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="grid gap-3"
                 >
-                  <ContentCycleTitle control={form.control} />
-
                   <hr className="border-gray-100" />
 
                   <Trigger control={form.control} getValues={form.getValues} />
@@ -479,10 +472,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                     control={form.control}
                     getValues={form.getValues}
                   />
-
-                  <hr className="border-gray-100" />
-
-                  <LikeDirect control={form.control} />
 
                   {/* Submit button */}
                   <LoadingButton isLoading={isSubmitting}>

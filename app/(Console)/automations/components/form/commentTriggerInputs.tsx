@@ -43,7 +43,7 @@ export default function CommentTriggerInputs() {
 
   return (
     <>
-      {watch("isComment") && (
+      {watch("isComment") && !watch('justFollowers') && (
         <>
           <FormField
             control={control}

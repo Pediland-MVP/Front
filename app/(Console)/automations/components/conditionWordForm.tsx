@@ -42,7 +42,6 @@ export default function ConditionWordForm({ control, remove }: any) {
                   <SelectContent>
                     <SelectGroup>
                       <SelectItem value="equal">برابر</SelectItem>
-                      <SelectItem value="contains">شامل</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>

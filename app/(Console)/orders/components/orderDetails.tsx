@@ -116,17 +116,17 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                         className="flex gap-x-3 items-center space-x-4 mb-4 p-2 rounded-md hover:bg-accent/10 transition-colors duration-200"
                       >
                         <Image
-                          src={op.product.images[0]?.url || "/placeholder.svg"}
-                          alt={op.product.title}
+                          src={op.product?.images[0]?.url || "/placeholder.svg"}
+                          alt={op.product?.title}
                           width={64}
                           height={64}
                           className="rounded-md shadow-sm flex-shrink-0"
                         />
                         <div>
-                          <h4 className="font-medium">{op.product.title}</h4>
+                          <h4 className="font-medium">{op.product ? op.product?.title : t('productDeleted')}</h4>
                           <p className="text-sm text-muted-foreground">
                             {t("quantity")}: {op.quantity} | {t("price")}:{" "}
-                            {op.product.price.toLocaleString()}
+                            {op.product?.price.toLocaleString()}
                           </p>
                           <div className="flex gap-x-1 mt-1">
                             {op.attributeValues.map((av) => (

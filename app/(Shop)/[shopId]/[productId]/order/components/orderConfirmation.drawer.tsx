@@ -51,12 +51,12 @@ export function OrderConfirmationDrawer({
     return (
       <div className="flex items-center justify-center gap-x-7 space-x-4 w-full">
         <img
-          src={product.images[0]?.url || "/placeholder.svg"}
-          alt={product.title}
+          src={product?.images[0]?.url || "/placeholder.svg"}
+          alt={product?.title}
           className="w-24 h-24 object-cover rounded"
         />
         <div>
-          <p className="font-medium text-xl">{orderProduct.product.title}</p>
+          <p className="font-medium text-xl">{orderProduct.product?.title}</p>
           <p className="text-sm text-gray-500">تعداد: {orderProduct.quantity}</p>
         </div>
       </div>
