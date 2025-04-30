@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
+import { Card } from "@/components/theme/ui/card";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -43,8 +44,7 @@ export default function Signup() {
       .string({ message: t("lastnameRequired") })
       .min(1, t("enterLastname")),
     referralCode: z
-      .string({ message: t("referralCodeRequired") })
-      .min(1, { message: t("referralCodeRequired") }),
+      .string({ message: t("referralCodeRequired") }).optional(),
     mobile: z
       .string({ message: t("mobileRequired") })
       .regex(REGEX_MOBILE, t("enterValidMobile"))
@@ -260,7 +260,10 @@ export default function Signup() {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                    />
+                    <div className="col-span-4 bg-blue-400 p-2 border-blue-200 border-[3px] rounded-lg text-white text-center text-xs">
+                      می‌خوای رایگان شروع کنی؟ کد free رو وارد کن و یک ماه مهمون ما باش
+                    </div>
 
                   <Button
                     type="submit"
