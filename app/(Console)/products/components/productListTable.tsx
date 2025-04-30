@@ -180,14 +180,14 @@ export default function ProductListTable() {
                   <TableCell>
                     <Image
                       src={product.images?.[0]?.url}
-                      alt={product.title}
+                      alt={product?.title}
                       width={50}
                       height={50}
                       className="rounded-sm"
                     />
                   </TableCell>
 
-                  <TableCell>{product.title}</TableCell>
+                  <TableCell>{product?.title}</TableCell>
 
                   <TableCell>
                     {product.isDigital

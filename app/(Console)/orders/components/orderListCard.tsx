@@ -185,7 +185,7 @@ export default function OrderListCard({
                           <ImageWithFallback
                             fill={true}
                             src={
-                              order.orderProducts[0]?.product.images[0].url ??
+                              order.orderProducts[0]?.product?.images[0].url ??
                               "/images/no-image.png"
                             }
                             fallbackSrc="/images/no-image.png"
@@ -194,7 +194,7 @@ export default function OrderListCard({
                           />
                         </div>
                         <p className="text-md font-medium">
-                          {order.orderProducts[0]?.product.title}
+                          {order.orderProducts[0]?.product?.title}
                         </p>
                       </Link>
                     </TableCell>

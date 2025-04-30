@@ -542,6 +542,7 @@
             }
         },
         "OrderDetails": {
+            "productDeleted": "محصول حذف شده",
             "chat": "چت",
             "productDetails": "جزئیات محصول",
             "orderDetails": "جزئیات سفارش",

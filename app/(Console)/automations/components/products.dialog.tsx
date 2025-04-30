@@ -143,20 +143,20 @@ const ProductsDialog = ({
                   <div
                     className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
                     key={product.id}
-                    data-url={product.images[0].url}
+                    data-url={product?.images[0].url}
                     data-productid={product.id}
                     onClick={selectPost}
                   >
                     <Image
-                      src={product.images[0].url}
-                      alt={product.title || t("instagramPostAlt")}
+                      src={product?.images[0].url}
+                      alt={product?.title || t("instagramPostAlt")}
                       layout="fill"
                       objectFit="cover"
                       className="hover:opacity-80 duration-150"
                     />
                     <div className="absolute inset-x-0 bottom-0 px-2 py-1 bg-black bg-opacity-50">
                       <div className="text-white text-sm font-bold">
-                        {product.title}
+                        {product?.title}
                       </div>
                       <div className="text-white text-sm">
                         {t("price", { price: product.price })}
