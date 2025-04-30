@@ -24,7 +24,7 @@ import api from "@/hooks/swr/api-client";
 import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 50;
 
 export type InstagramProductsDialogProps = {
   index: number;
