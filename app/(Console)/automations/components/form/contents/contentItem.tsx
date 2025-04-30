@@ -51,6 +51,7 @@ import Catalogue from "../catalogue";
 import ButtonTemplate from "../buttonTemplate/buttonTemplate";
 import api from "@/hooks/swr/api-client";
 import { Label } from "@/components/ui/label";
+import InputCounter from "@/components/theme/ui/inputCounter";
 
 type MessageByTypeProps = {
   index: number;
@@ -184,6 +185,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
                 placeholder={t("enterYourMessage")}
                 {...field} // Keep only this spread
               />
+              <InputCounter text={field.value} maxLength={1000} />
               {error && <FormMessage>{t_err(error.message)}</FormMessage>}
             </FormItem>
           )}
@@ -322,19 +324,19 @@ export default function ContentItem({
       }),
       ...(type === ContentCycleContentTypesEnum.BUTTON_TEMPLATE
         ? {
-            buttonTemplate: {
-              text: "",
-              buttons: [
-                {
-                  url: "",
-                  text: "",
-                },
-              ],
-            },
-          }
+          buttonTemplate: {
+            text: "",
+            buttons: [
+              {
+                url: "",
+                text: "",
+              },
+            ],
+          },
+        }
         : {
-            buttonTemplate: null,
-          }),
+          buttonTemplate: null,
+        }),
       ...(type !== ContentCycleContentTypesEnum.TEXT && { text: undefined }),
     };
 
@@ -378,17 +380,16 @@ export default function ContentItem({
             variant={
               (option.value === "media" &&
                 ["image", "video", "audio"].includes(contents[index].type)) ||
-              contents[index].type === option.value
+                contents[index].type === option.value
                 ? "default"
                 : "outline"
             }
-            className={`h-15 flex flex-col items-center justify-cente ${
-              (option.value === "media" &&
+            className={`h-15 flex flex-col items-center justify-cente ${(option.value === "media" &&
                 ["image", "video", "audio"].includes(contents[index].type)) ||
-              contents[index].type === option.value
+                contents[index].type === option.value
                 ? "ring-2 ring-primary"
                 : ""
-            }`}
+              }`}
             onClick={() => handleMessageTypeChange(option.value)}
           >
             {option.icon}
@@ -418,23 +419,23 @@ export default function ContentItem({
                           <Tooltip
                             {...(contents.length > 1 &&
                               contents[index].type ===
-                                ContentCycleContentTypesEnum.TEXT && {
-                                open: false,
-                              })}
+                              ContentCycleContentTypesEnum.TEXT && {
+                              open: false,
+                            })}
                           >
                             <TooltipTrigger
                               asChild
                               disabled={
                                 contents.length > 1 ||
                                 contents[index].type !==
-                                  ContentCycleContentTypesEnum.TEXT
+                                ContentCycleContentTypesEnum.TEXT
                               }
                             >
                               <Checkbox
                                 disabled={
                                   contents.length <= 1 ||
                                   contents[index].type !==
-                                    ContentCycleContentTypesEnum.TEXT
+                                  ContentCycleContentTypesEnum.TEXT
                                 }
                                 dir="ltr"
                                 checked={field.value || false}
@@ -445,8 +446,8 @@ export default function ContentItem({
                               {contents.length <= 1
                                 ? t("consentTooltip")
                                 : contents[index].type !==
-                                    ContentCycleContentTypesEnum.TEXT &&
-                                  t("consentTooltipType")}
+                                ContentCycleContentTypesEnum.TEXT &&
+                                t("consentTooltipType")}
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
