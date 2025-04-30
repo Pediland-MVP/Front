@@ -54,7 +54,7 @@ export default function ContentCycleTable() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const LIMIT = 10;
+  const LIMIT = 35;
 
   // TODO: Better type for ContentCycleResponse
   const {

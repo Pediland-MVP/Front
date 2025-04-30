@@ -49,7 +49,7 @@ export default function OrderListCard({
   const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<number>(35);
   const [page, setPage] = useState<number>(1);
   const debouncedSearchTerm = useDebounce(search, 500);
   const [open, setOpen] = useState<boolean>(false);
