@@ -21,8 +21,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd /home/cicd/Front
+          git reset --hard origin/main
           git pull origin main
-          git reset --hard HEAD
+          git reset --hard origin/main
           cd /home/cicd/ && ./run2.sh
           EOF
 
@@ -30,8 +31,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd /home/cicd/Front
+          git reset --hard origin/main
           git pull origin main
-          git reset --hard HEAD
+          git reset --hard origin/main
           cd /home/cicd/ && sleep 20 && ./run.sh
           EOF
 
