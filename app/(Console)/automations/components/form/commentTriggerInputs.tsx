@@ -26,7 +26,7 @@ export default function CommentTriggerInputs() {
         "دایرکتتون رو چک کنید لطفا 🙏",
         "براتون ارسال شد ❤️",
       ]);
-      return
+      return;
     }
     setValue("commentTexts", null);
   };
@@ -43,7 +43,7 @@ export default function CommentTriggerInputs() {
 
   return (
     <>
-      {watch("isComment") && !watch('justFollowers') && (
+      {watch("isComment") && !watch("justFollowers") && (
         <>
           <FormField
             control={control}
@@ -76,78 +76,78 @@ export default function CommentTriggerInputs() {
               </div>
             )}
           />
-
-          <FormField
-            control={control}
-            name="isReplyCommentEnabled"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Switch
-                    type="button"
-                    dir="ltr"
-                    checked={field.value}
-                    onCheckedChange={onIsReplyCommentEnabled}
-                    className="ml-2"
-                  />
-                </FormControl>
-                <FormLabel className="">
-                  {t("isReplyCommentEnabled.label")}
-                </FormLabel>
-                <FormDescription>
-                  {t("isReplyCommentEnabled.description")}
-                </FormDescription>
-                <FormMessage />
-                {field.value && (
-                  <>
-                    {watch("commentTexts").map(
-                      (commentText: string, index: number) => (
-                        <FormField
-                          key={index}
-                          control={control}
-                          name={`commentTexts.${index}`}
-                          render={({ field, fieldState: { error } }) => (
-                            <FormItem>
-                              <div className=" flex justify-center items-center gap-x-1">
-                                <FormControl>
-                                  <Textarea
-                                    {...field}
-                                    value={field.value ?? ""}
-                                    placeholder={t("commentPlaceholder")}
-                                  ></Textarea>
-                                </FormControl>
-                                {index > 2 && (
-                                  <Button
-                                    onClick={() => onDelete(index)}
-                                    variant={"outline"}
-                                    size={"icon"}
-                                    type="button"
-                                    className="flex justify-center items-center box-border"
-                                  >
-                                    <X />
-                                  </Button>
-                                )}
-                              </div>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )
-                    )}
-                    <Button
-                      onClick={onAddComment}
-                      type="button"
-                      disabled={watch("commentTexts").length >= 10}
-                    >
-                      {t("addComment")}
-                    </Button>
-                  </>
-                )}
-              </FormItem>
-            )}
-          />
         </>
       )}
+
+      <FormField
+        control={control}
+        name="isReplyCommentEnabled"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Switch
+                type="button"
+                dir="ltr"
+                checked={field.value}
+                onCheckedChange={onIsReplyCommentEnabled}
+                className="ml-2"
+              />
+            </FormControl>
+            <FormLabel className="">
+              {t("isReplyCommentEnabled.label")}
+            </FormLabel>
+            <FormDescription>
+              {t("isReplyCommentEnabled.description")}
+            </FormDescription>
+            <FormMessage />
+            {field.value && (
+              <>
+                {watch("commentTexts").map(
+                  (commentText: string, index: number) => (
+                    <FormField
+                      key={index}
+                      control={control}
+                      name={`commentTexts.${index}`}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <div className=" flex justify-center items-center gap-x-1">
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                value={field.value ?? ""}
+                                placeholder={t("commentPlaceholder")}
+                              ></Textarea>
+                            </FormControl>
+                            {index > 2 && (
+                              <Button
+                                onClick={() => onDelete(index)}
+                                variant={"outline"}
+                                size={"icon"}
+                                type="button"
+                                className="flex justify-center items-center box-border"
+                              >
+                                <X />
+                              </Button>
+                            )}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )
+                )}
+                <Button
+                  onClick={onAddComment}
+                  type="button"
+                  disabled={watch("commentTexts").length >= 10}
+                >
+                  {t("addComment")}
+                </Button>
+              </>
+            )}
+          </FormItem>
+        )}
+      />
     </>
   );
 }
