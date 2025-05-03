@@ -11,7 +11,6 @@ import { useTranslations } from "next-intl";
 // UI 
 import { Button } from "@/components/theme/ui/button";
 import { Input } from "@/components/theme/ui/input";
-import TextDivider from "@/components/theme/ui/textDivider";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
   Form,
@@ -23,6 +22,7 @@ import {
 import { InputPassword } from "@/components/theme/ui/inputPassword";
 import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "@/components/ui/use-toast";
+import { Enamad } from "@/components/global/enamad";
 
 export default function SignIn() {
   const t = useTranslations("Auth.Signin");
@@ -100,7 +100,7 @@ export default function SignIn() {
   return (
     <main className="_signin-page h-full bg-blue-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="_wrapper flex items-center justify-center h-full">
+        <div className="_wrapper relative flex items-center justify-center h-full">
           <div className="_content w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
@@ -208,6 +208,7 @@ export default function SignIn() {
               </div> */}
             </div>
           </div>
+          <Enamad/>
         </div>
       </div>
     </main>

@@ -24,6 +24,7 @@ import {
 import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 import { Card } from "@/components/theme/ui/card";
+import { Enamad } from "@/components/global/enamad";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -135,7 +136,7 @@ export default function Signup() {
   return (
     <main className="_signup h-full bg-blue-50/75">
       <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="_wrap flex items-center justify-center h-full">
+        <div className="_wrap  relative flex items-center justify-center h-full">
           <div className="_content w-full sm:w-1/3 mx-auto">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
@@ -307,6 +308,7 @@ export default function Signup() {
             </div>
           </div>
         </div>
+        <Enamad/>
       </div>
     </main>
   );
