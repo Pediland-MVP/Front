@@ -12,8 +12,11 @@ import {
 import { Input } from "@/components/theme/ui/input";
 import { PlusCircle, Trash } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/theme/ui/button";
+import { useTranslations } from "next-intl";
 export default function ConditionWordForm({ control, remove }: any) {
   const [conditions, setConditions] = useState([{ id: 1 }]);
+
+  const t = useTranslations("Automations.Conditions");
 
   const addCondition = () => {
     setConditions([...conditions, { id: Date.now() }]);
@@ -27,27 +30,10 @@ export default function ConditionWordForm({ control, remove }: any) {
 
   return (
     <div>
-      <p>کلمه یا جمله ای</p>
+      <p>{t("wordOrPhrase")} wdifrewr9q4q23oekwasikaeaeo</p>
       <div className=" space-y-4">
         {conditions.map((condition, index) => (
           <div key={condition.id} className="flex gap-4 items-center">
-            <Controller
-              name={`conditions.${index}.type`}
-              control={control}
-              render={({ field }) => (
-                <Select {...field} dir="rtl" onValueChange={field.onChange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="برابر" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="equal">برابر</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <span className="text-sm">با</span>
             <Controller
               name={`conditions.${index}.value`}
               control={control}

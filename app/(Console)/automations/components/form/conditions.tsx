@@ -60,22 +60,6 @@ export default function Conditions({
             >
               <div className="w-full flex items-center gap-2">
                 <Controller
-                  name={`conditions.${index}.type`}
-                  control={control}
-                  defaultValue="EQUAL"
-                  render={({ field, fieldState: { error } }) => (
-                    <FormItem className="w-full">
-                      <Button variant={'outline'} className="w-full" type="button">
-                        {t('equal')}
-                      </Button>
-                      {error && <FormMessage>{error.message}</FormMessage>}
-                    </FormItem>
-                  )}
-                />
-                <span className="text-sm">{t("with")}</span>
-              </div>
-              <div className="w-full flex items-center gap-2">
-                <Controller
                   name={`conditions.${index}.value`}
                   control={control}
                   render={({ field, fieldState: { error } }) => (

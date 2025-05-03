@@ -330,7 +330,7 @@
             "retryPlaceholder": "مثال: فالو کردم"
         },
         "Conditions": {
-            "wordOrPhrase": "کلمه یا جمله ای",
+            "wordOrPhrase": "کلمه یا جمله ای برابر با:",
             "equal": "برابر",
             "include": "شامل",
             "with": "با",

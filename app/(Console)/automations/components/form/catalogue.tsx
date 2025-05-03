@@ -124,6 +124,7 @@ export default function Catalogue({ index, mode }: CatalogueProps) {
     append: appendProducts,
     update: updateProducts,
     move: moveProducts,
+    insert: insertProducts
   } = useFieldArray({
     control: control,
     name: `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? 'contents' : 'reminders'}.${index}.products`,
@@ -156,7 +157,7 @@ export default function Catalogue({ index, mode }: CatalogueProps) {
 
   const addProduct = () => {
     if (productsField.length < 10) {
-      appendProducts({});
+      insertProducts(0, {})
       trigger();
     }
   };
