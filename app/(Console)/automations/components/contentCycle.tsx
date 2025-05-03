@@ -349,7 +349,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       haveError = true;
     }
 
-    if (values.isComment && !values.justFollowers && !values.commentStartText) {
+    if (values.isComment && (values.contents[0].type === ContentCycleContentTypesEnum.PRODUCT || values.contents.length > 1) && !values.justFollowers && !values.commentStartText) {
       form.setError("commentStartText", {
         message: "در حالت کامنت، پیام درخواست شروع ضروری است",
       });
