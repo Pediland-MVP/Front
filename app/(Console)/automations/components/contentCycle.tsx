@@ -27,6 +27,7 @@ import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { CommentReplies } from "./form/commentReplies";
+import useUser from "@/hooks/useUser";
 
 export type ContentType = {
   id: string;
@@ -318,7 +319,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       justFollowers: false,
       isRemindersEnabled: false,
       reminders: [],
-      isReplyCommentEnabled: false
+      isReplyCommentEnabled: false,
+      commentStartText: t('commentStartText'),
+      commentStartTitle: t('commentStartTitle'),
+      followCheckMessage: t('followCheckMessage'),
     },
   });
 
@@ -327,7 +331,9 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   })
 
   useEffect(() => {
-    if (!contentCycle) return;
+    if (!contentCycle) {
+      return 
+    };
     form.reset({
       ...contentCycle,
       ...(contentCycle.reminders?.length > 0 && { isRemindersEnabled: true }),

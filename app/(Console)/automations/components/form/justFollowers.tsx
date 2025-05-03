@@ -1,5 +1,5 @@
 
-import { Control, UseFormGetValues } from "react-hook-form";
+import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/theme/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/theme/ui/textarea";
+import useUser from "@/hooks/useUser";
+import { useEffect } from "react";
 
 
 type JustFollowersProps = {
@@ -24,6 +27,23 @@ export default function JustFollowers({
   getValues,
 }: JustFollowersProps) {
   const t = useTranslations('Automations.JustFollowers');
+  const t_automations = useTranslations('Automations');
+  const { setValue, watch } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
+
+  const { user, hasInstagram } = useUser()
+
+  useEffect(() => {
+    if (!user || !watch('justFollowers')) return;
+    if (watch('followMessage')) return;
+    if (hasInstagram) {
+      setValue('followMessage', t_automations('followMessage', {
+        username: `@${user?.instagrams[0].username}`
+      }))
+
+      setValue('followCheckMessage', t_automations('followCheckMessage'))
+    }
+  }, [watch('justFollowers')])
+
   return (
     <>
       <FormField
@@ -59,7 +79,7 @@ export default function JustFollowers({
               <FormItem>
                 <FormLabel className="">{t('messageText')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
                     placeholder={t('placeholder')}
                     {...field}
                     value={field.value ?? ""}
