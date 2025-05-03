@@ -407,7 +407,7 @@ export default function ContentItem({
           />
 
           {contents[index].type === ContentCycleContentTypesEnum.TEXT &&
-            mode === ContentCycleContentModeEnum.CONTENT_CYCLE && (
+            mode === ContentCycleContentModeEnum.CONTENT_CYCLE && index > 0 && (
               <FormField
                 name={`contents.${index}.haveConsent`}
                 control={control}
