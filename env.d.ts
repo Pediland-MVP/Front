@@ -8,6 +8,7 @@ declare global {
       NEXT_PUBLIC_MAIN_SITE_URL: string;
       BACK_API_URL: string;
       JWT_SECRET: string;
+      NEXT_PUBLIC_LANDING_URL: string;
     }
   }
 }

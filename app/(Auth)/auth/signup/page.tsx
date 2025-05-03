@@ -282,7 +282,7 @@ export default function Signup() {
               <Button
                 variant="link"
                 className="w-full text-muted-foreground mt-10"
-                onClick={() => router.push("/")}
+                onClick={() => router.push(process.env.NEXT_PUBLIC_LANDING_URL)}
               >
                 {t("backToSite")}
                 <ArrowLeft className="w-5 h-5" />
