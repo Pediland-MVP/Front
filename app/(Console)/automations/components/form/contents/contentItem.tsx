@@ -179,7 +179,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
           control={control}
           render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <Label>{t('youCanUseVars')}</Label>
+              <Label className="text-xs font-medium">{t('youCanUseVars')}</Label>
               <Textarea
                 rows={5}
                 placeholder={t("enterYourMessage")}
