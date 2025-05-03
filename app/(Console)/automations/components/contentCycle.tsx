@@ -26,6 +26,7 @@ import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { CommentReplies } from "./form/commentReplies";
 
 export type ContentType = {
   id: string;
@@ -460,7 +461,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <CommentTriggerInputs />
+                  <CommentReplies/>
 
                   <hr className="border-gray-100" />
 
@@ -472,6 +473,10 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                     control={form.control}
                     getValues={form.getValues}
                   />
+                  <hr className="border-gray-100 mb-6" />
+
+                  <CommentTriggerInputs />
+
 
                   {/* Submit button */}
                   <LoadingButton isLoading={isSubmitting}>
