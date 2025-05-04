@@ -22,15 +22,25 @@ import { Textarea } from "@/components/theme/ui/textarea";
 import ErrorMessage from "@/components/ui/errorMessage";
 import Contents from "./contents/contents";
 import { ContentCycleContentModeEnum, ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { useEffect } from "react";
 
 export default function Reminder() {
-  const { control, getValues, setValue } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  const { control, getValues, setValue, watch } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
   const t = useTranslations("Automations.Reminder");
 
   const toggleReminders = (isEnabled: boolean) => {
     setValue("isRemindersEnabled", isEnabled);
     setValue("reminders", isEnabled ? [{type: ContentCycleContentTypesEnum.TEXT}] : []);
   };
+
+  useEffect(() => {
+    console.log(watch());
+    
+  }, [watch()])
+
+  if (watch('isComment') && (!watch('justFollowers') && !watch('commentStartText'))) {
+    return null
+  }
 
   return (
     <FormField

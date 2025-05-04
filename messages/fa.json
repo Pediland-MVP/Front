@@ -306,6 +306,7 @@
             "commentPlaceholder": "مثال: لطفا برای شروع فرایند روی دکمه شروع بزنید",
             "commentStartTitlePlaceholder": "شروع",
             "commentStartTitle": "متن دکمه شروع",
+            "commentStartText": "برای اینکه بتونیم پیام رو براتون بفرستیم، لازمه دکمه دریافت پیام رو بزنید🌟",
             "startRequestMessageDescription": "",
             "isReplyCommentEnabled": {
                 "label": "ارسال کامنت بعد از ارسال دایرکت",
