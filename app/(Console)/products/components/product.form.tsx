@@ -37,6 +37,7 @@ import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { ProductFields } from "./productFields";
 import { FormDescription } from "@/components/ui/form";
 import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
+import { ShippingPrice } from "./shippingPrice";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -78,6 +79,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       isInfinite: z.boolean(),
       quantity: z.number().nonnegative().optional(),
       price: z.union([z.number().int().nonnegative(), z.nan()]),
+      shippingCost: z.union([z.number().int().nonnegative(), z.nan()]),
       isDiscount: z.boolean().default(false),
       discountPrice: z
         .union([z.number().int().nonnegative(), z.nan()])
@@ -154,6 +156,15 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           path: ["price"],
         });
       }
+
+      if (data.shippingCost < 1000 && data.shippingCost !== 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('shippingCost.errors.under1000'),
+          path: ["shippingCost"]
+        })
+      }
+
       if (data.discountPrice && data.isDiscount) {
         if (data.discountPrice >= data.price) {
           ctx.addIssue({
@@ -181,6 +192,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       isInfinite: false,
       quantity: 0,
       price: 0,
+      shippingCost: 0,
       description: "",
       imageId: shouldBeEdit?.images?.[0]?.id || undefined,
       isDigital: false,
@@ -815,6 +827,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
               </div>
 
               <ProductFields />
+
+              <ShippingPrice/>
+
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}
