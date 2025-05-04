@@ -85,7 +85,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
     return <LoadingSpinner />;
   }
 
-  const { isDiscount, paidPrice, totalPrice } = useGetOrderPrices(order.orderProducts);
+  const { isDiscount, paidPrice, totalPrice, shippingCost } = useGetOrderPrices(order.orderProducts);
 
   return (
     <div className="w-full h-full overflow-y-auto max-h-[calc(100vh-10rem)]">
@@ -138,8 +138,11 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                     ))}
                   </div>
                   <Separator className="my-4" />
-                  <div className="font-bold text-primary">
+                  <div>
                     {t("totalPrice")}: {totalPrice.toLocaleString()}
+                  </div>
+                  <div>
+                    {t("shippingCost")}: {shippingCost?.toLocaleString()}
                   </div>
                   <div className="font-bold text-primary">
                     {t("paidPrice")}: {paidPrice.toLocaleString()}

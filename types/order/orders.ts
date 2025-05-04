@@ -108,6 +108,7 @@ interface OrderProduct {
   discountPrice: number | null
   quantity: number;
   product: Product;
+  shippingCost: number | null
   attributeValues: {
     id: number;
     createDate: string;

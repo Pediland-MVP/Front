@@ -546,13 +546,14 @@
             }
         },
         "OrderDetails": {
+            "shippingCost": "هزینه ارسال",
             "productDeleted": "محصول حذف شده",
             "chat": "چت",
             "productDetails": "جزئیات محصول",
             "orderDetails": "جزئیات سفارش",
             "quantity": "تعداد",
             "price": "قیمت",
-            "totalPrice": "قیمت کل",
+            "totalPrice": "جمع قیمت محصولات",
             "customerDetails": "اطلاعات مشتری",
             "name": "نام",
             "email": "ایمیل",
