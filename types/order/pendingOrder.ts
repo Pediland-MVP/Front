@@ -34,6 +34,7 @@ interface IOrderProduct {
   updateDate: Date;
   quantity: number;
   price: number;
+  shippingCost: number | null;
   discountPrice: number | null;
   product: {
     id: string

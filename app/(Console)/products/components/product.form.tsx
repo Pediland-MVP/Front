@@ -37,7 +37,7 @@ import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { ProductFields } from "./productFields";
 import { FormDescription } from "@/components/ui/form";
 import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
-import { ShippingPrice } from "./shippingPrice";
+import { ShippingCost } from "./shippingCost";
 
 export type ProductFormProps = {
   shouldBeEdit?: ProductNamespace.Product;
@@ -828,7 +828,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
               <ProductFields />
 
-              <ShippingPrice/>
+              <ShippingCost/>
 
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">

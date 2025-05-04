@@ -191,22 +191,22 @@ export default function PaymentDetails() {
           )}
         </div>
 
+      </div>
         <div className="mt-2 w-full flex justify-center items-center gap-x-2">
-          <Button onClick={() => setStep(prevStep())} className="3/12 bg-gray-500">
+          <Button onClick={() => setStep(prevStep())} className="w-4/12 bg-gray-500 hover:bg-gray-400">
             {t("back")}
           </Button>
 
           <LoadingButton
             isLoading={isStartPaymentLoading}
             onClick={startPaymentHandler}
-            className="w-full"
+            className="w-8/12"
           >
             {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
               ? t("nextStep")
               : t("payWithZarinpal")}
           </LoadingButton>
         </div>
-      </div>
     </div>
   );
 }

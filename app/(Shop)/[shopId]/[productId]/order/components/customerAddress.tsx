@@ -35,11 +35,12 @@ import { Button } from "@/components/theme/ui/button";
 import { useCheckout } from "../useCheckout";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 import useCheckoutStep from "../hooks/useCheckoutStep";
+import { ShippingInfo } from "./shippingInfo";
 
 export default function Address() {
   const t = useTranslations("Checkout");
 
-  const { setStep } = useCheckout()
+  const { setStep, pendingOrder } = useCheckout()
   const { nextStep, prevStep } = useCheckoutStep()
 
   const {
@@ -96,6 +97,11 @@ export default function Address() {
     updateShipping()
   }
 
+  useEffect(() => {
+    console.log('Pending order', pendingOrder);
+    
+  }, [pendingOrder])
+
   return (
     <div className="_customer-address p-3">
       <h2 className="text-lg font-semibold mb-2 border-b pb-2 flex items-center gap-2 text-primary">
@@ -103,6 +109,8 @@ export default function Address() {
         {t("address")}
       </h2>
 
+
+    <ShippingInfo shippingCost={pendingOrder?.orderProducts[0]?.shippingCost} />
       {/* <FormProvider {...form}>
         <form onSubmit={form.handleSubmit((data) => console.log(data))}> */}
           <div className="grid gap-2">
@@ -253,11 +261,11 @@ export default function Address() {
         {/* </form>
       </FormProvider> */}
       <div className="mt-6 w-full flex justify-center items-center gap-x-2">
-      <Button onClick={() => setStep(prevStep())} className="3/12 bg-gray-500">
+      <Button onClick={() => setStep(prevStep())} className="w-4/12 bg-gray-500 hover:bg-gray-400">
           {t('back')}
         </Button>
 
-        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-9/12" type="button">
+        <LoadingButton onClick={updateShippingHandler} isLoading={isUpdateShippingLoading} className="w-8/12" type="button">
           {t("nextStep")}
         </LoadingButton>
       </div>

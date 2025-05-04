@@ -749,7 +749,15 @@
                 "too_small": "کد پستی باید ۱۰ رقم باشد"
             }
         },
-        "payWithZarinpal": "پرداخت با درگاه اینترنتی"
+        "payWithZarinpal": "پرداخت با درگاه اینترنتی",
+        "ShippingInfo": {
+            "shippingMethod": "نحوه ارسال",
+            "postCompany": "ارسال پستی",
+            "shippingCost": "هزینه ارسال",
+            "toman": "تومان",
+            "freeShipping": "ارسال رایگان",
+            "shippingInfo": "اطلاعات ارسال"
+        }
     },
     "Settings": {
         "dashboard": "داشبورد",

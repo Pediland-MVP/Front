@@ -25,9 +25,10 @@ export default function ProductDetails() {
 
   const price = useMemo(() => {
     if (pendingOrder) {
-      return typeof pendingOrder.orderProducts[0]?.discountPrice === "number"
-        ? (pendingOrder.orderProducts[0]?.discountPrice * orderQuantity).toLocaleString()
-        : (pendingOrder.orderProducts[0].price * orderQuantity).toLocaleString()
+      // Returns price of product or discountPrice if product have off
+      return (typeof pendingOrder.orderProducts[0]?.discountPrice === "number"
+        ? (pendingOrder.orderProducts[0]?.discountPrice * orderQuantity)
+        : (pendingOrder.orderProducts[0].price * orderQuantity)).toLocaleString()
     }
     if (product) {
       return typeof product?.discountPrice === "number"
@@ -103,6 +104,7 @@ export default function ProductDetails() {
           </div>
 
           {/* Add the AttributeSelector component */}
+          {/* @ts-ignore */}
           {attributes.length > 0 && <AttributeSelector attributes={attributes} />}
         </div>
       </div>

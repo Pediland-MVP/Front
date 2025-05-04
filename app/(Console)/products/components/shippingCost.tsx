@@ -7,7 +7,7 @@ import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function ShippingPrice() {
+export function ShippingCost() {
   const { control } = useFormContext();
   const t = useTranslations("Products.Form");
   const { onFocus } = useSelectOnFocus();
