@@ -52,12 +52,18 @@ import ButtonTemplate from "../buttonTemplate/buttonTemplate";
 import api from "@/hooks/swr/api-client";
 import { Label } from "@/components/ui/label";
 import InputCounter from "@/components/theme/ui/inputCounter";
+import { HighlightWithinTextarea } from 'react-highlight-within-textarea'
+
 
 type MessageByTypeProps = {
   index: number;
   type: ContentCycleContentTypesEnum;
   mode: ContentCycleContentModeEnum;
 };
+
+function NameVariable() {
+  return <mark className="text-blue-400 font-bold">#نام</mark>
+}
 
 export function MessageByType({ index, type, mode }: MessageByTypeProps) {
   const { files, setFiles } = useContentsUploaderContext();
@@ -177,14 +183,22 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
         <FormField
           name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.text`}
           control={control}
-          render={({ field, fieldState: { error } }) => (
+          render={({ field, fieldState: { error }}) => (
             <FormItem>
               <Label className="text-xs font-medium">{t('youCanUseVars')}</Label>
-              <Textarea
-                rows={5}
-                placeholder={t("enterYourMessage")}
-                {...field} // Keep only this spread
-              />
+              <div className="highlighted-textarea">
+                <HighlightWithinTextarea
+                  highlight={[
+                    {
+                      highlight: '#نام',
+                      className: 'text-blue-400 bg-transparent font-bold'
+                    }
+                  ]}
+                  {...field} // Keep only this spread
+                  value={field.value || ''}
+                  placeholder={t("enterYourMessage")}
+                />
+              </div>
               <InputCounter text={field.value} maxLength={1000} />
               {error && <FormMessage>{t_err(error.message)}</FormMessage>}
             </FormItem>

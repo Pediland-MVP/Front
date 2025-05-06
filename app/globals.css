@@ -208,3 +208,22 @@
     text-wrap: balance;
   }
 }
+
+
+
+
+.highlighted-textarea {
+  min-height: 50px;
+  max-height: 150px;
+  background: white;
+  border-radius: 4px;
+  padding: 8px;
+  border: 1px 1px 1px 1px #000;
+  overflow-y: scroll;
+  max-width: 47ch;
+  width: 100%;
+}
+
+.public-DraftEditorPlaceholder-inner {
+  font-size: 10px;
+}

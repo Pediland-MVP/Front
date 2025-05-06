@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/ui/loadingSpinner";
 import StartKit from "./components/startKit";
 import DashboardHome from "./components/dashboardHome";
 import { Card } from "@/components/theme/ui/card";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const {
