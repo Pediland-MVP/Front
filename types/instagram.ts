@@ -19,6 +19,7 @@ export namespace InstagramNamespace {
     username: string | null;
     profileUrl: string;
     profilePictureUrl: string | null;
+    isIgTokenValid: boolean
   }
 
   export interface Page {

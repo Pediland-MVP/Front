@@ -35,7 +35,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/theme/ui/dropdown-menu";
-import { ArrowClockwise } from "@phosphor-icons/react";
+import { ArrowClockwise, IntersectSquare } from "@phosphor-icons/react";
 import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
@@ -43,6 +43,7 @@ import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 import { AxiosError, AxiosResponse } from "axios";
 import { IResponseMessage } from "@/types/responseMessage";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { Warning } from "@phosphor-icons/react/dist/ssr";
 
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
@@ -157,18 +158,18 @@ export default function Accounts({
               className="_card bg-blue-50/35 shadow hover:shadow-lg duration-200 border rounded-lg"
             >
               <div className="flex flex-row items-center justify-between gap-4 p-3 md:p-4 group h-full hover:cursor-pointer">
-                <div className="flex gap-3 md:gap-4 items-center">
+                <div className="flex flex-col  items-center">
                   <div className="_avatar">
                     {instagram.profilePictureUrl ? (
                       <Image
                         className="rounded-full"
                         src={instagram.profilePictureUrl || "/placeholder.svg"}
-                        width={75}
-                        height={75}
+                        width={50}
+                        height={50}
                         alt={instagram.name}
                       />
                     ) : (
-                      <InstagramLogo size={75} />
+                      <InstagramLogo size={50} />
                     )}
                   </div>
 
@@ -179,6 +180,16 @@ export default function Accounts({
                     </span>
                   </div>
                 </div>
+
+                {!instagram.isIgTokenValid && (
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+                  >
+                    <Button variant={"destructive"}>
+                      نیاز به ورود مجدد <Warning />
+                    </Button>
+                  </Link>
+                )}
 
                 <div className="_tools flex gap-2">
                   <div className="w-full flex justify-end">
