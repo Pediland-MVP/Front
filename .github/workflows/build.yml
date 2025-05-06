@@ -19,19 +19,19 @@ jobs:
 
       - name: Deploy Front RD
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd /home/cicd/ && nohup ./run2.sh &
           EOF
 
       - name: Deploy Front Main
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd /home/cicd/ && nohup ./run.sh &
           EOF
 
       - name: Deploy Check
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
           cd /home/cicd/ && ./check.sh
           EOF
 
