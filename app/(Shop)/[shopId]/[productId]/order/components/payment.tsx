@@ -130,11 +130,11 @@ export default function PaymentDetails() {
               <p className="text-sm text-gray-600 leading-relaxed">
                 لطفا مبلغ{" "}
                 <span className="bg-yellow-100 font-semibold px-1 text-primary">
-                  {product?.discountPrice
-                    ? (product!.discountPrice * orderQuantity).toLocaleString()
-                    : (product!.price * orderQuantity).toLocaleString()}{" "}
+                  {((product?.discountPrice
+                    ? (product!.discountPrice * orderQuantity)
+                    : (product!.price * orderQuantity)) + (product?.shippingCost || 0)).toLocaleString()}{" "}
                   تومان
-                </span>{" "}
+                </span>{product?.shippingCost ? `(شامل ${product.shippingCost} تومان هزینه ارسال) ` : ' '}
                 به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
                 بارگزاری نمایید.
               </p>

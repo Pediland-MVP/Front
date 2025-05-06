@@ -26,6 +26,7 @@ export interface ProductItem {
   productVariations: ProductVariation[];
   orderButtonText: string;
   orderProcessText: string;
+  shippingCost: number
   fields: {
     id: string;
     label: string;
