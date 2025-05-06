@@ -25,6 +25,7 @@ export default function Dashboard() {
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
+
   if (isLoading) {
     return (
       <div className="_dashboard h-full">

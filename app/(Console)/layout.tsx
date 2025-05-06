@@ -7,6 +7,7 @@ import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { SWRProvider } from "@/hooks/swr/api-client";
 import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
 import ConsoleProvider from "./components/consoleProvider";
+import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -31,6 +32,7 @@ export default async function ConsoleLayout({
             <NextIntlClientProvider messages={messages}>
               <ZodErrorsMapProvider>
                 <ConsoleProvider>
+                  <InstagramTokenErrorDialog/>
                   {children}
                 </ConsoleProvider>
               </ZodErrorsMapProvider>

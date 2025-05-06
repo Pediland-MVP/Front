@@ -22,6 +22,7 @@ export interface IUser {
     instagrams: {
         id: string,
         username: string,
+        isIgTokenValid: boolean,
         profilePicture: {
             url?: string
         } | null
