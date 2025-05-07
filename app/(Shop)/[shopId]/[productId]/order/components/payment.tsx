@@ -28,7 +28,7 @@ export default function PaymentDetails() {
   const cardToCard = shop?.user.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
 
-  const { prevStep, nextStep } = useCheckoutStep()
+  const { prevStep, nextStep } = useCheckoutStep();
 
   const [cardNumberCopied, setCardNumberCopied] = useState(false);
   const [ibanCopied, setIbanCopied] = useState(false);
@@ -80,32 +80,34 @@ export default function PaymentDetails() {
           dir="rtl"
           className="gap-4 items-start flex flex-col"
         >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem
-              value={ORDER_PAYMENT_METHODS.ZARINPAL}
-              id="r1"
-              disabled={!shop?.user?.paymentDetail?.zarinpal}
-            />
-            <Label
-              htmlFor="r1"
-              className={`text-base ${!shop?.user?.paymentDetail?.zarinpal && "text-black/30"}`}
-            >
-              پرداخت اینترنتی
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem
-              value={ORDER_PAYMENT_METHODS.CARD_TO_CARD}
-              id="r2"
-              disabled={!shop?.user?.paymentDetail?.cardToCard}
-            />
-            <Label
-              htmlFor="r2"
-              className={`text-base ${!shop?.user?.paymentDetail?.cardToCard && "text-black/30"}`}
-            >
-              کارت به کارت
-            </Label>
-          </div>
+          {!!shop?.user?.paymentDetail.zarinpal && (
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                value={ORDER_PAYMENT_METHODS.ZARINPAL}
+                id="r1"
+                disabled={!shop?.user?.paymentDetail?.zarinpal}
+              />
+              <Label htmlFor="r1" className={`text-black`}>
+                پرداخت اینترنتی
+              </Label>
+            </div>
+          )}
+
+          {!!shop?.user.paymentDetail.cardToCard && (
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                value={ORDER_PAYMENT_METHODS.CARD_TO_CARD}
+                id="r2"
+                disabled={!shop?.user?.paymentDetail?.cardToCard}
+              />
+              <Label
+                htmlFor="r2"
+                className={`text-base ${!shop?.user?.paymentDetail?.cardToCard && "text-black/30"}`}
+              >
+                کارت به کارت
+              </Label>
+            </div>
+          )}
         </RadioGroup>
 
         <div className="_card-transfer-text">
@@ -130,11 +132,17 @@ export default function PaymentDetails() {
               <p className="text-sm text-gray-600 leading-relaxed">
                 لطفا مبلغ{" "}
                 <span className="bg-yellow-100 font-semibold px-1 text-primary">
-                  {product?.discountPrice
-                    ? (product!.discountPrice * orderQuantity).toLocaleString()
-                    : (product!.price * orderQuantity).toLocaleString()}{" "}
+                  {(
+                    (product?.discountPrice
+                      ? product!.discountPrice * orderQuantity
+                      : product!.price * orderQuantity) +
+                    (product?.shippingCost || 0)
+                  ).toLocaleString()}{" "}
                   تومان
-                </span>{" "}
+                </span>
+                {product?.shippingCost
+                  ? `(شامل ${product.shippingCost} تومان هزینه ارسال) `
+                  : " "}
                 به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
                 بارگزاری نمایید.
               </p>
@@ -190,23 +198,25 @@ export default function PaymentDetails() {
             </>
           )}
         </div>
-
       </div>
-        <div className="mt-2 w-full flex justify-center items-center gap-x-2">
-          <Button onClick={() => setStep(prevStep())} className="w-4/12 bg-gray-500 hover:bg-gray-400">
-            {t("back")}
-          </Button>
+      <div className="mt-2 w-full flex justify-center items-center gap-x-2">
+        <Button
+          onClick={() => setStep(prevStep())}
+          className="w-4/12 bg-gray-500 hover:bg-gray-400"
+        >
+          {t("back")}
+        </Button>
 
-          <LoadingButton
-            isLoading={isStartPaymentLoading}
-            onClick={startPaymentHandler}
-            className="w-8/12"
-          >
-            {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
-              ? t("nextStep")
-              : t("payWithZarinpal")}
-          </LoadingButton>
-        </div>
+        <LoadingButton
+          isLoading={isStartPaymentLoading}
+          onClick={startPaymentHandler}
+          className="w-8/12"
+        >
+          {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
+            ? t("nextStep")
+            : t("payWithZarinpal")}
+        </LoadingButton>
+      </div>
     </div>
   );
 }
