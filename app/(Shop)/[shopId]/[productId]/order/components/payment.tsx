@@ -139,7 +139,10 @@ export default function PaymentDetails() {
                     (product?.shippingCost || 0)
                   ).toLocaleString()}{" "}
                   تومان
-                </span>{" "}
+                </span>
+                {product?.shippingCost
+                  ? `(شامل ${product.shippingCost} تومان هزینه ارسال) `
+                  : " "}
                 به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
                 بارگزاری نمایید.
               </p>
