@@ -41,7 +41,13 @@
             "error": "خطا",
             "generalError": "خطایی رخ داده است",
             "referralCodeRequired": "کد معرف برای ثبت‌نام الزامی است",
-            "backToSite": "بازگشت به سایت"
+            "backToSite": "بازگشت به سایت",
+            "acceptRules": {
+                "label": "با تمام <rules>قوانین</rules> بفروش موافق هستم",
+                "erros": {
+                    "required": "قبول کردن قوانین ضروری است"
+                }
+            }
         },
         "Verify": {
             "title": "تایید کد یکبار مصرف",
