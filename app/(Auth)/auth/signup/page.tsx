@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -25,10 +25,12 @@ import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 import { Card } from "@/components/theme/ui/card";
 import { Enamad } from "@/components/global/enamad";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FormLabel } from "@/components/theme/ui/form";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
-  const t_ec = useTranslations('ERROR_CODES');
+  const t_ec = useTranslations("ERROR_CODES");
 
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -44,8 +46,7 @@ export default function Signup() {
     lastname: z
       .string({ message: t("lastnameRequired") })
       .min(1, t("enterLastname")),
-    referralCode: z
-      .string({ message: t("referralCodeRequired") }).optional(),
+    referralCode: z.string({ message: t("referralCodeRequired") }).optional(),
     mobile: z
       .string({ message: t("mobileRequired") })
       .regex(REGEX_MOBILE, t("enterValidMobile"))
@@ -56,20 +57,30 @@ export default function Signup() {
     confirmPassword: z
       .string({ message: t("confirmPasswordRequired") })
       .min(1, t("enterConfirmPassword")),
-  });
+    acceptRules: z.boolean()
+  })
+  .superRefine((data, ctx) => {
+    if (!data.acceptRules) {
+      ctx.addIssue({
+        code: "custom",
+        path: ['acceptRules'],
+        message: t('acceptRules.erros.required')
+      })
+    }
+  })
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues:
       process.env.NODE_ENV === "development"
         ? {
-          firstname: "Test",
-          lastname: "TestUser",
-          mobile: "09210246947",
-          password: "123Sina@",
-          confirmPassword: "123Sina@",
-          referralCode: "11313"
-        }
+            firstname: "Test",
+            lastname: "TestUser",
+            mobile: "09210246947",
+            password: "123Sina@",
+            confirmPassword: "123Sina@",
+            referralCode: "11313",
+          }
         : undefined,
   });
 
@@ -119,18 +130,6 @@ export default function Signup() {
         });
       })
       .finally(() => setIsLoading(false));
-  };
-
-  const signUpWithGoogle = () => {
-    setLoginWith("google");
-    setIsLoading(true);
-    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/google/login`);
-  };
-
-  const signUpWithFacebook = () => {
-    setLoginWith("facebook");
-    setIsLoading(true);
-    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/facebook`);
   };
 
   return (
@@ -261,10 +260,34 @@ export default function Signup() {
                         <FormMessage />
                       </FormItem>
                     )}
-                    />
-                    <p className="col-span-4 text-green-600 mt-4 text-center border border-green-200 bg-green-50 rounded-xl px-8 py-3 md:py-3 md:px-1 text-xs">
-                      می‌خوای رایگان شروع کنی؟ کد free رو وارد کن و یک ماه مهمون ما باش
-                    </p>
+                  />
+                  <p className="col-span-4 text-green-600 mt-4 text-center border border-green-200 bg-green-50 rounded-xl px-8 py-3 md:py-3 md:px-1 text-xs">
+                    می‌خوای رایگان شروع کنی؟ کد free رو وارد کن و یک ماه مهمون
+                    ما باش
+                  </p>
+
+                  <FormField
+                    control={form.control}
+                    name="acceptRules"
+                    render={({ field }) => (
+                      <FormItem className="col-span-4 flex justify-start items-center gap-x-2">
+                        <FormControl>
+                          <Checkbox
+                            onCheckedChange={field.onChange}
+                            checked={field.value}
+                          />
+                        </FormControl>
+                        <FormLabel>
+                          {t.rich("acceptRules.label", {
+                            rules: (chunks) => (
+                              <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/terms`} className="text-blue-500">{chunks}</Link>
+                            ),
+                          })}
+                          <FormMessage className="mt-2"/>
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
 
                   <Button
                     type="submit"
@@ -308,7 +331,7 @@ export default function Signup() {
             </div>
           </div>
         </div>
-        <Enamad/>
+        <Enamad />
       </div>
     </main>
   );

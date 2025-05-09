@@ -8,6 +8,7 @@ import { SWRProvider } from "@/hooks/swr/api-client";
 import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
 import ConsoleProvider from "./components/consoleProvider";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
+import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -33,6 +34,7 @@ export default async function ConsoleLayout({
               <ZodErrorsMapProvider>
                 <ConsoleProvider>
                   <InstagramTokenErrorDialog/>
+                  <SubscriptionExpireWarningDialog/>
                   {children}
                 </ConsoleProvider>
               </ZodErrorsMapProvider>

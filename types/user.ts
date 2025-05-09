@@ -42,7 +42,7 @@ export interface Subscription {
     id:             string;
     createDate:     Date;
     updateDate:     Date;
-    expire:         Date | null;
+    expire:         string;
     status:         string;
     planDurationId: number;
     userId:         string;
