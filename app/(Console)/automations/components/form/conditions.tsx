@@ -22,6 +22,8 @@ import {
   SelectItem,
 } from "@/components/theme/ui/select";
 import { Trash, PlusCircle } from "@phosphor-icons/react/dist/ssr";
+import { useEffect, useState } from "react";
+import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 
 type TriggerProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -36,22 +38,55 @@ export default function Conditions({
 }: TriggerProps) {
   const t = useTranslations("Automations.Conditions");
 
+  const [currentType, setCurrentType] = useState<ContentCycleConditionTypes>();
+  const [isRendered, setIsRendered] = useState<boolean>(false)
+
   const {
     fields: conditionsField,
     remove: removeConditions,
     append: appendConditions,
     update: updateConditions,
     swap: swapConditions,
+    replace: replaceConditions
   } = useFieldArray({
     control: control,
     name: "conditions",
     keyName: "_xid",
   });
 
+  useEffect(() => {
+    if (isRendered || !conditionsField) return
+
+    if (conditionsField?.[0].type) {
+      setCurrentType(conditionsField[0].type as ContentCycleConditionTypes)
+    }
+
+  }, [conditionsField])
+
+  const toggleConditionType = () => {
+    setCurrentType((old) => {
+      let newType: "INCLUDE" | "EQUAL";
+      if (old === "INCLUDE") {
+        newType = "EQUAL";
+      } else {
+        newType = "INCLUDE";
+      }
+
+      replaceConditions(conditionsField.map(condition => ({...condition, type: newType})))
+
+      return newType;
+    });
+
+  };
+
   return (
     <>
       <div className="space-y-1">
-        <p className="text-sm font-medium">{t("wordOrPhrase")}</p>
+        <div className=" flex">
+          <p className="text-sm font-medium">{t("wordOrPhrase")} {' '} <span onClick={toggleConditionType}>
+            {currentType === "INCLUDE" ? t("include") : t("equal")}
+          </span></p>
+        </div>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
             <div
@@ -87,7 +122,7 @@ export default function Conditions({
 
               <Button
                 onClick={() =>
-                  appendConditions({ type: "EQUAL", value: "", id: "" })
+                  appendConditions({ type: currentType!, value: "", id: "" })
                 }
                 variant="ghost"
                 type="button"
