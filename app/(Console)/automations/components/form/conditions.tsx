@@ -39,7 +39,7 @@ export default function Conditions({
   const t = useTranslations("Automations.Conditions");
 
   const [currentType, setCurrentType] = useState<ContentCycleConditionTypes>();
-  const [isRendered, setIsRendered] = useState<boolean>(false)
+  const [isRendered, setIsRendered] = useState<boolean>(false);
 
   const {
     fields: conditionsField,
@@ -47,7 +47,7 @@ export default function Conditions({
     append: appendConditions,
     update: updateConditions,
     swap: swapConditions,
-    replace: replaceConditions
+    replace: replaceConditions,
   } = useFieldArray({
     control: control,
     name: "conditions",
@@ -55,13 +55,12 @@ export default function Conditions({
   });
 
   useEffect(() => {
-    if (isRendered || !conditionsField) return
+    if (isRendered || !conditionsField) return;
 
     if (conditionsField?.[0].type) {
-      setCurrentType(conditionsField[0].type as ContentCycleConditionTypes)
+      setCurrentType(conditionsField[0].type as ContentCycleConditionTypes);
     }
-
-  }, [conditionsField])
+  }, [conditionsField]);
 
   const toggleConditionType = () => {
     setCurrentType((old) => {
@@ -72,20 +71,24 @@ export default function Conditions({
         newType = "INCLUDE";
       }
 
-      replaceConditions(conditionsField.map(condition => ({...condition, type: newType})))
+      replaceConditions(
+        conditionsField.map((condition) => ({ ...condition, type: newType }))
+      );
 
       return newType;
     });
-
   };
 
   return (
     <>
       <div className="space-y-1">
         <div className=" flex">
-          <p className="text-sm font-medium">{t("wordOrPhrase")} {' '} <span onClick={toggleConditionType}>
-            {currentType === "INCLUDE" ? t("include") : t("equal")}
-          </span></p>
+          <p className="text-sm font-medium">
+            {t("wordOrPhrase")}{" "}
+            <span onClick={toggleConditionType}>
+              {currentType === "INCLUDE" ? t("include") : t("equal")}
+            </span>
+          </p>
         </div>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
@@ -120,19 +123,21 @@ export default function Conditions({
                 )}
               </div>
 
-              <Button
-                onClick={() =>
-                  appendConditions({ type: currentType!, value: "", id: "" })
-                }
-                variant="ghost"
-                type="button"
-                className="flex items-center gap-2 cursor-pointer px-2"
-              >
-                <PlusCircle size={20} className="text-blue-600" />
-                <span className="text-sm font-medium text-blue-600">
-                  {t("addNewCondition")}
-                </span>
-              </Button>
+              {index === (conditionsField?.length - 1) && (
+                <Button
+                  onClick={() =>
+                    appendConditions({ type: currentType!, value: "", id: "" })
+                  }
+                  variant="ghost"
+                  type="button"
+                  className="flex items-center gap-2 cursor-pointer px-2"
+                >
+                  <PlusCircle size={20} className="text-blue-600" />
+                  <span className="text-sm font-medium text-blue-600">
+                    {t("addNewCondition")}
+                  </span>
+                </Button>
+              )}
             </div>
           ))}
         </div>
