@@ -381,7 +381,7 @@ export default function ContentItem({
       className="bg-blue-50 p-3 rounded-xl flex flex-col items-start gap-y-4"
     >
       <div className="_header flex justify-between items-center w-full">
-        <div {...attributes} {...listeners} className="cursor-move">
+        <div {...attributes} {...listeners} className="cursor-move touch-none">
           <ArrowsOutCardinal size={20} />
         </div>
         <div>

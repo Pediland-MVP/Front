@@ -36,8 +36,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { v4 as UUID } from "uuid";
-import ErrorMessage from "@/components/ui/errorMessage";
 import { FormItem } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 
@@ -70,7 +68,7 @@ const SortableFieldItem = ({
       <span
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing"
+        className="cursor-grab active:cursor-grabbing touch-none"
       >
         <ArrowsVertical size={16} className="text-gray-500" />
       </span>

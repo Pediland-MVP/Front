@@ -76,7 +76,7 @@ function SortableItem({
         <Button
           variant="ghost"
           size="icon"
-          className="cursor-move lg:opacity-0 group-hover:opacity-100 transition-opacity"
+          className="cursor-move lg:opacity-0 group-hover:opacity-100 transition-opacity touch-none"
           type="button"
           {...attributes}
           {...listeners}
