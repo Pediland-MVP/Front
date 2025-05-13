@@ -14,16 +14,12 @@ import numberToK from "@/app/utils/numberToK";
 // UI Here
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/theme/ui/button";
-import {
-  ArrowLeft,
-  ArrowUpLeft
-} from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, ArrowUpLeft } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Card } from "@/components/theme/ui/card";
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 import DiscountText from "@/components/discountText";
 import logger from "@/app/utils/logger";
-
 
 const planSchema = z.object({
   planId: z.number(),
@@ -35,11 +31,11 @@ type FormValues = z.infer<typeof planSchema>;
 export default function PlanSelection() {
   const t = useTranslations("Upgrade.PlanSelection");
 
-  const { plans, active, setActive, subscriptions, plansData } = useUpgradeContext();
-  const discountFrom = plansData?.discount?.from
-  const discount = plansData?.discount?.discount
-  const referralCodeType = plansData?.discount?.type
-
+  const { plans, active, setActive, subscriptions, plansData } =
+    useUpgradeContext();
+  const discountFrom = plansData?.discount?.from;
+  const discount = plansData?.discount?.discount;
+  const referralCodeType = plansData?.discount?.type;
 
   const [period, setPeriod] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -55,7 +51,7 @@ export default function PlanSelection() {
     },
   });
 
-  const planId = form.watch('planId')
+  const planId = form.watch("planId");
 
   useEffect(() => {
     if (!plans?.length) return;
@@ -96,49 +92,50 @@ export default function PlanSelection() {
     }
   };
 
-  const getPriceString = (price: number, period: number) => {
+  const getPriceString = (price: number, durationDays: number) => {
     if (price === 0) return t("free");
-    if (period === 0) return e2pNumber(price.toLocaleString());
-    logger.debug("period", period, price)
-    if (period === 1) return e2pNumber((+(price / 3).toFixed(0)).toLocaleString());
-    if (period === 2) return e2pNumber((+(price / 12).toFixed(0)).toLocaleString());
-    return null;
+    // if (period === 0) return e2pNumber(price.toLocaleString());
+    logger.debug("period", period, price);
+    // if (period === 1) return e2pNumber((+(price / 3).toFixed(0)).toLocaleString());
+    // if (period === 2) return e2pNumber((+(price / 12).toFixed(0)).toLocaleString());
+    return e2pNumber(
+      (+(price / (durationDays / 30)).toFixed(0)).toLocaleString()
+    );
   };
 
   if (!active.planSelection || !plans?.length) return null;
 
-  const currentPlan = plans.find(p => p.id === planId)
+  const currentPlan = plans.find((p) => p.id === planId);
 
   return (
-    <div
-      className="_plan-selection-page relative h-full box-border max-h-full text-foreground">
+    <div className="_plan-selection-page relative h-full box-border max-h-full text-foreground">
       <Card className="h-full p-6">
         <div className="mb-6">
           <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
-          <p className="text-[15px] text-muted-foreground">{t("description")}</p>
-          <DiscountText/>
+          <p className="text-[15px] text-muted-foreground">
+            {t("description")}
+          </p>
+          <DiscountText />
         </div>
 
         <div className="_plans-wrapper">
           <div className="_selector flex flex-col justify-center items-center">
             <div className="inline-flex flex-col md:flex-row w-full md:w-fit items-center p-1 rounded-xl sm:rounded-full border shadow-sm gap-1.5">
-              {
-                plans.map((plan) => (
-                  <button
-                    key={plan.id}
-                    type="button"
-                    onClick={() => changePlan(plan.id)}
-                    className={cn(
-                      "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
-                      plan.id === form.getValues("planId")
-                        ? "bg-gray-300"
-                        : "text-zinc-600 hover:text-zinc-900"
-                    )}
-                  >
-                    {plan.name}
-                  </button>
-                ))
-              }
+              {plans.map((plan) => (
+                <button
+                  key={plan.id}
+                  type="button"
+                  onClick={() => changePlan(plan.id)}
+                  className={cn(
+                    "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
+                    plan.id === form.getValues("planId")
+                      ? "bg-gray-300"
+                      : "text-zinc-600 hover:text-zinc-900"
+                  )}
+                >
+                  {plan.name}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -147,73 +144,79 @@ export default function PlanSelection() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
             >
-              {
-                currentPlan?.durations.map(duration => {
-                  const haveDiscount =
-                    typeof duration.discountPrice === "number" && duration.discountPrice >= 0;
-                  return (
-                    <div
-                      key={duration.id}
-                      className={cn(
-                        "relative group backdrop-blur-sm",
-                        "rounded-xl transition-all duration-300",
-                        "flex flex-col",
-                        "bg-gradient-to-b from-green-100/25 to-transparent",
-                        "border shadow-md hover:shadow-lg"
-                      )}
-                    >
-                      <div className="p-4">
-                        <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
-                          {duration.name}
-                        </h3>
-                        <div className="flex flex-col items-center">
+              {currentPlan?.durations.map((duration) => {
+                const haveDiscount =
+                  typeof duration.monthlyDiscount === "number" &&
+                  duration.monthlyDiscount >= 0;
+                return (
+                  <div
+                    key={duration.id}
+                    className={cn(
+                      "relative group backdrop-blur-sm",
+                      "rounded-xl transition-all duration-300",
+                      "flex flex-col",
+                      "bg-gradient-to-b from-green-100/25 to-transparent",
+                      "border shadow-md hover:shadow-lg",
+                      "min-h-64"
+                    )}
+                  >
+                    <div className="p-4">
+                      <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
+                        {duration.name}
+                      </h3>
+                      <div className="flex flex-col items-center">
+                        {haveDiscount && (
                           <span
                             className={cn(
-                              "text-3xl font-bold text-green-700",
-                              haveDiscount && "line-through text-2xl font-medium text-muted-foreground"
+                              "font-bold text-green-700",
+                              haveDiscount &&
+                                "line-through text-2xl font-medium text-muted-foreground"
                             )}
                           >
-                            {getPriceString(duration.price, period)}
+                            {duration.monthlyDiscount === 0
+                              ? t("free")
+                              : e2pNumber(
+                                  `${duration.monthlyDiscount?.toLocaleString()}`
+                                )}
                           </span>
-  
-                          {haveDiscount && (
-                            <span
-                              className={cn("font-bold text-green-700", duration.discountPrice === 0 ? "text-xl" : "text-3xl")}
-                            >
-                              {duration.discountPrice === 0 ? t("free") : e2pNumber(`${duration.discountPrice?.toLocaleString()}`)}
-                            </span>
-                          )}
-                          <span className="text-lg text-muted-foreground font-medium">
-                            {t("currency")} در {t("month")}
-                          </span>
-                        </div>
-                      </div>
-  
-                      <div className="p-6 pt-2">
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            form.setValue("durationId", duration.id);
-                            setTotalPrice(duration.price);
-                            form.handleSubmit(onSubmit)();
-                          }}
-                          className={cn(
-                            "w-full h-10 relative transition-all duration-300 bg-green-600 text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md"
-                          )}
-                          disabled={isPayLoading && loadingPlanId === duration.id}
+                        )}
+                        <span
+                          className={cn("text-3xl font-bold text-green-700")}
                         >
-                          {isPayLoading && loadingPlanId === duration.id ? (
-                            <LoadingSpinner />
-                          ) : (
-                            t("choosePlan")
+                          {getPriceString(
+                            duration.price,
+                            duration.durationDays
                           )}
-                        </Button>
+                        </span>
+                        <span className="text-lg text-muted-foreground font-medium">
+                          {t("currency")} در {t("month")}
+                        </span>
                       </div>
                     </div>
-                  );
 
-                })
-              }
+                    <div className="p-6 pt-2 mt-auto">
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          form.setValue("durationId", duration.id);
+                          setTotalPrice(duration.price);
+                          form.handleSubmit(onSubmit)();
+                        }}
+                        className={cn(
+                          "w-full h-10 relative transition-all duration-300 bg-green-600 text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md"
+                        )}
+                        disabled={isPayLoading && loadingPlanId === duration.id}
+                      >
+                        {isPayLoading && loadingPlanId === duration.id ? (
+                          <LoadingSpinner />
+                        ) : (
+                          t("choosePlan")
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
             </form>
           </Form>
         </div>
