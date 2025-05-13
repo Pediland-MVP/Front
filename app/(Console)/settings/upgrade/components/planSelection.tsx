@@ -55,6 +55,8 @@ export default function PlanSelection() {
     },
   });
 
+  const planId = form.watch('planId')
+
   useEffect(() => {
     if (!plans?.length) return;
     form.setValue("planId", plans[0].id);
@@ -62,14 +64,25 @@ export default function PlanSelection() {
     setTotalPrice(plans[0].durations[0].price);
   }, [plans, form]);
 
-  const handlePeriodChange = (newPeriod: number) => {
-    setPeriod(newPeriod);
+  // const handlePeriodChange = (newPeriod: number) => {
+  //   setPeriod(newPeriod);
+  //   if (plans) {
+  //     const currentPlanId = form.getValues("planId");
+  //     const currentPlan = plans.find((p) => p.id === currentPlanId);
+  //     if (currentPlan) {
+  //       form.setValue("durationId", currentPlan.durations[newPeriod].id);
+  //       setTotalPrice(currentPlan.durations[newPeriod].price);
+  //     }
+  //   }
+  // };
+
+  const changePlan = (planId: number) => {
+    form.setValue("planId", planId);
     if (plans) {
-      const currentPlanId = form.getValues("planId");
-      const currentPlan = plans.find((p) => p.id === currentPlanId);
+      const currentPlan = plans.find((p) => p.id === planId);
       if (currentPlan) {
-        form.setValue("durationId", currentPlan.durations[newPeriod].id);
-        setTotalPrice(currentPlan.durations[newPeriod].price);
+        form.setValue("durationId", currentPlan.durations[0].id);
+        setTotalPrice(currentPlan.durations[0].price);
       }
     }
   };
@@ -94,6 +107,8 @@ export default function PlanSelection() {
 
   if (!active.planSelection || !plans?.length) return null;
 
+  const currentPlan = plans.find(p => p.id === planId)
+
   return (
     <div
       className="_plan-selection-page relative h-full box-border max-h-full text-foreground">
@@ -107,42 +122,23 @@ export default function PlanSelection() {
         <div className="_plans-wrapper">
           <div className="_selector flex flex-col justify-center items-center">
             <div className="inline-flex flex-col md:flex-row w-full md:w-fit items-center p-1 rounded-xl sm:rounded-full border shadow-sm gap-1.5">
-              <button
-                type="button"
-                onClick={() => handlePeriodChange(0)}
-                className={cn(
-                  "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
-                  period === 0
-                    ? "bg-gray-300"
-                    : "text-zinc-600 hover:text-zinc-900"
-                )}
-              >
-                {t("monthly")}
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePeriodChange(1)}
-                className={cn(
-                  "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
-                  period === 1
-                    ? "bg-gray-300"
-                    : "text-zinc-600 hover:text-zinc-900"
-                )}
-              >
-                {t("threeMonths")}
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePeriodChange(2)}
-                className={cn(
-                  "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
-                  period === 2
-                    ? "bg-gray-300"
-                    : "text-zinc-600 hover:text-zinc-900"
-                )}
-              >
-                {t("oneYear")}
-              </button>
+              {
+                plans.map((plan) => (
+                  <button
+                    key={plan.id}
+                    type="button"
+                    onClick={() => changePlan(plan.id)}
+                    className={cn(
+                      "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
+                      plan.id === form.getValues("planId")
+                        ? "bg-gray-300"
+                        : "text-zinc-600 hover:text-zinc-900"
+                    )}
+                  >
+                    {plan.name}
+                  </button>
+                ))
+              }
             </div>
           </div>
 
@@ -151,73 +147,73 @@ export default function PlanSelection() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
             >
-              {plans.map((plan, index) => {
-                const price = plan.durations[period].price
-                const discountPrice = plan.durations[period].discountPrice;
-                const haveDiscount =
-                  typeof discountPrice === "number" && discountPrice >= 0;
-                return (
-                  <div
-                    key={plan.id}
-                    className={cn(
-                      "relative group backdrop-blur-sm",
-                      "rounded-xl transition-all duration-300",
-                      "flex flex-col",
-                      "bg-gradient-to-b from-green-100/25 to-transparent",
-                      "border shadow-md hover:shadow-lg"
-                    )}
-                  >
-                    <div className="p-4">
-                      <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
-                        {plan.name}
-                      </h3>
-                      <div className="flex flex-col items-center">
-                        <span
-                          className={cn(
-                            "text-3xl font-bold text-green-700",
-                            haveDiscount && "line-through text-2xl font-medium text-muted-foreground"
-                          )}
-                        >
-                          {getPriceString(price, period)}
-                        </span>
-
-                        {haveDiscount && (
+              {
+                currentPlan?.durations.map(duration => {
+                  const haveDiscount =
+                    typeof duration.discountPrice === "number" && duration.discountPrice >= 0;
+                  return (
+                    <div
+                      key={duration.id}
+                      className={cn(
+                        "relative group backdrop-blur-sm",
+                        "rounded-xl transition-all duration-300",
+                        "flex flex-col",
+                        "bg-gradient-to-b from-green-100/25 to-transparent",
+                        "border shadow-md hover:shadow-lg"
+                      )}
+                    >
+                      <div className="p-4">
+                        <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
+                          {duration.name}
+                        </h3>
+                        <div className="flex flex-col items-center">
                           <span
-                            className={cn("font-bold text-green-700", discountPrice === 0 ? "text-xl" : "text-3xl")}
+                            className={cn(
+                              "text-3xl font-bold text-green-700",
+                              haveDiscount && "line-through text-2xl font-medium text-muted-foreground"
+                            )}
                           >
-                            {discountPrice === 0 ? t("free") : e2pNumber(`${discountPrice?.toLocaleString()}`)}
+                            {getPriceString(duration.price, period)}
                           </span>
-                        )}
-                        <span className="text-lg text-muted-foreground font-medium">
-                          {t("currency")} در {t("month")}
-                        </span>
+  
+                          {haveDiscount && (
+                            <span
+                              className={cn("font-bold text-green-700", duration.discountPrice === 0 ? "text-xl" : "text-3xl")}
+                            >
+                              {duration.discountPrice === 0 ? t("free") : e2pNumber(`${duration.discountPrice?.toLocaleString()}`)}
+                            </span>
+                          )}
+                          <span className="text-lg text-muted-foreground font-medium">
+                            {t("currency")} در {t("month")}
+                          </span>
+                        </div>
+                      </div>
+  
+                      <div className="p-6 pt-2">
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            form.setValue("durationId", duration.id);
+                            setTotalPrice(duration.price);
+                            form.handleSubmit(onSubmit)();
+                          }}
+                          className={cn(
+                            "w-full h-10 relative transition-all duration-300 bg-green-600 text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md"
+                          )}
+                          disabled={isPayLoading && loadingPlanId === duration.id}
+                        >
+                          {isPayLoading && loadingPlanId === duration.id ? (
+                            <LoadingSpinner />
+                          ) : (
+                            t("choosePlan")
+                          )}
+                        </Button>
                       </div>
                     </div>
+                  );
 
-                    <div className="p-6 pt-2">
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          form.setValue("planId", plan.id);
-                          form.setValue("durationId", plan.durations[period].id);
-                          setTotalPrice(plan.durations[period].price);
-                          form.handleSubmit(onSubmit)();
-                        }}
-                        className={cn(
-                          "w-full h-10 relative transition-all duration-300 bg-green-600 text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md"
-                        )}
-                        disabled={isPayLoading && loadingPlanId === plan.id}
-                      >
-                        {isPayLoading && loadingPlanId === plan.id ? (
-                          <LoadingSpinner />
-                        ) : (
-                          t("choosePlan")
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
+                })
+              }
             </form>
           </Form>
         </div>
