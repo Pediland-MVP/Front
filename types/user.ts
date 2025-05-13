@@ -23,6 +23,7 @@ export interface IUser {
         id: string,
         username: string,
         isIgTokenValid: boolean,
+        isIgWebhookSubscribed: boolean,
         profilePicture: {
             url?: string
         } | null

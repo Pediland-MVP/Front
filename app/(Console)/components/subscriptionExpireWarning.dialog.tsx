@@ -32,6 +32,9 @@ export default function SubscriptionExpireWarningDialog() {
     // Don't show on upgrade settings page
     if (pathname.startsWith('/settings/upgrade')) return
 
+    const isHaveReserved = user.subscriptions.find(sub => sub.status === 'reserved')
+    if (isHaveReserved) return
+
     // Find active subscription
     const activeSub = user.subscriptions.find(sub => sub.status === 'active' && sub.expire)
     if (!activeSub) return
