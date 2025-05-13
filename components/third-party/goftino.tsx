@@ -92,6 +92,7 @@ export const GoftinoSnippet: FC<IGoftinoProps> = (props) => {
         type="text/javascript"
         referrerPolicy="no-referrer-when-downgrade"
         src={
+          typeof localStorage !== 'undefined' &&
           !!localStorage?.getItem('goftino_' + goftinoKey)
             ? `https://www.goftino.com/widget/${goftinoKey}?o=${localStorage.getItem(
                 'goftino_' + goftinoKey
