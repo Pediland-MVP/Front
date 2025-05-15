@@ -1300,12 +1300,19 @@
         "title": "اشتراک شما به زودی منقضی میشه!",
         "description": "اشتراک شما تو {count} روز دیگر منقضی میشه. لطفاً برای ادامه استفاده کامل، اشتراکتون رو تمدید کنید. \n توجه داشته باشید که با تمام شدن اشتراک اتومیشن‌های تعریف شده از کار می‌افتند",
         "buttons": {
-          "ok": "بستن",
-          "upgrade": "ارتقا میدم"
+            "ok": "بستن",
+            "upgrade": "ارتقا میدم"
         }
     },
+    "UpdateReferralCode": {
+        "update": "آپدیت",
+        "Code": {
+            "placeholder": "کد تخفیف دارید؟ وارد کنید"
+        },
+        "success": "کد تخفیف جدید اعمال شد"
+    },
     "ERROR_CODES": {
-        "USER_NOT_FOUND": "کارب پیدا نشد",
+        "USER_NOT_FOUND": "کاربر پیدا نشد",
         "USER_ALREADY_VERIFIED": "کاربر قبلاً تأیید شده است",
         "MOBILE_NUMBER_EXIST": "شماره موبایل از قبل وجود دارد",
         "PASSWORD_INVALID": "رمز عبور نامعتبر است",
@@ -1338,7 +1345,7 @@
         "CONTENT_AUDIO_REQUIRED": "صدای محتوا الزامی است",
         "CONTENT_VIDEO_REQUIRED": "ویدیوی محتوا الزامی است",
         "CONTENT_IMAGE_REQUIRED": "تصویر محتوا الزامی است",
-        "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "محتوای باید حداقل یک محصول داشته باشد",
+        "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "محتوا باید حداقل یک محصول داشته باشد",
         "FILE_NOT_FOUND": "فایل پیدا نشد",
         "CONDITION_IS_ALREADY_EXIST": "شرطی که انتخاب کردید قبلا در اتومیشن دیگری استفاده شده است",
         "CONSENT_TEXT_REQUIRED": "متن رضایت الزامی است",
@@ -1373,8 +1380,11 @@
         "PRODUCT_FIELD_TOO_MANY_FIELDS": "تعداد فیلدهای محصول بیش از حد مجاز است",
         "ATTRIBUTE_VALUE_NOT_FOUND": "مقدار ویژگی پیدا نشد",
         "ATTRIBUTE_ALREADY_SELECTED": "ویژگی از قبل انتخاب شده است",
-        "ATTRIBUTE_CANT_BE_UPDATED_NOW": "ویژگی در حال حاضر قابل به روز رسانی نیست",
+        "ATTRIBUTE_CANT_BE_UPDATED_NOW": "ویژگی در حال حاضر قابل به‌روزرسانی نیست",
+        "REGEX_IG_USERNAME_INVALID": "نام کاربری اینستاگرام نامعتبر است",
         "SHIPPING_COST_IS_NOT_ALLOWED_FOR_DIGITAL_PRODUCTS": "هزینه ارسال برای محصولات دیجیتال مجاز نیست",
+        "PLAN_DURATION_NOT_FOUND": "مدت زمان پلن پیدا نشد",
+        "REFERRALCODE_IS_IN_USE": "کد معرف در حال استفاده است",
         "ERROR_CODES": "خطای پیش آمد",
         "CONNECTION_ERROR": "اتصال به اینترنت برقرار نشد",
         "CHECK_CONNECTION": "اتصال خود را چک کنید"

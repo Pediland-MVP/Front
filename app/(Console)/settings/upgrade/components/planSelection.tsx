@@ -20,6 +20,7 @@ import { Card } from "@/components/theme/ui/card";
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 import DiscountText from "@/components/discountText";
 import logger from "@/app/utils/logger";
+import { UpdateReferralCode } from "./updateReferralCode";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -118,6 +119,8 @@ export default function PlanSelection() {
           <DiscountText />
         </div>
 
+        <UpdateReferralCode />
+
         <div className="_plans-wrapper">
           <div className="_selector flex flex-col justify-center items-center">
             <div className="inline-flex flex-col md:flex-row w-full md:w-fit items-center p-1 rounded-xl sm:rounded-full border shadow-sm gap-1.5">
@@ -145,9 +148,13 @@ export default function PlanSelection() {
               className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
             >
               {currentPlan?.durations.map((duration) => {
-                const haveDiscount =
+                const haveMonthlyDiscount =
                   typeof duration.monthlyDiscount === "number" &&
                   duration.monthlyDiscount >= 0;
+
+                const haveDurationDiscount = typeof duration.discountPrice === "number" &&
+                  duration.discountPrice >= 0;
+
                 return (
                   <div
                     key={duration.id}
@@ -165,29 +172,68 @@ export default function PlanSelection() {
                         {duration.name}
                       </h3>
                       <div className="flex flex-col items-center">
-                        {haveDiscount && (
+                        {haveDurationDiscount ? (
+                          <>
+                            <span
+                              className={cn(
+                                "font-bold text-green-700",
+                                  "line-through text-2xl font-medium text-muted-foreground"
+                              )}
+                            >
+                              {getPriceString(
+                                duration.price,
+                                duration.durationDays
+                              )}
+                            </span>
+
+                            <span
+                              className={cn(
+                                "text-3xl font-bold text-green-700"
+                              )}
+                            >
+                              {e2pNumber(
+                                (+(duration.discountPrice as number).toFixed(
+                                  0
+                                )).toLocaleString()
+                              )}
+                            </span>
+                          </>
+                        ) : haveMonthlyDiscount ? (
+                          <>
                           <span
                             className={cn(
                               "font-bold text-green-700",
-                              haveDiscount &&
                                 "line-through text-2xl font-medium text-muted-foreground"
                             )}
                           >
-                            {duration.monthlyDiscount === 0
-                              ? t("free")
-                              : e2pNumber(
-                                  `${duration.monthlyDiscount?.toLocaleString()}`
-                                )}
+                              {e2pNumber(
+                                (+(duration.monthlyDiscount as number).toFixed(
+                                  0
+                                )).toLocaleString()
+                              )}
+                          </span>
+
+                          <span
+                            className={cn(
+                              "text-3xl font-bold text-green-700"
+                            )}
+                          >
+                            {getPriceString(
+                              duration.price,
+                              duration.durationDays
+                            )}
+                          </span>
+                        </>
+                        ) :(
+                          <span
+                            className={cn("text-3xl font-bold text-green-700")}
+                          >
+                            {getPriceString(
+                              duration.price,
+                              duration.durationDays
+                            )}
                           </span>
                         )}
-                        <span
-                          className={cn("text-3xl font-bold text-green-700")}
-                        >
-                          {getPriceString(
-                            duration.price,
-                            duration.durationDays
-                          )}
-                        </span>
                         <span className="text-lg text-muted-foreground font-medium">
                           {t("currency")} در {t("month")}
                         </span>

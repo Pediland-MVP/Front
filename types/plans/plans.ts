@@ -25,6 +25,7 @@ export interface IDuration {
     name:         string;
     price:        number;
     monthlyDiscount?: number | null;
+    discountPrice?: number;
     durationDays: number;
     planId:       number;
 }
