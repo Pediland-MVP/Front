@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -23,8 +23,6 @@ import {
 } from "@/components/ui/form";
 import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 import { onInputP2EHandler } from "@/app/utils/p2eNumber";
-import { Card } from "@/components/theme/ui/card";
-import { Enamad } from "@/components/global/enamad";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormLabel } from "@/components/theme/ui/form";
 
@@ -331,7 +329,6 @@ export default function Signup() {
             </div>
           </div>
         </div>
-        <Enamad />
       </div>
     </main>
   );

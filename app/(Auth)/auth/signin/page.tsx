@@ -22,7 +22,6 @@ import {
 import { InputPassword } from "@/components/theme/ui/inputPassword";
 import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "@/components/ui/use-toast";
-import { Enamad } from "@/components/global/enamad";
 
 export default function SignIn() {
   const t = useTranslations("Auth.Signin");
@@ -208,7 +207,6 @@ export default function SignIn() {
               </div> */}
             </div>
           </div>
-          <Enamad/>
         </div>
       </div>
     </main>
