@@ -43,7 +43,7 @@
             "referralCodeRequired": "کد معرف برای ثبت‌نام الزامی است",
             "backToSite": "بازگشت به سایت",
             "acceptRules": {
-                "label": "با تمام <rules>قوانین</rules> بفروش موافق هستم",
+                "label": "با عضویت در بفروش، شما <rules>قوانین</rules> و <privacy>شرایط حریم خصوصی</privacy> را می‌پذیرید.",
                 "erros": {
                     "required": "قبول کردن قوانین ضروری است"
                 }

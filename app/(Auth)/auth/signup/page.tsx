@@ -37,35 +37,36 @@ export default function Signup() {
     "mobile" | "google" | "facebook"
   >();
 
-  const formSchema = z.object({
-    firstname: z
-      .string({ message: t("firstnameRequired") })
-      .min(1, t("enterFirstname")),
-    lastname: z
-      .string({ message: t("lastnameRequired") })
-      .min(1, t("enterLastname")),
-    referralCode: z.string({ message: t("referralCodeRequired") }).optional(),
-    mobile: z
-      .string({ message: t("mobileRequired") })
-      .regex(REGEX_MOBILE, t("enterValidMobile"))
-      .min(1, t("enterMobile")),
-    password: z
-      .string({ message: t("passwordRequired") })
-      .regex(REGEX_PASSWORD, t("passwordValidation")),
-    confirmPassword: z
-      .string({ message: t("confirmPasswordRequired") })
-      .min(1, t("enterConfirmPassword")),
-    acceptRules: z.boolean()
-  })
-  .superRefine((data, ctx) => {
-    if (!data.acceptRules) {
-      ctx.addIssue({
-        code: "custom",
-        path: ['acceptRules'],
-        message: t('acceptRules.erros.required')
-      })
-    }
-  })
+  const formSchema = z
+    .object({
+      firstname: z
+        .string({ message: t("firstnameRequired") })
+        .min(1, t("enterFirstname")),
+      lastname: z
+        .string({ message: t("lastnameRequired") })
+        .min(1, t("enterLastname")),
+      referralCode: z.string({ message: t("referralCodeRequired") }).optional(),
+      mobile: z
+        .string({ message: t("mobileRequired") })
+        .regex(REGEX_MOBILE, t("enterValidMobile"))
+        .min(1, t("enterMobile")),
+      password: z
+        .string({ message: t("passwordRequired") })
+        .regex(REGEX_PASSWORD, t("passwordValidation")),
+      confirmPassword: z
+        .string({ message: t("confirmPasswordRequired") })
+        .min(1, t("enterConfirmPassword")),
+      acceptRules: z.boolean(),
+    })
+    .superRefine((data, ctx) => {
+      if (!data.acceptRules) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["acceptRules"],
+          message: t("acceptRules.erros.required"),
+        });
+      }
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,8 +79,11 @@ export default function Signup() {
             password: "123Sina@",
             confirmPassword: "123Sina@",
             referralCode: "11313",
+            acceptRules: true
           }
-        : undefined,
+        : {
+            acceptRules: true,
+          },
   });
 
   const router = useRouter();
@@ -264,28 +268,26 @@ export default function Signup() {
                     ما باش
                   </p>
 
-                  <FormField
-                    control={form.control}
-                    name="acceptRules"
-                    render={({ field }) => (
-                      <FormItem className="col-span-4 flex justify-start items-center gap-x-2">
-                        <FormControl>
-                          <Checkbox
-                            onCheckedChange={field.onChange}
-                            checked={field.value}
-                          />
-                        </FormControl>
-                        <FormLabel>
-                          {t.rich("acceptRules.label", {
-                            rules: (chunks) => (
-                              <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/terms`} className="text-blue-500">{chunks}</Link>
-                            ),
-                          })}
-                          <FormMessage className="mt-2"/>
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  />
+                  <p className="col-span-4">
+                    {t.rich("acceptRules.label", {
+                      rules: (chunks) => (
+                        <Link
+                          href={`${process.env.NEXT_PUBLIC_LANDING_URL}/terms`}
+                          className="text-blue-500"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                      privacy: (chunks) => (
+                        <Link
+                          href={`${process.env.NEXT_PUBLIC_LANDING_URL}/privacy`}
+                          className="text-blue-500"
+                        >
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
+                  </p>
 
                   <Button
                     type="submit"
