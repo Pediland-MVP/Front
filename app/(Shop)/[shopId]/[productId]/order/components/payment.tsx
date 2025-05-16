@@ -133,9 +133,9 @@ export default function PaymentDetails() {
                 لطفا مبلغ{" "}
                 <span className="bg-yellow-100 font-semibold px-1 text-primary">
                   {(
-                    (product?.discountPrice
-                      ? product!.discountPrice * orderQuantity
-                      : product!.price * orderQuantity) +
+                    (pendingOrder?.orderProducts?.[0]?.discountPrice
+                      ? pendingOrder?.orderProducts?.[0]?.discountPrice * orderQuantity
+                      : (pendingOrder?.orderProducts?.[0]?.price || 0) * orderQuantity) +
                     (product?.shippingCost || 0)
                   ).toLocaleString()}{" "}
                   تومان
