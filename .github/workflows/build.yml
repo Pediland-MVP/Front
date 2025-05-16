@@ -19,7 +19,7 @@ jobs:
 
       - name: Deploy Front RD
         run: |
-	  ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
           cd /home/cicd/Back/
           sudo chown -R $(whoami) .git || true
           git fetch origin
@@ -35,7 +35,7 @@ jobs:
 
       - name: Deploy Front Main
         run: |
-	  ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
           cd /home/cicd/Back/
           sudo chown -R $(whoami) .git || true
           git fetch origin
@@ -51,7 +51,7 @@ jobs:
 
       - name: Deploy Check
         run: |
-	  ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
           cd /home/cicd/
           ./check.sh
           EOF
