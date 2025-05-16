@@ -20,7 +20,7 @@ jobs:
       - name: Deploy Front RD
         run: |
           ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
-          cd /home/cicd/Back/
+          cd /home/cicd/Front/
           sudo chown -R $(whoami) .git || true
           git fetch origin
           git reset --hard origin/main
@@ -36,7 +36,7 @@ jobs:
       - name: Deploy Front Main
         run: |
           ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
-          cd /home/cicd/Back/
+          cd /home/cicd/Front/
           sudo chown -R $(whoami) .git || true
           git fetch origin
           git reset --hard origin/main
