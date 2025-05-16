@@ -306,7 +306,7 @@ export default function CheckoutPage({
         setIsStepInitilized(true);
       }
     }
-  }, [_pendingOrder]);
+  }, [_pendingOrder, currentStep, product]);
 
   useEffect(() => {
     if (errorPendingOrder) setPendingOrder(undefined);
