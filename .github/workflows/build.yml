@@ -19,20 +19,41 @@ jobs:
 
       - name: Deploy Front RD
         run: |
-          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
-          cd /home/cicd/ && nohup ./run2.sh &
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          cd /home/cicd/Front/
+          sudo chown -R $(whoami) .git || true
+          git fetch origin
+          git reset --hard origin/main
+          git pull
+          git log -1 --oneline
+          docker rm -f front1 || true
+          docker rm -f front2 || true
+          echo "Current time: $(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/deploy.txt
+          docker compose -f docker-compose-Front1.yml up -d --build && echo "First instance running!!"
+          docker compose -f docker-compose-Front2.yml up -d --build && echo "Second instance running!!"
           EOF
 
       - name: Deploy Front Main
         run: |
-          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
-          cd /home/cicd/ && nohup ./run.sh &
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          cd /home/cicd/Front/
+          sudo chown -R $(whoami) .git || true
+          git fetch origin
+          git reset --hard origin/main
+          git pull
+          git log -1 --oneline
+          docker rm -f front12 || true
+          docker rm -f front22 || true
+          echo "Current time: $(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/deploy.txt
+          docker compose -f docker-compose-Front12.yml up -d --build && echo "First instance running!!"
+          docker compose -f docker-compose-Front22.yml up -d --build && echo "Second instance running!!"
           EOF
 
       - name: Deploy Check
         run: |
-          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << EOF
-          cd /home/cicd/ && ./check.sh
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
+          cd /home/cicd/
+          ./check.sh
           EOF
 
       - name: Remove SSH Key
