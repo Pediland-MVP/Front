@@ -524,7 +524,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                        {isDigital ? t("titleProduct") : t("titleService")}
+                        {isDigital ? t("titleService")  : t("titleProduct")}
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
