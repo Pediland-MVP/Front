@@ -411,6 +411,18 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       return;
     }
 
+    if (!values.commentStartText){
+      values.commentStartText = t('commentStartText')
+    }
+
+    if (!values.commentStartTitle) {
+      values.commentStartTitle = t('commentStartTitle')
+    }
+
+    if (!values.followCheckMessage) {
+      values.followCheckMessage = t('followCheckMessage')
+    }
+
 
     setIsSubmitting(true);
     await api({
