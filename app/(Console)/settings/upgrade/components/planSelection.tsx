@@ -34,9 +34,6 @@ export default function PlanSelection() {
 
   const { plans, active, setActive, subscriptions, plansData } =
     useUpgradeContext();
-  const discountFrom = plansData?.discount?.from;
-  const discount = plansData?.discount?.discount;
-  const referralCodeType = plansData?.discount?.type;
 
   const [period, setPeriod] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -61,17 +58,6 @@ export default function PlanSelection() {
     setTotalPrice(plans[0].durations[0].price);
   }, [plans, form]);
 
-  // const handlePeriodChange = (newPeriod: number) => {
-  //   setPeriod(newPeriod);
-  //   if (plans) {
-  //     const currentPlanId = form.getValues("planId");
-  //     const currentPlan = plans.find((p) => p.id === currentPlanId);
-  //     if (currentPlan) {
-  //       form.setValue("durationId", currentPlan.durations[newPeriod].id);
-  //       setTotalPrice(currentPlan.durations[newPeriod].price);
-  //     }
-  //   }
-  // };
 
   const changePlan = (planId: number) => {
     form.setValue("planId", planId);
@@ -95,10 +81,7 @@ export default function PlanSelection() {
 
   const getPriceString = (price: number, durationDays: number) => {
     if (price === 0) return t("free");
-    // if (period === 0) return e2pNumber(price.toLocaleString());
     logger.debug("period", period, price);
-    // if (period === 1) return e2pNumber((+(price / 3).toFixed(0)).toLocaleString());
-    // if (period === 2) return e2pNumber((+(price / 12).toFixed(0)).toLocaleString());
     return e2pNumber(
       (+(price / (durationDays / 30)).toFixed(0)).toLocaleString()
     );
@@ -148,11 +131,12 @@ export default function PlanSelection() {
               className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
             >
               {currentPlan?.durations.map((duration) => {
-                const haveMonthlyDiscount =
+                const haveMonthlyDiscount = 
                   typeof duration.monthlyDiscount === "number" &&
                   duration.monthlyDiscount >= 0;
 
-                const haveDurationDiscount = typeof duration.discountPrice === "number" &&
+                const haveDurationDiscount = 
+                  typeof duration.discountPrice === "number" &&
                   duration.discountPrice >= 0;
 
                 return (
@@ -171,13 +155,17 @@ export default function PlanSelection() {
                       <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
                         {duration.name}
                       </h3>
-                      <div className="flex flex-col items-center">
-                        {haveDurationDiscount ? (
+                      <div className="flex flex-col items-center justify-center">
+                        {(haveDurationDiscount && duration.discountPrice == 0) ? (
+                          <p className="text-xl font-bold text-green-700">
+                            {t("free")}
+                          </p>
+                        ) : haveDurationDiscount ? (
                           <>
                             <span
                               className={cn(
                                 "font-bold text-green-700",
-                                  "line-through text-2xl font-medium text-muted-foreground"
+                                "line-through text-2xl font-medium text-muted-foreground"
                               )}
                             >
                               {getPriceString(
@@ -192,51 +180,61 @@ export default function PlanSelection() {
                               )}
                             >
                               {e2pNumber(
-                                (+(duration.discountPrice as number).toFixed(
+                                (+((duration?.discountPrice || 0) as number).toFixed(
                                   0
                                 )).toLocaleString()
                               )}
                             </span>
+                            <span className="text-lg text-muted-foreground font-medium">
+                              {t("currency")} در {t("month")}
+                            </span>
                           </>
                         ) : haveMonthlyDiscount ? (
                           <>
-                          <span
-                            className={cn(
-                              "font-bold text-green-700",
+                            <span
+                              className={cn(
+                                "font-bold text-green-700",
                                 "line-through text-2xl font-medium text-muted-foreground"
-                            )}
-                          >
+                              )}
+                            >
                               {e2pNumber(
                                 (+(duration.monthlyDiscount as number).toFixed(
                                   0
                                 )).toLocaleString()
                               )}
-                          </span>
+                            </span>
 
-                          <span
-                            className={cn(
-                              "text-3xl font-bold text-green-700"
-                            )}
-                          >
-                            {getPriceString(
-                              duration.price,
-                              duration.durationDays
-                            )}
-                          </span>
-                        </>
-                        ) :(
-                          <span
-                            className={cn("text-3xl font-bold text-green-700")}
-                          >
-                            {getPriceString(
-                              duration.price,
-                              duration.durationDays
-                            )}
-                          </span>
+                            <span
+                              className={cn(
+                                "text-3xl font-bold text-green-700"
+                              )}
+                            >
+                              {getPriceString(
+                                duration.price,
+                                duration.durationDays
+                              )}
+                            </span>
+                            <span className="text-lg text-muted-foreground font-medium">
+                              {t("currency")} در {t("month")}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span
+                              className={cn(
+                                "text-3xl font-bold text-green-700"
+                              )}
+                            >
+                              {getPriceString(
+                                duration.price,
+                                duration.durationDays
+                              )}
+                            </span>
+                            <span className="text-lg text-muted-foreground font-medium">
+                              {t("currency")} در {t("month")}
+                            </span>
+                          </>
                         )}
-                        <span className="text-lg text-muted-foreground font-medium">
-                          {t("currency")} در {t("month")}
-                        </span>
                       </div>
                     </div>
 
