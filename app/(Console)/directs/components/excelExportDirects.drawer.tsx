@@ -79,16 +79,16 @@ const createFormSchema = (t: ReturnType<typeof useTranslations>) => {
   });
 };
 
-interface ExcelExportOrdersDrawerProps {
+interface ExcelExportDirectsDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function ExcelExportOrdersDrawer({
+export function ExcelExportDirectsDrawer({
   open,
   onOpenChange,
-}: ExcelExportOrdersDrawerProps) {
-  const t = useTranslations("Orders.ExcelExport");
+}: ExcelExportDirectsDrawerProps) {
+  const t = useTranslations("Directs.ExcelExport");
   const t_ec = useTranslations("ERROR_CODES");
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -116,7 +116,7 @@ export function ExcelExportOrdersDrawer({
   // Form submission handler
   async function onSubmit(values: FormValues) {
     setIsLoading(true)
-    await api.post('/orders/excelExport', values)
+    await api.post('/directs/excelExport', values)
     .then((res: AxiosResponse<IResponseMessage>) => {
       toast({
         title: t('success'),
