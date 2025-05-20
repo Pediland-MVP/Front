@@ -22,6 +22,7 @@ import {
 import { InputPassword } from "@/components/theme/ui/inputPassword";
 import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "@/components/ui/use-toast";
+import { onInputP2EHandler } from "@/app/utils/p2eNumber";
 
 export default function SignIn() {
   const t = useTranslations("Auth.Signin");
@@ -134,6 +135,7 @@ export default function SignIn() {
                           <Input
                             autoComplete="username"
                             placeholder={t("enterMobilePlaceholder")}
+                            onInput={onInputP2EHandler}
                             {...field}
                           />
                         </FormControl>
