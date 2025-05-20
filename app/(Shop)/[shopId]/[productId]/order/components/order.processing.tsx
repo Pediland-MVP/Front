@@ -12,7 +12,6 @@ export default function OrderProcessing() {
             width={200}
             alt={"قلب"}
           />
-          <p className="text-xl font-medium">{t("orderProcessing")}</p>
           <p className="text-lg text-center">
             {t("orderProcessingDescription")}
           </p>

@@ -74,7 +74,6 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
             width={200}
             alt={"قلب"}
           />
-          <p className="text-xl font-medium">{t("orderProcessing")}</p>
           <p className="text-lg text-center">
             {response?.data.orderProcessText || t("orderProcessingDescription")}
           </p>
