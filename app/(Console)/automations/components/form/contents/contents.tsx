@@ -34,6 +34,7 @@ import { ContentsContext } from "./useContentsContext";
 import useUser from "@/hooks/useUser";
 import { useEffect } from "react";
 import ContentPromotion from "./contentPromotion";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 // Sortable Item Component
 
@@ -91,7 +92,17 @@ export default function Contents({ mode }: ContentsProps) {
     <ContentsContext.Provider
       value={{ contents, updateContents, removeContents }}
     >
-      <div className="space-y-3">
+      <div className="space-y-3 relative">
+        {mode === ContentCycleContentModeEnum.CONTENT_CYCLE && (
+          <div className="w-full flex justify-center items-center">
+            <HelpmeDialog
+              noAbsolute
+              title={t("Help.title")}
+              description={t("Help.description")}
+              videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV"
+            />
+          </div>
+        )}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

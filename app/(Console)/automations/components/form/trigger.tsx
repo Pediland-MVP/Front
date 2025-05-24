@@ -6,6 +6,7 @@ import { z } from "zod";
 import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/theme/ui/textarea";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 type TriggerProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -17,7 +18,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
 
   return (
     <>
-      <div className="_trigger gap-4 flex items-center">
+      <div className="_trigger gap-4 flex items-center relative">
         <p className="text-sm font-medium">{t("userIn")}</p>
         <div className="flex gap-6 items-center">
           <FormField
@@ -53,6 +54,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
             )}
           ></FormField>
         </div>
+          <HelpmeDialog noAbsolute title={t('Help.title')} description={t('Help.description')} videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" />
       </div>
     </>
   );
