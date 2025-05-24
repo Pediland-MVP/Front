@@ -34,7 +34,7 @@ export default function NavUser({
   user: UserNamespace.GET.User | undefined
   isLoading: boolean
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const locale = useLocale();
   const t = useTranslations("Console.Sidebar");
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
@@ -58,6 +58,11 @@ export default function NavUser({
       setIsLogoutLoading(false)
     })
   };
+
+  const itemClickHandler = (path: string) => {
+    setOpenMobile(false)
+    router.push(path)
+  }
 
   if (isLoading || !user) {
     return <NavUserSkeleton/>
@@ -92,7 +97,7 @@ export default function NavUser({
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => router.push("/settings/upgrade")}>
+              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => itemClickHandler("/settings/upgrade")}>
                 <Sparkle size={22} />
                 <span>{t("upgradeAccount")}</span>
               </DropdownMenuItem>
@@ -101,7 +106,7 @@ export default function NavUser({
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => router.push("/profile")} >
+              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => itemClickHandler("/profile")} >
                 <IdentificationBadge size={22} />
                 {t("profile")}
               </DropdownMenuItem>
