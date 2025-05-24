@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { Switch } from "@/components/theme/ui/switch";
 import { Button } from "@/components/theme/ui/button";
 import { X } from "@phosphor-icons/react/dist/ssr";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 export function CommentReplies() {
   const { watch, control, setValue } = useFormContext();
@@ -50,7 +51,8 @@ export function CommentReplies() {
       control={control}
       name="isReplyCommentEnabled"
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="relative">
+          <HelpmeDialog title="" description="" videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" position="left-top" />
           <FormControl>
             <Switch
               type="button"

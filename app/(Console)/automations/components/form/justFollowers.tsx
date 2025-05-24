@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/theme/ui/textarea";
 import useUser from "@/hooks/useUser";
 import { useEffect } from "react";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 
 type JustFollowersProps = {
@@ -51,7 +52,8 @@ export default function JustFollowers({
         name="justFollowers"
         render={({ field }) => (
           <FormItem className="flex flex-col justify-start gap-y-2">
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-2 relative">
+            <HelpmeDialog title="" description="" videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" position="left" />
               <FormControl>
                 <Switch
                   type="button"

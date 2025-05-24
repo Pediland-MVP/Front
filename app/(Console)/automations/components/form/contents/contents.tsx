@@ -1,10 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  useFieldArray,
-  useFormContext
-} from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
 
@@ -34,6 +31,7 @@ import {
 import { ContentsUploaderContextProvider } from "./useContentsUploaderContext";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
 import { ContentsContext } from "./useContentsContext";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 // Sortable Item Component
 
@@ -83,12 +81,21 @@ export default function Contents({ mode }: ContentsProps) {
     }
   };
 
-
   return (
     <ContentsContext.Provider
       value={{ contents, updateContents, removeContents }}
     >
-      <div className="space-y-3">
+      <div className="space-y-3 relative">
+        {mode === ContentCycleContentModeEnum.CONTENT_CYCLE && (
+          <div className="w-full flex justify-center items-center">
+            <HelpmeDialog
+              noAbsolute
+              title={t("Help.title")}
+              description={t("Help.description")}
+              videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV"
+            />
+          </div>
+        )}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

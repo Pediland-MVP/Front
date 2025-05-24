@@ -23,6 +23,7 @@ import ErrorMessage from "@/components/ui/errorMessage";
 import Contents from "./contents/contents";
 import { ContentCycleContentModeEnum, ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import { useEffect } from "react";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 export default function Reminder() {
   const { control, getValues, setValue, watch } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
@@ -48,7 +49,8 @@ export default function Reminder() {
       name="isRemindersEnabled"
       render={({ field }) => (
         <FormItem className="flex flex-col justify-start gap-y-2">
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-2 relative">
+          <HelpmeDialog title="" description="" videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" position="left" />
             <FormControl>
               <Switch
                 dir="ltr"

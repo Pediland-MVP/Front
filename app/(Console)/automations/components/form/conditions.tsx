@@ -24,6 +24,7 @@ import {
 import { Trash, PlusCircle } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
+import HelpmeDialog from "@/components/global/helpme.dialog";
 
 type TriggerProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -82,13 +83,14 @@ export default function Conditions({
   return (
     <>
       <div className="space-y-1">
-        <div className=" flex">
-          <p className="text-sm font-medium">
+        <div className=" flex relative">
+          <p className="text-sm font-medium" >
             {t("wordOrPhrase")}{" "}
             <span onClick={toggleConditionType}>
               {currentType === "INCLUDE" ? t("include") : t("equal")}
             </span>
           </p>
+          <HelpmeDialog position="left" title={t('Help.title')} description={t('Help.description')} videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" />
         </div>
         <div className=" space-y-4">
           {conditionsField.map((condition, index) => (
