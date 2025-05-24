@@ -26,6 +26,7 @@ import { Card } from "@/components/theme/ui/card";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import ContentCycleSkeleton from "./contentCycleTableSkeleton";
+import { ContnetCycleTableWizard } from "./contentCycleTable.wizard";
 
 type ContentCycle = {
   title: string;
@@ -114,6 +115,13 @@ export default function ContentCycleTable() {
     setItemToDelete(null);
   };
   const locale = useLocale();
+
+
+  if (!isContentCycleLoading && !contentCycles?.items.length) {
+    return (
+      <ContnetCycleTableWizard/>
+    );
+  }
 
   return (
     <Card className="border-b-2 border-gray-100">
