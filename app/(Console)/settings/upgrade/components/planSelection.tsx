@@ -58,7 +58,6 @@ export default function PlanSelection() {
     setTotalPrice(plans[0].durations[0].price);
   }, [plans, form]);
 
-
   const changePlan = (planId: number) => {
     form.setValue("planId", planId);
     if (plans) {
@@ -131,11 +130,11 @@ export default function PlanSelection() {
               className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
             >
               {currentPlan?.durations.map((duration) => {
-                const haveMonthlyDiscount = 
+                const haveMonthlyDiscount =
                   typeof duration.monthlyDiscount === "number" &&
                   duration.monthlyDiscount >= 0;
 
-                const haveDurationDiscount = 
+                const haveDurationDiscount =
                   typeof duration.discountPrice === "number" &&
                   duration.discountPrice >= 0;
 
@@ -156,10 +155,23 @@ export default function PlanSelection() {
                         {duration.name}
                       </h3>
                       <div className="flex flex-col items-center justify-center">
-                        {(haveDurationDiscount && duration.discountPrice == 0) ? (
-                          <p className="text-xl font-bold text-green-700">
-                            {t("free")}
-                          </p>
+                        {haveDurationDiscount && duration.discountPrice == 0 ? (
+                          <>
+                            <span
+                              className={cn(
+                                "font-bold text-green-700",
+                                "line-through text-2xl font-medium text-muted-foreground"
+                              )}
+                            >
+                              {getPriceString(
+                                duration.price,
+                                duration.durationDays
+                              )}
+                            </span>
+                            <p className="text-xl font-bold text-green-700">
+                              {t("free")}
+                            </p>
+                          </>
                         ) : haveDurationDiscount ? (
                           <>
                             <span
@@ -180,9 +192,9 @@ export default function PlanSelection() {
                               )}
                             >
                               {e2pNumber(
-                                (+((duration?.discountPrice || 0) as number).toFixed(
-                                  0
-                                )).toLocaleString()
+                                (+(
+                                  (duration?.discountPrice || 0) as number
+                                ).toFixed(0)).toLocaleString()
                               )}
                             </span>
                             <span className="text-lg text-muted-foreground font-medium">
