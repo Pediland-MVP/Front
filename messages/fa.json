@@ -871,6 +871,9 @@
                 "accountSelectedSuccess": "اکانت با موفقیت انتخاب شد",
                 "select": "انتخاب"
             },
+            "ConnectInstagram": {
+                "connecting": "در حال اتصال به اینستاگرام..."
+            },
             "relogin": "ورود مجدد",
             "instagramConnected": "حساب شما با موفقیت اضافه شد",
             "instagramConnectionError": "ارتباط با اینستاگرام برقرار نشد"
@@ -1239,6 +1242,13 @@
         "dashboard": "داشبورد",
         "accounts": "اکانت‌ها",
         "title": "خطا"
+    },
+    "BottomNav": {
+        "menu": "منو",
+        "shop": "فروشگاه",
+        "automations": "اتومیشن‌ها",
+        "orders": "سفارش‌ها",
+        "profile": "پروفایل"
     },
     "ERRORS": {
         "USER_NOT_FOUND": "کاربر یافت نشد",

@@ -30,10 +30,6 @@ export default function AccountPage({ searchParams }: AccountPageProps) {
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
-  useEffect(() => {
-    console.log('code', code)
-  }, [searchParams])
-
   if (code) {
     return (
       <ConnectInstagram/>

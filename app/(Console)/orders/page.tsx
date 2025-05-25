@@ -17,7 +17,7 @@ export default function page() {
   useEffect(() => {
 
     setButtons([
-      <Button onClick={() => setOpen(true)}>
+      <Button onClick={() => setOpen(true)} key={'ExcelExport.title'}>
         {t('ExcelExport.title')}
       </Button>
     ])
