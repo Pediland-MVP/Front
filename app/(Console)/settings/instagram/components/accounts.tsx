@@ -237,11 +237,10 @@ export default function Accounts({
                             {t("relogin")}
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
                           <Link href={`#`}>
                             <AlertDialog
                               open={showDeleteModal}
-                              onOpenChange={setShowDeleteModal}
                             >
                               <AlertDialogTrigger>
                                 <div className="flex items-center gap-2 text-red-600">
