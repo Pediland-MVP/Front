@@ -30,6 +30,8 @@ export default function VerifyPage() {
   const router = useRouter()
 
   useEffect(() => {
+    console.log('This is rfId', refId);
+    
     if (refId) {
       router.push(`/settings/instagram?isAfterPurchasingPlan`)
     }
