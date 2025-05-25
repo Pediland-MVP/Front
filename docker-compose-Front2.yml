@@ -1,0 +1,16 @@
+networks:
+  app_networks:
+    external: true
+
+services:
+
+  front2:
+    build:
+      context: /home/cicd/Front
+      dockerfile: Dockerfile
+    container_name: front2
+    networks:
+      - app_networks
+    ports:
+    - "50002:3000"
+    restart: always
