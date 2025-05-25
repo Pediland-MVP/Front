@@ -9,6 +9,7 @@ import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvi
 import ConsoleProvider from "./components/consoleProvider";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
+import { BottomNavProvider } from "./components/bottomNavProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -36,6 +37,7 @@ export default async function ConsoleLayout({
                   <InstagramTokenErrorDialog/>
                   <SubscriptionExpireWarningDialog/>
                   {children}
+                  <BottomNavProvider/>
                 </ConsoleProvider>
               </ZodErrorsMapProvider>
               <Toaster />

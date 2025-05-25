@@ -1221,6 +1221,13 @@
         "accounts": "اکانت‌ها",
         "title": "خطا"
     },
+    "BottomNav": {
+        "menu": "منو",
+        "shop": "فروشگاه",
+        "automations": "اتومیشن‌ها",
+        "orders": "سفارش‌ها",
+        "profile": "پروفایل"
+    },
     "ERRORS": {
         "USER_NOT_FOUND": "کاربر یافت نشد",
         "PASSWORD_INVALID": "رمز عبور اشتباه است",
