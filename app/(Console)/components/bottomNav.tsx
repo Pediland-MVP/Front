@@ -1,11 +1,10 @@
-import Link, { useLinkStatus } from "next/link";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LinkStatusTracker } from "./linkStatusTracker";
 import { useState } from "react";
-import { Progress } from "@/components/ui/progress";
 import { AnimatedGradient } from "@/components/global/animatedGradient";
 
 export interface NavItem {
@@ -24,9 +23,6 @@ export function BottomNav({ items }: BottomNavbarProps) {
   const [isNavigationPending, setIsNavigationPending] =
     useState<boolean>(false);
   const pathname = usePathname();
-
-  console.log("isNavigationPending", isNavigationPending);
-
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden">    
           {
