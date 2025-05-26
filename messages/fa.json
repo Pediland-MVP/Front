@@ -492,7 +492,14 @@
         "commentStartText": "برای اینکه بتونیم پیام رو براتون بفرستیم، لازمه دکمه دریافت پیام رو بزنید🌟",
         "commentStartTitle": "دریافت پیام ✅",
         "followMessage": "برای اینکه بتونیم پیام رو براتون بفرستیم، لازمه پیجمون رو فالو داشته باشید 🌟\n {username}",
-        "followCheckMessage": "فالو کردم ✅"
+        "followCheckMessage": "فالو کردم ✅",
+        "TableWizard": {
+            "title": "حالا وقت ساخت یه اتومیشن جدیده!",
+            "description": "همین حالا شروع کن و اولین اتومیشنت رو بساز",
+            "Cta": {
+                "title": "افزودن اولین اتومیشن"
+            }
+        }
     },
     "InstagramPostDialog": {
         "changePost": "تعویض پست",
@@ -1227,9 +1234,10 @@
     "BottomNav": {
         "menu": "منو",
         "shop": "فروشگاه",
-        "automations": "اتومیشن‌ها",
+        "automations": "پیام‌خودکار",
         "orders": "سفارش‌ها",
-        "profile": "پروفایل"
+        "profile": "پروفایل",
+        "support": "پشتیبانی"
     },
     "ERRORS": {
         "USER_NOT_FOUND": "کاربر یافت نشد",

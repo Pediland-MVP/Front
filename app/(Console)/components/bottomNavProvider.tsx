@@ -1,7 +1,7 @@
 'use client'
 import { useSidebar } from "@/components/theme/ui/sidebar";
 import { BottomNav, NavItem } from "./bottomNav";
-import { DotsThree, Storefront, Plus, UsersThree, ShoppingBagOpen, Robot, User  } from '@phosphor-icons/react/dist/ssr'
+import { DotsThree, Storefront, Plus, UsersThree, ShoppingBagOpen, Robot, User, TelegramLogo  } from '@phosphor-icons/react/dist/ssr'
 import { useTranslations } from "next-intl";
 
 export function BottomNavProvider() {
@@ -34,10 +34,16 @@ export function BottomNavProvider() {
             href: '/orders',
         },
         {
-            icon: User,
-            label: t('profile'),
-            href: '/profile',
+            icon: TelegramLogo,
+            label: t('support'),
+            href: 'https://T.me/elhamrahiimi',
+            target: '_blank'
         }
+        // {
+        //     icon: User,
+        //     label: t('profile'),
+        //     href: '/profile',
+        // }
     ]
     
     return (

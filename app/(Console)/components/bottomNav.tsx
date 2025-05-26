@@ -4,13 +4,14 @@ import type { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LinkStatusTracker } from "./linkStatusTracker";
-import { useState } from "react";
+import { HTMLAttributeAnchorTarget, useState } from "react";
 import { AnimatedGradient } from "@/components/global/animatedGradient";
 
 export interface NavItem {
   icon: LucideIcon;
   label: string;
   href: string;
+  target?: HTMLAttributeAnchorTarget
   onClick?: () => void;
   isMain?: boolean;
 }
@@ -51,7 +52,7 @@ export function BottomNav({ items }: BottomNavbarProps) {
                 type="button"
                 {...(item.onClick && { onClick: item.onClick })}
               >
-                <Link href={item.href}>
+                <Link href={item.href} target={item.target}>
                   <Icon className="h-6 w-6" />
                   <span className="text-[10px] font-medium">{item.label}</span>
                   <LinkStatusTracker
@@ -75,7 +76,7 @@ export function BottomNav({ items }: BottomNavbarProps) {
                 pathname.startsWith(item.href) && "bg-gray-200/70"
               )}
             >
-              <Link href={item.href}>
+              <Link href={item.href} target={item.target}>
                 <Icon className="h-4 w-4" />
                 <span className="text-xs">{item.label}</span>
                 <LinkStatusTracker
