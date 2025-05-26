@@ -27,10 +27,10 @@ jobs:
           git pull
           git log -1 --oneline
           docker rm -f front1 || true
-          docker rm -f front2 || true
+          # docker rm -f front2 || true
           echo "Current time: $(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/deploy.txt
           docker compose -f docker-compose-Front1.yml up -d --build && echo "First instance running!!"
-          docker compose -f docker-compose-Front2.yml up -d --build && echo "Second instance running!!"
+          #docker compose -f docker-compose-Front2.yml up -d --build && echo "Second instance running!!"
           EOF
 
       - name: Deploy Front Main
@@ -43,10 +43,10 @@ jobs:
           git pull
           git log -1 --oneline
           docker rm -f front12 || true
-          docker rm -f front22 || true
+          # docker rm -f front22 || true
           echo "Current time: $(date '+%Y-%m-%d %H:%M:%S')" >> /tmp/deploy.txt
           docker compose -f docker-compose-Front12.yml up -d --build && echo "First instance running!!"
-          docker compose -f docker-compose-Front22.yml up -d --build && echo "Second instance running!!"
+          # docker compose -f docker-compose-Front22.yml up -d --build && echo "Second instance running!!"
           EOF
 
       - name: Deploy Check

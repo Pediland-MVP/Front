@@ -1,0 +1,16 @@
+networks:
+  app_networks:
+    external: true
+
+services:
+
+  front12:
+    build:
+      context: /home/cicd/Front
+      dockerfile: Dockerfile
+    container_name: front12
+    networks:
+      - app_networks
+    ports:
+    - "51001:3000"
+    restart: always

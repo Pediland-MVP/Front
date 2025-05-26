@@ -31,17 +31,19 @@ export default async function ConsoleLayout({
     >
       <body className="bg-blue-50 h-screen">
         <SWRProvider>
-            <NextIntlClientProvider messages={messages}>
-              <ZodErrorsMapProvider>
-                <ConsoleProvider>
-                  <InstagramTokenErrorDialog/>
-                  <SubscriptionExpireWarningDialog/>
+          <NextIntlClientProvider messages={messages}>
+            <ZodErrorsMapProvider>
+              <ConsoleProvider>
+                <InstagramTokenErrorDialog />
+                <SubscriptionExpireWarningDialog />
+                <div className="mb-[80px]">
                   {children}
-                  <BottomNavProvider/>
-                </ConsoleProvider>
-              </ZodErrorsMapProvider>
-              <Toaster />
-            </NextIntlClientProvider>
+                  <BottomNavProvider />
+                </div>
+              </ConsoleProvider>
+            </ZodErrorsMapProvider>
+            <Toaster />
+          </NextIntlClientProvider>
         </SWRProvider>
         <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
