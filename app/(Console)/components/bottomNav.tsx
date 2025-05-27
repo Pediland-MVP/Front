@@ -1,17 +1,22 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LinkStatusTracker } from "./linkStatusTracker";
-import { HTMLAttributeAnchorTarget, useState } from "react";
+import React, {
+  HTMLAttributeAnchorTarget,
+  ReactElement,
+  useState,
+} from "react";
 import { AnimatedGradient } from "@/components/global/animatedGradient";
+import { IconProps } from "@phosphor-icons/react";
 
 export interface NavItem {
-  icon: LucideIcon;
-  label: string;
+  icon: ReactElement<IconProps>;
+  label: ReactElement<HTMLParagraphElement>;
+  labelClassName?: string;
   href: string;
-  target?: HTMLAttributeAnchorTarget
+  target?: HTMLAttributeAnchorTarget;
   onClick?: () => void;
   isMain?: boolean;
 }
@@ -23,21 +28,21 @@ interface BottomNavbarProps {
 export function BottomNav({ items }: BottomNavbarProps) {
   const [isNavigationPending, setIsNavigationPending] =
     useState<boolean>(false);
+
   const pathname = usePathname();
   return (
-    <nav className="fixed h-[70px] bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden">    
-          {
-            isNavigationPending && (
-              <AnimatedGradient
-              colors={["#93c5fd", "#3b82f6", "#1e3a8a"]}
-              className="h-1 rounded-lg flex items-center justify-center"
-              animationDuration="1s"
-            ></AnimatedGradient>
-            )
-          }
+    <nav className="fixed h-[70px] bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden">
+      {isNavigationPending && (
+        <AnimatedGradient
+          colors={["#93c5fd", "#3b82f6", "#1e3a8a"]}
+          className="h-1 rounded-lg flex items-center justify-center"
+          animationDuration="1s"
+        ></AnimatedGradient>
+      )}
       <div className="flex items-end justify-around px-2 py-2 gap-x-1">
         {items.map((item, index) => {
           const Icon = item.icon;
+          const Label = item.label;
 
           if (item.isMain) {
             return (
@@ -53,11 +58,18 @@ export function BottomNav({ items }: BottomNavbarProps) {
                 {...(item.onClick && { onClick: item.onClick })}
               >
                 <Link href={item.href} target={item.target}>
-                  <Icon className="h-6 w-6" />
-                  <span className="text-[10px] font-medium">{item.label}</span>
+                  {React.cloneElement(Icon, {
+                    className: cn("h-6 w-6", Icon.props.className),
+                  })}
+                  {React.cloneElement(Label, {
+                    className: cn(
+                      "text-[10px] font-medium",
+                      Label.props.className
+                    ),
+                  })}
                   <LinkStatusTracker
-                  setIsNavigationPending={setIsNavigationPending}
-                />
+                    setIsNavigationPending={setIsNavigationPending}
+                  />
                 </Link>
               </Button>
             );
@@ -77,8 +89,12 @@ export function BottomNav({ items }: BottomNavbarProps) {
               )}
             >
               <Link href={item.href} target={item.target}>
-                <Icon className="h-4 w-4" />
-                <span className="text-xs">{item.label}</span>
+                {React.cloneElement(Icon, {
+                  className: cn("h-4 w-4", Icon.props.className),
+                })}
+                {React.cloneElement(Label, {
+                  className: cn("text-xs", Label.props.className),
+                })}
                 <LinkStatusTracker
                   setIsNavigationPending={setIsNavigationPending}
                 />
