@@ -7,7 +7,7 @@ export default function page() {
 
   return (
     <div className="_add-automation">
-      <div className="min-h-[calc(100vh-5.5rem)]">
+      <div className="min-h-[calc(100vh-5.5rem)] w-full xl:w-1/2 2xl:w-1/3">
         <ContentCycle />
       </div>
     </div>
