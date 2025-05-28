@@ -339,7 +339,8 @@
             "noMorePosts": "پست دیگری موجود نیست.",
             "instagramPostAlt": "پست اینستاگرام",
             "price": "{price} تومان",
-            "close": "بستن"
+            "close": "بستن",
+            "add": "افزودن محصول"
         },
         "DeleteConfirmationDialog": {
             "title": "آیا از حذف این مورد اطمینان دارید؟",

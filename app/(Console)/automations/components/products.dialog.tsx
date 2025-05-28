@@ -23,6 +23,8 @@ import { contentCycleFormSchema } from "./contentCycle";
 import api from "@/hooks/swr/api-client";
 import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const PAGE_SIZE = 50;
 
@@ -84,6 +86,8 @@ const ProductsDialog = ({
     });
     setIsOpen(false);
   };
+
+  const router = useRouter()
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -166,8 +170,11 @@ const ProductsDialog = ({
                 ))}
           </div>
         </InfiniteScroll>
-        <DialogFooter>
+        <DialogFooter className="flex justify-center items-center gap-x-2">
           <Button onClick={() => setIsOpen(false)}>{t("close")}</Button>
+          <Link href="/products/add" target="_blank">
+            <Button>{t("add")}</Button>
+          </Link>
         </DialogFooter>
       </DialogContent>
     </Dialog>
