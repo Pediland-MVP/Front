@@ -447,7 +447,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
   return (
     <FormProvider {...form}>
-      <div className="_add-automation w-full h-full">
+      <div className="_add-automation w-full h-full xl:w-1/2 2xl:w-1/3">
         <Card className="border-l-2 border-gray-100 px-8 py-6 h-full">
           {isContentCycleLoading ? (
             <div className="min-h-screen w-full flex justify-center items-center">
