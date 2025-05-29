@@ -5,10 +5,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
 
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 // Just UI Imports Below
-import { Textarea } from "@/components/theme/ui/textarea";
 import {
   FormControl,
   FormField,
@@ -38,211 +35,11 @@ import {
   ContentCycleContentTypesEnum,
 } from "@/app/constants/contentCycleContent.enum";
 import { Button } from "@/components/theme/ui/button";
-import { FileUploader } from "@/components/theme/ui/fileUploader";
-import { UploadedFile } from "@/components/theme/types/fileUploader";
-import { AxiosError, AxiosResponse } from "axios";
-import { toast } from "@/components/ui/use-toast";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { FileNamespace } from "@/types/file";
-import { useContentsUploaderContext } from "./useContentsUploaderContext";
-import { useContentsContext } from "./useContentsContext";
-import InstagramPostsDialog from "@/app/(Console)/automations/components/instagramPosts.dialog";
-import Catalogue from "../catalogue";
-import ButtonTemplate from "../buttonTemplate/buttonTemplate";
-import api from "@/hooks/swr/api-client";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/theme/ui/label";
+import { Textarea } from "@/components/theme/ui/textarea";
 import InputCounter from "@/components/theme/ui/inputCounter";
-import { useTransition } from "react";
-
-type MessageByTypeProps = {
-  index: number;
-  type: ContentCycleContentTypesEnum;
-  mode: ContentCycleContentModeEnum;
-};
-
-function NameVariable() {
-  return <mark className="text-blue-400 font-bold">#نام</mark>;
-}
-
-export function MessageByType({ index, type, mode }: MessageByTypeProps) {
-  const { files, setFiles } = useContentsUploaderContext();
-  const t_ec = useTranslations("ERROR_CODES");
-  const t_err = useTranslations("Automations.Errors");
-  const t_fileUploader = useTranslations("FileUploader");
-  const t = useTranslations("Automations.Contents");
-
-  const {
-    control,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
-
-  const onChange = (files: UploadedFile[]) => {
-    if (files.length === 0) {
-      setValue(
-        `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.file`,
-        null
-      );
-    }
-    if ("file" in files[0]) {
-      setFiles((files) => {
-        return [{ ...files[0], isUploading: true, process: 0 }];
-      });
-      const formData = new FormData();
-      formData.append("file", files[0].file);
-      const res = api
-        .post(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/upload`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            withCredentials: true,
-            onUploadProgress: (progressEvent) => {
-              if (progressEvent.total) {
-                const process = Math.round(
-                  (progressEvent.loaded / progressEvent.total) * 100
-                );
-                setFiles((prev) => {
-                  return [{ ...prev[0], process: process }];
-                });
-              }
-            },
-          }
-        )
-        .then((res: AxiosResponse<FileNamespace.File>) => {
-          setFiles([
-            {
-              id: res.data.id,
-              url: res.data.url,
-              mimeType: res.data.mimeType,
-            },
-          ]);
-
-          setValue(
-            `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.file`,
-            {
-              id: res.data.id,
-              url: res.data.url,
-              mimeType: res.data.mimeType,
-            }
-          );
-          setValue(
-            `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
-            {
-              ...getValues(
-                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`
-              ),
-              type: res.data.mimeType.split(
-                "/"
-              )[0] as ContentCycleContentTypesEnum,
-            }
-          );
-        })
-        .catch((err: AxiosError) => {
-          const errorCode = t_ec(
-            (err.response?.data as ExceptionMessage)?.code
-          );
-          if (errorCode !== "ERROR_CODES") {
-            toast({
-              title: errorCode,
-              variant: "destructive",
-            });
-            return;
-          }
-
-          if (err.status === 400) {
-            toast({
-              title: `${t_fileUploader(`Limits.${type}.text`)}. ${t_fileUploader(`Limits.${type}.formats`)}`,
-              description: "لطفا یک فایل دیگر انتخاب کنید",
-              variant: "destructive",
-            });
-          }
-        })
-        .finally(() => {
-          setFiles((prev) => {
-            return [{ ...prev[0], isUploading: false }];
-          });
-        });
-    }
-  };
-  const { updateContents, contents } = useContentsContext();
-
-  switch (type) {
-    case ContentCycleContentTypesEnum.INSTAGRAM_POST:
-      return (
-        <div className="relative flex justify-center items-center">
-          <InstagramPostsDialog mode={mode} index={index} />
-        </div>
-      );
-    case ContentCycleContentTypesEnum.TEXT:
-      return (
-        <FormField
-          name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.text`}
-          control={control}
-          render={({ field, fieldState: { error } }) => {
-            return (
-              <FormField
-                name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.text`}
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem>
-                    <Label className="text-xs font-medium">
-                      {t.rich("youCanUseVars", {
-                        name: (chunks) => (
-                          <span
-                            className="text-blue-500"
-                          >
-                            {chunks}
-                          </span>
-                        ),
-                      })}
-                    </Label>
-                    <Textarea
-                      rows={5}
-                      placeholder={t("enterYourMessage")}
-                      {...field} // Keep only this spread
-                    />
-                    <InputCounter text={field.value} maxLength={1000} />
-                    {error && <FormMessage>{t_err(error.message)}</FormMessage>}
-                  </FormItem>
-                )}
-              />
-            );
-          }}
-        />
-      );
-
-    case ContentCycleContentTypesEnum.PRODUCT:
-      return <Catalogue mode={mode} index={index} />;
-
-    case ContentCycleContentTypesEnum.BUTTON_TEMPLATE:
-      return <ButtonTemplate mode={mode} contentIndex={index} />;
-
-    default:
-      return (
-        <>
-          <FileUploader
-            multiple={false}
-            files={files}
-            setFiles={setFiles}
-            onChange={onChange}
-            accept="audio/*,video/*,image/*"
-          />
-          {errors.contents?.[index]?.file && (
-            <FormMessage>
-              {" "}
-              {t_err(
-                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.media.${errors.contents?.[index]?.file.message}`
-              )}{" "}
-            </FormMessage>
-          )}
-        </>
-      );
-  }
-}
+import ContentPromotionDialog from "./contentPromotion.dialog";
+import { useState } from "react";
 
 interface MessageTypeOption {
   value: ContentCycleContentTypesEnum | "media";
@@ -281,19 +78,7 @@ const messageTypeOptions: MessageTypeOption[] = [
   },
 ];
 
-export default function ContentItem({
-  id,
-  index,
-  mode,
-  isPromotion,
-  defaultUploaderValue,
-}: {
-  id: string;
-  index: number;
-  mode: ContentCycleContentModeEnum;
-  isPromotion?: boolean
-  defaultUploaderValue?: UploadedFile | null;
-}) {
+export default function ContentPromotion() {
   const {
     control,
     getValues,
@@ -303,19 +88,16 @@ export default function ContentItem({
     trigger,
   } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
-  let { removeContents, updateContents, contents } = useContentsContext();
-
+  //   let { removeContents, updateContents, contents } = useContentsContext();
+  const contents: any[] = [];
+  const updateContents = (...res: any[]) => {};
+  const removeContents = (...res: any[]) => {};
+  const index = 1;
+  const id = 1_000_000;
+  const mode = ContentCycleContentModeEnum.CONTENT_CYCLE;
 
   const t = useTranslations("Automations.Contents");
   const t_messageTypes = useTranslations("MessageTypes");
-
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   const deleteContent = () => {
     removeContents(index);
@@ -377,14 +159,18 @@ export default function ContentItem({
     clearErrors("contents.0.buttonTemplate");
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div
-      ref={setNodeRef}
-      style={style}
       className="bg-blue-50 p-3 rounded-xl flex flex-col items-start gap-y-4"
+      onClick={() =>
+        document?.getElementById(ContentPromotionDialog.name)?.click()
+      }
     >
+      <ContentPromotionDialog setIsOpen={setIsOpen} isOpen={isOpen} />
       <div className="_header flex justify-between items-center w-full">
-        <div {...attributes} {...listeners} className="cursor-move touch-none">
+        <div className="cursor-move touch-none">
           <ArrowsOutCardinal size={20} />
         </div>
         <div>
@@ -403,16 +189,21 @@ export default function ContentItem({
           <Button
             key={option.value}
             type="button"
+            disabled
             variant={
               (option.value === "media" &&
-                ["image", "video", "audio"].includes(contents?.[index]?.type)) ||
+                ["image", "video", "audio"].includes(
+                  contents?.[index]?.type
+                )) ||
               contents?.[index]?.type === option.value
                 ? "default"
                 : "outline"
             }
             className={`h-15 flex flex-col items-center justify-cente ${
               (option.value === "media" &&
-                ["image", "video", "audio"].includes(contents?.[index]?.type)) ||
+                ["image", "video", "audio"].includes(
+                  contents?.[index]?.type
+                )) ||
               contents?.[index]?.type === option.value
                 ? "ring-2 ring-primary"
                 : ""
@@ -427,15 +218,26 @@ export default function ContentItem({
 
       <div className="_content gap-3 flex flex-col w-full">
         <div className="flex flex-col gap-2 w-full">
-          <MessageByType
-            mode={mode}
-            index={index}
-            type={contents?.[index]?.type}
-          />
+          <FormItem>
+            <Label className="text-xs font-medium">
+              {t.rich("youCanUseVars", {
+                name: (chunks) => (
+                  <span className="text-blue-500">{chunks}</span>
+                ),
+              })}
+            </Label>
+            <Textarea
+              disabled
+              rows={5}
+              placeholder={t("enterYourMessage")}
+              value={t("promotionText")}
+            />
+          </FormItem>
 
           {contents?.[index]?.type === ContentCycleContentTypesEnum.TEXT &&
             mode === ContentCycleContentModeEnum.CONTENT_CYCLE &&
-            (contents.length > 1 || index > 0) && (index !== contents.length-1)  && (
+            (contents.length > 1 || index > 0) &&
+            index !== contents.length - 1 && (
               <FormField
                 name={`contents.${index}.haveConsent`}
                 control={control}

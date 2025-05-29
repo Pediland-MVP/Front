@@ -24,6 +24,7 @@ export interface IUser {
         username: string,
         isIgTokenValid: boolean,
         isIgWebhookSubscribed: boolean,
+        isPromotion: boolean,
         profilePicture: {
             url?: string
         } | null

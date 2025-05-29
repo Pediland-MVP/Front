@@ -1,10 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  useFieldArray,
-  useFormContext
-} from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
 
@@ -34,6 +31,9 @@ import {
 import { ContentsUploaderContextProvider } from "./useContentsUploaderContext";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
 import { ContentsContext } from "./useContentsContext";
+import useUser from "@/hooks/useUser";
+import { useEffect } from "react";
+import ContentPromotion from "./contentPromotion";
 
 // Sortable Item Component
 
@@ -53,6 +53,7 @@ export default function Contents({ mode }: ContentsProps) {
     append: appendContents,
     update: updateContents,
     move: moveContents,
+    insert: insertContents
   } = useFieldArray({
     control: control,
     name:
@@ -83,6 +84,8 @@ export default function Contents({ mode }: ContentsProps) {
     }
   };
 
+  const { user } = useUser();
+  const isPromotion = user?.instagrams?.[0]?.isPromotion;
 
   return (
     <ContentsContext.Provider
@@ -110,6 +113,18 @@ export default function Contents({ mode }: ContentsProps) {
                 ))}
               </div>
             )}
+          </SortableContext>
+
+          <SortableContext
+            disabled
+            items={contents.map((field) => field._xid)}
+            strategy={rectSortingStrategy}
+          >
+            {
+              isPromotion && (
+                <ContentPromotion/>
+              )
+            }
           </SortableContext>
         </DndContext>
         <Button

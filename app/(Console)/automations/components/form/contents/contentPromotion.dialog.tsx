@@ -1,0 +1,46 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
+
+interface ContentPromotionDialogProps {
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
+}
+export default function ContentPromotionDialog({ isOpen, setIsOpen }: ContentPromotionDialogProps) {
+  const t = useTranslations("Automations.ContentPromotionDialog");
+
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger id={ContentPromotionDialog.name}/>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+            {t("title")}
+          </DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex gap-x-2">
+          <Button onClick={() => setIsOpen(false)} variant="outline">{t("buttons.close")}</Button>
+
+          <Link href="/settings/upgrade">
+            <Button variant="default">{t("buttons.upgrade")}</Button>
+          </Link>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
