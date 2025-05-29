@@ -10,5 +10,14 @@
                 "92:9C:DA:A8:4B:0E:8B:F2:6E:5B:10:FB:9F:8B:3E:4F:29:2D:70:14:BE:97:88:B8:82:A0:B3:A5:2F:B8:4E:2C"
             ]
         }
+    },
+    {
+        "relation": [
+            "check_validation"
+        ],
+        "target": {
+            "namespace": "cafebazaar_twa",
+            "package_name": "app.befroosh.console.twa"
+        }
     }
 ]
