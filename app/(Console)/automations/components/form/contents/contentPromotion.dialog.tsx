@@ -33,11 +33,11 @@ export default function ContentPromotionDialog({ isOpen, setIsOpen }: ContentPro
           </DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex gap-x-2">
-          <Button onClick={() => setIsOpen(false)} variant="outline">{t("buttons.close")}</Button>
+        <DialogFooter className="flex flex-col gap-2">
+          <Button className="w-full" onClick={() => setIsOpen(false)} variant="outline">{t("buttons.close")}</Button>
 
-          <Link href="/settings/upgrade">
-            <Button variant="default">{t("buttons.upgrade")}</Button>
+          <Link href="/settings/upgrade" className="w-full">
+            <Button className="w-full" variant="default">{t("buttons.upgrade")}</Button>
           </Link>
         </DialogFooter>
       </DialogContent>
