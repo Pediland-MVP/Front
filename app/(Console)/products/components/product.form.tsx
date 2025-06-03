@@ -217,7 +217,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       orderButtonText: shouldBeEdit?.orderButtonText || "سفارش",
       orderProcessText:
         shouldBeEdit?.orderProcessText ||
-        `{{name}} پرداخت شما باموفقیت انجام شد. \nمبلغ: {{price}}\nکد تراکنش: {{order_id}}`,
+        `#نام پرداخت شما باموفقیت انجام شد. \nمبلغ: #قیمت\nکد تراکنش: #شناسه`,
     },
   });
 
