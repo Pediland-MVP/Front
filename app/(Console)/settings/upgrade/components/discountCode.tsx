@@ -15,8 +15,9 @@ import { useForm } from "react-hook-form";
 import { mutate } from "swr";
 import { z } from "zod";
 import { useUpgradeContext } from "../context/upgrade.context";
+import { usePlanSelection } from "../hooks/usePlanSelection";
 
-export function UpdateReferralCode() {
+export function DiscountCode() {
   const schema = z.object({
     code: z.string().min(1),
   });
@@ -25,29 +26,31 @@ export function UpdateReferralCode() {
     defaultValues: {},
   });
 
-  console.log(form.formState.errors);
-
   const t = useTranslations("UpdateReferralCode");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const { setActive } = useUpgradeContext()
+  const { setActive, setDiscountCode } = useUpgradeContext()
+  // const {setDiscountCode } = usePlanSelection()
 
   const onSubmit = (values: z.infer<typeof schema>) => {
-    api
-      .post("/subscriptions/updateReferralCode", values)
-      .then(async (res) => {
-        toast({
-          title: t("success"),
-        });
-        await mutate(mutateIncludeStringKey("plans"));
-        setActive({ planSelection: true, subscriptionInfo: false })
-      })
-      .catch((e) => {
-        toast({
-          title: t_ec(e.response?.data?.code),
-          variant: "destructive",
-        });
-      });
+
+    console.log('Code values', values.code)
+    setDiscountCode(values.code)
+    // api
+    //   .post("/subscriptions/updateReferralCode", values)
+    //   .then(async (res) => {
+    //     toast({
+    //       title: t("success"),
+    //     });
+    //     await mutate(mutateIncludeStringKey("plans"));
+    //     setActive({ planSelection: true, subscriptionInfo: false })
+    //   })
+    //   .catch((e) => {
+    //     toast({
+    //       title: t_ec(e.response?.data?.code),
+    //       variant: "destructive",
+    //     });
+    //   });
   };
 
   return (

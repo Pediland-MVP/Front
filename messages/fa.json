@@ -1460,6 +1460,9 @@
         "SHIPPING_COST_IS_NOT_ALLOWED_FOR_DIGITAL_PRODUCTS": "هزینه ارسال برای محصولات دیجیتال مجاز نیست",
         "PLAN_DURATION_NOT_FOUND": "مدت زمان پلن پیدا نشد",
         "REFERRALCODE_IS_IN_USE": "کد معرف در حال استفاده است",
+        "PLAN_DISCOUNT_CODE_NOT_FOUND": "کد تخفیف وارد شده معتبر نیست",
+        "PLAN_DISCOUNT_REACHED_LIMIT": "کد تخفیف وارد شده منقضی شده",
+        "PLAN_DISCOUNT_YOU_REACHED_LIMIT": "مقدار استفاده شما از این کد تخفیف به حداکثر رسید",
         "ERROR_CODES": "خطای پیش آمد",
         "CONNECTION_ERROR": "اتصال به اینترنت برقرار نشد",
         "CHECK_CONNECTION": "اتصال خود را چک کنید"

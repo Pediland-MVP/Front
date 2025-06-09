@@ -9,18 +9,18 @@ import { cn } from "@/lib/utils";
 import e2pNumber from "@/app/utils/e2pNumber";
 import usePayPlan from "../hooks/usePayPlan";
 import { useUpgradeContext } from "../context/upgrade.context";
-import numberToK from "@/app/utils/numberToK";
 
 // UI Here
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/theme/ui/button";
-import { ArrowLeft, ArrowUpLeft } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Card } from "@/components/theme/ui/card";
-import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 import DiscountText from "@/components/discountText";
 import logger from "@/app/utils/logger";
-import { UpdateReferralCode } from "./updateReferralCode";
+import { DiscountCode } from "./discountCode";
+import { usePlanSelection } from "../hooks/usePlanSelection";
+import { IPlan } from "@/types/plans/plans";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -32,7 +32,7 @@ type FormValues = z.infer<typeof planSchema>;
 export default function PlanSelection() {
   const t = useTranslations("Upgrade.PlanSelection");
 
-  const { plans, active, setActive, subscriptions, plansData } =
+  const { active, setActive, subscriptions, plansData, plans } =
     useUpgradeContext();
 
   const [period, setPeriod] = useState(0);
@@ -40,6 +40,8 @@ export default function PlanSelection() {
   const [loadingPlanId, setLoadingPlanId] = useState<number | null>(null);
 
   const { pay, isPayLoading } = usePayPlan();
+
+  const [currentPlan, setCurrentPlan] = useState<IPlan>()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(planSchema),
@@ -86,9 +88,23 @@ export default function PlanSelection() {
     );
   };
 
-  if (!active.planSelection || !plans?.length) return null;
+  useEffect(() => {
+    console.log("Plans is change", plansData);
+    if (!planId || !plansData || !plans) return;
 
-  const currentPlan = plans.find((p) => p.id === planId);
+    
+    setCurrentPlan(plans.find((p) => p.id === planId))
+
+  }, [planId, plansData])
+
+
+  useEffect(() => {
+    console.log('Plans', plans, planId, currentPlan);
+    
+  }, [plans, planId, currentPlan])
+
+
+  if (!active.planSelection || !plans?.length) return null;
 
   return (
     <div className="_plan-selection-page relative h-full box-border max-h-full text-foreground">
@@ -101,7 +117,7 @@ export default function PlanSelection() {
           <DiscountText />
         </div>
 
-        <UpdateReferralCode />
+        <DiscountCode />
 
         <div className="_plans-wrapper">
           <div className="_selector flex flex-col justify-center items-center">
