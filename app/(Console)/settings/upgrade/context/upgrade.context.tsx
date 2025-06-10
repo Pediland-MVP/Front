@@ -29,6 +29,9 @@ export interface UpgradeContext {
 export const UpgradeContext = createContext<UpgradeContext | null>(null)
 
 export function UpgradeProvider({ children }: { children: React.ReactNode }) {
+
+    const [initialized, setInitialized] = useState<boolean>(false)
+
     const [active, setActive] = useState({
         subscriptionInfo: false,
         planSelection: false
@@ -46,19 +49,19 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     const plans = plansData?.plans
 
     useEffect(() => {
-        if( plans) {
-            console.log('Plans updated on CONTEXT', plansData);
-            
-        }
-    }, [plans])
+        console.log('plansData', plansData);
+        
+    }, [plansData])
 
     useEffect(() => {
 
+        if (initialized) return;
         if (!subscriptionsData?.items?.length) {
             setActive({
                 subscriptionInfo: false,
                 planSelection: true
             })
+            setInitialized(true)
             return
         }
 
@@ -68,6 +71,8 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
                 planSelection: false
             })
         }
+
+        setInitialized(true)
 
     }, [subscriptionsData, plans])
 

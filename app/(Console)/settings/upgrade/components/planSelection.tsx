@@ -32,7 +32,7 @@ type FormValues = z.infer<typeof planSchema>;
 export default function PlanSelection() {
   const t = useTranslations("Upgrade.PlanSelection");
 
-  const { active, setActive, subscriptions, plansData, plans } =
+  const { active, setActive, subscriptions, plansData, plans, discountCode } =
     useUpgradeContext();
 
   const [period, setPeriod] = useState(0);
@@ -41,7 +41,7 @@ export default function PlanSelection() {
 
   const { pay, isPayLoading } = usePayPlan();
 
-  const [currentPlan, setCurrentPlan] = useState<IPlan>()
+  const [currentPlan, setCurrentPlan] = useState<IPlan>();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(planSchema),
@@ -74,7 +74,7 @@ export default function PlanSelection() {
   const onSubmit = async (data: FormValues) => {
     setLoadingPlanId(data.planId);
     try {
-      await pay(data, setActive);
+      await pay({ ...data, ...(discountCode && { discountCode }) }, setActive);
     } finally {
       setLoadingPlanId(null);
     }
@@ -89,20 +89,14 @@ export default function PlanSelection() {
   };
 
   useEffect(() => {
-    console.log("Plans is change", plansData);
     if (!planId || !plansData || !plans) return;
 
-    
-    setCurrentPlan(plans.find((p) => p.id === planId))
-
-  }, [planId, plansData])
-
+    setCurrentPlan(plans.find((p) => p.id === planId));
+  }, [planId, plansData]);
 
   useEffect(() => {
-    console.log('Plans', plans, planId, currentPlan);
-    
-  }, [plans, planId, currentPlan])
-
+    console.log("p-active", plans, active);
+  }, [active, plans]);
 
   if (!active.planSelection || !plans?.length) return null;
 

@@ -1376,7 +1376,8 @@
         }
     },
     "UpdateReferralCode": {
-        "update": "آپدیت",
+        "update": "اعمال کد",
+        "delete": "حذف کد",
         "Code": {
             "placeholder": "کد تخفیف دارید؟ وارد کنید"
         },
