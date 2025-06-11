@@ -34,7 +34,7 @@ export default function NavUser({
   user: UserNamespace.GET.User | undefined
   isLoading: boolean
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const locale = useLocale();
   const t = useTranslations("Console.Sidebar");
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false)
@@ -46,7 +46,7 @@ export default function NavUser({
     await api.delete("/auth/logout")
     .then(async (res: AxiosResponse) => {
       clearAccessToken()
-      router.push(process.env.NEXT_PUBLIC_MAIN_SITE_URL)
+      routeHandler(process.env.NEXT_PUBLIC_MAIN_SITE_URL)
     })
     .catch(e => {
       toast({
@@ -58,6 +58,12 @@ export default function NavUser({
       setIsLogoutLoading(false)
     })
   };
+
+
+  const routeHandler = (route: string) => {
+    router.push(route)
+    setOpenMobile(false)
+  }
 
   if (isLoading || !user) {
     return <NavUserSkeleton/>
@@ -92,7 +98,7 @@ export default function NavUser({
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => router.push("/settings/upgrade")}>
+              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => routeHandler("/settings/upgrade")}>
                 <Sparkle size={22} />
                 <span>{t("upgradeAccount")}</span>
               </DropdownMenuItem>
@@ -101,7 +107,7 @@ export default function NavUser({
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => router.push("/profile")} >
+              <DropdownMenuItem className="cursor-pointer hover:text-primary" onClick={() => routeHandler("/profile")} >
                 <IdentificationBadge size={22} />
                 {t("profile")}
               </DropdownMenuItem>
