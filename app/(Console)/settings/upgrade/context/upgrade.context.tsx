@@ -9,6 +9,7 @@ import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import useSWR from "swr";
 import { AxiosError } from "axios";
 import useUser from "@/hooks/useUser";
+import { useSearchParams } from "next/navigation";
 
 export interface UpgradeContext {
     active: {
@@ -29,6 +30,8 @@ export interface UpgradeContext {
 export const UpgradeContext = createContext<UpgradeContext | null>(null)
 
 export function UpgradeProvider({ children }: { children: React.ReactNode }) {
+
+    const searchParams = useSearchParams()
 
     const [initialized, setInitialized] = useState<boolean>(false)
 
@@ -56,6 +59,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
 
         if (initialized) return;
+        if (isPlansLoading || isSubscriptionsLoading) return;
         if (!subscriptionsData?.items?.length) {
             setActive({
                 subscriptionInfo: false,
@@ -75,6 +79,17 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         setInitialized(true)
 
     }, [subscriptionsData, plans])
+
+    useEffect(() => {
+        if (isPlansLoading && isSubscriptionsLoading) return;
+        if (searchParams.get('active') === 'planSelection') {
+            setActive({
+                subscriptionInfo: false,
+                planSelection: true
+            })
+            setInitialized(true)
+        }
+    }, [searchParams, isPlansLoading, isSubscriptionsLoading])
 
     if (isSubscriptionsLoading || isPlansLoading) {
         return (

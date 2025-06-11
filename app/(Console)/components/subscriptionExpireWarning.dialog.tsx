@@ -17,7 +17,7 @@ import useUser from "@/hooks/useUser"
 import ButtonLoading from "@/components/ui/button-loading"
 
 export default function SubscriptionExpireWarningDialog() {
-  const [showPopup, setShowPopup] = useState(false)
+  const [showPopup, setShowPopup] = useState(true)
   const [isAborted, setIsAborted] = useState(false)
   const [isNavigationLoading, setIsNavigationLoading] = useState(false)
   const [daysLeft, setDaysLeft] = useState<number | null>(null)
@@ -55,7 +55,7 @@ export default function SubscriptionExpireWarningDialog() {
   const handleUpgrade = () => {
     setShowPopup(false)
     setIsAborted(true)
-    router.push('/settings/upgrade')
+    router.push('/settings/upgrade?active=planSelection')
   }
 
   const handleClose = () => {
