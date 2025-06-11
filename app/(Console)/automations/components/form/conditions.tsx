@@ -11,16 +11,8 @@ import { contentCycleFormSchema } from "../contentCycle";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
 import ErrorMessage from "@/components/ui/errorMessage";
-import { FormItem, FormMessage } from "@/components/ui/form";
+import { FormItem } from "@/components/ui/form";
 import { Input } from "@/components/theme/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "@/components/theme/ui/select";
 import { Trash, PlusCircle } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
@@ -45,8 +37,6 @@ export default function Conditions({
     fields: conditionsField,
     remove: removeConditions,
     append: appendConditions,
-    update: updateConditions,
-    swap: swapConditions,
     replace: replaceConditions,
   } = useFieldArray({
     control: control,
@@ -152,6 +142,7 @@ export default function Conditions({
 
       {/* Message input & post select */}
       <p className="text-sm font-medium">{t("sendMessageBelow")}</p>
+      <p className="text-xs">{t('note')}</p>
     </>
   );
 }
