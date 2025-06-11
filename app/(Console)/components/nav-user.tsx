@@ -46,7 +46,7 @@ export default function NavUser({
     await api.delete("/auth/logout")
     .then(async (res: AxiosResponse) => {
       clearAccessToken()
-      routeHandler(process.env.NEXT_PUBLIC_MAIN_SITE_URL)
+      routeHandler(process.env.NEXT_PUBLIC_LANDING_URL)
     })
     .catch(e => {
       toast({
