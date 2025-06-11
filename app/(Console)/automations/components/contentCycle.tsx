@@ -437,7 +437,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     .catch((e: AxiosError<ExceptionMessage>) => {
       toast({
         title: t_ec(e.response?.data?.code),
-        description: t("problemOccurred"),
         variant: "destructive",
       });
     })
