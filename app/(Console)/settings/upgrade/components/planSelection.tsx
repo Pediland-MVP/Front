@@ -84,7 +84,9 @@ export default function PlanSelection() {
     if (price === 0) return t("free");
     logger.debug("period", period, price);
     return e2pNumber(
-      (+(price / (durationDays / 30)).toFixed(0)).toLocaleString()
+      (
+        Math.trunc(+(price / (durationDays / 30)).toFixed(0) / 500) * 500
+      ).toLocaleString()
     );
   };
 
