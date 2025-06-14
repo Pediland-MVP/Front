@@ -17,7 +17,7 @@ import useUser from "@/hooks/useUser"
 import ButtonLoading from "@/components/ui/button-loading"
 
 export default function SubscriptionExpireWarningDialog() {
-  const [showPopup, setShowPopup] = useState(true)
+  const [showPopup, setShowPopup] = useState(false)
   const [isAborted, setIsAborted] = useState(false)
   const [isNavigationLoading, setIsNavigationLoading] = useState(false)
   const [daysLeft, setDaysLeft] = useState<number | null>(null)
