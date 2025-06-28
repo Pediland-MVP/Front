@@ -83,9 +83,11 @@ export default function SubscriptionInfo() {
                     <div className="flex items-center gap-1">
                       <span>وضعیت:</span><span>{t(activeSubscription.status)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span>نوع اشتراک:</span><span>{getPlanById(activeSubscription.planDuration.planId)?.name}</span>
-                    </div>
+                    {getPlanById(activeSubscription.planDuration.planId)?.name && (
+                      <div className="flex items-center gap-1">
+                        <span>نوع اشتراک:</span><span>{getPlanById(activeSubscription.planDuration.planId)?.name}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1">
                       <span>مدت اشتراک:</span><span>{activeSubscription.planDuration.name}</span>
                     </div>
