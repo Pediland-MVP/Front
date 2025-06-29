@@ -23,6 +23,7 @@ import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
 import useUser from "@/hooks/useUser";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
+import { mutate } from "swr";
 
 export default function Zarinpal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,10 +56,11 @@ export default function Zarinpal() {
   const onSubmit = async (values: z.infer<typeof zarinpalFormSchema>) => {
     setIsSubmitting(true);
     await api.post(`/payments/zarinpal`, values)
-      .then(res => {
+      .then(async res => {
         toast({
           title: t("success"),
         });
+        await mutate('/payments/methods');
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         toast({

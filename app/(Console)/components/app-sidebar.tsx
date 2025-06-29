@@ -1,8 +1,11 @@
 "use client";
 
 import {
-  AddressBookTabs, ChatCircleText,
-  HouseSimple, Sliders, Basket
+  AddressBookTabs,
+  ChatCircleText,
+  HouseSimple,
+  Sliders,
+  Basket
 } from "@phosphor-icons/react/dist/ssr";
 
 import { NavMain } from "./nav-main";
@@ -11,7 +14,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  useSidebar
+  useSidebar,
 } from "@/components/theme/ui/sidebar";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -30,90 +33,94 @@ const NavUser = dynamic(() => import("./nav-user"), {
 const generateData = (t: any, isMobile: boolean) => ({
   navMain: [
     {
-      title: t('dashboard'),
+      title: t("dashboard"),
       url: "/",
       icon: HouseSimple,
       isActive: true,
     },
     {
-      title: t('contacts'),
+      title: t("contacts"),
       url: "/contacts",
       icon: AddressBookTabs,
       isActive: true,
     },
     {
-      title: t('instagramConnections'),
+      title: t("instagramConnections"),
       url: "#",
       icon: ChatCircleText,
       isActive: false,
       items: [
         {
-          title: t('directs'),
+          title: t("directs"),
           url: "/directs",
         },
         {
-          title: t('comments'),
+          title: t("comments"),
           url: "/comments",
         },
         {
-          title: t('automations'),
+          title: t("automations"),
           url: "/automations",
         },
       ],
     },
 
     {
-      title: t('shop'),
-      url: '#',
+      title: t("shop"),
+      url: "#",
       icon: Basket,
       isActive: false,
       items: [
         {
-          title: t('ordersList'),
+          title: t("ordersList"),
           url: "/orders",
         },
         {
-          title: t('products'),
+          title: t("products"),
           url: "/products",
-        }
+        },
       ],
     },
-    ...(!isMobile ? [{
-      title: t('settings'),
-      url: "/settings",
-      icon: Sliders,
-      isActive: true,
-    }] : [
-      {
-        title: t('settings'),
-        url: "#",
-        icon: Sliders,
-        isActive: false,
-        items: [
+    ...(!isMobile
+      ? [
           {
-            title: t('accounts'),
-            url: "/settings/instagram",
+            title: t("settings"),
+            url: "/settings",
+            icon: Sliders,
+            isActive: true,
           },
+        ]
+      : [
           {
-            title: t('cardToCard'),
-            url: "/settings/card",
+            title: t("settings"),
+            url: "#",
+            icon: Sliders,
+            isActive: false,
+            items: [
+              {
+                title: t("accounts"),
+                url: "/settings/instagram",
+              },
+              {
+                title: t("cardToCard"),
+                url: "/settings/card",
+              },
+              {
+                title: t("zarinpal"),
+                url: "/settings/zarinpal",
+              },
+              {
+                title: t("upgrade"),
+                url: "/settings/upgrade",
+              },
+            ],
           },
-          {
-            title: t('zarinpal'),
-            url: "/settings/zarinpal",
-          },
-          {
-            title: t('upgrade'),
-            url: "/settings/upgrade",
-          },
-        ],
-      }
-    ]),
+        ]),
   ],
-})
+});
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations('Console.Sidebar');
+  const t = useTranslations("Console.Sidebar");
   const { isMobile, toggleSidebar } = useSidebar();
   const data = generateData(t, isMobile);
 
@@ -125,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
     {
       revalidateOnMount: true,
-      refreshInterval: 30_000
+      refreshInterval: 30_000,
     }
   );
   
@@ -141,10 +148,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               height={38}
               className="w-[38px] h-[38px]"
               priority
-            />          </div>
+            />{" "}
+          </div>
           <div className="flex flex-col flex-1 text-left text-[15px] leading-snug">
-            <span className="font-bold">{t('name')}</span>
-            <span className="text-[13px]">{t('description')}</span>
+            <span className="font-bold">{t("name")}</span>
+            <span className="text-[13px]">{t("description")}</span>
           </div>
         </div>
       </SidebarHeader>
@@ -155,11 +163,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SetupWarning/>
 
-      < SidebarFooter >
+
+      <SidebarFooter>
         <Suspense fallback={<NavUserSkeleton />}>
           <NavUser user={userData} isLoading={userIsLoading} />
         </Suspense>
       </SidebarFooter>
-    </Sidebar >
+    </Sidebar>
   );
 }
