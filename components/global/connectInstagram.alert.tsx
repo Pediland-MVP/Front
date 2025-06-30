@@ -9,7 +9,7 @@ export function ConnectInstagramAlert() {
   const t = useTranslations("ConnectInstagramAlert");
 
   return (
-    <Alert variant={"destructive"} className="w-10/12 mx-auto mb-5">
+    <Alert variant={"destructive"} className="w-full mx-auto mb-5">
       <WarningCircle />
       <AlertTitle>{t("title")}</AlertTitle>
       <AlertDescription>{t("description")}</AlertDescription>
