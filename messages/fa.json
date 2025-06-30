@@ -514,7 +514,8 @@
             "Cta": {
                 "title": "افزودن اولین اتومیشن"
             }
-        }
+        },
+        "goToInstagram": "اتصال"
     },
     "InstagramPostDialog": {
         "changePost": "تعویض پست",
@@ -1388,6 +1389,11 @@
         "subscriptionWarningText": "برای استفاده از امکانات بفروش، لازم است که یک اشتراک کاربری فعال داشته باشید.",
         "instagramWarningText": "برای استفاده از امکانات بفروش، لازم است که یک اکانت اینستاگرام به پنل خود متصل کنید."
     },
+    "ConnectInstagramAlert": {
+        "title": "اول باید اینستاگرام را وصل کنید",
+        "description": "تا قبل از اتصال اینستاگرام امکان ساخت پیام خودکار را ندارید",
+        "connect": "اتصال اینستاگرام"
+    },
     "ERROR_CODES": {
         "USER_NOT_FOUND": "کاربر پیدا نشد",
         "USER_ALREADY_VERIFIED": "کاربر قبلاً تأیید شده است",
@@ -1413,6 +1419,7 @@
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
         "LEAD_SHOPPING_ACCESS_DENIED": "دسترسی خرید لید رد شد",
         "NO_INSTAGRAM": "اینستاگرامی وجود ندارد",
+        "INSTAGRAM_REQUIRED": "اول باید اینستاگرامتان را وصل کنید",
         "CITY_INVALID": "شهر نامعتبر است",
         "CITY_NOT_FOUND": "شهر پیدا نشد",
         "COMMENT_NOT_FOUND": "کامنت پیدا نشد",

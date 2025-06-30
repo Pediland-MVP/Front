@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import {Toaster as Sonner} from '@/components/ui/sonner'
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
@@ -45,6 +46,7 @@ export default async function ConsoleLayout({
                 </ConsoleProvider>
               </ZodErrorsMapProvider>
               <Toaster />
+              <Sonner/>
             </NextIntlClientProvider>
           </StandaloneChecker>
         </SWRProvider>
