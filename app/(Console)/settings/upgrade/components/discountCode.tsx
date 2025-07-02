@@ -1,4 +1,3 @@
-import { mutateIncludeStringKey } from "@/app/utils/mutateIncludeStringKey";
 import { Button } from "@/components/theme/ui/button";
 import {
   Form,
@@ -12,11 +11,12 @@ import api from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { mutate } from "swr";
 import { z } from "zod";
 import { useUpgradeContext } from "../context/upgrade.context";
+import { AxiosError } from "axios";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 
-export function UpdateReferralCode() {
+export function DiscountCode() {
   const schema = z.object({
     code: z.string().min(1),
   });
@@ -25,29 +25,38 @@ export function UpdateReferralCode() {
     defaultValues: {},
   });
 
-  console.log(form.formState.errors);
-
   const t = useTranslations("UpdateReferralCode");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const { setActive } = useUpgradeContext()
+  const { setDiscountCode, setActive } = useUpgradeContext();
+  
+  const deleteCode = () => {
+
+    setDiscountCode('')
+    form.setValue('code', '')
+    setActive({
+      planSelection: true,
+      subscriptionInfo: false,
+    });
+
+  }
 
   const onSubmit = (values: z.infer<typeof schema>) => {
     api
-      .post("/subscriptions/updateReferralCode", values)
-      .then(async (res) => {
-        toast({
-          title: t("success"),
-        });
-        await mutate(mutateIncludeStringKey("plans"));
-        setActive({ planSelection: true, subscriptionInfo: false })
+      .get(`/plans?discountCode=${values.code}`)
+      .then((res) => {
+        setDiscountCode(values.code);
       })
-      .catch((e) => {
+      .catch((e: AxiosError<ExceptionMessage>) => {
         toast({
-          title: t_ec(e.response?.data?.code),
+          title: t_ec(e?.response?.data.code),
           variant: "destructive",
         });
       });
+    setActive({
+      planSelection: true,
+      subscriptionInfo: false,
+    });
   };
 
   return (
@@ -59,7 +68,7 @@ export function UpdateReferralCode() {
         <FormField
           control={form.control}
           name="code"
-          render={({field}) => {
+          render={({ field }) => {
             return (
               <FormItem>
                 <FormControl>
@@ -74,9 +83,23 @@ export function UpdateReferralCode() {
             );
           }}
         ></FormField>
-        <Button type="submit" className="w-full bg-green-600">
-          {t("update")}
-        </Button>
+        <div className="flex gap-x-2">
+          <Button
+            type="button"
+            onClick={form.handleSubmit(onSubmit)}
+            className="w-full bg-green-600"
+          >
+            {t("update")}
+          </Button>
+          <Button
+            type="button"
+            variant={"ghost"}
+            onClick={deleteCode}
+            className="w-full "
+          >
+            {t("delete")}
+          </Button>
+        </div>
       </form>
     </Form>
   );

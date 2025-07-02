@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from "next-intl"
-import { motion } from "framer-motion"
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum"
 import { useUpgradeContext } from "../context/upgrade.context"
 import { CircularProgress } from "./circularProgress"
@@ -9,8 +8,8 @@ import { useCallback, useEffect, useState } from "react"
 // UI 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/theme/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/theme/ui/card"
-import { ClockCounterClockwise, Plus } from "@phosphor-icons/react/dist/ssr"
+import { Card } from "@/components/theme/ui/card"
+import { ClockCounterClockwise } from "@phosphor-icons/react/dist/ssr"
 
 
 export default function SubscriptionInfo() {
@@ -31,7 +30,7 @@ export default function SubscriptionInfo() {
   const remainingDays = activeSubscription ? getRemainingDays(activeSubscription.expire) : 0
 
   const getPlanById = (planId: number) => {
-    return plans.find((plan) => plan.id === planId)
+    return plans?.find((plan) => plan.id === planId)
   }
 
   const getStatusColor = (status: string) => {
@@ -84,9 +83,11 @@ export default function SubscriptionInfo() {
                     <div className="flex items-center gap-1">
                       <span>وضعیت:</span><span>{t(activeSubscription.status)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span>نوع اشتراک:</span><span>{getPlanById(activeSubscription.planDuration.planId)?.name}</span>
-                    </div>
+                    {getPlanById(activeSubscription.planDuration.planId)?.name && (
+                      <div className="flex items-center gap-1">
+                        <span>نوع اشتراک:</span><span>{getPlanById(activeSubscription.planDuration.planId)?.name}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1">
                       <span>مدت اشتراک:</span><span>{activeSubscription.planDuration.name}</span>
                     </div>

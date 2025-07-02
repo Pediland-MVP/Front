@@ -36,7 +36,7 @@ export function DeleteConfirmationDialog({
             {t('description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="rtl:flex-row-reverse">
+        <AlertDialogFooter className="flex flex-row gap-x-1 justify-end items-center">
           <AlertDialogAction onClick={onConfirm}>{t('delete')}</AlertDialogAction>
           <AlertDialogCancel onClick={onClose}>{t('cancel')}</AlertDialogCancel>
         </AlertDialogFooter>

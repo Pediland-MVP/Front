@@ -10,7 +10,7 @@ import { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useRouter } from "next/navigation";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import { ProductDeleteDialog } from "./product.delete";
 import { cn } from "@/lib/utils";
 import ProductListSkeleton from "./productListSkeleton";
@@ -89,7 +89,9 @@ export default function ProductListTable() {
     data: paymentMethods,
     error: paymentMethodsError,
     isLoading: isPaymentMethodsLoading,
-  } = useSWRImmutable(`/payments/methods`);
+  } = useSWR(`/payments/methods`, {
+    revalidateOnFocus: false,
+  });
 
   useEffect(() => {
     if (!paymentMethods) return;

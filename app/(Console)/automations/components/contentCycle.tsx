@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 // Just UI Imports Below
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Form } from "@/components/ui/form";
-import { useToast } from "@/components/ui/use-toast";
+
 import LoadingButton from "@/components/ui/button-loading";
 import { Card } from "@/components/theme/ui/card";
 import {
@@ -27,7 +27,9 @@ import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { CommentReplies } from "./form/commentReplies";
+import { toast } from "sonner";
 import useUser from "@/hooks/useUser";
+import { ConnectInstagramAlert } from "@/components/global/connectInstagram.alert";
 
 export type ContentType = {
   id: string;
@@ -242,7 +244,7 @@ export const contentCycleFormSchema = z
       })
     ),
     commentTexts: z.array(z.string().min(1)).nullable().optional(),
-    isReplyCommentEnabled: z.boolean()
+    isReplyCommentEnabled: z.boolean(),
   })
   .superRefine((data, ctx) => {
     if (data.reminders.length > 0 && !data.reminderTime) {
@@ -302,7 +304,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
   const t_ec = useTranslations("ERROR_CODES");
   const t = useTranslations("Automations");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { toast } = useToast();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof contentCycleFormSchema>>({
@@ -320,29 +321,33 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       isRemindersEnabled: false,
       reminders: [],
       isReplyCommentEnabled: false,
-      commentStartText: t('commentStartText'),
-      commentStartTitle: t('commentStartTitle'),
-      followCheckMessage: t('followCheckMessage'),
+      commentStartText: t("commentStartText"),
+      commentStartTitle: t("commentStartTitle"),
+      followCheckMessage: t("followCheckMessage"),
     },
   });
 
-  const { data: contentCycle, isLoading: isContentCycleLoading, error: contentCycleError } = useSWRImmutable(`/contentCycle/${id}`, {
-    revalidateOnMount: true
-  })
+  const {
+    data: contentCycle,
+    isLoading: isContentCycleLoading,
+    error: contentCycleError,
+  } = useSWRImmutable(`/contentCycle/${id}`, {
+    revalidateOnMount: true,
+  });
 
   useEffect(() => {
     if (!contentCycle) {
-      return 
-    };
+      return;
+    }
     form.reset({
       ...contentCycle,
       ...(contentCycle.reminders?.length > 0 && { isRemindersEnabled: true }),
       reminderTime: contentCycle.reminderTime
         ? `${contentCycle.reminderTime}`
         : undefined,
-      isReplyCommentEnabled: !!contentCycle.commentTexts?.length
+      isReplyCommentEnabled: !!contentCycle.commentTexts?.length,
     });
-  }, [contentCycle, form])
+  }, [contentCycle, form]);
 
   const onSubmit = async (values: z.infer<typeof contentCycleFormSchema>) => {
     // Validate Optionals
@@ -355,7 +360,13 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       haveError = true;
     }
 
-    if (values.isComment && (values.contents[0].type === ContentCycleContentTypesEnum.PRODUCT || values.contents.length > 1) && !values.justFollowers && !values.commentStartText) {
+    if (
+      values.isComment &&
+      (values.contents[0].type === ContentCycleContentTypesEnum.PRODUCT ||
+        values.contents.length > 1) &&
+      !values.justFollowers &&
+      !values.commentStartText
+    ) {
       form.setError("commentStartText", {
         message: "در حالت کامنت، پیام درخواست شروع ضروری است",
       });
@@ -411,18 +422,17 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       return;
     }
 
-    if (!values.commentStartText){
-      values.commentStartText = t('commentStartText')
+    if (!values.commentStartText) {
+      values.commentStartText = t("commentStartText");
     }
 
     if (!values.commentStartTitle) {
-      values.commentStartTitle = t('commentStartTitle')
+      values.commentStartTitle = t("commentStartTitle");
     }
 
     if (!values.followCheckMessage) {
-      values.followCheckMessage = t('followCheckMessage')
+      values.followCheckMessage = t("followCheckMessage");
     }
-
 
     setIsSubmitting(true);
     await api({
@@ -430,25 +440,32 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       url: `/contentCycle${id ? `/${id}` : ""}`,
       data: values,
     })
-    .then(res => {
-      toast({ title: t("success") });
-      router.push("/automations");
-    })
-    .catch((e: AxiosError<ExceptionMessage>) => {
-      toast({
-        title: t_ec(e.response?.data?.code),
-        description: t("problemOccurred"),
-        variant: "destructive",
-      });
-    })
-    .then(() => setIsSubmitting(false))
-
+      .then((res) => {
+        toast.error(t("success"));
+        router.push("/automations");
+      })
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        if (e.response?.data?.code == "INSTAGRAM_REQUIRED") {
+          toast.error(t_ec(e.response?.data?.code), {
+            action: {
+              label: t("goToInstagram"),
+              onClick: () => router.push("/settings/instagram"),
+            },
+          });
+          return;
+        }
+        toast.error(t_ec(e.response?.data?.code));
+      })
+      .then(() => setIsSubmitting(false));
   };
+
+  const { hasInstagram } = useUser();
 
   return (
     <FormProvider {...form}>
       <div className="_add-automation w-full h-full xl:w-1/2 2xl:w-1/3">
         <Card className="border-l-2 border-gray-100 px-8 py-6 h-full">
+          {!hasInstagram && <ConnectInstagramAlert />}
           {isContentCycleLoading ? (
             <div className="min-h-screen w-full flex justify-center items-center">
               <LoadingSpinner className="h-20 w-20 text-gray-500" />
@@ -479,7 +496,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <CommentReplies/>
+                  <CommentReplies />
 
                   <hr className="border-gray-100" />
 
@@ -494,7 +511,6 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                   <hr className="border-gray-100 mb-6" />
 
                   <CommentTriggerInputs />
-
 
                   {/* Submit button */}
                   <LoadingButton isLoading={isSubmitting}>

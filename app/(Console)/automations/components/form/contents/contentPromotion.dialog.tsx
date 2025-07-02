@@ -36,7 +36,7 @@ export default function ContentPromotionDialog({ isOpen, setIsOpen }: ContentPro
         <DialogFooter className="flex flex-col gap-2">
           <Button className="w-full" onClick={() => setIsOpen(false)} variant="outline">{t("buttons.close")}</Button>
 
-          <Link href="/settings/upgrade" className="w-full">
+          <Link href="/settings/upgrade?active=planSelection" className="w-full">
             <Button className="w-full" variant="default">{t("buttons.upgrade")}</Button>
           </Link>
         </DialogFooter>

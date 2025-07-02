@@ -404,7 +404,8 @@
             "Help": {
                 "title": "آموزش شرط‌های اتوماسیون",
                 "description": "با این گذینه‌ها میتونین شرط‌هایی رو تعریف کنین که با ارسال یه کامنت یا دایرکت از سمت مشتری فعال میشن"
-            }
+            },
+            "note": "نکته:‌ بفروش به صورت اتوماتیک اعداد فارسی و انگلیسی و ا و آ رو به صورت خودکار تشخیص میده و به هم تبدیل میکنه"
         },
         "Contents": {
             "consent": "کسب اجازه برای پیام بعدی",
@@ -525,7 +526,8 @@
             "Cta": {
                 "title": "افزودن اولین اتومیشن"
             }
-        }
+        },
+        "goToInstagram": "اتصال"
     },
     "InstagramPostDialog": {
         "changePost": "تعویض پست",
@@ -1388,7 +1390,8 @@
         }
     },
     "UpdateReferralCode": {
-        "update": "آپدیت",
+        "update": "اعمال کد",
+        "delete": "حذف کد",
         "Code": {
             "placeholder": "کد تخفیف دارید؟ وارد کنید"
         },
@@ -1397,6 +1400,11 @@
     "SetupWarning": {
         "subscriptionWarningText": "برای استفاده از امکانات بفروش، لازم است که یک اشتراک کاربری فعال داشته باشید.",
         "instagramWarningText": "برای استفاده از امکانات بفروش، لازم است که یک اکانت اینستاگرام به پنل خود متصل کنید."
+    },
+    "ConnectInstagramAlert": {
+        "title": "اول باید اینستاگرام را وصل کنید",
+        "description": "تا قبل از اتصال اینستاگرام امکان ساخت پیام خودکار را ندارید",
+        "connect": "اتصال اینستاگرام"
     },
     "Helpme": {
         "close": "بستن",
@@ -1428,6 +1436,7 @@
         "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
         "LEAD_SHOPPING_ACCESS_DENIED": "دسترسی خرید لید رد شد",
         "NO_INSTAGRAM": "اینستاگرامی وجود ندارد",
+        "INSTAGRAM_REQUIRED": "اول باید اینستاگرامتان را وصل کنید",
         "CITY_INVALID": "شهر نامعتبر است",
         "CITY_NOT_FOUND": "شهر پیدا نشد",
         "COMMENT_NOT_FOUND": "کامنت پیدا نشد",
@@ -1477,6 +1486,9 @@
         "SHIPPING_COST_IS_NOT_ALLOWED_FOR_DIGITAL_PRODUCTS": "هزینه ارسال برای محصولات دیجیتال مجاز نیست",
         "PLAN_DURATION_NOT_FOUND": "مدت زمان پلن پیدا نشد",
         "REFERRALCODE_IS_IN_USE": "کد معرف در حال استفاده است",
+        "PLAN_DISCOUNT_CODE_NOT_FOUND": "کد تخفیف وارد شده معتبر نیست",
+        "PLAN_DISCOUNT_REACHED_LIMIT": "کد تخفیف وارد شده منقضی شده",
+        "PLAN_DISCOUNT_YOU_REACHED_LIMIT": "مقدار استفاده شما از این کد تخفیف به حداکثر رسید",
         "ERROR_CODES": "خطای پیش آمد",
         "CONNECTION_ERROR": "اتصال به اینترنت برقرار نشد",
         "CHECK_CONNECTION": "اتصال خود را چک کنید"

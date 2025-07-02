@@ -55,7 +55,7 @@ export default function SubscriptionExpireWarningDialog() {
   const handleUpgrade = () => {
     setShowPopup(false)
     setIsAborted(true)
-    router.push('/settings/upgrade')
+    router.push('/settings/upgrade?active=planSelection')
   }
 
   const handleClose = () => {

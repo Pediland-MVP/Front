@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import {Toaster as Sonner} from '@/components/ui/sonner'
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
@@ -10,6 +11,7 @@ import ConsoleProvider from "./components/consoleProvider";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
 import { BottomNavProvider } from "./components/bottomNavProvider";
+import { StandaloneChecker } from "@/components/global/standaloneChecker";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -31,19 +33,22 @@ export default async function ConsoleLayout({
     >
       <body className="bg-blue-50 h-screen">
         <SWRProvider>
-          <NextIntlClientProvider messages={messages}>
-            <ZodErrorsMapProvider>
-              <ConsoleProvider>
-                <InstagramTokenErrorDialog />
-                <SubscriptionExpireWarningDialog />
-                <div className="mb-[80px]">
-                  {children}
-                  <BottomNavProvider />
-                </div>
-              </ConsoleProvider>
-            </ZodErrorsMapProvider>
-            <Toaster />
-          </NextIntlClientProvider>
+          <StandaloneChecker>
+            <NextIntlClientProvider messages={messages}>
+              <ZodErrorsMapProvider>
+                <ConsoleProvider>
+                  <InstagramTokenErrorDialog />
+                  <SubscriptionExpireWarningDialog />
+                  <div className="mb-[80px]">
+                    {children}
+                    <BottomNavProvider />
+                  </div>
+                </ConsoleProvider>
+              </ZodErrorsMapProvider>
+              <Toaster />
+              <Sonner/>
+            </NextIntlClientProvider>
+          </StandaloneChecker>
         </SWRProvider>
         <GoftinoSnippet goftinoKey="amN3YU" />
       </body>

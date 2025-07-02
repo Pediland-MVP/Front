@@ -17,7 +17,7 @@ export default function usePayPlan() {
   const t_rc = useTranslations("RESPONSE_CODES");
 
   const pay = async (
-    values: { planId: number; durationId: number },
+    values: { planId: number; durationId: number, discountCode?: string },
     setActive: UpgradeContext["setActive"]
   ) => {
     setIsPayLoading(true);
