@@ -32,6 +32,8 @@ import { ContentsUploaderContextProvider } from "./useContentsUploaderContext";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
 import { ContentsContext } from "./useContentsContext";
 import HelpmeDialog from "@/components/global/helpme.dialog";
+import useUser from "@/hooks/useUser";
+import ContentPromotion from "./contentPromotion";
 
 // Sortable Item Component
 
