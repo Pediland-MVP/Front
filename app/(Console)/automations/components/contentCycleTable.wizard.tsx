@@ -3,7 +3,6 @@ import { Button } from "@/components/theme/ui/button";
 import { useTranslations } from "next-intl";
 import { Plus } from '@phosphor-icons/react/dist/ssr'
 import Link from "next/link";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 export function ContnetCycleTableWizard() {
 
@@ -16,7 +15,7 @@ export function ContnetCycleTableWizard() {
                     <h2 className="font-semibold text-lg mt-10 text-primary">{t('title')}</h2>
                     <p>{t('description')}</p>
                 </div>
-                <Video controls loop playsInline className="mb-4" variant="bordered" src={WizardVideoLinks.Automations.table.video} poster={WizardVideoLinks.Automations.table.poster} shape="vertical" />
+                <Video controls loop playsInline className="mb-4" variant="bordered" src="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" shape="vertical" />
                 <Link href={'/automations/add'}>
                     <Button variant={'iconed'} className="w-[260px]">
                         <Plus/>
