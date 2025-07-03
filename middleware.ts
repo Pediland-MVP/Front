@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import * as jose from "jose";
-
 import createNextIntlPlugin from "next-intl/plugin";
 
+
 const withNextIntl = createNextIntlPlugin();
+const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
 
 export default async function middleware(request: NextRequest) {
-  
   const currentRoute = request.nextUrl.pathname.split("/")[1];
   if (currentRoute === "en" || currentRoute === "fa") {
     const pathWithoutLocale = request.nextUrl.pathname.replace(
@@ -17,22 +17,27 @@ export default async function middleware(request: NextRequest) {
     const response = CustomResponse.redirect(
       new URL(pathWithoutLocale ? pathWithoutLocale : "/", request.url),
       request
-    )
+    );
     response.cookies.set("NEXT_LOCALE", currentRoute, {
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10),
-    })
-    return response
+    });
+    return response;
+  }
+
+  // Check for shops that's are like this: /cvexor/0f7d0b72-fac4-4c52-a9af-0a0607bee542/order
+  const splittedPathname = request.nextUrl.pathname.split("/");
+  splittedPathname.shift()
+  if (splittedPathname.length === 3 && splittedPathname.at(-1) === 'order') {
+    if (UUID_REGEX.test(splittedPathname[1])) {
+      return CustomResponse.next(request);
+    }
   }
 
   if (request.nextUrl.pathname.startsWith("/auth")) {
     return authMiddleware(request);
   }
 
-  if (request.nextUrl.pathname.startsWith("/console")) {
-    return consoleMiddleware(request);
-  }
-
-  return CustomResponse.next(request);
+  return consoleMiddleware(request);
 }
 
 async function consoleMiddleware(request: NextRequest) {
@@ -43,7 +48,7 @@ async function consoleMiddleware(request: NextRequest) {
       request
     );
   }
-  
+
   return CustomResponse.next(request);
 }
 
@@ -68,7 +73,6 @@ async function authMiddleware(request: NextRequest) {
   }
 
   if (jwt.payload.isVerified) {
-
     return CustomResponse.redirect(new URL("/console", request.url), request);
   }
   return CustomResponse.next(request);
@@ -76,10 +80,10 @@ async function authMiddleware(request: NextRequest) {
 
 async function parseJwt(token: string, request: NextRequest) {
   try {
-    console.time("jwtVerify")
+    console.time("jwtVerify");
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const jwt = await jose.jwtVerify(token, secret);
-    console.timeEnd('jwtVerify')
+    console.timeEnd("jwtVerify");
     return jwt;
     // return !!token ? {payload: {isVerified: true}} : false
   } catch (error) {
@@ -104,3 +108,10 @@ export class CustomResponse {
     return response;
   }
 }
+
+
+export const config = {
+  matcher: [
+    "/((?!api|payments/verify|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|fonts).*)",
+  ],
+};
