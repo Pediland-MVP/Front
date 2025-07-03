@@ -263,10 +263,6 @@ export default function Signup() {
                       </FormItem>
                     )}
                   />
-                  <p className="col-span-4 text-green-600 mt-4 text-center border border-green-200 bg-green-50 rounded-xl px-8 py-3 md:py-3 md:px-1 text-xs">
-                    می‌خوای رایگان شروع کنی؟ کد free رو وارد کن و یک ماه مهمون
-                    ما باش
-                  </p>
 
                   <p className="col-span-4">
                     {t.rich("acceptRules.label", {
