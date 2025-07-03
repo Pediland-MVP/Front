@@ -289,7 +289,7 @@ export default function PlanSelection() {
           </Form>
         </div>
 
-        {subscriptions.length && (
+        {subscriptions.length ? (
           <div className="text-left mb-12 md:mb-0">
             <Button
               onClick={() =>
@@ -302,7 +302,7 @@ export default function PlanSelection() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </div>
-        )}
+        ): null}
       </Card>
     </div>
   );
