@@ -14,10 +14,11 @@ import { Switch } from "@/components/theme/ui/switch";
 import { Button } from "@/components/theme/ui/button";
 import { X } from "@phosphor-icons/react/dist/ssr";
 import HelpmeDialog from "@/components/global/helpme.dialog";
+import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 
 export function CommentReplies() {
   const { watch, control, setValue } = useFormContext();
-  const t = useTranslations("Automations.Trigger");
+  const t = useTranslations("Automations.CommentReplies");
 
   const onIsReplyCommentEnabled = (isActive: boolean) => {
     setValue("isReplyCommentEnabled", isActive);
@@ -52,7 +53,7 @@ export function CommentReplies() {
       name="isReplyCommentEnabled"
       render={({ field }) => (
         <FormItem className="relative">
-          <HelpmeDialog title="" description="" videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" position="left-top" />
+          <HelpmeDialog title={t('Help.title')} description={t('Help.description')} videoSrc={WizardVideoLinks.Automations.Hints.CommentReplies.video} position="left-top" />
           <FormControl>
             <Switch
               type="button"

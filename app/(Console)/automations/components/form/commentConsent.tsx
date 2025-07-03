@@ -9,11 +9,12 @@ import { z, set } from 'zod';
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
 import { useEffect, useState } from "react";
 import HelpmeDialog from "@/components/global/helpme.dialog";
+import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 
-export default function CommentTriggerInputs() {
+export default function CommentConsent() {
   const { watch, control, getValues, setValue } =
     useFormContext<z.infer<typeof contentCycleFormSchema>>();
-  const t = useTranslations("Automations.Trigger");
+  const t = useTranslations("Automations.CommentConsent");
   const contents = watch("contents");
 
   const [isActive, setIsActive] = useState(false);
@@ -49,7 +50,7 @@ export default function CommentTriggerInputs() {
         render={({ field, fieldState: { error } }) => (
           <div className="space-y-1 relative">
             <FormLabel>{t("startRequestMessage")}</FormLabel>
-            <HelpmeDialog title="" description="" videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV" position="top-left" />
+            <HelpmeDialog title={t('Help.title')} description={t('Help.description')} videoSrc={WizardVideoLinks.Automations.Hints.CommentConsent.video} position="top-left" />
             {/* <FormDescription>{t('startRequestMessageDescription')}</FormDescription> */}
             <Textarea
               {...field}

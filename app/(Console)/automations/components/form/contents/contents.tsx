@@ -34,6 +34,7 @@ import { ContentsContext } from "./useContentsContext";
 import HelpmeDialog from "@/components/global/helpme.dialog";
 import useUser from "@/hooks/useUser";
 import ContentPromotion from "./contentPromotion";
+import { WizardVideoLinks } from "../../../wizardVideoLinks.conf";
 
 // Sortable Item Component
 
@@ -98,7 +99,7 @@ export default function Contents({ mode }: ContentsProps) {
               noAbsolute
               title={t("Help.title")}
               description={t("Help.description")}
-              videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV"
+              videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
             />
           </div>
         )}

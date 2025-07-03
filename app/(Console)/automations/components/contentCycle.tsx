@@ -21,7 +21,7 @@ import {
 } from "@/app/constants/contentCycleContent.enum";
 import Reminder from "./form/reminder";
 import { REGEX_URL } from "@/app/utils/regex";
-import CommentTriggerInputs from "./form/commentTriggerInputs";
+import CommentTriggerInputs from "./form/commentConsent";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";

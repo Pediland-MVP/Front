@@ -88,21 +88,21 @@ export default function HelpmeDialog({
           <span className="sr-only">{t('help')}</span>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl w-full h-full sm:h-auto max-h-[90vh] p-0 gap-0">
+      <DialogContent className="sm:max-w-4xl w-full h-full sm:h-auto p-0 gap-0">
         <div className="flex flex-col h-full">
           <DialogHeader className="p-6 pb-4">
             <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
             <DialogDescription className="text-base text-muted-foreground">{description}</DialogDescription>
           </DialogHeader>
 
-          <div className="w-full flex justify-center items-center">
+          <div className="w-full  flex justify-center items-center">
               <Video
                 shape='vertical'
                 variant="bordered"
                 src={videoSrc}
                 poster={videoPoster}
                 controls
-                className="w-full h-full object-cover"
+                className="w-full h-[800px] object-cover"
                 preload="metadata"
               >
                 {t('browserDosntSupport')}
