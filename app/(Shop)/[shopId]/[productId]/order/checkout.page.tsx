@@ -29,8 +29,7 @@ import {
   House,
   User,
   CreditCard,
-  UploadSimple,
-  ShoppingBagOpen,
+  UploadSimple
 } from "@phosphor-icons/react/dist/ssr";
 import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
@@ -44,7 +43,6 @@ import CheckoutError from "./components/checkout.error";
 import useSWR, { mutate } from "swr";
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
 import { toast } from "@/components/theme/ui/use-toast";
-import { useRouter } from "next/navigation";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
@@ -125,8 +123,6 @@ export default function CheckoutPage({
     useState<OrderNamespace.GET.Pending>();
   const [isUnauthorized, setIsUnauthorized] = useState(false);
   const [timeLeft, setTimeLeft] = useState(MAX_PAYMENT_LIFE_TIME_IN_SEC); // Initialize with 1 hour in seconds
-
-  const router = useRouter();
 
   const {
     data: _pendingOrder,
@@ -276,9 +272,9 @@ export default function CheckoutPage({
       setCurrentStep(1);
     }
 
-    if (currentStep === 1) {
-      setCurrentStep(_pendingOrder?.step || 1)
-    }
+    // if (currentStep === 1) {
+    //   setCurrentStep(_pendingOrder?.step || 1)
+    // }
 
     if (_pendingOrder) {
       setPendingOrder(_pendingOrder);

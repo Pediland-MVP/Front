@@ -45,6 +45,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "befroosh.app"
+      },
+      {
+        protocol: "https",
+        hostname: "befroosh.s3.ir-thr-at1.arvanstorage.ir"
       }
     ],
   },
