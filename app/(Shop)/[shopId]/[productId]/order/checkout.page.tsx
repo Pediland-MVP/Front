@@ -181,11 +181,6 @@ export default function CheckoutPage({
   });
 
   useEffect(() => {
-    console.log('Form.watch()', form.watch());
-    
-  }, [form.watch()])
-
-  useEffect(() => {
     if (lead) {
       const cityId = lead.contact.city?.id?.toString();
       const state = lead.contact.city?.province?.id?.toString();
