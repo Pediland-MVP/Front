@@ -3,9 +3,9 @@ import type { NextRequest } from "next/server";
 import * as jose from "jose";
 import createNextIntlPlugin from "next-intl/plugin";
 
-
 const withNextIntl = createNextIntlPlugin();
-const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+const UUID_REGEX =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 export default async function middleware(request: NextRequest) {
   const currentRoute = request.nextUrl.pathname.split("/")[1];
@@ -26,8 +26,8 @@ export default async function middleware(request: NextRequest) {
 
   // Check for shops that's are like this: /cvexor/0f7d0b72-fac4-4c52-a9af-0a0607bee542/order
   const splittedPathname = request.nextUrl.pathname.split("/");
-  splittedPathname.shift()
-  if (splittedPathname.length === 3 && splittedPathname.at(-1) === 'order') {
+  splittedPathname.shift();
+  if (splittedPathname.length === 3 && splittedPathname.at(-1) === "order") {
     if (UUID_REGEX.test(splittedPathname[1])) {
       return CustomResponse.next(request);
     }
@@ -41,7 +41,7 @@ export default async function middleware(request: NextRequest) {
 }
 
 async function consoleMiddleware(request: NextRequest) {
-  const token = request.cookies.get("token");
+  const token = request.cookies.get("token2");
   if (!token) {
     return CustomResponse.redirect(
       new URL("/auth/signin", request.url),
@@ -108,7 +108,6 @@ export class CustomResponse {
     return response;
   }
 }
-
 
 export const config = {
   matcher: [

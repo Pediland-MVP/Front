@@ -2,7 +2,6 @@
 
 import { useInstallPrompt } from "./useInstallPrompt";
 import { isStandalone } from "@/lib/isStandalone";
-import { } from 'cookie';
 
 export function StandaloneChecker({ children }: { children: React.ReactNode }) {
   const { deferredPrompt, promptInstall } = useInstallPrompt();
