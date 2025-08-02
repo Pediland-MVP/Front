@@ -1,4 +1,6 @@
+// app/(Console)/components/layout/consoleProvider.tsx
 "use client";
+
 import { UserNamespace } from "@/types/user";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -7,8 +9,8 @@ import useSWRImmutable from "swr/immutable";
 // UI Imports Here
 import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
-import { HeaderFeaturesProvider } from "./context/headerFeaturesContext";
-import Header from "./header";
+import { HeaderFeaturesProvider } from "../context/headerFeaturesContext";
+import Header from "../header";
 
 const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations("ConsoleLayout");
@@ -24,7 +26,7 @@ const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
     {
       revalidateOnMount: true,
       refreshInterval: 30_000,
-    }
+    },
   );
 
   useEffect(() => {
@@ -40,9 +42,10 @@ const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <AppSidebar side={locale === "fa" ? "right" : "left"} />
+
       <SidebarInset>
         <HeaderFeaturesProvider>
-          <Header/>
+          <Header />
           {children}
         </HeaderFeaturesProvider>
       </SidebarInset>

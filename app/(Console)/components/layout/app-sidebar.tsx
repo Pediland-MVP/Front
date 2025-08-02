@@ -1,14 +1,15 @@
+// app/(Console)/components/layout/app-sidebar.tsx
 "use client";
 
-import {
-  AddressBookTabs,
-  ChatCircleText,
-  HouseSimple,
-  Sliders,
-  Basket
-} from "@phosphor-icons/react/dist/ssr";
+import { UserNamespace } from "@/types/user";
+import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { Suspense } from "react";
+import useSWRImmutable from "swr/immutable";
 
-import { NavMain } from "./nav-main";
+// UI Imports
+import { SetupWarning } from "@/components/global/setupWarning";
 import {
   Sidebar,
   SidebarContent,
@@ -16,14 +17,16 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/theme/ui/sidebar";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
-import dynamic from "next/dynamic";
+import {
+  AddressBookTabsIcon,
+  BasketIcon,
+  ChatCircleTextIcon,
+  HouseSimpleIcon,
+  SlidersIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { NavMain } from "./nav-main";
 import { NavUserSkeleton } from "./nav-user.skeleton";
-import { Suspense } from "react";
-import useSWRImmutable from "swr/immutable";
-import { UserNamespace } from "@/types/user";
-import { SetupWarning } from "@/components/global/setupWarning";
+import { cn } from "@/lib/utils";
 
 const NavUser = dynamic(() => import("./nav-user"), {
   loading: () => <NavUserSkeleton />,
@@ -35,19 +38,19 @@ const generateData = (t: any, isMobile: boolean) => ({
     {
       title: t("dashboard"),
       url: "/",
-      icon: HouseSimple,
+      icon: HouseSimpleIcon,
       isActive: true,
     },
     {
       title: t("contacts"),
       url: "/contacts",
-      icon: AddressBookTabs,
+      icon: AddressBookTabsIcon,
       isActive: true,
     },
     {
       title: t("instagramConnections"),
       url: "#",
-      icon: ChatCircleText,
+      icon: ChatCircleTextIcon,
       isActive: false,
       items: [
         {
@@ -68,7 +71,7 @@ const generateData = (t: any, isMobile: boolean) => ({
     {
       title: t("shop"),
       url: "#",
-      icon: Basket,
+      icon: BasketIcon,
       isActive: false,
       items: [
         {
@@ -86,7 +89,7 @@ const generateData = (t: any, isMobile: boolean) => ({
           {
             title: t("settings"),
             url: "/settings",
-            icon: Sliders,
+            icon: SlidersIcon,
             isActive: true,
           },
         ]
@@ -94,7 +97,7 @@ const generateData = (t: any, isMobile: boolean) => ({
           {
             title: t("settings"),
             url: "#",
-            icon: Sliders,
+            icon: SlidersIcon,
             isActive: false,
             items: [
               {
@@ -133,27 +136,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       revalidateOnMount: true,
       refreshInterval: 30_000,
-    }
+    },
   );
-  
+
   return (
-    <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
-        <div className="flex items-center p-2 pb-0 gap-3">
-          <div className="flex items-center justify-center">
-            <Image
-              src="/images/befroosh-logo.svg"
-              alt="Befroosh App Logo"
-              width={38}
-              height={38}
-              className="w-[38px] h-[38px]"
-              priority
-            />{" "}
-          </div>
-          <div className="flex flex-col flex-1 text-left text-[15px] leading-snug">
-            <span className="font-bold">{t("name")}</span>
-            <span className="text-[13px]">{t("description")}</span>
-          </div>
+    <Sidebar variant="inset" collapsible="offcanvas" {...props}>
+      <SidebarHeader className="flex-row gap-2">
+        <Image
+          src="/images/befroosh-logo.svg"
+          alt="Befroosh App Logo"
+          className="aspect-square"
+          width={32}
+          height={32}
+        />
+        <div className="flex items-center gap-1 truncate leading-tight">
+          <h1 className="text-sidebar-foreground font-bold">{t("name")}</h1>
+          <h2 className="text-sm">[{t("description")}]</h2>
         </div>
       </SidebarHeader>
 
@@ -161,8 +159,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
 
-      <SetupWarning/>
-
+      <SetupWarning />
 
       <SidebarFooter>
         <Suspense fallback={<NavUserSkeleton />}>

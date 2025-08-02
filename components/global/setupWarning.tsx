@@ -1,13 +1,15 @@
+// components/global/setupWarning.tsx
 "use client";
 
-import { Basket, WarningCircle, Plug } from "@phosphor-icons/react/dist/ssr";
-
-import { useSidebar } from "@/components/theme/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import useUser from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
+
+// UI Imports
+import { useSidebar } from "@/components/theme/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { PlugIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface SetupWarningProps {
   subscriptionWarningText?: string;
@@ -27,18 +29,18 @@ export function SetupWarning({
       {!hasInstagram ? (
         <div
           className={cn(
-            `col-span-4 flex flex-col items-center justify-center gap-2 text-white pt-2 p-3 mx-2 text-sm rounded-md bg-orange-500/90`
+            `col-span-4 flex flex-col items-center justify-center gap-2 rounded-md bg-orange-500/90 p-3 pt-2 text-sm text-white`,
           )}
         >
-          <div className="flex items-center xl:flex-col gap-2">
+          <div className="flex items-center gap-2 xl:flex-col">
             <div>
-              <WarningCircle size={28} weight="duotone" />
+              <WarningCircleIcon size={28} weight="duotone" />
             </div>
 
             <p>{instagramWarningText || t("instagramWarningText")}</p>
           </div>
           <Button
-            className="w-full bg-sidebar hover:bg-blue-100 text-black"
+            className="bg-sidebar w-full text-black hover:bg-blue-100"
             asChild
           >
             <Link
@@ -48,7 +50,7 @@ export function SetupWarning({
               }}
             >
               <>
-                <Plug weight="duotone" />
+                <PlugIcon weight="duotone" />
                 اتصال اکانت
               </>
             </Link>

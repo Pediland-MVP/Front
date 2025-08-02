@@ -48,11 +48,12 @@ export function NavMain({
         {items.map((item) => {
           // بررسی می‌کنیم که آیا مسیر فعلی با یکی از زیر آیتم‌های منو تطبیق دارد یا نه
           const isSubMenuActive = item.items?.some((subItem) =>
-            pathname.startsWith(subItem.url)
+            pathname.startsWith(subItem.url),
           );
 
           // منوی باز در صورتی که openMenu برابر با این منو یا به صورت پیش‌فرض فعال باشد
-          const isOpen = openMenu === item.title || item.isActive || isSubMenuActive;
+          const isOpen =
+            openMenu === item.title || item.isActive || isSubMenuActive;
 
           return (
             <Collapsible
@@ -76,7 +77,7 @@ export function NavMain({
                       className={
                         pathname === item.url
                           ? "text-foreground hover:text-foreground bg-blue-100"
-                          : "text-gray-700 hover:text-foreground"
+                          : "hover:text-foreground text-gray-700"
                       }
                       onClick={() => {
                         // اگر منو هنوز باز نیست، با کلیک بازش می‌کنیم
@@ -96,7 +97,7 @@ export function NavMain({
                     className={
                       pathname === item.url
                         ? "text-foreground hover:text-foreground bg-blue-100"
-                        : "text-gray-700 hover:text-foreground"
+                        : "hover:text-foreground text-gray-700"
                     }
                     onClick={() => {
                       if (isMobile) toggleSidebar();
@@ -127,10 +128,9 @@ export function NavMain({
                               className={
                                 pathname.startsWith(subItem.url)
                                   ? "text-foreground hover:text-foreground bg-blue-100"
-                                  : "text-gray-700 hover:text-foreground"
+                                  : "hover:text-foreground text-gray-700"
                               }
                               onClick={() => {
-                                // وقتی روی زیرمنو کلیک می‌کنیم، openMenu را به منوی والد اختصاص می‌دهیم (و منوهای دیگر بسته می‌شوند)
                                 setOpenMenu(item.title);
                                 if (isMobile) toggleSidebar();
                               }}

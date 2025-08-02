@@ -18,18 +18,17 @@ export default function Dashboard() {
     error: statsError,
     isLoading: isStatsLoading,
   } = useSWRImmutable<StatsNamespace.Overall>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`,
   );
 
   const t = useTranslations("Console");
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
-
   if (isLoading) {
     return (
       <div className="_dashboard h-full">
-        <div className="_wrapper min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)] flex items-center justify-center">
+        <div className="_wrapper flex min-h-[calc(100vh-3.25rem)] items-center justify-center md:min-h-[calc(100vh-5.5rem)]">
           <LoadingSpinner className="h-full" />
         </div>
       </div>
@@ -38,16 +37,8 @@ export default function Dashboard() {
 
   return (
     <div className="_dashboard h-full">
-      <div className="_wrapper min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)]">
-        {hasInstagram ? (
-          <DashboardHome />
-        ) : (
-          <div className="_dashboard h-full">
-            <div className="_wrapper min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)] h-full bg-white">
-              <StartKit />
-            </div>
-          </div>
-        )}
+      <div className="_wrapper flex h-full flex-1 flex-col">
+        {hasInstagram ? <DashboardHome /> : <StartKit />}
       </div>
     </div>
   );

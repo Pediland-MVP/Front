@@ -1,15 +1,19 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
+// app/(Console)/components/layout/bottomNav.tsx
+
 import { cn } from "@/lib/utils";
-import { LinkStatusTracker } from "./linkStatusTracker";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+// UI Imports
+import { AnimatedGradient } from "@/components/global/animatedGradient";
+import { Button } from "@/components/theme/ui/button";
+import { IconProps } from "@phosphor-icons/react";
 import React, {
   HTMLAttributeAnchorTarget,
   ReactElement,
   useState,
 } from "react";
-import { AnimatedGradient } from "@/components/global/animatedGradient";
-import { IconProps } from "@phosphor-icons/react";
+import { LinkStatusTracker } from "../linkStatusTracker";
 
 export interface NavItem {
   icon: ReactElement<IconProps>;
@@ -31,15 +35,16 @@ export function BottomNav({ items }: BottomNavbarProps) {
 
   const pathname = usePathname();
   return (
-    <nav className="fixed h-[70px] bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden">
+    <nav className="bg-background fixed right-0 bottom-0 left-0 z-50 h-14 border-t border-gray-100 md:hidden">
       {isNavigationPending && (
         <AnimatedGradient
           colors={["#93c5fd", "#3b82f6", "#1e3a8a"]}
-          className="h-1 rounded-lg flex items-center justify-center"
+          className="flex h-1 items-center justify-center rounded-lg"
           animationDuration="1s"
         ></AnimatedGradient>
       )}
-      <div className="flex items-end justify-around px-2 py-2 gap-x-1">
+
+      <div className="flex items-end justify-around gap-x-2 px-2">
         {items.map((item, index) => {
           const Icon = item.icon;
           const Label = item.label;
@@ -51,21 +56,18 @@ export function BottomNav({ items }: BottomNavbarProps) {
                 asChild
                 size="lg"
                 className={cn(
-                  "flex flex-col gap-1 h-16 w-16 rounded-full shadow-lg -mt-6 bg-gray-600 z-50",
-                  pathname.startsWith(item.href) && "bg-blue-500"
+                  "z-50 -mt-5 flex h-18 flex-col gap-0.5 rounded-t-xl rounded-b-none bg-blue-200 px-2.5 text-blue-950 shadow-lg [&_svg]:-ml-0 [&_svg]:size-8",
+                  pathname.startsWith(item.href) && "bg-blue-500 text-white",
                 )}
                 type="button"
                 {...(item.onClick && { onClick: item.onClick })}
               >
                 <Link href={item.href} target={item.target}>
                   {React.cloneElement(Icon, {
-                    className: cn("h-6 w-6", Icon.props.className),
+                    className: cn(Icon.props.className),
                   })}
                   {React.cloneElement(Label, {
-                    className: cn(
-                      "text-[10px] font-medium",
-                      Label.props.className
-                    ),
+                    className: cn("text-xs font-normal", Label.props.className),
                   })}
                   <LinkStatusTracker
                     setIsNavigationPending={setIsNavigationPending}
@@ -84,16 +86,16 @@ export function BottomNav({ items }: BottomNavbarProps) {
               size="lg"
               asChild
               className={cn(
-                "flex flex-col gap-1 h-12 w-full p-1",
-                pathname.startsWith(item.href) && "bg-gray-200/70"
+                "flex h-14 w-full flex-col items-center justify-center gap-0.5 rounded-none px-0 [&_svg]:-ml-0 [&_svg]:size-6",
+                pathname.startsWith(item.href) && "bg-gray-200/75",
               )}
             >
               <Link href={item.href} target={item.target}>
                 {React.cloneElement(Icon, {
-                  className: cn("h-4 w-4", Icon.props.className),
+                  className: cn(Icon.props.className),
                 })}
                 {React.cloneElement(Label, {
-                  className: cn("text-xs", Label.props.className),
+                  className: cn("text-xs font-normal", Label.props.className),
                 })}
                 <LinkStatusTracker
                   setIsNavigationPending={setIsNavigationPending}

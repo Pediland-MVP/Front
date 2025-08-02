@@ -1,3 +1,4 @@
+// app/(Console)/components/breadcrumbGenerator.tsx
 "use client";
 
 import React from "react";
@@ -14,9 +15,8 @@ import {
 
 export function BreadcrumbGenerator() {
   const pathname = usePathname();
-
-  const pathSegments = pathname.split("/").filter((segment) => segment !== "");
   const t = useTranslations("Breadcrumbs");
+  const pathSegments = pathname.split("/").filter((segment) => segment !== "");
 
   return (
     <Breadcrumb>
@@ -26,14 +26,15 @@ export function BreadcrumbGenerator() {
           const isLast = index === pathSegments.length - 1;
           const lastpart = pathSegments[pathSegments.length - 1];
           const withoutLastpart = pathSegments.slice(0, -1).join("/");
-          
 
           return (
             <React.Fragment key={path}>
-              <BreadcrumbItem className={isLast ? "flex-1 min-w-0" : ""}>
+              <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
                 {isLast ? (
                   <span className="block truncate whitespace-nowrap">
-                    {path.includes('-') ? t(`/${withoutLastpart}/item`) : t(path)}
+                    {path.includes("-")
+                      ? t(`/${withoutLastpart}/item`)
+                      : t(path)}
                   </span>
                 ) : (
                   <BreadcrumbLink asChild>

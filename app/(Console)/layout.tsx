@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import {Toaster as Sonner} from '@/components/ui/sonner'
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { SWRProvider } from "@/hooks/swr/api-client";
 import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
-import ConsoleProvider from "./components/consoleProvider";
+import ConsoleProvider from "./components/layout/consoleProvider";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
-import { BottomNavProvider } from "./components/bottomNavProvider";
+import { BottomNavProvider } from "./components/layout/bottomNavProvider";
 import { StandaloneChecker } from "@/components/global/standaloneChecker";
 
 export const metadata: Metadata = {
@@ -31,7 +31,7 @@ export default async function ConsoleLayout({
       dir={locale === "fa" ? "rtl" : "ltr"}
       className={locale === "fa" ? "font-Anjoman" : "font-Roboto"}
     >
-      <body className="bg-blue-50 h-screen">
+      <body className="h-screen bg-blue-50">
         <SWRProvider>
           <StandaloneChecker>
             <NextIntlClientProvider messages={messages}>
@@ -39,14 +39,12 @@ export default async function ConsoleLayout({
                 <ConsoleProvider>
                   <InstagramTokenErrorDialog />
                   <SubscriptionExpireWarningDialog />
-                  <div className="mb-[80px]">
-                    {children}
-                    <BottomNavProvider />
-                  </div>
+                  {children}
+                  <BottomNavProvider />
                 </ConsoleProvider>
               </ZodErrorsMapProvider>
               <Toaster />
-              <Sonner/>
+              <Sonner />
             </NextIntlClientProvider>
           </StandaloneChecker>
         </SWRProvider>
