@@ -6,7 +6,7 @@ export default function page() {
   const t = useTranslations("Automations");
 
   return (
-    <div className="_add-automation">
+    <div className="_add-automation overflow-auto">
       <div className="min-h-[calc(100vh-5.5rem)] w-full">
         <ContentCycle />
       </div>

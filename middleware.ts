@@ -12,11 +12,11 @@ export default async function middleware(request: NextRequest) {
   if (currentRoute === "en" || currentRoute === "fa") {
     const pathWithoutLocale = request.nextUrl.pathname.replace(
       `/${currentRoute}`,
-      ""
+      "",
     );
     const response = CustomResponse.redirect(
       new URL(pathWithoutLocale ? pathWithoutLocale : "/", request.url),
-      request
+      request,
     );
     response.cookies.set("NEXT_LOCALE", currentRoute, {
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 10),
@@ -45,7 +45,7 @@ async function consoleMiddleware(request: NextRequest) {
   if (!token) {
     return CustomResponse.redirect(
       new URL("/auth/signin", request.url),
-      request
+      request,
     );
   }
 
@@ -59,7 +59,7 @@ async function authMiddleware(request: NextRequest) {
     if (isVerifyPage) {
       return CustomResponse.redirect(
         new URL("/auth/signin", request.url),
-        request
+        request,
       );
     }
 
@@ -95,7 +95,7 @@ export class CustomResponse {
   static redirect(
     url: string | URL,
     request: NextRequest,
-    init?: number | RequestInit
+    init?: number | RequestInit,
   ) {
     const response = NextResponse.redirect(url, init);
     response.headers.set("next-pathname", request.nextUrl.pathname);
