@@ -41,7 +41,7 @@ export default async function middleware(request: NextRequest) {
 }
 
 async function consoleMiddleware(request: NextRequest) {
-  const token = request.cookies.get("token2");
+  const token = request.cookies.get("token");
   if (!token) {
     return CustomResponse.redirect(
       new URL("/auth/signin", request.url),
