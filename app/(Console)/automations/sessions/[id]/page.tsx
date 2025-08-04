@@ -1,12 +1,8 @@
 export default async function SessionPage({
-  params
+  params,
 }: {
-  params: Promise<{ id: string }>,
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return(
-    <div className="w-full">
-      {id}
-    </div>
-  )
+  return <div className="w-full overflow-auto">{id}</div>;
 }
