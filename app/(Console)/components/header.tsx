@@ -12,7 +12,7 @@ const Header = () => {
   if (pathname === "/") return null;
 
   return (
-    <header className="flex flex-col gap-0 border-b border-gray-100 px-5 py-3.5 xl:flex-row xl:items-center xl:justify-between xl:gap-4 xl:border-b-2 xl:py-2">
+    <header className="flex flex-col gap-0 border-b border-gray-100 px-3 py-3.5 xl:flex-row xl:items-center xl:justify-between xl:gap-4 xl:border-b-2 xl:py-2">
       <div className="_wrap flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 xl:gap-4">
           <SidebarTrigger />

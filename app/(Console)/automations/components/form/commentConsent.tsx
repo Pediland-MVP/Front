@@ -1,15 +1,17 @@
-import { useFormContext } from "react-hook-form";
-// Just UI Imports Below
-import { FormField, FormMessage, FormLabel } from "@/components/ui/form";
-import { Textarea } from "@/components/theme/ui/textarea";
-import { useTranslations } from "next-intl";
-import { FormDescription } from "@/components/theme/ui/form";
-import { contentCycleFormSchema } from "../contentCycle";
-import { z, set } from 'zod';
+// app/(Console)/automations/components/form/commentConsent.tsx
+
 import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import HelpmeDialog from "@/components/global/helpme.dialog";
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { contentCycleFormSchema } from "../contentCycle";
+
+// UI Imports
+import HelpmeDialog from "@/components/global/helpme.dialog";
+import { Textarea } from "@/components/theme/ui/textarea";
+import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
 
 export default function CommentConsent() {
   const { watch, control, getValues, setValue } =
@@ -27,19 +29,23 @@ export default function CommentConsent() {
   // }
 
   useEffect(() => {
-    if (watch("isComment") && !watch("justFollowers") && (contents?.[0]?.type === ContentCycleContentTypesEnum.PRODUCT || contents?.length > 1)) {
-      setValue('commentStartText', t('commentStartText'));
-      setIsActive(true)
-      return
+    if (
+      watch("isComment") &&
+      !watch("justFollowers") &&
+      (contents?.[0]?.type === ContentCycleContentTypesEnum.PRODUCT ||
+        contents?.length > 1)
+    ) {
+      setValue("commentStartText", t("commentStartText"));
+      setIsActive(true);
+      return;
     }
 
-    setIsActive(false)
-    setValue('commentStartText', undefined);
-  }, [watch('isComment'), watch('justFollowers'), contents])
-
+    setIsActive(false);
+    setValue("commentStartText", undefined);
+  }, [watch("isComment"), watch("justFollowers"), contents]);
 
   if (!isActive) {
-    return null
+    return null;
   }
 
   return (
@@ -48,9 +54,14 @@ export default function CommentConsent() {
         control={control}
         name="commentStartText"
         render={({ field, fieldState: { error } }) => (
-          <div className="space-y-1 relative">
+          <div className="relative flex items-center gap-x-2">
             <FormLabel>{t("startRequestMessage")}</FormLabel>
-            <HelpmeDialog title={t('Help.title')} description={t('Help.description')} videoSrc={WizardVideoLinks.Automations.Hints.CommentConsent.video} position="top-left" />
+            <HelpmeDialog
+              title={t("Help.title")}
+              description={t("Help.description")}
+              videoSrc={WizardVideoLinks.Automations.Hints.CommentConsent.video}
+              position="top-left"
+            />
             {/* <FormDescription>{t('startRequestMessageDescription')}</FormDescription> */}
             <Textarea
               {...field}

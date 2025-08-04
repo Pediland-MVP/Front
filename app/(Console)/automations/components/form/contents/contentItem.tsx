@@ -1,58 +1,51 @@
+// app/(Console)/automations/components/form/contents/contentItem.tsx
 "use client";
 
+import {
+  ContentCycleContentModeEnum,
+  ContentCycleContentTypesEnum,
+} from "@/app/constants/contentCycleContent.enum";
+import api from "@/hooks/swr/api-client";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { FileNamespace } from "@/types/file";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { AxiosError, AxiosResponse } from "axios";
 import { useTranslations } from "next-intl";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
+import ButtonTemplateComp from "../buttonTemplateComp";
+import { useContentsContext } from "./useContentsContext";
+import { useContentsUploaderContext } from "./useContentsUploaderContext";
 
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-// Just UI Imports Below
-import { Textarea } from "@/components/theme/ui/textarea";
+// UI Imports
+import { UploadedFile } from "@/components/theme/types/fileUploader";
+import { Badge } from "@/components/theme/ui/badge";
+import { FileUploader } from "@/components/theme/ui/fileUploader";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import {
-  Trash,
-  ArrowsOutCardinal,
-  Chat,
-  InstagramLogo,
-  Paperclip,
-  Storefront,
-  RadioButton,
-} from "@phosphor-icons/react/dist/ssr";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/components/theme/ui/form";
 import { Input } from "@/components/theme/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  ContentCycleContentModeEnum,
-  ContentCycleContentTypesEnum,
-} from "@/app/constants/contentCycleContent.enum";
-import { Button } from "@/components/theme/ui/button";
-import { FileUploader } from "@/components/theme/ui/fileUploader";
-import { UploadedFile } from "@/components/theme/types/fileUploader";
-import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { FileNamespace } from "@/types/file";
-import { useContentsUploaderContext } from "./useContentsUploaderContext";
-import { useContentsContext } from "./useContentsContext";
-import InstagramPostsDialog from "@/app/(Console)/automations/components/instagramPosts.dialog";
-import Catalogue from "../catalogue";
-import ButtonTemplate from "../buttonTemplate/buttonTemplate";
-import api from "@/hooks/swr/api-client";
-import { Label } from "@/components/ui/label";
-import InputCounter from "@/components/theme/ui/inputCounter";
-import { useTransition } from "react";
+import {
+  ArrowsOutCardinalIcon,
+  TrashIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import TextContentComp from "../textContentComp";
+import ProductContentComp from "../productContentComp";
+import InstagramPostsContentComp from "../instagramPostsContentComp";
 
 type MessageByTypeProps = {
   index: number;
@@ -61,7 +54,7 @@ type MessageByTypeProps = {
 };
 
 function NameVariable() {
-  return <mark className="text-blue-400 font-bold">#نام</mark>;
+  return <mark className="font-bold text-blue-400">#نام</mark>;
 }
 
 export function MessageByType({ index, type, mode }: MessageByTypeProps) {
@@ -82,7 +75,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
     if (files.length === 0) {
       setValue(
         `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.file`,
-        null
+        null,
       );
     }
     if ("file" in files[0]) {
@@ -103,14 +96,14 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
             onUploadProgress: (progressEvent) => {
               if (progressEvent.total) {
                 const process = Math.round(
-                  (progressEvent.loaded / progressEvent.total) * 100
+                  (progressEvent.loaded / progressEvent.total) * 100,
                 );
                 setFiles((prev) => {
                   return [{ ...prev[0], process: process }];
                 });
               }
             },
-          }
+          },
         )
         .then((res: AxiosResponse<FileNamespace.File>) => {
           setFiles([
@@ -127,23 +120,23 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
               id: res.data.id,
               url: res.data.url,
               mimeType: res.data.mimeType,
-            }
+            },
           );
           setValue(
             `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
             {
               ...getValues(
-                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`
+                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
               ),
               type: res.data.mimeType.split(
-                "/"
+                "/",
               )[0] as ContentCycleContentTypesEnum,
-            }
+            },
           );
         })
         .catch((err: AxiosError) => {
           const errorCode = t_ec(
-            (err.response?.data as ExceptionMessage)?.code
+            (err.response?.data as ExceptionMessage)?.code,
           );
           if (errorCode !== "ERROR_CODES") {
             toast({
@@ -171,55 +164,17 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
   const { updateContents, contents } = useContentsContext();
 
   switch (type) {
-    case ContentCycleContentTypesEnum.INSTAGRAM_POST:
-      return (
-        <div className="relative flex justify-center items-center">
-          <InstagramPostsDialog mode={mode} index={index} />
-        </div>
-      );
     case ContentCycleContentTypesEnum.TEXT:
-      return (
-        <FormField
-          name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.text`}
-          control={control}
-          render={({ field, fieldState: { error } }) => {
-            return (
-              <FormField
-                name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.text`}
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem>
-                    <Label className="text-xs font-medium">
-                      {t.rich("youCanUseVars", {
-                        name: (chunks) => (
-                          <span
-                            className="text-blue-500"
-                          >
-                            {chunks}
-                          </span>
-                        ),
-                      })}
-                    </Label>
-                    <Textarea
-                      rows={5}
-                      placeholder={t("enterYourMessage")}
-                      {...field} // Keep only this spread
-                    />
-                    <InputCounter text={field.value} maxLength={1000} />
-                    {error && <FormMessage>{t_err(error.message)}</FormMessage>}
-                  </FormItem>
-                )}
-              />
-            );
-          }}
-        />
-      );
+      return <TextContentComp control={control} mode={mode} index={index} />;
+
+    case ContentCycleContentTypesEnum.INSTAGRAM_POST:
+      return <InstagramPostsContentComp mode={mode} index={index} />;
 
     case ContentCycleContentTypesEnum.PRODUCT:
-      return <Catalogue mode={mode} index={index} />;
+      return <ProductContentComp mode={mode} index={index} />;
 
     case ContentCycleContentTypesEnum.BUTTON_TEMPLATE:
-      return <ButtonTemplate mode={mode} contentIndex={index} />;
+      return <ButtonTemplateComp mode={mode} contentIndex={index} />;
 
     default:
       return (
@@ -233,53 +188,15 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
           />
           {errors.contents?.[index]?.file && (
             <FormMessage>
-              {" "}
               {t_err(
-                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.media.${errors.contents?.[index]?.file.message}`
-              )}{" "}
+                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.media.${errors.contents?.[index]?.file.message}`,
+              )}
             </FormMessage>
           )}
         </>
       );
   }
 }
-
-interface MessageTypeOption {
-  value: ContentCycleContentTypesEnum | "media";
-  label: string;
-  icon: React.ReactNode;
-}
-
-//FIXME: Should be refactored
-//BUG: Dont change my order!
-const messageTypeOptions: MessageTypeOption[] = [
-  {
-    value: ContentCycleContentTypesEnum.TEXT,
-    label: "Text",
-    icon: <Chat className="h-6 w-6" />,
-  },
-  {
-    value: ContentCycleContentTypesEnum.INSTAGRAM_POST,
-    label: "Instagram Post",
-    icon: <InstagramLogo className="h-6 w-6" />,
-  },
-  {
-    value: ContentCycleContentTypesEnum.PRODUCT,
-    label: "Product",
-    icon: <Storefront className="h-6 w-6" />,
-  },
-  {
-    value: ContentCycleContentTypesEnum.BUTTON_TEMPLATE,
-    label: "Button",
-    icon: <RadioButton className="h-6 w-6" />,
-  },
-  //BUG: Dont change my order!
-  {
-    value: "media",
-    label: "Media",
-    icon: <Paperclip className="h-6 w-6" />,
-  },
-];
 
 export default function ContentItem({
   id,
@@ -291,7 +208,7 @@ export default function ContentItem({
   id: string;
   index: number;
   mode: ContentCycleContentModeEnum;
-  isPromotion?: boolean
+  isPromotion?: boolean;
   defaultUploaderValue?: UploadedFile | null;
 }) {
   const {
@@ -302,13 +219,10 @@ export default function ContentItem({
     clearErrors,
     trigger,
   } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
-
-  let { removeContents, updateContents, contents } = useContentsContext();
-
-
   const t = useTranslations("Automations.Contents");
   const t_messageTypes = useTranslations("MessageTypes");
 
+  let { removeContents, updateContents, contents } = useContentsContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -333,7 +247,7 @@ export default function ContentItem({
   };
 
   const handleMessageTypeChange = async (
-    type: ContentCycleContentTypesEnum | "media"
+    type: ContentCycleContentTypesEnum | "media",
   ) => {
     // Create a new content object with the selected type
     //NOTE: Default values of the new content
@@ -371,7 +285,7 @@ export default function ContentItem({
 
     // Trigger form validation
     await trigger(
-      `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`
+      `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
     );
 
     clearErrors("contents.0.buttonTemplate");
@@ -381,130 +295,109 @@ export default function ContentItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-blue-50 p-3 rounded-xl flex flex-col items-start gap-y-4"
+      className="flex flex-col items-start gap-y-4 rounded-xl border border-blue-200/75 bg-blue-50/50 p-3 hover:border-blue-300"
     >
-      <div className="_header flex justify-between items-center w-full">
-        <div {...attributes} {...listeners} className="cursor-move touch-none">
-          <ArrowsOutCardinal size={20} />
+      <div className="_header flex w-full items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-move touch-none"
+          >
+            <ArrowsOutCardinalIcon size={18} className="text-gray-600" />
+          </div>
+          <div className="flex gap-2 text-sm font-medium text-blue-900">
+            <Badge>{index + 1}</Badge>
+            {`${t_messageTypes("create_title")} ${t_messageTypes(contents?.[index]?.type) ?? "عنوان محتوا"}`}
+          </div>
         </div>
         <div>
-          <Trash
-            size={22}
-            className="text-red-600 cursor-pointer"
+          <TrashIcon
+            size={20}
+            className="cursor-pointer text-red-600"
             onClick={deleteContent}
             aria-label={t("removeContent")}
           />
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-5 gap-x-2 shrink-0 items-center">
-        {/**FIXME: Should be refactor */}
-        {messageTypeOptions.map((option) => (
-          <Button
-            key={option.value}
-            type="button"
-            variant={
-              (option.value === "media" &&
-                ["image", "video", "audio"].includes(contents?.[index]?.type)) ||
-              contents?.[index]?.type === option.value
-                ? "default"
-                : "outline"
-            }
-            className={`h-15 flex flex-col items-center justify-cente ${
-              (option.value === "media" &&
-                ["image", "video", "audio"].includes(contents?.[index]?.type)) ||
-              contents?.[index]?.type === option.value
-                ? "ring-2 ring-primary"
-                : ""
-            }`}
-            onClick={() => handleMessageTypeChange(option.value)}
-          >
-            {option.icon}
-            <span className="text-sm">{t_messageTypes(option.value)}</span>
-          </Button>
-        ))}
-      </div>
+      <div className="_content flex w-full flex-col gap-3">
+        <MessageByType
+          mode={mode}
+          index={index}
+          type={contents?.[index]?.type}
+        />
 
-      <div className="_content gap-3 flex flex-col w-full">
-        <div className="flex flex-col gap-2 w-full">
-          <MessageByType
-            mode={mode}
-            index={index}
-            type={contents?.[index]?.type}
-          />
-
-          {contents?.[index]?.type === ContentCycleContentTypesEnum.TEXT &&
-            mode === ContentCycleContentModeEnum.CONTENT_CYCLE &&
-            (contents.length > 1 || index > 0) && (index !== contents.length-1)  && (
-              <FormField
-                name={`contents.${index}.haveConsent`}
-                control={control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col justify-start gap-y-2">
-                    <div className="flex items-center gap-x-2">
-                      <FormControl>
-                        <TooltipProvider>
-                          <Tooltip
-                            {...(contents.length > 1 &&
-                              contents?.[index]?.type ===
-                                ContentCycleContentTypesEnum.TEXT && {
-                                open: false,
-                              })}
+        {contents?.[index]?.type === ContentCycleContentTypesEnum.TEXT &&
+          mode === ContentCycleContentModeEnum.CONTENT_CYCLE &&
+          (contents.length > 1 || index > 0) &&
+          index !== contents.length - 1 && (
+            <FormField
+              name={`contents.${index}.haveConsent`}
+              control={control}
+              render={({ field }) => (
+                <FormItem className="flex flex-col justify-start gap-y-2">
+                  <div className="flex items-center gap-x-2">
+                    <FormControl>
+                      <TooltipProvider>
+                        <Tooltip
+                          {...(contents.length > 1 &&
+                            contents?.[index]?.type ===
+                              ContentCycleContentTypesEnum.TEXT && {
+                              open: false,
+                            })}
+                        >
+                          <TooltipTrigger
+                            asChild
+                            disabled={
+                              contents.length > 1 ||
+                              contents?.[index]?.type !==
+                                ContentCycleContentTypesEnum.TEXT
+                            }
                           >
-                            <TooltipTrigger
-                              asChild
+                            <Checkbox
                               disabled={
-                                contents.length > 1 ||
+                                contents.length <= 1 ||
                                 contents?.[index]?.type !==
                                   ContentCycleContentTypesEnum.TEXT
                               }
-                            >
-                              <Checkbox
-                                disabled={
-                                  contents.length <= 1 ||
-                                  contents?.[index]?.type !==
-                                    ContentCycleContentTypesEnum.TEXT
-                                }
-                                dir="ltr"
-                                checked={field.value || false}
-                                onCheckedChange={field.onChange}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              {contents.length <= 1
-                                ? t("consentTooltip")
-                                : contents?.[index]?.type !==
-                                    ContentCycleContentTypesEnum.TEXT &&
-                                  t("consentTooltipType")}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </FormControl>
-                      <FormLabel className="">{t("consent")}</FormLabel>
-                    </div>
-                    {!!field.value && (
-                      <Controller
-                        name={`contents.${index}.consentText`}
-                        control={control}
-                        render={({ field, fieldState: { error } }) => (
-                          <FormItem>
-                            <Input
-                              placeholder={t("consentMessage")}
-                              {...field}
+                              dir="ltr"
+                              checked={field.value || false}
+                              onCheckedChange={field.onChange}
                             />
-                            {error && (
-                              <FormMessage> {error.message} </FormMessage>
-                            )}
-                          </FormItem>
-                        )}
-                      />
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-        </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {contents.length <= 1
+                              ? t("consentTooltip")
+                              : contents?.[index]?.type !==
+                                  ContentCycleContentTypesEnum.TEXT &&
+                                t("consentTooltipType")}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormControl>
+                    <FormLabel className="">{t("consent")}</FormLabel>
+                  </div>
+
+                  {!!field.value && (
+                    <Controller
+                      name={`contents.${index}.consentText`}
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <Input placeholder={t("consentMessage")} {...field} />
+                          {error && (
+                            <FormMessage> {error.message} </FormMessage>
+                          )}
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
       </div>
     </div>
   );

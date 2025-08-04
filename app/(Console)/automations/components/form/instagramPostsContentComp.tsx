@@ -1,8 +1,8 @@
+// app/(Console)/automations/components/instagramPosts.dialog.tsx
 "use client";
 
-import { useState, useEffect, MouseEvent } from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { Button } from "@/components/theme/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,33 +12,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
-import {
-  Control,
-  useFieldArray,
-  useFormContext,
-  UseFormGetValues,
-  UseFormStateReturn,
-} from "react-hook-form";
-import { z } from "zod";
-import { contentCycleFormSchema } from "../content-cycle/components/contentCycle";
-import { useTranslations } from "next-intl";
-import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { Skeleton } from "@/components/ui/skeleton";
 import api from "@/hooks/swr/api-client";
-import { AxiosError } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import { toast } from "@/components/theme/ui/use-toast";
+import { AxiosError } from "axios";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { MouseEvent, useEffect, useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { z } from "zod";
+import { contentCycleFormSchema } from "../contentCycle";
+import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 
 const PAGE_SIZE = 9;
 
-export type InstagramPostsDialogProps = {
+export type InstagramPostsContentCompProps = {
   index: number;
   mode: ContentCycleContentModeEnum;
 };
 
-const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
+export default function InstagramPostsContentComp({
+  index,
+  mode,
+}: InstagramPostsContentCompProps) {
   const {
     getValues,
     control,
@@ -64,7 +62,7 @@ const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
       .get(
         afterCursor
           ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure?after=${afterCursor}`
-          : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`
+          : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`,
       )
       .then(async (res) => {
         setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
@@ -90,8 +88,8 @@ const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const postId = e.currentTarget.dataset.postid!;
     const mediaUrl = e.currentTarget.dataset.mediaurl;
-    console.log("media", postId, mediaUrl);
-    console.log(`value before update`, getValues()?.contents?.[index]);
+    // console.log("media", postId, mediaUrl);
+    // console.log(`value before update`, getValues()?.contents?.[index]);
 
     updateContents(index, {
       ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE
@@ -108,21 +106,24 @@ const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {contents[index].instagramPost?.mediaUrl ? (
-          <div className="relative w-48 h-48 rounded-lg overflow-hidden">
+          <div className="relative h-auto w-32 overflow-hidden rounded-lg">
             <Image
               src={contents[index].instagramPost.mediaUrl}
               alt="cover"
-              fill
+              width={128}
+              height={228}
+              className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
-              <Button type="button" className="text-white">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
+              <Button type="button" variant={"outline"} size={"sm"}>
                 {t("changePost")}
               </Button>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-y-2">
-            <Button type="button" variant="outline">
+          <div className="flex flex-col">
+            <Button type="button" variant="outline" size={"sm"}>
+              <ChatTextIcon className="size-5" />
               {t("selectPost")}
             </Button>
             {errors?.contents?.[index]?.id && (
@@ -145,20 +146,20 @@ const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
           scrollableTarget="scrollableDiv"
         >
           <div
-            className="w-full grid grid-cols-3 gap-4"
+            className="grid w-full grid-cols-3 gap-4"
             id="scrollableDiv"
             style={{ maxHeight: "60vh", overflowY: "auto" }}
           >
             {!posts.length
               ? Array.from({ length: 9 }).map((_, index) => (
                   <div key={index} className="col-span-1">
-                    <Skeleton className="relative w-full h-56" />
+                    <Skeleton className="relative h-56 w-full" />
                   </div>
                 ))
               : Array.isArray(posts) &&
                 posts.map((post) => (
                   <div
-                    className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
+                    className="relative col-span-1 h-56 w-full overflow-hidden rounded-sm bg-black"
                     key={post.id}
                     data-postid={post.id}
                     data-mediaurl={
@@ -177,7 +178,7 @@ const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
                       alt={post.caption || "Instagram Post"}
                       layout="fill"
                       objectFit="cover"
-                      className="hover:opacity-80 duration-150"
+                      className="duration-150 hover:opacity-80"
                     />
                   </div>
                 ))}
@@ -189,6 +190,4 @@ const InstagramPostsDialog = ({ index, mode }: InstagramPostsDialogProps) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-export default InstagramPostsDialog;
+}

@@ -1,35 +1,39 @@
+// app/(Console)/automations/components/contentCycle.tsx
 "use client";
-import { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import JustFollowers from "./form/justFollowers";
-import Trigger from "./form/trigger";
-import Conditions from "./form/conditions";
-import Contents from "./form/contents/contents";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-// Just UI Imports Below
-import LoadingSpinner from "@/components/ui/loadingSpinner";
-import { Form } from "@/components/ui/form";
 
-import LoadingButton from "@/components/ui/button-loading";
-import { Card } from "@/components/theme/ui/card";
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
 } from "@/app/constants/contentCycleContent.enum";
-import Reminder from "./form/reminder";
 import { REGEX_URL } from "@/app/utils/regex";
-import CommentTriggerInputs from "./form/commentConsent";
-import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
-import { AxiosError } from "axios";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { CommentReplies } from "./form/commentReplies";
-import { toast } from "sonner";
 import useUser from "@/hooks/useUser";
+import { cn } from "@/lib/utils";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import useSWRImmutable from "swr/immutable";
+import { z } from "zod";
+import { CommentReplies } from "./form/commentReplies";
+import Conditions from "./form/conditions";
+import Contents from "./form/contents/contents";
+import JustFollowers from "./form/justFollowers";
+import Reminder from "./form/reminder";
+import Trigger from "./form/trigger";
+
+// UI Imports
 import { ConnectInstagramAlert } from "@/components/global/connectInstagram.alert";
+import { Card } from "@/components/theme/ui/card";
+import LoadingButton from "@/components/ui/button-loading";
+import { Form } from "@/components/ui/form";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
+import { toast } from "sonner";
+import CommentTriggerInputs from "./form/commentConsent";
+import CommentContentTarget from "./form/commentContentTarget";
 
 export type ContentType = {
   id: string;
@@ -65,7 +69,7 @@ export const contentCycleFormSchema = z
           value: z.string().min(1, "مقدار شرط الزامی است"),
           id: z.string(),
           conditionId: z.string().optional().nullable(),
-        })
+        }),
       )
       .min(1, "حداقل یک شرط الزامی است"),
     contents: z.array(
@@ -103,14 +107,14 @@ export const contentCycleFormSchema = z
                     z.object({
                       url: z.string().optional().nullable(),
                       id: z.number().optional().nullable(),
-                    })
+                    }),
                   )
                   .optional()
                   .nullable(),
                 _xid: z.string().optional().nullable(),
               })
               .nullable()
-              .optional()
+              .optional(),
           )
           .nullable()
           .optional(),
@@ -139,15 +143,25 @@ export const contentCycleFormSchema = z
             buttons: z.array(
               z.object({
                 title: z.string().min(1),
-                url: z.string().regex(REGEX_URL),
+                url: z
+                  .string()
+                  .regex(REGEX_URL)
+                  .transform((val) => val.toLowerCase()),
                 _xid: z.string().optional().nullable(),
-              })
+              }),
             ),
           })
           .optional()
           .nullable(),
-      })
+      }),
     ),
+    instagramPost: z
+      .object({
+        mediaUrl: z.string().optional().nullable(),
+        mediaId: z.string().min(1, "انتخاب پست الزامی است"),
+      })
+      .optional()
+      .nullable(),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     commentStartText: z
@@ -208,14 +222,14 @@ export const contentCycleFormSchema = z
                     z.object({
                       url: z.string().optional().nullable(),
                       id: z.number().optional().nullable(),
-                    })
+                    }),
                   )
                   .optional()
                   .nullable(),
                 _xid: z.string().optional().nullable(),
               })
               .nullable()
-              .optional()
+              .optional(),
           )
           .nullable()
           .optional(),
@@ -236,12 +250,12 @@ export const contentCycleFormSchema = z
                 title: z.string().min(1),
                 url: z.string().regex(REGEX_URL),
                 _xid: z.string().optional().nullable(),
-              })
+              }),
             ),
           })
           .optional()
           .nullable(),
-      })
+      }),
     ),
     commentTexts: z.array(z.string().min(1)).nullable().optional(),
     isReplyCommentEnabled: z.boolean(),
@@ -310,11 +324,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
     resolver: zodResolver(contentCycleFormSchema),
     defaultValues: {
       conditions: [{ type: "EQUAL", value: "", id: "" }],
-      contents: [
-        {
-          type: ContentCycleContentTypesEnum.TEXT,
-        },
-      ],
+      contents: [],
       isDirect: true,
       isComment: false,
       justFollowers: false,
@@ -463,23 +473,24 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
   return (
     <FormProvider {...form}>
-      <div className="_add-automation w-full h-full xl:w-1/2 2xl:w-1/3">
-        <Card className="border-l-2 border-gray-100 px-8 py-6 h-full">
-          {!hasInstagram && <ConnectInstagramAlert />}
+      <div className="_add-automation h-full xl:w-1/2 2xl:w-1/3">
+        <Card
+          className={cn(
+            "border-l-2 border-gray-100 px-3 md:p-5 2xl:pb-7",
+            isContentCycleLoading ? "h-full" : "min-h-full",
+          )}
+        >
           {isContentCycleLoading ? (
-            <div className="min-h-screen w-full flex justify-center items-center">
-              <LoadingSpinner className="h-20 w-20 text-gray-500" />
-            </div>
+            <LoadingSpinner />
           ) : (
-            <div className="_wrap">
-              {/* Form wrapper */}
+            <>
+              {!hasInstagram && <ConnectInstagramAlert />}
+
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="grid gap-3"
+                  className="grid gap-3.5"
                 >
-                  <hr className="border-gray-100" />
-
                   <Trigger control={form.control} getValues={form.getValues} />
 
                   <hr className="border-gray-100" />
@@ -492,13 +503,14 @@ export default function ContentCycle({ id }: ContentCycleProps) {
 
                   <hr className="border-gray-100" />
 
-                  <Contents mode={ContentCycleContentModeEnum.CONTENT_CYCLE} />
+                  <Contents
+                    contentCycleId={id}
+                    mode={ContentCycleContentModeEnum.CONTENT_CYCLE}
+                  />
 
-                  <hr className="border-gray-100" />
+                  <CommentContentTarget />
 
                   <CommentReplies />
-
-                  <hr className="border-gray-100" />
 
                   <Reminder />
 
@@ -508,17 +520,16 @@ export default function ContentCycle({ id }: ContentCycleProps) {
                     control={form.control}
                     getValues={form.getValues}
                   />
-                  <hr className="border-gray-100 mb-6" />
 
                   <CommentTriggerInputs />
 
                   {/* Submit button */}
-                  <LoadingButton isLoading={isSubmitting}>
-                    {id ? t("update") : t("submit")}
+                  <LoadingButton className="mt-3" isLoading={isSubmitting}>
+                    {id ? t("update_automation") : t("add_automation")}
                   </LoadingButton>
                 </form>
               </Form>
-            </div>
+            </>
           )}
         </Card>
       </div>

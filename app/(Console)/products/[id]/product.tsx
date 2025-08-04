@@ -11,15 +11,16 @@ import useUser from "@/hooks/useUser";
 
 export default function Product({ id }: { id: string }) {
   const t = useTranslations("Products");
-  const { isAuthenticated } = useUser()
+  const { isAuthenticated } = useUser();
 
-  const { data: product, error: productError, mutate: mutateProduct } = useSWRImmutable(
-    isAuthenticated ? `/products/${id}` : null,
-    {
-      refreshInterval: 30_000,
-      revalidateOnMount: true,
-    }
-  );
+  const {
+    data: product,
+    error: productError,
+    mutate: mutateProduct,
+  } = useSWRImmutable(isAuthenticated ? `/products/${id}` : null, {
+    refreshInterval: 30_000,
+    revalidateOnMount: true,
+  });
 
   useEffect(() => {
     if (productError)
@@ -28,14 +29,14 @@ export default function Product({ id }: { id: string }) {
         variant: "destructive",
       });
   }, [productError]);
-  console.log(typeof product, !!product);
+  // console.log(typeof product, !!product);
 
   if (!product) {
     return <ProductFormSkeleton />;
   }
 
   return (
-    <div className="_edit-product">
+    <div className="_edit-product overflow-auto">
       <ProductForm shouldBeEdit={product} />
     </div>
   );

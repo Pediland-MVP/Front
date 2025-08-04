@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { HelpCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { HelpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,10 +11,11 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
-import { Video } from "./video"
-import { useTranslations } from "next-intl"
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { Video } from "./video";
+import { useTranslations } from "next-intl";
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 
 type Position =
   | "left"
@@ -29,22 +30,25 @@ type Position =
   | "bottom"
   | "bottom-left"
   | "bottom-right"
-  | "center"
+  | "center";
 
 interface HelpDialogProps {
-  title: string
-  description: string
-  videoSrc: string
-  videoPoster?: string
-  position?: Position
-  className?: string
-  noAbsolute?: boolean
+  title: string;
+  description: string;
+  videoSrc: string;
+  videoPoster?: string;
+  position?: Position;
+  className?: string;
+  noAbsolute?: boolean;
 }
 
-const getPositionClasses = (position: Position, noAbsolute: boolean = false): string => {
+const getPositionClasses = (
+  position: Position,
+  noAbsolute: boolean = false,
+): string => {
   const positions = {
-    left: "absolute left-2 top-1/2 -translate-y-1/2",
-    "left-top": "absolute left-2 top-2",
+    left: "absolute left-0 top-1/2 -translate-y-1/2",
+    "left-top": "absolute left-0 top-2",
     "left-bottom": "absolute left-2 bottom-2",
     right: "absolute right-2 top-1/2 -translate-y-1/2",
     "right-top": "absolute right-2 top-2",
@@ -56,10 +60,10 @@ const getPositionClasses = (position: Position, noAbsolute: boolean = false): st
     "bottom-left": "absolute bottom-2 left-2",
     "bottom-right": "absolute bottom-2 right-2",
     center: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-  }
+  };
 
-  return positions[position] || positions["right-top"]
-}
+  return positions[position] || positions["right-top"];
+};
 
 export default function HelpmeDialog({
   title,
@@ -68,11 +72,11 @@ export default function HelpmeDialog({
   videoPoster,
   position = "right-top",
   className,
-  noAbsolute = false
+  noAbsolute = false,
 }: HelpDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const t = useTranslations('Helpme')
+  const t = useTranslations("Helpme");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -81,41 +85,43 @@ export default function HelpmeDialog({
           className={cn(
             !noAbsolute && getPositionClasses(position),
             className,
-            'cursor-pointer hover:scale-110 duration-100'
+            "cursor-pointer duration-100 hover:scale-110",
           )}
         >
-          <HelpCircle className="h-4 w-4 text-primary" />
-          <span className="sr-only">{t('help')}</span>
+          <InfoIcon size={18} weight="duotone" className="text-gray-500" />
+          <span className="sr-only">{t("help")}</span>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl w-full h-full sm:h-auto p-0 gap-0">
-        <div className="flex flex-col h-full">
+      <DialogContent className="h-full w-full gap-0 p-0 sm:h-auto sm:max-w-4xl">
+        <div className="flex h-full flex-col">
           <DialogHeader className="p-6 pb-4">
             <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
-            <DialogDescription className="text-base text-muted-foreground">{description}</DialogDescription>
+            <DialogDescription className="text-muted-foreground text-base">
+              {description}
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="w-full  flex justify-center items-center">
-              <Video
-                shape='vertical'
-                variant="bordered"
-                src={videoSrc}
-                poster={videoPoster}
-                controls
-                className="w-full h-[800px] object-cover"
-                preload="metadata"
-              >
-                {t('browserDosntSupport')}
-              </Video>
+          <div className="flex w-full items-center justify-center">
+            <Video
+              shape="vertical"
+              variant="bordered"
+              src={videoSrc}
+              poster={videoPoster}
+              controls
+              className="h-[800px] w-full object-cover"
+              preload="metadata"
+            >
+              {t("browserDosntSupport")}
+            </Video>
           </div>
 
           <DialogFooter className="p-6 pt-4">
             <Button onClick={() => setOpen(false)} className="w-full sm:w-auto">
-              {t('close')}
+              {t("close")}
             </Button>
           </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

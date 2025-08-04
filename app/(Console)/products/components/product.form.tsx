@@ -53,14 +53,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     isLoading: isVariationsLoading,
     error: variationsError,
   } = useSWRImmutable<ProductVariationNamespace.GET.ProductAttributes>(
-    `/variations/attributes?page=1&limit=100`
+    `/variations/attributes?page=1&limit=100`,
   );
   const {
     data: attributeValues,
     isLoading: isAttributeValuesLoading,
     error: attributeValuesError,
   } = useSWRImmutable<ProductVariationNamespace.GET.ProductAttributeValues>(
-    `/variations/attributeValues?page=1&limit=100`
+    `/variations/attributeValues?page=1&limit=100`,
   );
 
   // TODO: Dynamic
@@ -104,7 +104,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             label: z.string(),
             colorHex: z.string().nullable(),
             attributeId: z.number(),
-          })
+          }),
         )
         .optional(),
       colors: z
@@ -117,7 +117,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             label: z.string(),
             colorHex: z.string().nullable().optional(),
             attributeId: z.number(),
-          })
+          }),
         )
         .optional(),
       // Just used in submit
@@ -130,7 +130,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
             isRequired: z.boolean(),
             _xid: z.string().uuid().optional(),
             id: z.string().uuid().optional(),
-          })
+          }),
         )
         .nullable()
         .optional(),
@@ -160,9 +160,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       if (data.shippingCost < 1000 && data.shippingCost !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: t('shippingCost.errors.under1000'),
-          path: ["shippingCost"]
-        })
+          message: t("shippingCost.errors.under1000"),
+          path: ["shippingCost"],
+        });
       }
 
       if (data.discountPrice && data.isDiscount) {
@@ -290,14 +290,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         variant: "destructive",
       });
     }
-    console.log("Form errors:", form.formState.errors);
+    // console.log("Form errors:", form.formState.errors);
   }, [form.formState.errors.imageId]);
 
   const [isLoading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [images, setImages] = useState<string[]>(
-    shouldBeEdit?.images?.[0]?.url ? [shouldBeEdit.images[0].url] : []
+    shouldBeEdit?.images?.[0]?.url ? [shouldBeEdit.images[0].url] : [],
   );
 
   // تابع ارسال فرم
@@ -341,7 +341,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       });
       toast({ title: t("productAddedSuccess") });
       await mutate(
-        (key) => typeof key === "string" && key.includes("products")
+        (key) => typeof key === "string" && key.includes("products"),
       );
       router.push("/products");
     } catch (e: any) {
@@ -371,16 +371,16 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
+                (progressEvent.loaded * 100) / progressEvent.total,
               );
-              console.log(`Upload Progress: ${percentCompleted}%`);
+              // console.log(`Upload Progress: ${percentCompleted}%`);
               setUploadProgress(percentCompleted);
             } else {
               console.log(`Loaded ${progressEvent.loaded} bytes`);
             }
           },
           withCredentials: true,
-        }
+        },
       );
       form.setValue("imageId", response.data.id);
       setImages([response.data.url]);
@@ -394,7 +394,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   };
 
   const addCustomField = () => {
-    console.log("Fields", fields);
+    // console.log("Fields", fields);
 
     if (fields?.length === undefined || fields.length === null) return;
     if (fields!.length < 5) {
@@ -414,13 +414,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     if (fields?.length === undefined || fields.length === null) return;
     form.setValue(
       "fields",
-      fields.filter((field) => field.label !== label)
+      fields.filter((field) => field.label !== label),
     );
   };
 
-  useEffect(() => {
-    console.log(form.getValues());
-  }, [form.watch()]);
+  // useEffect(() => {
+  //   console.log(form.getValues());
+  // }, [form.watch()]);
 
   useEffect(() => {
     if (form.formState.errors) {
@@ -438,20 +438,20 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
     form.setValue("haveColor", isChecked);
   };
 
-  const { onFocus } = useSelectOnFocus()
+  const { onFocus } = useSelectOnFocus();
 
   return (
     <Card className="h-full p-4 xl:p-5">
       <div className="mb-6">
-        <h2 className="font-semibold text-foreground mb-1">{t("title")}</h2>
-        <p className="text-[15px] text-muted-foreground">{t("description")}</p>
+        <h2 className="text-foreground mb-1 font-semibold">{t("title")}</h2>
+        <p className="text-muted-foreground text-[15px]">{t("description")}</p>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-10">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-10">
             <div className="_right-column space-y-4 xl:space-y-5">
               {/* Item Details */}
-              <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
+              <div className="space-y-3 rounded-xl border border-blue-100 bg-blue-50/50 p-3 xl:p-5">
                 {/* Item Status */}
                 <FormField
                   control={form.control}
@@ -462,7 +462,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                         {t("status")}
                       </FormLabel>
                       <FormControl>
-                        <div className="flex gap-2 items-center">
+                        <div className="flex items-center gap-2">
                           <Label htmlFor="status-active">{t("active")}</Label>
                           <Switch
                             id="status-active"
@@ -484,7 +484,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   name="isDigital"
                   control={form.control}
                   render={({ field }) => (
-                    <FormItem className="flex items-center gap-2 xl:gap-3 mb-4 space-y-0">
+                    <FormItem className="mb-4 flex items-center gap-2 space-y-0 xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                         {t("typeItem")}
                       </FormLabel>
@@ -496,7 +496,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                               : field.onChange(false)
                           }
                           value={field.value?.toString()}
-                          className="flex items-center h-7"
+                          className="flex h-7 items-center"
                         >
                           <FormItem className="flex items-center gap-1.5 space-y-0">
                             <FormControl>
@@ -522,9 +522,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   control={form.control}
                   name="title"
                   render={({ field }) => (
-                    <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0">
+                    <FormItem className="flex items-center gap-2 space-y-0 xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                        {isDigital ? t("titleService")  : t("titleProduct")}
+                        {isDigital ? t("titleService") : t("titleProduct")}
                       </FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -539,7 +539,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   name="isInfinite"
                   control={form.control}
                   render={({ field }) => (
-                    <FormItem className="flex items-center gap-2 xl:gap-3 mb-4 space-y-0">
+                    <FormItem className="mb-4 flex items-center gap-2 space-y-0 xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                         {t("stock")}
                       </FormLabel>
@@ -549,7 +549,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                             field.onChange(value === "true")
                           }
                           value={`${field.value}`}
-                          className="flex items-center h-7"
+                          className="flex h-7 items-center"
                         >
                           <FormItem className="flex items-center gap-1.5 space-y-0">
                             <FormControl>
@@ -571,7 +571,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                           control={form.control}
                           name="quantity"
                           render={({ field }) => (
-                            <FormItem className="space-y-0 flex-1">
+                            <FormItem className="flex-1 space-y-0">
                               <FormControl>
                                 <Input
                                   onInput={onInputP2EHandler}
@@ -597,7 +597,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   control={form.control}
                   name="price"
                   render={({ field }) => (
-                    <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0">
+                    <FormItem className="flex items-center gap-2 space-y-0 xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                         {t("price")}
                       </FormLabel>
@@ -620,7 +620,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   control={form.control}
                   name="isDiscount"
                   render={({ field }) => (
-                    <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
+                    <FormItem className="flex flex-wrap items-center justify-start gap-2 space-y-0 xl:flex-nowrap xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                         {t("activateDiscount")}
                       </FormLabel>
@@ -638,7 +638,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                           control={form.control}
                           name="discountPrice"
                           render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
+                            <FormItem className="flex w-full items-center gap-2 space-y-0 xl:gap-3">
                               <FormLabel className="min-w-[88px] xl:min-w-fit">
                                 {t("discountPrice")}
                               </FormLabel>
@@ -655,7 +655,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                                   onChange={(e) => {
                                     const newValue = e.target.value;
                                     field.onChange(
-                                      newValue === "" ? 0 : +newValue
+                                      newValue === "" ? 0 : +newValue,
                                     );
                                   }}
                                 />
@@ -674,7 +674,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   control={form.control}
                   name="haveColor"
                   render={({ field }) => (
-                    <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
+                    <FormItem className="flex flex-wrap items-center justify-start gap-2 space-y-0 xl:flex-nowrap xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                         {t("activateColor")}
                       </FormLabel>
@@ -692,13 +692,14 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                           control={form.control}
                           name="colors"
                           render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
+                            <FormItem className="flex w-full items-center gap-2 space-y-0 xl:gap-3">
                               <FormControl>
                                 <MultipleSelector
                                   {...field}
                                   //@ts-ignore
                                   defaultOptions={attributeValues?.items.filter(
-                                    (vv) => vv.attributeId == colorAttribute?.id
+                                    (vv) =>
+                                      vv.attributeId == colorAttribute?.id,
                                   )}
                                   placeholder={t("selectColor")}
                                   emptyIndicator={
@@ -721,7 +722,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                   control={form.control}
                   name="haveSize"
                   render={({ field }) => (
-                    <FormItem className="flex flex-wrap xl:flex-nowrap items-center justify-start gap-2 xl:gap-3 space-y-0">
+                    <FormItem className="flex flex-wrap items-center justify-start gap-2 space-y-0 xl:flex-nowrap xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                         {t("activateSize")}
                       </FormLabel>
@@ -739,12 +740,12 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                           control={form.control}
                           name="sizes"
                           render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 xl:gap-3 space-y-0 w-full">
+                            <FormItem className="flex w-full items-center gap-2 space-y-0 xl:gap-3">
                               <FormControl>
                                 <MultipleSelector
                                   {...field}
                                   defaultOptions={attributeValues?.items.filter(
-                                    (vv) => vv.attributeId == sizeAttribute?.id
+                                    (vv) => vv.attributeId == sizeAttribute?.id,
                                   )}
                                   placeholder={t("selectSize")}
                                   emptyIndicator={
@@ -828,12 +829,11 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
               <ProductFields />
 
-              <ShippingCost/>
-
+              <ShippingCost />
             </div>
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}
-              <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
+              <div className="space-y-3 rounded-xl border border-blue-100 bg-blue-50/50 p-3 xl:p-5">
                 <FormLabel>{t("uploadImage")}</FormLabel>
                 <FileUpload
                   images={images}
