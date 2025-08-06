@@ -100,7 +100,7 @@ export default function DialogInstagramPostSelect({
     const mediaId = e.currentTarget.dataset.postid!;
     // console.log("media", postId, mediaUrl);
     // console.log(`value before update`, getValues()?.contents?.[index]);
-    setValue("instagramPost", { mediaUrl, mediaId });
+    setValue("instagramPost", { picture: {url: mediaUrl}, mediaId });
     setIsOpen(false);
   };
 
@@ -110,23 +110,25 @@ export default function DialogInstagramPostSelect({
     <div className={cn(props.className)}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          {contents[index]?.instagramPost?.mediaUrl ? (
-            <div className="relative h-auto w-32 overflow-hidden rounded-lg">
-              <Image
-                src={watch("instagramPost")?.mediaUrl || ""}
-                alt="cover"
-                width={128}
-                height={228}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
-                <Button type="button" variant={"outline"} size={"sm"}>
-                  {t("changePost")}
-                </Button>
+          {watch('instagramPost')?.picture?.url ? (
+            <div className="w-full flex justify-center items-center">
+              <div className="relative h-auto w-32 overflow-hidden rounded-lg">
+                <Image
+                  src={watch("instagramPost")?.picture?.url || ""}
+                  alt="cover"
+                  width={128}
+                  height={228}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
+                  <Button type="button" variant={"outline"} size={"sm"}>
+                    {t("changePost")}
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col">
+            <div className="flex flex-col justify-center items-center bg-black/10 rounded-2xl w-full h-[228px]">
               <Button type="button" variant={props.btnVariant} size={"sm"}>
                 <InstagramLogoIcon className="size-5" />
                 {t("selectPost")}

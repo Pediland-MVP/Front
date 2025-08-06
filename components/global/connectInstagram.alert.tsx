@@ -14,7 +14,7 @@ export function ConnectInstagramAlert() {
       <AlertTitle className="text-white">{t("title")}</AlertTitle>
       <AlertDescription>{t("description")}</AlertDescription>
       <Link href={"/settings/instagram"}>
-        <Button variant={"destructive"} size={"sm"} className="mt-3">
+        <Button variant={"destructive"} size={"sm"} className="mt-3 text-white">
           {t("connect")}
         </Button>
       </Link>

@@ -11,10 +11,20 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import DialogInstagramPostSelect from "../dialog.instagramPostSelect";
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import z from "zod";
+import { contentCycleFormSchema } from "../contentCycle";
+import { useEffect } from "react";
 
 export default function CommentContentTarget() {
-  const { watch, control, setValue } = useFormContext();
+  const { watch, control, setValue } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
   const t = useTranslations("Automations.CommentContentTarget");
+
+  const toggleHandler = (value: boolean) => {
+    if (value === false) {
+      setValue('instagramPost', null)
+    }
+    setValue('isCommentContentTargetEnabled', value)    
+  }
 
   if (!watch("isComment")) {
     return null;
@@ -35,7 +45,7 @@ export default function CommentContentTarget() {
                   type="button"
                   dir="ltr"
                   checked={field.value}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={toggleHandler}
                 />
               </FormControl>
               <FormLabel className="">

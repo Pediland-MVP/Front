@@ -159,6 +159,10 @@ export const contentCycleFormSchema = z
       .object({
         mediaUrl: z.string().optional().nullable(),
         mediaId: z.string().min(1, "انتخاب پست الزامی است"),
+        picture: z
+          .object({ url: z.string().optional().nullable() })
+          .optional()
+          .nullable(),
       })
       .optional()
       .nullable(),
@@ -259,6 +263,7 @@ export const contentCycleFormSchema = z
     ),
     commentTexts: z.array(z.string().min(1)).nullable().optional(),
     isReplyCommentEnabled: z.boolean(),
+    isCommentContentTargetEnabled: z.boolean(),
   })
   .superRefine((data, ctx) => {
     if (data.reminders.length > 0 && !data.reminderTime) {
@@ -334,6 +339,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
       commentStartText: t("commentStartText"),
       commentStartTitle: t("commentStartTitle"),
       followCheckMessage: t("followCheckMessage"),
+      isCommentContentTargetEnabled: false,
     },
   });
 
@@ -356,6 +362,7 @@ export default function ContentCycle({ id }: ContentCycleProps) {
         ? `${contentCycle.reminderTime}`
         : undefined,
       isReplyCommentEnabled: !!contentCycle.commentTexts?.length,
+      isCommentContentTargetEnabled: !!contentCycle.instagramPost,
     });
   }, [contentCycle, form]);
 
