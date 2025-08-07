@@ -1,24 +1,25 @@
+// app/(Console)/automations/components/form/justFollowers.tsx
 
+import useUser from "@/hooks/useUser";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
+import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
-import { useTranslations } from "next-intl";
-// Just UI Imports Below
+
+// UI Imports
+import HelpmeDialog from "@/components/global/helpme.dialog";
+import { Input } from "@/components/theme/ui/input";
+import { Textarea } from "@/components/theme/ui/textarea";
 import {
+  FormControl,
   FormField,
   FormItem,
-  FormControl,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/theme/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/theme/ui/textarea";
-import useUser from "@/hooks/useUser";
-import { useEffect } from "react";
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-
 
 type JustFollowersProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
@@ -28,33 +29,44 @@ export default function JustFollowers({
   control,
   getValues,
 }: JustFollowersProps) {
-  const t = useTranslations('Automations.JustFollowers');
-  const t_automations = useTranslations('Automations');
-  const { setValue, watch } = useFormContext<z.infer<typeof contentCycleFormSchema>>()
+  const t = useTranslations("Automations.JustFollowers");
+  const t_automations = useTranslations("Automations");
+  const { setValue, watch } =
+    useFormContext<z.infer<typeof contentCycleFormSchema>>();
 
-  const { user, hasInstagram } = useUser()
+  const { user, hasInstagram } = useUser();
 
   useEffect(() => {
-    if (!user || !watch('justFollowers')) return;
-    if (watch('followMessage')) return;
+    if (!user || !watch("justFollowers")) return;
+    if (watch("followMessage")) return;
     if (hasInstagram) {
-      setValue('followMessage', t_automations('followMessage', {
-        username: `@${user?.instagrams[0].username}`
-      }))
+      setValue(
+        "followMessage",
+        t_automations("followMessage", {
+          username: `@${user?.instagrams[0].username}`,
+        }),
+      );
 
-      setValue('followCheckMessage', t_automations('followCheckMessage'))
+      setValue("followCheckMessage", t_automations("followCheckMessage"));
     }
-  }, [watch('justFollowers')])
+  }, [watch("justFollowers")]);
 
   return (
-    <>
+    <div className="_just-followers space-y-2">
       <FormField
         control={control}
         name="justFollowers"
         render={({ field }) => (
           <FormItem className="flex flex-col justify-start gap-y-2">
-            <div className="flex items-center gap-x-2 relative">
-            <HelpmeDialog title={t('Help.title')} description={t('Help.description')} videoSrc={WizardVideoLinks.Automations.Hints.JustFollowers.video} position="left" />
+            <div className="relative flex items-center gap-x-2">
+              <HelpmeDialog
+                title={t("Help.title")}
+                description={t("Help.description")}
+                videoSrc={
+                  WizardVideoLinks.Automations.Hints.JustFollowers.video
+                }
+                position="left"
+              />
               <FormControl>
                 <Switch
                   type="button"
@@ -63,7 +75,7 @@ export default function JustFollowers({
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel className="">{t('justFollowers')}</FormLabel>
+              <FormLabel className="">{t("justFollowers")}</FormLabel>
             </div>
             <FormMessage />
           </FormItem>
@@ -72,18 +84,16 @@ export default function JustFollowers({
 
       {getValues().justFollowers && (
         <>
-          <p className="text-sm text-muted-foreground">
-            {t('helper')}
-          </p>
+          <p className="text-muted-foreground text-sm">{t("helper")}</p>
           <FormField
             control={control}
             name="followMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel className="">{t('messageText')}</FormLabel>
+                <FormLabel className="">{t("messageText")}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t('placeholder')}
+                    placeholder={t("placeholder")}
                     {...field}
                     value={field.value ?? ""}
                   />
@@ -98,10 +108,10 @@ export default function JustFollowers({
             name="followCheckMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel className="">{t('retryButton')}</FormLabel>
+                <FormLabel className="">{t("retryButton")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('retryPlaceholder')}
+                    placeholder={t("retryPlaceholder")}
                     {...field}
                     value={field.value ?? ""}
                   />
@@ -112,6 +122,6 @@ export default function JustFollowers({
           />
         </>
       )}
-    </>
+    </div>
   );
 }

@@ -86,7 +86,7 @@ export default function PlanSelection() {
     return e2pNumber(
       (
         Math.trunc(+(price / (durationDays / 30)).toFixed(0) / 500) * 500
-      ).toLocaleString()
+      ).toLocaleString(),
     );
   };
 
@@ -96,18 +96,18 @@ export default function PlanSelection() {
     setCurrentPlan(plans.find((p) => p.id === planId));
   }, [planId, plansData]);
 
-  useEffect(() => {
-    console.log("p-active", plans, active);
-  }, [active, plans]);
+  // useEffect(() => {
+  //   console.log("p-active", plans, active);
+  // }, [active, plans]);
 
   if (!active.planSelection || !plans?.length) return null;
 
   return (
-    <div className="_plan-selection-page relative h-full box-border max-h-full text-foreground">
+    <div className="_plan-selection-page text-foreground relative box-border h-full max-h-full">
       <Card className="h-full p-6">
         <div className="mb-6">
-          <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
-          <p className="text-[15px] text-muted-foreground">
+          <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
+          <p className="text-muted-foreground text-[15px]">
             {t("description")}
           </p>
           <DiscountText />
@@ -116,18 +116,18 @@ export default function PlanSelection() {
         <DiscountCode />
 
         <div className="_plans-wrapper">
-          <div className="_selector flex flex-col justify-center items-center">
-            <div className="inline-flex flex-col md:flex-row w-full md:w-fit items-center p-1 rounded-xl sm:rounded-full border shadow-sm gap-1.5">
+          <div className="_selector flex flex-col items-center justify-center">
+            <div className="inline-flex w-full flex-col items-center gap-1.5 rounded-xl border p-1 shadow-sm sm:rounded-full md:w-fit md:flex-row">
               {plans.map((plan) => (
                 <button
                   key={plan.id}
                   type="button"
                   onClick={() => changePlan(plan.id)}
                   className={cn(
-                    "w-full md:w-fit px-5 py-2.5 text-sm font-medium rounded-lg md:rounded-full transition-all duration-300",
+                    "w-full rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-300 md:w-fit md:rounded-full",
                     plan.id === form.getValues("planId")
                       ? "bg-gray-300"
-                      : "text-zinc-600 hover:text-zinc-900"
+                      : "text-zinc-600 hover:text-zinc-900",
                   )}
                 >
                   {plan.name}
@@ -139,7 +139,7 @@ export default function PlanSelection() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6"
+              className="my-6 grid grid-cols-1 gap-4 md:grid-cols-3"
             >
               {currentPlan?.durations.map((duration) => {
                 const haveMonthlyDiscount =
@@ -154,16 +154,16 @@ export default function PlanSelection() {
                   <div
                     key={duration.id}
                     className={cn(
-                      "relative group backdrop-blur-sm",
+                      "group relative backdrop-blur-sm",
                       "rounded-xl transition-all duration-300",
                       "flex flex-col",
                       "bg-gradient-to-b from-green-100/25 to-transparent",
                       "border shadow-md hover:shadow-lg",
-                      "min-h-64"
+                      "min-h-64",
                     )}
                   >
                     <div className="p-4">
-                      <h3 className="text-xl text-center text-teal-900 font-semibold mb-4">
+                      <h3 className="mb-4 text-center text-xl font-semibold text-teal-900">
                         {duration.name}
                       </h3>
                       <div className="flex flex-col items-center justify-center">
@@ -172,12 +172,12 @@ export default function PlanSelection() {
                             <span
                               className={cn(
                                 "font-bold text-green-700",
-                                "line-through text-2xl font-medium text-muted-foreground"
+                                "text-muted-foreground text-2xl font-medium line-through",
                               )}
                             >
                               {getPriceString(
                                 duration.price,
-                                duration.durationDays
+                                duration.durationDays,
                               )}
                             </span>
                             <p className="text-xl font-bold text-green-700">
@@ -189,27 +189,27 @@ export default function PlanSelection() {
                             <span
                               className={cn(
                                 "font-bold text-green-700",
-                                "line-through text-2xl font-medium text-muted-foreground"
+                                "text-muted-foreground text-2xl font-medium line-through",
                               )}
                             >
                               {getPriceString(
                                 duration.price,
-                                duration.durationDays
+                                duration.durationDays,
                               )}
                             </span>
 
                             <span
                               className={cn(
-                                "text-3xl font-bold text-green-700"
+                                "text-3xl font-bold text-green-700",
                               )}
                             >
                               {e2pNumber(
                                 (+(
                                   (duration?.discountPrice || 0) as number
-                                ).toFixed(0)).toLocaleString()
+                                ).toFixed(0)).toLocaleString(),
                               )}
                             </span>
-                            <span className="text-lg text-muted-foreground font-medium">
+                            <span className="text-muted-foreground text-lg font-medium">
                               {t("currency")} در {t("month")}
                             </span>
                           </>
@@ -218,27 +218,27 @@ export default function PlanSelection() {
                             <span
                               className={cn(
                                 "font-bold text-green-700",
-                                "line-through text-2xl font-medium text-muted-foreground"
+                                "text-muted-foreground text-2xl font-medium line-through",
                               )}
                             >
                               {e2pNumber(
                                 (+(duration.monthlyDiscount as number).toFixed(
-                                  0
-                                )).toLocaleString()
+                                  0,
+                                )).toLocaleString(),
                               )}
                             </span>
 
                             <span
                               className={cn(
-                                "text-3xl font-bold text-green-700"
+                                "text-3xl font-bold text-green-700",
                               )}
                             >
                               {getPriceString(
                                 duration.price,
-                                duration.durationDays
+                                duration.durationDays,
                               )}
                             </span>
-                            <span className="text-lg text-muted-foreground font-medium">
+                            <span className="text-muted-foreground text-lg font-medium">
                               {t("currency")} در {t("month")}
                             </span>
                           </>
@@ -246,15 +246,15 @@ export default function PlanSelection() {
                           <>
                             <span
                               className={cn(
-                                "text-3xl font-bold text-green-700"
+                                "text-3xl font-bold text-green-700",
                               )}
                             >
                               {getPriceString(
                                 duration.price,
-                                duration.durationDays
+                                duration.durationDays,
                               )}
                             </span>
-                            <span className="text-lg text-muted-foreground font-medium">
+                            <span className="text-muted-foreground text-lg font-medium">
                               {t("currency")} در {t("month")}
                             </span>
                           </>
@@ -262,7 +262,7 @@ export default function PlanSelection() {
                       </div>
                     </div>
 
-                    <div className="p-6 pt-2 mt-auto">
+                    <div className="mt-auto p-6 pt-2">
                       <Button
                         type="button"
                         onClick={() => {
@@ -271,7 +271,7 @@ export default function PlanSelection() {
                           form.handleSubmit(onSubmit)();
                         }}
                         className={cn(
-                          "w-full h-10 relative transition-all duration-300 bg-green-600 text-white border border-zinc-200 hover:bg-green-700 hover:border-green-700 shadow-sm hover:shadow-md"
+                          "relative h-10 w-full border border-zinc-200 bg-green-600 text-white shadow-sm transition-all duration-300 hover:border-green-700 hover:bg-green-700 hover:shadow-md",
                         )}
                         disabled={isPayLoading && loadingPlanId === duration.id}
                       >
@@ -290,7 +290,7 @@ export default function PlanSelection() {
         </div>
 
         {subscriptions?.length ? (
-          <div className="text-left mb-12 md:mb-0">
+          <div className="mb-12 text-left md:mb-0">
             <Button
               onClick={() =>
                 setActive({ planSelection: false, subscriptionInfo: true })
@@ -299,10 +299,10 @@ export default function PlanSelection() {
               size={"lg"}
             >
               بازگشت به اشتراک‌های من
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="h-5 w-5" />
             </Button>
           </div>
-        ): null}
+        ) : null}
       </Card>
     </div>
   );

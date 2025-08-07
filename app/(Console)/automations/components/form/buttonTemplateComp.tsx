@@ -1,43 +1,41 @@
+// app/(Console)/automations/components/form/buttonTemplateComp.tsx
+
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
-import { useTranslations } from "next-intl";
+import { Button } from "@/components/theme/ui/button";
+import InputCounter from "@/components/theme/ui/inputCounter";
+import { Textarea } from "@/components/theme/ui/textarea";
+import ErrorMessage from "@/components/ui/errorMessage";
+import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  sortableKeyboardCoordinates,
   rectSortingStrategy,
   SortableContext,
+  sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
+import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { contentCycleFormSchema } from "../contentCycle";
 import ButtonTemplateItem from "./buttonTemplateItem";
-import { Button } from "@/components/theme/ui/button";
-import { PlusCircle } from "@phosphor-icons/react/dist/ssr";
-import ErrorMessage from "@/components/ui/errorMessage";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/theme/ui/input";
-import { Textarea } from "@/components/theme/ui/textarea";
 
-type ButtonTemplateProps = {
+type ButtonTemplateCompProps = {
   mode: ContentCycleContentModeEnum;
   contentIndex: number;
 };
-export default function ButtonTemplate({
+
+export default function ButtonTemplateComp({
   contentIndex,
   mode,
-}: ButtonTemplateProps) {
+}: ButtonTemplateCompProps) {
   const t = useTranslations("Automations.ButtonTemplates");
   const t_errors = useTranslations("Automations.Errors");
 
@@ -64,7 +62,7 @@ export default function ButtonTemplate({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -86,7 +84,7 @@ export default function ButtonTemplate({
   };
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
+    <div className="flex flex-col gap-y-3">
       <FormField
         control={control}
         name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.text`}
@@ -95,9 +93,12 @@ export default function ButtonTemplate({
             <FormLabel>{t("text.label")}</FormLabel>
             <Textarea
               {...field}
+              maxLength={640}
+              rows={3}
               className="w-full"
               placeholder={t("text.placeholder")}
             />
+            <InputCounter text={field.value} maxLength={640} />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </FormItem>
         )}
@@ -112,7 +113,7 @@ export default function ButtonTemplate({
           items={fields.map((item) => item._xid)}
           strategy={rectSortingStrategy}
         >
-          <div className="w-full flex flex-col gap-y-2 justify-center items-center">
+          <div className="flex w-full flex-col items-center justify-center gap-y-3">
             {fields.map((buttonTemplate, index) => (
               <ButtonTemplateItem
                 key={buttonTemplate._xid}
@@ -129,16 +130,14 @@ export default function ButtonTemplate({
 
       {fields.length < 3 && (
         <Button
-          variant="ghost"
-          onClick={addButton}
           type="button"
-          className="flex items-center gap-2 cursor-pointer w-full"
+          variant="outline"
+          size={"sm"}
+          onClick={addButton}
           disabled={fields.length >= 10}
         >
-          <PlusCircle size={22} className="text-blue-600" />
-          <span className="text-sm font-semibold text-blue-600">
-            {t("add")}
-          </span>
+          <RadioButtonIcon className="size-5" />
+          {t("add")}
         </Button>
       )}
     </div>

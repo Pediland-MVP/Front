@@ -35,7 +35,7 @@ export function BottomNav({ items }: BottomNavbarProps) {
 
   const pathname = usePathname();
   return (
-    <nav className="bg-background fixed right-0 bottom-0 left-0 z-50 h-14 border-t border-gray-100 md:hidden">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 h-14 border-t border-gray-100 bg-gray-50 md:hidden">
       {isNavigationPending && (
         <AnimatedGradient
           colors={["#93c5fd", "#3b82f6", "#1e3a8a"]}

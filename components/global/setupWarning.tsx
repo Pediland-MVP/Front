@@ -20,9 +20,11 @@ export function SetupWarning({
   instagramWarningText,
   subscriptionWarningText,
 }: SetupWarningProps) {
-  const { hasInstagram } = useUser();
+  const { hasInstagram, isLoading } = useUser();
   const { isMobile, setOpenMobile } = useSidebar();
   const t = useTranslations("SetupWarning");
+
+  if (isLoading) return null;
 
   return (
     <>

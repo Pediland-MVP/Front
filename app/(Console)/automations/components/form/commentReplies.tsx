@@ -1,20 +1,24 @@
+// app/(Console)/automations/components/form/commentReplies.tsx
+
 import { useFormContext } from "react-hook-form";
-// Just UI Imports Below
+
+// UI Imports
 import {
-    FormField,
-    FormMessage,
-    FormLabel,
-    FormDescription,
-    FormControl,
-    FormItem,
+  FormField,
+  FormMessage,
+  FormLabel,
+  FormDescription,
+  FormControl,
+  FormItem,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/theme/ui/textarea";
 import { useTranslations } from "next-intl";
-import { Switch } from "@/components/theme/ui/switch";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/theme/ui/button";
-import { X } from "@phosphor-icons/react/dist/ssr";
+import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import HelpmeDialog from "@/components/global/helpme.dialog";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { Input } from "@/components/theme/ui/input";
 
 export function CommentReplies() {
   const { watch, control, setValue } = useFormContext();
@@ -22,14 +26,17 @@ export function CommentReplies() {
 
   const onIsReplyCommentEnabled = (isActive: boolean) => {
     setValue("isReplyCommentEnabled", isActive);
+
     if (isActive) {
       setValue("commentTexts", [
         "به دایرکت شما ارسال شد ✅",
         "دایرکتتون رو چک کنید لطفا 🙏",
         "براتون ارسال شد ❤️",
       ]);
+
       return;
     }
+
     setValue("commentTexts", null);
   };
 
@@ -44,77 +51,98 @@ export function CommentReplies() {
   };
 
   if (!watch("isComment")) {
-    return null
+    return null;
   }
 
   return (
-    <FormField
-      control={control}
-      name="isReplyCommentEnabled"
-      render={({ field }) => (
-        <FormItem className="relative">
-          <HelpmeDialog title={t('Help.title')} description={t('Help.description')} videoSrc={WizardVideoLinks.Automations.Hints.CommentReplies.video} position="left-top" />
-          <FormControl>
-            <Switch
-              type="button"
-              dir="ltr"
-              checked={field.value}
-              onCheckedChange={onIsReplyCommentEnabled}
-              className="ml-2"
-            />
-          </FormControl>
-          <FormLabel className="">{t("isReplyCommentEnabled.label")}</FormLabel>
-          <FormDescription>
-            {t("isReplyCommentEnabled.description")}
-          </FormDescription>
-          <FormMessage />
-          {field.value && (
-            <>
-              {watch("commentTexts").map(
-                (commentText: string, index: number) => (
-                  <FormField
-                    key={index}
-                    control={control}
-                    name={`commentTexts.${index}`}
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem>
-                        <div className=" flex justify-center items-center gap-x-1">
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              value={field.value ?? ""}
-                              placeholder={t("commentPlaceholder")}
-                            ></Textarea>
-                          </FormControl>
-                          {index > 2 && (
-                            <Button
-                              onClick={() => onDelete(index)}
-                              variant={"outline"}
-                              size={"icon"}
-                              type="button"
-                              className="flex justify-center items-center box-border"
-                            >
-                              <X />
-                            </Button>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )
-              )}
-              <Button
-                onClick={onAddComment}
-                type="button"
-                disabled={watch("commentTexts").length >= 10}
-              >
-                {t("addComment")}
-              </Button>
-            </>
-          )}
-        </FormItem>
-      )}
-    />
+    <>
+      <hr className="border-gray-100" />
+
+      <FormField
+        control={control}
+        name="isReplyCommentEnabled"
+        render={({ field }) => (
+          <FormItem className="relative">
+            <div className="relative flex items-center gap-x-2">
+              <HelpmeDialog
+                title={t("Help.title")}
+                description={t("Help.description")}
+                videoSrc={
+                  WizardVideoLinks.Automations.Hints.CommentReplies.video
+                }
+                position="left-top"
+              />
+              <FormControl>
+                <Switch
+                  type="button"
+                  dir="ltr"
+                  checked={field.value}
+                  onCheckedChange={onIsReplyCommentEnabled}
+                />
+              </FormControl>
+              <FormLabel className="">
+                {t("isReplyCommentEnabled.label")}
+              </FormLabel>
+            </div>
+
+            <FormDescription className="text-sm">
+              {t("isReplyCommentEnabled.description")}
+            </FormDescription>
+            <FormMessage />
+
+            {field.value && (
+              <div className="mt-3 space-y-2.5">
+                {watch("commentTexts").map(
+                  (commentText: string, index: number) => (
+                    <FormField
+                      key={index}
+                      control={control}
+                      name={`commentTexts.${index}`}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <div className="flex items-center justify-center gap-1.5">
+                            <FormControl>
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                placeholder={t("commentPlaceholder")}
+                              ></Input>
+                            </FormControl>
+
+                            {index > 2 && (
+                              <Button
+                                onClick={() => onDelete(index)}
+                                variant={"outline"}
+                                size={"icon"}
+                                type="button"
+                                className="box-border flex items-center justify-center"
+                              >
+                                <XIcon />
+                              </Button>
+                            )}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ),
+                )}
+                <div className="flex flex-col">
+                  <Button
+                    onClick={onAddComment}
+                    type="button"
+                    variant={"secondary"}
+                    size={"sm"}
+                    disabled={watch("commentTexts").length >= 10}
+                  >
+                    {t("addComment")}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </FormItem>
+        )}
+      />
+    </>
   );
 }

@@ -17,19 +17,19 @@ export default function page() {
   useEffect(() => {
     setButtons(
       <button
-        className="flex p-0 m-0"
+        className="m-0 flex p-0"
         onClick={() => setIsSearchVisible((prev) => !prev)}
       >
         <ListMagnifyingGlass size={26} className="text-foreground xl:hidden" />
-      </button>
+      </button>,
     );
     setTools(
       <Input
         type="search"
         placeholder={t("searchPlaceholder")}
         onChange={(e) => setSearch(e.target.value)}
-        className={`border-none shadow-none mt-2 xl:mt-0 text-[15px] bg-blue-50 xl:bg-white focus:bg-blue-50 text-foreground transition-all duration-200 ${isSearchVisible ? "flex" : "hidden xl:flex"}`}
-      />
+        className={`text-foreground mt-2 border-none bg-blue-50 text-[15px] shadow-none transition-all duration-200 focus:bg-blue-50 xl:mt-0 xl:bg-white ${isSearchVisible ? "flex" : "hidden xl:flex"}`}
+      />,
     );
     return () => {
       setButtons(null);
@@ -38,7 +38,7 @@ export default function page() {
   }, [isSearchVisible]);
 
   return (
-    <div className="_contacts">
+    <div className="_contacts overflow-auto">
       <ContactListCard search={search} setSearch={setSearch} />
     </div>
   );

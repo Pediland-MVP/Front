@@ -1,7 +1,8 @@
+// app/(Console)/automations/[id]/page.tsx
+
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";
 import ContentCycle from "../components/contentCycle";
-// Just UI Imports Below
 import { getTranslations } from "next-intl/server";
 
 type ContentCycleEditPageProps = {
@@ -20,10 +21,8 @@ export default async function ContentCycleEditPage({
   const t = await getTranslations("Automations");
 
   return (
-    <div className="_add-automation">
-      <div className="min-h-[calc(100vh-5.5rem)]">
-        <ContentCycle id={id} />
-      </div>
+    <div className="_update-automation-page h-full overflow-auto">
+      <ContentCycle id={id} />
     </div>
   );
 }

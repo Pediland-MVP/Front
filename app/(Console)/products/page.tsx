@@ -7,7 +7,7 @@ import ProductListTable from "./components/productListTable";
 import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default function Page() {
   const t = useTranslations("Products");
@@ -18,9 +18,9 @@ export default function Page() {
       <Link href="/products/add">
         <Button size={"sm"} className="mt-3 xl:mt-0">
           {t("add")}
-          <Plus />
+          <PlusIcon />
         </Button>
-      </Link>
+      </Link>,
     );
     return () => {
       setTools(null);
@@ -28,7 +28,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="_products">
+    <div className="_products overflow-auto">
       <ProductListTable />
     </div>
   );

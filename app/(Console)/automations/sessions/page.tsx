@@ -7,7 +7,7 @@ export default async function SessionsPage(props: {
 }) {
   const t = await getTranslations("Sessions");
   return (
-    <div className="_automation">
+    <div className="_automation overflow-auto">
       <SessionsTable
         contentCycleId={(await props.searchParams).contentCycleId || undefined}
       />

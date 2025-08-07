@@ -1,8 +1,6 @@
+// app/(Console)/automations/components/products.dialog.tsx
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState, useEffect, MouseEvent } from "react";
-import Image from "next/image";
 import { Button } from "@/components/theme/ui/button";
 import {
   Dialog,
@@ -13,18 +11,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Skeleton } from "@/components/ui/skeleton";
 import ErrorMessage from "@/components/ui/errorMessage";
+import { Skeleton } from "@/components/ui/skeleton";
+import api from "@/hooks/swr/api-client";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 import { ProductNamespace } from "@/types/product";
-import { useFormContext, UseFormStateReturn } from "react-hook-form";
+import { AxiosError, AxiosResponse } from "axios";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { MouseEvent, useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
 import { contentCycleFormSchema } from "./contentCycle";
-import api from "@/hooks/swr/api-client";
-import { AxiosError, AxiosResponse } from "axios";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 const PAGE_SIZE = 50;
 
@@ -67,7 +68,6 @@ const ProductsDialog = ({
       });
   };
 
-
   useEffect(() => {
     if (isOpen) {
       setProducts([]);
@@ -87,37 +87,40 @@ const ProductsDialog = ({
     setIsOpen(false);
   };
 
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger className="relative">
+      <DialogTrigger className="relative flex h-full w-full flex-1 items-center justify-center overflow-hidden rounded-lg bg-gray-900">
         {productsField[index]?.id ? (
-          <div className="relative rounded-lg">
+          <div className="relative h-[240px] w-[200px] rounded-lg">
             <Image
               src={productsField[index]?.images?.[0]?.url}
               alt={t("coverImageAlt")}
-              width={300}
-              height={300}
+              fill
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 duration-150 flex justify-center items-center">
-              <Button type="button" className="text-white text-xs">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
+              <Button type="button" className="text-xs text-white">
                 {t("changeProduct")}
               </Button>
             </div>
           </div>
         ) : (
-          <div className="flex justify-center w-full gap-y-2">
-            <Button type="button" variant="outline" className="text-xs">
+          <div>
+            <Button type="button" variant="link" className="text-white">
               {t("selectProduct")}
             </Button>
             {/*TODO: Check types*/}
             {(errors as any)?.products?.[index]?.id && (
-              <ErrorMessage>{(errors as any).products?.[index].id.message}</ErrorMessage>
+              <ErrorMessage>
+                {(errors as any).products?.[index].id.message}
+              </ErrorMessage>
             )}
           </div>
         )}
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
           <DialogTitle>{t("selectProduct")}</DialogTitle>
@@ -132,20 +135,20 @@ const ProductsDialog = ({
           scrollableTarget="scrollableDiv"
         >
           <div
-            className="w-full grid grid-cols-3 gap-4"
+            className="grid w-full grid-cols-3 gap-4"
             id="scrollableDiv"
             style={{ maxHeight: "60vh", overflowY: "auto" }}
           >
             {!products.length
               ? Array.from({ length: 9 }).map((_, index) => (
                   <div key={index} className="col-span-1">
-                    <Skeleton className="relative w-full h-56" />
+                    <Skeleton className="relative h-56 w-full" />
                   </div>
                 ))
               : Array.isArray(products) &&
                 products.map((product) => (
                   <div
-                    className="relative w-full h-56 col-span-1 bg-black rounded-sm overflow-hidden"
+                    className="relative col-span-1 h-56 w-full overflow-hidden rounded-sm bg-black"
                     key={product.id}
                     data-url={product?.images[0].url}
                     data-productid={product.id}
@@ -156,13 +159,13 @@ const ProductsDialog = ({
                       alt={product?.title || t("instagramPostAlt")}
                       layout="fill"
                       objectFit="cover"
-                      className="hover:opacity-80 duration-150"
+                      className="duration-150 hover:opacity-80"
                     />
-                    <div className="absolute inset-x-0 bottom-0 px-2 py-1 bg-black bg-opacity-50">
-                      <div className="text-white text-sm font-bold">
+                    <div className="bg-opacity-50 absolute inset-x-0 bottom-0 bg-black px-2 py-1">
+                      <div className="text-sm font-bold text-white">
                         {product?.title}
                       </div>
-                      <div className="text-white text-sm">
+                      <div className="text-sm text-white">
                         {t("price", { price: product.price })}
                       </div>
                     </div>
@@ -170,7 +173,7 @@ const ProductsDialog = ({
                 ))}
           </div>
         </InfiniteScroll>
-        <DialogFooter className="flex justify-center items-center gap-x-2">
+        <DialogFooter className="flex items-center justify-center gap-x-2">
           <Button onClick={() => setIsOpen(false)}>{t("close")}</Button>
           <Link href="/products/add" target="_blank">
             <Button>{t("add")}</Button>

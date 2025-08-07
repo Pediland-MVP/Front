@@ -1,17 +1,18 @@
+// app/(Console)/automations/page.tsx
 "use client";
 
-import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import ContentCycleTable from "./components/contentCycleTable";
-import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 import Link from "next/link";
-// Just UI Imports Below
+import { useEffect } from "react";
+import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
+
+// UI Imports
 import { Button } from "@/components/theme/ui/button";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import ContentCycleTable from "./components/contentCycleTable";
 
 export default function ContentCyclePage() {
   const t = useTranslations("Automations");
-
   const { setTools } = useHeaderFeatures();
 
   useEffect(() => {
@@ -19,9 +20,9 @@ export default function ContentCyclePage() {
       <Link href="/automations/add">
         <Button size={"sm"} className="mt-3 xl:mt-0">
           {t("add")}
-          <Plus />
+          <PlusIcon />
         </Button>
-      </Link>
+      </Link>,
     );
     return () => {
       setTools(null);
@@ -29,7 +30,7 @@ export default function ContentCyclePage() {
   }, []);
 
   return (
-    <div className="_automation">
+    <div className="_automation overflow-auto">
       <ContentCycleTable />
     </div>
   );
