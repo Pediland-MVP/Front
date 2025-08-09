@@ -8,7 +8,7 @@ import useSWRImmutable from "swr/immutable";
 
 // UI Imports Here
 import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
-import { AppSidebar } from "./app-sidebar";
+import { AppSidebar } from "./appSidebar";
 import { HeaderFeaturesProvider } from "../context/headerFeaturesContext";
 import Header from "../header";
 

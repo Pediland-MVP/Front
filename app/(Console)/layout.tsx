@@ -1,17 +1,19 @@
-import type { Metadata } from "next";
 import "@/app/globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { getLocale, getMessages } from "next-intl/server";
-import { NextIntlClientProvider } from "next-intl";
-import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { SWRProvider } from "@/hooks/swr/api-client";
-import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
-import ConsoleProvider from "./components/layout/consoleProvider";
-import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
-import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
-import { BottomNavProvider } from "./components/layout/bottomNavProvider";
+import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
+
+// UI Imports
 import { StandaloneChecker } from "@/components/global/standaloneChecker";
+import { GoftinoSnippet } from "@/components/third-party/goftino";
+import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
+import { BottomNavProvider } from "./components/layout/bottomNavProvider";
+import ConsoleProvider from "./components/layout/consoleProvider";
+import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",

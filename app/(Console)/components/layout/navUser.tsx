@@ -33,7 +33,7 @@ import {
   SparkleIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { NavUserSkeleton } from "./nav-user.skeleton";
+import { NavUserSkeleton } from "./navUser.skeleton";
 
 export default function NavUser({
   user,
@@ -110,7 +110,7 @@ export default function NavUser({
 
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side="top"
             align="start"
             sideOffset={4}
           >

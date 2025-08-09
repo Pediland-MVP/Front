@@ -1,12 +1,12 @@
+// app/(Console)/components/layout/navMain.tsx
 "use client";
 
-import React, { useState } from "react";
 import { Icon } from "@phosphor-icons/react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+// UI Imports
 import {
   SidebarGroup,
   SidebarMenu,
@@ -18,9 +18,12 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/theme/ui/sidebar";
-import { CaretLeft } from "@phosphor-icons/react/dist/ssr";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
 
 export function NavMain({
   items,
@@ -76,7 +79,7 @@ export function NavMain({
                       tooltip={item.title}
                       className={
                         pathname === item.url
-                          ? "text-foreground hover:text-foreground bg-blue-100"
+                          ? "text-foreground hover:text-foreground bg-blue-50"
                           : "hover:text-foreground text-gray-700"
                       }
                       onClick={() => {
@@ -96,7 +99,7 @@ export function NavMain({
                     tooltip={item.title}
                     className={
                       pathname === item.url
-                        ? "text-foreground hover:text-foreground bg-blue-100"
+                        ? "text-foreground hover:text-foreground bg-blue-100/60 hover:bg-blue-100/60"
                         : "hover:text-foreground text-gray-700"
                     }
                     onClick={() => {
@@ -114,7 +117,7 @@ export function NavMain({
                   <>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuAction className="data-[state=open]:-rotate-90">
-                        <CaretLeft />
+                        <CaretLeftIcon />
                         <span className="sr-only">Toggle</span>
                       </SidebarMenuAction>
                     </CollapsibleTrigger>

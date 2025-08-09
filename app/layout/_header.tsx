@@ -36,19 +36,25 @@ function Header() {
 
   return (
     <header
-      className={`bg-white w-full top-0 fixed z-10 justify-between items-center flex flex-col py-3 lg:py-4 shadow-sm ${showMenu ? "border-primary border-b-2" : ""
-        } `}
+      className={`fixed top-0 z-10 flex w-full flex-col items-center justify-between bg-white py-3 shadow-sm lg:py-4 ${
+        showMenu ? "border-primary border-b-2" : ""
+      } `}
     >
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
+      <div className="container mx-auto max-w-6xl px-3 sm:px-4 xl:px-0">
         <div className={`_wrapper flex justify-between gap-5 sm:gap-10`}>
           <div className="_logo">
-            <a href="/#top" >
-              <Image src="/images/befroosh-logo.svg" alt="logo" width={46} height={44} />
+            <a href="/#top">
+              <Image
+                src="/images/befroosh-logo.svg"
+                alt="logo"
+                width={46}
+                height={44}
+              />
             </a>
           </div>
 
           <div className="_navigation flex flex-1 items-center justify-center">
-            <ul className="flex gap-5 lg:gap-10 font-semibold text-primary text-[15px] sm:text-base">
+            <ul className="text-primary flex gap-5 text-[15px] font-semibold sm:text-base lg:gap-10">
               <li>
                 <Link href="/#features" className="hover:text-secondary">
                   {t("features")}
@@ -98,7 +104,7 @@ function Header() {
             </ul> */}
           </div>
 
-          <div className="_buttons hidden sm:flex items-center gap-3 sm:gap-4 xl:gap-6">
+          <div className="_buttons hidden items-center gap-3 sm:flex sm:gap-4 xl:gap-6">
             <Button className="hidden sm:flex" asChild>
               <Link href="/auth/signin">{t("signin")}</Link>
             </Button>
@@ -132,11 +138,11 @@ function Header() {
             <Accordion
               type="single"
               collapsible
-              className="w-full border-b pb-4 mb-4"
+              className="mb-4 w-full border-b pb-4"
             >
               <div className="flex flex-col gap-4">
                 {navItems.map((item) => (
-                  <div key={item.key} className="bg-blue-100 px-4 rounded-xl">
+                  <div key={item.key} className="rounded-xl bg-blue-100 px-4">
                     {item.key === "pricing" ? (
                       <div className="py-4">{item.label}</div>
                     ) : (
@@ -155,9 +161,9 @@ function Header() {
                 ))}
               </div>
             </Accordion>
-            <div className="flex flex-col gap-4 cursor-pointer">
+            <div className="flex cursor-pointer flex-col gap-4">
               <a href="/contact">
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <span>
                     <EnvelopeSimple size={28} />
                   </span>
