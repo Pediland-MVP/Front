@@ -289,7 +289,7 @@ export default function PlanSelection() {
           </Form>
         </div>
 
-        {subscriptions.length ? (
+        {subscriptions?.length ? (
           <div className="mb-12 text-left md:mb-0">
             <Button
               onClick={() =>

@@ -30,7 +30,7 @@ const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!userIsLoading && userData) {
-      if (userData.subscriptions.length === 0) {
+      if (userData.subscriptions?.length === 0) {
         setIsLimited(true);
       } else {
         setIsLimited(false);

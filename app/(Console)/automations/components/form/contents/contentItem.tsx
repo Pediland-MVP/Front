@@ -113,15 +113,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
               mimeType: res.data.mimeType,
             },
           ]);
-
-          setValue(
-            `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.file`,
-            {
-              id: res.data.id,
-              url: res.data.url,
-              mimeType: res.data.mimeType,
-            },
-          );
+          
           setValue(
             `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
             {
@@ -131,8 +123,17 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
               type: res.data.mimeType.split(
                 "/",
               )[0] as ContentCycleContentTypesEnum,
+              file:             {
+                id: res.data.id,
+                url: res.data.url,
+                mimeType: res.data.mimeType,
+              },
             },
           );
+
+          console.log('Uploader content of that content', getValues(`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`));
+          
+
         })
         .catch((err: AxiosError) => {
           const errorCode = t_ec(
