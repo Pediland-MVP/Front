@@ -4,16 +4,19 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect } from "react";
-import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 
 // UI Imports
 import { Button } from "@/components/theme/ui/button";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import ContentCycleTable from "./components/contentCycleTable";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function ContentCyclePage() {
   const t = useTranslations("Automations");
-  const { setTools } = useHeaderFeatures();
+  const { setTools, clearTools } = useHeaderFeatures((s) => ({
+    setTools: s.setTools,
+    clearTools: s.clearTools,
+  }));
 
   useEffect(() => {
     setTools(
@@ -25,9 +28,9 @@ export default function ContentCyclePage() {
       </Link>,
     );
     return () => {
-      setTools(null);
+      clearTools();
     };
-  }, []);
+  }, [setTools, clearTools]);
 
   return (
     <div className="_automation overflow-auto">

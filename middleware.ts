@@ -41,7 +41,7 @@ export default async function middleware(request: NextRequest) {
 }
 
 async function consoleMiddleware(request: NextRequest) {
-  const token = request.cookies.get("token");
+  const token = request.cookies.get("token2");
   if (!token) {
     return CustomResponse.redirect(
       new URL("/auth/signin", request.url),
@@ -53,7 +53,7 @@ async function consoleMiddleware(request: NextRequest) {
 }
 
 async function authMiddleware(request: NextRequest) {
-  const token = request.cookies.get("token");
+  const token = request.cookies.get("token2");
   if (!token) {
     const isVerifyPage = request.nextUrl.pathname === "/auth/verify";
     if (isVerifyPage) {

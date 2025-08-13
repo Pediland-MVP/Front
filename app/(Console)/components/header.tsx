@@ -1,9 +1,8 @@
 import { SidebarTrigger } from "@/components/theme/ui/sidebar";
 import React from "react";
 import { BreadcrumbGenerator } from "./breadcrumbGenerator";
-import { useHeaderFeatures } from "./context/headerFeaturesContext";
-import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 const Header = () => {
   const { buttons, tools } = useHeaderFeatures();

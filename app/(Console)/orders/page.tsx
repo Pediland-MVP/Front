@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import OrderListCard from "./components/orderListCard";
-import Header from "../components/header";
-import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 import { Button } from "@/components/theme/ui/button";
 import { ExcelExportOrdersDrawer } from "./components/excelExportOrders.drawer";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function page() {
   const [search, setSearch] = useState<string>("");
   const t = useTranslations("Orders");
-  const { setButtons } = useHeaderFeatures();
+  const { setButtons, clearButtons } = useHeaderFeatures((s) => ({
+    setButtons: s.setButtons,
+    clearButtons: s.clearButtons,
+  }))
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -22,9 +24,9 @@ export default function page() {
     ]);
 
     return () => {
-      setButtons([]);
+      clearButtons();
     };
-  }, []);
+  }, [setButtons, clearButtons]);
 
   return (
     <div className="_orders overflow-auto">

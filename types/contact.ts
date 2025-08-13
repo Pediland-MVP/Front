@@ -11,37 +11,37 @@ export namespace ContactNamespace {
 
   export type Contacts = ContactItem[];
 }
+
 interface ContactItem {
-  lead: Lead;
-  id: string;
-  createDate: string;
-  updateDate: string;
-  firstname: string | null;
-  lastname: string | null;
-  mobile: string | null;
-  email: string | null;
-  country: string | null;
-  city: string | null;
-  postalcode: string | null;
   address: string | null;
-  gender: "male" | "female" | "other" | null;
   birthDate: string | null;
-  messagesCount: string;
+  cityId: string | null;
+  country: string | null;
+  createDate: string;
+  email: string | null;
+  firstname: string | null;
+  gender: "male" | "female" | "other" | null;
+  id: string;
+  lastname: string | null;
   latestMessageDate: string;
+  lead: Lead;
+  messagesCount: string;
+  mobile: string | null;
+  postalcode: string | null;
+  updateDate: string;
   username: string;
 }
 
 export interface Lead {
-  id: string;
+  contactId: string;
   createDate: Date;
-  updateDate: Date;
   firstname: string;
+  id: string;
+  instagramId: string;
   lastname: null;
   profilePic: null | string;
+  updateDate: Date;
   userId: string;
-  instagramId: string;
-  leadInstagramId: string;
-  contactId: string;
 }
 
 export interface Meta {

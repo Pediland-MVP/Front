@@ -4,15 +4,18 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ProductListTable from "./components/productListTable";
-import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
 // Just UI Imports Below
 import { Button } from "@/components/theme/ui/button";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function Page() {
   const t = useTranslations("Products");
 
-  const { setTools } = useHeaderFeatures();
+  const { setTools, clearTools } = useHeaderFeatures((s) => ({
+    setTools: s.setTools,
+    clearTools: s.clearTools,
+  }))
   useEffect(() => {
     setTools(
       <Link href="/products/add">
@@ -23,9 +26,9 @@ export default function Page() {
       </Link>,
     );
     return () => {
-      setTools(null);
+      clearTools();
     };
-  }, []);
+  }, [setTools, clearTools]);
 
   return (
     <div className="_products overflow-auto">

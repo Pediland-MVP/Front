@@ -9,7 +9,6 @@ import useSWRImmutable from "swr/immutable";
 // UI Imports Here
 import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
 import { AppSidebar } from "./appSidebar";
-import { HeaderFeaturesProvider } from "../context/headerFeaturesContext";
 import Header from "../header";
 
 const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
@@ -44,10 +43,8 @@ const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
       <AppSidebar side={locale === "fa" ? "right" : "left"} />
 
       <SidebarInset>
-        <HeaderFeaturesProvider>
-          <Header />
-          {children}
-        </HeaderFeaturesProvider>
+        <Header />
+        {children}
       </SidebarInset>
     </SidebarProvider>
   );

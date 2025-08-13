@@ -1,17 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
-import ContactListCard from "./components/contactListCard";
 import { useTranslations } from "next-intl";
-// Just UI Imports Below
-import { Input } from "@/components/theme/ui/input";
-import { useHeaderFeatures } from "../components/context/headerFeaturesContext";
-import { ListMagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
+import { useEffect, useState } from "react";
+// UI Imports
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { TableLayout, Input, ListMagnifyingGlassIcon } from "@/components/index";
+import ContactsListPage from "./ContactsListPage";
 
 export default function page() {
-  const { setButtons, setTools } = useHeaderFeatures();
-  const [search, setSearch] = useState<string>("");
-  const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false); // حالت نمایش اینپوت
+  const { setTools, setButtons, clearTools, clearButtons } = useHeaderFeatures((s) => ({
+    setTools: s.setTools,
+    setButtons: s.setButtons,
+    clearTools: s.clearTools,
+    clearButtons: s.clearButtons,
+  }))
 
+  const [search, setSearch] = useState<string>("");
+  const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const t = useTranslations("Contacts");
 
   useEffect(() => {
@@ -20,7 +24,7 @@ export default function page() {
         className="m-0 flex p-0"
         onClick={() => setIsSearchVisible((prev) => !prev)}
       >
-        <ListMagnifyingGlass size={26} className="text-foreground xl:hidden" />
+        <ListMagnifyingGlassIcon size={26} className="text-foreground xl:hidden" />
       </button>,
     );
     setTools(
@@ -32,14 +36,14 @@ export default function page() {
       />,
     );
     return () => {
-      setButtons(null);
-      setTools(null);
+      clearButtons();
+      clearTools();
     };
   }, [isSearchVisible]);
 
   return (
-    <div className="_contacts overflow-auto">
-      <ContactListCard search={search} setSearch={setSearch} />
-    </div>
+    <TableLayout className="_contacts">
+      <ContactsListPage />
+    </TableLayout>
   );
 }
