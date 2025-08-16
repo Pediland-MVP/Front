@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 // UI Imports
-import { useSidebar } from "@/components/theme/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { PlugIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 

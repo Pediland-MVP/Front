@@ -1,4 +1,4 @@
-// app/(Console)/components/layout/app-sidebar.tsx
+// src/components/layout/consoleSidebar.tsx
 "use client";
 
 import { UserNamespace } from "@/types/user";
@@ -16,7 +16,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   useSidebar,
-} from "@/components/theme/ui/sidebar";
+} from "@/components/ui/sidebar";
 import {
   AddressBookTabsIcon,
   BasketIcon,
@@ -24,10 +24,9 @@ import {
   HouseSimpleIcon,
   SlidersIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { NavMain } from "./navMain";
-import { NavUserSkeleton } from "./navUser.skeleton";
+import { NavMain, NavUserSkeleton } from "@components/index";
 
-const NavUser = dynamic(() => import("./navUser"), {
+const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,
   ssr: false,
 });
@@ -121,7 +120,9 @@ const generateData = (t: any, isMobile: boolean) => ({
   ],
 });
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export const ConsoleSidebar = ({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) => {
   const t = useTranslations("Console.Sidebar");
   const { isMobile, toggleSidebar } = useSidebar();
   const data = generateData(t, isMobile);
@@ -167,4 +168,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
     </Sidebar>
   );
-}
+};

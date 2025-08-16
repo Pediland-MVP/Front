@@ -1,10 +1,13 @@
-import { SidebarTrigger } from "@/components/theme/ui/sidebar";
+// src/components/layout/consoleHeader.tsx
+"use client";
+
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
-import { BreadcrumbGenerator } from "./breadcrumbGenerator";
+import { BreadcrumbGenerator } from "../../app/(Console)/components/breadcrumbGenerator";
 import { usePathname } from "next/navigation";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
-const Header = () => {
+export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();
   const pathname = usePathname();
 
@@ -24,5 +27,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

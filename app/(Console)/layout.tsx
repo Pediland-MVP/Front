@@ -1,4 +1,4 @@
-import "@/app/globals.css";
+import "@/app/styles/globals.css";
 import { SWRProvider } from "@/hooks/swr/api-client";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -8,12 +8,15 @@ import { getLocale, getMessages } from "next-intl/server";
 import { StandaloneChecker } from "@/components/global/standaloneChecker";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
-import { BottomNavProvider } from "./components/layout/bottomNavProvider";
-import ConsoleProvider from "./components/layout/consoleProvider";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
+
+import {
+  ConsoleProvider,
+  NavBottomProvider,
+  Toaster as Sonner,
+} from "@/components/index";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -42,7 +45,7 @@ export default async function ConsoleLayout({
                   <InstagramTokenErrorDialog />
                   <SubscriptionExpireWarningDialog />
                   {children}
-                  <BottomNavProvider />
+                  <NavBottomProvider />
                 </ConsoleProvider>
               </ZodErrorsMapProvider>
               <Toaster />

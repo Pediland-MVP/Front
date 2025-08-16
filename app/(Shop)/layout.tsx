@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import "@/app/globals.css";
+import "@/app/styles/globals.css";
 // UI
 import { Toaster } from "@/components/theme/ui/toaster";
 import SWRProvider from "./swr.prvider";

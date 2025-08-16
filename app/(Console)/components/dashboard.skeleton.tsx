@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/theme/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/theme/ui/breadcrumb";
-import SidebarTrigger from "@/components/theme/ui/sidebar";
+import SidebarTrigger from "@/components/ui/sidebar";
 import Link from "next/link";
 
 export default function DashboardSkeleton({ accessDenied = false }) {

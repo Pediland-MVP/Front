@@ -1,4 +1,5 @@
-// app/(Console)/components/layout/bottomNav.tsx
+// src/components/layout/NavBottom.tsx
+"use client";
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import React, {
   ReactElement,
   useState,
 } from "react";
-import { LinkStatusTracker } from "../linkStatusTracker";
+import { LinkStatusTracker } from "../../app/(Console)/components/linkStatusTracker";
 
 export interface NavItem {
   icon: ReactElement<IconProps>;
@@ -29,7 +30,7 @@ interface BottomNavbarProps {
   items: NavItem[];
 }
 
-export function BottomNav({ items }: BottomNavbarProps) {
+export const NavBottom = ({ items }: BottomNavbarProps) => {
   const [isNavigationPending, setIsNavigationPending] =
     useState<boolean>(false);
 
@@ -107,4 +108,4 @@ export function BottomNav({ items }: BottomNavbarProps) {
       </div>
     </nav>
   );
-}
+};

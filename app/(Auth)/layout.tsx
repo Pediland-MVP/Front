@@ -1,4 +1,4 @@
-import "@/app/globals.css";
+import "@/app/styles/globals.css";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";

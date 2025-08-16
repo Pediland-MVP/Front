@@ -1,8 +1,8 @@
-// app/(Console)/components/bottomNavProvider.tsx
+// src/components/Layout/NavBottomProvider.tsx
 "use client";
 
-import { useSidebar } from "@/components/theme/ui/sidebar";
-import { BottomNav, NavItem } from "./bottomNav";
+import { useSidebar } from "@/components/ui/sidebar";
+import { NavBottom, NavItem } from "@/components/index";
 import {
   DotsThreeIcon,
   StorefrontIcon,
@@ -13,7 +13,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 
-export function BottomNavProvider() {
+export const NavBottomProvider = () => {
   const { setOpenMobile } = useSidebar();
   const t = useTranslations("BottomNav");
   const items: NavItem[] = [
@@ -47,5 +47,5 @@ export function BottomNavProvider() {
     },
   ];
 
-  return <BottomNav items={items} />;
-}
+  return <NavBottom items={items} />;
+};

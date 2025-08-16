@@ -170,6 +170,9 @@
       "upgrade": "مدیریت اشتراک کاربری"
     }
   },
+  "DataTable": {
+    "noResults": "رکوردی برای نمایش وجود ندارد."
+  },
   "Contacts": {
     "dashboard": "داشبورد",
     "list": "لیست مخاطبین",
@@ -186,26 +189,26 @@
       "show": "نمایش",
       "page": "صفحه {page} از {pages}"
     },
-    "EditDialog": {
-      "editInformation": "ویرایش اطلاعات",
-      "cancel": "انصراف"
+    "Dialog": {
+      "detailsInfo": "اطلاعات مخاطب"
     },
     "Form": {
-      "firstname": "نام",
-      "lastname": "نام خانوادگی",
       "gender": "جنسیت",
-      "genderPlaceholder": "انتخاب کنید",
+      "genderPlaceholder": "...",
       "female": "زن",
       "male": "مرد",
       "other": "سایر",
-      "save": "ذخیره",
+      "firstname": "نام",
+      "lastname": "نام خانوادگی",
       "birthDate": "تاریخ تولد",
       "mobile": "همراه",
       "email": "ایمیل",
       "state": "استان",
       "city": "شهر",
-      "address": "آدرس",
       "postalcode": "کد پستی",
+      "address": "آدرس",
+      "saveChanges": "ذخیره تغییرات",
+      "cancel": "انصراف",
       "updated": "اطلاعات با موفقیت بروز شد",
       "errors": {
         "firstname": "لطفاً نام را وارد کنید",

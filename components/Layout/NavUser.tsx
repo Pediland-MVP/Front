@@ -22,7 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/theme/ui/sidebar";
+} from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { toast } from "@/components/ui/use-toast";
@@ -33,15 +33,15 @@ import {
   SparkleIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { NavUserSkeleton } from "./navUser.skeleton";
+import { NavUserSkeleton } from "@components/index";
 
-export default function NavUser({
+const NavUser = ({
   user,
   isLoading,
 }: {
   user: UserNamespace.GET.User | undefined;
   isLoading: boolean;
-}) {
+}) => {
   const { isMobile, setOpenMobile } = useSidebar();
   const locale = useLocale();
   const t = useTranslations("Console.Sidebar");
@@ -150,4 +150,6 @@ export default function NavUser({
       </SidebarMenuItem>
     </SidebarMenu>
   );
-}
+};
+
+export default NavUser;

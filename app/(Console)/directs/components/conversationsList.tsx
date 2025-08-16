@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/theme/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useSidebar } from "@/components/theme/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 

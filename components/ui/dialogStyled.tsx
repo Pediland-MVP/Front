@@ -2,35 +2,43 @@
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import * as Icons from "@phosphor-icons/react";
 import { XIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 
-function Dialog({
+type PhosphorIconName = keyof typeof Icons;
+
+type DialogStyledTitleProps = React.ComponentProps<
+  typeof DialogPrimitive.Title
+> & {
+  icon?: PhosphorIconName;
+};
+
+function DialogStyled({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
-function DialogTrigger({
+function DialogStyledTrigger({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-function DialogPortal({
+function DialogStyledPortal({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
-function DialogClose({
+function DialogStyledClose({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogOverlay({
+function DialogStyledOverlay({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
@@ -46,7 +54,7 @@ function DialogOverlay({
   );
 }
 
-function DialogContent({
+function DialogStyledContent({
   className,
   children,
   showCloseButton = true,
@@ -55,12 +63,12 @@ function DialogContent({
   showCloseButton?: boolean;
 }) {
   return (
-    <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+    <DialogStyledPortal data-slot="dialog-portal">
+      <DialogStyledOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200 sm:max-w-lg",
           className,
         )}
         {...props}
@@ -76,26 +84,19 @@ function DialogContent({
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
-    </DialogPortal>
+    </DialogStyledPortal>
   );
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+function DialogStyledHeader({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-right", className)}
-      {...props}
-    />
-  );
-}
-
-function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "flex flex-col gap-2 rounded-t-xl border-b bg-stone-50 px-6 py-4 text-center sm:text-right",
         className,
       )}
       {...props}
@@ -103,41 +104,81 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function DialogTitle({
+function DialogStyledBody({
   className,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
+}: React.ComponentProps<"div">) {
   return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn("text-lg leading-none font-medium", className)}
+    <div data-slot="dialog-body" className={cn("p-6", className)} {...props} />
+  );
+}
+
+function DialogStyledFooter({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-footer"
+      className={cn(
+        "flex flex-col-reverse gap-2 px-6 py-4 sm:flex-row sm:justify-end",
+        className,
+      )}
       {...props}
     />
   );
 }
 
-function DialogDescription({
+function DialogStyledTitle({
   className,
+  icon,
+  children,
+  ...props
+}: DialogStyledTitleProps) {
+  const IconComponent = icon
+    ? (Icons[icon] as React.ElementType<Icons.IconProps>)
+    : null;
+
+  return (
+    <DialogPrimitive.Title
+      data-slot="dialog-title"
+      className={cn("flex items-center gap-2 font-medium", className)}
+      {...props}
+    >
+      {IconComponent && <IconComponent size={24} weight="duotone" />}
+      {children}
+    </DialogPrimitive.Title>
+  );
+}
+
+function DialogStyledDescription({
+  className,
+  children,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
+  if (!children) return null;
+
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
-    />
+    >
+      {children}
+    </DialogPrimitive.Description>
   );
 }
 
 export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
+  DialogStyled,
+  DialogStyledClose,
+  DialogStyledContent,
+  DialogStyledDescription,
+  DialogStyledFooter,
+  DialogStyledHeader,
+  DialogStyledBody,
+  DialogStyledOverlay,
+  DialogStyledPortal,
+  DialogStyledTitle,
+  DialogStyledTrigger,
 };

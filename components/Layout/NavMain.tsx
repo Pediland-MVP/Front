@@ -17,7 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/theme/ui/sidebar";
+} from "@/components/ui/sidebar";
 import {
   Collapsible,
   CollapsibleContent,
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/collapsible";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
 
-export function NavMain({
+export const NavMain = ({
   items,
 }: {
   items: {
@@ -38,7 +38,7 @@ export function NavMain({
       url: string;
     }[];
   }[];
-}) {
+}) => {
   const pathname = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
 
@@ -155,4 +155,4 @@ export function NavMain({
       </SidebarMenu>
     </SidebarGroup>
   );
-}
+};

@@ -1,4 +1,4 @@
-// app/(Console)/components/layout/consoleProvider.tsx
+// app/(Console)/components/layout/ConsoleProvider.tsx
 "use client";
 
 import { UserNamespace } from "@/types/user";
@@ -7,11 +7,18 @@ import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 
 // UI Imports Here
-import { SidebarInset, SidebarProvider } from "@/components/theme/ui/sidebar";
-import { AppSidebar } from "./appSidebar";
-import Header from "../header";
+import {
+  SidebarInset,
+  SidebarProvider,
+  ConsoleSidebar,
+  ConsoleHeader,
+} from "@/components/index";
 
-const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
+export const ConsoleProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const t = useTranslations("ConsoleLayout");
   const locale = useLocale();
   const [isLimited, setIsLimited] = useState(false);
@@ -40,14 +47,12 @@ const ConsoleProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <AppSidebar side={locale === "fa" ? "right" : "left"} />
+      <ConsoleSidebar side={locale === "fa" ? "right" : "left"} />
 
       <SidebarInset>
-        <Header />
+        <ConsoleHeader />
         {children}
       </SidebarInset>
     </SidebarProvider>
   );
 };
-
-export default ConsoleProvider;

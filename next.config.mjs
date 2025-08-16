@@ -1,5 +1,5 @@
-import createNextIntlPlugin from 'next-intl/plugin';
- 
+import createNextIntlPlugin from "next-intl/plugin";
+
 const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
@@ -27,42 +27,42 @@ const nextConfig = {
         hostname: "github.com",
       },
       {
-        protocol: 'https',
-        hostname: 'github.com'
-      },
-      {
-        protocol: 'https',
-        hostname: 'koochaa-cdn.s3.**.amazonaws.com',
-      }, 
-      {
-        protocol: 'https',
-        hostname: 'koochaa-cdn.s3.amazonaws.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.zarinpal.com'
+        protocol: "https",
+        hostname: "github.com",
       },
       {
         protocol: "https",
-        hostname: "befroosh.app"
+        hostname: "koochaa-cdn.s3.**.amazonaws.com",
       },
       {
         protocol: "https",
-        hostname: "befroosh.s3.ir-thr-at1.arvanstorage.ir"
-      }
+        hostname: "koochaa-cdn.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.zarinpal.com",
+      },
+      {
+        protocol: "https",
+        hostname: "befroosh.app",
+      },
+      {
+        protocol: "https",
+        hostname: "befroosh.s3.ir-thr-at1.arvanstorage.ir",
+      },
     ],
   },
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: true,
   },
-  reactStrictMode: false
+  reactStrictMode: false,
 };
 
 const withNextIntlConfig = withNextIntl(nextConfig);
-export default withNextIntlConfig
+export default withNextIntlConfig;
 
 // withSentryConfig(withNextIntlConfig, {
 //   // For all available options, see:

@@ -27,11 +27,14 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
+import { Skeleton } from "../ui/skeleton";
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]; // List of column definitions
   data: TData[]; // Table row data
+  isLoading?: boolean; // Optional external row selection state
   rowSelection?: Record<string, boolean>; // Optional external row selection state
   onRowSelectionChange?: OnChangeFn<Record<string, boolean>>; // Optional row selection handler
   setSelectedRows?: (rows: TData[]) => void; // Optional callback to expose selected rows
@@ -64,6 +67,7 @@ function safeFlexRender(Comp: any, ctx: any, fallback: React.ReactNode = null) {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
   rowSelection,
   onRowSelectionChange,
   tableInstanceRef,
@@ -79,6 +83,8 @@ export function DataTable<TData, TValue>({
   onSortingChange,
   sortingState,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations("DataTable");
+
   // Local state for column visibility if not externally controlled
   const [internalColumnVisibility, setInternalColumnVisibility] =
     useState<VisibilityState>({});
@@ -180,7 +186,7 @@ export function DataTable<TData, TValue>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} data-header={true}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} style={{ width: header.getSize() }}>
                   {header.isPlaceholder
                     ? null
                     : safeFlexRender(
@@ -192,26 +198,58 @@ export function DataTable<TData, TValue>({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length > 0 ? (
-            table.getRowModel().rows?.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>{renderCell(cell)}</TableCell>
-                ))}
+        {isLoading ? (
+          <TableBody>
+            {[...Array(limit)].map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {columns.map((col, colIndex) => {
+                  const key =
+                    "accessorKey" in col
+                      ? col.accessorKey?.toString()
+                      : (col.id ?? colIndex);
+
+                  const meta = col.meta as ColumnMeta;
+                  const skeletonClass = meta?.skeletonClass ?? "";
+
+                  return (
+                    <TableCell key={key} className="h-11">
+                      <Skeleton className={skeletonClass} />
+                    </TableCell>
+                  );
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-14">
-                <span className="text-muted-foreground">No results found.</span>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
+            ))}
+          </TableBody>
+        ) : (
+          <TableBody>
+            {table.getRowModel().rows?.length > 0 ? (
+              table.getRowModel().rows?.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      style={{ width: cell.column.getSize() }}
+                      className="text-center"
+                    >
+                      {renderCell(cell)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-14">
+                  <div className="text-muted-foreground px-2">
+                    {t("noResults")}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        )}
       </Table>
     </div>
   );
