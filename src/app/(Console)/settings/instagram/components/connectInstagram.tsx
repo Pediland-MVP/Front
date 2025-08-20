@@ -1,5 +1,5 @@
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";

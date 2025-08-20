@@ -8,7 +8,7 @@ import { useEffect } from "react";
 // UI Imports
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
-import ContentCycleTable from "./components/contentCycleTable";
+import ContentCycleTable from "../../../components/Automations/contentCycleTable";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function ContentCyclePage() {

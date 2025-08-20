@@ -4,7 +4,7 @@
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
-} from "@/app/constants/contentCycleContent.enum";
+} from "@/constants/contentCycleContent.enum";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { FileNamespace } from "@/types/file";

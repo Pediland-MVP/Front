@@ -16,7 +16,7 @@ import {
 import { useTranslations } from "next-intl"
 import OrderDetails from "./orderDetails"
 import type { OrderNamespace } from "@/types/order/order.namespace"
-import LoadingSpinner from "@/components/ui/loadingSpinner"
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin"
 
 export interface EditOrderProps {
   open: boolean

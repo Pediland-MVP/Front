@@ -1,4 +1,4 @@
-import SessionsTable from "./components/sessions.table";
+import SessionsTable from "../../../../components/Sessions/sessions.table";
 import { getTranslations } from "next-intl/server";
 // Just UI Imports Below
 

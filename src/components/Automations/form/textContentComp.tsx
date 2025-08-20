@@ -1,6 +1,6 @@
 // app/(Console)/automations/components/form/text/main.tsx
 
-import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import InputCounter from "@/components/ui/inputCounter";
 import { Label } from "@/components/ui/label";

@@ -1,4 +1,4 @@
-import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import { GENDERS_ENUM } from "@/constants/gender.constant";
 import { ORDER_STATUS } from "./order.namespace";
 
 

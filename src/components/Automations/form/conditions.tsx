@@ -1,4 +1,5 @@
 // app/(Console)/automations/components/form/conditions.tsx
+"use client";
 
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 import { useTranslations } from "next-intl";
@@ -11,7 +12,7 @@ import {
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports

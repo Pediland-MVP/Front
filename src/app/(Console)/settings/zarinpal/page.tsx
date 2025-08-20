@@ -19,7 +19,7 @@ import ErrorMessage from "@/components/ui/errorMessage";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import useUser from "@/hooks/useUser";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";

@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/utils/regex";
 import { useTranslations } from "next-intl";
 // UI
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { InputPassword } from "@/components/ui/inputPassword";

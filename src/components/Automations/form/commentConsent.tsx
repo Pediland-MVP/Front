@@ -1,11 +1,12 @@
 // app/(Console)/automations/components/form/commentConsent.tsx
+"use client";
 
-import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentTypesEnum } from "@/constants/contentCycleContent.enum";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports

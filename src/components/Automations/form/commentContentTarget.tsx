@@ -1,4 +1,5 @@
 // app/(Console)/automations/components/form/commentContentTarget.tsx
+"use client";
 
 import {
   FormControl,
@@ -10,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import DialogInstagramPostSelect from "../dialog.instagramPostSelect";
-import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
 import z from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { useEffect } from "react";

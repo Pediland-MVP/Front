@@ -31,7 +31,7 @@ import { OrderInstagramProfile } from "./orderInstagramProfile";
 import ImageWithFallback from "@/components/ui/imageWithCallback";
 import api from "@/hooks/swr/api-client";
 import type { AxiosError } from "axios";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { Pen } from "@phosphor-icons/react/dist/ssr";
 import { getOrderPrices, useGetOrderPrices } from "@/utils/getOrderPrices";
 

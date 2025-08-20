@@ -19,7 +19,7 @@ import useSWRImmutable from "swr/immutable";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from '@/components/ui/button-loading';
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { CardContent } from "@/components/ui/card";
 import api from "@/hooks/swr/api-client";
 

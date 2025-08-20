@@ -33,7 +33,7 @@ import {
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
-} from "@/app/constants/contentCycleContent.enum";
+} from "@/constants/contentCycleContent.enum";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

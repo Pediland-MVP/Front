@@ -2,7 +2,7 @@
 
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";
-import ContentCycle from "../components/contentCycle";
+import ContentCycle from "../../../../components/Automations/contentCycle";
 import { getTranslations } from "next-intl/server";
 
 type ContentCycleEditPageProps = {

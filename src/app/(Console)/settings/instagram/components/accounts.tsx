@@ -36,7 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowClockwise, IntersectSquare } from "@phosphor-icons/react";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";

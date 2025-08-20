@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";

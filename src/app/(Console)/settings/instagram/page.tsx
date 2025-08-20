@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { Plug } from "@phosphor-icons/react/dist/ssr";
 import ConnectInstagram from "./components/connectInstagram";
 

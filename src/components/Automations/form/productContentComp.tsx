@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/form/catalogue.tsx
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";

@@ -1,3 +1,4 @@
+export * from "./Automations";
 export * from "./Contacts";
 export * from "./Icons";
 export * from "./Layout";

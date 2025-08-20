@@ -1,4 +1,4 @@
-import { ContentCycleContentTypesEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentTypesEnum } from "@/constants/contentCycleContent.enum";
 
 export interface IContentCycle {
     id:                 string;

@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/dialog.instagramPostSelect.tsxs
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

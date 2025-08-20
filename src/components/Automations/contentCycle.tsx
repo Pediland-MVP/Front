@@ -4,7 +4,7 @@
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
-} from "@/app/constants/contentCycleContent.enum";
+} from "@/constants/contentCycleContent.enum";
 import { REGEX_URL } from "@/utils/regex";
 import api from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
@@ -30,7 +30,7 @@ import { ConnectInstagramAlert } from "@/components/global/connectInstagram.aler
 import { Card } from "@/components/ui/card";
 import LoadingButton from "@/components/ui/button-loading";
 import { Form } from "@/components/ui/form";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";
 import CommentTriggerInputs from "./form/commentConsent";
 import CommentContentTarget from "./form/commentContentTarget";

@@ -10,7 +10,7 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { fetcher2 } from "@/hooks/swr/fetcher2";
 import { REGEX_MOBILE } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import { GENDERS_ENUM } from "@/constants/gender.constant";
 import ProductDetails from "./components/productDetails";
 import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
 import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";

@@ -1,4 +1,5 @@
 // app/(Console)/automations/components/form/commentReplies.tsx
+"use client";
 
 import { useFormContext } from "react-hook-form";
 
@@ -17,7 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import HelpmeDialog from "@/components/global/helpme.dialog";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { Input } from "@/components/ui/input";
 
 export function CommentReplies() {

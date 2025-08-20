@@ -2,7 +2,7 @@
 import useSWRImmutable from "swr/immutable";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useEffect } from "react";
 import { mutate } from "swr";

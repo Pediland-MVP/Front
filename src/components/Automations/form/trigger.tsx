@@ -9,7 +9,7 @@ import { contentCycleFormSchema } from "../contentCycle";
 import HelpmeDialog from "@/components/global/helpme.dialog";
 import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 type TriggerProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;

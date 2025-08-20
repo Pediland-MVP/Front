@@ -1,13 +1,14 @@
 // app/(Console)/automations/components/form/reminder.tsx
+"use client";
 
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
-} from "@/app/constants/contentCycleContent.enum";
+} from "@/constants/contentCycleContent.enum";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
 import Contents from "./contents/contents";
 

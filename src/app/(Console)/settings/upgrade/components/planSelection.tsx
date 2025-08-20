@@ -14,7 +14,7 @@ import { useUpgradeContext } from "../context/upgrade.context";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { Card } from "@/components/ui/card";
 import DiscountText from "@/components/discountText";
 import logger from "@/utils/logger";

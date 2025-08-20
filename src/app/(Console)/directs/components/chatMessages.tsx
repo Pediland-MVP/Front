@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Message from "./message";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { useTranslations } from "next-intl";
 import { UseFetchMessage } from "./useFetchMessages";
 

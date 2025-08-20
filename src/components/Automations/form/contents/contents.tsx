@@ -4,7 +4,7 @@
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
-} from "@/app/constants/contentCycleContent.enum";
+} from "@/constants/contentCycleContent.enum";
 import HelpmeDialog from "@/components/global/helpme.dialog";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../../contentCycle";
 import ContentItem from "./contentItem";
 import ContentPromotion from "./contentPromotion";

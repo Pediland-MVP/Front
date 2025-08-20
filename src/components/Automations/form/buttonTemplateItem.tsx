@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/form/buttonTemplateItem.tsx
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
+import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
 import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";

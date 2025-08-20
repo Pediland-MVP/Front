@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
 import { z } from "zod";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { GENDERS_ENUM } from "@/app/constants/gender.constant";
+import { GENDERS_ENUM } from "@/constants/gender.constant";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import DateObject from "react-date-object";
@@ -38,7 +38,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
 
 export function ProfileForm() {

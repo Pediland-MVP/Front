@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/index";
 
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";
 import {
   Form,

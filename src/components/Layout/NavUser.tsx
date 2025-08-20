@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "@/components/ui/use-toast";
 import {
   CaretUpDownIcon,

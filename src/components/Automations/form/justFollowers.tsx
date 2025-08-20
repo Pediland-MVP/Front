@@ -1,11 +1,12 @@
 // app/(Console)/automations/components/form/justFollowers.tsx
+"use client";
 
 import useUser from "@/hooks/useUser";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports

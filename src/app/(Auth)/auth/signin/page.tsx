@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 // UI 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import LoadingSpinner from "@/components/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import {
   Form,
   FormControl,
