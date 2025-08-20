@@ -27,7 +27,7 @@ import Trigger from "./form/trigger";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/global/connectInstagram.alert";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import LoadingButton from "@/components/ui/button-loading";
 import { Form } from "@/components/ui/form";
 import LoadingSpinner from "@/components/ui/loadingSpinner";

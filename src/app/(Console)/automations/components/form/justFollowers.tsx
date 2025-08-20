@@ -10,8 +10,8 @@ import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports
 import HelpmeDialog from "@/components/global/helpme.dialog";
-import { Input } from "@/components/theme/ui/input";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   FormControl,
   FormField,

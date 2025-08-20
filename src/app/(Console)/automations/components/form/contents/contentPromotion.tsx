@@ -23,7 +23,7 @@ import {
   RadioButton,
 } from "@phosphor-icons/react/dist/ssr";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/theme/ui/input";
+import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -34,10 +34,10 @@ import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
 } from "@/app/constants/contentCycleContent.enum";
-import { Button } from "@/components/theme/ui/button";
-import { Label } from "@/components/theme/ui/label";
-import { Textarea } from "@/components/theme/ui/textarea";
-import InputCounter from "@/components/theme/ui/inputCounter";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import InputCounter from "@/components/ui/inputCounter";
 import ContentPromotionDialog from "./contentPromotion.dialog";
 import { useState } from "react";
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
-import { toast } from "@/components/theme/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { mutate } from "swr";
 import { useRouter } from "next/navigation";
 import { OrderNamespace } from "@/types/order/order.namespace";

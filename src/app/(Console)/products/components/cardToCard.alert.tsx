@@ -3,7 +3,7 @@
 import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useTranslations } from "next-intl"
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function CardToCardAlert() {

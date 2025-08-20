@@ -1,6 +1,7 @@
 export * from "./ConsoleHeader";
 export * from "./ConsoleProvider";
 export * from "./ConsoleSidebar";
+export * from "./HeaderBreadcrumb";
 export * from "./HeaderFeaturesContext";
 export * from "./NavBottom";
 export * from "./NavBottomProvider";

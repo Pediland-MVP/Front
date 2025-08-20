@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 // UI Imports
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import ContentCycleTable from "./components/contentCycleTable";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";

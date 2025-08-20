@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TableRow, TableCell } from "@/components/theme/ui/table";
+import { TableRow, TableCell } from "@/components/ui/table";
 
 type ContentCycleSkeletonProps = {
   rowCount?: number;

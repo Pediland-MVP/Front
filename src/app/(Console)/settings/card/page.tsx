@@ -1,8 +1,8 @@
 "use client";
 
 import { z } from "zod";
-import { Card } from "@/components/theme/ui/card";
-import { Input } from "@/components/theme/ui/input";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -19,7 +19,7 @@ import useSWRImmutable from "swr/immutable";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from '@/components/ui/button-loading';
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { CardContent } from "@/components/ui/card";
 import api from "@/hooks/swr/api-client";
 

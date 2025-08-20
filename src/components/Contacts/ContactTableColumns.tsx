@@ -1,7 +1,7 @@
 // src/app/leads/columns.tsx
 "use client";
 
-import { ContactNamespace } from "@/types/contact";
+import { Contact } from "@/types/contact";
 import { UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -12,10 +12,10 @@ import { useState } from "react";
 export function ContactTableColumns(
   setOpen: (open: boolean) => void,
   setContactId: (contactId: string) => void,
-  data?: ContactNamespace.Contact[],
+  data?: Contact[],
   withRowSelection: boolean = false,
-): ColumnDef<ContactNamespace.Contact>[] {
-  const cols: ColumnDef<ContactNamespace.Contact>[] = [];
+): ColumnDef<Contact>[] {
+  const cols: ColumnDef<Contact>[] = [];
 
   if (withRowSelection) {
     cols.push({
@@ -48,7 +48,6 @@ export function ContactTableColumns(
         const [hasError, setHasError] = useState(false);
         const src = row.original?.lead?.profilePic;
         const alt = row.original?.lead?.firstname || "بدون نام";
-
         const showFallback = hasError || !src;
 
         return (
@@ -74,6 +73,7 @@ export function ContactTableColumns(
       },
       meta: {
         skeletonClass: "h-8 w-8 rounded-full mx-auto",
+        className: "w-14",
       },
     },
     {

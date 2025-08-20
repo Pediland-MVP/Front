@@ -1,4 +1,4 @@
-// app/(Console)/components/layout/nav-user.tsx
+// src/components/layout/navUser.tsx
 "use client";
 
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/theme/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,

@@ -8,10 +8,10 @@ import {
   SelectTrigger,
   SelectLabel,
   SelectValue,
-} from "@/components/theme/ui/select";
-import { Input } from "@/components/theme/ui/input";
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { PlusCircle, Trash } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 export default function ConditionWordForm({ control, remove }: any) {
   const [conditions, setConditions] = useState([{ id: 1 }]);

@@ -5,7 +5,7 @@ import {
     TableRow,
     TableCell,
     TableBody,
-} from "@/components/theme/ui/table";
+} from "@/components/ui/table";
 
 interface ProductListSkeletonProps {
     rowCount?: number;

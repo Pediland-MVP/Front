@@ -7,11 +7,11 @@ import Accounts from "./components/accounts";
 import { useTranslations } from "next-intl";
 import { InstagramNamespace } from "@/types/instagram";
 // UI Imports Here
-import { Button } from "@/components/theme/ui/button";
-import { Card } from "@/components/theme/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
-import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { Plug } from "@phosphor-icons/react/dist/ssr";
 import ConnectInstagram from "./components/connectInstagram";
 

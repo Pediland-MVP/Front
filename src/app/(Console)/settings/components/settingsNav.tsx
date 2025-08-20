@@ -1,4 +1,4 @@
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { CreditCard, PaypalLogo, Plug, Rocket } from "@phosphor-icons/react/dist/ssr";

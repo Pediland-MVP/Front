@@ -2,7 +2,7 @@
 "use client";
 
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {

@@ -20,11 +20,11 @@ import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skel
 import OrderNotfound from "./components/order.notfound";
 import OrderProcessing from "./components/order.processing";
 // UI
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   FormStep,
   FormStepperProvider,
-} from "@/components/theme/ui/formStepper";
+} from "@/components/ui/formStepper";
 import {
   House,
   User,
@@ -42,7 +42,7 @@ import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import CheckoutError from "./components/checkout.error";
 import useSWR, { mutate } from "swr";
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
-import { toast } from "@/components/theme/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {

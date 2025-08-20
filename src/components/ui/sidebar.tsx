@@ -8,7 +8,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 // UI Imports
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -270,7 +270,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="link"
       className={cn(
-        "text-foreground hover:text-secondary-foreground hidden cursor-pointer pr-0 pl-2 md:flex [&_svg]:size-7",
+        "text-foreground hover:text-primary hidden cursor-pointer pr-0 pl-2 md:flex [&_svg]:size-7",
         className,
       )}
       onClick={(event) => {

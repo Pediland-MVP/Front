@@ -1,9 +1,9 @@
 // app/(Console)/automations/components/form/buttonTemplateComp.tsx
 
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
-import { Button } from "@/components/theme/ui/button";
-import InputCounter from "@/components/theme/ui/inputCounter";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { Button } from "@/components/ui/button";
+import InputCounter from "@/components/ui/inputCounter";
+import { Textarea } from "@/components/ui/textarea";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 import {

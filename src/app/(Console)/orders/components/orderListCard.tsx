@@ -14,10 +14,10 @@ import {
   TableRow,
   TableCell,
   TableHead,
-} from "@/components/theme/ui/table";
+} from "@/components/ui/table";
 import ImageWithFallback from "@/components/ui/imageWithCallback";
 import { Pencil } from "@phosphor-icons/react/dist/ssr";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import OrderListSkeleton from "./orderListSkeleton";
 import { Badge } from "@/components/ui/badge";
 import EditOrderDialog from "./editOrderDialog";

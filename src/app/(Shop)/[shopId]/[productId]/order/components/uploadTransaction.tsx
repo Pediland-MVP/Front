@@ -1,11 +1,11 @@
-import ImageUploader from '@/components/theme/ui/image-upload';
-import { Label } from '@/components/theme/ui/label';
+import ImageUploader from '@/components/ui/image-upload';
+import { Label } from '@/components/ui/label';
 import LoadingButton from '@/components/ui/button-loading';
 import { useTranslations } from 'next-intl';
 import { useCheckout } from '../useCheckout';
 import { mutate } from 'swr';
 import useProcessOrder from '../hooks/useProcessOrder';
-import { Button } from '@/components/theme/ui/button';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 

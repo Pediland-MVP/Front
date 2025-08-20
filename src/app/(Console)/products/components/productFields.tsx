@@ -1,7 +1,7 @@
 "use client";
 // UI Components from shadcn and custom theme
-import { Input } from "@/components/theme/ui/input";
-import { FormField, FormLabel } from "@/components/theme/ui/form";
+import { Input } from "@/components/ui/input";
+import { FormField, FormLabel } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -9,8 +9,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/theme/ui/select";
-import { Button } from "@/components/theme/ui/button";
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import {
   ArrowsVertical,
   PlusCircle,

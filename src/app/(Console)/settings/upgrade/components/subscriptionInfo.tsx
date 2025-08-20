@@ -7,8 +7,8 @@ import { CircularProgress } from "./circularProgress"
 import { useCallback, useEffect, useState } from "react"
 // UI 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/theme/ui/button"
-import { Card } from "@/components/theme/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { ClockCounterClockwise } from "@phosphor-icons/react/dist/ssr"
 
 

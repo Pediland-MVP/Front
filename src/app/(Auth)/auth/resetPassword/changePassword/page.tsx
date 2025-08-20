@@ -23,11 +23,11 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/theme/ui/input-otp";
-import { Button } from "@/components/theme/ui/button";
-import { Input } from "@/components/theme/ui/input";
+} from "@/components/ui/input-otp";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { InputPassword } from "@/components/theme/ui/inputPassword";
+import { InputPassword } from "@/components/ui/inputPassword";
 import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 
 export default function ResetPasswordForm() {

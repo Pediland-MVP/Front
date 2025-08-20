@@ -16,8 +16,8 @@ import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports
 import HelpmeDialog from "@/components/global/helpme.dialog";
-import { Button } from "@/components/theme/ui/button";
-import { Input } from "@/components/theme/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import ErrorMessage from "@/components/ui/errorMessage";
 import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 

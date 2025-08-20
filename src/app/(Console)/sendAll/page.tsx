@@ -1,6 +1,6 @@
 import React from "react";
 import Table1 from "./component/table";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 
 export default function page() {
   return (

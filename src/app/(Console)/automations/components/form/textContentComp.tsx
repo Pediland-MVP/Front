@@ -1,10 +1,10 @@
 // app/(Console)/automations/components/form/text/main.tsx
 
 import { ContentCycleContentModeEnum } from "@/app/constants/contentCycleContent.enum";
-import { FormField, FormItem, FormMessage } from "@/components/theme/ui/form";
-import InputCounter from "@/components/theme/ui/inputCounter";
-import { Label } from "@/components/theme/ui/label";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { FormField, FormItem, FormMessage } from "@/components/ui/form";
+import InputCounter from "@/components/ui/inputCounter";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";
 
 export type TextContentCompProps = {

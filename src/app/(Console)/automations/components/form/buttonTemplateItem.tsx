@@ -10,8 +10,8 @@ import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports
-import { Button } from "@/components/theme/ui/button";
-import { Input } from "@/components/theme/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import ErrorMessage from "@/components/ui/errorMessage";
 import {

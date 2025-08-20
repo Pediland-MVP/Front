@@ -4,7 +4,7 @@ import { orderFormSchema } from '../checkout.page';
 import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
-import { toast } from "@/components/theme/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import useCheckoutStep from "./useCheckoutStep";
 import { OrderNamespace } from "@/types/order/order.namespace";

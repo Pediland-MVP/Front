@@ -8,7 +8,7 @@ import QuestionAnswerDialog from "./questionAnswer.dialog";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Link from "next/link";
 // Just UI Imports Below
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +19,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/theme/ui/table";
-import { Button } from "@/components/theme/ui/button";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 
 interface SessionTableProps {

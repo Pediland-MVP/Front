@@ -10,7 +10,7 @@ import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports
 import HelpmeDialog from "@/components/global/helpme.dialog";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
 
 export default function CommentConsent() {

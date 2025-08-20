@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/products.dialog.tsx
 "use client";
 
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,

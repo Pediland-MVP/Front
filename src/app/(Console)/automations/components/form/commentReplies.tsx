@@ -11,14 +11,14 @@ import {
   FormControl,
   FormItem,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import HelpmeDialog from "@/components/global/helpme.dialog";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { Input } from "@/components/theme/ui/input";
+import { Input } from "@/components/ui/input";
 
 export function CommentReplies() {
   const { watch, control, setValue } = useFormContext();

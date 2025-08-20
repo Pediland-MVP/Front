@@ -13,8 +13,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/theme/ui/table";
-import { Button } from "@/components/theme/ui/button";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   Pencil,
   Trash,
@@ -22,7 +22,7 @@ import {
   CaretLeft,
   EnvelopeSimple
 } from "@phosphor-icons/react/dist/ssr";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import ContentCycleSkeleton from "./contentCycleTableSkeleton";

@@ -1,7 +1,7 @@
 import { Dispatch, useState } from "react";
 import { useCheckout } from "../useCheckout";
 import { useTranslations } from "next-intl";
-import { toast } from "@/components/theme/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import logger from "@/utils/logger";
 import { OrderNamespace } from "@/types/order/order.namespace";
 

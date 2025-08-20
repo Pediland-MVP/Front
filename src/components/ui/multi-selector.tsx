@@ -4,13 +4,13 @@ import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import * as React from "react";
 import { forwardRef, useEffect } from "react";
 
-import { Badge } from "@/components/theme/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/theme/ui/command";
+} from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { X, XCircle } from "@phosphor-icons/react/dist/ssr";
 

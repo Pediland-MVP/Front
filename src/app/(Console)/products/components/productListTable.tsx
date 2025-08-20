@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils";
 import ProductListSkeleton from "./productListSkeleton";
 
 // Just UI Imports Below
-import { Card } from "@/components/theme/ui/card";
-import { Button } from "@/components/theme/ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/theme/ui/table";
+} from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import {
   CaretRight,

@@ -1,9 +1,9 @@
 "use client";
 import { useTranslations } from "next-intl";
 // UI
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/theme/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/theme/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/ui/breadcrumb";
 import SidebarTrigger from "@/components/ui/sidebar";
 import Link from "next/link";
 

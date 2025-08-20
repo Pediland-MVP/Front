@@ -13,9 +13,9 @@ import { AttributeValue, ProductItem, ProductNamespace } from "@/types/product";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 // UI Components from shadcn and custom theme
-import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
-import { Input } from "@/components/theme/ui/input";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -23,14 +23,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/theme/ui/form";
+} from "@/components/ui/form";
 import { toast } from "@/components/ui/use-toast";
 import { FileUpload } from "@/components/file-upload";
 import LoadingButton from "@/components/ui/button-loading";
-import { Switch } from "@/components/theme/ui/switch";
-import { Label } from "@/components/theme/ui/label";
-import { Card } from "@/components/theme/ui/card";
-import MultipleSelector from "@/components/theme/ui/multi-selector";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import MultipleSelector from "@/components/ui/multi-selector";
 import useSWRImmutable from "swr/immutable";
 import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
 import { ProductFieldTypeEnum } from "@/types/product.enum";

@@ -1,11 +1,10 @@
 // src/components/layout/consoleHeader.tsx
 "use client";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import React from "react";
-import { BreadcrumbGenerator } from "../../app/(Console)/components/breadcrumbGenerator";
-import { usePathname } from "next/navigation";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { usePathname } from "next/navigation";
+
+import { HeaderBreadcrumb, SidebarTrigger } from "@/components/index";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();
@@ -18,7 +17,7 @@ export const ConsoleHeader = () => {
       <div className="_wrap flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 xl:gap-4">
           <SidebarTrigger />
-          <BreadcrumbGenerator />
+          <HeaderBreadcrumb />
         </div>
         {buttons && <div className="_buttons">{buttons}</div>}
       </div>

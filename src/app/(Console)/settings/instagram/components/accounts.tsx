@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
@@ -21,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/theme/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import {
   DotsThreeOutlineVertical,
   Eye,
@@ -34,9 +34,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/theme/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { ArrowClockwise, IntersectSquare } from "@phosphor-icons/react";
-import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";

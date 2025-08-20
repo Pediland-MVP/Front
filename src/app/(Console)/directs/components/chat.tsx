@@ -7,7 +7,7 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import { leadNamespace } from "@/types/lead";
 import useCurrentLead from "@/src/store/currentLead.store";
 import ChatBottombar from "./chatBottombar";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 import useFetchMessages from "./useFetchMessages";
 import ChatSkeleton from "./chat.skeleton";

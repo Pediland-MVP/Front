@@ -21,16 +21,16 @@ import { useContentsUploaderContext } from "./useContentsUploaderContext";
 
 // UI Imports
 import { UploadedFile } from "@/components/theme/types/fileUploader";
-import { Badge } from "@/components/theme/ui/badge";
-import { FileUploader } from "@/components/theme/ui/fileUploader";
+import { Badge } from "@/components/ui/badge";
+import { FileUploader } from "@/components/ui/fileUploader";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/theme/ui/form";
-import { Input } from "@/components/theme/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,

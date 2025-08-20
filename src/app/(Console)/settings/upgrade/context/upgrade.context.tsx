@@ -5,7 +5,7 @@ import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspa
 import { createContext, useState, use, useContext, useEffect } from "react";
 import { usePlanSelection } from "../hooks/usePlanSelection";
 import useSWRImmutable from "swr/immutable";
-import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import useSWR from "swr";
 import { AxiosError } from "axios";
 import useUser from "@/hooks/useUser";

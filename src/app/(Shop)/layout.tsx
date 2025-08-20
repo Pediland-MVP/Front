@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "@/app/styles/globals.css";
 // UI
-import { Toaster } from "@/components/theme/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import SWRProvider from "./swr.prvider";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
 

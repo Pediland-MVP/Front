@@ -1,9 +1,9 @@
 import Link from "next/link";
 import React, { useRef, useState } from "react";
-import { buttonVariants } from "@/components/theme/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Textarea } from "@/components/theme/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { EmojiPicker } from "./emojiPicker";
 import useCurrentLead from "@/src/store/currentLead.store";
 import { toast } from "@/components/ui/use-toast";

@@ -7,7 +7,7 @@ import {
 } from "@/app/constants/contentCycleContent.enum";
 import HelpmeDialog from "@/components/global/helpme.dialog";
 import { UploadedFile } from "@/components/theme/types/fileUploader";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import ErrorMessage from "@/components/ui/errorMessage";
 import useUser from "@/hooks/useUser";
 import {

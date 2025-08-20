@@ -7,11 +7,12 @@ export type ColumnMeta = {
   isNumeric?: boolean;
   headAlign?: "text-left" | "text-center" | "text-right";
   cellAlign?: "text-left" | "text-center" | "text-right";
+  className?: string;
 };
 
-export type ColumnDef<TData, TValue = unknown> = BaseColumnDef<
-  TData,
-  TValue
+export type ColumnDef<TData, TValue = unknown> = Omit<
+  BaseColumnDef<TData, TValue>,
+  "meta"
 > & {
   meta?: ColumnMeta;
 };

@@ -1,4 +1,4 @@
-import { Card } from "@/components/theme/ui/card"
+import { Card } from "@/components/ui/card"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 

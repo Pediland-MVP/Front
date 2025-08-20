@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { commentsSocket } from "@/utils/socket";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -17,7 +17,7 @@ import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";
 import logger from "@/utils/logger";
-import InfiniteScroll from "@/components/theme/ui/infinite-scroll";
+import InfiniteScroll from "@/components/ui/infinite-scroll";
 
 interface CommentsListProps {
   children?: React.ReactNode;

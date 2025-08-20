@@ -11,9 +11,9 @@ import { useTranslations } from "next-intl";
 // UI
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import { toast } from "@/components/ui/use-toast";
-import { Input } from "@/components/theme/ui/input";
-import { InputPassword } from "@/components/theme/ui/inputPassword";
-import { Button } from "@/components/theme/ui/button";
+import { Input } from "@/components/ui/input";
+import { InputPassword } from "@/components/ui/inputPassword";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import {
 import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FormLabel } from "@/components/theme/ui/form";
+import { FormLabel } from "@/components/ui/form";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");

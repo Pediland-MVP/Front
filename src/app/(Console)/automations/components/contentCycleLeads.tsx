@@ -16,9 +16,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/theme/ui/table";
+} from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TableCell } from "@/components/theme/ui/table";
+import { TableCell } from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,

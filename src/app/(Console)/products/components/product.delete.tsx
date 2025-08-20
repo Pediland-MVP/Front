@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/theme/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
 
 interface DeleteConfirmationDialogProps {

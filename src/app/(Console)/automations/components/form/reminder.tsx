@@ -20,7 +20,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/theme/ui/select";
+} from "@/components/ui/select";
 import ErrorMessage from "@/components/ui/errorMessage";
 import {
   FormControl,
@@ -28,7 +28,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/theme/ui/form";
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 
 export default function Reminder() {

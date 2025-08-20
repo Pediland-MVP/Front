@@ -5,7 +5,7 @@ import type {
   FileWithPreview,
   UploadedFile,
 } from "@/components/theme/types/fileUploader";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import {} from "@phosphor-icons/react";
 import {
   FileIcon,

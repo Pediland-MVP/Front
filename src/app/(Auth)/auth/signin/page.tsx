@@ -9,8 +9,8 @@ import { REGEX_PASSWORD } from "@/utils/regex";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 // UI 
-import { Button } from "@/components/theme/ui/button";
-import { Input } from "@/components/theme/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
   Form,
@@ -19,7 +19,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { InputPassword } from "@/components/theme/ui/inputPassword";
+import { InputPassword } from "@/components/ui/inputPassword";
 import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "@/components/ui/use-toast";
 import { onInputP2EHandler } from "@/utils/p2eNumber";

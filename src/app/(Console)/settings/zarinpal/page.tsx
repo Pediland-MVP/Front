@@ -1,7 +1,7 @@
 "use client";
 
-import { Input } from "@/components/theme/ui/input";
-import { Card, CardContent } from "@/components/theme/ui/card";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -19,7 +19,7 @@ import ErrorMessage from "@/components/ui/errorMessage";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "@/components/ui/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import useUser from "@/hooks/useUser";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";

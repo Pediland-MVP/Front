@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/theme/ui/table";
+} from "@/components/ui/table";
 import {
   Cell,
   ColumnDef,

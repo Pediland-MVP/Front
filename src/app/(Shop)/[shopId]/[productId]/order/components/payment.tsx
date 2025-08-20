@@ -2,14 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Label } from "@/components/theme/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/theme/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Copy, CreditCard, Check } from "@phosphor-icons/react/dist/ssr";
 import { useCheckout } from "../useCheckout";
 import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
 import useStartPayment from "../hooks/useStartPayment";
 import LoadingButton from "@/components/ui/button-loading";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import Image from "next/image";
 import useCheckoutStep from "../hooks/useCheckoutStep";

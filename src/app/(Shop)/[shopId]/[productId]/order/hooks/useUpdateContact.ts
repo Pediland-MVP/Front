@@ -3,7 +3,7 @@ import { useCheckout } from "../useCheckout";
 import { mutate } from "swr";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
-import { toast } from "@/components/theme/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import useCheckoutStep from "./useCheckoutStep";
 import { IResponseMessage } from "@/types/responseMessage";

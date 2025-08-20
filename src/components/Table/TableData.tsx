@@ -2,23 +2,10 @@
 "use client";
 
 import { formatNumber } from "@/lib/formatNumber";
-import { ColumnMeta } from "@/types/tables";
-import { useEffect, useState } from "react";
-
-// UI Components for table layout
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-// TanStack Table types and utilities
+import { cn } from "@/lib/utils";
+import { ColumnMeta, ColumnDef } from "@/types/tables";
 import {
   Cell,
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -28,7 +15,17 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { Skeleton } from "../ui/skeleton";
+import { useEffect, useState } from "react";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/index";
+import { Skeleton } from "@/components/index";
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {
@@ -231,7 +228,10 @@ export function DataTable<TData, TValue>({
                   <TableCell
                     key={cell.id}
                     style={{ width: cell.column.getSize() }}
-                    className="text-center"
+                    className={cn(
+                      cell.column.columnDef.meta?.className,
+                      "text-center",
+                    )}
                   >
                     {renderCell(cell)}
                   </TableCell>

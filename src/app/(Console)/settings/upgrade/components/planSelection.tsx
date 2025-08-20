@@ -12,10 +12,10 @@ import { useUpgradeContext } from "../context/upgrade.context";
 
 // UI Here
 import { Form } from "@/components/ui/form";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import { Card } from "@/components/theme/ui/card";
+import { Card } from "@/components/ui/card";
 import DiscountText from "@/components/discountText";
 import logger from "@/utils/logger";
 import { DiscountCode } from "./discountCode";

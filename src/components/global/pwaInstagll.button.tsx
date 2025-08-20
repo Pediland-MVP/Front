@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../theme/ui/button';
+import { Button } from '../ui/button';
 
 /**
  * PWAInstallButton listens for the `beforeinstallprompt` event and

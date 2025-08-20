@@ -1,3 +1,4 @@
+// src/components/layout/NavUser.skeleton.tsx
 import { Skeleton } from "@/components/ui/skeleton"
 
 export const NavUserSkeleton = () => {

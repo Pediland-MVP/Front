@@ -7,14 +7,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/theme/ui/select";
+} from "@/components/ui/select";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface DataTablePaginationProps {
   currentPage: number;

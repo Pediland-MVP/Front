@@ -1,5 +1,5 @@
 import { Video } from "@/components/global/video";
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Plus } from '@phosphor-icons/react/dist/ssr'
 import Link from "next/link";

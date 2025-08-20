@@ -1,4 +1,4 @@
-// app/(Console)/components/layout/ConsoleProvider.tsx
+// src/components/layout/consoleProvider.tsx
 "use client";
 
 import { UserNamespace } from "@/types/user";

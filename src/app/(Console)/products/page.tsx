@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import ProductListTable from "./components/productListTable";
 // Just UI Imports Below
-import { Button } from "@/components/theme/ui/button";
+import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 

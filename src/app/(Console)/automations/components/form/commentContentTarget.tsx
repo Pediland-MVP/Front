@@ -5,7 +5,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/theme/ui/form";
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";

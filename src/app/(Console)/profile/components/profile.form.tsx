@@ -32,13 +32,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/theme/ui/select";
-import { Card } from "@/components/theme/ui/card";
-import { Input } from "@/components/theme/ui/input";
-import { Button } from "@/components/theme/ui/button";
+} from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import LoadingButton from "@/components/ui/button-loading";
-import LoadingSpinner from "@/components/theme/ui/loadingSpinner";
+import LoadingSpinner from "@/components/ui/loadingSpinner";
 import api from "@/hooks/swr/api-client";
 
 export function ProfileForm() {
