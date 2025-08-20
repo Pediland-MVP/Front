@@ -2,7 +2,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 import {
@@ -12,7 +12,19 @@ import {
   TableLayout,
 } from "@/components/index";
 
-export default function page() {
+function useDebouncedValue<T>(value: T, delay = 300) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
+export default function Page() {
+  const t = useTranslations("Contacts");
+
   const { setTools, setButtons, clearTools, clearButtons } = useHeaderFeatures(
     (s) => ({
       setTools: s.setTools,
@@ -24,37 +36,63 @@ export default function page() {
 
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
-  const t = useTranslations("Contacts");
 
-  useEffect(() => {
-    setButtons(
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const normalized = debouncedSearch.trim();
+  const effectiveSearch = normalized.length >= 2 ? normalized : "";
+
+  const HeaderButton = useMemo(
+    () => (
       <button
+        type="button"
         className="m-0 flex p-0"
         onClick={() => setIsSearchVisible((prev) => !prev)}
+        aria-label={t("toggleSearch")}
       >
         <ListMagnifyingGlassIcon
           size={26}
           className="text-foreground xl:hidden"
         />
-      </button>,
-    );
-    setTools(
+      </button>
+    ),
+    [t],
+  );
+
+  const HeaderTools = useMemo(
+    () => (
       <Input
+        id="contacts-search-input"
         type="search"
         placeholder={t("searchPlaceholder")}
-        onChange={(e) => setSearch(e.target.value)}
-        className={`${isSearchVisible ? "flex" : "hidden xl:flex"}`}
-      />,
-    );
+        aria-label={t("searchPlaceholder")}
+        value={search}
+        onChange={(e) => setSearch(e.target.value.replace(/\s+/g, " "))}
+        className={isSearchVisible ? "flex" : "hidden xl:flex"}
+      />
+    ),
+    [t, search, isSearchVisible],
+  );
+
+  useEffect(() => {
+    setButtons(HeaderButton);
+    setTools(HeaderTools);
+
     return () => {
       clearButtons();
       clearTools();
     };
-  }, [isSearchVisible]);
+  }, [
+    HeaderButton,
+    HeaderTools,
+    setButtons,
+    setTools,
+    clearButtons,
+    clearTools,
+  ]);
 
   return (
     <TableLayout className="_contacts">
-      <ContactsList search={search} />
+      <ContactsList search={effectiveSearch} />
     </TableLayout>
   );
 }

@@ -1,36 +1,47 @@
-export namespace ContactNamespace {
-  export interface GET {
-    items: ContactItem[];
-    meta: Meta;
-  }
+// src/types/contact.ts
 
-  export type Contact = Omit<
-    ContactItem,
-    "messagesCount" | "latestMessageDate"
-  >;
+import { Paginated } from "./api";
 
-  export type Contacts = ContactItem[];
+export type ContactsGetResponse = Paginated<ContactWire>;
+
+// ------------- WIRE (raw API) -------------
+export type GenderWire = "male" | "female" | "other" | null;
+export type ISODateString = string;
+
+export interface LeadWire {
+  contactId: string;
+  createDate: ISODateString;
+  firstname: string;
+  id: string;
+  instagramId: string;
+  lastname: string | null;
+  profilePic: string | null;
+  updateDate: ISODateString;
+  userId: string;
 }
 
-interface ContactItem {
+export interface ContactWire {
+  id: string;
+  username: string;
+  firstname: string | null;
+  lastname: string | null;
+  email: string | null;
+  mobile: string | null;
   address: string | null;
-  birthDate: string | null;
+  postalcode: string | null;
   cityId: string | null;
   country: string | null;
-  createDate: string;
-  email: string | null;
-  firstname: string | null;
-  gender: "male" | "female" | "other" | null;
-  id: string;
-  lastname: string | null;
-  latestMessageDate: string;
-  lead: Lead;
-  messagesCount: string;
-  mobile: string | null;
-  postalcode: string | null;
-  updateDate: string;
-  username: string;
+  gender: GenderWire;
+  birthDate: ISODateString | null;
+  createDate: ISODateString;
+  updateDate: ISODateString;
+  messagesCount: string; // ⚠️ comes as string from API
+  latestMessageDate: ISODateString; // string in wire
+  lead: LeadWire;
 }
+
+// ------------- DOMAIN (used in UI) -------------
+export type Gender = "male" | "female" | "other";
 
 export interface Lead {
   contactId: string;
@@ -38,16 +49,28 @@ export interface Lead {
   firstname: string;
   id: string;
   instagramId: string;
-  lastname: null;
-  profilePic: null | string;
+  lastname: string | null;
+  profilePic: string | null;
   updateDate: Date;
   userId: string;
 }
 
-export interface Meta {
-  currentPage: number;
-  itemCount: number;
-  itemsPerPage: number;
-  totalItems: number;
-  totalPages: number;
+export interface Contact {
+  id: string;
+  username: string;
+  firstname: string | null;
+  lastname: string | null;
+  email: string | null;
+  mobile: string | null;
+  address: string | null;
+  postalcode: string | null;
+  cityId: string | null;
+  country: string | null;
+  gender: Gender | null;
+  birthDate: Date | null;
+  createDate: Date;
+  updateDate: Date;
+  messagesCount: number; // parsed
+  latestMessageDate: Date;
+  lead: Lead;
 }

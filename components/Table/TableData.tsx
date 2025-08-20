@@ -180,77 +180,75 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="flex-1 overflow-hidden">
-      <Table dir="rtl">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} data-header={true}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} style={{ width: header.getSize() }}>
-                  {header.isPlaceholder
-                    ? null
-                    : safeFlexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHead>
-              ))}
+    <Table dir="rtl">
+      <TableHeader className="sticky top-0 z-10">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id} data-header={true}>
+            {headerGroup.headers.map((header) => (
+              <TableHead key={header.id} style={{ width: header.getSize() }}>
+                {header.isPlaceholder
+                  ? null
+                  : safeFlexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      {isLoading ? (
+        <TableBody>
+          {[...Array(limit)].map((_, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {columns.map((col, colIndex) => {
+                const key =
+                  "accessorKey" in col
+                    ? col.accessorKey?.toString()
+                    : (col.id ?? colIndex);
+
+                const meta = col.meta as ColumnMeta;
+                const skeletonClass = meta?.skeletonClass ?? "";
+
+                return (
+                  <TableCell key={key} className="h-11">
+                    <Skeleton className={skeletonClass} />
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))}
-        </TableHeader>
-        {isLoading ? (
-          <TableBody>
-            {[...Array(limit)].map((_, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {columns.map((col, colIndex) => {
-                  const key =
-                    "accessorKey" in col
-                      ? col.accessorKey?.toString()
-                      : (col.id ?? colIndex);
-
-                  const meta = col.meta as ColumnMeta;
-                  const skeletonClass = meta?.skeletonClass ?? "";
-
-                  return (
-                    <TableCell key={key} className="h-11">
-                      <Skeleton className={skeletonClass} />
-                    </TableCell>
-                  );
-                })}
+        </TableBody>
+      ) : (
+        <TableBody>
+          {table.getRowModel().rows?.length > 0 ? (
+            table.getRowModel().rows?.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}
+                    className="text-center"
+                  >
+                    {renderCell(cell)}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        ) : (
-          <TableBody>
-            {table.getRowModel().rows?.length > 0 ? (
-              table.getRowModel().rows?.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}
-                      className="text-center"
-                    >
-                      {renderCell(cell)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-14">
-                  <div className="text-muted-foreground px-2">
-                    {t("noResults")}
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        )}
-      </Table>
-    </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-14">
+                <div className="text-muted-foreground px-2">
+                  {t("noResults")}
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      )}
+    </Table>
   );
 }

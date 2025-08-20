@@ -177,6 +177,7 @@
     "dashboard": "داشبورد",
     "list": "لیست مخاطبین",
     "searchPlaceholder": "جستجو ...",
+    "toggleSearch": "نمایش جستجو",
     "List": {
       "image": "تصویر",
       "userName": "نام کاربر",

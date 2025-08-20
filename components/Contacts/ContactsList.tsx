@@ -1,44 +1,116 @@
 // src/components/Contacts/ContactsList.tsx
 "use client";
 
-import { ContactDetailsDialog, DataTable } from "@/components/index";
+import useSWR from "swr";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ContactTableColumns } from "./ContactTableColumns";
-import useSWRImmutable from "swr/immutable";
-import { ContactNamespace } from "@/types/contact";
-import { useState } from "react";
+import { toContact } from "@/lib/mappers/contact";
+import type { PageMeta, Paginated } from "@/types/api";
+import type { ContactWire } from "@/types/contact";
+import { Table } from "@tanstack/react-table";
+
+import {
+  ContactDetailsDialog,
+  DataTable,
+  TablePagination,
+} from "@/components/index";
 
 export const ContactsList = ({ search }: { search: string }) => {
   // Dialog
   const [open, setOpen] = useState<boolean>(false);
   const [contactId, setContactId] = useState<string>("");
+
   // Table
-  const columns = ContactTableColumns(setOpen, setContactId);
-
-  const page = 1;
-  const limit = 12;
-  const onPageChange = (page: number) => {};
-  const onLimitChange = (limit: number) => {};
-
-  const {
-    data: contactsData,
-    error: contactsError,
-    isLoading: isContactsLoading,
-    mutate: mutateContacts,
-  } = useSWRImmutable<ContactNamespace.GET>(
-    `/contacts?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}`,
+  const [tableInstance, setTableInstance] = useState<Table<any> | null>(null);
+  const columns = useMemo(
+    () => ContactTableColumns(setOpen, setContactId),
+    [setOpen, setContactId],
   );
+
+  // Server-side pagination state (1-based page)
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(30);
+
+  const onPageChange = useCallback(
+    (newPage: number) => setPage(Math.max(1, newPage)),
+    [],
+  );
+  const onLimitChange = useCallback((newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1);
+  }, []);
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  // SWR key as a tuple: [url, { params }]
+  const swrKey = useMemo<
+    [string, { params: { page: number; limit: number; search?: string } }]
+  >(
+    () => [
+      "/contacts",
+      { params: { page, limit, ...(search ? { search } : {}) } },
+    ],
+    [page, limit, search],
+  );
+
+  // Global fetcher from SWRProvider handles this tuple key
+  const { data, error, isLoading } = useSWR<Paginated<ContactWire>>(swrKey);
+
+  // Map Wire -> Domain (memoized)
+  const rawItems = data?.items ?? [];
+  const items = useMemo(() => rawItems.map(toContact), [rawItems]);
+
+  // Safe meta (fallback while loading)
+  const defaultMeta: PageMeta = {
+    currentPage: page,
+    itemsPerPage: limit,
+    itemCount: 0,
+    totalItems: 0,
+    totalPages: 1,
+  };
+  const meta: PageMeta = data?.meta ?? defaultMeta;
+
+  const currentPage = meta.currentPage;
+  const itemsPerPage = meta.itemsPerPage;
+  const itemCount = meta.itemCount;
+  const totalItems = meta.totalItems;
+  const totalPages = meta.totalPages;
+
+  // Clamp page if server reports fewer pages (e.g., after a narrow search)
+  useEffect(() => {
+    if (currentPage > totalPages) setPage(totalPages);
+  }, [currentPage, totalPages]);
+
+  // Block controls while loading or in error state
+  const blockControls = isLoading || !!error;
 
   return (
     <>
       <DataTable
         columns={columns}
-        data={contactsData?.items || []}
-        isLoading={isContactsLoading}
-        page={page}
-        limit={limit}
+        data={items}
+        isLoading={isLoading}
+        page={currentPage}
+        limit={itemsPerPage}
+        totalCount={totalItems}
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
-        totalCount={contactsData?.meta?.totalItems || 0}
+        tableInstanceRef={setTableInstance}
+      />
+
+      <TablePagination
+        isLoading={blockControls}
+        table={tableInstance}
+        onPageChange={onPageChange}
+        onLimitChange={onLimitChange}
+        totalCount={totalItems}
+        serverPage={currentPage}
+        serverPerPage={itemsPerPage}
+        serverItemCount={itemCount}
+        serverTotalPages={totalPages}
       />
 
       <ContactDetailsDialog
