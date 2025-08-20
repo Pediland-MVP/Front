@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "Yekan";
+  src:
+    url("/fonts/YekanBakhFaNum-VF.woff2") format("woff2"),
+    url("/fonts/YekanBakhFaNum-VF.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AnjomanMaxVF";
+  src:
+    url("/fonts/AnjomanMaxVF.woff2") format("woff2-variations"),
+    url("/fonts/AnjomanMaxVF.woff2") format("woff2"),
+    url("/fonts/AnjomanMaxVF.woff") format("woff");
+  font-weight: 100 1000;
+  font-display: swap;
+}
