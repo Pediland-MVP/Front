@@ -24,6 +24,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { cn } from "@/lib/utils";
 
 export const NavMain = ({
   items,
@@ -42,19 +43,16 @@ export const NavMain = ({
   const pathname = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
 
-  // state برای کنترل منوی باز شده
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          // بررسی می‌کنیم که آیا مسیر فعلی با یکی از زیر آیتم‌های منو تطبیق دارد یا نه
           const isSubMenuActive = item.items?.some((subItem) =>
             pathname.startsWith(subItem.url),
           );
 
-          // منوی باز در صورتی که openMenu برابر با این منو یا به صورت پیش‌فرض فعال باشد
           const isOpen =
             openMenu === item.title || item.isActive || isSubMenuActive;
 
@@ -77,13 +75,13 @@ export const NavMain = ({
                     <SidebarMenuButton
                       asChild
                       tooltip={item.title}
-                      className={
+                      className={cn(
+                        "border border-dashed border-transparent",
                         pathname === item.url
                           ? "text-foreground hover:text-foreground bg-blue-50"
-                          : "hover:text-foreground text-gray-700"
-                      }
+                          : "hover:text-foreground hover:border-gray-200",
+                      )}
                       onClick={() => {
-                        // اگر منو هنوز باز نیست، با کلیک بازش می‌کنیم
                         if (!isOpen) setOpenMenu(item.title);
                       }}
                     >
@@ -97,11 +95,12 @@ export const NavMain = ({
                   <SidebarMenuButton
                     asChild
                     tooltip={item.title}
-                    className={
+                    className={cn(
+                      "border border-dashed border-transparent",
                       pathname === item.url
-                        ? "text-foreground hover:text-foreground bg-blue-100/60 hover:bg-blue-100/60"
-                        : "hover:text-foreground text-gray-700"
-                    }
+                        ? "text-foreground hover:text-foreground border-blue-200 bg-blue-50 hover:bg-blue-50"
+                        : "hover:text-foreground hover:border-gray-200",
+                    )}
                     onClick={() => {
                       if (isMobile) toggleSidebar();
                     }}
@@ -116,7 +115,7 @@ export const NavMain = ({
                 {item.items?.length ? (
                   <>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuAction className="data-[state=open]:-rotate-90">
+                      <SidebarMenuAction className="-mt-0.5 data-[state=open]:-rotate-90">
                         <CaretLeftIcon />
                         <span className="sr-only">Toggle</span>
                       </SidebarMenuAction>
@@ -128,11 +127,12 @@ export const NavMain = ({
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
-                              className={
+                              className={cn(
+                                "border border-dashed border-transparent",
                                 pathname.startsWith(subItem.url)
-                                  ? "text-foreground hover:text-foreground bg-blue-100"
-                                  : "hover:text-foreground text-gray-700"
-                              }
+                                  ? "text-foreground hover:text-foreground border-blue-200 bg-blue-50 hover:bg-blue-50"
+                                  : "hover:text-foreground hover:border-gray-200",
+                              )}
                               onClick={() => {
                                 setOpenMenu(item.title);
                                 if (isMobile) toggleSidebar();

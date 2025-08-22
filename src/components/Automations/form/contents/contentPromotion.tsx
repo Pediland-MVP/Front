@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import InputCounter from "@/components/ui/inputCounter";
-import ContentPromotionDialog from "./contentPromotion.dialog";
+import { ContentPromotionDialog } from "./ContentPromotion.dialog";
 import { useState } from "react";
 
 interface MessageTypeOption {
@@ -78,7 +78,7 @@ const messageTypeOptions: MessageTypeOption[] = [
   },
 ];
 
-export default function ContentPromotion() {
+export const ContentPromotion = () => {
   const {
     control,
     getValues,
@@ -115,7 +115,7 @@ export default function ContentPromotion() {
   };
 
   const handleMessageTypeChange = async (
-    type: ContentCycleContentTypesEnum | "media"
+    type: ContentCycleContentTypesEnum | "media",
   ) => {
     // Create a new content object with the selected type
     //NOTE: Default values of the new content
@@ -153,7 +153,7 @@ export default function ContentPromotion() {
 
     // Trigger form validation
     await trigger(
-      `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`
+      `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
     );
 
     clearErrors("contents.0.buttonTemplate");
@@ -163,27 +163,27 @@ export default function ContentPromotion() {
 
   return (
     <div
-      className="bg-blue-50 p-3 rounded-xl flex flex-col items-start gap-y-4"
+      className="flex flex-col items-start gap-y-4 rounded-xl bg-blue-50 p-3"
       onClick={() =>
         document?.getElementById(ContentPromotionDialog.name)?.click()
       }
     >
       <ContentPromotionDialog setIsOpen={setIsOpen} isOpen={isOpen} />
-      <div className="_header flex justify-between items-center w-full">
+      <div className="_header flex w-full items-center justify-between">
         <div className="cursor-move touch-none">
           <ArrowsOutCardinal size={20} />
         </div>
         <div>
           <Trash
             size={22}
-            className="text-red-600 cursor-pointer"
+            className="cursor-pointer text-red-600"
             onClick={deleteContent}
             aria-label={t("removeContent")}
           />
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-5 gap-x-2 shrink-0 items-center">
+      <div className="grid w-full shrink-0 grid-cols-5 items-center gap-x-2">
         {/**FIXME: Should be refactor */}
         {messageTypeOptions.map((option) => (
           <Button
@@ -193,19 +193,19 @@ export default function ContentPromotion() {
             variant={
               (option.value === "media" &&
                 ["image", "video", "audio"].includes(
-                  contents?.[index]?.type
+                  contents?.[index]?.type,
                 )) ||
               contents?.[index]?.type === option.value
                 ? "default"
                 : "outline"
             }
-            className={`h-15 flex flex-col items-center justify-cente ${
+            className={`justify-cente flex h-15 flex-col items-center ${
               (option.value === "media" &&
                 ["image", "video", "audio"].includes(
-                  contents?.[index]?.type
+                  contents?.[index]?.type,
                 )) ||
               contents?.[index]?.type === option.value
-                ? "ring-2 ring-primary"
+                ? "ring-primary ring-2"
                 : ""
             }`}
             onClick={() => handleMessageTypeChange(option.value)}
@@ -216,8 +216,8 @@ export default function ContentPromotion() {
         ))}
       </div>
 
-      <div className="_content gap-3 flex flex-col w-full">
-        <div className="flex flex-col gap-2 w-full">
+      <div className="_content flex w-full flex-col gap-3">
+        <div className="flex w-full flex-col gap-2">
           <FormItem>
             <Label className="text-xs font-medium">
               {t.rich("youCanUseVars", {
@@ -310,4 +310,4 @@ export default function ContentPromotion() {
       </div>
     </div>
   );
-}
+};

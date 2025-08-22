@@ -4,7 +4,7 @@ import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enu
 import { Button } from "@/components/ui/button";
 import InputCounter from "@/components/ui/inputCounter";
 import { Textarea } from "@/components/ui/textarea";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { ErrorMessage } from "@/components/index";
 import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 import {
   closestCenter,
@@ -24,18 +24,15 @@ import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
-import ButtonTemplateItem from "./buttonTemplateItem";
+import { contentCycleFormSchema } from "../../contentCycle";
+import { ContentButtonsItem } from "./ContentButtonsItem";
 
-type ButtonTemplateCompProps = {
+type ContentButtonsProps = {
   mode: ContentCycleContentModeEnum;
   contentIndex: number;
 };
 
-export default function ButtonTemplateComp({
-  contentIndex,
-  mode,
-}: ButtonTemplateCompProps) {
+export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
   const t = useTranslations("Automations.ButtonTemplates");
   const t_errors = useTranslations("Automations.Errors");
 
@@ -115,7 +112,7 @@ export default function ButtonTemplateComp({
         >
           <div className="flex w-full flex-col items-center justify-center gap-y-3">
             {fields.map((buttonTemplate, index) => (
-              <ButtonTemplateItem
+              <ContentButtonsItem
                 key={buttonTemplate._xid}
                 id={buttonTemplate._xid}
                 index={index}
@@ -142,4 +139,4 @@ export default function ButtonTemplateComp({
       )}
     </div>
   );
-}
+};

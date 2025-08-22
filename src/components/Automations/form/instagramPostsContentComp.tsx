@@ -1,21 +1,20 @@
 // app/(Console)/automations/components/instagramPosts.dialog.tsx
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
+  Button, Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import ErrorMessage from "@/components/ui/errorMessage";
-import { Skeleton } from "@/components/ui/skeleton";
+  DialogTrigger, ErrorMessage,
+  Skeleton
+} from "@/components/index";
+import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -24,7 +23,6 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
-import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 
 const PAGE_SIZE = 9;
 

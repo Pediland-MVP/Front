@@ -8,31 +8,25 @@ import {
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
-import Contents from "./contents/contents";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
+import { Contents } from "./Contents";
 
 // UI Imports
-import HelpmeDialog from "@/components/global/helpme.dialog";
 import {
-  Select,
+  ErrorMessage, FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage, HelpMeDialog, Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import ErrorMessage from "@/components/ui/errorMessage";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+  SelectValue, Switch
+} from "@/components/index";
 
-export default function Reminder() {
+export const Reminder = () => {
   const { control, getValues, setValue, watch } =
     useFormContext<z.infer<typeof contentCycleFormSchema>>();
   const t = useTranslations("Automations.Reminder");
@@ -63,7 +57,7 @@ export default function Reminder() {
         render={({ field }) => (
           <FormItem className="flex flex-col justify-start gap-y-2">
             <div className="relative flex items-center gap-x-2">
-              <HelpmeDialog
+              <HelpMeDialog
                 title={t("Help.title")}
                 description={t("Help.description")}
                 videoSrc={WizardVideoLinks.Automations.Hints.Reminders.video}
@@ -126,4 +120,4 @@ export default function Reminder() {
       />
     </>
   );
-}
+};

@@ -6,15 +6,19 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormLabel,
+  FormMessage,
+  HelpMeDialog,
+  Textarea,
+} from "@/components/index";
 
-export default function CommentConsent() {
+export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =
     useFormContext<z.infer<typeof contentCycleFormSchema>>();
   const t = useTranslations("Automations.CommentConsent");
@@ -57,7 +61,7 @@ export default function CommentConsent() {
         render={({ field, fieldState: { error } }) => (
           <div className="relative flex items-center gap-x-2">
             <FormLabel>{t("startRequestMessage")}</FormLabel>
-            <HelpmeDialog
+            <HelpMeDialog
               title={t("Help.title")}
               description={t("Help.description")}
               videoSrc={WizardVideoLinks.Automations.Hints.CommentConsent.video}
@@ -90,4 +94,4 @@ export default function CommentConsent() {
       />
     </>
   );
-}
+};

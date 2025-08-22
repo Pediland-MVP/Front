@@ -8,8 +8,8 @@ import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import {
   ContactsList,
   Input,
+  LayoutTable,
   ListMagnifyingGlassIcon,
-  TableLayout,
 } from "@/components/index";
 
 function useDebouncedValue<T>(value: T, delay = 300) {
@@ -91,8 +91,8 @@ export default function Page() {
   ]);
 
   return (
-    <TableLayout className="_contacts">
+    <LayoutTable className="_contacts">
       <ContactsList search={effectiveSearch} />
-    </TableLayout>
+    </LayoutTable>
   );
 }

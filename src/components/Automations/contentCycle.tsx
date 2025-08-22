@@ -18,22 +18,22 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
-import { CommentReplies } from "./form/commentReplies";
-import Conditions from "./form/conditions";
-import Contents from "./form/contents/contents";
-import JustFollowers from "./form/justFollowers";
-import Reminder from "./form/reminder";
-import Trigger from "./form/trigger";
+import { CommentReplies } from "./form/CommentReplies";
+import Conditions from "./form/Conditions";
+import Contents from "./form/Contents/Contents";
+import JustFollowers from "./form/JustFollowers";
+import Reminder from "./form/Reminder";
+import Trigger from "./form/Trigger";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/global/connectInstagram.alert";
+import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
 import { Card } from "@/components/ui/card";
 import LoadingButton from "@/components/ui/button-loading";
 import { Form } from "@/components/ui/form";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";
-import CommentTriggerInputs from "./form/commentConsent";
-import CommentContentTarget from "./form/commentContentTarget";
+import CommentTriggerInputs from "./form/CommentTriggerInputs";
+import CommentContentTarget from "./form/CommentContentTarget";
 
 export type ContentType = {
   id: string;

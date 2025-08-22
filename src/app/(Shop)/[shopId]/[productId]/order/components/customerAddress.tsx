@@ -30,7 +30,7 @@ import { CityNamespace } from "@/types/city";
 import { useEffect } from "react";
 import LoadingButton from "@/components/ui/button-loading";
 import useShipping from "../hooks/useShipping";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { ErrorMessage } from "@/components/index";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "../useCheckout";
 import { onInputP2EHandler } from "@/utils/p2eNumber";

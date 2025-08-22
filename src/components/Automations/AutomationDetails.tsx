@@ -5,11 +5,11 @@ import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
 } from "@/constants/contentCycleContent.enum";
-import { REGEX_URL } from "@/utils/regex";
 import api from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { REGEX_URL } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
@@ -18,23 +18,23 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
-import { CommentReplies } from "./form/commentReplies";
-import Conditions from "./form/conditions";
-import Contents from "./form/contents/contents";
-import JustFollowers from "./form/justFollowers";
-import Reminder from "./form/reminder";
-import Trigger from "./form/trigger";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/global/connectInstagram.alert";
-import { Card } from "@/components/ui/card";
-import LoadingButton from "@/components/ui/button-loading";
-import { Form } from "@/components/ui/form";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { toast } from "sonner";
-import CommentTriggerInputs from "./form/commentConsent";
-import CommentContentTarget from "./form/commentContentTarget";
+import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
+import LoadingButton from "@/components/ui/button-loading";
+import { Form } from "@/components/index";
+import { toast } from "sonner";
+import {
+  CommentContentTarget,
+  CommentReplies,
+  CommentTriggerInputs,
+  Conditions,
+  Contents,
+  JustFollowers,
+  Reminder,
+  Trigger,
+} from "./form";
 
 export type ContentType = {
   id: string;
@@ -481,65 +481,58 @@ export const AutomationDetails = ({ id }: ContentCycleProps) => {
 
   return (
     <FormProvider {...form}>
-      <div className="_automation-details h-full xl:w-1/2 2xl:w-1/3">
-        <div
-          className={cn(
-            "border-l-2 border-gray-100 px-3 md:p-5 2xl:pb-7",
-            isContentCycleLoading ? "h-full" : "min-h-full",
-          )}
-        >
-          {isContentCycleLoading ? (
-            <LoaderSpin />
-          ) : (
-            <>
-              {!hasInstagram && <ConnectInstagramAlert />}
+      <div className={cn("_automation-details min-h-full")}>
+        {isContentCycleLoading ? (
+          <LoaderSpin />
+        ) : (
+          <>
+            {!hasInstagram && <ConnectInstagramAlert />}
 
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="grid gap-3.5"
-                >
-                  <Trigger control={form.control} getValues={form.getValues} />
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="grid gap-3.5"
+              >
+                <Trigger control={form.control} getValues={form.getValues} />
 
-                  <hr className="border-gray-100" />
+                <hr className="border-gray-100" />
 
-                  <Conditions
-                    control={form.control}
-                    getValues={form.getValues}
-                    formState={form.formState}
-                  />
+                <Conditions
+                  control={form.control}
+                  getValues={form.getValues}
+                  formState={form.formState}
+                />
 
-                  <hr className="border-gray-100" />
+                <hr className="border-gray-100" />
 
-                  <Contents
-                    contentCycleId={id}
-                    mode={ContentCycleContentModeEnum.CONTENT_CYCLE}
-                  />
+                <Contents
+                  contentCycleId={id}
+                  mode={ContentCycleContentModeEnum.CONTENT_CYCLE}
+                />
 
-                  <CommentContentTarget />
+                <CommentContentTarget />
 
-                  <CommentReplies />
+                <CommentReplies />
 
-                  <Reminder />
+                <Reminder />
 
-                  <hr className="border-gray-100" />
+                <hr className="border-gray-100" />
 
-                  <JustFollowers
-                    control={form.control}
-                    getValues={form.getValues}
-                  />
+                <CommentTriggerInputs />
 
-                  <CommentTriggerInputs />
+                <JustFollowers
+                  control={form.control}
+                  getValues={form.getValues}
+                />
 
-                  {/* Submit button */}
-                  <LoadingButton className="mt-3" isLoading={isSubmitting}>
-                    {id ? t("update_automation") : t("add_automation")}
-                  </LoadingButton>
-                </form>
-              </Form>
-            </>
-          )}
-        </div>
+                {/* Submit button */}
+                <LoadingButton className="mt-3" isLoading={isSubmitting}>
+                  {id ? t("update_automation") : t("add_automation")}
+                </LoadingButton>
+              </form>
+            </Form>
+          </>
+        )}
       </div>
     </FormProvider>
   );

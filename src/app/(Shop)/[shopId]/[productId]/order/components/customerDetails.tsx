@@ -21,7 +21,7 @@ import useUpdateContact from "../hooks/useUpdateContact";
 import p2eNumbers, { onInputP2EHandler } from "@/utils/p2eNumber";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { useEffect, useState } from "react";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { ErrorMessage } from "@/components/index";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function CustomerDetails() {

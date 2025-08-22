@@ -1,4 +1,4 @@
-// app/(Console)/automations/components/form/conditions.tsx
+// src/components/Automations/form/Conditions.tsx
 "use client";
 
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
@@ -12,14 +12,12 @@ import {
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { Button, HelpMeDialog, Input } from "@/components/index";
+import { ErrorMessage } from "@/components/index";
 import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 
 type TriggerProps = {
@@ -28,11 +26,7 @@ type TriggerProps = {
   formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
 };
 
-export default function Conditions({
-  control,
-  getValues,
-  formState,
-}: TriggerProps) {
+export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
   const t = useTranslations("Automations.Conditions");
   const [currentType, setCurrentType] = useState<ContentCycleConditionTypes>();
   const [isRendered, setIsRendered] = useState<boolean>(false);
@@ -82,7 +76,7 @@ export default function Conditions({
           </span>
         </p>
 
-        <HelpmeDialog
+        <HelpMeDialog
           position="left"
           title={t("Help.title")}
           description={t("Help.description")}
@@ -148,4 +142,4 @@ export default function Conditions({
       </div>
     </div>
   );
-}
+};

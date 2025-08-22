@@ -1,14 +1,12 @@
 // app/(Console)/automations/components/form/contents/contents.tsx
 "use client";
 
+import { Alert, AlertDescription, Button, ErrorMessage, HelpMeDialog } from "@/components/index";
+import { UploadedFile } from "@/components/theme/types/fileUploader";
 import {
   ContentCycleContentModeEnum,
   ContentCycleContentTypesEnum,
 } from "@/constants/contentCycleContent.enum";
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { UploadedFile } from "@/components/theme/types/fileUploader";
-import { Button } from "@/components/ui/button";
-import ErrorMessage from "@/components/ui/errorMessage";
 import useUser from "@/hooks/useUser";
 import {
   closestCenter,
@@ -36,13 +34,12 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../../contentCycle";
-import ContentItem from "./contentItem";
-import ContentPromotion from "./contentPromotion";
+import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { ContentItem } from "./ContentItem";
+import { ContentPromotion } from "./ContentPromotion";
 import { ContentsContext } from "./useContentsContext";
 import { ContentsUploaderContextProvider } from "./useContentsUploaderContext";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type ContentsProps = {
   mode: ContentCycleContentModeEnum;
@@ -83,7 +80,7 @@ const messageTypeOptions: MessageTypeOption[] = [
   },
 ];
 
-export default function Contents({ mode, contentCycleId }: ContentsProps) {
+export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
   const {
     control,
     getValues,
@@ -234,7 +231,7 @@ export default function Contents({ mode, contentCycleId }: ContentsProps) {
             </span>
           </Button>
 
-          <HelpmeDialog
+          <HelpMeDialog
             position="left"
             title={t("Help.title")}
             description={t("Help.description")}
@@ -244,4 +241,4 @@ export default function Contents({ mode, contentCycleId }: ContentsProps) {
       </div>
     </ContentsContext.Provider>
   );
-}
+};

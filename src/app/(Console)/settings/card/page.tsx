@@ -13,7 +13,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { FormProvider, useForm } from "react-hook-form";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { ErrorMessage } from "@/components/index";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "@/components/ui/use-toast";

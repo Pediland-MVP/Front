@@ -1,4 +1,4 @@
-// app/(Console)/automations/components/form/trigger.tsx
+// src/components/Automations/form/Trigger.tsx
 
 import { useTranslations } from "next-intl";
 import { Control, UseFormGetValues } from "react-hook-form";
@@ -6,9 +6,7 @@ import { z } from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 
 // UI Imports
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+import { FormField, FormLabel, FormMessage, HelpMeDialog, Switch } from "@/components/index";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 type TriggerProps = {
@@ -16,7 +14,7 @@ type TriggerProps = {
   getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
 };
 
-export default function Trigger({ control, getValues }: TriggerProps) {
+export const Trigger = ({ control, getValues }: TriggerProps) => {
   const t = useTranslations("Automations.Trigger");
 
   return (
@@ -31,6 +29,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
             <div className="flex items-center gap-2">
               <FormMessage />
               <Switch
+                type="button"
                 dir="ltr"
                 id="direct"
                 checked={field.value}
@@ -40,6 +39,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
             </div>
           )}
         />
+
         <FormField
           control={control}
           name="isComment"
@@ -48,17 +48,17 @@ export default function Trigger({ control, getValues }: TriggerProps) {
               <Switch
                 type="button"
                 dir="ltr"
-                id="direct"
+                id="comment"
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
-              <FormLabel htmlFor="direct">{t("comment")}</FormLabel>
+              <FormLabel htmlFor="comment">{t("comment")}</FormLabel>
             </div>
           )}
         />
       </div>
 
-      <HelpmeDialog
+      <HelpMeDialog
         noAbsolute
         title={t("Help.title")}
         description={t("Help.description")}
@@ -66,4 +66,4 @@ export default function Trigger({ control, getValues }: TriggerProps) {
       />
     </div>
   );
-}
+};

@@ -16,16 +16,17 @@ import z from "zod";
 import { contentCycleFormSchema } from "../contentCycle";
 import { useEffect } from "react";
 
-export default function CommentContentTarget() {
-  const { watch, control, setValue } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+export const CommentContentTarget = () => {
+  const { watch, control, setValue } =
+    useFormContext<z.infer<typeof contentCycleFormSchema>>();
   const t = useTranslations("Automations.CommentContentTarget");
 
   const toggleHandler = (value: boolean) => {
     if (value === false) {
-      setValue('instagramPost', null)
+      setValue("instagramPost", null);
     }
-    setValue('isCommentContentTargetEnabled', value)    
-  }
+    setValue("isCommentContentTargetEnabled", value);
+  };
 
   if (!watch("isComment")) {
     return null;
@@ -67,4 +68,4 @@ export default function CommentContentTarget() {
       />
     </>
   );
-}
+};

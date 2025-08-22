@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { ErrorMessage } from "@/components/index";
 import { Skeleton } from "@/components/ui/skeleton";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
@@ -100,7 +100,7 @@ export default function DialogInstagramPostSelect({
     const mediaId = e.currentTarget.dataset.postid!;
     // console.log("media", postId, mediaUrl);
     // console.log(`value before update`, getValues()?.contents?.[index]);
-    setValue("instagramPost", { picture: {url: mediaUrl}, mediaId });
+    setValue("instagramPost", { picture: { url: mediaUrl }, mediaId });
     setIsOpen(false);
   };
 
@@ -110,8 +110,8 @@ export default function DialogInstagramPostSelect({
     <div className={cn(props.className)}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          {watch('instagramPost')?.picture?.url ? (
-            <div className="w-full flex justify-center items-center">
+          {watch("instagramPost")?.picture?.url ? (
+            <div className="flex w-full items-center justify-center">
               <div className="relative h-auto w-32 overflow-hidden rounded-lg">
                 <Image
                   src={watch("instagramPost")?.picture?.url || ""}
@@ -128,7 +128,7 @@ export default function DialogInstagramPostSelect({
               </div>
             </div>
           ) : (
-            <div className="flex flex-col justify-center items-center bg-black/10 rounded-2xl w-full h-[228px]">
+            <div className="flex h-[228px] w-full flex-col items-center justify-center rounded-2xl bg-black/10">
               <Button type="button" variant={props.btnVariant} size={"sm"}>
                 <InstagramLogoIcon className="size-5" />
                 {t("selectPost")}

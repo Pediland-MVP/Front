@@ -6,30 +6,23 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { contentCycleFormSchema } from "../contentCycle";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
+  FormMessage, HelpMeDialog, Input, Switch, Textarea
+} from "@/components/index";
 
 type JustFollowersProps = {
   control: Control<z.infer<typeof contentCycleFormSchema>>;
   getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
 };
-export default function JustFollowers({
-  control,
-  getValues,
-}: JustFollowersProps) {
+export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
   const t = useTranslations("Automations.JustFollowers");
   const t_automations = useTranslations("Automations");
   const { setValue, watch } =
@@ -60,7 +53,7 @@ export default function JustFollowers({
         render={({ field }) => (
           <FormItem className="flex flex-col justify-start gap-y-2">
             <div className="relative flex items-center gap-x-2">
-              <HelpmeDialog
+              <HelpMeDialog
                 title={t("Help.title")}
                 description={t("Help.description")}
                 videoSrc={
@@ -125,4 +118,4 @@ export default function JustFollowers({
       )}
     </div>
   );
-}
+};

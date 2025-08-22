@@ -1,27 +1,26 @@
-// app/(Console)/automations/components/form/commentReplies.tsx
+// src/components/Automations/form/CommentReplies.tsx
 "use client";
 
 import { useFormContext } from "react-hook-form";
+import { WizardVideoLinks } from "../wizardVideoLinks.conf";
+import { useTranslations } from "next-intl";
 
 // UI Imports
 import {
-  FormField,
-  FormMessage,
-  FormLabel,
-  FormDescription,
+  Button,
   FormControl,
+  FormDescription,
+  FormField,
   FormItem,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useTranslations } from "next-intl";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
+  FormLabel,
+  FormMessage,
+  HelpMeDialog,
+  Input,
+  Switch,
+} from "@/components/index";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
-import HelpmeDialog from "@/components/global/helpme.dialog";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
-import { Input } from "@/components/ui/input";
 
-export function CommentReplies() {
+export const CommentReplies = () => {
   const { watch, control, setValue } = useFormContext();
   const t = useTranslations("Automations.CommentReplies");
 
@@ -65,7 +64,7 @@ export function CommentReplies() {
         render={({ field }) => (
           <FormItem className="relative">
             <div className="relative flex items-center gap-x-2">
-              <HelpmeDialog
+              <HelpMeDialog
                 title={t("Help.title")}
                 description={t("Help.description")}
                 videoSrc={
@@ -146,4 +145,4 @@ export function CommentReplies() {
       />
     </>
   );
-}
+};

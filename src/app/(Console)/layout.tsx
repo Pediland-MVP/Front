@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
 // UI Imports
-import { StandaloneChecker } from "@/components/global/standaloneChecker";
+import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 import { GoftinoSnippet } from "@/components/third-party/goftino";
 import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
 import { Toaster } from "@/components/ui/toaster";

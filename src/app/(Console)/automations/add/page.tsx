@@ -1,7 +1,11 @@
 // app/(Console)/automations/add/page.tsx
 
-import { AutomationDetails } from "@/components/index";
+import { AutomationDetails, LayoutPage } from "@/components/index";
 
 export default function page() {
-  return <AutomationDetails />;
+  return (
+    <LayoutPage col="half">
+      <AutomationDetails />
+    </LayoutPage>
+  );
 }

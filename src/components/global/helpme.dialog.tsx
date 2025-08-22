@@ -1,21 +1,22 @@
+// src/components/Global/HelpMe.dialog.tsx
 "use client";
 
+import { cn } from "@/lib/utils";
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { HelpCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-import { Video } from "./video";
-import { useTranslations } from "next-intl";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
+  VideoComp,
+} from "@/components/index";
 
 type Position =
   | "left"
@@ -65,7 +66,7 @@ const getPositionClasses = (
   return positions[position] || positions["right-top"];
 };
 
-export default function HelpmeDialog({
+export const HelpMeDialog = ({
   title,
   description,
   videoSrc,
@@ -73,7 +74,7 @@ export default function HelpmeDialog({
   position = "right-top",
   className,
   noAbsolute = false,
-}: HelpDialogProps) {
+}: HelpDialogProps) => {
   const [open, setOpen] = useState(false);
 
   const t = useTranslations("Helpme");
@@ -102,7 +103,7 @@ export default function HelpmeDialog({
           </DialogHeader>
 
           <div className="flex w-full items-center justify-center">
-            <Video
+            <VideoComp
               shape="vertical"
               variant="bordered"
               src={videoSrc}
@@ -112,7 +113,7 @@ export default function HelpmeDialog({
               preload="metadata"
             >
               {t("browserDosntSupport")}
-            </Video>
+            </VideoComp>
           </div>
 
           <DialogFooter className="p-6 pt-4">
@@ -124,4 +125,4 @@ export default function HelpmeDialog({
       </DialogContent>
     </Dialog>
   );
-}
+};

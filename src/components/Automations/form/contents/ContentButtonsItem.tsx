@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { contentCycleFormSchema } from "../../contentCycle";
 
 // UI Imports
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import ErrorMessage from "@/components/ui/errorMessage";
+import { ErrorMessage } from "@/components/index";
 import {
   FormDescription,
   FormField,
@@ -27,7 +27,7 @@ import {
   TrashIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-type ButtonTemplateItemProps = {
+type ContentButtonsItemProps = {
   id: string;
   index: number;
   contentIndex: number;
@@ -35,13 +35,13 @@ type ButtonTemplateItemProps = {
   mode: ContentCycleContentModeEnum;
 };
 
-export default function ButtonTemplateItem({
+export const ContentButtonsItem = ({
   id,
   index,
   contentIndex,
   remove,
   mode,
-}: ButtonTemplateItemProps) {
+}: ContentButtonsItemProps) => {
   const {
     attributes,
     listeners,
@@ -130,4 +130,4 @@ export default function ButtonTemplateItem({
       </div>
     </Card>
   );
-}
+};

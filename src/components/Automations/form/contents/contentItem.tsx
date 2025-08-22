@@ -15,7 +15,6 @@ import { useTranslations } from "next-intl";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contentCycleFormSchema } from "../../contentCycle";
-import ButtonTemplateComp from "../buttonTemplateComp";
 import { useContentsContext } from "./useContentsContext";
 import { useContentsUploaderContext } from "./useContentsUploaderContext";
 
@@ -46,6 +45,7 @@ import {
 import TextContentComp from "../textContentComp";
 import ProductContentComp from "../productContentComp";
 import InstagramPostsContentComp from "../instagramPostsContentComp";
+import { ContentButtons } from "./ContentButtons";
 
 type MessageByTypeProps = {
   index: number;
@@ -57,7 +57,7 @@ function NameVariable() {
   return <mark className="font-bold text-blue-400">#نام</mark>;
 }
 
-export function MessageByType({ index, type, mode }: MessageByTypeProps) {
+export const MessageByType = ({ index, type, mode }: MessageByTypeProps) => {
   const { files, setFiles } = useContentsUploaderContext();
   const t_ec = useTranslations("ERROR_CODES");
   const t_err = useTranslations("Automations.Errors");
@@ -113,7 +113,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
               mimeType: res.data.mimeType,
             },
           ]);
-          
+
           setValue(
             `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
             {
@@ -123,7 +123,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
               type: res.data.mimeType.split(
                 "/",
               )[0] as ContentCycleContentTypesEnum,
-              file:             {
+              file: {
                 id: res.data.id,
                 url: res.data.url,
                 mimeType: res.data.mimeType,
@@ -131,9 +131,12 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
             },
           );
 
-          console.log('Uploader content of that content', getValues(`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`));
-          
-
+          console.log(
+            "Uploader content of that content",
+            getValues(
+              `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
+            ),
+          );
         })
         .catch((err: AxiosError) => {
           const errorCode = t_ec(
@@ -175,7 +178,7 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
       return <ProductContentComp mode={mode} index={index} />;
 
     case ContentCycleContentTypesEnum.BUTTON_TEMPLATE:
-      return <ButtonTemplateComp mode={mode} contentIndex={index} />;
+      return <ContentButtons mode={mode} contentIndex={index} />;
 
     default:
       return (
@@ -197,9 +200,9 @@ export function MessageByType({ index, type, mode }: MessageByTypeProps) {
         </>
       );
   }
-}
+};
 
-export default function ContentItem({
+export const ContentItem = ({
   id,
   index,
   mode,
@@ -211,7 +214,7 @@ export default function ContentItem({
   mode: ContentCycleContentModeEnum;
   isPromotion?: boolean;
   defaultUploaderValue?: UploadedFile | null;
-}) {
+}) => {
   const {
     control,
     getValues,
@@ -402,4 +405,4 @@ export default function ContentItem({
       </div>
     </div>
   );
-}
+};
