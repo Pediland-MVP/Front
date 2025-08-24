@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "@/components/ui-custom/use-toast"
 import { useCheckout } from "../useCheckout"
 import { useTranslations } from "next-intl"
 import { ExceptionMessage } from "@/types/exceptionMessage"

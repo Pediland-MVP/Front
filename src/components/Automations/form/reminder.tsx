@@ -2,13 +2,13 @@
 "use client";
 
 import {
-  ContentCycleContentModeEnum,
-  ContentCycleContentTypesEnum,
-} from "@/constants/contentCycleContent.enum";
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from "@/constants/automationContent.enum";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "../Automation";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { Contents } from "./Contents";
 
@@ -28,14 +28,14 @@ import {
 
 export const Reminder = () => {
   const { control, getValues, setValue, watch } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+    useFormContext<z.infer<typeof AutomationFormSchema>>();
   const t = useTranslations("Automations.Reminder");
 
   const toggleReminders = (isEnabled: boolean) => {
     setValue("isRemindersEnabled", isEnabled);
     setValue(
       "reminders",
-      isEnabled ? [{ type: ContentCycleContentTypesEnum.TEXT }] : [],
+      isEnabled ? [{ type: AutomationContentTypesEnum.TEXT }] : [],
     );
   };
 
@@ -111,7 +111,7 @@ export const Reminder = () => {
                   )}
                 ></FormField>
 
-                <Contents mode={ContentCycleContentModeEnum.REMINDER} />
+                <Contents mode={AutomationContentModeEnum.REMINDER} />
               </>
             )}
             <FormMessage />

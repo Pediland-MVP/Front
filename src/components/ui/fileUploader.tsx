@@ -4,7 +4,7 @@ import type {
   FileUploaderProps,
   FileWithPreview,
   UploadedFile,
-} from "@/components/theme/types/fileUploader";
+} from "@/types/fileUploader";
 import { Button } from "@/components/ui/button";
 import {} from "@phosphor-icons/react";
 import {

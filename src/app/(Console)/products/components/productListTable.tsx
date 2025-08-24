@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import {
   CaretRight,
   CaretLeft,
@@ -121,7 +121,7 @@ export default function ProductListTable() {
         })
         .catch((e: AxiosError<ExceptionMessage>) => {
           const code = e.response?.data?.code;
-          if (code === "PRODUCT_IS_IN_CONTENT_CYCLE") {
+          if (code === "PRODUCT_IS_IN_AUTOMATION") {
             e.response?.data.data?.contentCycles?.forEach((cc: any) => {
               toast({
                 title: t_ec(code),

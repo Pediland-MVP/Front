@@ -1,5 +1,5 @@
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";

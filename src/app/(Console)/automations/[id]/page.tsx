@@ -1,18 +1,17 @@
-// app/(Console)/automations/[id]/page.tsx
+// src/app/(Console)/automations/[id]/page.tsx
 
+import { AutomationDetails, LayoutPage } from "@/components";
 import { isUUID } from "class-validator";
-import { redirect } from "next/navigation";
-import ContentCycle from "../../../../components/Automations/contentCycle";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
-type ContentCycleEditPageProps = {
+type PageProps = {
   params: Promise<{
     id: string;
   }>;
 };
-export default async function ContentCycleEditPage({
-  params,
-}: ContentCycleEditPageProps) {
+
+export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
   if (!isUUID(id, "4")) {
@@ -21,8 +20,8 @@ export default async function ContentCycleEditPage({
   const t = await getTranslations("Automations");
 
   return (
-    <div className="_update-automation-page h-full overflow-auto">
-      <ContentCycle id={id} />
-    </div>
+    <LayoutPage col="half">
+      <AutomationDetails id={id} />
+    </LayoutPage>
   );
 }

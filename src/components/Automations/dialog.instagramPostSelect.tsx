@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/dialog.instagramPostSelect.tsxs
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +23,7 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
-import { contentCycleFormSchema } from "./contentCycle";
+import { AutomationFormSchema } from "./Automation";
 import {
   ChatTextIcon,
   InstagramLogoIcon,
@@ -35,7 +35,7 @@ const PAGE_SIZE = 9;
 
 export type DialogInstagramPostSelectProps = {
   index: number;
-  mode: ContentCycleContentModeEnum;
+  mode: AutomationContentModeEnum;
   className?: string;
   btnVariant?: "outline" | "secondary";
 };
@@ -51,12 +51,12 @@ export default function DialogInstagramPostSelect({
     formState: { errors },
     setValue,
     watch,
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   const { fields: contents, update: updateContents } = useFieldArray({
     control: control,
     name:
-      mode === ContentCycleContentModeEnum.REMINDER ? "reminders" : "contents",
+      mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
     keyName: "_xid",
   });
 

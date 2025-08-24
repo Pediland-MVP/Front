@@ -1,4 +1,4 @@
-// src/components/ui/errorMessage.tsx
+// src/components/ui-custom/errorMessage.tsx
 
 export const ErrorMessage = ({
   className,

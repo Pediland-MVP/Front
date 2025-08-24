@@ -1,10 +1,14 @@
-import { UploadedFile } from "@/components/theme/types/fileUploader";
+// src/components/Automations/form/Contents/useContentsUploaderContext.tsx
+"use client";
+
+import { UploadedFile } from "@/types/fileUploader";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type ContentsUploaderContextType = {
   files: UploadedFile[];
   setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
 };
+
 const ContentsUploaderContext =
   createContext<ContentsUploaderContextType | null>(null);
 

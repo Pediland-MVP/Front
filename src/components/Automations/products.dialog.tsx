@@ -25,7 +25,7 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
-import { contentCycleFormSchema } from "./contentCycle";
+import { AutomationFormSchema } from "./Automation";
 
 const PAGE_SIZE = 50;
 
@@ -49,7 +49,7 @@ const ProductsDialog = ({
 
   const {
     formState: { errors },
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   const fetchProducts = async (pageNumber: number = 1) => {
     setIsLoading(true);

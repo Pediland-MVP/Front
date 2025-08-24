@@ -1,4 +1,4 @@
-import { ContentCycleContentTypesEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 
 export interface IContentCycle {
     id:                 string;
@@ -40,7 +40,7 @@ interface Content {
     consentText:     string | undefined;
     haveConsent:     boolean;
     step:            number;
-    type:            ContentCycleContentTypesEnum;
+    type:            AutomationContentTypesEnum;
     contentProducts: ContentProduct[];
     file:            File | null;
     instagramPost:   InstagramPost | null;

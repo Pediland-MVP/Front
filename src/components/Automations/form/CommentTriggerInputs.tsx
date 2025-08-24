@@ -1,12 +1,12 @@
 // app/(Console)/automations/components/form/commentConsent.tsx
 "use client";
 
-import { ContentCycleContentTypesEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -20,13 +20,13 @@ import {
 
 export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+    useFormContext<z.infer<typeof AutomationFormSchema>>();
   const t = useTranslations("Automations.CommentConsent");
   const contents = watch("contents");
 
   const [isActive, setIsActive] = useState(false);
 
-  // if (!(watch("isComment") && !watch("justFollowers") && (contents?.[0]?.type === ContentCycleContentTypesEnum.PRODUCT || contents?.length > 1))) {
+  // if (!(watch("isComment") && !watch("justFollowers") && (contents?.[0]?.type === AutomationContentTypesEnum.PRODUCT || contents?.length > 1))) {
   //   setValue('commentStartText', undefined);
   //   return null
   // } else {
@@ -37,7 +37,7 @@ export const CommentTriggerInputs = () => {
     if (
       watch("isComment") &&
       !watch("justFollowers") &&
-      (contents?.[0]?.type === ContentCycleContentTypesEnum.PRODUCT ||
+      (contents?.[0]?.type === AutomationContentTypesEnum.PRODUCT ||
         contents?.length > 1)
     ) {
       setValue("commentStartText", t("commentStartText"));

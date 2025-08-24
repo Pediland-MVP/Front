@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/form/catalogue.tsx
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -31,12 +31,12 @@ import { GripVertical, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "../Automation";
 import ProductsDialog from "../products.dialog";
 
 type ProductContentCompProps = {
   index: number;
-  mode: ContentCycleContentModeEnum;
+  mode: AutomationContentModeEnum;
 };
 
 type SortableItemProps = {
@@ -119,7 +119,7 @@ export default function ProductContentComp({
   const t_errors = useTranslations("Automations.Errors");
 
   const { control, trigger } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+    useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   const {
     fields: productsField,
@@ -130,7 +130,7 @@ export default function ProductContentComp({
     insert: insertProducts,
   } = useFieldArray({
     control: control,
-    name: `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.products`,
+    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}.products`,
     keyName: "_xid",
   });
 

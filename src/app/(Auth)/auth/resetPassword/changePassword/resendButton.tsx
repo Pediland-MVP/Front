@@ -1,6 +1,6 @@
 import logger from "@/utils/logger";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { z } from "zod";

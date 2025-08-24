@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspace";
 import { useTranslations } from "next-intl";

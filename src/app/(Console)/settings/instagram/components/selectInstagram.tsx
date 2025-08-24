@@ -27,7 +27,7 @@ import { InstagramLogo } from "@phosphor-icons/react";
 import { InstagramNamespace } from "@/types/instagram";
 import { APIError } from "@/types/apierror";
 import Image from "next/image";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";

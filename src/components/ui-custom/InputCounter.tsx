@@ -9,26 +9,26 @@ interface InputCounterProps {
   text: string | undefined;
 }
 
-export default function InputCounter({
+export const InputCounter = ({
   text,
   placeholder = "Type your message here...",
   maxLength = 100,
   className,
-}: InputCounterProps) {
+}: InputCounterProps) => {
   const charCount = text?.length || 0;
   const progress = Math.min((charCount / maxLength) * 100, 100);
-  const isOverLimit = charCount > maxLength;
+  const isOverLimit = charCount >= maxLength;
 
   // SVG circle properties
   const size = 25;
-  const strokeWidth = 3;
+  const strokeWidth = 4;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (progress / 100) * circumference;
 
   return (
     <div className="relative flex items-center gap-2">
-      <div className="relative flex h-6 w-6 items-center justify-center">
+      <div className="relative flex size-5 items-center justify-center">
         <svg
           width={size}
           height={size}
@@ -56,7 +56,7 @@ export default function InputCounter({
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            className={isOverLimit ? "text-red-500" : "text-green-600"}
+            className={isOverLimit ? "text-orange-500" : "text-green-600"}
             style={{
               transition: "stroke-dashoffset 0.2s ease, stroke 0.2s ease",
             }}
@@ -67,11 +67,11 @@ export default function InputCounter({
       <span
         className={cn(
           "flex text-xs leading-px font-medium",
-          isOverLimit ? "text-red-500" : "text-green-600",
+          isOverLimit ? "text-orange-500" : "text-green-600",
         )}
       >
-        {charCount}/{maxLength}
+        {charCount}/{maxLength} کاراکتر
       </span>
     </div>
   );
-}
+};

@@ -1,13 +1,16 @@
+// src/components/Automations/form/Contents/useContentsContext.tsx
+"use client";
+
 import { createContext, useContext } from "react";
-import { contentCycleFormSchema } from "../../contentCycle";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { z } from "zod";
 
 type ContentsContextType = {
   updateContents: (index: number, content: any) => void;
   removeContents: (index: number) => void;
   contents:
-    | z.infer<typeof contentCycleFormSchema>["contents"]
-    | z.infer<typeof contentCycleFormSchema>["reminders"];
+    | z.infer<typeof AutomationFormSchema>["contents"]
+    | z.infer<typeof AutomationFormSchema>["reminders"];
 };
 export const ContentsContext = createContext<ContentsContextType | null>(null);
 

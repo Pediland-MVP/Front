@@ -389,7 +389,7 @@
       "cancel": "لغو"
     },
     "Trigger": {
-      "userIn": "اگر کاربر شما در",
+      "userIn": "اگر مخاطب شما در",
       "direct": "دایرکت",
       "comment": "کامنت",
       "Help": {
@@ -441,14 +441,18 @@
       }
     },
     "Conditions": {
+      "Errors": {
+        "required": "مقدار شرط را وارد کنید"
+      },
       "wordOrPhrase": "کلمه یا جمله‌ای",
       "equal": "برابر با",
       "include": "شامل",
       "with": "با",
       "value": "مقدار شرط",
+      "belowConditions": "شرط(های) زیر ارسال کند،",
       "deleteCondition": "حذف شرط",
       "addNewCondition": "افزودن شرط جدید",
-      "sendMessageBelow": "را ارسال کند، موارد زیر برایش ارسال می‌شود.",
+      "sendMessageBelow": "محتوا(های) زیر به ترتیب برایش ارسال می‌شود.",
       "Help": {
         "title": "مشخص کردن شرط برای فعال سازی اتوماسیون",
         "description": "در این بخش مشخص میکنید که کاربر چه کلمه یا عددی را در کامنت یا دایرکت ارسال کند که اتوماسیون برای او فعال شود"
@@ -462,16 +466,26 @@
       }
     },
     "Contents": {
+      "Text": {
+        "youCanUseVars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",
+        "enterYourMessage": "متن پیام را وارد کنید",
+        "Errors": {
+          "required": "متن پیام الزامی است"
+        }
+      },
+      "Errors": {
+        "MISSING_MESSAGE": "متن پیام الزامی است",
+        "INSUFFICIENT_PATH": "مسیر کافی نیست",
+        "too_small": "برای ثبت پیام خودکار حداقل یک محتوا اضافه کنید"
+      },
       "consent": "کسب اجازه برای پیام بعدی",
       "consentTooltip": "برای فعال سازی این قابلیت حداقل باید دو پیام بسازی",
       "consentTooltipType": "برای استفاده از قابلیت کسب اجازه، پیام باید متنی باشد",
       "removeContent": "حذف محتوا",
-      "enterYourMessage": "پیام خود را وارد کنید",
       "consentMessage": "بریم بعدی؟",
       "addContent": "افزودن محتوا",
       "label": "ارسال محتوا",
       "haveInstagramPost": "ارسال یک پست اینستاگرام",
-      "youCanUseVars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام وارد می شود.",
       "promotionText": "پاسخ‌ اتوماتیک به کامنت و دایرکت‌های این پیج توسط «بفروش» انجام می‌شود\n@befoosh.app",
       "Help": {
         "title": "تعریف محتوای دایرکت هوشمند",
@@ -550,8 +564,9 @@
       "cta": {
         "custom": "متن پایانی را مشخص کنید"
       },
+      "required": "این فیلد الزامی است",
       "contents": {
-        "at_least": "حداقل باید یک محتوا یا یک محصول اضافه کنید",
+        "at_least": "حداقل یک محتوا اضافه کنید",
         "too_small": "پیام الزامی است",
         "text": {
           "required": "پیام الزامی است و باید حداقل یک حرف باشد"
@@ -567,6 +582,9 @@
         },
         "audio": {
           "required": "لطفا یک ویس/صدا انتخاب کنید"
+        },
+        "media": {
+          "required": "لطفا یک فایل انتخاب کنید"
         }
       },
       "products": {
@@ -1355,18 +1373,19 @@
     "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
     "dropIt": "رها کنید"
   },
-  "MessageTypes": {
-    "select_your_type": "لطفا نوع محتوای مورد نظر خود را انتخاب کنید.",
+  "ContentTypes": {
+    "select_your_type": "نوع محتوای مورد نظر خود را انتخاب کنید.",
     "create_title": "ایجاد یک محتوا از نوع",
     "text": "متن",
-    "instagram_post": "پست",
-    "instagramPost": "پست انستاگرام",
+    "post": "پست",
+    "instagram_post": "پست IG",
     "audio": "صدا",
     "video": "ویدیو",
     "image": "رسانه",
-    "product": "محصول",
+    "product": "کالا",
     "media": "رسانه",
-    "button_template": "دکمه"
+    "button_template": "دکمه",
+    "fallback_key": "عنوان محتوا"
   },
   "FileUploader": {
     "dropzone": "فایل‌ها را در اینجا رها کنید یا روی آن کلیک کنید تا فایل‌ها را انتخاب کنید",
@@ -1473,6 +1492,7 @@
     "browserDosntSupport": "لطفا برای استفاده از این امکانات مرورگر خودتون رو آپدیت کنید"
   },
   "ERROR_CODES": {
+    "LOAD_FAILED": "خطا در بارگزاری",
     "USER_NOT_FOUND": "کاربر پیدا نشد",
     "USER_ALREADY_VERIFIED": "کاربر قبلاً تأیید شده است",
     "MOBILE_NUMBER_EXIST": "شماره موبایل از قبل وجود دارد",
@@ -1481,7 +1501,7 @@
     "PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE": "قیمت تخفیف محصول بیشتر از قیمت اصلی است",
     "PRODUCT_DISCOUNT_PRICE_IS_ZERO": "قیمت تخفیف محصول صفر است",
     "PRODUCT_OUT_OF_STOCK": "محصول در انبار موجود نیست",
-    "PRODUCT_IS_IN_CONTENT_CYCLE": "این محصول در یک اتومیشن وجود دارد",
+    "PRODUCT_IS_IN_AUTOMATION": "این محصول در یک اتومیشن وجود دارد",
     "ORDER_NOT_FOUND": "سفارش پیدا نشد",
     "ORDER_EXPIRED": "سفارش منقضی شده است",
     "ORDER_SHOP_IS_NOT_VALID": "فروشگاه سفارش معتبر نیست",
@@ -1561,6 +1581,12 @@
   },
   "Breadcrumbs": {
     "": "داشبورد",
+    "automations": "اتوماسیون‌ها",
+    "contents": "محتوا",
+    "settings": "تنظیمات",
+    "new": "جدید",
+    "edit": "ویرایش",
+    "detail": "جزئیات",
     "/contacts": "لیست مخاطبین",
     "/directs": "لیست دایرکت‌ها",
     "/directs/item": "دایرکت",
@@ -1590,6 +1616,7 @@
   },
   "zod": {
     "errors": {
+      "MISSING_MESSAGE": "متن پیام الزامی است",
       "invalid_type": "مقدار مورد انتظار {expected} بود، اما {received} دریافت شد",
       "invalid_type_received_undefined": "ضروری است",
       "invalid_literal": "مقدار وارد شده نامعتبر است، مقدار مورد انتظار {expected} بود",

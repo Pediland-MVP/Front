@@ -1,11 +1,7 @@
-// app/(Console)/automations/components/form/buttonTemplateComp.tsx
+// src/components/Automations/form/Contents/ContentButtons.tsx
+"use client";
 
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
-import { Button } from "@/components/ui/button";
-import InputCounter from "@/components/ui/inputCounter";
-import { Textarea } from "@/components/ui/textarea";
-import { ErrorMessage } from "@/components/index";
-import { FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import {
   closestCenter,
   DndContext,
@@ -20,15 +16,25 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
-import { ContentButtonsItem } from "./ContentButtonsItem";
+import { AutomationFormSchema } from "@/schemas/automationForm";
+
+import {
+  Button,
+  ContentButtonsItem,
+  ErrorMessage,
+  FormField,
+  FormItem,
+  FormLabel,
+  InputCounter,
+  Textarea,
+} from "@/components/index";
+import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ContentButtonsProps = {
-  mode: ContentCycleContentModeEnum;
+  mode: AutomationContentModeEnum;
   contentIndex: number;
 };
 
@@ -42,12 +48,12 @@ export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
     clearErrors,
     formState: { errors },
     watch,
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   // NOTE: I dindt changed default name of fields becuase it was not working :)
   const { fields, move, remove, append } = useFieldArray({
     control: control,
-    name: `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons`,
+    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons`,
     keyName: "_xid",
   });
 
@@ -84,15 +90,13 @@ export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
     <div className="flex flex-col gap-y-3">
       <FormField
         control={control}
-        name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.text`}
+        name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.text`}
         render={({ field, fieldState: { error } }) => (
-          <FormItem className="w-full">
+          <FormItem>
             <FormLabel>{t("text.label")}</FormLabel>
             <Textarea
               {...field}
               maxLength={640}
-              rows={3}
-              className="w-full"
               placeholder={t("text.placeholder")}
             />
             <InputCounter text={field.value} maxLength={640} />

@@ -1,30 +1,32 @@
-// app/(Console)/automations/components/form/buttonTemplateItem.tsx
+// src/components/Automations/form/Contents/ContentButtonsItem.tsx
 "use client";
 
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 
 // UI Imports
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { ErrorMessage } from "@/components/index";
 import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  ErrorMessage,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
+  Input,
+} from "@/components/index";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowsOutCardinalIcon,
-  TrashIcon,
+  TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
 type ContentButtonsItemProps = {
@@ -32,7 +34,7 @@ type ContentButtonsItemProps = {
   index: number;
   contentIndex: number;
   remove: (index: number) => void;
-  mode: ContentCycleContentModeEnum;
+  mode: AutomationContentModeEnum;
 };
 
 export const ContentButtonsItem = ({
@@ -51,7 +53,7 @@ export const ContentButtonsItem = ({
     isDragging,
   } = useSortable({ id });
   useI18nZodErrors();
-  const { control } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  const { control } = useFormContext<z.infer<typeof AutomationFormSchema>>();
   const t = useTranslations("Automations.ButtonTemplates");
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -63,48 +65,48 @@ export const ContentButtonsItem = ({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group hover:border-primary w-full p-4 transition-all duration-200",
-        isDragging && "ring-primary ring-2 ring-offset-2",
+        "group relative w-full gap-2 transition-all duration-200",
+        index !== 0 && "pt-4",
+        isDragging && "ring-primary ring-1",
       )}
     >
-      <div className="mb-2 flex w-full items-center justify-between">
-        <Button
-          variant="link"
-          size="icon"
-          className="size-5! cursor-move touch-none p-0"
-          type="button"
-          {...attributes}
-          {...listeners}
-        >
-          <ArrowsOutCardinalIcon className="text-gray-500" />
-        </Button>
-        {index !== 0 && (
-          <Button
-            variant="link"
-            size="icon"
-            className="text-destructive size-5! p-0"
-            type="button"
-            onClick={() => remove(index)}
-          >
-            <TrashIcon />
-          </Button>
-        )}
-      </div>
-      <div className="flex flex-col items-center justify-center gap-y-2">
+      {index !== 0 && (
+        <CardHeader className="gap-0">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="link"
+              size="icon"
+              className="size-5! cursor-move touch-none p-0"
+              type="button"
+              {...attributes}
+              {...listeners}
+            >
+              <ArrowsOutCardinalIcon className="text-gray-500" />
+            </Button>
+
+            <Button
+              variant="link"
+              size="icon"
+              className="text-destructive size-5! p-0"
+              type="button"
+              onClick={() => remove(index)}
+            >
+              <TrashSimpleIcon />
+            </Button>
+          </div>
+        </CardHeader>
+      )}
+      <CardContent className="space-y-4">
         <FormField
           control={control}
-          name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.title`}
+          name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.title`}
           render={({ field, fieldState: { error } }) => (
-            <FormItem className="w-full">
+            <FormItem>
               <FormLabel>
                 {t("title.label")}{" "}
                 {index + 1 === 1 ? "اول" : index + 1 === 2 ? "دوم" : "سوم"}
               </FormLabel>
-              <Input
-                {...field}
-                className="w-full"
-                placeholder={t("title.placeholder")}
-              />
+              <Input {...field} placeholder={t("title.placeholder")} />
               <FormDescription>{t("title.description")}</FormDescription>
               {error && <ErrorMessage>{error.message}</ErrorMessage>}
             </FormItem>
@@ -113,21 +115,17 @@ export const ContentButtonsItem = ({
 
         <FormField
           control={control}
-          name={`${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.url`}
+          name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.url`}
           render={({ field, fieldState: { error } }) => (
-            <FormItem className="w-full">
+            <FormItem>
               <FormLabel>{t("url.label")}</FormLabel>
-              <Input
-                {...field}
-                className="w-full"
-                placeholder={t("url.placeholder")}
-              />
+              <Input {...field} placeholder={t("url.placeholder")} />
               <FormDescription>{t("url.description")}</FormDescription>
               {error && <ErrorMessage>{error.message}</ErrorMessage>}
             </FormItem>
           )}
         />
-      </div>
+      </CardContent>
     </Card>
   );
 };

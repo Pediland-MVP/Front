@@ -11,14 +11,14 @@ import { Switch } from "@/components/ui/switch";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import DialogInstagramPostSelect from "../dialog.instagramPostSelect";
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import z from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { useEffect } from "react";
 
 export const CommentContentTarget = () => {
   const { watch, control, setValue } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+    useFormContext<z.infer<typeof AutomationFormSchema>>();
   const t = useTranslations("Automations.CommentContentTarget");
 
   const toggleHandler = (value: boolean) => {
@@ -60,7 +60,7 @@ export const CommentContentTarget = () => {
                 className="mt-4"
                 btnVariant="secondary"
                 index={0}
-                mode={ContentCycleContentModeEnum.CONTENT_CYCLE}
+                mode={AutomationContentModeEnum.AUTOMATION}
               />
             )}
           </FormItem>

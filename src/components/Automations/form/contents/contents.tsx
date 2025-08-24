@@ -1,13 +1,32 @@
-// app/(Console)/automations/components/form/contents/contents.tsx
+// src/components/Automations/form/Contents/Contents.tsx
 "use client";
 
-import { Alert, AlertDescription, Button, ErrorMessage, HelpMeDialog } from "@/components/index";
-import { UploadedFile } from "@/components/theme/types/fileUploader";
 import {
-  ContentCycleContentModeEnum,
-  ContentCycleContentTypesEnum,
-} from "@/constants/contentCycleContent.enum";
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from "@/constants/automationContent.enum";
 import useUser from "@/hooks/useUser";
+import { AutomationFormSchema } from "@/schemas/automationForm";
+import { UploadedFile } from "@/types/fileUploader";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
+import { contentTypeOptions } from "./contentTypeOptions";
+
+import {
+  Alert,
+  AlertDescription,
+  Button,
+  ContentItem,
+  ContentPromotion,
+  ContentsContext,
+  ContentsUploaderContextProvider,
+  ErrorMessage,
+  FormMessage,
+  HelpMeDialog,
+} from "@/components/index";
 import {
   closestCenter,
   DndContext,
@@ -22,76 +41,33 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import {
-  ChatTextIcon,
-  InstagramLogoIcon,
-  PaperclipIcon,
-  PlusCircleIcon,
-  RadioButtonIcon,
-  ShoppingBagIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { ContentItem } from "./ContentItem";
-import { ContentPromotion } from "./ContentPromotion";
-import { ContentsContext } from "./useContentsContext";
-import { ContentsUploaderContextProvider } from "./useContentsUploaderContext";
+import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ContentsProps = {
-  mode: ContentCycleContentModeEnum;
-  contentCycleId?: string | undefined;
+  mode: AutomationContentModeEnum;
+  automationId?: string | undefined;
 };
 
-interface MessageTypeOption {
-  value: ContentCycleContentTypesEnum | "media";
-  label: string;
-  icon: React.ReactNode;
-}
-const messageTypeOptions: MessageTypeOption[] = [
-  {
-    value: ContentCycleContentTypesEnum.TEXT,
-    label: "Text",
-    icon: <ChatTextIcon />,
-  },
-  {
-    value: ContentCycleContentTypesEnum.INSTAGRAM_POST,
-    label: "Instagram Post",
-    icon: <InstagramLogoIcon />,
-  },
-  {
-    value: ContentCycleContentTypesEnum.PRODUCT,
-    label: "Product",
-    icon: <ShoppingBagIcon />,
-  },
-  {
-    value: ContentCycleContentTypesEnum.BUTTON_TEMPLATE,
-    label: "Button",
-    icon: <RadioButtonIcon />,
-  },
-  //BUG: Dont change my order!
-  {
-    value: "media",
-    label: "Media",
-    icon: <PaperclipIcon />,
-  },
-];
+export const Contents = ({ mode, automationId }: ContentsProps) => {
+  const { user } = useUser();
+  const isPromotion = user?.instagrams?.[0]?.isPromotion;
+  const t_contentTypes = useTranslations("ContentTypes");
+  const t = useTranslations("Automations.Contents");
+  const t_err = useTranslations("Automations.Contents.Errors");
 
-export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
   const {
     control,
     getValues,
     formState: { errors },
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+
   const [isChoosingType, setIsChoosingType] = useState(
-    !!contentCycleId || mode === ContentCycleContentModeEnum.REMINDER
+    !!automationId || mode === AutomationContentModeEnum.REMINDER
       ? false
       : true,
   );
-  const t_messageTypes = useTranslations("MessageTypes");
+
+  console.log(errors);
 
   const {
     fields: contents,
@@ -103,12 +79,9 @@ export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
   } = useFieldArray({
     control: control,
     name:
-      mode === ContentCycleContentModeEnum.REMINDER ? "reminders" : "contents",
+      mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
     keyName: "_xid",
   });
-
-  const t = useTranslations("Automations.Contents");
-  const t_errors = useTranslations("Automations.Errors");
 
   // Configure sensors for drag and drop
   const sensors = useSensors(
@@ -129,9 +102,6 @@ export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
       moveContents(oldIndex, newIndex);
     }
   };
-
-  const { user } = useUser();
-  const isPromotion = user?.instagrams?.[0]?.isPromotion;
 
   return (
     <ContentsContext.Provider
@@ -171,8 +141,8 @@ export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
         )}
 
         {isChoosingType && (
-          <div className="flex w-full flex-wrap justify-evenly gap-2">
-            {messageTypeOptions.map((option) => (
+          <div className="flex w-full flex-wrap justify-start gap-x-2.5 gap-y-2.5">
+            {contentTypeOptions.map((option) => (
               <Button
                 key={option.value}
                 type="button"
@@ -180,13 +150,13 @@ export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
                   appendContents({
                     type:
                       option.value === "media"
-                        ? ContentCycleContentTypesEnum.IMAGE
+                        ? AutomationContentTypesEnum.IMAGE
                         : option.value,
-                    ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE && {
+                    ...(mode === AutomationContentModeEnum.AUTOMATION && {
                       haveConsent: false,
                     }),
                     ...(option.value ===
-                      ContentCycleContentTypesEnum.BUTTON_TEMPLATE && {
+                      AutomationContentTypesEnum.BUTTON_TEMPLATE && {
                       buttonTemplate: {
                         text: "",
                         buttons: [
@@ -200,35 +170,34 @@ export const Contents = ({ mode, contentCycleId }: ContentsProps) => {
                   });
                   setIsChoosingType(false);
                 }}
-                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 bg-blue-100/75 text-sm text-blue-900 shadow-blue-200 hover:bg-amber-100/75 hover:shadow-amber-200 md:h-10 md:flex-row md:justify-start md:gap-1.5 [&_svg]:size-5"
+                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-none bg-blue-100/75 text-sm text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:pr-2 md:pl-6 [&_svg]:size-5"
               >
                 {option.icon}
-                {t_messageTypes(option.value)}
+                {t_contentTypes(option.value)}
               </Button>
             ))}
-            <Alert variant={"destructive"} className="mt-2 py-2 text-center">
+
+            <Alert variant="note">
               <AlertDescription>
-                {t_messageTypes("select_your_type")}
+                {t_contentTypes("select_your_type")}
               </AlertDescription>
             </Alert>
           </div>
         )}
-        {errors.contents?.message === "at_least" && (
-          <ErrorMessage>
-            {t_errors(`contents.${errors.contents.message}`)}
-          </ErrorMessage>
+
+        {errors.contents?.message && (
+          <ErrorMessage>{t_err(errors.contents?.type)}</ErrorMessage>
         )}
 
         <div className="relative">
           <Button
             variant="ghost"
             type="button"
+            disabled={isChoosingType}
             onClick={() => setIsChoosingType(true)}
           >
             <PlusCircleIcon size={22} className="text-blue-600" />
-            <span className="text-sm font-semibold text-blue-600">
-              {t("addContent")}
-            </span>
+            <span className="text-blue-600">{t("addContent")}</span>
           </Button>
 
           <HelpMeDialog

@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,

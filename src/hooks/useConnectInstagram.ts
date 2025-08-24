@@ -1,5 +1,5 @@
 import api from "./swr/api-client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import { useTranslations } from "next-intl";
 import { InstagramNamespace } from "@/types/instagram";
 import { useRouter } from "next/navigation";

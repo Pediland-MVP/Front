@@ -14,11 +14,35 @@ import {
   BreadcrumbSeparator,
 } from "@/components/index";
 
+// تشخیص UUID (برای سگمنت‌های داینامیک)
+const isUUID = (s: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    s,
+  );
+
+// اگر بخوای چند سگمنت ثابت رو ترجمه کنی، اینجا تعریفشون کن
+const knownSegmentKey = (seg: string): string | null => {
+  switch (seg) {
+    case "automations":
+      return "automations";
+    case "contents":
+      return "contents";
+    case "settings":
+      return "settings";
+    case "new":
+      return "new";
+    case "edit":
+      return "edit";
+    default:
+      return null;
+  }
+};
+
 export function HeaderBreadcrumb() {
   const pathname = usePathname();
   const t = useTranslations("Breadcrumbs");
 
-  // build segments once
+  // سگمنت‌ها را یکبار بساز
   const segments = useMemo(
     () =>
       pathname
@@ -27,35 +51,54 @@ export function HeaderBreadcrumb() {
         .map((segment, index, arr) => {
           const path = `/${arr.slice(0, index + 1).join("/")}`;
           const isLast = index === arr.length - 1;
-
           return { segment, path, isLast };
         }),
     [pathname],
   );
 
+  // برچسب نهایی هر سگمنت را تعیین کن
+  const getLabel = (segment: string) => {
+    // 1) اگر UUID/آیدی داینامیک بود
+    if (isUUID(segment)) return t("detail"); // کلید ثابت: Breadcrumbs.detail
+
+    // 2) اگر کلید شناخته‌شده داشت
+    const key = knownSegmentKey(segment);
+    if (key) return t(key); // مثل Breadcrumbs.automations
+
+    // 3) در غیر این صورت: خود متن قابل‌خواندن را نشان بده (بدون ترجمه)
+    return decodeURIComponent(segment);
+  };
+
   return (
-    <Breadcrumb>
-      <BreadcrumbList className="flex w-full overflow-hidden">
-        {segments.map(({ segment, path, isLast }) => (
-          <React.Fragment key={path}>
-            <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
-              {isLast ? (
-                <span
-                  className="block truncate whitespace-nowrap"
-                  aria-current="page"
-                >
-                  {t(path, { default: segment })}
-                </span>
-              ) : (
-                <BreadcrumbLink asChild>
-                  <Link href={path}>{t(path, { default: segment })}</Link>
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-            {!isLast && <BreadcrumbSeparator />}
-          </React.Fragment>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div>
+      <p>hello</p>
+    </div>
+    // <Breadcrumb>
+    //   <BreadcrumbList className="flex w-full overflow-hidden">
+    //     {segments.map(({ segment, path, isLast }) => {
+    //       const label = getLabel(segment);
+
+    //       return (
+    //         <React.Fragment key={path}>
+    //           <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
+    //             {isLast ? (
+    //               <span
+    //                 className="block truncate whitespace-nowrap"
+    //                 aria-current="page"
+    //               >
+    //                 {label}
+    //               </span>
+    //             ) : (
+    //               <BreadcrumbLink asChild>
+    //                 <Link href={path}>{label}</Link>
+    //               </BreadcrumbLink>
+    //             )}
+    //           </BreadcrumbItem>
+    //           {!isLast && <BreadcrumbSeparator />}
+    //         </React.Fragment>
+    //       );
+    //     })}
+    //   </BreadcrumbList>
+    // </Breadcrumb>
   );
 }

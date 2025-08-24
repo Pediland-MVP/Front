@@ -1,7 +1,7 @@
 import { Dispatch, useState } from "react";
 import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import { useTranslations } from "next-intl";
 import { mutate } from "swr";
 

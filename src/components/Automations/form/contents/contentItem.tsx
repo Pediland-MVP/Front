@@ -1,11 +1,10 @@
-// app/(Console)/automations/components/form/contents/contentItem.tsx
+// src/components/Automations/form/Contents/ContentItem.tsx
 "use client";
 
 import {
-  ContentCycleContentModeEnum,
-  ContentCycleContentTypesEnum,
-} from "@/constants/contentCycleContent.enum";
-import api from "@/hooks/swr/api-client";
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from "@/constants/automationContent.enum";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { FileNamespace } from "@/types/file";
 import { useSortable } from "@dnd-kit/sortable";
@@ -14,54 +13,42 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useTranslations } from "next-intl";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
-import { useContentsContext } from "./useContentsContext";
-import { useContentsUploaderContext } from "./useContentsUploaderContext";
 
 // UI Imports
-import { UploadedFile } from "@/components/theme/types/fileUploader";
-import { Badge } from "@/components/ui/badge";
-import { FileUploader } from "@/components/ui/fileUploader";
 import {
+  Checkbox,
+  ContentButtons,
+  TextContent,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
+  Input,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/use-toast";
+  useContentsContext,
+} from "@/components/index";
 import {
   ArrowsOutCardinalIcon,
-  TrashIcon,
+  TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import TextContentComp from "../textContentComp";
-import ProductContentComp from "../productContentComp";
+
 import InstagramPostsContentComp from "../instagramPostsContentComp";
-import { ContentButtons } from "./ContentButtons";
+import ProductContentComp from "../productContentComp";
+import { ContentMedia } from "./ContentMedia";
+import { UploadedFile } from "@/types/fileUploader";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 
-type MessageByTypeProps = {
+interface ReturnContentProps {
   index: number;
-  type: ContentCycleContentTypesEnum;
-  mode: ContentCycleContentModeEnum;
-};
-
-function NameVariable() {
-  return <mark className="font-bold text-blue-400">#نام</mark>;
+  type: AutomationContentTypesEnum;
+  mode: AutomationContentModeEnum;
 }
 
-export const MessageByType = ({ index, type, mode }: MessageByTypeProps) => {
-  const { files, setFiles } = useContentsUploaderContext();
-  const t_ec = useTranslations("ERROR_CODES");
-  const t_err = useTranslations("Automations.Errors");
-  const t_fileUploader = useTranslations("FileUploader");
+export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
   const t = useTranslations("Automations.Contents");
 
   const {
@@ -69,136 +56,23 @@ export const MessageByType = ({ index, type, mode }: MessageByTypeProps) => {
     setValue,
     getValues,
     formState: { errors },
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
-
-  const onChange = (files: UploadedFile[]) => {
-    if (files.length === 0) {
-      setValue(
-        `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}.file`,
-        null,
-      );
-    }
-    if ("file" in files[0]) {
-      setFiles((files) => {
-        return [{ ...files[0], isUploading: true, process: 0 }];
-      });
-      const formData = new FormData();
-      formData.append("file", files[0].file);
-      const res = api
-        .post(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/upload`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            withCredentials: true,
-            onUploadProgress: (progressEvent) => {
-              if (progressEvent.total) {
-                const process = Math.round(
-                  (progressEvent.loaded / progressEvent.total) * 100,
-                );
-                setFiles((prev) => {
-                  return [{ ...prev[0], process: process }];
-                });
-              }
-            },
-          },
-        )
-        .then((res: AxiosResponse<FileNamespace.File>) => {
-          setFiles([
-            {
-              id: res.data.id,
-              url: res.data.url,
-              mimeType: res.data.mimeType,
-            },
-          ]);
-
-          setValue(
-            `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
-            {
-              ...getValues(
-                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
-              ),
-              type: res.data.mimeType.split(
-                "/",
-              )[0] as ContentCycleContentTypesEnum,
-              file: {
-                id: res.data.id,
-                url: res.data.url,
-                mimeType: res.data.mimeType,
-              },
-            },
-          );
-
-          console.log(
-            "Uploader content of that content",
-            getValues(
-              `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
-            ),
-          );
-        })
-        .catch((err: AxiosError) => {
-          const errorCode = t_ec(
-            (err.response?.data as ExceptionMessage)?.code,
-          );
-          if (errorCode !== "ERROR_CODES") {
-            toast({
-              title: errorCode,
-              variant: "destructive",
-            });
-            return;
-          }
-
-          if (err.status === 400) {
-            toast({
-              title: `${t_fileUploader(`Limits.${type}.text`)}. ${t_fileUploader(`Limits.${type}.formats`)}`,
-              description: "لطفا یک فایل دیگر انتخاب کنید",
-              variant: "destructive",
-            });
-          }
-        })
-        .finally(() => {
-          setFiles((prev) => {
-            return [{ ...prev[0], isUploading: false }];
-          });
-        });
-    }
-  };
-  const { updateContents, contents } = useContentsContext();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   switch (type) {
-    case ContentCycleContentTypesEnum.TEXT:
-      return <TextContentComp control={control} mode={mode} index={index} />;
+    case AutomationContentTypesEnum.TEXT:
+      return <TextContent control={control} mode={mode} index={index} />;
 
-    case ContentCycleContentTypesEnum.INSTAGRAM_POST:
+    case AutomationContentTypesEnum.INSTAGRAM_POST:
       return <InstagramPostsContentComp mode={mode} index={index} />;
 
-    case ContentCycleContentTypesEnum.PRODUCT:
+    case AutomationContentTypesEnum.PRODUCT:
       return <ProductContentComp mode={mode} index={index} />;
 
-    case ContentCycleContentTypesEnum.BUTTON_TEMPLATE:
+    case AutomationContentTypesEnum.BUTTON_TEMPLATE:
       return <ContentButtons mode={mode} contentIndex={index} />;
 
     default:
-      return (
-        <>
-          <FileUploader
-            multiple={false}
-            files={files}
-            setFiles={setFiles}
-            onChange={onChange}
-            accept="audio/*,video/*,image/*"
-          />
-          {errors.contents?.[index]?.file && (
-            <FormMessage>
-              {t_err(
-                `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.media.${errors.contents?.[index]?.file.message}`,
-              )}
-            </FormMessage>
-          )}
-        </>
-      );
+      return <ContentMedia index={index} mode={mode} type={type} />;
   }
 };
 
@@ -211,7 +85,7 @@ export const ContentItem = ({
 }: {
   id: string;
   index: number;
-  mode: ContentCycleContentModeEnum;
+  mode: AutomationContentModeEnum;
   isPromotion?: boolean;
   defaultUploaderValue?: UploadedFile | null;
 }) => {
@@ -222,10 +96,9 @@ export const ContentItem = ({
     setValue,
     clearErrors,
     trigger,
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
   const t = useTranslations("Automations.Contents");
-  const t_messageTypes = useTranslations("MessageTypes");
-
+  const t_contentTypes = useTranslations("ContentTypes");
   let { removeContents, updateContents, contents } = useContentsContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -238,20 +111,26 @@ export const ContentItem = ({
   const deleteContent = () => {
     removeContents(index);
 
-    // if the index is 1, set the haveConsent to false because for consent we need at least 2 item
-    if (index === 1) {
+    // وضعیت جدید بعد از حذف
+    const newList =
+      mode === AutomationContentModeEnum.AUTOMATION
+        ? getValues().contents
+        : getValues().reminders;
+
+    // اگر فقط ۱ آیتم یا کمتر باقی مونده => haveConsent رو خاموش کن
+    if (newList && newList.length <= 1) {
       updateContents(0, {
-        ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE
-          ? getValues().contents?.[0]
-          : getValues().reminders?.[0]),
+        ...newList[0],
         haveConsent: false,
       });
     }
+
     trigger();
   };
 
-  const handleMessageTypeChange = async (
-    type: ContentCycleContentTypesEnum | "media",
+  // *************** NEVE USED ???????
+  const handleContentTypeChange = async (
+    type: AutomationContentTypesEnum | "media",
   ) => {
     // Create a new content object with the selected type
     //NOTE: Default values of the new content
@@ -259,14 +138,14 @@ export const ContentItem = ({
       ...contents[index],
       type,
       // Reset content-specific fields when changing type
-      ...((type === ContentCycleContentTypesEnum.TEXT ||
-        type === ContentCycleContentTypesEnum.INSTAGRAM_POST) && {
+      ...((type === AutomationContentTypesEnum.TEXT ||
+        type === AutomationContentTypesEnum.INSTAGRAM_POST) && {
         file: null,
       }),
-      ...(type === ContentCycleContentTypesEnum.PRODUCT && {
+      ...(type === AutomationContentTypesEnum.PRODUCT && {
         products: [{}],
       }),
-      ...(type === ContentCycleContentTypesEnum.BUTTON_TEMPLATE
+      ...(type === AutomationContentTypesEnum.BUTTON_TEMPLATE
         ? {
             buttonTemplate: {
               text: "",
@@ -281,7 +160,7 @@ export const ContentItem = ({
         : {
             buttonTemplate: null,
           }),
-      ...(type !== ContentCycleContentTypesEnum.TEXT && { text: undefined }),
+      ...(type !== AutomationContentTypesEnum.TEXT && { text: undefined }),
     };
 
     // Update the form field
@@ -289,34 +168,44 @@ export const ContentItem = ({
 
     // Trigger form validation
     await trigger(
-      `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
+      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
     );
 
     clearErrors("contents.0.buttonTemplate");
   };
 
+  const typeKey = contents?.[index]?.type as string | undefined;
+  const typeLabel = typeKey
+    ? t_contentTypes(typeKey)
+    : t_contentTypes("fallback_key");
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex flex-col items-start gap-y-4 rounded-xl border border-blue-200/75 bg-blue-50/50 p-3 hover:border-blue-300"
+      className="flex flex-col items-start gap-y-4 rounded-xl border border-dashed border-blue-200/75 bg-blue-50/60 p-3 hover:border-blue-300"
     >
       <div className="_header flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div
             {...attributes}
             {...listeners}
             className="cursor-move touch-none"
           >
-            <ArrowsOutCardinalIcon size={18} className="text-gray-600" />
+            <ArrowsOutCardinalIcon
+              size={18}
+              className="text-gray-500 hover:text-blue-900"
+            />
           </div>
           <div className="flex gap-2 text-sm font-medium text-blue-900">
-            <Badge>{index + 1}</Badge>
-            {`${t_messageTypes("create_title")} ${t_messageTypes(contents?.[index]?.type) ?? "عنوان محتوا"}`}
+            <div className="flex size-5.5 items-center justify-center rounded-full bg-blue-900 p-0 text-xs leading-px font-medium text-white">
+              {index + 1}
+            </div>
+            {`${t_contentTypes("create_title")} ${typeLabel}`}
           </div>
         </div>
         <div>
-          <TrashIcon
+          <TrashSimpleIcon
             size={20}
             className="cursor-pointer text-red-600"
             onClick={deleteContent}
@@ -326,28 +215,28 @@ export const ContentItem = ({
       </div>
 
       <div className="_content flex w-full flex-col gap-3">
-        <MessageByType
+        <ReturnContent
           mode={mode}
           index={index}
           type={contents?.[index]?.type}
         />
 
-        {contents?.[index]?.type === ContentCycleContentTypesEnum.TEXT &&
-          mode === ContentCycleContentModeEnum.CONTENT_CYCLE &&
+        {contents?.[index]?.type === AutomationContentTypesEnum.TEXT &&
+          mode === AutomationContentModeEnum.AUTOMATION &&
           (contents.length > 1 || index > 0) &&
           index !== contents.length - 1 && (
             <FormField
               name={`contents.${index}.haveConsent`}
               control={control}
               render={({ field }) => (
-                <FormItem className="flex flex-col justify-start gap-y-2">
+                <FormItem className="flex flex-col justify-start space-y-0 gap-y-2">
                   <div className="flex items-center gap-x-2">
                     <FormControl>
                       <TooltipProvider>
                         <Tooltip
                           {...(contents.length > 1 &&
                             contents?.[index]?.type ===
-                              ContentCycleContentTypesEnum.TEXT && {
+                              AutomationContentTypesEnum.TEXT && {
                               open: false,
                             })}
                         >
@@ -356,16 +245,15 @@ export const ContentItem = ({
                             disabled={
                               contents.length > 1 ||
                               contents?.[index]?.type !==
-                                ContentCycleContentTypesEnum.TEXT
+                                AutomationContentTypesEnum.TEXT
                             }
                           >
                             <Checkbox
                               disabled={
                                 contents.length <= 1 ||
                                 contents?.[index]?.type !==
-                                  ContentCycleContentTypesEnum.TEXT
+                                  AutomationContentTypesEnum.TEXT
                               }
-                              dir="ltr"
                               checked={field.value || false}
                               onCheckedChange={field.onChange}
                             />
@@ -374,13 +262,13 @@ export const ContentItem = ({
                             {contents.length <= 1
                               ? t("consentTooltip")
                               : contents?.[index]?.type !==
-                                  ContentCycleContentTypesEnum.TEXT &&
+                                  AutomationContentTypesEnum.TEXT &&
                                 t("consentTooltipType")}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </FormControl>
-                    <FormLabel className="">{t("consent")}</FormLabel>
+                    <FormLabel className="m-0">{t("consent")}</FormLabel>
                   </div>
 
                   {!!field.value && (
@@ -390,9 +278,7 @@ export const ContentItem = ({
                       render={({ field, fieldState: { error } }) => (
                         <FormItem>
                           <Input placeholder={t("consentMessage")} {...field} />
-                          {error && (
-                            <FormMessage> {error.message} </FormMessage>
-                          )}
+                          {error && <FormMessage>{error.message}</FormMessage>}
                         </FormItem>
                       )}
                     />

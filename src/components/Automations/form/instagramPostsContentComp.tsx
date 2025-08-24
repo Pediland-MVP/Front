@@ -11,7 +11,7 @@ import {
   DialogTrigger, ErrorMessage,
   Skeleton
 } from "@/components/index";
-import { ContentCycleContentModeEnum } from "@/constants/contentCycleContent.enum";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
@@ -22,13 +22,13 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "../Automation";
 
 const PAGE_SIZE = 9;
 
 export type InstagramPostsContentCompProps = {
   index: number;
-  mode: ContentCycleContentModeEnum;
+  mode: AutomationContentModeEnum;
 };
 
 export default function InstagramPostsContentComp({
@@ -39,12 +39,12 @@ export default function InstagramPostsContentComp({
     getValues,
     control,
     formState: { errors },
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   const { fields: contents, update: updateContents } = useFieldArray({
     control: control,
     name:
-      mode === ContentCycleContentModeEnum.REMINDER ? "reminders" : "contents",
+      mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
     keyName: "_xid",
   });
 
@@ -90,7 +90,7 @@ export default function InstagramPostsContentComp({
     // console.log(`value before update`, getValues()?.contents?.[index]);
 
     updateContents(index, {
-      ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE
+      ...(mode === AutomationContentModeEnum.AUTOMATION
         ? getValues()?.contents?.[index]
         : getValues()?.reminders?.[index]),
       instagramPost: { mediaUrl, mediaId: postId },

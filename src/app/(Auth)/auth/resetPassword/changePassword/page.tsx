@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-custom/use-toast";
 import { InputPassword } from "@/components/ui/inputPassword";
 import { Keyhole } from "@phosphor-icons/react/dist/ssr";
 

@@ -3,15 +3,15 @@
 import { useTranslations } from "next-intl";
 import { Control, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "../Automation";
 
 // UI Imports
 import { FormField, FormLabel, FormMessage, HelpMeDialog, Switch } from "@/components/index";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 type TriggerProps = {
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
+  control: Control<z.infer<typeof AutomationFormSchema>>;
+  getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
 };
 
 export const Trigger = ({ control, getValues }: TriggerProps) => {

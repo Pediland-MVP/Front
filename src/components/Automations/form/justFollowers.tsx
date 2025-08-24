@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "../Automation";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -19,14 +19,14 @@ import {
 } from "@/components/index";
 
 type JustFollowersProps = {
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
+  control: Control<z.infer<typeof AutomationFormSchema>>;
+  getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
 };
 export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
   const t = useTranslations("Automations.JustFollowers");
   const t_automations = useTranslations("Automations");
   const { setValue, watch } =
-    useFormContext<z.infer<typeof contentCycleFormSchema>>();
+    useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   const { user, hasInstagram } = useUser();
 

@@ -1,4 +1,4 @@
-// src/components/Automations/AutomationDetails.tsx
+// src/components/Automations/Automation.tsx
 "use client";
 
 import {
@@ -17,27 +17,49 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
+import { CommentReplies } from "./form/CommentReplies";
+import { Conditions } from "./form/Conditions";
+import { Contents } from "./form/Contents/Contents";
+import { JustFollowers } from "./form/JustFollowers";
+import { Reminder } from "./form/Reminder";
+import { Trigger } from "./form/Trigger";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
-import { ErrorMessage, Form } from "@/components/index";
-import LoaderSpin from "@/components/ui-custom/LoaderSpin";
-import LoadingButton from "@/components/ui/button-loading";
-import { AutomationFormSchema } from "@/schemas/automationForm";
-import { toast } from "sonner";
 import {
+  Card,
   CommentContentTarget,
-  CommentReplies,
   CommentTriggerInputs,
-  Conditions,
-  Contents,
-  JustFollowers,
-  Reminder,
-  Trigger,
-} from "./form";
+  Form,
+} from "@/components/index";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingButton from "@/components/ui/button-loading";
+import { toast } from "sonner";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
 
-type AutomationDetailsProps = {
+export type ContentType = {
+  id: string;
+  message?: string;
+  postId?: string;
+  consent?: string;
+};
+
+export type ConditionType = {
+  id?: string;
+  type: string;
+  value: string;
+};
+
+export const CONTENTCYCLE_EVENTS = {
+  SelectPost: "selectPost",
+};
+
+export type SelectPostEventPayload = {
+  postId: string;
+};
+
+type AutomationProps = {
   id?: string;
 };
 
@@ -46,28 +68,12 @@ type AutomationDetailsProps = {
  * @param {id} Object This param is optional and specify the component is for Update or Create`
  * @returns
  */
-export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
-  useI18nZodErrors();
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { hasInstagram, isLoading } = useUser();
+export const Automation = ({ id }: AutomationProps) => {
   const t_ec = useTranslations("ERROR_CODES");
   const t = useTranslations("Automations");
-
-  const isUUID = (s?: string) =>
-    !!s &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      s,
-    );
-
-  const key = isUUID(id) ? `/contentCycle/${id}` : null;
-  const {
-    data: automation,
-    isLoading: isAutomationLoading,
-    error: automationError,
-  } = useSWRImmutable(key, {
-    revalidateOnMount: !!id,
-  });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const router = useRouter();
+  useI18nZodErrors();
 
   const form = useForm<z.infer<typeof AutomationFormSchema>>({
     resolver: zodResolver(AutomationFormSchema),
@@ -85,6 +91,14 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
       followCheckMessage: t("followCheckMessage"),
       isCommentContentTargetEnabled: false,
     },
+  });
+
+  const {
+    data: automation,
+    isLoading: isAutomationLoading,
+    error: automationError,
+  } = useSWRImmutable(`/contentCycle/${id}`, {
+    revalidateOnMount: true,
   });
 
   useEffect(() => {
@@ -113,11 +127,9 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
       haveError = true;
     }
 
-    const firstType = values.contents[0]?.type;
-
     if (
       values.isComment &&
-      (firstType === AutomationContentTypesEnum.PRODUCT ||
+      (values.contents[0].type === AutomationContentTypesEnum.PRODUCT ||
         values.contents.length > 1) &&
       !values.justFollowers &&
       !values.commentStartText
@@ -196,7 +208,7 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
       data: values,
     })
       .then((res) => {
-        toast.success(t("success"));
+        toast.error(t("success"));
         router.push("/automations");
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
@@ -214,62 +226,69 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
       .then(() => setIsSubmitting(false));
   };
 
+  const { hasInstagram } = useUser();
+
   return (
     <FormProvider {...form}>
-      <div className={cn("_automation-details min-h-full")}>
-        {isAutomationLoading || isLoading ? (
-          <LoaderSpin />
-        ) : (
-          <>
-            {!hasInstagram && <ConnectInstagramAlert />}
+      <div className="_add-automation h-full xl:w-1/2 2xl:w-1/3">
+        <Card
+          className={cn(
+            "border-l-2 border-gray-100 px-3 md:p-5 2xl:pb-7",
+            isAutomationLoading ? "h-full" : "min-h-full",
+          )}
+        >
+          {isAutomationLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              {!hasInstagram && <ConnectInstagramAlert />}
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="grid gap-3.5"
-              >
-                <Trigger control={form.control} getValues={form.getValues} />
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="grid gap-3.5"
+                >
+                  <Trigger control={form.control} getValues={form.getValues} />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Conditions
-                  control={form.control}
-                  getValues={form.getValues}
-                  formState={form.formState}
-                />
+                  <Conditions
+                    control={form.control}
+                    getValues={form.getValues}
+                    formState={form.formState}
+                  />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <Contents
-                  automationId={id}
-                  mode={AutomationContentModeEnum.AUTOMATION}
-                />
+                  <Contents
+                    automationId={id}
+                    mode={AutomationContentModeEnum.AUTOMATION}
+                  />
 
-                <CommentContentTarget />
+                  <CommentContentTarget />
 
-                <CommentReplies />
+                  <CommentReplies />
 
-                <Reminder />
+                  <Reminder />
 
-                <hr className="border-gray-100" />
+                  <hr className="border-gray-100" />
 
-                <CommentTriggerInputs />
+                  <JustFollowers
+                    control={form.control}
+                    getValues={form.getValues}
+                  />
 
-                <JustFollowers
-                  control={form.control}
-                  getValues={form.getValues}
-                />
+                  <CommentTriggerInputs />
 
-                {/* Submit button */}
-                <LoadingButton className="mt-3" isLoading={isSubmitting}>
-                  {id ? t("update_automation") : t("add_automation")}
-                </LoadingButton>
-              </form>
-            </Form>
-          </>
-        )}
-
-        {automationError && <ErrorMessage>{t_ec("LOAD_FAILED")}</ErrorMessage>}
+                  {/* Submit button */}
+                  <LoadingButton className="mt-3" isLoading={isSubmitting}>
+                    {id ? t("update_automation") : t("add_automation")}
+                  </LoadingButton>
+                </form>
+              </Form>
+            </>
+          )}
+        </Card>
       </div>
     </FormProvider>
   );

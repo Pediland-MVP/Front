@@ -19,7 +19,7 @@ export const LayoutPage = ({
     <div className="scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-white flex flex-1 flex-col overflow-auto">
       <div
         className={cn(
-          "_layout-page flex flex-1 flex-col border-l-2 border-gray-100 p-5",
+          "_layout-page flex flex-1 flex-col md:border-l-2 border-gray-100 px-3 py-4 md:p-5",
           col === "small" && "xl:w-1/3",
           col === "half" && "xl:w-1/2 2xl:w-1/3",
           col === "full" && "w-full",

@@ -16,8 +16,8 @@ export * from "./table";
 export * from "./switch";
 export * from "./form";
 export * from "./textarea";
-export * from "./errorMessage";
 export * from "./alert";
 export * from "./alert-dialog";
-
-
+export * from "./checkbox";
+export * from "./badge";
+export * from "./card";

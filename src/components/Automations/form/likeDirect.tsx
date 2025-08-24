@@ -1,12 +1,12 @@
 import { FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
 import { Control } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "../Automation";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type LikeDirectProps = {
-    control: Control<z.infer<typeof contentCycleFormSchema>>;
+    control: Control<z.infer<typeof AutomationFormSchema>>;
   };
 
 export default function LikeDirect({ control }: LikeDirectProps) {

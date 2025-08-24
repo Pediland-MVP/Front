@@ -1,48 +1,46 @@
+// src/components/Automations/form/Contents/ContentPromotion.tsx
 "use client";
 
 import { useTranslations } from "next-intl";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../../contentCycle";
+import { AutomationFormSchema } from "@/schemas/automationForm";
+import { useState } from "react";
 
 // Just UI Imports Below
 import {
+  Button,
+  Checkbox,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import {
-  Trash,
-  ArrowsOutCardinal,
-  Chat,
-  InstagramLogo,
-  Paperclip,
-  Storefront,
-  RadioButton,
-} from "@phosphor-icons/react/dist/ssr";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import {
+  Input,
+  Label,
+  Textarea,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/index";
 import {
-  ContentCycleContentModeEnum,
-  ContentCycleContentTypesEnum,
-} from "@/constants/contentCycleContent.enum";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import InputCounter from "@/components/ui/inputCounter";
-import { ContentPromotionDialog } from "./ContentPromotion.dialog";
-import { useState } from "react";
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from "@/constants/automationContent.enum";
+import {
+  ArrowsOutCardinalIcon,
+  ChatIcon,
+  InstagramLogoIcon,
+  PaperclipIcon,
+  RadioButtonIcon,
+  StorefrontIcon,
+  TrashSimpleIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { ContentPromotionDialog } from "./ContentPromotionDialog";
 
 interface MessageTypeOption {
-  value: ContentCycleContentTypesEnum | "media";
+  value: AutomationContentTypesEnum | "media";
   label: string;
   icon: React.ReactNode;
 }
@@ -51,30 +49,30 @@ interface MessageTypeOption {
 //BUG: Dont change my order!
 const messageTypeOptions: MessageTypeOption[] = [
   {
-    value: ContentCycleContentTypesEnum.TEXT,
+    value: AutomationContentTypesEnum.TEXT,
     label: "Text",
-    icon: <Chat className="h-6 w-6" />,
+    icon: <ChatIcon className="h-6 w-6" />,
   },
   {
-    value: ContentCycleContentTypesEnum.INSTAGRAM_POST,
+    value: AutomationContentTypesEnum.INSTAGRAM_POST,
     label: "Instagram Post",
-    icon: <InstagramLogo className="h-6 w-6" />,
+    icon: <InstagramLogoIcon className="h-6 w-6" />,
   },
   {
-    value: ContentCycleContentTypesEnum.PRODUCT,
+    value: AutomationContentTypesEnum.PRODUCT,
     label: "Product",
-    icon: <Storefront className="h-6 w-6" />,
+    icon: <StorefrontIcon className="h-6 w-6" />,
   },
   {
-    value: ContentCycleContentTypesEnum.BUTTON_TEMPLATE,
+    value: AutomationContentTypesEnum.BUTTON_TEMPLATE,
     label: "Button",
-    icon: <RadioButton className="h-6 w-6" />,
+    icon: <RadioButtonIcon className="h-6 w-6" />,
   },
   //BUG: Dont change my order!
   {
     value: "media",
     label: "Media",
-    icon: <Paperclip className="h-6 w-6" />,
+    icon: <PaperclipIcon className="h-6 w-6" />,
   },
 ];
 
@@ -86,7 +84,7 @@ export const ContentPromotion = () => {
     setValue,
     clearErrors,
     trigger,
-  } = useFormContext<z.infer<typeof contentCycleFormSchema>>();
+  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   //   let { removeContents, updateContents, contents } = useContentsContext();
   const contents: any[] = [];
@@ -94,7 +92,7 @@ export const ContentPromotion = () => {
   const removeContents = (...res: any[]) => {};
   const index = 1;
   const id = 1_000_000;
-  const mode = ContentCycleContentModeEnum.CONTENT_CYCLE;
+  const mode = AutomationContentModeEnum.AUTOMATION;
 
   const t = useTranslations("Automations.Contents");
   const t_messageTypes = useTranslations("MessageTypes");
@@ -105,7 +103,7 @@ export const ContentPromotion = () => {
     // if the index is 1, set the haveConsent to false because for consent we need at least 2 item
     if (index === 1) {
       updateContents(0, {
-        ...(mode === ContentCycleContentModeEnum.CONTENT_CYCLE
+        ...(mode === AutomationContentModeEnum.AUTOMATION
           ? getValues().contents?.[0]
           : getValues().reminders?.[0]),
         haveConsent: false,
@@ -115,7 +113,7 @@ export const ContentPromotion = () => {
   };
 
   const handleMessageTypeChange = async (
-    type: ContentCycleContentTypesEnum | "media",
+    type: AutomationContentTypesEnum | "media",
   ) => {
     // Create a new content object with the selected type
     //NOTE: Default values of the new content
@@ -123,14 +121,14 @@ export const ContentPromotion = () => {
       ...contents[index],
       type,
       // Reset content-specific fields when changing type
-      ...((type === ContentCycleContentTypesEnum.TEXT ||
-        type === ContentCycleContentTypesEnum.INSTAGRAM_POST) && {
+      ...((type === AutomationContentTypesEnum.TEXT ||
+        type === AutomationContentTypesEnum.INSTAGRAM_POST) && {
         file: null,
       }),
-      ...(type === ContentCycleContentTypesEnum.PRODUCT && {
+      ...(type === AutomationContentTypesEnum.PRODUCT && {
         products: [{}],
       }),
-      ...(type === ContentCycleContentTypesEnum.BUTTON_TEMPLATE
+      ...(type === AutomationContentTypesEnum.BUTTON_TEMPLATE
         ? {
             buttonTemplate: {
               text: "",
@@ -145,7 +143,7 @@ export const ContentPromotion = () => {
         : {
             buttonTemplate: null,
           }),
-      ...(type !== ContentCycleContentTypesEnum.TEXT && { text: undefined }),
+      ...(type !== AutomationContentTypesEnum.TEXT && { text: undefined }),
     };
 
     // Update the form field
@@ -153,7 +151,7 @@ export const ContentPromotion = () => {
 
     // Trigger form validation
     await trigger(
-      `${mode === ContentCycleContentModeEnum.CONTENT_CYCLE ? "contents" : "reminders"}.${index}`,
+      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
     );
 
     clearErrors("contents.0.buttonTemplate");
@@ -171,10 +169,10 @@ export const ContentPromotion = () => {
       <ContentPromotionDialog setIsOpen={setIsOpen} isOpen={isOpen} />
       <div className="_header flex w-full items-center justify-between">
         <div className="cursor-move touch-none">
-          <ArrowsOutCardinal size={20} />
+          <ArrowsOutCardinalIcon size={20} />
         </div>
         <div>
-          <Trash
+          <TrashSimpleIcon
             size={22}
             className="cursor-pointer text-red-600"
             onClick={deleteContent}
@@ -225,6 +223,7 @@ export const ContentPromotion = () => {
                   <span className="text-blue-500">{chunks}</span>
                 ),
               })}
+              asdasds
             </Label>
             <Textarea
               disabled
@@ -234,8 +233,8 @@ export const ContentPromotion = () => {
             />
           </FormItem>
 
-          {contents?.[index]?.type === ContentCycleContentTypesEnum.TEXT &&
-            mode === ContentCycleContentModeEnum.CONTENT_CYCLE &&
+          {contents?.[index]?.type === AutomationContentTypesEnum.TEXT &&
+            mode === AutomationContentModeEnum.AUTOMATION &&
             (contents.length > 1 || index > 0) &&
             index !== contents.length - 1 && (
               <FormField
@@ -249,7 +248,7 @@ export const ContentPromotion = () => {
                           <Tooltip
                             {...(contents.length > 1 &&
                               contents?.[index]?.type ===
-                                ContentCycleContentTypesEnum.TEXT && {
+                                AutomationContentTypesEnum.TEXT && {
                                 open: false,
                               })}
                           >
@@ -258,14 +257,14 @@ export const ContentPromotion = () => {
                               disabled={
                                 contents.length > 1 ||
                                 contents?.[index]?.type !==
-                                  ContentCycleContentTypesEnum.TEXT
+                                  AutomationContentTypesEnum.TEXT
                               }
                             >
                               <Checkbox
                                 disabled={
                                   contents.length <= 1 ||
                                   contents?.[index]?.type !==
-                                    ContentCycleContentTypesEnum.TEXT
+                                    AutomationContentTypesEnum.TEXT
                                 }
                                 dir="ltr"
                                 checked={field.value || false}
@@ -276,7 +275,7 @@ export const ContentPromotion = () => {
                               {contents.length <= 1
                                 ? t("consentTooltip")
                                 : contents?.[index]?.type !==
-                                    ContentCycleContentTypesEnum.TEXT &&
+                                    AutomationContentTypesEnum.TEXT &&
                                   t("consentTooltipType")}
                             </TooltipContent>
                           </Tooltip>

@@ -12,24 +12,33 @@ import {
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
-import { Button, HelpMeDialog, Input } from "@/components/index";
-import { ErrorMessage } from "@/components/index";
-import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  Button,
+  ErrorMessage,
+  FormField,
+  FormItem,
+  FormMessage,
+  HelpMeDialog,
+  Input,
+} from "@/components/index";
+import { PlusCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 type TriggerProps = {
-  control: Control<z.infer<typeof contentCycleFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof contentCycleFormSchema>>;
-  formState: UseFormStateReturn<z.infer<typeof contentCycleFormSchema>>;
+  control: Control<z.infer<typeof AutomationFormSchema>>;
+  getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
+  formState: UseFormStateReturn<z.infer<typeof AutomationFormSchema>>;
 };
 
 export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
   const t = useTranslations("Automations.Conditions");
+  const t_err = useTranslations("Automations.Conditions.Errors");
   const [currentType, setCurrentType] = useState<ContentCycleConditionTypes>();
   const [isRendered, setIsRendered] = useState<boolean>(false);
+
   const {
     fields: conditionsField,
     remove: removeConditions,
@@ -69,11 +78,12 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
   return (
     <div className="_conditions space-y-2">
       <div className="relative">
-        <p className="text-sm font-medium">
-          {t("wordOrPhrase")}{" "}
+        <p className="flex items-center gap-1 text-sm font-medium">
+          <span>{t("wordOrPhrase")}</span>
           <span onClick={toggleConditionType}>
             {currentType === "INCLUDE" ? t("include") : t("equal")}
           </span>
+          <span>{t("belowConditions")}</span>
         </p>
 
         <HelpMeDialog
@@ -88,22 +98,29 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
         {conditionsField.map((condition, index) => (
           <div
             key={condition.id}
-            className="flex flex-col items-center gap-2 xl:flex-row"
+            className="flex flex-col items-start gap-2 xl:flex-row"
           >
-            <div className="flex w-full items-center gap-2">
-              <Controller
+            <div className="flex w-full items-start gap-2">
+              <FormField
                 name={`conditions.${index}.value`}
                 control={control}
                 render={({ field, fieldState: { error } }) => (
-                  <Input {...field} type="text" placeholder={t("value")} />
+                  <FormItem className="w-full">
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={t("value")}
+                      aria-invalid={!!error}
+                    />
+                    {error && <ErrorMessage>{t_err("required")}</ErrorMessage>}
+                  </FormItem>
                 )}
               />
 
-              {/* Delete Icon */}
               {getValues().conditions?.length > 1 && (
-                <TrashIcon
-                  size={18}
-                  className="cursor-pointer text-red-600"
+                <XCircleIcon
+                  size={20}
+                  className="h-9 cursor-pointer text-red-600"
                   onClick={() => removeConditions(index)}
                   aria-label={t("deleteCondition")}
                 />
@@ -118,27 +135,24 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
                 variant="ghost"
                 type="button"
               >
-                <PlusCircleIcon size={20} className="text-blue-600" />
-                <span className="text-sm font-medium text-blue-600">
-                  {t("addNewCondition")}
-                </span>
+                <span className="text-blue-600">{t("addNewCondition")}</span>
               </Button>
             )}
           </div>
         ))}
       </div>
 
-      {formState?.errors?.conditions?.map &&
+      {/* {formState?.errors?.conditions?.map &&
         formState.errors.conditions.map((state, index) => {
           return (
             <ErrorMessage key={index}>{state?.value?.message}</ErrorMessage>
           );
-        })}
+        })} */}
 
       {/* Message input & post select */}
-      <div>
-        <p className="mb-1 text-sm font-medium">{t("sendMessageBelow")}</p>
-        <p className="text-sm text-gray-600">{t("note")}</p>
+      <div className="space-y-3">
+        <p className="text-sm font-medium">{t("sendMessageBelow")}</p>
+        <p className="text-[13px] text-gray-600">{t("note")}</p>
       </div>
     </div>
   );
