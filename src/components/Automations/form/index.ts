@@ -5,4 +5,4 @@ export * from "./Conditions";
 export * from "./Contents";
 export * from "./JustFollowers";
 export * from "./Reminder";
-export * from "./Trigger";
+export * from "./Triggers";

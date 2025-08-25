@@ -22,7 +22,7 @@ import { Conditions } from "./form/Conditions";
 import { Contents } from "./form/Contents/Contents";
 import { JustFollowers } from "./form/JustFollowers";
 import { Reminder } from "./form/Reminder";
-import { Trigger } from "./form/Trigger";
+import { Triggers } from "./form/Triggers";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
@@ -69,8 +69,9 @@ type AutomationProps = {
  * @returns
  */
 export const Automation = ({ id }: AutomationProps) => {
-  const t_ec = useTranslations("ERROR_CODES");
   const t = useTranslations("Automations");
+  const t_ec = useTranslations("ERROR_CODES");
+  const t_err = useTranslations("Errors");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
   useI18nZodErrors();
@@ -86,9 +87,9 @@ export const Automation = ({ id }: AutomationProps) => {
       isRemindersEnabled: false,
       reminders: [],
       isReplyCommentEnabled: false,
-      commentStartText: t("commentStartText"),
-      commentStartTitle: t("commentStartTitle"),
-      followCheckMessage: t("followCheckMessage"),
+      commentStartText: t("comment_start_text"),
+      commentStartTitle: t("comment_start_title"),
+      followCheckMessage: t("follow_check_message"),
       isCommentContentTargetEnabled: false,
     },
   });
@@ -119,13 +120,8 @@ export const Automation = ({ id }: AutomationProps) => {
   const onSubmit = async (values: z.infer<typeof AutomationFormSchema>) => {
     // Validate Optionals
     let haveError: boolean = false;
-    if (!values.isComment && !values.isDirect) {
-      form.setError("isDirect", {
-        message: "باید حداقل یکی از حالت‌های کامنت و دایرکت روشن باشد",
-      });
-      form.setFocus("isDirect");
-      haveError = true;
-    }
+
+
 
     if (
       values.isComment &&
@@ -190,15 +186,15 @@ export const Automation = ({ id }: AutomationProps) => {
     }
 
     if (!values.commentStartText) {
-      values.commentStartText = t("commentStartText");
+      values.commentStartText = t("comment_start_text");
     }
 
     if (!values.commentStartTitle) {
-      values.commentStartTitle = t("commentStartTitle");
+      values.commentStartTitle = t("comment_start_title");
     }
 
     if (!values.followCheckMessage) {
-      values.followCheckMessage = t("followCheckMessage");
+      values.followCheckMessage = t("follow_check_message");
     }
 
     setIsSubmitting(true);
@@ -248,7 +244,7 @@ export const Automation = ({ id }: AutomationProps) => {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="grid gap-3.5"
                 >
-                  <Trigger control={form.control} getValues={form.getValues} />
+                  <Triggers control={form.control} getValues={form.getValues} />
 
                   <hr className="border-gray-100" />
 

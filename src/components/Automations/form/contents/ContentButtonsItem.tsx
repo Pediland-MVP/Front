@@ -52,7 +52,6 @@ export const ContentButtonsItem = ({
     transition,
     isDragging,
   } = useSortable({ id });
-  useI18nZodErrors();
   const { control } = useFormContext<z.infer<typeof AutomationFormSchema>>();
   const t = useTranslations("Automations.ButtonTemplates");
   const style = {

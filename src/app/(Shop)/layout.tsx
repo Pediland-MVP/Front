@@ -5,7 +5,7 @@ import "@/styles/globals.css";
 // UI
 import { Toaster } from "@/components/ui/toaster";
 import SWRProvider from "./swr.prvider";
-import { GoftinoSnippet } from "@/components/third-party/goftino";
+import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",

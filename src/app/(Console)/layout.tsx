@@ -1,4 +1,4 @@
-import "@/styles/globals.css"
+import "@/styles/globals.css";
 import { SWRProvider } from "@/hooks/swr/api-client";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -6,8 +6,8 @@ import { getLocale, getMessages } from "next-intl/server";
 
 // UI Imports
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
-import { GoftinoSnippet } from "@/components/third-party/goftino";
-import { ZodErrorsMapProvider } from "@/components/third-party/zodErrorsMapProvider";
+import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
+import { ZodErrorsMapProvider } from "@/components/index";
 import { Toaster } from "@/components/ui/toaster";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
@@ -34,7 +34,9 @@ export default async function ConsoleLayout({
     <html
       lang={locale}
       dir={locale === "fa" ? "rtl" : "ltr"}
-      className={locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"}
+      className={
+        locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
+      }
     >
       <body className="h-screen bg-blue-50">
         <SWRProvider>

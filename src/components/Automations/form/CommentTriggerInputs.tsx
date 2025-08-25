@@ -40,7 +40,7 @@ export const CommentTriggerInputs = () => {
       (contents?.[0]?.type === AutomationContentTypesEnum.PRODUCT ||
         contents?.length > 1)
     ) {
-      setValue("commentStartText", t("commentStartText"));
+      setValue("commentStartText", t("comment_start_text"));
       setIsActive(true);
       return;
     }
@@ -82,7 +82,7 @@ export const CommentTriggerInputs = () => {
         name="commentStartTitle"
         render={({ field, fieldState: { error } }) => (
           <div className="space-y-1">
-            <FormLabel>{t("commentStartTitle")}</FormLabel>
+            <FormLabel>{t("comment_start_title")}</FormLabel>
             <Textarea
               {...field}
               value={field.value ?? ""}

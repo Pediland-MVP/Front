@@ -20,7 +20,7 @@ import { z } from "zod";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
-import { ErrorMessage, Form } from "@/components/index";
+import { Button, ErrorMessage, Form } from "@/components/index";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
 import LoadingButton from "@/components/ui/button-loading";
 import { AutomationFormSchema } from "@/schemas/automationForm";
@@ -33,7 +33,7 @@ import {
   Contents,
   JustFollowers,
   Reminder,
-  Trigger,
+  Triggers,
 } from "./form";
 import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
 
@@ -80,9 +80,9 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
       isRemindersEnabled: false,
       reminders: [],
       isReplyCommentEnabled: false,
-      commentStartText: t("commentStartText"),
-      commentStartTitle: t("commentStartTitle"),
-      followCheckMessage: t("followCheckMessage"),
+      commentStartText: t("comment_start_text"),
+      commentStartTitle: t("comment_start_title"),
+      followCheckMessage: t("follow_check_message"),
       isCommentContentTargetEnabled: false,
     },
   });
@@ -178,15 +178,15 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
     }
 
     if (!values.commentStartText) {
-      values.commentStartText = t("commentStartText");
+      values.commentStartText = t("comment_start_text");
     }
 
     if (!values.commentStartTitle) {
-      values.commentStartTitle = t("commentStartTitle");
+      values.commentStartTitle = t("comment_start_title");
     }
 
     if (!values.followCheckMessage) {
-      values.followCheckMessage = t("followCheckMessage");
+      values.followCheckMessage = t("follow_check_message");
     }
 
     setIsSubmitting(true);
@@ -228,7 +228,7 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="grid gap-3.5"
               >
-                <Trigger control={form.control} getValues={form.getValues} />
+                <Triggers control={form.control} getValues={form.getValues} />
 
                 <hr className="border-gray-100" />
 
@@ -260,10 +260,19 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
                   getValues={form.getValues}
                 />
 
-                {/* Submit button */}
-                <LoadingButton className="mt-3" isLoading={isSubmitting}>
-                  {id ? t("update_automation") : t("add_automation")}
-                </LoadingButton>
+                <div className="mt-4 flex items-center gap-2">
+                  <LoadingButton isLoading={isSubmitting} className="w-full">
+                    {id ? t("save_changes") : t("add_automation")}
+                  </LoadingButton>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full"
+                    onClick={() => router.back()}
+                  >
+                    {t("cancel")}
+                  </Button>
+                </div>
               </form>
             </Form>
           </>

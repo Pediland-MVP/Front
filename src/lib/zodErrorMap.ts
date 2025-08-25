@@ -67,10 +67,12 @@ export const makeZodI18nMap: MakeZodI18nMap = (option) => (issue, ctx) => {
   let message: string;
   message = defaultErrorMap(issue, ctx).message;
 
-  const path =
-    issue.path.length > 0 && !!tForm
-      ? { path: tForm(issue.path.join(".") as any) }
-      : {};
+  // const path =
+  //   issue.path.length > 0 && !!tForm
+  //     ? { path: tForm(issue.path.join(".") as any) }
+  //     : {};
+
+  const path = issue.path.length ? { path: issue.path.join(".") } : {};
 
   switch (issue.code) {
     case ZodIssueCode.invalid_type:

@@ -7,7 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import RadialProgress from "@/components/radial.progress";
+import RadialProgress from "@/components/ui-custom/radial.progress";
 
 import axios, { AxiosProgressEvent } from "axios";
 import { UploadSimple } from "@phosphor-icons/react/dist/ssr";

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { Card } from "@/components/ui/card";
-import DiscountText from "@/components/discountText";
+import DiscountText from "@/components/ui-custom/discountText";
 import logger from "@/utils/logger";
 import { DiscountCode } from "./discountCode";
 import { usePlanSelection } from "../hooks/usePlanSelection";

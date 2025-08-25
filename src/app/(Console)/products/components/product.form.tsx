@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "@/components/ui-custom/use-toast";
-import { FileUpload } from "@/components/file-upload";
+import { FileUpload } from "@/components/ui-custom/file-upload";
 import LoadingButton from "@/components/ui/button-loading";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";

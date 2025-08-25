@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 // UI Imports
-import DiscountText from "@/components/discountText";
+import DiscountText from "@/components/ui-custom/discountText";
 import { Button } from "@/components/ui/button";
 import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
 

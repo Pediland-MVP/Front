@@ -113,6 +113,9 @@ const ContentItemSchema = z.object({
 
 export const AutomationFormSchema = z
   .object({
+    isDirect: z.boolean(),
+    isComment: z.boolean(),
+
     conditions: z
       .array(
         z.object({
@@ -127,10 +130,6 @@ export const AutomationFormSchema = z
     contents: z.array(ContentItemSchema).min(1),
 
     instagramPost: InstagramPostSchema, // برای سناریوهای سطح فرم
-
-    // حالت‌های ماشه
-    isDirect: z.boolean(),
-    isComment: z.boolean(),
 
     // شروع مکالمه در کامنت
     commentStartText: optionalStringToUndef,
@@ -171,6 +170,15 @@ export const AutomationFormSchema = z
     isCommentContentTargetEnabled: z.boolean(),
   })
   .superRefine((data, ctx) => {
+    if (!data.isDirect && !data.isComment) {
+      const issue = {
+        code: "custom" as const,
+        message: "required",
+      };
+      ctx.addIssue({ ...issue, path: ["isDirect"] });
+      ctx.addIssue({ ...issue, path: ["isComment"] });
+    }
+
     // اگر reminder تعریف شده، زمان نیز الزامی است
     if ((data.reminders?.length ?? 0) > 0 && !data.reminderTime) {
       ctx.addIssue({
