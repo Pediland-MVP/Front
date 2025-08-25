@@ -209,7 +209,7 @@ export const ContentItem = ({
             size={20}
             className="cursor-pointer text-red-600"
             onClick={deleteContent}
-            aria-label={t("removeContent")}
+            aria-label={t("remove_content")}
           />
         </div>
       </div>

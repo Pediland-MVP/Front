@@ -176,7 +176,7 @@ export const ContentPromotion = () => {
             size={22}
             className="cursor-pointer text-red-600"
             onClick={deleteContent}
-            aria-label={t("removeContent")}
+            aria-label={t("remove_content")}
           />
         </div>
       </div>
@@ -218,7 +218,7 @@ export const ContentPromotion = () => {
         <div className="flex w-full flex-col gap-2">
           <FormItem>
             <Label className="text-xs font-medium">
-              {t.rich("youCanUseVars", {
+              {t.rich("you_can_use_vars", {
                 name: (chunks) => (
                   <span className="text-blue-500">{chunks}</span>
                 ),
@@ -228,8 +228,8 @@ export const ContentPromotion = () => {
             <Textarea
               disabled
               rows={5}
-              placeholder={t("enterYourMessage")}
-              value={t("promotionText")}
+              placeholder={t("enter_your_message")}
+              value={t("promotion_text")}
             />
           </FormItem>
 

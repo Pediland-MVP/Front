@@ -1,4 +1,4 @@
-// src/components/Automations/AutomationDetails.tsx
+// src/components/Automations/AutomationForm.tsx
 "use client";
 
 import {
@@ -36,8 +36,9 @@ import {
   Triggers,
 } from "./form";
 import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
+import { SeperateLine } from "../ui-custom/SeperateLine";
 
-type AutomationDetailsProps = {
+type AutomationFormProps = {
   id?: string;
 };
 
@@ -46,7 +47,7 @@ type AutomationDetailsProps = {
  * @param {id} Object This param is optional and specify the component is for Update or Create`
  * @returns
  */
-export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
+export const AutomationForm = ({ id }: AutomationFormProps) => {
   useI18nZodErrors();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -105,13 +106,6 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
   const onSubmit = async (values: z.infer<typeof AutomationFormSchema>) => {
     // Validate Optionals
     let haveError: boolean = false;
-    if (!values.isComment && !values.isDirect) {
-      form.setError("isDirect", {
-        message: "باید حداقل یکی از حالت‌های کامنت و دایرکت روشن باشد",
-      });
-      form.setFocus("isDirect");
-      haveError = true;
-    }
 
     const firstType = values.contents[0]?.type;
 
@@ -214,9 +208,11 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
       .then(() => setIsSubmitting(false));
   };
 
+  console.log("Form Errors...", form.formState.errors);
+
   return (
     <FormProvider {...form}>
-      <div className={cn("_automation-details min-h-full")}>
+      <div className={cn("_automation-form min-h-full")}>
         {isAutomationLoading || isLoading ? (
           <LoaderSpin />
         ) : (
@@ -230,15 +226,11 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
               >
                 <Triggers control={form.control} getValues={form.getValues} />
 
-                <hr className="border-gray-100" />
+                <SeperateLine />
 
-                <Conditions
-                  control={form.control}
-                  getValues={form.getValues}
-                  formState={form.formState}
-                />
+                <Conditions control={form.control} getValues={form.getValues} />
 
-                <hr className="border-gray-100" />
+                <SeperateLine />
 
                 <Contents
                   automationId={id}
@@ -251,7 +243,7 @@ export const AutomationDetails = ({ id }: AutomationDetailsProps) => {
 
                 <Reminder />
 
-                <hr className="border-gray-100" />
+                <SeperateLine />
 
                 <CommentTriggerInputs />
 

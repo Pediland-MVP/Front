@@ -1,18 +1,17 @@
 // src/components/Automations/form/Conditions.tsx
 "use client";
 
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
   Control,
-  Controller,
   useFieldArray,
   UseFormGetValues,
   UseFormStateReturn,
 } from "react-hook-form";
 import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -21,19 +20,17 @@ import {
   ErrorMessage,
   FormField,
   FormItem,
-  FormMessage,
   HelpMeDialog,
   Input,
 } from "@/components/index";
-import { PlusCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
-type TriggerProps = {
+type ConditionsProps = {
   control: Control<z.infer<typeof AutomationFormSchema>>;
   getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
-  formState: UseFormStateReturn<z.infer<typeof AutomationFormSchema>>;
 };
 
-export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
+export const Conditions = ({ control, getValues }: ConditionsProps) => {
   const t = useTranslations("Automations.Conditions");
   const t_err = useTranslations("Automations.Conditions.Errors");
   const [currentType, setCurrentType] = useState<ContentCycleConditionTypes>();
@@ -61,6 +58,7 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
   const toggleConditionType = () => {
     setCurrentType((old) => {
       let newType: "INCLUDE" | "EQUAL";
+
       if (old === "INCLUDE") {
         newType = "EQUAL";
       } else {
@@ -79,11 +77,11 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
     <div className="_conditions space-y-2">
       <div className="relative">
         <p className="flex items-center gap-1 text-sm font-medium">
-          <span>{t("wordOrPhrase")}</span>
+          <span>{t("word_or_phrase")}</span>
           <span onClick={toggleConditionType}>
             {currentType === "INCLUDE" ? t("include") : t("equal")}
           </span>
-          <span>{t("belowConditions")}</span>
+          <span>{t("below_conditions")}</span>
         </p>
 
         <HelpMeDialog
@@ -97,7 +95,7 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
       <div className="space-y-2">
         {conditionsField.map((condition, index) => (
           <div
-            key={condition.id}
+            key={condition._xid}
             className="flex flex-col items-start gap-2 xl:flex-row"
           >
             <div className="flex w-full items-start gap-2">
@@ -122,7 +120,7 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
                   size={20}
                   className="h-9 cursor-pointer text-red-600"
                   onClick={() => removeConditions(index)}
-                  aria-label={t("deleteCondition")}
+                  aria-label={t("delete_condition")}
                 />
               )}
             </div>
@@ -135,23 +133,15 @@ export const Conditions = ({ control, getValues, formState }: TriggerProps) => {
                 variant="ghost"
                 type="button"
               >
-                <span className="text-blue-600">{t("addNewCondition")}</span>
+                <span className="text-blue-600">{t("add_new_condition")}</span>
               </Button>
             )}
           </div>
         ))}
       </div>
 
-      {/* {formState?.errors?.conditions?.map &&
-        formState.errors.conditions.map((state, index) => {
-          return (
-            <ErrorMessage key={index}>{state?.value?.message}</ErrorMessage>
-          );
-        })} */}
-
-      {/* Message input & post select */}
       <div className="space-y-3">
-        <p className="text-sm font-medium">{t("sendMessageBelow")}</p>
+        <p className="text-sm font-medium">{t("send_message_below")}</p>
         <p className="text-[13px] text-gray-600">{t("note")}</p>
       </div>
     </div>

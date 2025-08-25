@@ -74,39 +74,23 @@ const InstagramPostSchema = z
 /* ------------------------------ Content Schema ------------------------------ */
 
 const ContentItemSchema = z.object({
-  type: z.nativeEnum(AutomationContentTypesEnum),
-
-  // TEXT-mode
-  text: optionalStringToUndef,
-
-  // INSTAGRAM_POST-mode
-  instagramPost: InstagramPostSchema,
-
-  // FILE modes: AUDIO / VIDEO / IMAGE
-  file: FileSchema,
-
-  // PRODUCT attach
-  products: z.array(ProductSchema).optional().nullable(),
-  // For sending only
-  productIds: z.array(z.string()).optional().nullable(),
-
-  // misc
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
-
-  // consent (برای متن‌هایی که نیاز به تأیید دارند)
-  haveConsent: optionalBoolDefault(false),
+  text: optionalStringToUndef,
   consentText: optionalStringToUndef,
+  haveConsent: optionalBoolDefault(false),
+  type: z.nativeEnum(AutomationContentTypesEnum),
+  file: FileSchema,
+  instagramPost: InstagramPostSchema,
+  buttonTemplate: ButtonTemplateSchema,
+  products: z.array(ProductSchema).optional().nullable(),
 
-  // نگه نمی‌داریم، فقط جهت UI استفاده می‌شود
+  productIds: z.array(z.string()).optional().nullable(),
   haveInstagramPost: z
     .boolean()
     .optional()
     .nullable()
     .transform(() => undefined),
-
-  // optional buttons
-  buttonTemplate: ButtonTemplateSchema,
 });
 
 /* ------------------------------- Main Schema -------------------------------- */

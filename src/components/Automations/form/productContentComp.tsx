@@ -31,7 +31,7 @@ import { GripVertical, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { AutomationFormSchema } from "../Automation";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import ProductsDialog from "../products.dialog";
 
 type ProductContentCompProps = {

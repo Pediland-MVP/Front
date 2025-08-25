@@ -25,7 +25,7 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
-import { AutomationFormSchema } from "./Automation";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 
 const PAGE_SIZE = 50;
 

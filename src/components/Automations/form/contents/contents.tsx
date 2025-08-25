@@ -67,8 +67,6 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       : true,
   );
 
-  console.log(errors);
-
   const {
     fields: contents,
     remove: removeContents,
@@ -185,7 +183,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           </div>
         )}
 
-        {errors.contents?.message && (
+        {errors.contents && (
           <ErrorMessage>{t_err(errors.contents?.type)}</ErrorMessage>
         )}
 
@@ -197,7 +195,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
             onClick={() => setIsChoosingType(true)}
           >
             <PlusCircleIcon size={22} className="text-blue-600" />
-            <span className="text-blue-600">{t("addContent")}</span>
+            <span className="text-blue-600">{t("add_content")}</span>
           </Button>
 
           <HelpMeDialog

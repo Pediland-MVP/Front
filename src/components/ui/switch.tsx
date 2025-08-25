@@ -11,7 +11,7 @@ function Switch({
   ...props
 }: React.ComponentProps<typeof SwitchPrimitive.Root>) {
   const locale = useLocale();
-  console.log(locale);
+
   return (
     <SwitchPrimitive.Root
       data-slot="switch"

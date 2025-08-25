@@ -23,7 +23,7 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { z } from "zod";
-import { AutomationFormSchema } from "./Automation";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import {
   ChatTextIcon,
   InstagramLogoIcon,

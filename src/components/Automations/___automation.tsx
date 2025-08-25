@@ -121,8 +121,6 @@ export const Automation = ({ id }: AutomationProps) => {
     // Validate Optionals
     let haveError: boolean = false;
 
-
-
     if (
       values.isComment &&
       (values.contents[0].type === AutomationContentTypesEnum.PRODUCT ||
@@ -251,7 +249,6 @@ export const Automation = ({ id }: AutomationProps) => {
                   <Conditions
                     control={form.control}
                     getValues={form.getValues}
-                    formState={form.formState}
                   />
 
                   <hr className="border-gray-100" />
@@ -278,7 +275,7 @@ export const Automation = ({ id }: AutomationProps) => {
 
                   {/* Submit button */}
                   <LoadingButton className="mt-3" isLoading={isSubmitting}>
-                    {id ? t("update_automation") : t("add_automation")}
+                    {id ? t("update_automationsssss") : t("add_automation11111")}
                   </LoadingButton>
                 </form>
               </Form>

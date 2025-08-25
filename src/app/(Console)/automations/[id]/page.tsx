@@ -1,6 +1,6 @@
 // src/app/(Console)/automations/[id]/page.tsx
 
-import { AutomationDetails, LayoutPage } from "@/components";
+import { AutomationForm, LayoutPage } from "@/components";
 import { isUUID } from "class-validator";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
@@ -21,7 +21,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <LayoutPage col="half">
-      <AutomationDetails id={id} />
+      <AutomationForm id={id} />
     </LayoutPage>
   );
 }

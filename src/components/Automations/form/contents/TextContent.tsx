@@ -28,14 +28,14 @@ export const TextContent = ({ index, mode, control }: TextContentProps) => {
       render={({ field, fieldState: { error } }) => (
         <FormItem>
           <Label>
-            {t.rich("youCanUseVars", {
+            {t.rich("you_can_use_vars", {
               name: (chunks) => <span className="text-blue-500">{chunks}</span>,
             })}
           </Label>
           <Textarea
             rows={4}
             maxLength={1000}
-            placeholder={t("enterYourMessage")}
+            placeholder={t("enter_your_message")}
             {...field}
             aria-invalid={!!error}
           />

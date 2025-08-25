@@ -8,7 +8,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { AutomationFormSchema } from "../Automation";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { Contents } from "./Contents";
 

@@ -37,14 +37,10 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
   const triggerErrorMessage =
     errors.isDirect?.message ?? errors.isComment?.message;
 
-  useEffect(() => {
-    console.log(hasTriggerError);
-  }, [errors]);
-
   return (
     <div className="_trigger relative flex flex-col gap-2">
       <div className="flex flex-1 items-center gap-4">
-        <span className="text-sm font-medium">{t("userIn")}</span>
+        <span className="text-sm font-medium">{t("user_in")}</span>
 
         <div className="flex flex-1 items-center gap-4 md:gap-6">
           <FormField

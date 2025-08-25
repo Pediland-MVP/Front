@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
-import { AutomationFormSchema } from "../Automation";
+import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
