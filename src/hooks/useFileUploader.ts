@@ -1,6 +1,6 @@
 'use client'
 
-import { useFileUploadProvider } from '@/components/ui/fileUploaderxxx';
+import { useFileUploadProvider } from '@/components/index';
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 

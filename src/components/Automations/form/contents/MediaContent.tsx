@@ -1,9 +1,6 @@
+// src/components/Automations/form/Contents/MediaContent.tsx
 "use client";
 
-import { useContentsUploaderContext } from "@/components/index";
-import { FormMessage } from "@/components/ui";
-import { toast } from "@/components/ui-custom/use-toast";
-import { FileUploader } from "@/components/ui/fileUploader";
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
@@ -17,25 +14,32 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-interface ContentMediaProps {
+import {
+  FileUploader,
+  FormMessage,
+  toast,
+  useContentsUploaderContext,
+} from "@/components/index";
+
+interface MediaContentProps {
   index: number;
   mode: AutomationContentModeEnum;
   type: AutomationContentTypesEnum;
 }
 
-export const ContentMedia = ({ index, mode, type }: ContentMediaProps) => {
+export const MediaContent = ({ index, mode, type }: MediaContentProps) => {
   const { files, setFiles } = useContentsUploaderContext();
 
   const {
     control,
     setValue,
     getValues,
+    trigger,
     formState: { errors },
   } = useFormContext<AutomationFormType>();
 
-  const t = useTranslations("Automations.Contents");
   const t_ec = useTranslations("ERROR_CODES");
-  const t_err = useTranslations("Automations.Errors");
+  const t_err = useTranslations("Automations.Contents.Media.Errors");
   const t_fileUploader = useTranslations("FileUploader");
 
   const onChange = (files: UploadedFile[]) => {
@@ -45,6 +49,7 @@ export const ContentMedia = ({ index, mode, type }: ContentMediaProps) => {
         null,
       );
     }
+    
     if ("file" in files[0]) {
       setFiles((files) => {
         return [{ ...files[0], isUploading: true, process: 0 }];
@@ -97,13 +102,6 @@ export const ContentMedia = ({ index, mode, type }: ContentMediaProps) => {
               },
             },
           );
-
-          console.log(
-            "Uploader content of that content",
-            getValues(
-              `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
-            ),
-          );
         })
         .catch((err: AxiosError) => {
           const errorCode = t_ec(
@@ -129,6 +127,7 @@ export const ContentMedia = ({ index, mode, type }: ContentMediaProps) => {
           setFiles((prev) => {
             return [{ ...prev[0], isUploading: false }];
           });
+          trigger("contents");
         });
     }
   };
@@ -145,9 +144,7 @@ export const ContentMedia = ({ index, mode, type }: ContentMediaProps) => {
 
       {errors.contents?.[index]?.file && (
         <FormMessage>
-          {t_err(
-            `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.media.${errors.contents?.[index]?.file.message}`,
-          )}
+          {t_err(`${errors.contents?.[index]?.file.message}`)}
         </FormMessage>
       )}
     </>

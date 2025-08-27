@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { InputPassword } from "@/components/ui/inputPassword";
 import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 export default function SignIn() {

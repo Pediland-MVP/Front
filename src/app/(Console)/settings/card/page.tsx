@@ -16,7 +16,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { ErrorMessage } from "@/components/index";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import LoadingButton from '@/components/ui/button-loading';
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";

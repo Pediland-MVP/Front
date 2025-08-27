@@ -1,4 +1,4 @@
-// src/components/Automations/form/Contents/ContentButtons.tsx
+// src/components/Automations/Form/Contents/ButtonContent.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
@@ -22,7 +22,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 
 import {
   Button,
-  ContentButtonsItem,
+  ButtonContentItem,
   ErrorMessage,
   FormField,
   FormItem,
@@ -32,14 +32,14 @@ import {
 } from "@/components/index";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 
-type ContentButtonsProps = {
+type ButtonContentProps = {
   mode: AutomationContentModeEnum;
   contentIndex: number;
 };
 
-export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
-  const t = useTranslations("Automations.ButtonTemplates");
-  const t_errors = useTranslations("Automations.Errors");
+export const ButtonContent = ({ contentIndex, mode }: ButtonContentProps) => {
+  const t = useTranslations("Automations.Contents.Button");
+  const t_err = useTranslations("Automations.Contents.Button.Errors");
 
   const {
     control,
@@ -96,10 +96,11 @@ export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
             <Textarea
               {...field}
               maxLength={640}
+              aria-invalid={!!error}
               placeholder={t("text.placeholder")}
             />
             <InputCounter text={field.value} maxLength={640} />
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
+            {error && <ErrorMessage>{t_err("required")}</ErrorMessage>}
           </FormItem>
         )}
       />
@@ -115,7 +116,7 @@ export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
         >
           <div className="flex w-full flex-col items-center justify-center gap-y-3">
             {fields.map((buttonTemplate, index) => (
-              <ContentButtonsItem
+              <ButtonContentItem
                 key={buttonTemplate._xid}
                 id={buttonTemplate._xid}
                 index={index}

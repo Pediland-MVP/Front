@@ -93,8 +93,6 @@ export default function DialogInstagramPostSelect({
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const mediaUrl = e.currentTarget.dataset.mediaurl;
     const mediaId = e.currentTarget.dataset.postid!;
-    // console.log("media", postId, mediaUrl);
-    // console.log(`value before update`, getValues()?.contents?.[index]);
     setValue("instagramPost", { picture: { url: mediaUrl }, mediaId });
     setIsOpen(false);
   };

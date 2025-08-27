@@ -10,7 +10,7 @@ import { REGEX_MOBILE, REGEX_PASSWORD } from "@/utils/regex";
 import { useTranslations } from "next-intl";
 // UI
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { Input } from "@/components/ui/input";
 import { InputPassword } from "@/components/ui/inputPassword";
 import { Button } from "@/components/ui/button";

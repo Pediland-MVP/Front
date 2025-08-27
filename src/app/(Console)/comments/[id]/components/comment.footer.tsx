@@ -7,7 +7,7 @@ import { z } from "zod";
 import { CardFooter } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "../../../directs/components/emojiPicker";
 import { PaperPlaneRight } from "@phosphor-icons/react";

@@ -14,15 +14,13 @@ import { Controller, useFormContext } from "react-hook-form";
 
 import {
   Checkbox,
-  ContentButtons,
-  ContentMedia,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   Input,
-  InstagramPostContent,
+  IGPostContent,
   ProductContentComp,
   TextContent,
   Tooltip,
@@ -30,6 +28,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
   useContentsContext,
+  ButtonContent,
+  MediaContent,
 } from "@/components/index";
 import {
   ArrowsOutCardinalIcon,
@@ -57,16 +57,16 @@ export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
       return <TextContent control={control} mode={mode} index={index} />;
 
     case AutomationContentTypesEnum.INSTAGRAM_POST:
-      return <InstagramPostContent mode={mode} index={index} />;
+      return <IGPostContent mode={mode} index={index} />;
 
     case AutomationContentTypesEnum.PRODUCT:
       return <ProductContentComp mode={mode} index={index} />;
 
     case AutomationContentTypesEnum.BUTTON_TEMPLATE:
-      return <ContentButtons mode={mode} contentIndex={index} />;
+      return <ButtonContent mode={mode} contentIndex={index} />;
 
     default:
-      return <ContentMedia index={index} mode={mode} type={type} />;
+      return <MediaContent index={index} mode={mode} type={type} />;
   }
 };
 
@@ -171,8 +171,8 @@ export const ContentItem = ({
   const typeKey = contents?.[index]?.type as string | undefined;
   const typeLabelMap: Record<string, string> = {
     button_template: t_contentTypes("button_template"),
-    ig_post: t_contentTypes("instagram_post"),
-    media: t_contentTypes("media"),
+    instagram_post: t_contentTypes("ig_post"),
+    image: t_contentTypes("media"),
     product: t_contentTypes("product_or_service"),
     text: t_contentTypes("text"),
   };

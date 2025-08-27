@@ -1,5 +1,5 @@
 // hooks/useCopyToClipboard.ts
-import { toast } from "@/components/ui-custom/use-toast"; // Import shadcn toast
+import { toast } from "@/components/ui-custom/useToast"; // Import shadcn toast
 
 export const useCopyToClipboard = () => {
   const copyToClipboard = async (text: string) => {

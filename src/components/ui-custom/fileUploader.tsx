@@ -19,6 +19,7 @@ import { useTranslations } from "next-intl";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import Image from "next/image";
 
 export function FileUploader({
   multiple = false,
@@ -27,8 +28,8 @@ export function FileUploader({
   accept,
   onChange,
 }: FileUploaderProps) {
-  const t = useTranslations("FileUploader");
   const [isDragActive, setIsDragActive] = useState(false);
+  const t = useTranslations("Automations.Contents.Media.FileUploader");
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -88,6 +89,7 @@ export function FileUploader({
       };
       return (
         <div className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform">
+          adada
           {isPlaying ? (
             <PauseIcon
               onClick={handlePlay}
@@ -151,13 +153,15 @@ export function FileUploader({
     switch (fileType) {
       case "image":
         return (
-          <div className="relative h-full w-full object-cover">
+          <div className="relative">
             {"isUploading" in file &&
               file.isUploading &&
               renderUploadCircularProgress()}
-            <img
+            <Image
               src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)}
               alt="Preview"
+              width={250}
+              height={0}
               className="h-full w-full object-cover"
             />
           </div>
@@ -225,20 +229,43 @@ export function FileUploader({
                 type="button"
                 variant="destructive"
                 size="icon"
-                className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                className="absolute -top-2 -right-2 size-5 rounded-full text-white"
                 onClick={() => removeFile(file.id)}
               >
-                <XIcon size={12} weight="bold" />
+                <XIcon className="size-3"/>
               </Button>
             </div>
           ))}
         </div>
       )}
-      <div className="mt-2 flex flex-col items-start justify-center">
-        <span className="text-xs text-gray-500">{t("Limits.media.text")}</span>
-        <span className="text-xs text-gray-500">
-          {t("Limits.media.formats")}
-        </span>
+      <div className="mt-3 flex flex-col items-start justify-center text-sm uppercase">
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-gray-500">
+            {t("Limits.image.text")}
+          </span>
+          .
+          <span className="text-xs text-gray-500">
+            {t("Limits.image.formats")}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-gray-500">
+            {t("Limits.video.text")}
+          </span>
+          .
+          <span className="text-xs text-gray-500">
+            {t("Limits.video.formats")}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-gray-500">
+            {t("Limits.audio.text")}
+          </span>
+          .
+          <span className="text-xs text-gray-500">
+            {t("Limits.audio.formats")}
+          </span>
+        </div>
       </div>
     </div>
   );

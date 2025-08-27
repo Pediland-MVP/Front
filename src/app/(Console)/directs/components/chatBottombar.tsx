@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 import { EmojiPicker } from "./emojiPicker";
 import useCurrentLead from "@/src/store/currentLead.store";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { messagesSocket } from "@/utils/socket";
 import { PaperPlaneRight } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";

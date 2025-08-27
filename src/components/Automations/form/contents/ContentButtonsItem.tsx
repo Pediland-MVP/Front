@@ -1,4 +1,4 @@
-// src/components/Automations/form/Contents/ContentButtonsItem.tsx
+// src/components/Automations/form/Contents/ButtonContentItem.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
@@ -27,7 +27,7 @@ import {
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-type ContentButtonsItemProps = {
+type ButtonContentItemProps = {
   id: string;
   index: number;
   contentIndex: number;
@@ -35,13 +35,13 @@ type ContentButtonsItemProps = {
   mode: AutomationContentModeEnum;
 };
 
-export const ContentButtonsItem = ({
+export const ButtonContentItem = ({
   id,
   index,
   contentIndex,
   remove,
   mode,
-}: ContentButtonsItemProps) => {
+}: ButtonContentItemProps) => {
   const {
     attributes,
     listeners,
@@ -51,7 +51,7 @@ export const ContentButtonsItem = ({
     isDragging,
   } = useSortable({ id });
   const { control } = useFormContext<AutomationFormType>();
-  const t = useTranslations("Automations.ButtonTemplates");
+  const t = useTranslations("Automations.Contents.Button");
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -103,7 +103,11 @@ export const ContentButtonsItem = ({
                 {t("title.label")}{" "}
                 {index + 1 === 1 ? "اول" : index + 1 === 2 ? "دوم" : "سوم"}
               </FormLabel>
-              <Input {...field} placeholder={t("title.placeholder")} />
+              <Input
+                {...field}
+                aria-invalid={!!error}
+                placeholder={t("title.placeholder")}
+              />
               <FormDescription>{t("title.description")}</FormDescription>
               {error && <ErrorMessage>{error.message}</ErrorMessage>}
             </FormItem>
@@ -115,8 +119,18 @@ export const ContentButtonsItem = ({
           name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.url`}
           render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>{t("url.label")}</FormLabel>
-              <Input {...field} placeholder={t("url.placeholder")} />
+              <FormLabel>
+                {t("url.label")}{" "}
+                {index + 1 === 1 ? "اول" : index + 1 === 2 ? "دوم" : "سوم"}
+              </FormLabel>
+              <Input
+                type="url"
+                dir="ltr"
+                className="text-left"
+                {...field}
+                aria-invalid={!!error}
+                placeholder={t("url.placeholder")}
+              />
               <FormDescription>{t("url.description")}</FormDescription>
               {error && <ErrorMessage>{error.message}</ErrorMessage>}
             </FormItem>

@@ -5,7 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { DeleteConfirmationDialog } from "./contentCycleDeleteConfirmation";
 // Just UI Imports Below
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import {
   Table,
   TableBody,

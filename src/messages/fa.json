@@ -412,9 +412,9 @@
         "button_template": "دکمه",
         "create_title": "ایجاد یک محتوا از نوع",
         "fallback_key": "عنوان محتوا",
-        "ig_post": "پست IG",
+        "ig_post": "پست این",
         "image": "رسانه",
-        "instagram_post": "پست اینستاگرام",
+        "instagram_post": "پست IG",
         "media": "رسانه",
         "post": "پست",
         "product": "کالا",
@@ -428,6 +428,21 @@
         "enter_your_message": "متن پیام را وارد کنید",
         "Errors": {
           "required": "متن پیام را وارد کنید."
+        }
+      },
+      "InstagramPost": {
+        "change": "تـعـویـض",
+        "select": "انتخاب",
+
+        "Errors": {
+          "selection_required": "حداقل یک پست انتخاب کنید."
+        },
+
+        "Dialog": {
+          "see_your_last_posts": "آخرین پست‌های اینستاگرام خود را مشاهده کنید.",
+          "there_is_no_more": "پست دیگری موجود نیست.",
+          "select_post": "انتخاب پست اینستاگرام",
+          "close": "بستن"
         }
       },
       "Product": {
@@ -448,6 +463,51 @@
           "price": "{price} تومان",
           "select_product": "انتخاب کالا یا خدمت",
           "select_product_description": "کالا یه خدمت مورد نظر خود را انتخاب کنید."
+        }
+      },
+      "Button": {
+        "add": "افزودن دکمه",
+        "text": {
+          "label": "متن",
+          "placeholder": "مثلا: این لیستی از شبکه‌های اجتماعی ماست"
+        },
+        "title": {
+          "label": "متن دکمه",
+          "description": "متن دکمه که به کاربر نمایش داده میشود.",
+          "placeholder": "مثال: لینک سایت ما"
+        },
+        "url": {
+          "label": "لینک دکمه",
+          "description": "کاربر با کلیک بر روی این دکمه به این لینک منتقل میشود.",
+          "placeholder": "مثال: https://befroosh.app"
+        },
+
+        "Errors": {
+          "required": "متن ابتدایی را وارد کنید."
+        }
+      },
+      "Media": {
+        "Errors": {
+          "required": "فایلی برای آپلود انتخاب نکردید."
+        },
+
+        "FileUploader": {
+          "dropzone": "فایل‌ها را در اینجا رها کنید یا روی آن کلیک کنید تا فایل‌ها را انتخاب کنید",
+          "uploadButton": "آپلود فایل",
+          "Limits": {
+            "image": {
+              "text": "عکس: حداکثر حجم ۸ مگابایت",
+              "formats": "فرمت‌های پشتیبانی شده: png, jpeg, gif"
+            },
+            "video": {
+              "text": "ویدیو: حداکثر حجم ۲۵ مگابایت",
+              "formats": "فرمت‌های پشتیبانی شده: mp4, ogg, avi, mov, webm"
+            },
+            "audio": {
+              "text": "ویس/موزیک: حداکثر حجم ۲۵ مگابایت",
+              "formats": "فرمت‌ها پشتیبانی شده: aac, m4a, wav, mp4"
+            }
+          }
         }
       }
     },
@@ -580,23 +640,6 @@
         "description": "تا ۲۴ ساعت فرصت دارید یک پیام پیگیری یا یاداوری برای کاربر ارسال کنید"
       }
     },
-    "ButtonTemplates": {
-      "add": "افزودن دکمه",
-      "text": {
-        "label": "متن",
-        "placeholder": "مثلا: این لیستی از شبکه‌های اجتماعی ماست"
-      },
-      "title": {
-        "label": "متن دکمه",
-        "description": "متن دکمه که به کاربر نمایش داده میشود",
-        "placeholder": "مثال: لینک سایت ما"
-      },
-      "url": {
-        "label": "لینک",
-        "description": "کاربر با کلیک بر روی این دکمه به این لینک منتقل میشود",
-        "placeholder": "مثال: https://befroosh.app"
-      }
-    },
     "TableWizard": {
       "title": "حالا وقت ساخت یه اتومیشن جدیده!",
       "description": "همین حالا شروع کن و اولین اتومیشنت رو بساز",
@@ -604,13 +647,6 @@
         "title": "افزودن اولین اتومیشن"
       }
     }
-  },
-  "InstagramPostDialog": {
-    "changePost": "تعویض پست",
-    "selectPost": "انتخاب پست",
-    "seeYourLastPosts": "آخرین پست‌های اینستاگرام خود را مشاهده کنید.",
-    "thereIsNoMore": "پست دیگری موجود نیست.",
-    "close": "بستن"
   },
   "Sessions": {
     "title": "لیست سشن‌ها",
@@ -1373,28 +1409,6 @@
     "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
     "dropIt": "رها کنید"
   },
-  "FileUploader": {
-    "dropzone": "فایل‌ها را در اینجا رها کنید یا روی آن کلیک کنید تا فایل‌ها را انتخاب کنید",
-    "uploadButton": "آپلود فایل",
-    "Limits": {
-      "image": {
-        "text": "حداکثر حجم تصویر ۸ مگابایت میباشد",
-        "formats": "فرمت‌های پشتیبانی شده: png, jpeg, gif"
-      },
-      "video": {
-        "text": "حداکثر حجم ویدیو ۲۵ مگابایت میباشد",
-        "formats": "فرمت‌های پشتیبانی شده: mp4, ogg, avi, mov, webm"
-      },
-      "audio": {
-        "text": "حداکثر حجم ویس/موزیک ۲۵ مگابایت میباشد",
-        "formats": "فرمت‌ها پشتیبانی شده: aac, m4a, wav, mp4"
-      },
-      "media": {
-        "text": "حداکثر حجم برای ویدیو و ویس ۲۵ و برای عکس ۸ مگابایت است",
-        "formats": "فرمتهای پشتیبانی شده: aac, m4a, wav, mp4, mp4, ogg, avi, mov, webm, png, jpeg, gif"
-      }
-    }
-  },
   "Upgrade": {
     "Verify": {
       "error": "پرداخت با خطا مواجه شد",
@@ -1626,7 +1640,7 @@
         "ip": "{validation} نامعتبر",
         "cuid": "{validation} نامعتبر",
         "cuid2": "{validation} نامعتبر",
-        "regex": "نامعتبر",
+        "regex": "مقدار وارد شده معتبر نیست.",
         "datetime": "{validation} نامعتبر",
         "startsWith": "ورودی نامعتبر: باید با \"{startsWith}\" شروع شود",
         "endsWith": "ورودی نامعتبر: باید با \"{endsWith}\" تمام شود"
@@ -1638,9 +1652,9 @@
           "not_inclusive": "باید بیش از {minimum} عنصر داشته باشد"
         },
         "string": {
-          "exact": "باید دقیقا {minimum} کاراکتر داشته باشد",
-          "inclusive": "باید حداقل {minimum} کاراکتر داشته باشد",
-          "not_inclusive": "باید بیشتر از {minimum} کاراکتر داشته باشد"
+          "exact": "باید دقیقا {minimum} کاراکتر داشته باشد.",
+          "inclusive": "باید حداقل {minimum} کاراکتر داشته باشد.",
+          "not_inclusive": "باید بیشتر از {minimum} کاراکتر داشته باشد."
         },
         "number": {
           "exact": "باید دقیقا {minimum} باشد",

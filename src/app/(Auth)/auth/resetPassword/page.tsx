@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
 
 export default function ResetPasswordForm() {

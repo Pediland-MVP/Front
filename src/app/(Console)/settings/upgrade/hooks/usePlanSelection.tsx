@@ -1,5 +1,5 @@
 "use client";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import useUser from "@/hooks/useUser";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { PlanNamespace } from "@/types/plans/plan.namespace";

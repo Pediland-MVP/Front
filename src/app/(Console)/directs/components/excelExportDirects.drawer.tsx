@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import api from "@/hooks/swr/api-client";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";

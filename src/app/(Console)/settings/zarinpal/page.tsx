@@ -17,7 +17,7 @@ import LoadingButton from "@/components/ui/button-loading";
 import { useEffect, useState } from "react";
 import { ErrorMessage } from "@/components/index";
 import useSWRImmutable from "swr/immutable";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import useUser from "@/hooks/useUser";

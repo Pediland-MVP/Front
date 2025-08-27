@@ -98,17 +98,13 @@ export const ProductContentItem = ({
                 className="aspect-square rounded-lg object-cover"
               />
               <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 duration-150 group-hover:opacity-100">
-                <Button
-                  type="button"
-                  className="text-xs text-white"
-                  onClick={() => setIsOpen(true)}
-                >
+                <Button type="button" size="sm" onClick={() => setIsOpen(true)}>
                   {t("change")}
                 </Button>
               </div>
             </>
           ) : (
-            <div className="flex h-full flex-col items-center justify-center rounded-lg bg-gray-300">
+            <div className="flex h-full items-center justify-center rounded-lg bg-gray-300">
               <Button
                 type="button"
                 variant="link"

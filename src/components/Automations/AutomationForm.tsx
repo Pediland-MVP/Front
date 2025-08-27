@@ -189,6 +189,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     }
 
     setIsSubmitting(true);
+
     await api({
       method: id ? "PATCH" : "POST",
       url: `/contentCycle${id ? `/${id}` : ""}`,
@@ -208,7 +209,26 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
           });
           return;
         }
-        toast.error(t_ec(e.response?.data?.code));
+
+        // Handle missing translation keys gracefully
+        const errorCode = e.response?.data?.code;
+
+        if (errorCode) {
+          try {
+            const errorMessage = t_ec(errorCode);
+            toast.error(errorMessage);
+          } catch (translationError) {
+            // Fallback to generic error message if translation key doesn't exist
+            console.error(
+              "Missing translation for error code:",
+              errorCode,
+              translationError,
+            );
+            toast.error("خطایی رخ داده است");
+          }
+        } else {
+          toast.error("خطایی رخ داده است");
+        }
       })
       .then(() => setIsSubmitting(false));
   };

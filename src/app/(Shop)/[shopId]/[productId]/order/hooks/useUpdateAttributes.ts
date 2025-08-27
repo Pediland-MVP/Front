@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui-custom/use-toast"
+import { toast } from "@/components/ui-custom/useToast"
 import { ExceptionMessage } from "@/types/exceptionMessage"
 import { useTranslations } from "next-intl"
 import { useState } from "react"

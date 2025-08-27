@@ -42,7 +42,7 @@ import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import CheckoutError from "./components/checkout.error";
 import useSWR, { mutate } from "swr";
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {

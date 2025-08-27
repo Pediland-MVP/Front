@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import type { ExceptionMessage } from "@/types/exceptionMessage";
 import { Loader2, Package, User, MapPin, CreditCard } from "lucide-react";
 import { mutate } from "swr";

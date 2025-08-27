@@ -1,4 +1,4 @@
-// src/components/Automations/Form/Contents/InstagramPostContent.tsx
+// src/components/Automations/Form/Contents/IGPostContentDialog.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
@@ -20,62 +20,54 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  ErrorMessage,
   Skeleton,
 } from "@/components/index";
-import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 
-const PAGE_SIZE = 9;
-
-export type InstagramPostContentProps = {
+type IGPostContentDialogProps = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
   index: number;
   mode: AutomationContentModeEnum;
 };
 
-export const InstagramPostContent = ({
+const PAGE_SIZE = 9;
+
+export const IGPostContentDialog = ({
+  isOpen,
+  setIsOpen,
   index,
   mode,
-}: InstagramPostContentProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+}: IGPostContentDialogProps) => {
   const [hasMore, setHasMore] = useState(true);
   const [posts, setPosts] = useState<any[]>([]);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const t = useTranslations("InstagramPostDialog");
+  const t = useTranslations("Automations.Contents.InstagramPost.Dialog");
 
-  const {
-    getValues,
-    control,
-    formState: { errors },
-  } = useFormContext<AutomationFormType>();
-
-  const { fields: contents, update: updateContents } = useFieldArray({
+  const { getValues, control } = useFormContext<AutomationFormType>();
+  const { update: updateContents } = useFieldArray({
     control: control,
     name:
-      mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
+      mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders",
     keyName: "_xid",
   });
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
-    await api
-      .get(
-        afterCursor
-          ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure?after=${afterCursor}`
-          : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`,
-      )
-      .then(async (res) => {
-        setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
-        setHasMore(res.data.media.data.length === PAGE_SIZE);
-        setAfter(res.data.media.paging.cursors.after || null);
-      })
-      .catch((e: AxiosError<ExceptionMessage>) => {
-        console.log(e);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    try {
+      const url = afterCursor
+        ? `/posts/pure?after=${afterCursor}`
+        : `/posts/pure`;
+
+      const res = await api.get(url);
+      setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
+      setHasMore(res.data.media.data.length === PAGE_SIZE);
+      setAfter(res.data.media.paging.cursors.after || null);
+    } catch (e: any) {
+      console.error("Error fetching posts:", e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -90,56 +82,32 @@ export const InstagramPostContent = ({
     const postId = e.currentTarget.dataset.postid!;
     const mediaUrl = e.currentTarget.dataset.mediaurl;
 
-    updateContents(index, {
-      ...(mode === AutomationContentModeEnum.AUTOMATION
+    const currentValues =
+      mode === AutomationContentModeEnum.AUTOMATION
         ? getValues()?.contents?.[index]
-        : getValues()?.reminders?.[index]),
+        : getValues()?.reminders?.[index];
+
+    updateContents(index, {
+      ...currentValues,
       instagramPost: { mediaUrl, mediaId: postId },
     });
+
     setIsOpen(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {contents[index].instagramPost?.mediaUrl ? (
-          <div className="relative h-auto w-32 overflow-hidden rounded-lg">
-            <Image
-              src={contents[index].instagramPost.mediaUrl}
-              alt="cover"
-              width={128}
-              height={228}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
-              <Button type="button" variant={"outline"} size={"sm"}>
-                {t("changePost")}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col">
-            <Button type="button" variant="outline" size={"sm"}>
-              <ChatTextIcon className="size-5" />
-              {t("selectPost")}
-            </Button>
-            {errors?.contents?.[index]?.id && (
-              <ErrorMessage>{errors.contents[index].id.message}</ErrorMessage>
-            )}
-          </div>
-        )}
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>{t("selectPost")}</DialogTitle>
-          <DialogDescription>{t("seeYourLastPosts")}</DialogDescription>
+          <DialogTitle>{t("select_post")}</DialogTitle>
+          <DialogDescription>{t("see_your_last_posts")}</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={posts.length}
           next={() => fetchPosts(after)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>{t("thereIsNoMore")}</p>}
+          endMessage={<p>{t("there_is_no_more")}</p>}
           scrollableTarget="scrollableDiv"
         >
           <div
@@ -147,16 +115,15 @@ export const InstagramPostContent = ({
             id="scrollableDiv"
             style={{ maxHeight: "60vh", overflowY: "auto" }}
           >
-            {!posts.length
+            {!posts.length && isLoading
               ? Array.from({ length: 9 }).map((_, index) => (
                   <div key={index} className="col-span-1">
                     <Skeleton className="relative h-56 w-full" />
                   </div>
                 ))
-              : Array.isArray(posts) &&
-                posts.map((post) => (
+              : posts.map((post) => (
                   <div
-                    className="relative col-span-1 h-56 w-full overflow-hidden rounded-sm bg-black"
+                    className="relative col-span-1 h-56 w-full cursor-pointer overflow-hidden rounded-sm bg-black"
                     key={post.id}
                     data-postid={post.id}
                     data-mediaurl={
@@ -173,9 +140,8 @@ export const InstagramPostContent = ({
                           : post.media_url
                       }
                       alt={post.caption || "Instagram Post"}
-                      layout="fill"
-                      objectFit="cover"
-                      className="duration-150 hover:opacity-80"
+                      fill
+                      className="object-cover duration-150 hover:opacity-80"
                     />
                   </div>
                 ))}

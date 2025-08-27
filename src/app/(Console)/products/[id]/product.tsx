@@ -5,7 +5,7 @@ import ProductFormSkeleton from "../components/product.form.skeleton";
 import ProductForm from "../components/product.form";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import useSWRImmutable from "swr/immutable";
 import useUser from "@/hooks/useUser";
 

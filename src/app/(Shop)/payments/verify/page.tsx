@@ -1,5 +1,5 @@
 "use client";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

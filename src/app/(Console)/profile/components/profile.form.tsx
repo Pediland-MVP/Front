@@ -36,7 +36,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui-custom/use-toast";
+import { toast } from "@/components/ui-custom/useToast";
 import LoadingButton from "@/components/ui/button-loading";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
