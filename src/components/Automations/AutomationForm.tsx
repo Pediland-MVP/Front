@@ -16,15 +16,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
-import { z } from "zod";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
 import { Button, ErrorMessage, Form } from "@/components/index";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
 import LoadingButton from "@/components/ui/button-loading";
-import { AutomationFormSchema } from "@/schemas/automationForm";
+import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
+import {
+  AutomationFormSchema,
+  AutomationFormType,
+} from "@/schemas/automationForm";
 import { toast } from "sonner";
+import { SeperateLine } from "../ui-custom/SeperateLine";
 import {
   CommentContentTarget,
   CommentReplies,
@@ -34,9 +38,7 @@ import {
   JustFollowers,
   Reminder,
   Triggers,
-} from "./form";
-import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
-import { SeperateLine } from "../ui-custom/SeperateLine";
+} from "./Form";
 
 type AutomationFormProps = {
   id?: string;
@@ -62,6 +64,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     );
 
   const key = isUUID(id) ? `/contentCycle/${id}` : null;
+
   const {
     data: automation,
     isLoading: isAutomationLoading,
@@ -70,21 +73,23 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     revalidateOnMount: !!id,
   });
 
-  const form = useForm<z.infer<typeof AutomationFormSchema>>({
+  const form = useForm<AutomationFormType>({
     resolver: zodResolver(AutomationFormSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
     defaultValues: {
-      conditions: [{ type: "EQUAL", value: "", id: "" }],
-      contents: [],
-      isDirect: true,
-      isComment: false,
-      justFollowers: false,
-      isRemindersEnabled: false,
-      reminders: [],
-      isReplyCommentEnabled: false,
       commentStartText: t("comment_start_text"),
       commentStartTitle: t("comment_start_title"),
+      conditions: [{ type: "EQUAL", value: "", id: "" }],
+      contents: [],
       followCheckMessage: t("follow_check_message"),
+      isComment: false,
       isCommentContentTargetEnabled: false,
+      isDirect: true,
+      isRemindersEnabled: false,
+      isReplyCommentEnabled: false,
+      justFollowers: false,
+      reminders: [],
     },
   });
 
@@ -92,6 +97,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     if (!automation) {
       return;
     }
+
     form.reset({
       ...automation,
       ...(automation.reminders?.length > 0 && { isRemindersEnabled: true }),
@@ -103,8 +109,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     });
   }, [automation, form]);
 
-  const onSubmit = async (values: z.infer<typeof AutomationFormSchema>) => {
-    // Validate Optionals
+  const onSubmit = async (values: AutomationFormType) => {
     let haveError: boolean = false;
 
     const firstType = values.contents[0]?.type;

@@ -1,10 +1,11 @@
 // src/components/Automations/form/Trigger.tsx
 "use client";
 
+import {
+  AutomationFormType
+} from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -12,15 +13,13 @@ import {
   ErrorMessage,
   FormField,
   FormLabel,
-  FormMessage,
   HelpMeDialog,
-  Switch,
+  Switch
 } from "@/components/index";
-import { useEffect } from "react";
 
 type TriggersProps = {
-  control: Control<z.infer<typeof AutomationFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
+  control: Control<AutomationFormType>;
+  getValues: UseFormGetValues<AutomationFormType>;
 };
 
 export const Triggers = ({ control, getValues }: TriggersProps) => {
@@ -30,7 +29,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
   const {
     formState: { errors },
     trigger,
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   const hasTriggerError = !!(errors.isDirect || errors.isComment);
 

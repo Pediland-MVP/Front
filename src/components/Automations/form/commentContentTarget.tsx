@@ -8,17 +8,14 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import DialogInstagramPostSelect from "../dialog.instagramPostSelect";
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import z from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
-import { useEffect } from "react";
 
 export const CommentContentTarget = () => {
-  const { watch, control, setValue } =
-    useFormContext<z.infer<typeof AutomationFormSchema>>();
+  const { watch, control, setValue } = useFormContext<AutomationFormType>();
   const t = useTranslations("Automations.CommentContentTarget");
 
   const toggleHandler = (value: boolean) => {

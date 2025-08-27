@@ -17,12 +17,12 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
-import { CommentReplies } from "./form/CommentReplies";
-import { Conditions } from "./form/Conditions";
-import { Contents } from "./form/Contents/Contents";
-import { JustFollowers } from "./form/JustFollowers";
-import { Reminder } from "./form/Reminder";
-import { Triggers } from "./form/Triggers";
+import { CommentReplies } from "./Form/CommentReplies";
+import { Conditions } from "./Form/Conditions";
+import { Contents } from "./Form/Contents/Contents";
+import { JustFollowers } from "./Form/JustFollowers";
+import { Reminder } from "./Form/Reminder";
+import { Triggers } from "./Form/Triggers";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
@@ -35,7 +35,10 @@ import {
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import LoadingButton from "@/components/ui/button-loading";
 import { toast } from "sonner";
-import { AutomationFormSchema } from "@/schemas/automationForm";
+import {
+  AutomationFormSchema,
+  AutomationFormType,
+} from "@/schemas/automationForm";
 import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
 
 export type ContentType = {
@@ -76,7 +79,7 @@ export const Automation = ({ id }: AutomationProps) => {
   const router = useRouter();
   useI18nZodErrors();
 
-  const form = useForm<z.infer<typeof AutomationFormSchema>>({
+  const form = useForm<AutomationFormType>({
     resolver: zodResolver(AutomationFormSchema),
     defaultValues: {
       conditions: [{ type: "EQUAL", value: "", id: "" }],
@@ -117,7 +120,7 @@ export const Automation = ({ id }: AutomationProps) => {
     });
   }, [automation, form]);
 
-  const onSubmit = async (values: z.infer<typeof AutomationFormSchema>) => {
+  const onSubmit = async (values: AutomationFormType) => {
     // Validate Optionals
     let haveError: boolean = false;
 
@@ -275,7 +278,9 @@ export const Automation = ({ id }: AutomationProps) => {
 
                   {/* Submit button */}
                   <LoadingButton className="mt-3" isLoading={isSubmitting}>
-                    {id ? t("update_automationsssss") : t("add_automation11111")}
+                    {id
+                      ? t("update_automationsssss")
+                      : t("add_automation11111")}
                   </LoadingButton>
                 </form>
               </Form>

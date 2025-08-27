@@ -2,6 +2,7 @@
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
+import { AutomationFormType } from "@/schemas/automationForm";
 import {
   closestCenter,
   DndContext,
@@ -18,8 +19,6 @@ import {
 } from "@dnd-kit/sortable";
 import { useTranslations } from "next-intl";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 
 import {
   Button,
@@ -48,7 +47,7 @@ export const ContentButtons = ({ contentIndex, mode }: ContentButtonsProps) => {
     clearErrors,
     formState: { errors },
     watch,
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   // NOTE: I dindt changed default name of fields becuase it was not working :)
   const { fields, move, remove, append } = useFieldArray({

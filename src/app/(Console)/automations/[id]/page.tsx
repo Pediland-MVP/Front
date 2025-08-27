@@ -2,7 +2,6 @@
 
 import { AutomationForm, LayoutPage } from "@/components";
 import { isUUID } from "class-validator";
-import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 type PageProps = {
@@ -17,7 +16,6 @@ export default async function Page({ params }: PageProps) {
   if (!isUUID(id, "4")) {
     redirect("/automations");
   }
-  const t = await getTranslations("Automations");
 
   return (
     <LayoutPage col="half">

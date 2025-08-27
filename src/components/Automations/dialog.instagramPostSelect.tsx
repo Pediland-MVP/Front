@@ -1,7 +1,7 @@
 // app/(Console)/automations/components/dialog.instagramPostSelect.tsxs
 "use client";
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
+import { ErrorMessage } from "@/components/index";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,24 +12,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ErrorMessage } from "@/components/index";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
+import { cn } from "@/lib/utils";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { MouseEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
-import {
-  ChatTextIcon,
-  InstagramLogoIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { Instagram } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 9;
 
@@ -51,7 +46,7 @@ export default function DialogInstagramPostSelect({
     formState: { errors },
     setValue,
     watch,
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   const { fields: contents, update: updateContents } = useFieldArray({
     control: control,

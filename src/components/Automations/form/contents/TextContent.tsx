@@ -35,7 +35,6 @@ export const TextContent = ({ index, mode, control }: TextContentProps) => {
           <Textarea
             rows={4}
             maxLength={1000}
-            placeholder={t("enter_your_message")}
             {...field}
             aria-invalid={!!error}
           />

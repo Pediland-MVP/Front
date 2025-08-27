@@ -1,16 +1,16 @@
 // src/components/Automations/form/Contents/ContentPromotion.tsx
 "use client";
 
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
-import { Controller, useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 import { useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 
 // Just UI Imports Below
 import {
   Button,
   Checkbox,
+  ContentPromotionDialog,
   FormControl,
   FormField,
   FormItem,
@@ -37,7 +37,6 @@ import {
   StorefrontIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { ContentPromotionDialog } from "./ContentPromotionDialog";
 
 interface MessageTypeOption {
   value: AutomationContentTypesEnum | "media";
@@ -84,7 +83,7 @@ export const ContentPromotion = () => {
     setValue,
     clearErrors,
     trigger,
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   //   let { removeContents, updateContents, contents } = useContentsContext();
   const contents: any[] = [];
@@ -290,7 +289,7 @@ export const ContentPromotion = () => {
                         render={({ field, fieldState: { error } }) => (
                           <FormItem>
                             <Input
-                              placeholder={t("consentMessage")}
+                              placeholder={t("consent_message")}
                               {...field}
                             />
                             {error && (

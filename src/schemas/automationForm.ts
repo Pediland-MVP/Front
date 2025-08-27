@@ -1,4 +1,5 @@
 // src/schemas/automationForm.ts
+
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import { REGEX_URL } from "@/utils/regex";
 import z from "zod";
@@ -212,6 +213,18 @@ export const AutomationFormSchema = z
           message: "required",
         });
       }
+
+      // PRODUCT نیاز به حداقل یک محصول انتخاب شده
+      if (t === AutomationContentTypesEnum.PRODUCT) {
+        const selectedProducts = content.products?.filter(product => product?.id) || [];
+        if (selectedProducts.length === 0) {
+          ctx.addIssue({
+            path: ["contents", index, "products"],
+            code: "custom",
+            message: "required",
+          });
+        }
+      }
     });
 
     // همان ولیدیشن را برای reminders هم اعمال کنیم
@@ -251,5 +264,19 @@ export const AutomationFormSchema = z
           message: "required",
         });
       }
+
+      // PRODUCT نیاز به حداقل یک محصول انتخاب شده
+      if (t === AutomationContentTypesEnum.PRODUCT) {
+        const selectedProducts = content.products?.filter(product => product?.id) || [];
+        if (selectedProducts.length === 0) {
+          ctx.addIssue({
+            path: ["reminders", index, "products"],
+            code: "custom",
+            message: "required",
+          });
+        }
+      }
     });
   });
+
+export type AutomationFormType = z.infer<typeof AutomationFormSchema>;

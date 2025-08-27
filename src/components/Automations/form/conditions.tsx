@@ -1,17 +1,15 @@
 // src/components/Automations/form/Conditions.tsx
 "use client";
 
-import { AutomationFormSchema } from "@/schemas/automationForm";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
   Control,
   useFieldArray,
-  UseFormGetValues,
-  UseFormStateReturn,
+  UseFormGetValues
 } from "react-hook-form";
-import { z } from "zod";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -26,8 +24,8 @@ import {
 import { XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ConditionsProps = {
-  control: Control<z.infer<typeof AutomationFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
+  control: Control<AutomationFormType>;
+  getValues: UseFormGetValues<AutomationFormType>;
 };
 
 export const Conditions = ({ control, getValues }: ConditionsProps) => {

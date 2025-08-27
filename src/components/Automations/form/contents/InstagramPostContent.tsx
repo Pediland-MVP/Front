@@ -1,45 +1,54 @@
-// app/(Console)/automations/components/instagramPosts.dialog.tsx
+// src/components/Automations/Form/Contents/InstagramPostContent.tsx
 "use client";
 
-import {
-  Button, Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger, ErrorMessage,
-  Skeleton
-} from "@/components/index";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { MouseEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
+
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  ErrorMessage,
+  Skeleton,
+} from "@/components/index";
+import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 
 const PAGE_SIZE = 9;
 
-export type InstagramPostsContentCompProps = {
+export type InstagramPostContentProps = {
   index: number;
   mode: AutomationContentModeEnum;
 };
 
-export default function InstagramPostsContentComp({
+export const InstagramPostContent = ({
   index,
   mode,
-}: InstagramPostsContentCompProps) {
+}: InstagramPostContentProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [after, setAfter] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations("InstagramPostDialog");
+
   const {
     getValues,
     control,
     formState: { errors },
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   const { fields: contents, update: updateContents } = useFieldArray({
     control: control,
@@ -47,12 +56,6 @@ export default function InstagramPostsContentComp({
       mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
     keyName: "_xid",
   });
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [posts, setPosts] = useState<any[]>([]);
-  const [after, setAfter] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
@@ -86,8 +89,6 @@ export default function InstagramPostsContentComp({
   const selectPost = (e: MouseEvent<HTMLDivElement>) => {
     const postId = e.currentTarget.dataset.postid!;
     const mediaUrl = e.currentTarget.dataset.mediaurl;
-    // console.log("media", postId, mediaUrl);
-    // console.log(`value before update`, getValues()?.contents?.[index]);
 
     updateContents(index, {
       ...(mode === AutomationContentModeEnum.AUTOMATION
@@ -97,8 +98,6 @@ export default function InstagramPostsContentComp({
     });
     setIsOpen(false);
   };
-
-  const t = useTranslations("InstagramPostDialog");
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -188,4 +187,4 @@ export default function InstagramPostsContentComp({
       </DialogContent>
     </Dialog>
   );
-}
+};

@@ -1,2 +1,2 @@
 export * from "./AutomationForm";
-export * from "./form";
+export * from "./Form";

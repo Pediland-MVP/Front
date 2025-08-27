@@ -2,11 +2,10 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -15,18 +14,21 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, HelpMeDialog, Input, Switch, Textarea
+  FormMessage,
+  HelpMeDialog,
+  Input,
+  Switch,
+  Textarea,
 } from "@/components/index";
 
 type JustFollowersProps = {
-  control: Control<z.infer<typeof AutomationFormSchema>>;
-  getValues: UseFormGetValues<z.infer<typeof AutomationFormSchema>>;
+  control: Control<AutomationFormType>;
+  getValues: UseFormGetValues<AutomationFormType>;
 };
 export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
   const t = useTranslations("Automations.JustFollowers");
   const t_automations = useTranslations("Automations");
-  const { setValue, watch } =
-    useFormContext<z.infer<typeof AutomationFormSchema>>();
+  const { setValue, watch } = useFormContext<AutomationFormType>();
 
   const { user, hasInstagram } = useUser();
 

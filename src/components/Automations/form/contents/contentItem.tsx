@@ -5,26 +5,26 @@ import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { FileNamespace } from "@/types/file";
+import { AutomationFormType } from "@/schemas/automationForm";
+import { UploadedFile } from "@/types/fileUploader";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { AxiosError, AxiosResponse } from "axios";
 import { useTranslations } from "next-intl";
 import { Controller, useFormContext } from "react-hook-form";
-import { z } from "zod";
 
-// UI Imports
 import {
   Checkbox,
   ContentButtons,
-  TextContent,
+  ContentMedia,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   Input,
+  InstagramPostContent,
+  ProductContentComp,
+  TextContent,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -35,12 +35,6 @@ import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-
-import InstagramPostsContentComp from "../instagramPostsContentComp";
-import ProductContentComp from "../productContentComp";
-import { ContentMedia } from "./ContentMedia";
-import { UploadedFile } from "@/types/fileUploader";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 
 interface ReturnContentProps {
   index: number;
@@ -56,14 +50,14 @@ export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
     setValue,
     getValues,
     formState: { errors },
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   switch (type) {
     case AutomationContentTypesEnum.TEXT:
       return <TextContent control={control} mode={mode} index={index} />;
 
     case AutomationContentTypesEnum.INSTAGRAM_POST:
-      return <InstagramPostsContentComp mode={mode} index={index} />;
+      return <InstagramPostContent mode={mode} index={index} />;
 
     case AutomationContentTypesEnum.PRODUCT:
       return <ProductContentComp mode={mode} index={index} />;
@@ -96,10 +90,12 @@ export const ContentItem = ({
     setValue,
     clearErrors,
     trigger,
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
   const t = useTranslations("Automations.Contents");
-  const t_contentTypes = useTranslations("ContentTypes");
+  const t_contentTypes = useTranslations("Automations.Contents.Types");
+
   let { removeContents, updateContents, contents } = useContentsContext();
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -118,14 +114,12 @@ export const ContentItem = ({
         : getValues().reminders;
 
     // اگر فقط ۱ آیتم یا کمتر باقی مونده => haveConsent رو خاموش کن
-    if (newList && newList.length <= 1) {
+    if (newList && newList.length === 1) {
       updateContents(0, {
         ...newList[0],
         haveConsent: false,
       });
     }
-
-    trigger();
   };
 
   // *************** NEVE USED ???????
@@ -175,8 +169,16 @@ export const ContentItem = ({
   };
 
   const typeKey = contents?.[index]?.type as string | undefined;
+  const typeLabelMap: Record<string, string> = {
+    button_template: t_contentTypes("button_template"),
+    ig_post: t_contentTypes("instagram_post"),
+    media: t_contentTypes("media"),
+    product: t_contentTypes("product_or_service"),
+    text: t_contentTypes("text"),
+  };
+
   const typeLabel = typeKey
-    ? t_contentTypes(typeKey)
+    ? typeLabelMap[typeKey]
     : t_contentTypes("fallback_key");
 
   return (
@@ -277,7 +279,10 @@ export const ContentItem = ({
                       control={control}
                       render={({ field, fieldState: { error } }) => (
                         <FormItem>
-                          <Input placeholder={t("consentMessage")} {...field} />
+                          <Input
+                            placeholder={t("consent_message")}
+                            {...field}
+                          />
                           {error && <FormMessage>{error.message}</FormMessage>}
                         </FormItem>
                       )}

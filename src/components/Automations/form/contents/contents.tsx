@@ -6,14 +6,13 @@ import {
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
 import useUser from "@/hooks/useUser";
-import { AutomationFormSchema } from "@/schemas/automationForm";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { UploadedFile } from "@/types/fileUploader";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { z } from "zod";
+import { useEffect, useState } from "react";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { contentTypeOptions } from "./contentTypeOptions";
+import { contentTypeOptions } from "./ContentTypeOptions";
 
 import {
   Alert,
@@ -24,8 +23,7 @@ import {
   ContentsContext,
   ContentsUploaderContextProvider,
   ErrorMessage,
-  FormMessage,
-  HelpMeDialog,
+  HelpMeDialog
 } from "@/components/index";
 import {
   closestCenter,
@@ -51,21 +49,27 @@ type ContentsProps = {
 export const Contents = ({ mode, automationId }: ContentsProps) => {
   const { user } = useUser();
   const isPromotion = user?.instagrams?.[0]?.isPromotion;
-  const t_contentTypes = useTranslations("ContentTypes");
   const t = useTranslations("Automations.Contents");
+  const t_contentTypes = useTranslations("Automations.Contents.Types");
   const t_err = useTranslations("Automations.Contents.Errors");
 
   const {
     control,
-    getValues,
+    trigger,
+    clearErrors,
     formState: { errors },
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   const [isChoosingType, setIsChoosingType] = useState(
     !!automationId || mode === AutomationContentModeEnum.REMINDER
       ? false
       : true,
   );
+
+  const arrayName =
+    mode === AutomationContentModeEnum.REMINDER
+      ? "reminders"
+      : ("contents" as const);
 
   const {
     fields: contents,
@@ -76,10 +80,22 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
     insert: insertContents,
   } = useFieldArray({
     control: control,
-    name:
-      mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
+    name: arrayName,
     keyName: "_xid",
   });
+
+  const watched = useWatch({ name: arrayName, control });
+  const hasItems = (watched?.length ?? 0) > 0;
+
+  useEffect(() => {
+    if (
+      hasItems &&
+      ((errors as any)?.[arrayName]?.root?.message ||
+        (errors as any)?.[arrayName]?.message)
+    ) {
+      clearErrors(arrayName);
+    }
+  }, [hasItems, arrayName, clearErrors, errors]);
 
   // Configure sensors for drag and drop
   const sensors = useSensors(
@@ -92,6 +108,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   // Handle drag end event
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    if (!over) return;
 
     if (active.id !== over?.id) {
       const oldIndex = contents.findIndex((field) => field._xid === active.id);
@@ -100,6 +117,14 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       moveContents(oldIndex, newIndex);
     }
   };
+
+  const arrayErrors = (errors as any)?.[arrayName];
+  const arrayErrorMsg = arrayErrors?.root?.message ?? arrayErrors?.message;
+  const arrayErrorType = arrayErrors?.root?.type ?? arrayErrors?.type;
+
+  useEffect(() => {
+    console.log("Watching contents...", contents);
+  }, [contents]);
 
   return (
     <ContentsContext.Provider
@@ -167,6 +192,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                     }),
                   });
                   setIsChoosingType(false);
+                  clearErrors(arrayName);
                 }}
                 className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-none bg-blue-100/75 text-sm text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:pr-2 md:pl-6 [&_svg]:size-5"
               >
@@ -183,8 +209,8 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           </div>
         )}
 
-        {errors.contents && (
-          <ErrorMessage>{t_err(errors.contents?.type)}</ErrorMessage>
+        {arrayErrorMsg && (
+          <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>
         )}
 
         <div className="relative">

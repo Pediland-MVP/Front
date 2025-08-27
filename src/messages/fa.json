@@ -401,21 +401,56 @@
       "Errors": {
         "INSUFFICIENT_PATH": "مسیر کافی نیست",
         "MISSING_MESSAGE": "متن پیام الزامی است",
-        "too_small": "برای ثبت پیام خودکار حداقل یک محتوا اضافه کنید"
+        "too_small": "برای ثبت پیام خودکار حداقل یک محتوا اضافه کنید."
       },
       "Help": {
         "title": "تعریف محتوای دایرکت هوشمند",
         "description": "در این بخش میتوانید انواع محتوا را برای دایرکت هوشمند تعریف کنید تا برای کاربر بصورت اتوماتیک ارسال شود"
       },
+      "Types": {
+        "audio": "صدا",
+        "button_template": "دکمه",
+        "create_title": "ایجاد یک محتوا از نوع",
+        "fallback_key": "عنوان محتوا",
+        "ig_post": "پست IG",
+        "image": "رسانه",
+        "instagram_post": "پست اینستاگرام",
+        "media": "رسانه",
+        "post": "پست",
+        "product": "کالا",
+        "product_or_service": "کالا یا خدمت",
+        "select_your_type": "نوع محتوای مورد نظر خود را انتخاب کنید.",
+        "text": "متن",
+        "video": "ویدیو"
+      },
       "Text": {
         "you_can_use_vars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",
         "enter_your_message": "متن پیام را وارد کنید",
         "Errors": {
-          "required": "متن پیام الزامی است"
+          "required": "متن پیام را وارد کنید."
+        }
+      },
+      "Product": {
+        "add": "افزودن کالا یا خدمت",
+        "label": "ارسال کاتالوگ  محصولات",
+        "limit": "حداکثر تعداد آیتم قابل انتخاب در هر پیام ۱۰ عدد است.",
+        "select": "انتخاب",
+        "change": "تـعـویـض",
+        "cover_image_alt": "تصویر کاور",
+        "selection_required": "حداقل یک کالا یا خدمت انتخاب کنید.",
+
+        "Dialog": {
+          "add": "انتخاب",
+          "close": "بستن",
+          "fetch_error": "خطا در دریافت محصولات:",
+          "instagram_post_alt": "پست اینستاگرام",
+          "no_more_posts": "پست دیگری موجود نیست.",
+          "price": "{price} تومان",
+          "select_product": "انتخاب کالا یا خدمت",
+          "select_product_description": "کالا یه خدمت مورد نظر خود را انتخاب کنید."
         }
       }
     },
-
     "ContentPromotionDialog": {
       "title": "اجازه تغییر این محتوا رو ندارید",
       "description": "برای حذف کردن تبلیغات باید پلن رو ارتقا بدید",
@@ -446,18 +481,6 @@
       "responses": "جواب‌ها",
       "edit": "ویرایش",
       "delete": "حذف"
-    },
-    "ProductsDialog": {
-      "fetchError": "خطا در دریافت محصولات:",
-      "coverImageAlt": "تصویر کاور",
-      "changeProduct": "تغییر",
-      "selectProduct": "انتخاب",
-      "selectProductDescription": "یک محصول انتخاب کنید",
-      "noMorePosts": "پست دیگری موجود نیست.",
-      "instagramPostAlt": "پست اینستاگرام",
-      "price": "{price} تومان",
-      "close": "بستن",
-      "add": "افزودن محصول"
     },
     "DeleteConfirmationDialog": {
       "title": "آیا از حذف این مورد اطمینان دارید؟",
@@ -556,11 +579,6 @@
         "title": "ارسال پیام یادآوری",
         "description": "تا ۲۴ ساعت فرصت دارید یک پیام پیگیری یا یاداوری برای کاربر ارسال کنید"
       }
-    },
-    "Catalogue": {
-      "label": "ارسال کاتالوگ  محصولات",
-      "add": "افزودن محصول",
-      "limit": "حداکثر تعداد محصولات قابل انتخاب در هر پیام ۱۰ تاست"
     },
     "ButtonTemplates": {
       "add": "افزودن دکمه",
@@ -1354,20 +1372,6 @@
     "title": "آپلود تصویر",
     "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
     "dropIt": "رها کنید"
-  },
-  "ContentTypes": {
-    "select_your_type": "نوع محتوای مورد نظر خود را انتخاب کنید.",
-    "create_title": "ایجاد یک محتوا از نوع",
-    "text": "متن",
-    "post": "پست",
-    "instagram_post": "پست IG",
-    "audio": "صدا",
-    "video": "ویدیو",
-    "image": "رسانه",
-    "product": "کالا",
-    "media": "رسانه",
-    "button_template": "دکمه",
-    "fallback_key": "عنوان محتوا"
   },
   "FileUploader": {
     "dropzone": "فایل‌ها را در اینجا رها کنید یا روی آن کلیک کنید تا فایل‌ها را انتخاب کنید",

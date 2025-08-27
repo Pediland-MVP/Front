@@ -2,11 +2,10 @@
 "use client";
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -20,7 +19,7 @@ import {
 
 export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =
-    useFormContext<z.infer<typeof AutomationFormSchema>>();
+    useFormContext<AutomationFormType>();
   const t = useTranslations("Automations.CommentConsent");
   const contents = watch("contents");
 

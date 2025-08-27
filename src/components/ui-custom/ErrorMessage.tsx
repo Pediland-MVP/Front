@@ -7,7 +7,7 @@ export const ErrorMessage = ({
 }: React.HTMLAttributes<HTMLParagraphElement>) => {
   return (
     <p
-      className={`text-xs text-red-500 ${className}`}
+      className={`text-[13px] text-red-500 ${className}`}
       id="error_message_custom_for_react_hook_forms"
       {...props}
     >

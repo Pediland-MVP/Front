@@ -5,10 +5,9 @@ import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { Contents } from "./Contents";
 
@@ -28,7 +27,7 @@ import {
 
 export const Reminder = () => {
   const { control, getValues, setValue, watch } =
-    useFormContext<z.infer<typeof AutomationFormSchema>>();
+    useFormContext<AutomationFormType>();
   const t = useTranslations("Automations.Reminder");
 
   const toggleReminders = (isEnabled: boolean) => {

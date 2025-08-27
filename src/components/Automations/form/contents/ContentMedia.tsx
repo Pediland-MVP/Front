@@ -1,20 +1,21 @@
+"use client";
+
+import { useContentsUploaderContext } from "@/components/index";
+import { FormMessage } from "@/components/ui";
+import { toast } from "@/components/ui-custom/use-toast";
 import { FileUploader } from "@/components/ui/fileUploader";
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
-import { useContentsUploaderContext } from "./ContentsUploaderContext";
-import { UploadedFile } from "@/types/fileUploader";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
-import { AxiosError, AxiosResponse } from "axios";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { useTranslations } from "next-intl";
-import { FormMessage, Toast } from "@/components/ui";
 import api from "@/hooks/swr/api-client";
+import { AutomationFormType } from "@/schemas/automationForm";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 import { FileNamespace } from "@/types/file";
-import { toast } from "@/components/ui-custom/use-toast";
+import { UploadedFile } from "@/types/fileUploader";
+import { AxiosError, AxiosResponse } from "axios";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 
 interface ContentMediaProps {
   index: number;
@@ -30,7 +31,7 @@ export const ContentMedia = ({ index, mode, type }: ContentMediaProps) => {
     setValue,
     getValues,
     formState: { errors },
-  } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  } = useFormContext<AutomationFormType>();
 
   const t = useTranslations("Automations.Contents");
   const t_ec = useTranslations("ERROR_CODES");

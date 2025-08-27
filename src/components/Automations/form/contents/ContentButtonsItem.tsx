@@ -2,12 +2,10 @@
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
 import { cn } from "@/lib/utils";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import { AutomationFormSchema } from "@/schemas/automationForm";
 
 // UI Imports
 import {
@@ -52,7 +50,7 @@ export const ContentButtonsItem = ({
     transition,
     isDragging,
   } = useSortable({ id });
-  const { control } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  const { control } = useFormContext<AutomationFormType>();
   const t = useTranslations("Automations.ButtonTemplates");
   const style = {
     transform: CSS.Transform.toString(transform),
