@@ -11,6 +11,8 @@ export type ExistingFile = {
   id: number;
   url: string;
   mimeType: string;
+  originalName?: string;
+  originalSize?: number;
 };
 
 export type UploadedFile = FileWithPreview | ExistingFile;
@@ -18,7 +20,7 @@ export type UploadedFile = FileWithPreview | ExistingFile;
 export interface FileUploaderProps {
   multiple?: boolean;
   // value: UploadedFile[]
-  onChange: (files: UploadedFile[]) => any;
+  onChange: (files: UploadedFile[], rejectedFiles?: any[]) => any;
   files: UploadedFile[];
   setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
   accept?: string;
