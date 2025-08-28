@@ -30,13 +30,13 @@ import {
 import { toast } from "sonner";
 import { SeperateLine } from "../ui-custom/SeperateLine";
 import {
-  CommentContentTarget,
   CommentReplies,
   CommentTriggerInputs,
   Conditions,
   Contents,
   JustFollowers,
   Reminder,
+  TargetPostComment,
   Triggers,
 } from "./Form";
 
@@ -262,7 +262,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   mode={AutomationContentModeEnum.AUTOMATION}
                 />
 
-                <CommentContentTarget />
+                <TargetPostComment />
 
                 <CommentReplies />
 

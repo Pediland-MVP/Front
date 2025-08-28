@@ -1,4 +1,4 @@
-// app/(Console)/automations/components/form/reminder.tsx
+// src/components/Automations/form/Reminder.tsx
 "use client";
 
 import {
@@ -13,21 +13,31 @@ import { Contents } from "./Contents";
 
 // UI Imports
 import {
-  ErrorMessage, FormControl,
+  ErrorMessage,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, HelpMeDialog, Select,
+  FormMessage,
+  HelpMeDialog,
+  Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue, Switch
+  SelectValue,
+  Switch,
 } from "@/components/index";
 
 export const Reminder = () => {
-  const { control, getValues, setValue, watch } =
-    useFormContext<AutomationFormType>();
+  const {
+    control,
+    getValues,
+    setValue,
+    watch,
+    formState: { errors },
+    clearErrors,
+  } = useFormContext<AutomationFormType>();
   const t = useTranslations("Automations.Reminder");
 
   const toggleReminders = (isEnabled: boolean) => {
@@ -36,6 +46,13 @@ export const Reminder = () => {
       "reminders",
       isEnabled ? [{ type: AutomationContentTypesEnum.TEXT }] : [],
     );
+
+    if (!isEnabled) {
+      // Reset reminder time and clear errors when disabling
+      setValue("reminderTime", undefined);
+      clearErrors("reminders");
+      clearErrors("reminderTime");
+    }
   };
 
   if (
@@ -54,7 +71,7 @@ export const Reminder = () => {
         control={control}
         name="isRemindersEnabled"
         render={({ field }) => (
-          <FormItem className="flex flex-col justify-start gap-y-2">
+          <FormItem className="flex flex-col justify-start gap-y-3">
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
                 title={t("Help.title")}
@@ -64,7 +81,6 @@ export const Reminder = () => {
               />
               <FormControl>
                 <Switch
-                  dir="ltr"
                   id="reminder"
                   checked={field.value}
                   onCheckedChange={(e) => toggleReminders(e)}
@@ -82,10 +98,13 @@ export const Reminder = () => {
                     <FormItem>
                       <FormControl>
                         <Select
-                          {...selectField}
+                          value={selectField.value || ""}
                           onValueChange={selectField.onChange}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger
+                            className="w-full"
+                            aria-invalid={!!error}
+                          >
                             <SelectValue placeholder={t("time.placeholder")} />
                           </SelectTrigger>
                           <SelectContent>
@@ -103,7 +122,7 @@ export const Reminder = () => {
                       </FormControl>
                       {error && (
                         <ErrorMessage>
-                          {t(`time.Errors.${error.message}`)}{" "}
+                          {t(`time.Errors.${error.message}`)}
                         </ErrorMessage>
                       )}
                     </FormItem>
@@ -113,7 +132,6 @@ export const Reminder = () => {
                 <Contents mode={AutomationContentModeEnum.REMINDER} />
               </>
             )}
-            <FormMessage />
           </FormItem>
         )}
       />

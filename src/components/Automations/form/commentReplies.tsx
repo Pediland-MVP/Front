@@ -1,9 +1,9 @@
 // src/components/Automations/form/CommentReplies.tsx
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
-import { useTranslations } from "next-intl";
 
 // UI Imports
 import {
@@ -18,10 +18,10 @@ import {
   Input,
   Switch,
 } from "@/components/index";
-import { XIcon } from "@phosphor-icons/react/dist/ssr";
+import { TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const CommentReplies = () => {
-  const { watch, control, setValue } = useFormContext();
+  const { watch, control, setValue, clearErrors } = useFormContext();
   const t = useTranslations("Automations.CommentReplies");
 
   const onIsReplyCommentEnabled = (isActive: boolean) => {
@@ -33,6 +33,9 @@ export const CommentReplies = () => {
         "دایرکتتون رو چک کنید لطفا 🙏",
         "براتون ارسال شد ❤️",
       ]);
+      
+      // Clear any existing errors for commentTexts fields
+      clearErrors("commentTexts");
 
       return;
     }
@@ -62,7 +65,7 @@ export const CommentReplies = () => {
         control={control}
         name="isReplyCommentEnabled"
         render={({ field }) => (
-          <FormItem className="relative">
+          <FormItem>
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
                 title={t("Help.title")}
@@ -70,28 +73,25 @@ export const CommentReplies = () => {
                 videoSrc={
                   WizardVideoLinks.Automations.Hints.CommentReplies.video
                 }
-                position="left-top"
+                position="left"
               />
               <FormControl>
                 <Switch
                   type="button"
-                  dir="ltr"
                   checked={field.value}
                   onCheckedChange={onIsReplyCommentEnabled}
                 />
               </FormControl>
-              <FormLabel className="">
-                {t("isReplyCommentEnabled.label")}
-              </FormLabel>
+              <FormLabel>{t("is_enabled.label")}</FormLabel>
             </div>
 
-            <FormDescription className="text-sm">
-              {t("isReplyCommentEnabled.description")}
+            <FormDescription className="text-[13px]">
+              {t("is_enabled.description")}
             </FormDescription>
             <FormMessage />
 
             {field.value && (
-              <div className="mt-3 space-y-2.5">
+              <div className="mt-1 space-y-2.5">
                 {watch("commentTexts").map(
                   (commentText: string, index: number) => (
                     <FormField
@@ -105,19 +105,17 @@ export const CommentReplies = () => {
                               <Input
                                 {...field}
                                 value={field.value ?? ""}
-                                placeholder={t("commentPlaceholder")}
                               ></Input>
                             </FormControl>
 
                             {index > 2 && (
                               <Button
                                 onClick={() => onDelete(index)}
-                                variant={"outline"}
-                                size={"icon"}
+                                variant="link"
+                                size="icon"
                                 type="button"
-                                className="box-border flex items-center justify-center"
                               >
-                                <XIcon />
+                                <TrashSimpleIcon className="text-destructive" />
                               </Button>
                             )}
                           </div>
@@ -131,11 +129,11 @@ export const CommentReplies = () => {
                   <Button
                     onClick={onAddComment}
                     type="button"
-                    variant={"secondary"}
-                    size={"sm"}
+                    variant="secondary"
                     disabled={watch("commentTexts").length >= 10}
                   >
-                    {t("addComment")}
+                    <TextboxIcon />
+                    {t("add_comment")}
                   </Button>
                 </div>
               </div>

@@ -8,7 +8,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import { Button, ErrorMessage } from "@/components/index";
+import {
+  Button,
+  ErrorMessage,
+  InstagramPostSelectDialog,
+} from "@/components/index";
 import { IGPostContentDialog } from "./IGPostContentDialog";
 
 const PAGE_SIZE = 9;
@@ -37,9 +41,9 @@ export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-3 gap-4">
         {watchedPost?.mediaUrl ? (
-          <div className="relative aspect-square overflow-hidden rounded-lg">
+          <div className="relative aspect-square overflow-hidden rounded-lg bg-red-50">
             <Image
               src={watchedPost.mediaUrl}
               alt="Instagram post cover"
@@ -47,23 +51,29 @@ export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
               height={0}
               className="aspect-square rounded-lg object-cover"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
-              <Button type="button" size="sm" onClick={() => setIsOpen(true)}>
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black to-transparent opacity-0 duration-150 hover:opacity-100">
+              <Button
+                type="button"
+                className="text-white hover:no-underline"
+                variant={"link"}
+                size="sm"
+                onClick={() => setIsOpen(true)}
+              >
                 {t("change")}
               </Button>
             </div>
           </div>
         ) : (
           <>
-            <div className="hover:border-primary flex aspect-square items-center justify-center rounded-lg border bg-gray-300">
-              <Button
-                type="button"
-                variant="link"
-                onClick={() => setIsOpen(true)}
-              >
-                {t("select")}
-              </Button>
-            </div>
+            <Button
+              className="flex aspect-square h-full w-full items-center justify-center bg-gray-200 p-0 hover:bg-gray-300/90 hover:no-underline"
+              type="button"
+              variant="link"
+              onClick={() => setIsOpen(true)}
+            >
+              {t("select")}
+            </Button>
+
             {(errors as any)?.[fieldPath]?.[index]?.instagramPost && (
               <ErrorMessage className="col-span-3">
                 {t_err("selection_required")}

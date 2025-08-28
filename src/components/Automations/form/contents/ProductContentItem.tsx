@@ -52,14 +52,7 @@ export const ProductContentItem = ({
 
   return (
     <>
-      <div
-        ref={setNodeRef}
-        style={style}
-        className={cn(
-          "group hover:border-primary relative rounded-lg border transition-all duration-200",
-          isDragging && "ring-primary ring-2 ring-offset-2",
-        )}
-      >
+      <div ref={setNodeRef} style={style} className={cn("group relative")}>
         <div className="absolute top-0 right-0 z-50 flex w-full items-center justify-between">
           {productsField.length > 1 && (
             <Button
@@ -97,22 +90,27 @@ export const ProductContentItem = ({
                 height={0}
                 className="aspect-square rounded-lg object-cover"
               />
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 duration-150 group-hover:opacity-100">
-                <Button type="button" size="sm" onClick={() => setIsOpen(true)}>
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-t from-black to-transparent opacity-0 duration-150 group-hover:opacity-100">
+                <Button
+                  type="button"
+                  size="sm"
+                  className="text-white hover:no-underline"
+                  variant={"link"}
+                  onClick={() => setIsOpen(true)}
+                >
                   {t("change")}
                 </Button>
               </div>
             </>
           ) : (
-            <div className="flex h-full items-center justify-center rounded-lg bg-gray-300">
-              <Button
-                type="button"
-                variant="link"
-                onClick={() => setIsOpen(true)}
-              >
-                {t("select")}
-              </Button>
-            </div>
+            <Button
+              className="flex aspect-square h-full w-full items-center justify-center bg-gray-200 p-0 hover:bg-gray-300/90 hover:no-underline"
+              type="button"
+              variant="link"
+              onClick={() => setIsOpen(true)}
+            >
+              {t("select")}
+            </Button>
           )}
         </div>
       </div>

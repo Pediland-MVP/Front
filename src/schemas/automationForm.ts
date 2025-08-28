@@ -227,6 +227,42 @@ export const AutomationFormSchema = z
       }
     });
 
+    // اگر isCommentContentTargetEnabled فعال باشد، instagramPost الزامی است
+    if (data.isCommentContentTargetEnabled && !data.instagramPost) {
+      ctx.addIssue({
+        path: ["instagramPost"],
+        code: "custom",
+        message: "required",
+      });
+    }
+
+    // اگر reminders فعال باشد، حداقل یک reminder content الزامی است
+    if (data.isRemindersEnabled && (data.reminders?.length ?? 0) === 0) {
+      ctx.addIssue({
+        path: ["reminders"],
+        code: "custom",
+        message: "required",
+      });
+    }
+
+    // اگر justFollowers فعال باشد، followMessage و followCheckMessage الزامی است
+    if (data.justFollowers) {
+      if (!data.followMessage) {
+        ctx.addIssue({
+          path: ["followMessage"],
+          code: "custom",
+          message: "required",
+        });
+      }
+      if (!data.followCheckMessage) {
+        ctx.addIssue({
+          path: ["followCheckMessage"],
+          code: "custom",
+          message: "required",
+        });
+      }
+    }
+
     // همان ولیدیشن را برای reminders هم اعمال کنیم
     data.reminders.forEach((content, index) => {
       const t = content.type;

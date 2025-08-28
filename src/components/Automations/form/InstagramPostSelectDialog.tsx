@@ -1,24 +1,11 @@
-// app/(Console)/automations/components/dialog.instagramPostSelect.tsxs
+// src/components/Automations/Form/InstagramPostSelectDialog.tsx
 "use client";
 
-import { ErrorMessage } from "@/components/index";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import { cn } from "@/lib/utils";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -26,27 +13,48 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  ErrorMessage,
+  Skeleton,
+} from "@/components/index";
+import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
+
 const PAGE_SIZE = 9;
 
-export type DialogInstagramPostSelectProps = {
+type InstagramPostSelectDialogProps = {
   index: number;
   mode: AutomationContentModeEnum;
   className?: string;
   btnVariant?: "outline" | "secondary";
 };
 
-export default function DialogInstagramPostSelect({
+export const InstagramPostSelectDialog = ({
   index,
   mode,
   ...props
-}: DialogInstagramPostSelectProps) {
+}: InstagramPostSelectDialogProps) => {
   const {
     getValues,
     control,
     formState: { errors },
     setValue,
     watch,
+    trigger,
   } = useFormContext<AutomationFormType>();
+  const t = useTranslations("Automations.InstagramPostSelectDialog");
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [after, setAfter] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { fields: contents, update: updateContents } = useFieldArray({
     control: control,
@@ -54,12 +62,6 @@ export default function DialogInstagramPostSelect({
       mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
     keyName: "_xid",
   });
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [posts, setPosts] = useState<any[]>([]);
-  const [after, setAfter] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
@@ -90,59 +92,59 @@ export default function DialogInstagramPostSelect({
     }
   }, [isOpen]);
 
-  const selectPost = (e: MouseEvent<HTMLDivElement>) => {
+  const selectPost = async (e: MouseEvent<HTMLDivElement>) => {
     const mediaUrl = e.currentTarget.dataset.mediaurl;
     const mediaId = e.currentTarget.dataset.postid!;
     setValue("instagramPost", { picture: { url: mediaUrl }, mediaId });
+    await trigger("instagramPost");
     setIsOpen(false);
   };
 
-  const t = useTranslations("InstagramPostDialog");
-
   return (
-    <div className={cn(props.className)}>
+    <div className={cn("mt-2", props.className)}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          {watch("instagramPost")?.picture?.url ? (
-            <div className="flex w-full items-center justify-center">
-              <div className="relative h-auto w-32 overflow-hidden rounded-lg">
-                <Image
-                  src={watch("instagramPost")?.picture?.url || ""}
-                  alt="cover"
-                  width={128}
-                  height={228}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 duration-150 hover:opacity-100">
-                  <Button type="button" variant={"outline"} size={"sm"}>
-                    {t("changePost")}
-                  </Button>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="flex cursor-pointer items-center justify-center rounded-lg bg-gray-200 duration-300 hover:bg-gray-300/90">
+              {watch("instagramPost")?.picture?.url ? (
+                <div className="relative aspect-square size-42">
+                  <Image
+                    src={watch("instagramPost")?.picture?.url || ""}
+                    alt="cover"
+                    fill
+                    className="rounded-lg object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-t from-black to-transparent opacity-0 duration-150 hover:opacity-100">
+                    <span className="text-xs text-white hover:no-underline">
+                      {t("change_post")}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex h-[228px] w-full flex-col items-center justify-center rounded-2xl bg-black/10">
-              <Button type="button" variant={props.btnVariant} size={"sm"}>
-                <InstagramLogoIcon className="size-5" />
-                {t("selectPost")}
-              </Button>
-              {errors?.contents?.[index]?.id && (
-                <ErrorMessage>{errors.contents[index].id.message}</ErrorMessage>
+              ) : (
+                <div className="flex size-42 cursor-pointer items-center justify-center rounded-lg bg-gray-200 duration-300 hover:bg-gray-300/90">
+                  <span className="text-sm">{t("select_post")}</span>
+                  {errors?.contents?.[index]?.id && (
+                    <ErrorMessage>
+                      {errors.contents[index].id.message}
+                    </ErrorMessage>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </div>
         </DialogTrigger>
+
         <DialogContent className="sm:max-w-[50rem]">
           <DialogHeader>
-            <DialogTitle>{t("selectPost")}</DialogTitle>
-            <DialogDescription>{t("seeYourLastPosts")}</DialogDescription>
+            <DialogTitle>{t("select_instagram_post")}</DialogTitle>
+            <DialogDescription>{t("see_your_last_posts")}</DialogDescription>
           </DialogHeader>
           <InfiniteScroll
             dataLength={posts.length}
             next={() => fetchPosts(after)}
             hasMore={hasMore}
             loader={<></>}
-            endMessage={<p>{t("thereIsNoMore")}</p>}
+            endMessage={<p>{t("there_is_no_more")}</p>}
             scrollableTarget="scrollableDiv"
           >
             <div
@@ -159,7 +161,7 @@ export default function DialogInstagramPostSelect({
                 : Array.isArray(posts) &&
                   posts.map((post) => (
                     <div
-                      className="relative col-span-1 h-56 w-full overflow-hidden rounded-sm bg-black"
+                      className="relative col-span-1 h-56 w-full overflow-hidden rounded-md bg-black"
                       key={post.id}
                       data-postid={post.id}
                       data-mediaurl={
@@ -191,4 +193,4 @@ export default function DialogInstagramPostSelect({
       </Dialog>
     </div>
   );
-}
+};
