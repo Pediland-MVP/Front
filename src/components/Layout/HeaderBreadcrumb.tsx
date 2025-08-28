@@ -23,16 +23,39 @@ const isUUID = (s: string) =>
 // اگر بخوای چند سگمنت ثابت رو ترجمه کنی، اینجا تعریفشون کن
 const knownSegmentKey = (seg: string): string | null => {
   switch (seg) {
-    case "automations":
-      return "automations";
-    case "contents":
-      return "contents";
-    case "settings":
-      return "settings";
-    case "new":
+    case "add":
       return "new";
     case "edit":
       return "edit";
+
+    case "contacts":
+      return "contacts";
+    case "directs":
+      return "directs";
+    case "comments":
+      return "comments";
+    case "automations":
+      return "automations";
+    case "sessions":
+      return "sessions";
+    case "orders":
+      return "orders";
+    case "products":
+      return "products";
+    case "settings":
+      return "settings";
+    case "instagram":
+      return "instagram";
+    case "card":
+      return "card";
+    case "zarinpal":
+      return "zarinpal";
+    case "upgrade":
+      return "upgrade";
+    case "profile":
+      return "profile";
+    case "verify":
+      return "verify";
     default:
       return null;
   }
@@ -70,35 +93,32 @@ export function HeaderBreadcrumb() {
   };
 
   return (
-    <div>
-      <p>hello</p>
-    </div>
-    // <Breadcrumb>
-    //   <BreadcrumbList className="flex w-full overflow-hidden">
-    //     {segments.map(({ segment, path, isLast }) => {
-    //       const label = getLabel(segment);
+    <Breadcrumb>
+      <BreadcrumbList className="flex w-full overflow-hidden">
+        {segments.map(({ segment, path, isLast }) => {
+          const label = getLabel(segment);
 
-    //       return (
-    //         <React.Fragment key={path}>
-    //           <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
-    //             {isLast ? (
-    //               <span
-    //                 className="block truncate whitespace-nowrap"
-    //                 aria-current="page"
-    //               >
-    //                 {label}
-    //               </span>
-    //             ) : (
-    //               <BreadcrumbLink asChild>
-    //                 <Link href={path}>{label}</Link>
-    //               </BreadcrumbLink>
-    //             )}
-    //           </BreadcrumbItem>
-    //           {!isLast && <BreadcrumbSeparator />}
-    //         </React.Fragment>
-    //       );
-    //     })}
-    //   </BreadcrumbList>
-    // </Breadcrumb>
+          return (
+            <React.Fragment key={path}>
+              <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
+                {isLast ? (
+                  <span
+                    className="block truncate whitespace-nowrap"
+                    aria-current="page"
+                  >
+                    {label}
+                  </span>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link href={path}>{label}</Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+              {!isLast && <BreadcrumbSeparator />}
+            </React.Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }
