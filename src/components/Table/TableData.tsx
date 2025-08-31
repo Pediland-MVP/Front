@@ -1,9 +1,8 @@
-// app/(Console)/contacts/components/DataTable.tsx
 "use client";
 
-import { formatNumber } from "@/lib/formatNumber";
+import { formatNumber } from "@/utils/formatNumber";
 import { cn } from "@/lib/utils";
-import { ColumnMeta, ColumnDef } from "@/types/tables";
+import { ColumnDef, ColumnMeta } from "@/types/tables";
 import {
   Cell,
   flexRender,
@@ -18,6 +17,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import {
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -25,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/index";
-import { Skeleton } from "@/components/index";
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {
@@ -116,15 +115,32 @@ export function DataTable<TData, TValue>({
 
   // Create the table instance
   const table = useReactTable({
-    columns,
-    data,
-    pageCount: Math.ceil(totalCount / limit),
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: !serverSorting ? getSortedRowModel() : undefined,
-    manualSorting: serverSorting,
-    onSortingChange: resolvedSetSorting,
-    onColumnVisibilityChange: resolvedSetColumnVisibility,
     ...(onRowSelectionChange && { onRowSelectionChange }),
+    columns,
+    columnResizeMode: "onChange",
+    columnResizeDirection: "rtl",
+    data,
+    getCoreRowModel: getCoreRowModel(),
+    // Use custom row ID field (required for rowSelection to work reliably)
+    getRowId: (row) =>
+      (row as any).id?.toString() ??
+      (row as any)._id?.toString() ??
+      (row as any).uuid?.toString() ??
+      JSON.stringify(row),
+    getSortedRowModel: !serverSorting ? getSortedRowModel() : undefined,
+    manualPagination: true,
+    manualSorting: serverSorting,
+    onColumnVisibilityChange: resolvedSetColumnVisibility,
+    onPaginationChange: (updater) => {
+      const newState =
+        typeof updater === "function"
+          ? updater({ pageIndex: page - 1, pageSize: limit })
+          : updater;
+      onPageChange(newState.pageIndex + 1);
+      onLimitChange(newState.pageSize);
+    },
+    onSortingChange: resolvedSetSorting,
+    pageCount: Math.ceil(totalCount / limit),
     state: {
       sorting: resolvedSorting,
       columnVisibility: resolvedColumnVisibility,
@@ -134,21 +150,6 @@ export function DataTable<TData, TValue>({
         pageSize: limit,
       },
     },
-    manualPagination: true,
-    onPaginationChange: (updater) => {
-      const newState =
-        typeof updater === "function"
-          ? updater({ pageIndex: page - 1, pageSize: limit })
-          : updater;
-      onPageChange(newState.pageIndex + 1);
-      onLimitChange(newState.pageSize);
-    },
-    // Use custom row ID field (required for rowSelection to work reliably)
-    getRowId: (row) =>
-      (row as any).id?.toString() ??
-      (row as any)._id?.toString() ??
-      (row as any).uuid?.toString() ??
-      JSON.stringify(row),
   });
 
   // Pass table instance to parent if requested
@@ -178,11 +179,22 @@ export function DataTable<TData, TValue>({
 
   return (
     <Table dir="rtl">
+      <colgroup>
+        {table
+          .getHeaderGroups()
+          .at(-1)
+          ?.headers.map((h) => (
+            <col key={h.id} style={{ width: `${h.getSize()}px` }} />
+          ))}
+      </colgroup>
       <TableHeader className="sticky top-0 z-10">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id} data-header={true}>
             {headerGroup.headers.map((header) => (
-              <TableHead key={header.id} style={{ width: header.getSize() }}>
+              <TableHead
+                key={header.id}
+                style={{ width: `${header.getSize()}px` }}
+              >
                 {header.isPlaceholder
                   ? null
                   : safeFlexRender(
@@ -209,7 +221,7 @@ export function DataTable<TData, TValue>({
 
                 return (
                   <TableCell key={key} className="h-11">
-                    <Skeleton className={skeletonClass} />
+                    <Skeleton className={cn("h-4", skeletonClass)} />
                   </TableCell>
                 );
               })}
@@ -227,9 +239,9 @@ export function DataTable<TData, TValue>({
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    style={{ width: cell.column.getSize() }}
+                    style={{ width: `${cell.column.getSize()}px` }}
                     className={cn(
-                      cell.column.columnDef.meta?.className,
+                      (cell.column.columnDef.meta as ColumnMeta)?.className,
                       "text-center",
                     )}
                   >

@@ -1,19 +1,18 @@
-// src/components/Contacts/ContactsList.tsx
 "use client";
 
-import useSWR from "swr";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ContactTableColumns } from "./ContactTableColumns";
 import { toContact } from "@/lib/mappers/contact";
 import type { PageMeta, Paginated } from "@/types/api";
 import type { ContactWire } from "@/types/contact";
 import { Table } from "@tanstack/react-table";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
 
 import {
   ContactDetailsDialog,
   DataTable,
   TablePagination,
 } from "@/components/index";
+import { ContactTableColumns } from "./ContactTableColumns";
 
 export const ContactsList = ({ search }: { search: string }) => {
   // Dialog
@@ -89,6 +88,12 @@ export const ContactsList = ({ search }: { search: string }) => {
 
   return (
     <>
+      <ContactDetailsDialog
+        open={open}
+        setOpen={setOpen}
+        contactId={contactId}
+      />
+
       <DataTable
         columns={columns}
         data={items}
@@ -111,12 +116,6 @@ export const ContactsList = ({ search }: { search: string }) => {
         serverPerPage={itemsPerPage}
         serverItemCount={itemCount}
         serverTotalPages={totalPages}
-      />
-
-      <ContactDetailsDialog
-        open={open}
-        setOpen={setOpen}
-        contactId={contactId}
       />
     </>
   );

@@ -3,16 +3,48 @@
 
 import { Contact } from "@/types/contact";
 import { UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@/types/tables";
 
 // UI Imports
 import Image from "next/image";
-import { useState } from "react";
+import { memo, useState } from "react";
+
+const AvatarCell = memo(function AvatarCell({
+  src,
+  alt,
+}: {
+  src?: string | null;
+  alt: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+  const showFallback = hasError || !src;
+
+  return (
+    <div className="flex justify-center">
+      {showFallback ? (
+        <UserCircleIcon
+          className="mx-auto size-8 text-neutral-400"
+          weight="duotone"
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          width={32}
+          height={32}
+          className="h-8 w-8 rounded-full object-cover"
+          onError={() => setHasError(true)}
+          unoptimized
+        />
+      )}
+    </div>
+  );
+});
 
 export function ContactTableColumns(
   setOpen: (open: boolean) => void,
   setContactId: (contactId: string) => void,
-  data?: Contact[],
+  _data?: Contact[],
   withRowSelection: boolean = false,
 ): ColumnDef<Contact>[] {
   const cols: ColumnDef<Contact>[] = [];
@@ -23,6 +55,7 @@ export function ContactTableColumns(
       header: ({ table }) => (
         <input
           type="checkbox"
+          onClick={(e) => e.stopPropagation()}
           checked={table.getIsAllPageRowsSelected()}
           onChange={table.getToggleAllPageRowsSelectedHandler()}
         />
@@ -30,6 +63,7 @@ export function ContactTableColumns(
       cell: ({ row }) => (
         <input
           type="checkbox"
+          onClick={(e) => e.stopPropagation()}
           checked={row.getIsSelected()}
           onChange={row.getToggleSelectedHandler()}
         />
@@ -41,37 +75,19 @@ export function ContactTableColumns(
 
   cols.push(
     {
-      accessorKey: "profilePic",
+      id: "profilePic",
+      accessorFn: (row) => row.lead?.profilePic ?? null,
       header: "تصویر",
       size: 10,
-      cell: ({ row }) => {
-        const [hasError, setHasError] = useState(false);
-        const src = row.original?.lead?.profilePic;
-        const alt = row.original?.lead?.firstname || "بدون نام";
-        const showFallback = hasError || !src;
-
-        return (
-          <div className="flex justify-center">
-            {showFallback ? (
-              <UserCircleIcon
-                className="mx-auto size-8 text-neutral-400"
-                weight="duotone"
-              />
-            ) : (
-              <Image
-                src={src}
-                alt={alt}
-                width={32}
-                height={32}
-                className="h-8 w-8 rounded-full object-cover"
-                onError={() => setHasError(true)}
-                unoptimized
-              />
-            )}
-          </div>
-        );
-      },
+      enableSorting: false,
+      cell: ({ row }) => (
+        <AvatarCell
+          src={row.getValue<string | undefined>("profilePic") ?? ""}
+          alt={row.original?.lead?.firstname || "بدون نام"}
+        />
+      ),
       meta: {
+        title: "تصویر",
         skeletonClass: "h-8 w-8 rounded-full mx-auto",
         className: "w-14",
       },
@@ -79,10 +95,11 @@ export function ContactTableColumns(
     {
       id: "fullName",
       size: 70,
+      enableSorting: false,
       accessorFn: (row) =>
         !row.lead.firstname && !row.lead.lastname
           ? "نامشخص"
-          : `${row.lead.firstname ?? ""} ${row.lead.lastname ?? ""}`,
+          : `${row.lead.firstname ?? ""} ${row.lead.lastname ?? ""}`.trim(),
       header: () => <div className="text-right">نام کاربر</div>,
       cell: ({ row }) => (
         <div
@@ -95,20 +112,27 @@ export function ContactTableColumns(
           {row.getValue("fullName")}
         </div>
       ),
+      meta: {
+        title: "نام کاربر",
+      },
     },
     {
-      accessorKey: "username",
+      id: "username",
+      accessorFn: (row) => row.username,
       header: "آیدی اینستاگرام",
       size: 50,
       meta: {
+        title: "آیدی اینستاگرام",
         skeletonClass: "mx-auto",
       },
     },
     {
-      accessorKey: "messagesCount",
+      id: "messagesCount",
+      accessorFn: (row) => row.messagesCount,
       header: "پیام ها",
       size: 50,
       meta: {
+        title: "پیام ها",
         skeletonClass: "mx-auto",
       },
     },

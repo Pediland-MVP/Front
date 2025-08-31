@@ -9,7 +9,10 @@ const Table = React.forwardRef<
   <div className="scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-white relative flex h-full w-full flex-1 flex-col overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
+      className={cn(
+        "w-full caption-bottom text-sm md:table-fixed",
+        className,
+      )}
       {...props}
     />
   </div>
@@ -23,7 +26,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "bg-gray-50 [&_tr]:border-b [&_tr]:hover:bg-inherit",
+      "bg-blue-50 [&_tr]:border-b [&_tr]:hover:bg-inherit",
       className,
     )}
     {...props}
@@ -77,7 +80,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "text-foreground h-[44px] px-3 align-middle font-medium whitespace-nowrap first:rounded-tr-lg last:rounded-tl-lg [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "text-foreground h-10 px-3 align-middle font-semibold whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className,
     )}
     {...props}
@@ -92,7 +95,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "h-12 p-1.5 text-center align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "h-11 px-2.5 text-center align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className,
     )}
     {...props}

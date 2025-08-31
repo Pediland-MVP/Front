@@ -39,7 +39,7 @@ import {
   AutomationFormSchema,
   AutomationFormType,
 } from "@/schemas/automationForm";
-import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
+import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 
 export type ContentType = {
   id: string;

@@ -1,40 +1,89 @@
-// app/(Console)/automations/page.tsx
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { useEffect } from "react";
-
-// UI Imports
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
-import ContentCycleTable from "../../../components/Automations/contentCycleTable";
+import { useEffect, useMemo, useState } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
-export default function ContentCyclePage() {
+import {
+  Button,
+  LayoutTable,
+  SearchInput,
+  SearchToggleButton,
+} from "@/components/index";
+import ContentCycleTable from "../../../components/Automations/contentCycleTable";
+import Link from "next/link";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { AutomationsList } from "@/components/Automations/AutomationsList";
+
+export default function Page() {
   const t = useTranslations("Automations");
-  const { setTools, clearTools } = useHeaderFeatures((s) => ({
-    setTools: s.setTools,
-    clearTools: s.clearTools,
-  }));
+
+  const { setTools, clearTools, setButtons, clearButtons } = useHeaderFeatures(
+    (s) => ({
+      setTools: s.setTools,
+      clearTools: s.clearTools,
+      setButtons: s.setButtons,
+      clearButtons: s.clearButtons,
+    }),
+  );
+
+  const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+
+  const debouncedSearch = useDebounce(search, 300);
+  const normalized = debouncedSearch.trim();
+  const effectiveSearch = normalized.length >= 2 ? normalized : "";
+
+  const HeaderButton = useMemo(() => {
+    return (
+      <>
+        <SearchToggleButton
+          isSearchVisible={isSearchVisible}
+          setIsSearchVisible={setIsSearchVisible}
+        />
+
+        <Link href="/automations/add">
+          <Button size={"sm"}>
+            {t("add")}
+            <PlusIcon />
+          </Button>
+        </Link>
+      </>
+    );
+  }, [isSearchVisible, setIsSearchVisible]);
+
+  const HeaderTools = useMemo(
+    () => (
+      <SearchInput
+        value={search}
+        onChange={setSearch}
+        visible={isSearchVisible}
+      />
+    ),
+    [search, isSearchVisible, setSearch],
+  );
 
   useEffect(() => {
-    setTools(
-      <Link href="/automations/add">
-        <Button size={"sm"} className="mt-3 xl:mt-0">
-          {t("add")}
-          <PlusIcon />
-        </Button>
-      </Link>,
-    );
+    setButtons(HeaderButton);
+    setTools(HeaderTools);
+
     return () => {
+      clearButtons();
       clearTools();
     };
-  }, [setTools, clearTools]);
+  }, [
+    HeaderButton,
+    HeaderTools,
+    setButtons,
+    setTools,
+    clearButtons,
+    clearTools,
+  ]);
 
   return (
-    <div className="_automation overflow-auto">
-      <ContentCycleTable />
-    </div>
+    <LayoutTable className="_automation overflow-auto">
+      <AutomationsList />
+    </LayoutTable>
   );
 }

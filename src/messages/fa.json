@@ -1,4 +1,9 @@
 {
+  "Components": {
+    "SearchInput": {
+      "search_placeholder": "جستجو ..."
+    }
+  },
   "ConsoleLayout": {
     "youDontHaveSubscription": "شما  اشتراک ندارید",
     "youShouldBuySubscription": "برای استفاده از تمام خدمات باید اشتراک تهیه کنید"
@@ -176,8 +181,6 @@
   "Contacts": {
     "dashboard": "داشبورد",
     "list": "لیست مخاطبین",
-    "searchPlaceholder": "جستجو ...",
-    "toggleSearch": "نمایش جستجو",
     "List": {
       "image": "تصویر",
       "userName": "نام کاربر",

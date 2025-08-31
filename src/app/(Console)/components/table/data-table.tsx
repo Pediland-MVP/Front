@@ -1,7 +1,7 @@
 // src/app/leads/data-table.tsx
 "use client";
 
-import { formatNumber } from "@/lib/formatNumber";
+import { formatNumber } from "@/utils/formatNumber";
 import { ColumnMeta } from "@/types/tables";
 import { useEffect, useState } from "react";
 

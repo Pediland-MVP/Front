@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import formatTimestamp from "@/lib/formatTimestamp";
+import formatTimestamp from "@/utils/formatTimestamp";
 import Reply from "./reply";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 

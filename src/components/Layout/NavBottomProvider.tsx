@@ -1,17 +1,15 @@
-// src/components/Layout/NavBottomProvider.tsx
 "use client";
 
-import { useSidebar } from "@/components/ui/sidebar";
-import { NavBottom, NavItem } from "@/components/index";
-import {
-  DotsThreeIcon,
-  StorefrontIcon,
-  ShoppingBagOpenIcon,
-  RobotIcon,
-  TelegramLogoIcon,
-  DotsThreeOutlineIcon,
-} from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
+
+import { NavBottom, NavItem, useSidebar } from "@/components/index";
+import {
+  DotsThreeOutlineIcon,
+  LightningIcon,
+  ShoppingBagOpenIcon,
+  StorefrontIcon,
+  TelegramLogoIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export const NavBottomProvider = () => {
   const { setOpenMobile } = useSidebar();
@@ -29,7 +27,7 @@ export const NavBottomProvider = () => {
       href: "/products",
     },
     {
-      icon: <RobotIcon />,
+      icon: <LightningIcon />,
       isMain: true,
       href: "/automations",
       label: <p>{t("automations")}</p>,

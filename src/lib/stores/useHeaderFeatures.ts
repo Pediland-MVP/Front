@@ -1,4 +1,3 @@
-// lib/stores/useHeaderFeatures.ts
 "use client";
 
 import { create } from "zustand";

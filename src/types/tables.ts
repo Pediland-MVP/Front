@@ -1,4 +1,3 @@
-// types/tables.ts
 import { ColumnDef as BaseColumnDef } from "@tanstack/react-table";
 
 export type ColumnMeta = {
@@ -10,9 +9,6 @@ export type ColumnMeta = {
   className?: string;
 };
 
-export type ColumnDef<TData, TValue = unknown> = Omit<
-  BaseColumnDef<TData, TValue>,
-  "meta"
-> & {
+export type ColumnDef<TData, TValue = unknown> = BaseColumnDef<TData, TValue> & {
   meta?: ColumnMeta;
 };

@@ -3,6 +3,8 @@ export * from "./InputCounter";
 export * from "./ErrorMessage";
 export * from "./useToast";
 export * from "./MediaUploader";
+export * from "./SearchInput";
+export * from "./SearchToggleButton";
 
 
 

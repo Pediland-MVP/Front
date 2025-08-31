@@ -1,4 +1,6 @@
-import { ListMagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  ListMagnifyingGlassIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
-export { ListMagnifyingGlassIcon };
-
+export { ListMagnifyingGlassIcon, XCircleIcon };

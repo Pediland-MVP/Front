@@ -22,7 +22,7 @@ import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.aler
 import { Button, ErrorMessage, Form } from "@/components/index";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
 import LoadingButton from "@/components/ui/button-loading";
-import { useI18nZodErrors } from "@/lib/useI18nZodErrors";
+import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import {
   AutomationFormSchema,
   AutomationFormType,

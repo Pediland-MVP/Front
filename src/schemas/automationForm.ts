@@ -74,7 +74,7 @@ const InstagramPostSchema = z
 
 /* ------------------------------ Content Schema ------------------------------ */
 
-const ContentItemSchema = z.object({
+export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
   text: optionalStringToUndef,
@@ -94,6 +94,12 @@ const ContentItemSchema = z.object({
     .transform(() => undefined),
 });
 
+export const ContentItemConditionSchema = z.object({
+  type: z.string().min(1),
+  value: z.string().min(1),
+  id: z.string(),
+  conditionId: z.string().optional().nullable(),
+});
 /* ------------------------------- Main Schema -------------------------------- */
 
 export const AutomationFormSchema = z
@@ -101,16 +107,7 @@ export const AutomationFormSchema = z
     isDirect: z.boolean(),
     isComment: z.boolean(),
 
-    conditions: z
-      .array(
-        z.object({
-          type: z.string().min(1),
-          value: z.string().min(1),
-          id: z.string(),
-          conditionId: z.string().optional().nullable(),
-        }),
-      )
-      .min(1),
+    conditions: z.array(ContentItemConditionSchema).min(1),
 
     contents: z.array(ContentItemSchema).min(1),
 
@@ -216,7 +213,8 @@ export const AutomationFormSchema = z
 
       // PRODUCT نیاز به حداقل یک محصول انتخاب شده
       if (t === AutomationContentTypesEnum.PRODUCT) {
-        const selectedProducts = content.products?.filter(product => product?.id) || [];
+        const selectedProducts =
+          content.products?.filter((product) => product?.id) || [];
         if (selectedProducts.length === 0) {
           ctx.addIssue({
             path: ["contents", index, "products"],
@@ -303,7 +301,8 @@ export const AutomationFormSchema = z
 
       // PRODUCT نیاز به حداقل یک محصول انتخاب شده
       if (t === AutomationContentTypesEnum.PRODUCT) {
-        const selectedProducts = content.products?.filter(product => product?.id) || [];
+        const selectedProducts =
+          content.products?.filter((product) => product?.id) || [];
         if (selectedProducts.length === 0) {
           ctx.addIssue({
             path: ["reminders", index, "products"],

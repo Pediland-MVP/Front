@@ -1,0 +1,179 @@
+// src/app/leads/columns.tsx
+"use client";
+
+import { Contact } from "@/types/contact";
+import {
+  ChatCircleTextIcon,
+  ChatTeardropTextIcon,
+  CheckSquareIcon,
+  SquareIcon,
+  UserCircleIcon,
+  XSquareIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { ColumnDef } from "@/types/tables";
+
+// UI Imports
+import Image from "next/image";
+import { memo, useState } from "react";
+import { Automation } from "@/schemas/automation";
+import { Badge } from "../ui";
+import formatTimestamp from "@/utils/formatTimestamp";
+
+const AvatarCell = memo(function AvatarCell({
+  src,
+  alt,
+}: {
+  src?: string | null;
+  alt: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+  const showFallback = hasError || !src;
+
+  return (
+    <div className="flex justify-center">
+      {showFallback ? (
+        <UserCircleIcon
+          className="mx-auto size-8 text-neutral-400"
+          weight="duotone"
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          width={32}
+          height={32}
+          className="h-8 w-8 rounded-full object-cover"
+          onError={() => setHasError(true)}
+          unoptimized
+        />
+      )}
+    </div>
+  );
+});
+
+export const AutomationTableColumns = (
+  setOpen?: (open: boolean) => void,
+  setAutomationId?: (automationId: string) => void,
+  _data?: Automation[],
+  withRowSelection: boolean = false,
+): ColumnDef<Automation>[] => {
+  const cols: ColumnDef<Automation>[] = [];
+
+  if (withRowSelection) {
+    cols.push({
+      id: "select",
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          onClick={(e) => e.stopPropagation()}
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+        />
+      ),
+      size: 50,
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          onClick={(e) => e.stopPropagation()}
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    });
+  }
+
+  cols.push(
+    {
+      id: "createDate",
+      accessorFn: (row) => row.createDate,
+      header: "تاریخ ایجاد",
+      size: 120,
+      cell: ({ row }) =>
+        formatTimestamp(row.getValue<string>("createDate")),
+      meta: {
+        title: "تاریخ ایجاد",
+        skeletonClass: "mx-auto",
+      },
+    },
+    {
+      id: "conditions",
+      accessorFn: (row) =>
+        (row.conditions ?? [])
+          .map((c) => c?.value)
+          .filter((v): v is string => Boolean(v && String(v).trim())),
+      header: () => <div className="text-right">شروط فعالسازی</div>,
+      size: 300,
+      cell: ({ getValue }) => {
+        const values = getValue<string[]>();
+        return (
+          <div className="flex gap-1">
+            {values.length ? (
+              values.map((val, i) => (
+                <Badge key={i} variant="outline" className="lowercase text-[13px]">
+                  {val}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">بدون شرط</span>
+            )}
+          </div>
+        );
+      },
+      meta: {
+        title: "شرایط فعالسازی",
+      },
+    },
+    {
+      id: "isDirect",
+      accessorFn: (row) => row.isDirect,
+      header: "دایرکت",
+      size: 50,
+      cell: ({ row }) =>
+        row.getValue<boolean>("isDirect") ? (
+          <CheckSquareIcon className="mx-auto text-gray-400" size={20} />
+        ) : (
+          <XSquareIcon size={20} className="mx-auto text-gray-300" />
+        ),
+      meta: {
+        title: "دایرکت",
+        skeletonClass: "mx-auto w-4 rounded-none",
+      },
+    },
+    {
+      id: "isComment",
+      accessorFn: (row) => row.isComment,
+      header: "کامنت",
+      size: 50,
+      cell: ({ row }) =>
+        row.getValue<boolean>("isComment") ? (
+          <CheckSquareIcon className="mx-auto text-gray-400" size={20} />
+        ) : (
+          <XSquareIcon size={20} className="mx-auto text-gray-300" />
+        ),
+      meta: {
+        title: "کامنت",
+        skeletonClass: "mx-auto w-4 rounded-none",
+      },
+    },
+    {
+      id: "sessions",
+      header: "پاسخ‌ها",
+      size: 150,
+      cell: ({ row }) => (
+        <div className="flex justify-center gap-1">
+          <ChatCircleTextIcon size={20} /> <span>0</span>
+        </div>
+      ),
+    },
+    {
+      id: "actions",
+      header: "عملیات",
+      size: 150,
+      cell: ({ row }) => <div>...</div>,
+    },
+  );
+
+  return cols;
+};

@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import formatTimestamp from "@/lib/formatTimestamp";
+import formatTimestamp from "@/utils/formatTimestamp";
 import AdminReply from "./adminReply";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 

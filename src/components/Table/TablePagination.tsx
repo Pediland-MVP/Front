@@ -113,7 +113,7 @@ export function TablePagination<TData>({
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex items-center justify-center md:w-auto">
+      <div className="flex w-full items-center justify-center md:w-auto">
         <div className="flex items-center gap-1">
           {/* Next */}
           <Button

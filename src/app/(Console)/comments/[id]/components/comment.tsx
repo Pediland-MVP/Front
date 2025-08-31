@@ -7,7 +7,7 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import CommentSkeleton from "./comment.skeleton";
 import CommentError from "./comment.error";
 import CommentFooter from "./comment.footer";
-import formatTimestamp from "@/lib/formatTimestamp";
+import formatTimestamp from "@/utils/formatTimestamp";
 import Reply from "./reply";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
