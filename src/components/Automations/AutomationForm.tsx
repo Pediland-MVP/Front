@@ -18,7 +18,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
+import { ConnectInstagramAlert } from "@/components/index";
 import { Button, ErrorMessage, Form } from "@/components/index";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
 import LoadingButton from "@/components/ui/button-loading";

@@ -9,6 +9,16 @@
 }
 
 @font-face {
+  font-family: "Iran";
+  src:
+    url("/fonts/IRANSansXV.woff2") format("woff2"),
+    url("/fonts/IRANSansXV.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "AnjomanMaxVF";
   src:
     url("/fonts/AnjomanMaxVF.woff2") format("woff2-variations"),

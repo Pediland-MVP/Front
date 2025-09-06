@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export function ConnectInstagramAlert() {
+export const ConnectInstagramAlert = () => {
   const t = useTranslations("ConnectInstagramAlert");
 
   return (
@@ -20,4 +20,4 @@ export function ConnectInstagramAlert() {
       </Link>
     </Alert>
   );
-}
+};
