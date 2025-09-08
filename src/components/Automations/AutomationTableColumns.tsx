@@ -6,18 +6,28 @@ import {
   ChatCircleTextIcon,
   ChatTeardropTextIcon,
   CheckSquareIcon,
+  DotsThreeOutlineIcon,
+  EyeIcon,
   SquareIcon,
+  TrashSimpleIcon,
   UserCircleIcon,
   XSquareIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { ColumnDef } from "@/types/tables";
-
-// UI Imports
+import { Automation } from "@/schemas/automation";
 import Image from "next/image";
 import { memo, useState } from "react";
-import { Automation } from "@/schemas/automation";
-import { Badge } from "../ui";
-import formatTimestamp from "@/utils/formatTimestamp";
+import { Badge } from "@/components/index";
+import { toJalaliDate } from "@/utils/jalali";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/index";
 
 const AvatarCell = memo(function AvatarCell({
   src,
@@ -52,6 +62,7 @@ const AvatarCell = memo(function AvatarCell({
 });
 
 export const AutomationTableColumns = (
+  onDelete?: (id: string) => void,
   setOpen?: (open: boolean) => void,
   setAutomationId?: (automationId: string) => void,
   _data?: Automation[],
@@ -90,8 +101,20 @@ export const AutomationTableColumns = (
       accessorFn: (row) => row.createDate,
       header: "تاریخ ایجاد",
       size: 120,
-      cell: ({ row }) =>
-        formatTimestamp(row.getValue<string>("createDate")),
+      cell: ({ row }) => {
+        const value = row.getValue<string>("createDate");
+
+        if (!value) return "-";
+
+        return (
+          <Link
+            href={`/automations/${row.id}`}
+            className="text-[13px] hover:text-fuchsia-800"
+          >
+            {toJalaliDate(value, "Europe/Berlin")}
+          </Link>
+        );
+      },
       meta: {
         title: "تاریخ ایجاد",
         skeletonClass: "mx-auto",
@@ -111,7 +134,11 @@ export const AutomationTableColumns = (
           <div className="flex gap-1">
             {values.length ? (
               values.map((val, i) => (
-                <Badge key={i} variant="outline" className="lowercase text-[13px]">
+                <Badge
+                  key={i}
+                  variant="outline"
+                  className="text-[13px] lowercase"
+                >
                   {val}
                 </Badge>
               ))
@@ -132,9 +159,17 @@ export const AutomationTableColumns = (
       size: 50,
       cell: ({ row }) =>
         row.getValue<boolean>("isDirect") ? (
-          <CheckSquareIcon className="mx-auto text-gray-400" size={20} />
+          <CheckSquareIcon
+            weight="light"
+            className="group-hover:text-primary mx-auto text-gray-400"
+            size={20}
+          />
         ) : (
-          <XSquareIcon size={20} className="mx-auto text-gray-300" />
+          <XSquareIcon
+            weight="light"
+            size={20}
+            className="mx-auto text-gray-300"
+          />
         ),
       meta: {
         title: "دایرکت",
@@ -148,9 +183,17 @@ export const AutomationTableColumns = (
       size: 50,
       cell: ({ row }) =>
         row.getValue<boolean>("isComment") ? (
-          <CheckSquareIcon className="mx-auto text-gray-400" size={20} />
+          <CheckSquareIcon
+            weight="light"
+            className="group-hover:text-primary mx-auto text-gray-400"
+            size={20}
+          />
         ) : (
-          <XSquareIcon size={20} className="mx-auto text-gray-300" />
+          <XSquareIcon
+            weight="light"
+            size={20}
+            className="mx-auto text-gray-300"
+          />
         ),
       meta: {
         title: "کامنت",
@@ -163,7 +206,7 @@ export const AutomationTableColumns = (
       size: 150,
       cell: ({ row }) => (
         <div className="flex justify-center gap-1">
-          <ChatCircleTextIcon size={20} /> <span>0</span>
+          <ChatCircleTextIcon weight="light" size={20} /> <span>0</span>
         </div>
       ),
     },
@@ -171,7 +214,29 @@ export const AutomationTableColumns = (
       id: "actions",
       header: "عملیات",
       size: 150,
-      cell: ({ row }) => <div>...</div>,
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <DotsThreeOutlineIcon
+                size={20}
+                className="cursor-pointer hover:text-fuchsia-800"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>
+                <Link href={`/automations/${row.id}`}>مشاهده</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                variant="destructive"
+                onClick={() => onDelete?.(row.original.id)}
+              >
+                حذف
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
     },
   );
 

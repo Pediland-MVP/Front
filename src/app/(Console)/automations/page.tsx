@@ -1,20 +1,19 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
 import {
+  AutomationsList,
   Button,
   LayoutTable,
   SearchInput,
   SearchToggleButton,
 } from "@/components/index";
-import ContentCycleTable from "../../../components/Automations/contentCycleTable";
-import Link from "next/link";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
-import { AutomationsList } from "@/components/Automations/AutomationsList";
 
 export default function Page() {
   const t = useTranslations("Automations");
@@ -38,10 +37,10 @@ export default function Page() {
   const HeaderButton = useMemo(() => {
     return (
       <>
-        <SearchToggleButton
+        {/* <SearchToggleButton
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
-        />
+        /> */}
 
         <Link href="/automations/add">
           <Button size={"sm"}>
@@ -53,20 +52,20 @@ export default function Page() {
     );
   }, [isSearchVisible, setIsSearchVisible]);
 
-  const HeaderTools = useMemo(
-    () => (
-      <SearchInput
-        value={search}
-        onChange={setSearch}
-        visible={isSearchVisible}
-      />
-    ),
-    [search, isSearchVisible, setSearch],
-  );
+  // const HeaderTools = useMemo(
+  //   () => (
+  //     <SearchInput
+  //       value={search}
+  //       onChange={setSearch}
+  //       visible={isSearchVisible}
+  //     />
+  //   ),
+  //   [search, isSearchVisible, setSearch],
+  // );
 
   useEffect(() => {
     setButtons(HeaderButton);
-    setTools(HeaderTools);
+    // setTools(HeaderTools);
 
     return () => {
       clearButtons();
@@ -74,9 +73,9 @@ export default function Page() {
     };
   }, [
     HeaderButton,
-    HeaderTools,
+    // HeaderTools,
     setButtons,
-    setTools,
+    // setTools,
     clearButtons,
     clearTools,
   ]);

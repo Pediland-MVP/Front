@@ -131,6 +131,9 @@ importers:
       date-fns-jalali:
         specifier: ^4.1.0-0
         version: 4.1.0-0
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.18
       draft-js:
         specifier: ^0.11.7
         version: 0.11.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -149,9 +152,15 @@ importers:
       input-otp:
         specifier: ^1.4.1
         version: 1.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      jalaali-js:
+        specifier: ^1.2.8
+        version: 1.2.8
       jalaali-react-date-picker:
         specifier: ^1.0.18
         version: 1.0.19(@babel/plugin-syntax-flow@7.27.1(@babel/core@7.28.0))(@babel/plugin-transform-react-jsx@7.27.1(@babel/core@7.28.0))(@testing-library/dom@10.4.1)(@types/babel__core@7.20.5)(@types/moment-jalaali@0.7.9)(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(eslint@9.32.0(jiti@2.5.1))(moment-jalaali@0.10.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(type-fest@4.41.0)
+      jalaliday:
+        specifier: ^3.1.0
+        version: 3.1.0(dayjs@1.11.18)
       jose:
         specifier: ^5.9.6
         version: 5.10.0
@@ -255,6 +264,9 @@ importers:
       '@types/accept-language-parser':
         specifier: ^1.5.8
         version: 1.5.8
+      '@types/jalaali-js':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -3012,6 +3024,9 @@ packages:
   '@types/istanbul-reports@3.0.4':
     resolution: {integrity: sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==}
 
+  '@types/jalaali-js@1.2.0':
+    resolution: {integrity: sha512-DRQKjbfFe0/v3siCou9eFzYjDxJItkJpxbU+/CSptvoRqq2/VmTA6y8QvqK/VELKW6xX3qb174nLZlrFV9OT3Q==}
+
   '@types/jest@27.5.2':
     resolution: {integrity: sha512-mpT8LJJ4CMeeahobofYWIjFo0xonRS/HfxnVEPMPFSQdGUt1uHCnoPT7Zhb+sjDU2wz0oKV0OLUR0WzrHNgfeA==}
 
@@ -4370,6 +4385,9 @@ packages:
     resolution: {integrity: sha512-39BOQLs9ZjKh0/patS9nrT8wc3ioX3/eA/zgbKNopnF2wCqJEoxywwwElATYvRsXdnOxA/OQeQoFZ3rFjVajhg==}
     engines: {node: '>=4.0'}
 
+  dayjs@1.11.18:
+    resolution: {integrity: sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==}
+
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
     peerDependencies:
@@ -5705,6 +5723,11 @@ packages:
       moment-jalaali: '>= 0.9.6'
       react: '>= 17.0.2'
       react-dom: '>= 17.0.2'
+
+  jalaliday@3.1.0:
+    resolution: {integrity: sha512-waxCecXw1YAyxB8OgpRITWWXHn/tWCeR3qgW71kD4/tusPbbs3ilSvkfOCN2e5wdUS/XyAPxY9WRubuIb5rtzg==}
+    peerDependencies:
+      dayjs: ^1.11.13
 
   jest-changed-files@27.5.1:
     resolution: {integrity: sha512-buBLMiByfWGCoMsLLzGUUSpAmIAGnbR2KJoMN10ziLhOLvP4e0SlypHnAel8iqQXTrcbmfEY9sSqae5sgUsTvw==}
@@ -11948,6 +11971,8 @@ snapshots:
     dependencies:
       '@types/istanbul-lib-report': 3.0.3
 
+  '@types/jalaali-js@1.2.0': {}
+
   '@types/jest@27.5.2':
     dependencies:
       jest-matcher-utils: 27.5.1
@@ -13462,6 +13487,8 @@ snapshots:
   date-fns-jalali@4.1.0-0: {}
 
   date-format@4.0.14: {}
+
+  dayjs@1.11.18: {}
 
   debug@2.6.9:
     dependencies:
@@ -15076,6 +15103,10 @@ snapshots:
       - webpack-cli
       - webpack-hot-middleware
       - webpack-plugin-serve
+
+  jalaliday@3.1.0(dayjs@1.11.18):
+    dependencies:
+      dayjs: 1.11.18
 
   jest-changed-files@27.5.1:
     dependencies:

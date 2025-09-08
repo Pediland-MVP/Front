@@ -42,7 +42,7 @@ export function TablePagination<TData>({
   serverItemCount,
   serverTotalPages,
 }: TablePaginationProps<TData>) {
-  const defaultPageSize = 30;
+  const defaultPageSize = 20;
 
   // TanStack pagination state (fallback if server metadata is not provided)
   const pagination = table?.getState?.().pagination ?? {
@@ -115,18 +115,6 @@ export function TablePagination<TData>({
       {/* Navigation buttons */}
       <div className="flex w-full items-center justify-center md:w-auto">
         <div className="flex items-center gap-1">
-          {/* Next */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            onClick={() => onPageChange(pageIndex0 + 2)} // convert to 1-based
-            disabled={disabledAll || atLastPage}
-          >
-            <span className="sr-only">صفحه بعد</span>
-            <ChevronRight />
-          </Button>
-
           {/* Last */}
           <Button
             variant="outline"
@@ -139,6 +127,18 @@ export function TablePagination<TData>({
             <ChevronsRight />
           </Button>
 
+          {/* Next */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8"
+            onClick={() => onPageChange(pageIndex0 + 2)} // convert to 1-based
+            disabled={disabledAll || atLastPage}
+          >
+            <span className="sr-only">صفحه بعد</span>
+            <ChevronRight />
+          </Button>
+
           {/* Current page info */}
           <div className="text-muted-foreground flex items-center justify-center px-4 text-sm">
             {isLoading ? (
@@ -147,18 +147,6 @@ export function TablePagination<TData>({
               `صفحه ${Math.min(pageIndex0 + 1, totalPages)} از ${totalPages}`
             )}
           </div>
-
-          {/* First */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="hidden size-8 lg:flex"
-            onClick={() => onPageChange(1)}
-            disabled={disabledAll || atFirstPage}
-          >
-            <span className="sr-only">برو به صفحه اول</span>
-            <ChevronsLeft />
-          </Button>
 
           {/* Previous */}
           <Button
@@ -170,6 +158,18 @@ export function TablePagination<TData>({
           >
             <span className="sr-only">برو به صفحه قبلی</span>
             <ChevronLeft />
+          </Button>
+
+          {/* First */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="hidden size-8 lg:flex"
+            onClick={() => onPageChange(1)}
+            disabled={disabledAll || atFirstPage}
+          >
+            <span className="sr-only">برو به صفحه اول</span>
+            <ChevronsLeft />
           </Button>
         </div>
       </div>
@@ -188,7 +188,7 @@ export function TablePagination<TData>({
             <SelectValue>{pageSize}</SelectValue>
           </SelectTrigger>
           <SelectContent side="top">
-            {[30, 60].map((size) => (
+            {[20, 40].map((size) => (
               <SelectItem key={size} value={String(size)}>
                 {size}
               </SelectItem>

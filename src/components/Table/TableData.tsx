@@ -220,7 +220,7 @@ export function DataTable<TData, TValue>({
                 const skeletonClass = meta?.skeletonClass ?? "";
 
                 return (
-                  <TableCell key={key} className="h-11">
+                  <TableCell key={key}>
                     <Skeleton className={cn("h-4", skeletonClass)} />
                   </TableCell>
                 );
@@ -234,6 +234,7 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows?.map((row) => (
               <TableRow
                 key={row.id}
+                className="text-gray-500 hover:text-primary group"
                 data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
               >
                 {row.getVisibleCells().map((cell) => (

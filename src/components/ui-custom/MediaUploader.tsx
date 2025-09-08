@@ -3,6 +3,7 @@
 import type {
   FileUploaderProps,
   FileWithPreview,
+  ExistingFile,
   UploadedFile,
 } from "@/types/fileUploader";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,46 @@ export const MediaUploader = ({
 }: FileUploaderProps) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const t = useTranslations("Automations.Contents.Media.FileUploader");
+
+  // Type guards and helpers
+  const isNewFile = (file: UploadedFile): file is FileWithPreview => 'file' in file;
+  const isExistingFile = (file: UploadedFile): file is ExistingFile => 'url' in file;
+  
+  const getDisplayName = (file: UploadedFile): string => {
+    if (isNewFile(file)) return file.file.name;
+    if (isExistingFile(file)) {
+      return file.originalName ?? file.url.split('/').pop() ?? t("uploaded_file");
+    }
+    return t("uploaded_file");
+  };
+
+  const isUploading = (file: UploadedFile): boolean => {
+    if (isExistingFile(file)) return false;
+    if (isNewFile(file)) {
+      if (file.process !== undefined) return file.process < 100;
+      if (file.isUploading) return !!file.isUploading;
+      return true; // new file without process yet
+    }
+    return false;
+  };
+
+  const getDisplaySize = (file: UploadedFile): string => {
+    if (isNewFile(file)) {
+      return `${(file.file.size / 1024 / 1024).toFixed(2)} ${t("MB")}`;
+    }
+    if (isExistingFile(file)) {
+      return t("uploaded");
+    }
+    return t("uploaded");
+  };
+
+  const getProgressText = (file: UploadedFile): string | null => {
+    if (isExistingFile(file)) return null; // Don't show progress for existing files
+    if (isNewFile(file) && file.process !== undefined) {
+      return `${Math.round(file.process)}%`;
+    }
+    return t("uploaded");
+  };
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: any[]) => {
@@ -120,7 +161,7 @@ export const MediaUploader = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
       <div
         {...getRootProps()}
         className={`relative min-h-32 cursor-pointer rounded-lg border bg-white transition-colors hover:bg-gray-50`}
@@ -139,80 +180,69 @@ export const MediaUploader = ({
         </div>
       </div>
 
-
-      {files.length > 0 && (
-        <div className="mt-4 space-y-3">
-          {files.map((file) => (
-            <div
-              key={file.id}
-              className="flex items-center gap-3 rounded-lg border bg-white/90 p-3"
-            >
-              <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                {renderPreview(file)}
-              </div>
-              {/* File info */}
-              <div className="flex-1">
-                <div className="mb-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      {t("uploaded_file")}
-                    </span>
-                    <span className="w-1/3 truncate text-left text-[13px] text-gray-500">
-                      {"file" in file
-                        ? file.file.name
-                        : "originalName" in file && file.originalName
-                          ? file.originalName
-                          : t("uploaded_file")}
-                    </span>
-                  </div>
-                </div>
-                {/* Progress bar - always visible */}
-                <div className="h-2 w-full rounded-full bg-gray-200">
-                  <div
-                    className="h-2 rounded-full bg-blue-500 transition-all duration-300 ease-out"
-                    style={{
-                      width: `${
-                        "process" in file && file.process !== undefined
-                          ? file.process
-                          : 100
-                      }%`,
+      {files.length > 0 &&
+        files.map((file) => (
+          <div
+            key={file.id}
+            className="flex items-center gap-3 rounded-lg border bg-white/90 p-3"
+          >
+            <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+              {renderPreview(file)}
+            </div>
+            {/* File info */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500">
+                  {t("uploaded_file")}
+                </span>
+                {isUploading(file) ? (
+                  <span className="w-1/3 h-6 truncate text-left text-[13px] text-gray-500">
+                    {getDisplayName(file)}
+                  </span>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-6 w-6 p-0 text-gray-400 hover:text-red-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(file.id);
                     }}
-                  />
-                </div>
-                <div className="mt-1 flex items-center justify-between">
-                  <div className="flex w-full items-center justify-between gap-2">
-                    <div className="flex gap-1 text-xs text-gray-500">
-                      <span className="ltr">
-                        {"file" in file
-                          ? `${(file.file.size / 1024 / 1024).toFixed(1)} ${t("MB")}`
-                          : "originalSize" in file && file.originalSize
-                            ? `${(file.originalSize / 1024 / 1024).toFixed(1)} ${t("MB")}`
-                            : t("uploaded")}
-                      </span>
-                      |
-                      <span>
-                        {"process" in file && file.process !== undefined
-                          ? `${Math.round(file.process)}%`
-                          : t("uploaded")}
-                      </span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="link"
-                      size="sm"
-                      className="h-6 w-6 p-0 text-gray-400 hover:text-red-500"
-                      onClick={() => removeFile(file.id)}
-                    >
-                      <TrashSimpleIcon className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
+                  >
+                    <TrashSimpleIcon className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+              {/* Progress bar - always visible */}
+              <div className="h-2 w-full rounded-full bg-gray-200">
+                <div
+                  className="h-2 rounded-full bg-blue-500 transition-all duration-300 ease-out"
+                  style={{
+                    width: `${
+                      "process" in file && file.process !== undefined
+                        ? file.process
+                        : 100
+                    }%`,
+                  }}
+                />
+              </div>
+              
+              <div className="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
+                <span className="ltr">
+                  {getDisplaySize(file)}
+                </span>
+                {getProgressText(file) && (
+                  <span>
+                    {getProgressText(file)}
+                  </span>
+                )}
               </div>
             </div>
-          ))}
-        </div>
-      )}
-      <div className="mt-3 flex flex-col items-start justify-center text-sm uppercase">
+          </div>
+        ))}
+
+      <div className="flex flex-col items-start justify-center text-sm uppercase">
         <div className="flex items-center gap-1">
           <span className="text-xs text-gray-500">
             {t("Limits.image.text")}

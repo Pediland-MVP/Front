@@ -19,6 +19,7 @@ import {
   Switch,
 } from "@/components/index";
 import { TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();
@@ -33,7 +34,7 @@ export const CommentReplies = () => {
         "دایرکتتون رو چک کنید لطفا 🙏",
         "براتون ارسال شد ❤️",
       ]);
-      
+
       // Clear any existing errors for commentTexts fields
       clearErrors("commentTexts");
 
@@ -59,7 +60,7 @@ export const CommentReplies = () => {
 
   return (
     <>
-      <hr className="border-gray-100" />
+      <SeperateLine />
 
       <FormField
         control={control}

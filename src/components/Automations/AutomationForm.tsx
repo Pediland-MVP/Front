@@ -15,7 +15,6 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import useSWRImmutable from "swr/immutable";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/index";
@@ -39,6 +38,7 @@ import {
   TargetPostComment,
   Triggers,
 } from "./Form";
+import useSWRImmutable from "swr/immutable";
 
 type AutomationFormProps = {
   id?: string;
@@ -69,6 +69,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     data: automation,
     isLoading: isAutomationLoading,
     error: automationError,
+    mutate: automationMutate,
   } = useSWRImmutable(key, {
     revalidateOnMount: !!id,
   });
@@ -198,6 +199,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       .then((res) => {
         toast.success(t("success"));
         router.push("/automations");
+        automationMutate();
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         if (e.response?.data?.code == "INSTAGRAM_REQUIRED") {

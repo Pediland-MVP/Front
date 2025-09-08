@@ -11,11 +11,13 @@ import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 // UI Imports
 import {
   FormField,
+  FormItem,
   FormLabel,
   FormMessage,
   HelpMeDialog,
   Textarea,
 } from "@/components/index";
+import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 
 export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =
@@ -54,43 +56,50 @@ export const CommentTriggerInputs = () => {
 
   return (
     <>
-      <FormField
-        control={control}
-        name="commentStartText"
-        render={({ field, fieldState: { error } }) => (
-          <div className="relative flex items-center gap-x-2">
-            <FormLabel>{t("startRequestMessage")}</FormLabel>
-            <HelpMeDialog
-              title={t("Help.title")}
-              description={t("Help.description")}
-              videoSrc={WizardVideoLinks.Automations.Hints.CommentConsent.video}
-              position="top-left"
-            />
-            {/* <FormDescription>{t('startRequestMessageDescription')}</FormDescription> */}
-            <Textarea
-              {...field}
-              value={field.value ?? ""}
-              placeholder={t("commentPlaceholder")}
-            ></Textarea>
-            {error && <FormMessage>{error.message}</FormMessage>}
-          </div>
-        )}
-      />
-      <FormField
-        control={control}
-        name="commentStartTitle"
-        render={({ field, fieldState: { error } }) => (
-          <div className="space-y-1">
-            <FormLabel>{t("comment_start_title")}</FormLabel>
-            <Textarea
-              {...field}
-              value={field.value ?? ""}
-              placeholder={t("commentStartTitlePlaceholder")}
-            ></Textarea>
-            {error && <FormMessage>{error.message}</FormMessage>}
-          </div>
-        )}
-      />
+      <div className="space-y-3">
+        <FormField
+          control={control}
+          name="commentStartText"
+          render={({ field, fieldState: { error } }) => (
+            <FormItem>
+              <div className="relative">
+                <FormLabel>{t("start_request_message")}</FormLabel>
+                <HelpMeDialog
+                  title={t("Help.title")}
+                  description={t("Help.description")}
+                  videoSrc={
+                    WizardVideoLinks.Automations.Hints.CommentConsent.video
+                  }
+                  position="left"
+                />
+              </div>
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                placeholder={t("comment_placeholder")}
+              ></Textarea>
+              {error && <FormMessage>{error.message}</FormMessage>}
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="commentStartTitle"
+          render={({ field, fieldState: { error } }) => (
+            <FormItem>
+              <FormLabel>{t("comment_start_title")}</FormLabel>
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                placeholder={t("comment_start_title_placeholder")}
+              ></Textarea>
+              {error && <FormMessage>{error.message}</FormMessage>}
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <SeperateLine />
     </>
   );
 };
