@@ -1,10 +1,10 @@
 "use client";
 
 import api from "@/hooks/swr/api-client";
-import { AutomationResponse } from "@/schemas/automation";
-import { PageMeta } from "@/schemas/pageMeta";
+import type { AutomationResponse } from "@/schemas/automation";
+import type { PageMeta } from "@/schemas/pageMeta";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { Table } from "@tanstack/react-table";
+import type { Table } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";

@@ -1,7 +1,7 @@
 // src/app/leads/columns.tsx
 "use client";
 
-import { Contact } from "@/types/contact";
+import type { Contact } from "@/types/contact";
 import {
   ChatCircleTextIcon,
   ChatTeardropTextIcon,
@@ -14,8 +14,8 @@ import {
   XSquareIcon,
   CheckCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { ColumnDef } from "@/types/tables";
-import { Automation } from "@/schemas/automation";
+import type { ColumnDef } from "@/types/tables";
+import type { Automation } from "@/schemas/automation";
 import Image from "next/image";
 import { memo, useState } from "react";
 import { Badge } from "@/components/index";
@@ -138,7 +138,7 @@ export const AutomationTableColumns = (
                 <Badge
                   key={i}
                   variant="outline"
-                  className="text-[13px] font-medium rounded px-1.5"
+                  className="rounded px-1.5 text-[13px] font-medium"
                 >
                   {val}
                 </Badge>

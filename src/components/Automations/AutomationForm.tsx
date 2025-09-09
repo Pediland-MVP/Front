@@ -8,7 +8,7 @@ import {
 import api from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
-import { ExceptionMessage } from "@/types/exceptionMessage";
+import type { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
@@ -24,7 +24,7 @@ import LoadingButton from "@/components/ui/button-loading";
 import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import {
   AutomationFormSchema,
-  AutomationFormType,
+  type AutomationFormType,
 } from "@/schemas/automationForm";
 import { toast } from "sonner";
 import { SeperateLine } from "../ui-custom/SeperateLine";
@@ -237,8 +237,6 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       })
       .then(() => setIsSubmitting(false));
   };
-
-  console.log("Form Errors...", form.formState.errors);
 
   return (
     <FormProvider {...form}>
