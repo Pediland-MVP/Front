@@ -13,11 +13,11 @@ import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { AxiosResponse, AxiosError } from "axios";
+import { toast } from "sonner";
 
 import {
   FormMessage,
   MediaUploader,
-  toast,
   useContentsUploaderContext,
 } from "@/components/index";
 
@@ -143,10 +143,9 @@ export const MediaContent = ({ index, mode, type }: MediaContentProps) => {
         })
         .catch((err: AxiosError) => {
           if (err.status === 400) {
-            toast({
-              title: `${t_fileUploader(`Limits.${type}.text`)}. ${t_fileUploader(`Limits.${type}.formats`)}`,
-              description: t_fileUploader("Errors.select_another"),
-            });
+            toast.error(
+              `${t_fileUploader(`Limits.${type}.text`)}. ${t_fileUploader(`Limits.${type}.formats`)}`,
+            );
           }
         })
         .finally(() => {

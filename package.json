@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:tailwind‑check": "pnpm dlx @tailwindcss/cli@latest -i ./app/styles/globals.css --eject-cli‑cache --no‑clear --watch",
+    "dev:tailwind-check": "pnpm dlx @tailwindcss/cli@latest -i ./app/styles/globals.css --eject-cli-cache --no-clear --watch",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Pagination } from "./pagination";
-import useDebounce from "@/hooks/useDebounce";
+import { useDebounce } from "@/hooks/useDebounce";
 // import EditContactDialog from "./editContactDialog";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
@@ -62,7 +62,7 @@ export default function OrderListCard({
     isLoading: isOrdersLoading,
     mutate: fetchOrders,
   } = useSWR<OrderNamespace.GET.Orders>(
-    `/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`
+    `/orders?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ""}`,
   );
   const orders = ordersData?.items || [];
   const ordersMeta = ordersData?.meta || undefined;
@@ -90,11 +90,7 @@ export default function OrderListCard({
   return (
     <Card className="border-b-2 border-gray-100">
       {/* <EditContactDialog orderId={orderId} open={open} setOpen={setOpen} /> */}
-      <EditOrderDialog
-        open={open}
-        setOpen={setOpen}
-        order={selectedOrder}
-      />
+      <EditOrderDialog open={open} setOpen={setOpen} order={selectedOrder} />
 
       <div className="_table">
         <Table className="">
@@ -104,7 +100,7 @@ export default function OrderListCard({
                 onClick={() => handleSort("name")}
                 className={cn(
                   `cursor-pointer hover:text-black lg:w-[8%]`,
-                  `text-center`
+                  `text-center`,
                 )}
               >
                 {t("product")}
@@ -121,7 +117,7 @@ export default function OrderListCard({
               <TableHead
                 className={cn(
                   "cursor-pointer hover:text-black lg:w-[2%]",
-                  `text-center`
+                  `text-center`,
                 )}
               >
                 {t("quantity")}
@@ -130,7 +126,7 @@ export default function OrderListCard({
               <TableHead
                 className={cn(
                   "cursor-pointer hover:text-black lg:w-[4%]",
-                  `text-center`
+                  `text-center`,
                 )}
               >
                 {t("price")}
@@ -139,18 +135,18 @@ export default function OrderListCard({
               <TableHead
                 className={cn(
                   "cursor-pointer hover:text-black lg:w-[8%]",
-                  `text-center`
+                  `text-center`,
                 )}
                 onClick={() => handleSort("messages")}
               >
                 {t("details")}
               </TableHead>
 
-              <TableHead className={cn("lg:w-[3%] _space", `text-center`)}>
+              <TableHead className={cn("_space lg:w-[3%]", `text-center`)}>
                 {t("status")}
               </TableHead>
 
-              <TableHead className={cn("lg:w-[3%] _space", `text-center`)}>
+              <TableHead className={cn("_space lg:w-[3%]", `text-center`)}>
                 {t("date")}
               </TableHead>
 
@@ -165,23 +161,24 @@ export default function OrderListCard({
               <OrderListSkeleton rowCount={limit} />
             ) : (
               orders.map((order) => {
-
-                const { isDiscount, paidPrice, totalPrice } = getOrderPrices(order.orderProducts);
+                const { isDiscount, paidPrice, totalPrice } = getOrderPrices(
+                  order.orderProducts,
+                );
 
                 return (
                   <TableRow
                     key={order.id}
                     className={cn(
-                      selectedLeads.includes(order.id) ? "bg-muted" : ""
+                      selectedLeads.includes(order.id) ? "bg-muted" : "",
                     )}
                   >
                     <TableCell>
                       <Link
                         href={`/products/${order?.orderProducts[0]?.product?.id}`}
                         target="_blank"
-                        className="hover:text-pink-700 flex justify-start items-center gap-x-3"
+                        className="flex items-center justify-start gap-x-3 hover:text-pink-700"
                       >
-                        <div className="relative w-16 h-16 roundedlg">
+                        <div className="roundedlg relative h-16 w-16">
                           <ImageWithFallback
                             fill={true}
                             src={
@@ -190,7 +187,7 @@ export default function OrderListCard({
                             }
                             fallbackSrc="/images/no-image.png"
                             alt={`${order.id} order`}
-                            className="rounded-sm fill-background"
+                            className="fill-background rounded-sm"
                           />
                         </div>
                         <p className="text-md font-medium">
@@ -226,9 +223,7 @@ export default function OrderListCard({
                         {paidPrice.toLocaleString()}
                       </span>
                       <br />
-                      {isDiscount && (
-                        <span>{totalPrice.toLocaleString()}</span>
-                      )}
+                      {isDiscount && <span>{totalPrice.toLocaleString()}</span>}
                     </TableCell>
 
                     <TableCell className="_space text-center">
@@ -254,11 +249,11 @@ export default function OrderListCard({
                     </TableCell>
 
                     <TableCell className="text-center">
-                      <div className="flex gap-2 justify-center">
+                      <div className="flex justify-center gap-2">
                         <Pencil
                           size={20}
                           weight="light"
-                          className="text-gray-500 hover:text-pink-700 cursor-pointer"
+                          className="cursor-pointer text-gray-500 hover:text-pink-700"
                           onClick={() => editOrderHandler(order)}
                         />
                       </div>
