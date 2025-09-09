@@ -1,17 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { REGEX_PASSWORD } from "@/utils/regex";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-// UI 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -19,10 +9,19 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { InputPassword } from "@/components/ui/inputPassword";
-import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
-import { toast } from "@/components/ui-custom/useToast";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
+import { REGEX_PASSWORD } from "@/utils/regex";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeftIcon, KeyholeIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export default function SignIn() {
   const t = useTranslations("Auth.Signin");
@@ -63,30 +62,19 @@ export default function SignIn() {
         },
         credentials: "include",
         body: JSON.stringify(values),
-      }
+      },
     )
       .then(async (res) => {
         if (!res.ok) {
-          toast({
-            title: t("loginError"),
-            description: t("loginErrorDescription"),
-            variant: "destructive",
-          });
+          toast.error(t("loginError"));
           return;
         }
-        toast({
-          title: t("loginSuccess"),
-          description: t("loginWelcome"),
-        });
+        toast.success(t("loginSuccess"));
         router.push("/");
       })
       .catch((e) => {
         console.error(e);
-        toast({
-          title: t("loginError"),
-          description: t("generalError"),
-          variant: "destructive",
-        });
+        toast.error(t("loginError"));
       })
       .finally(() => setIsLoading(false));
   };
@@ -99,17 +87,21 @@ export default function SignIn() {
 
   return (
     <main className="_signin-page h-full bg-blue-50/75">
-      <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="_wrapper relative flex items-center justify-center h-full">
-          <div className="_content w-full sm:w-1/3 mx-auto">
+      <div className="container h-full max-w-6xl px-6 sm:px-0">
+        <div className="_wrapper relative flex h-full items-center justify-center">
+          <div className="_content mx-auto w-full sm:w-1/3">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
-                <Keyhole size={36} weight="light" className="text-primary" />
-                <h1 className="text-2xl font-semibold text-primary">
+                <KeyholeIcon
+                  size={36}
+                  weight="light"
+                  className="text-primary"
+                />
+                <h1 className="text-primary text-2xl font-semibold">
                   {t("loginTitle")}
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-center text-sm text-gray-500">
                 {t("noAccount")}{" "}
                 <Link
                   className="text-secondary font-medium underline underline-offset-8 duration-300"
@@ -159,10 +151,10 @@ export default function SignIn() {
                       </FormItem>
                     )}
                   />
-                  <div className="flex col-span-4">
+                  <div className="col-span-4 flex">
                     <Link
                       href={"/auth/resetPassword"}
-                      className="py-1 text-sm text-muted-foreground hover:text-secondary duration-300"
+                      className="text-muted-foreground hover:text-secondary py-1 text-sm duration-300"
                     >
                       {t("forgotPassword")}
                     </Link>
@@ -183,11 +175,11 @@ export default function SignIn() {
 
               <Button
                 variant="link"
-                className="w-full text-muted-foreground mt-10"
+                className="text-muted-foreground mt-10 w-full"
                 onClick={() => router.push(process.env.NEXT_PUBLIC_LANDING_URL)}
               >
                 {t("backToSite")}
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeftIcon className="h-5 w-5" />
               </Button>
 
               {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
@@ -214,4 +206,3 @@ export default function SignIn() {
     </main>
   );
 }
-

@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspace";
 import { useTranslations } from "next-intl";
@@ -17,8 +17,8 @@ export default function usePayPlan() {
   const t_rc = useTranslations("RESPONSE_CODES");
 
   const pay = async (
-    values: { planId: number; durationId: number, discountCode?: string },
-    setActive: UpgradeContext["setActive"]
+    values: { planId: number; durationId: number; discountCode?: string },
+    setActive: UpgradeContext["setActive"],
   ) => {
     setIsPayLoading(true);
     await api
@@ -26,9 +26,7 @@ export default function usePayPlan() {
       .then(
         async (res: AxiosResponse<SubscriptionNamespace.POST.Subscribe>) => {
           if (res.data.code === "PAID_FREE") {
-            toast({
-              title: t_rc(res.data.code),
-            });
+            toast(t_rc(res.data.code));
             await mutate(mutateIncludeStringKey("subscriptions"));
             mutate(mutateIncludeStringKey("plans"));
             setActive({
@@ -39,14 +37,11 @@ export default function usePayPlan() {
           }
           router.push(res.data.data.link);
           return;
-        }
+        },
       )
       .catch(async (e: AxiosError<ExceptionMessage>) => {
         const error = t_ec(e.response?.data.code);
-        toast({
-          title: error,
-          variant: "destructive",
-        });
+        toast.error(error);
       })
       .finally(() => {
         setIsPayLoading(false);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { mutate } from "swr";
 import { useRouter } from "next/navigation";
 import { OrderNamespace } from "@/types/order/order.namespace";
@@ -18,7 +18,6 @@ export default function useStartPayment() {
     setStep,
     paymentMethod,
   } = useCheckout();
-
 
   const t_ec = useTranslations("ERROR_CODES");
   const router = useRouter();
@@ -38,13 +37,13 @@ export default function useStartPayment() {
           paymentMethod,
         }),
         credentials: "include",
-      }
+      },
     )
       .then(async (res) => {
         if (res.ok) {
           const json: OrderNamespace.POST.StartPayment = await res.json();
           await mutate(
-            (key) => typeof key === "string" && key.includes("pending")
+            (key) => typeof key === "string" && key.includes("pending"),
           );
           if (paymentMethod === ORDER_PAYMENT_METHODS.ZARINPAL) {
             router.push(json.data.link!);
@@ -56,21 +55,16 @@ export default function useStartPayment() {
 
         const resJson = (await res.json()) as unknown as ExceptionMessage;
 
-        toast({
-          title: t_ec(resJson.code),
-          ...(resJson.code === "PRODUCT_OUT_OF_STOCK" && {
-            description: "تعداد سفارش را کاهش دهید",
-          }),
-          variant: "destructive",
+        toast.error(t_ec(resJson.code), {
+          description: "تعداد سفارش را کاهش دهید",
         });
 
-        await mutate(key => typeof key === 'string' && (key.includes("/products")))
+        await mutate(
+          (key) => typeof key === "string" && key.includes("/products"),
+        );
       })
       .catch((e) => {
-        toast({
-          title: t_ec("CHECK_CONNECTION"),
-          variant: "destructive",
-        });
+        toast.error(t_ec("CHECK_CONNECTION"));
       })
       .finally(() => {
         setLoading(false);

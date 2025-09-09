@@ -1,5 +1,5 @@
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
@@ -21,25 +21,22 @@ export default function useVerifyPlanPayment() {
         "/payments/subscription/zarinpal/verify?Authority=" +
           searchParams.get("Authority") +
           "&Status=" +
-          searchParams.get("Status")
+          searchParams.get("Status"),
       )
       .then(
         async (
-          res: AxiosResponse<PaymentNamespace.GET.SubscriptionPaymentVerify>
+          res: AxiosResponse<PaymentNamespace.GET.SubscriptionPaymentVerify>,
         ) => {
           await mutate(mutateIncludeStringKey("me"));
           return res.data.data.ref_id;
-        }
+        },
       )
       .catch((e: AxiosError<ExceptionMessage>) => {
-        toast({
-          title: t_ec(e.response?.data?.code),
-          variant: "destructive",
-        });
+        toast.error(t_ec(e.response?.data?.code));
       })
       .finally(() => {
         setIsLoading(false);
-      })
+      });
   };
 
   return {

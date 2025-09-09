@@ -1,16 +1,6 @@
 "use client";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
-import { useTranslations } from "next-intl";
-
-// Import the specified date picker components
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import DateObject from "react-date-object";
-import persian_fa from "react-date-object/locales/persian_fa";
-
 import { Button } from "@/components/ui/button";
+import LoadingButton from "@/components/ui/button-loading";
 import {
   Drawer,
   DrawerClose,
@@ -31,12 +21,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import api from "@/hooks/swr/api-client";
-import { toast } from "@/components/ui-custom/useToast";
-import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError, AxiosResponse } from "axios";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import LoadingButton from '@/components/ui/button-loading';
+import DateObject from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import { Controller, useForm } from "react-hook-form";
+import DatePicker from "react-multi-date-picker";
+import { toast } from "sonner";
+import { z } from "zod";
 
 // Define a proper type for DateObject
 type DateObjectType =
@@ -91,7 +88,7 @@ export function ExcelExportDirectsDrawer({
   const t = useTranslations("Directs.ExcelExport");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Create the schema with translations
   const formSchema = createFormSchema(t);
@@ -115,21 +112,17 @@ export function ExcelExportDirectsDrawer({
 
   // Form submission handler
   async function onSubmit(values: FormValues) {
-    setIsLoading(true)
-    await api.post('/directs/excelExport', values)
-    .then((res: AxiosResponse<IResponseMessage>) => {
-      toast({
-        title: t('success'),
-        description: t("excelWillSentToYourEmail"),
+    setIsLoading(true);
+    await api
+      .post("/directs/excelExport", values)
+      .then((res: AxiosResponse<IResponseMessage>) => {
+        toast(t("success"));
       })
-    })
-    .catch((e: AxiosError<ExceptionMessage>) => {
-      const error = t_ec(e.code)
-      toast({
-        title: error,
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        const error = t_ec(e.code);
+        toast(error);
       })
-    })
-    .finally(() => setIsLoading(false))
+      .finally(() => setIsLoading(false));
     onOpenChange(false);
     form.reset();
   }
@@ -148,7 +141,7 @@ export function ExcelExportDirectsDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="sm:max-w-[425px] mx-auto">
+      <DrawerContent className="mx-auto sm:max-w-[425px]">
         <DrawerHeader>
           <DrawerTitle>{t("title")}</DrawerTitle>
           <DrawerDescription>{t("description")}</DrawerDescription>
@@ -277,7 +270,9 @@ export function ExcelExportDirectsDrawer({
               />
 
               <DrawerFooter>
-                <LoadingButton isLoading={isLoading} type="submit">{t("buttons.export")}</LoadingButton>
+                <LoadingButton isLoading={isLoading} type="submit">
+                  {t("buttons.export")}
+                </LoadingButton>
                 <DrawerClose asChild>
                   <Button variant="outline">{t("buttons.cancel")}</Button>
                 </DrawerClose>

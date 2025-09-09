@@ -4,8 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import Link from "next/link";
 import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
-// Just UI Imports Below
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -16,16 +15,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
-  Pencil,
-  Trash,
-  CaretRight,
-  CaretLeft,
-  EnvelopeSimple
+  PencilIcon,
+  TrashIcon,
+  CaretRightIcon,
+  CaretLeftIcon,
+  EnvelopeSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/ui/card";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
-import ContentCycleSkeleton from "./contentCycleTableSkeleton";
 import { ContnetCycleTableWizard } from "./contentCycleTable.wizard";
 
 type ContentCycle = {
@@ -67,7 +65,7 @@ export default function ContentCycleTable() {
     `/contentCycle?page=${currentPage}&limit=${LIMIT}`,
     {
       revalidateOnMount: true,
-    }
+    },
   );
 
   const nextPage = () => {
@@ -90,17 +88,11 @@ export default function ContentCycleTable() {
       await api
         .delete(`/contentCycle/${itemToDelete}`)
         .then((res) => {
-          toast({
-            title: t("deleted"),
-          });
+          toast.success(t("deleted"));
           contentCycleMutate();
         })
         .catch((e) => {
-          toast({
-            title: t("error"),
-            description: t("problemOccurred"),
-            variant: "destructive",
-          });
+          toast.error(t("error"));
         })
         .finally(() => {
           setIsDeleteLoading(false);
@@ -116,11 +108,8 @@ export default function ContentCycleTable() {
   };
   const locale = useLocale();
 
-
   if (!isContentCycleLoading && !contentCycles?.items.length) {
-    return (
-      <ContnetCycleTableWizard/>
-    );
+    return <ContnetCycleTableWizard />;
   }
 
   return (
@@ -142,7 +131,7 @@ export default function ContentCycleTable() {
                 </TableCell>
               </TableRow>
             ) : isContentCycleLoading ? (
-              <ContentCycleSkeleton rowCount={LIMIT} />
+              <p>loading...</p>
             ) : (
               contentCycles?.items.map((item) => (
                 <TableRow key={item.id}>
@@ -156,23 +145,23 @@ export default function ContentCycleTable() {
                       <Link
                         href={`/automations/sessions?contentCycleId=${item.id}`}
                       >
-                        <EnvelopeSimple
+                        <EnvelopeSimpleIcon
                           size={20}
                           weight="light"
                           className="hover:text-primary cursor-pointer"
                         />
                       </Link>
                       <Link href={`/automations/${item.id}`}>
-                        <Pencil
+                        <PencilIcon
                           size={20}
                           weight="light"
-                          className="hover:text-green-600 cursor-pointer"
+                          className="cursor-pointer hover:text-green-600"
                         />
                       </Link>
-                      <Trash
+                      <TrashIcon
                         size={20}
                         weight="light"
-                        className="hover:text-red-600 cursor-pointer"
+                        className="cursor-pointer hover:text-red-600"
                         onClick={() => handleDeleteClick(item.id)}
                       />
                     </div>
@@ -185,21 +174,17 @@ export default function ContentCycleTable() {
       </div>
 
       {contentCycles?.meta && (
-        <div className="flex justify-between items-center mt-4">
+        <div className="mt-4 flex items-center justify-between">
           <Button
             variant="ghost"
             size={"sm"}
             onClick={prevPage}
             disabled={currentPage === 1}
           >
-            {locale === "fa" ? (
-              <CaretRight />
-            ) : (
-              <CaretLeft />
-            )}
+            {locale === "fa" ? <CaretRightIcon /> : <CaretLeftIcon />}
             {t("previous")}
           </Button>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             {t("pageOf", {
               current: currentPage,
               total: contentCycles.meta.totalPages,
@@ -212,11 +197,7 @@ export default function ContentCycleTable() {
             disabled={currentPage === contentCycles.meta.totalPages}
           >
             {t("next")}
-            {locale === "fa" ? (
-              <CaretLeft />
-            ) : (
-              <CaretRight />
-            )}
+            {locale === "fa" ? <CaretLeftIcon /> : <CaretRightIcon />}
           </Button>
         </div>
       )}
@@ -225,7 +206,6 @@ export default function ContentCycleTable() {
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        itemId={itemToDelete || ""}
       />
     </Card>
   );

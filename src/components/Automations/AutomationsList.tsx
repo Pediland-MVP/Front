@@ -1,35 +1,56 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { AutomationTableColumns } from "./AutomationTableColumns";
-import { Table } from "@tanstack/react-table";
-import { DataTable, TablePagination } from "../Table";
-import useSWRImmutable from "swr/immutable";
+import api from "@/hooks/swr/api-client";
 import { AutomationResponse } from "@/schemas/automation";
 import { PageMeta } from "@/schemas/pageMeta";
-import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
+import { Table } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
+import useSWR, { mutate } from "swr";
+
+import {
+  AutomationTableColumns,
+  DataTable,
+  DeleteConfirmationDialog,
+  TablePagination,
+} from "@/components/index";
 
 export const AutomationsList = () => {
+  const t = useTranslations("Automations.List");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedAutomationId, setSelectedAutomationId] = useState<string>("");
+  const [selectedAutomationId, setSelectedAutomationId] = useState<
+    string | null
+  >(null);
 
   // Handle delete action
   const handleDelete = (id: string) => {
     setSelectedAutomationId(id);
     setDeleteDialogOpen(true);
-    console.log("Deleting automation:", id);
   };
 
-  const handleDeleteConfirm = () => {
-    // TODO: Implement actual delete API call
-    console.log("Deleting automation:", selectedAutomationId);
-    setDeleteDialogOpen(false);
-    setSelectedAutomationId("");
+  const handleDeleteConfirm = async () => {
+    if (selectedAutomationId) {
+      await api
+        .delete(`/contentCycle/${selectedAutomationId}`)
+        .then((res) => {
+          toast.success(t("Toast.deleted"));
+          mutate(mutateIncludeStringKey("/contentCycle"));
+        })
+        .catch((e) => {
+          toast.error(t("Toast.delete_error"));
+        })
+        .finally(() => {
+          setDeleteDialogOpen(false);
+          setSelectedAutomationId(null);
+        });
+    }
   };
 
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
-    setSelectedAutomationId("");
+    setSelectedAutomationId(null);
   };
 
   // Table
@@ -51,12 +72,8 @@ export const AutomationsList = () => {
   }, []);
 
   // TODO: Better type for AutomationResponse
-  const { data, isLoading } = useSWRImmutable<AutomationResponse | null>(
+  const { data, isLoading } = useSWR<AutomationResponse | null>(
     `/contentCycle?page=${page}&limit=${limit}`,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
   );
 
   // Map Wire -> Domain (memoized)
@@ -78,7 +95,6 @@ export const AutomationsList = () => {
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        itemId={selectedAutomationId}
       />
 
       <DataTable

@@ -36,7 +36,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import LoadingButton from "@/components/ui/button-loading";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
@@ -119,7 +119,7 @@ export function ProfileForm() {
     {
       revalidateOnMount: true,
       refreshInterval: 30_000,
-    }
+    },
   );
 
   const resetWithUserData = () => {
@@ -153,7 +153,7 @@ export function ProfileForm() {
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities/provinces`,
     {
       revalidateOnMount: true,
-    }
+    },
   );
 
   const {
@@ -167,7 +167,7 @@ export function ProfileForm() {
       `${form.getValues().state}`,
     {
       revalidateOnMount: true,
-    }
+    },
   );
 
   useEffect(() => {
@@ -183,16 +183,11 @@ export function ProfileForm() {
         ...data,
       })
       .then((res) => {
-        toast({
-          title: t("profileUpdated"),
-        });
+        toast(t("profileUpdated"));
         mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`);
       })
       .catch((e) => {
-        toast({
-          title: t("profileUpdateFailed"),
-          variant: "destructive",
-        });
+        toast.error(t("profileUpdateFailed"));
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -207,13 +202,13 @@ export function ProfileForm() {
   if (userIsLoading) return <LoadingSpinner className="h-full" />;
 
   return (
-    <Card className="h-full md:border-l-2 border-gray-100 p-6 md:p-10">
+    <Card className="h-full border-gray-100 p-6 md:border-l-2 md:p-10">
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-2"
         >
-          <div className="grid md:grid-cols-4 gap-2">
+          <div className="grid gap-2 md:grid-cols-4">
             <FormField
               control={form.control}
               name="gender"
@@ -265,7 +260,7 @@ export function ProfileForm() {
                     }
                     onChange={(date) => {
                       onChange(
-                        date?.isValid ? (date.unix * 1000).toString() : ""
+                        date?.isValid ? (date.unix * 1000).toString() : "",
                       );
                     }}
                     format={"YYYY/MM/DD"}
@@ -291,9 +286,9 @@ export function ProfileForm() {
                     <Input {...field} />
                   </FormControl>
                   {form.formState.errors?.firstname && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {t(
-                        `Errors.firstname.${form.formState.errors.firstname.type}`
+                        `Errors.firstname.${form.formState.errors.firstname.type}`,
                       )}
                     </span>
                   )}
@@ -310,9 +305,9 @@ export function ProfileForm() {
                     <Input {...field} />
                   </FormControl>
                   {form.formState.errors?.lastname && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {t(
-                        `Errors.lastname.${form.formState.errors.lastname.type}`
+                        `Errors.lastname.${form.formState.errors.lastname.type}`,
                       )}
                     </span>
                   )}
@@ -330,7 +325,7 @@ export function ProfileForm() {
                     <Input {...field} />
                   </FormControl>
                   {form.formState.errors?.email && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {t(`Errors.email.${form.formState.errors.email.type}`)}
                     </span>
                   )}
@@ -348,7 +343,7 @@ export function ProfileForm() {
                     <Input {...field} />
                   </FormControl>
                   {form.formState.errors?.mobile && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {t(`Errors.mobile.${form.formState.errors.mobile.type}`)}
                     </span>
                   )}
@@ -421,7 +416,7 @@ export function ProfileForm() {
               </>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-3 mt-10">
+          <div className="mt-10 grid grid-cols-2 gap-3">
             <LoadingButton
               isLoading={isSubmitting}
               type="submit"

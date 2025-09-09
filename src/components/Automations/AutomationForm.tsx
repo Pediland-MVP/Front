@@ -39,6 +39,8 @@ import {
   Triggers,
 } from "./Form";
 import useSWRImmutable from "swr/immutable";
+import { mutate } from "swr";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 type AutomationFormProps = {
   id?: string;
@@ -197,8 +199,9 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       data: values,
     })
       .then((res) => {
-        toast.success(t("success"));
+        toast.success(id ? t("Toast.updated") : t("Toast.created"));
         router.push("/automations");
+        mutate(mutateIncludeStringKey("/contentCycle"));
         automationMutate();
       })
       .catch((e: AxiosError<ExceptionMessage>) => {

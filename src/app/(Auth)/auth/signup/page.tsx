@@ -1,18 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { REGEX_MOBILE, REGEX_PASSWORD } from "@/utils/regex";
-import { useTranslations } from "next-intl";
-// UI
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { toast } from "@/components/ui-custom/useToast";
-import { Input } from "@/components/ui/input";
-import { InputPassword } from "@/components/ui/inputPassword";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,10 +9,22 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft, UserCirclePlus } from "@phosphor-icons/react/dist/ssr";
+import { Input } from "@/components/ui/input";
+import { InputPassword } from "@/components/ui/inputPassword";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
-import { Checkbox } from "@/components/ui/checkbox";
-import { FormLabel } from "@/components/ui/form";
+import { REGEX_MOBILE, REGEX_PASSWORD } from "@/utils/regex";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ArrowLeftIcon,
+  UserCirclePlusIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -79,7 +79,7 @@ export default function Signup() {
             password: "123Sina@",
             confirmPassword: "123Sina@",
             referralCode: "11313",
-            acceptRules: true
+            acceptRules: true,
           }
         : {
             acceptRules: true,
@@ -100,60 +100,48 @@ export default function Signup() {
         },
         credentials: "include",
         body: JSON.stringify(values),
-      }
+      },
     )
       .then(async (res) => {
         const resJson = await res.json();
         if (!res.ok) {
           if (res.status === 409) {
-            toast({
-              title: t("signupFailed"),
-              description: t("mobileAlreadyRegistered"),
-              variant: "destructive",
-            });
+            toast.error(t("mobileAlreadyRegistered"));
             return;
           }
 
-          toast({
-            title: t("error"),
-            description: t_ec(resJson.code),
-            variant: "destructive",
-          });
+          toast.error(t_ec(resJson.code));
           return;
         }
         router.push("/auth/verify");
       })
       .catch((e) => {
         console.error(e);
-        toast({
-          title: t("error"),
-          description: t("generalError"),
-          variant: "destructive",
-        });
+        toast.error(t("generalError"));
       })
       .finally(() => setIsLoading(false));
   };
 
   return (
     <main className="_signup h-full bg-blue-50/75">
-      <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="_wrap  relative flex items-center justify-center h-full">
-          <div className="_content w-full sm:w-1/3 mx-auto">
+      <div className="container h-full max-w-6xl px-6 sm:px-0">
+        <div className="_wrap relative flex h-full items-center justify-center">
+          <div className="_content mx-auto w-full sm:w-1/3">
             <div className="_header mb-6 flex flex-col gap-2">
               <div className="_title flex items-center justify-center gap-2">
-                <UserCirclePlus
+                <UserCirclePlusIcon
                   size={36}
                   weight="light"
                   className="text-primary"
                 />
-                <h1 className="text-2xl font-semibold text-primary">
+                <h1 className="text-primary text-2xl font-semibold">
                   {t("signupTitle")}
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-center text-sm text-gray-500">
                 {t("alreadyHaveAccount")}{" "}
                 <Link
-                  className="font-medium text-secondary underline underline-offset-8 duration-300"
+                  className="text-secondary font-medium underline underline-offset-8 duration-300"
                   href="/auth/signin"
                 >
                   {t("signInHere")}
@@ -300,11 +288,11 @@ export default function Signup() {
 
               <Button
                 variant="link"
-                className="w-full text-muted-foreground mt-10"
+                className="text-muted-foreground mt-10 w-full"
                 onClick={() => router.push(process.env.NEXT_PUBLIC_LANDING_URL)}
               >
                 {t("backToSite")}
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeftIcon className="h-5 w-5" />
               </Button>
 
               {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}

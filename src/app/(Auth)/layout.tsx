@@ -2,8 +2,7 @@ import "@/styles/globals.css";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
-// UI
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/index";
 
 export async function generateMetadata() {
   const cookieStore = await cookies();

@@ -1,12 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import api from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -29,17 +24,15 @@ export function DiscountCode() {
   const t_ec = useTranslations("ERROR_CODES");
 
   const { setDiscountCode, setActive } = useUpgradeContext();
-  
-  const deleteCode = () => {
 
-    setDiscountCode('')
-    form.setValue('code', '')
+  const deleteCode = () => {
+    setDiscountCode("");
+    form.setValue("code", "");
     setActive({
       planSelection: true,
       subscriptionInfo: false,
     });
-
-  }
+  };
 
   const onSubmit = (values: z.infer<typeof schema>) => {
     api
@@ -48,10 +41,7 @@ export function DiscountCode() {
         setDiscountCode(values.code);
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
-        toast({
-          title: t_ec(e?.response?.data.code),
-          variant: "destructive",
-        });
+        toast(t_ec(e?.response?.data.code));
       });
     setActive({
       planSelection: true,
@@ -63,7 +53,7 @@ export function DiscountCode() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="lg:w-2/6 mx-auto my-6 gap-y-2 flex flex-col"
+        className="mx-auto my-6 flex flex-col gap-y-2 lg:w-2/6"
       >
         <FormField
           control={form.control}
@@ -95,7 +85,7 @@ export function DiscountCode() {
             type="button"
             variant={"ghost"}
             onClick={deleteCode}
-            className="w-full "
+            className="w-full"
           >
             {t("delete")}
           </Button>

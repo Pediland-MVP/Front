@@ -12,6 +12,7 @@ import {
   TrashSimpleIcon,
   UserCircleIcon,
   XSquareIcon,
+  CheckCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { ColumnDef } from "@/types/tables";
 import { Automation } from "@/schemas/automation";
@@ -131,13 +132,13 @@ export const AutomationTableColumns = (
       cell: ({ getValue }) => {
         const values = getValue<string[]>();
         return (
-          <div className="flex gap-1">
+          <div className="flex gap-1.5">
             {values.length ? (
               values.map((val, i) => (
                 <Badge
                   key={i}
                   variant="outline"
-                  className="text-[13px] lowercase"
+                  className="text-[13px] font-medium rounded px-1.5"
                 >
                   {val}
                 </Badge>
@@ -158,17 +159,11 @@ export const AutomationTableColumns = (
       header: "دایرکت",
       size: 50,
       cell: ({ row }) =>
-        row.getValue<boolean>("isDirect") ? (
-          <CheckSquareIcon
+        row.getValue<boolean>("isDirect") && (
+          <CheckCircleIcon
             weight="light"
             className="group-hover:text-primary mx-auto text-gray-400"
             size={20}
-          />
-        ) : (
-          <XSquareIcon
-            weight="light"
-            size={20}
-            className="mx-auto text-gray-300"
           />
         ),
       meta: {
@@ -182,17 +177,11 @@ export const AutomationTableColumns = (
       header: "کامنت",
       size: 50,
       cell: ({ row }) =>
-        row.getValue<boolean>("isComment") ? (
-          <CheckSquareIcon
+        row.getValue<boolean>("isComment") && (
+          <CheckCircleIcon
             weight="light"
             className="group-hover:text-primary mx-auto text-gray-400"
             size={20}
-          />
-        ) : (
-          <XSquareIcon
-            weight="light"
-            size={20}
-            className="mx-auto text-gray-300"
           />
         ),
       meta: {
@@ -227,7 +216,7 @@ export const AutomationTableColumns = (
               <DropdownMenuItem>
                 <Link href={`/automations/${row.id}`}>مشاهده</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 variant="destructive"
                 onClick={() => onDelete?.(row.original.id)}
               >

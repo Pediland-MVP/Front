@@ -16,11 +16,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { ErrorMessage } from "@/components/index";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import { toast } from "@/components/ui-custom/useToast";
-import LoadingButton from '@/components/ui/button-loading';
+import { toast } from "sonner";
+import LoadingButton from "@/components/ui/button-loading";
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { CardContent } from "@/components/ui/card";
 import api from "@/hooks/swr/api-client";
 
 export const bankDetailsSchema = z.object({
@@ -58,32 +57,32 @@ export default function BankDetails() {
     resolver: zodResolver(bankDetailsSchema),
   });
 
-  const { data: cardToCardData, isLoading: cardToCardLoading, error: cardToCardError } = useSWRImmutable(`/payments/cardToCard`, {
-    revalidateOnMount: true
-  })
+  const {
+    data: cardToCardData,
+    isLoading: cardToCardLoading,
+    error: cardToCardError,
+  } = useSWRImmutable(`/payments/cardToCard`, {
+    revalidateOnMount: true,
+  });
 
   useEffect(() => {
     if (!cardToCardData) return;
-    form.reset(cardToCardData)
-  }, [cardToCardData])
+    form.reset(cardToCardData);
+  }, [cardToCardData]);
 
   const onSubmit = async (data: z.infer<typeof bankDetailsSchema>) => {
-    setIsSubmitting(true)
-    await api.post('/payments/cardToCard', data)
-    .then(res => {
-      toast({
-        title: t("cardToCardUpdated"),
+    setIsSubmitting(true);
+    await api
+      .post("/payments/cardToCard", data)
+      .then((res) => {
+        toast(t("cardToCardUpdated"));
+      })
+      .catch((e) => {
+        toast.error(t("cardToCardUpdateFailed"));
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-    })
-    .catch(e => {
-      toast({
-        title: t("cardToCardUpdateFailed"),
-        variant: "destructive"
-      });
-    })
-    .finally(() => {
-      setIsSubmitting(false)
-    })
   };
 
   const {
@@ -95,24 +94,22 @@ export default function BankDetails() {
   if (cardToCardLoading) {
     return (
       <div className="_card-to-card-page flex h-full">
-        <div className="w-full sm:w-3/5 h-full">
-          <Card className="border-l-2 border-gray-100 h-full p-6">
+        <div className="h-full w-full sm:w-3/5">
+          <Card className="h-full border-l-2 border-gray-100 p-6">
             <LoadingSpinner className="h-full" />
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="_card-to-card-page flex h-full">
-      <div className="sm:w-3/5 h-full">
-        <Card className="border-l-2 border-gray-100 h-full p-6">
+      <div className="h-full sm:w-3/5">
+        <Card className="h-full border-l-2 border-gray-100 p-6">
           <div className="mb-6">
-            <h2 className="font-semibold text-primary mb-1">{t('title')}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t('description')}
-            </p>
+            <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
+            <p className="text-muted-foreground text-sm">{t("description")}</p>
           </div>
           <FormProvider {...form}>
             <Form {...form}>
@@ -174,9 +171,19 @@ export default function BankDetails() {
                       <FormItem>
                         <FormLabel>{t("iban.label")}</FormLabel>
                         <FormControl>
-                          <div className="w-full relative">
-                            <Input id="iban" {...field} className="text-left pl-10" dir="ltr" />
-                            <p className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-500" dir="ltr">IR -</p>
+                          <div className="relative w-full">
+                            <Input
+                              id="iban"
+                              {...field}
+                              className="pl-10 text-left"
+                              dir="ltr"
+                            />
+                            <p
+                              className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"
+                              dir="ltr"
+                            >
+                              IR -
+                            </p>
                           </div>
                         </FormControl>
                         {error && (

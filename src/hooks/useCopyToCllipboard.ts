@@ -1,13 +1,10 @@
-// hooks/useCopyToClipboard.ts
-import { toast } from "@/components/ui-custom/useToast"; // Import shadcn toast
-
 export const useCopyToClipboard = () => {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      return true
+      return true;
     } catch (err) {
-      return false
+      return false;
     }
   };
 

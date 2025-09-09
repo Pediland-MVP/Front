@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "@/styles/globals.css";
 // UI
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/index";
 import SWRProvider from "./swr.prvider";
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 
@@ -24,7 +24,9 @@ export default async function ShopLayout({
     <html
       lang={locale}
       dir={locale === "fa" ? "rtl" : "ltr"}
-      className={locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"}
+      className={
+        locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
+      }
     >
       <body className="bg-fuchsia-50/75">
         <Toaster />
@@ -32,22 +34,20 @@ export default async function ShopLayout({
         <SWRProvider>
           <NextIntlClientProvider messages={messages}>
             <main>
-              <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
+              <div className="container mx-auto max-w-4xl px-3 sm:px-4 xl:px-0">
                 {children}
               </div>
             </main>
           </NextIntlClientProvider>
         </SWRProvider>
         <footer>
-          <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 pt-6 pb-4 mx-auto">
+          <div className="container mx-auto max-w-4xl px-3 pt-6 pb-4 sm:px-4 xl:px-0">
             <p className="text-center text-sm text-gray-500">
               تمامی حقوق ناشی از این وب‌سایت برای بـفـروش محفوظ است.
             </p>
           </div>
         </footer>
-        <GoftinoSnippet
-          goftinoKey="amN3YU"
-        />
+        <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
     </html>
   );

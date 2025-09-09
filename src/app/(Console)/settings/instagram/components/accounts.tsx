@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,7 +74,7 @@ export default function Accounts({
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
     {
       revalidateOnMount: true,
-    }
+    },
   );
 
   useEffect(() => {
@@ -85,21 +85,18 @@ export default function Accounts({
         ? instagramPages?.filter(
             (page) =>
               page.facebookAccountId ===
-                searchParams.get("facebookAccountId") && !page.instagramId
+                searchParams.get("facebookAccountId") && !page.instagramId,
           )
         : !!instagramPages?.length
           ? instagramPages.filter((account) => account.instagramId)
-          : null
+          : null,
     );
   }, [instagramPages]);
 
   useEffect(() => {
     if (isFromFacebook) {
       if (filteredInstagramPages?.length === 0) {
-        toast({
-          title: t("errorOccurred"),
-          description: t("tryAgain"),
-        });
+        toast(t("errorOccurred"));
         router.push("/accounts");
         return;
       }
@@ -124,19 +121,12 @@ export default function Accounts({
     await api
       .delete(`/instagram/${id}`)
       .then(async (res) => {
-        toast({
-          title: t("deleteSuccess"),
-          description: t("accountDeletedSuccess"),
-        });
+        toast(t("deleteSuccess"));
         await mutate(mutateIncludeStringKey("me"));
         await mutate(mutateIncludeStringKey("instagram"));
       })
       .catch(() => {
-        toast({
-          title: t("deleteError"),
-          description: t("deleteErrorDescription"),
-          variant: "destructive",
-        });
+        toast.error(t("deleteError"));
       })
       .finally(() => {
         setShowDeleteModal(false);
@@ -155,10 +145,10 @@ export default function Accounts({
           return (
             <div
               key={instagram.id}
-              className="_card bg-blue-50/35 shadow hover:shadow-lg duration-200 border rounded-lg"
+              className="_card rounded-lg border bg-blue-50/35 shadow duration-200 hover:shadow-lg"
             >
-              <div className="flex flex-row items-center justify-between gap-4 p-3 md:p-4 group h-full hover:cursor-pointer">
-                <div className="flex flex-col  items-center">
+              <div className="group flex h-full flex-row items-center justify-between gap-4 p-3 hover:cursor-pointer md:p-4">
+                <div className="flex flex-col items-center">
                   <div className="_avatar">
                     {instagram.profilePictureUrl ? (
                       <Image
@@ -192,11 +182,11 @@ export default function Accounts({
                 )}
 
                 <div className="_tools flex gap-2">
-                  <div className="w-full flex justify-end">
+                  <div className="flex w-full justify-end">
                     <DropdownMenu dir="rtl">
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="w-6">
-                          <DotsThreeOutlineVertical className="h-6 w-6 text-primary" />
+                          <DotsThreeOutlineVertical className="text-primary h-6 w-6" />
                           <span className="sr-only">Open menu</span>
                         </Button>
                       </DropdownMenuTrigger>
@@ -217,7 +207,7 @@ export default function Accounts({
                               onClick={() => {
                                 setOpenSelectInstagramDialog(true);
                                 setFacebookAccountId(
-                                  instagram.facebookAccountId
+                                  instagram.facebookAccountId,
                                 );
                               }}
                               variant={"outline"}
@@ -237,11 +227,11 @@ export default function Accounts({
                             {t("relogin")}
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
+                        <DropdownMenuItem
+                          onClick={() => setShowDeleteModal(true)}
+                        >
                           <Link href={`#`}>
-                            <AlertDialog
-                              open={showDeleteModal}
-                            >
+                            <AlertDialog open={showDeleteModal}>
                               <AlertDialogTrigger>
                                 <div className="flex items-center gap-2 text-red-600">
                                   <Trash size={18} />
@@ -288,8 +278,8 @@ export default function Accounts({
           );
         })
       ) : (
-        <div className="w-full flex items-center justify-center">
-          <p className="text-gray-600 text-sm">{t("noAccountsFound")}</p>
+        <div className="flex w-full items-center justify-center">
+          <p className="text-sm text-gray-600">{t("noAccountsFound")}</p>
         </div>
       )}
 

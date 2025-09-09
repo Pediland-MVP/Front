@@ -1,5 +1,5 @@
 import api from "./swr/api-client";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { InstagramNamespace } from "@/types/instagram";
 import { useRouter } from "next/navigation";
@@ -23,15 +23,10 @@ export default function useConnectInstagram() {
     await api
       .get(`/instagram/callbackIG?code=${code}`)
       .then(async (res) => {
-        toast({
-          title: t("instagramConnected"),
-        });
+        toast.success(t("instagramConnected"));
       })
       .catch((e) => {
-        toast({
-          title: t("instagramConnectionError"),
-          variant: "destructive",
-        });
+        toast.error(t("instagramConnectionError"));
       })
       .finally(() => {
         setIsCallbackIGLoading(false);

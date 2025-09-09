@@ -8,14 +8,13 @@ import { getLocale, getMessages } from "next-intl/server";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { ZodErrorsMapProvider } from "@/components/index";
-import { Toaster } from "@/components/ui/toaster";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
 
 import {
   ConsoleProvider,
   NavBottomProvider,
-  Toaster as Sonner,
+  Toaster,
 } from "@/components/index";
 
 export const metadata: Metadata = {
@@ -45,13 +44,22 @@ export default async function ConsoleLayout({
               <ZodErrorsMapProvider>
                 <ConsoleProvider>
                   <InstagramTokenErrorDialog />
+
                   <SubscriptionExpireWarningDialog />
+
                   {children}
+
                   <NavBottomProvider />
                 </ConsoleProvider>
               </ZodErrorsMapProvider>
-              <Toaster />
-              <Sonner />
+
+              <Toaster
+                richColors
+                theme="light"
+                toastOptions={{
+                  className: "font-Yekan text-[13px]",
+                }}
+              />
             </NextIntlClientProvider>
           </StandaloneChecker>
         </SWRProvider>

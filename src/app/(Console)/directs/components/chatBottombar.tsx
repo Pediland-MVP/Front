@@ -1,17 +1,16 @@
+import { buttonVariants } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import useCurrentLead from "@/store/currentLead.store";
+import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
+import { messagesSocket } from "@/utils/socket";
+import { PaperPlaneRightIcon } from "@phosphor-icons/react/dist/ssr";
+import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { EmojiPicker } from "./emojiPicker";
-import useCurrentLead from "@/store/currentLead.store";
-import { toast } from "@/components/ui-custom/useToast";
-import { messagesSocket } from "@/utils/socket";
-import { PaperPlaneRight } from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
-import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
-
 
 export default function ChatBottombar() {
   const { currentLead } = useCurrentLead();
@@ -19,7 +18,7 @@ export default function ChatBottombar() {
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const t = useTranslations('Inbox.ChatBottombar');
+  const t = useTranslations("Inbox.ChatBottombar");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
@@ -27,10 +26,7 @@ export default function ChatBottombar() {
 
   const handleSend = async () => {
     if (!currentLead) {
-      return toast({
-        variant: "destructive",
-        title: t('errors.send'),
-      });
+      return toast(t("errors.send"));
     }
 
     if (message.trim()) {
@@ -40,7 +36,10 @@ export default function ChatBottombar() {
         text: message.trim(),
       };
       const digest = Math.floor(Math.random()) * 10000 + Date.now();
-      messagesSocket.emit(WsMessageEvents.SEND_MESSAGE, { ...newMessage, digest });
+      messagesSocket.emit(WsMessageEvents.SEND_MESSAGE, {
+        ...newMessage,
+        digest,
+      });
 
       setMessage("");
 
@@ -64,7 +63,7 @@ export default function ChatBottombar() {
 
   return (
     <div className="_bottom-bar mt-4">
-      <div className="_wrapper w-full flex items-center">
+      <div className="_wrapper flex w-full items-center">
         <div className="_emoji">
           <EmojiPicker
             onChange={(value) => {
@@ -81,18 +80,21 @@ export default function ChatBottombar() {
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
               "h-9 w-9",
-              "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
+              "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted shrink-0 dark:hover:text-white",
             )}
             onClick={handleSend}
           >
-            <PaperPlaneRight size={22} className="text-muted-foreground -rotate-[30deg]" />
+            <PaperPlaneRightIcon
+              size={22}
+              className="text-muted-foreground -rotate-[30deg]"
+            />
           </Link>
         </div>
 
         <AnimatePresence initial={false}>
           <motion.div
             key="input"
-            className="w-full relative"
+            className="relative w-full"
             layout
             initial={{ opacity: 0, scale: 1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -112,8 +114,8 @@ export default function ChatBottombar() {
               onKeyDown={handleKeyPress}
               onChange={handleInputChange}
               name="message"
-              placeholder={t('textPlaceholder')}
-              className="w-full h-20 resize-none border-gray-200/60 rounded-md focus-visible:border-gray-300"
+              placeholder={t("textPlaceholder")}
+              className="h-20 w-full resize-none rounded-md border-gray-200/60 focus-visible:border-gray-300"
             ></Textarea>
           </motion.div>
         </AnimatePresence>

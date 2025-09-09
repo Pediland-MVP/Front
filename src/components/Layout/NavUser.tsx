@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import {
   CaretUpDownIcon,
   IdentificationBadgeIcon,
@@ -60,10 +60,7 @@ const NavUser = ({
         routeHandler(process.env.NEXT_PUBLIC_LANDING_URL);
       })
       .catch((e) => {
-        toast({
-          title: t("logoutFailed"),
-          variant: "destructive",
-        });
+        toast.error(t("logoutFailed"));
       })
       .finally(() => {
         setIsLogoutLoading(false);

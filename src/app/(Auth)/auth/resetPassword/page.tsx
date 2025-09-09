@@ -1,12 +1,5 @@
 "use client";
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-// UI
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,8 +9,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui-custom/useToast";
-import { ArrowLeft, Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeftIcon, KeyholeIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export default function ResetPasswordForm() {
   const t = useTranslations("Auth.ResetPassword");
@@ -37,77 +36,67 @@ export default function ResetPasswordForm() {
     },
   });
 
-  const router = useRouter()
+  const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/sendResetPasswordCode`, {
-        method: "PATCH",
-        body: JSON.stringify(values),
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/mobile/sendResetPasswordCode`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(values),
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
       if (!res.ok) {
         if (res.status === 429) {
-          toast({
-            title: t("tryAgainLater"),
-            variant: "destructive",
-          });
-          return
+          toast.error(t("tryAgainLater"));
+          return;
         }
 
-        toast({
-          title: t("resetRequestError"),
-          description: t("resetRequestErrorDescription"),
-          variant: "destructive",
-        });
-        return
+        toast.error(t("resetRequestError"));
+        return;
       }
 
-      toast({
-        title: t("resetRequestSent"),
-        description: t("checkMobile"),
-      });
+      toast.success(t("resetRequestSent"));
 
-      router.push(`/auth/resetPassword/changePassword?mobile=${values.mobile}`)
-    }
-    catch (e) {
-      toast({
-        title: t("resetRequestError"),
-        description: t("resetRequestErrorDescription"),
-        variant: "destructive",
-      });
-      return
-    }
-    finally {
+      router.push(`/auth/resetPassword/changePassword?mobile=${values.mobile}`);
+    } catch (e) {
+      toast.error(t("resetRequestError"));
+      return;
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <main className="h-full bg-blue-50/75">
-      <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="flex items-center justify-center h-full">
-          <div className="w-full sm:w-1/3 mx-auto">
+      <div className="container h-full max-w-6xl px-6 sm:px-0">
+        <div className="flex h-full items-center justify-center">
+          <div className="mx-auto w-full sm:w-1/3">
             <div className="mb-6 flex flex-col gap-2">
               <div className="flex items-center justify-center gap-2">
-                <Keyhole className="h-9 w-9 text-primary" />
-                <h1 className="text-2xl font-semibold text-primary">
+                <KeyholeIcon className="text-primary h-9 w-9" />
+                <h1 className="text-primary text-2xl font-semibold">
                   {t("resetPassword")}
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-center text-sm text-gray-500">
                 {t("enterMobile")}
               </p>
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="mobile"
@@ -135,11 +124,11 @@ export default function ResetPasswordForm() {
 
             <Button
               variant="link"
-              className="w-full text-muted-foreground mt-10"
+              className="text-muted-foreground mt-10 w-full"
               onClick={() => router.push("/auth/signin")}
             >
               {t("backToLogin")}
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeftIcon className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -147,4 +136,3 @@ export default function ResetPasswordForm() {
     </main>
   );
 }
-

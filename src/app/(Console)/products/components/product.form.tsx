@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { FileUpload } from "@/components/ui-custom/file-upload";
 import LoadingButton from "@/components/ui/button-loading";
 import { Switch } from "@/components/ui/switch";
@@ -285,10 +285,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   // نمایش توست در صورت بروز خطای imageId
   useEffect(() => {
     if (form.formState.errors.imageId) {
-      toast({
-        title: t("uploadProductImage"),
-        variant: "destructive",
-      });
+      toast.error(t("uploadProductImage"));
     }
     // console.log("Form errors:", form.formState.errors);
   }, [form.formState.errors.imageId]);
@@ -339,16 +336,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
         data: values,
       });
-      toast({ title: t("productAddedSuccess") });
+      toast(t("productAddedSuccess"));
       await mutate(
         (key) => typeof key === "string" && key.includes("products"),
       );
       router.push("/products");
     } catch (e: any) {
-      toast({
-        title: t_ec(e.response?.data.code),
-        variant: "destructive",
-      });
+      toast.error(t_ec(e.response?.data.code));
     } finally {
       setLoading(false);
     }

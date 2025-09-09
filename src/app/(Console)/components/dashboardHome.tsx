@@ -37,7 +37,7 @@ export default function DashboardHome() {
     <div className="_dashboard h-full">
       <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
-          <Card className="border-l-2 border-gray-100">
+          <Card className="border-l-2 border-gray-100 rounded-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("productCount")}
@@ -56,7 +56,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-2 border-gray-100">
+          <Card className="border-l-2 border-gray-100 rounded-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("leadCount")}
@@ -75,7 +75,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-2 border-gray-100">
+          <Card className="border-l-2 border-gray-100 rounded-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("automations")}
@@ -88,7 +88,7 @@ export default function DashboardHome() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-none">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("responseCount")}
@@ -108,8 +108,8 @@ export default function DashboardHome() {
           </Card>
         </div>
 
-        <div className="col-span-1 grid h-full bg-red-500 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-1 border-y-2 border-l-2 border-gray-100 lg:col-span-4">
+        <div className="col-span-1 grid h-full md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-1 border-y-2 border-l-2 border-gray-100 lg:col-span-4 rounded-none">
             <CardHeader>
               <CardTitle className="tracking-normal">
                 {t("leadsGrowthChart")}
@@ -120,7 +120,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
 
-          <Card className="col-span-1 border-y-2 border-gray-100 lg:col-span-3">
+          <Card className="col-span-1 border-y-2 border-gray-100 lg:col-span-3 rounded-none">
             <CardHeader>
               <CardTitle className="tracking-normal">
                 {t("recentSessions")}

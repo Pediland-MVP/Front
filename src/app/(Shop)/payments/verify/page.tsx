@@ -1,5 +1,5 @@
 "use client";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -17,7 +17,8 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
   const [isOk, setIsOk] = useState<boolean>();
-  const [response, setResponse] = useState<PaymentNamespace.GET.OrderpaymentVerify>()
+  const [response, setResponse] =
+    useState<PaymentNamespace.GET.OrderpaymentVerify>();
   const t = useTranslations("Checkout");
 
   useEffect(() => {
@@ -32,22 +33,20 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
       `${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/zarinpal/verify?Authority=${Authority}&Status=${Status}`,
       {
         credentials: "include",
-      }
+      },
     )
       .then(async (res) => {
         if (res.ok) {
-          const json = await res.json() as PaymentNamespace.GET.OrderpaymentVerify
+          const json =
+            (await res.json()) as PaymentNamespace.GET.OrderpaymentVerify;
           setIsOk(true);
-          setResponse(json)
+          setResponse(json);
           return;
         }
         setIsOk(false);
       })
       .catch((e) => {
-        toast({
-          title: t_ec("CHECK_CONNECTION"),
-          variant: "destructive",
-        });
+        toast.error(t_ec("CHECK_CONNECTION"));
       })
       .finally(() => {
         setIsLoading(false);
@@ -56,7 +55,7 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
 
   if (isLoading) {
     return (
-      <div className="h-svh flex justify-center items-center">
+      <div className="flex h-svh items-center justify-center">
         <span className="loading loading-spinner text-primary">
           درحال بارگزاری
         </span>
@@ -65,16 +64,16 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
   }
 
   return (
-    <div className="h-svh flex justify-center items-center">
+    <div className="flex h-svh items-center justify-center">
       {isOk === true ? (
-        <div className="_checkout h-svh flex flex-col justify-center items-center bg-white border rounded-xl p-5 md:p-10">
+        <div className="_checkout flex h-svh flex-col items-center justify-center rounded-xl border bg-white p-5 md:p-10">
           <Image
             src={"/images/emojies/smiling-face-with-hearts.webp"}
             height={200}
             width={200}
             alt={"قلب"}
           />
-          <p className="text-lg text-center">
+          <p className="text-center text-lg">
             {response?.data.orderProcessText || t("orderProcessingDescription")}
           </p>
 
@@ -86,14 +85,14 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
         </div>
       ) : (
         isOk === false && (
-          <div className="flex flex-col justify-center items-center gap-2">
+          <div className="flex flex-col items-center justify-center gap-2">
             <Image
               src={"/images/emojies/broken-heart.webp"}
               height={200}
               width={200}
               alt={"قلب شکسته"}
             />
-            <span className="text-primary font-semibold text-2xl">
+            <span className="text-primary text-2xl font-semibold">
               پرداخت با شکست مواجه شد
             </span>
           </div>

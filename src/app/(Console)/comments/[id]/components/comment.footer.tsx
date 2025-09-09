@@ -1,23 +1,20 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { CardFooter } from "@/components/ui/card";
+import { Form, FormField } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import api from "@/hooks/swr/api-client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PaperPlaneRightIcon } from "@phosphor-icons/react/dist/ssr";
+import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { mutate } from "swr";
 import { z } from "zod";
-import { CardFooter } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui-custom/useToast";
-import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPicker } from "../../../directs/components/emojiPicker";
-import { PaperPlaneRight } from "@phosphor-icons/react";
-import { FormField, Form } from "@/components/ui/form";
-import { KeyedMutator, mutate } from "swr";
-import { useTranslations } from "next-intl";
-import api from "@/hooks/swr/api-client";
-
-
-
 
 interface RedesignedCommentFooterProps {
   commentId: string;
@@ -26,10 +23,9 @@ interface RedesignedCommentFooterProps {
 
 export default function RedesignedCommentFooter({
   commentId,
-  addReply
+  addReply,
 }: RedesignedCommentFooterProps) {
-
-  const t = useTranslations('Comments.Footer')
+  const t = useTranslations("Comments.Footer");
 
   const formSchema = z.object({
     text: z.string().min(1, `${t("errors.text")}`),
@@ -52,19 +48,19 @@ export default function RedesignedCommentFooter({
         data,
         {
           withCredentials: true,
-        }
+        },
       );
 
       addReply(response.data);
-      await mutate((key) => typeof key === "string" && key.includes(`comments/${commentId}`));
-      toast({ title: t('success') });
+      await mutate(
+        (key) =>
+          typeof key === "string" && key.includes(`comments/${commentId}`),
+      );
+      toast.success(t("success"));
       form.reset();
     } catch (error) {
       console.error("Error submitting comment:", error);
-      toast({
-        title: t('error'),
-        variant: "destructive",
-      });
+      toast.error(t("error"));
     }
   };
 
@@ -81,11 +77,11 @@ export default function RedesignedCommentFooter({
   };
 
   return (
-    <CardFooter className="border-t px-2 pt-2 pb-2 fixed lg:static lg:p-5 bottom-0 left-0 right-0 bg-white w-full">
+    <CardFooter className="fixed right-0 bottom-0 left-0 w-full border-t bg-white px-2 pt-2 pb-2 lg:static lg:p-5">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full flex items-center"
+          className="flex w-full items-center"
         >
           <EmojiPicker
             onChange={(value) => {
@@ -101,12 +97,12 @@ export default function RedesignedCommentFooter({
             className="h-9 w-9 shrink-0"
             disabled={form.formState.isSubmitting}
           >
-            <PaperPlaneRight size={20} className="text-muted-foreground" />
+            <PaperPlaneRightIcon size={20} className="text-muted-foreground" />
           </Button>
           <AnimatePresence initial={false}>
             <motion.div
               key="input"
-              className="w-full relative mx-2"
+              className="relative mx-2 w-full"
               layout
               initial={{ opacity: 0, scale: 1 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -126,8 +122,8 @@ export default function RedesignedCommentFooter({
                   <Textarea
                     {...field}
                     ref={inputRef}
-                    placeholder={t('placeholder')}
-                    className="w-full resize-none min-h-[60px]"
+                    placeholder={t("placeholder")}
+                    className="min-h-[60px] w-full resize-none"
                     onKeyDown={handleKeyPress}
                     autoComplete="off"
                   />

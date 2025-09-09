@@ -11,30 +11,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface DeleteConfirmationDialogProps {
-  isOpen?: boolean;
-  onClose?: () => void;
-  onConfirm?: () => void;
-  itemId?: string;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
 export const DeleteConfirmationDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  itemId,
 }: DeleteConfirmationDialogProps) => {
   const t = useTranslations("DeleteConfirmationDialog");
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="ltr:text-left rtl:text-right">
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+          <AlertDialogTitle className="text-destructive flex items-center gap-1">
+            <WarningCircleIcon size={24} weight="duotone" />
+            {t("title")}
+          </AlertDialogTitle>
           <AlertDialogDescription>{t("description")}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex flex-row items-center justify-end gap-x-1">
+        <AlertDialogFooter>
           <AlertDialogAction onClick={onConfirm}>
             {t("delete")}
           </AlertDialogAction>

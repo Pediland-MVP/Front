@@ -31,12 +31,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import api from "@/hooks/swr/api-client";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";
 import { useState } from "react";
-import LoadingButton from '@/components/ui/button-loading';
+import LoadingButton from "@/components/ui/button-loading";
 
 // Define a proper type for DateObject
 type DateObjectType =
@@ -91,7 +91,7 @@ export function ExcelExportOrdersDrawer({
   const t = useTranslations("Orders.ExcelExport");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Create the schema with translations
   const formSchema = createFormSchema(t);
@@ -115,21 +115,17 @@ export function ExcelExportOrdersDrawer({
 
   // Form submission handler
   async function onSubmit(values: FormValues) {
-    setIsLoading(true)
-    await api.post('/orders/excelExport', values)
-    .then((res: AxiosResponse<IResponseMessage>) => {
-      toast({
-        title: t('success'),
-        description: t("excelWillSentToYourEmail"),
+    setIsLoading(true);
+    await api
+      .post("/orders/excelExport", values)
+      .then((res: AxiosResponse<IResponseMessage>) => {
+        toast(t("success"));
       })
-    })
-    .catch((e: AxiosError<ExceptionMessage>) => {
-      const error = t_ec(e.code)
-      toast({
-        title: error,
+      .catch((e: AxiosError<ExceptionMessage>) => {
+        const error = t_ec(e.code);
+        toast(error);
       })
-    })
-    .finally(() => setIsLoading(false))
+      .finally(() => setIsLoading(false));
     onOpenChange(false);
     form.reset();
   }
@@ -148,7 +144,7 @@ export function ExcelExportOrdersDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="sm:max-w-[425px] mx-auto">
+      <DrawerContent className="mx-auto sm:max-w-[425px]">
         <DrawerHeader>
           <DrawerTitle>{t("title")}</DrawerTitle>
           <DrawerDescription>{t("description")}</DrawerDescription>
@@ -277,7 +273,9 @@ export function ExcelExportOrdersDrawer({
               />
 
               <DrawerFooter>
-                <LoadingButton isLoading={isLoading} type="submit">{t("buttons.export")}</LoadingButton>
+                <LoadingButton isLoading={isLoading} type="submit">
+                  {t("buttons.export")}
+                </LoadingButton>
                 <DrawerClose asChild>
                   <Button variant="outline">{t("buttons.cancel")}</Button>
                 </DrawerClose>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { useEffect, useState } from "react";
 import useSWRImmutable, { mutate } from "swr";
@@ -27,7 +27,7 @@ import { InstagramLogo } from "@phosphor-icons/react";
 import { InstagramNamespace } from "@/types/instagram";
 import { APIError } from "@/types/apierror";
 import Image from "next/image";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
@@ -43,23 +43,26 @@ export function SelectInstagram({
   setOpen,
   facebookAccountId,
 }: DrawerDialogDemoProps) {
-  const t = useTranslations('Settings.Accounts.SelectInstagram');
+  const t = useTranslations("Settings.Accounts.SelectInstagram");
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
-  const router = useRouter()
+  const router = useRouter();
 
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader className="flex justify-center items-start mt-2">
+          <DialogHeader className="mt-2 flex items-start justify-center">
             <DialogTitle className="text-black">
-              {t('selectAccount')}
+              {t("selectAccount")}
             </DialogTitle>
             <DialogDescription className="text-right">
-              {t('accountsDescription')}
+              {t("accountsDescription")}
             </DialogDescription>
           </DialogHeader>
-          <SelectPagesForm facebookAccountId={facebookAccountId} setOpen={setOpen} />
+          <SelectPagesForm
+            facebookAccountId={facebookAccountId}
+            setOpen={setOpen}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -69,10 +72,8 @@ export function SelectInstagram({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <DrawerHeader className="">
-          <DrawerTitle>{t('selectAccount')}</DrawerTitle>
-          <DrawerDescription>
-            {t('accountsDescription')}
-          </DrawerDescription>
+          <DrawerTitle>{t("selectAccount")}</DrawerTitle>
+          <DrawerDescription>{t("accountsDescription")}</DrawerDescription>
         </DrawerHeader>
         <SelectPagesForm
           facebookAccountId={facebookAccountId}
@@ -81,7 +82,9 @@ export function SelectInstagram({
         />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-              <Button variant="outline" onClick={() => router.push('/accounts')}>{t('cancel')}</Button>
+            <Button variant="outline" onClick={() => router.push("/accounts")}>
+              {t("cancel")}
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
@@ -92,15 +95,15 @@ export function SelectInstagram({
 function SelectPagesForm({
   className,
   facebookAccountId,
-  setOpen
+  setOpen,
 }: {
   className?: string;
   facebookAccountId: string;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const t = useTranslations('SelectPagesForm');
+  const t = useTranslations("SelectPagesForm");
   const [loading, setLoading] = useState<{ id: string }>();
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     data: instagramPages,
@@ -108,20 +111,16 @@ function SelectPagesForm({
     error: instagramPagesError,
   } = useSWRImmutable<InstagramNamespace.GET["Pages"] | APIError>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${facebookAccountId}/instagramPages`,
-    fetcher
+    fetcher,
   );
 
   useEffect(() => {
     if (!instagramPagesError) return;
-    toast({
-      title: instagramPagesError?.message,
-      description: t('serverConnectionError'),
-      variant: "destructive",
-    });
+    toast.error(instagramPagesError?.message);
   }, [instagramPagesError]);
 
   const handleSelectInstagram = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
     const pageId = e.currentTarget.dataset.id;
@@ -131,50 +130,44 @@ function SelectPagesForm({
       {
         method: "PATCH",
         credentials: "include",
-      }
+      },
     )
       .then(async (res) => {
         const response = await res.json();
         if (!res.ok) {
           const isExist = response?.message?.includes("already exist");
-          toast({
-            title: isExist ? t('accountAlreadySelected') : t('serverConnectionError'),
-            description: isExist ? t('selectDifferentAccount') : t('serverConnectionError'),
-            variant: "destructive",
-          });
+          toast(
+            isExist ? t("accountAlreadySelected") : t("serverConnectionError"),
+          );
           return;
         }
-        toast({
-          title: t('accountSelectedSuccess'),
-        });
-        await mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`)
-        setOpen(false)
-        router.push('/accounts')
+        toast(t("accountSelectedSuccess"));
+        await mutate(
+          `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
+        );
+        setOpen(false);
+        router.push("/accounts");
       })
       .catch((e) => {
         console.error(e);
-        toast({
-          title: t('serverConnectionError'),
-          description: t('serverConnectionError'),
-          variant: "destructive",
-        });
+        toast(t("serverConnectionError"));
       })
       .finally(() => setLoading(undefined));
   };
 
   return (
     <form className={cn(className)}>
-      <div className="flex justify-cent items-center gap-x-4 w-full mb-4">
+      <div className="justify-cent mb-4 flex w-full items-center gap-x-4">
         {isInstagramPagesLoading &&
           Array.from({ length: 2 }).map((_, index) => (
             <Skeleton
               key={index}
-              className="flex flex-col gap-y-2 justify-center items-center w-52 h-52 border rounded-lg "
+              className="flex h-52 w-52 flex-col items-center justify-center gap-y-2 rounded-lg border"
             >
-              <Skeleton className="w-20 h-20" />
-              <Skeleton className="w-20 h-4" />
-              <Skeleton className="w-20 h-4" />
-              <Skeleton className="w-20 h-8 rounded" />
+              <Skeleton className="h-20 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-20 rounded" />
             </Skeleton>
           ))}
         {Array.isArray(instagramPages) &&
@@ -182,7 +175,7 @@ function SelectPagesForm({
             return (
               <div
                 key={instagram.id}
-                className="flex flex-col gap-y-2 justify-center items-center px-4 w-52 h-52 border rounded-lg"
+                className="flex h-52 w-52 flex-col items-center justify-center gap-y-2 rounded-lg border px-4"
               >
                 {instagram.profile_picture_url ? (
                   <Image
@@ -200,10 +193,10 @@ function SelectPagesForm({
                 <Button
                   onClick={handleSelectInstagram}
                   data-id={instagram.id}
-                  className="w-full text-black flex justify-center items-center gap-x-2"
+                  className="flex w-full items-center justify-center gap-x-2 text-black"
                   variant={"outline"}
                 >
-                  {t('select')}
+                  {t("select")}
                   {loading?.id === instagram.id && <LoadingSpinner size={20} />}
                 </Button>
               </div>
@@ -213,4 +206,3 @@ function SelectPagesForm({
     </form>
   );
 }
-

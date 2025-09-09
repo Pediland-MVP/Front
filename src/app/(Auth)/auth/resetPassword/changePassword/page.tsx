@@ -1,15 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import ResetButton from "./resendButton";
-import { useRouter, useSearchParams } from "next/navigation";
-import { REGEX_PASSWORD } from "@/utils/regex";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-// UI
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,17 +9,25 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui-custom/useToast";
 import { InputPassword } from "@/components/ui/inputPassword";
-import { Keyhole } from "@phosphor-icons/react/dist/ssr";
+import { REGEX_PASSWORD } from "@/utils/regex";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { KeyholeIcon } from "@phosphor-icons/react/dist/ssr";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useTranslations } from "next-intl";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import ResetButton from "./resendButton";
 
 export default function ResetPasswordForm() {
   const t = useTranslations("Auth.ResetPassword.ChangePassword");
@@ -91,9 +90,9 @@ export default function ResetPasswordForm() {
         },
         {
           shouldFocus: true,
-        }
+        },
       );
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
 
@@ -107,54 +106,34 @@ export default function ResetPasswordForm() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!res.ok) {
         if (res.status === 429) {
-          toast({
-            title: t("tryAgainLater"),
-            variant: "destructive",
-          });
+          toast.error(t("tryAgainLater"));
           return;
         }
 
         if (res.status === 410) {
-          toast({
-            title: t("codeExpired"),
-            variant: "destructive",
-          });
+          toast.error(t("codeExpired"));
           return;
         }
 
         if (res.status === 400) {
-          toast({
-            title: t("invalidCode"),
-            variant: "destructive",
-          })
-          return
+          toast.error(t("invalidCode"));
+          return;
         }
 
-        toast({
-          title: t("resetRequestError"),
-          description: t("resetRequestErrorDescription"),
-          variant: "destructive",
-        });
+        toast.error(t("resetRequestError"));
         return;
       }
 
-      toast({
-        title: t("resetRequestSent"),
-        description: t("checkMobile"),
-      });
+      toast.success(t("resetRequestSent"));
 
       router.push("/auth/signin");
     } catch (e) {
-      toast({
-        title: t("resetRequestError"),
-        description: t("resetRequestErrorDescription"),
-        variant: "destructive",
-      });
+      toast.error(t("resetRequestError"));
       return;
     } finally {
       setIsLoading(false);
@@ -163,17 +142,17 @@ export default function ResetPasswordForm() {
 
   return (
     <main className="h-full bg-blue-50/75">
-      <div className="container max-w-6xl px-6 sm:px-0 h-full">
-        <div className="flex items-center justify-center h-full">
-          <div className="w-full sm:w-1/3 mx-auto">
+      <div className="container h-full max-w-6xl px-6 sm:px-0">
+        <div className="flex h-full items-center justify-center">
+          <div className="mx-auto w-full sm:w-1/3">
             <div className="mb-6 flex flex-col gap-2">
               <div className="flex items-center justify-center gap-2">
-                <Keyhole className="h-9 w-9 text-primary" />
-                <h1 className="text-2xl font-semibold text-primary">
+                <KeyholeIcon className="text-primary h-9 w-9" />
+                <h1 className="text-primary text-2xl font-semibold">
                   {t("resetPassword")}
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-center text-sm text-gray-500">
                 {t("enterMobile")}
               </p>
             </div>
@@ -203,7 +182,7 @@ export default function ResetPasswordForm() {
                   control={form.control}
                   name="otp"
                   render={({ field }) => (
-                    <FormItem className="my-6 flex flex-col justify-center items-center">
+                    <FormItem className="my-6 flex flex-col items-center justify-center">
                       <FormControl>
                         <InputOTP
                           maxLength={6}
@@ -262,7 +241,7 @@ export default function ResetPasswordForm() {
                     </FormItem>
                   )}
                 />
-                
+
                 <ResetButton mobile={form.getValues().mobile} />
 
                 <Button

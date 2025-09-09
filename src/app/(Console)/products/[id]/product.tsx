@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import ProductFormSkeleton from "../components/product.form.skeleton";
-import ProductForm from "../components/product.form";
-import { useTranslations } from "next-intl";
-// Just UI Imports Below
-import { toast } from "@/components/ui-custom/useToast";
-import useSWRImmutable from "swr/immutable";
 import useUser from "@/hooks/useUser";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import useSWRImmutable from "swr/immutable";
+import ProductForm from "../components/product.form";
+import ProductFormSkeleton from "../components/product.form.skeleton";
 
 export default function Product({ id }: { id: string }) {
   const t = useTranslations("Products");
@@ -23,13 +22,8 @@ export default function Product({ id }: { id: string }) {
   });
 
   useEffect(() => {
-    if (productError)
-      toast({
-        title: t("notFound"),
-        variant: "destructive",
-      });
+    if (productError) toast.error(t("notFound"));
   }, [productError]);
-  // console.log(typeof product, !!product);
 
   if (!product) {
     return <ProductFormSkeleton />;

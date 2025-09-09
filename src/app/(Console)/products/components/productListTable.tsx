@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ProductNamespace } from "@/types/product";
-import useDebounce from "@/hooks/useDebounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import EditProduct from "./product.dialog";
 import { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
@@ -26,14 +26,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import {
-  CaretRight,
-  CaretLeft,
-  Pencil,
-  Trash,
+  CaretRightIcon,
+  CaretLeftIcon,
+  PencilIcon,
+  TrashIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { ExceptionMessage } from "../../../../src/types/exceptionMessage";
+import { ExceptionMessage } from "@/types/exceptionMessage";
 import CardToCardAlert from "./cardToCard.alert";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
@@ -71,7 +71,7 @@ export default function ProductListTable() {
     }`,
     {
       revalidateOnMount: true,
-    }
+    },
   );
   const products = productsData?.items || [];
   const productsMeta = productsData?.meta || undefined;
@@ -82,7 +82,7 @@ export default function ProductListTable() {
     useState(false);
 
   const shouldCheckPaymentMethod: boolean = Boolean(
-    productsData && productsData.items.length === 0
+    productsData && productsData.items.length === 0,
   );
 
   const {
@@ -114,30 +114,22 @@ export default function ProductListTable() {
       await api
         .delete(`/products/${itemToDelete}`)
         .then((res) => {
-          toast({
-            title: t("deleted"),
-          });
+          toast(t("deleted"));
           mutate(mutateIncludeStringKey("products"));
         })
         .catch((e: AxiosError<ExceptionMessage>) => {
           const code = e.response?.data?.code;
           if (code === "PRODUCT_IS_IN_AUTOMATION") {
             e.response?.data.data?.contentCycles?.forEach((cc: any) => {
-              toast({
-                title: t_ec(code),
+              toast.error(t_ec(code), {
                 description: t("productInAutomation", {
                   automationTitle: cc?.title,
                 }),
-                variant: "destructive",
               });
             });
             return;
           }
-          toast({
-            title: t_ec(code),
-            description: t("problemOccurred"),
-            variant: "destructive",
-          });
+          toast.error(t_ec(code));
         })
         .finally(() => {
           setDeleteDialogOpen(false);
@@ -221,19 +213,19 @@ export default function ProductListTable() {
                   <TableCell>فعال</TableCell>
 
                   <TableCell>
-                    <div className="flex gap-2 justify-center">
-                      <Pencil
+                    <div className="flex justify-center gap-2">
+                      <PencilIcon
                         size={20}
                         weight="light"
-                        className="hover:text-green-600 cursor-pointer"
+                        className="cursor-pointer hover:text-green-600"
                         onClick={() => {
                           router.push(`/products/${product.id}`);
                         }}
                       />
-                      <Trash
+                      <TrashIcon
                         size={20}
                         weight="light"
-                        className="hover:text-red-600 cursor-pointer"
+                        className="cursor-pointer hover:text-red-600"
                         onClick={() => handleDeleteClick(product.id)}
                       />
                     </div>
@@ -245,14 +237,14 @@ export default function ProductListTable() {
         </Table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="mt-4 flex items-center justify-between">
         <Button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
           variant={"ghost"}
           size={"sm"}
         >
-          {locale === "fa" ? <CaretRight /> : <CaretLeft />}
+          {locale === "fa" ? <CaretRightIcon /> : <CaretLeftIcon />}
           {t("previous")}
         </Button>
         <span className="text-muted-foreground text-sm">
@@ -267,7 +259,7 @@ export default function ProductListTable() {
           size={"sm"}
         >
           {t("next")}
-          {locale === "fa" ? <CaretLeft /> : <CaretRight />}
+          {locale === "fa" ? <CaretLeftIcon /> : <CaretRightIcon />}
         </Button>
       </div>
 

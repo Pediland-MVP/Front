@@ -1,13 +1,11 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import Image from "next/image";
+import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import ImageWithFallback from "@/components/ui/imageWithCallback";
 import {
   Select,
   SelectContent,
@@ -15,25 +13,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { toast } from "@/components/ui-custom/useToast";
+import { Separator } from "@/components/ui/separator";
+import api from "@/hooks/swr/api-client";
 import type { ExceptionMessage } from "@/types/exceptionMessage";
-import { Loader2, Package, User, MapPin, CreditCard } from "lucide-react";
-import { mutate } from "swr";
 import {
   ORDER_STATUS,
   type OrderNamespace,
 } from "@/types/order/order.namespace";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { OrderInstagramProfile } from "./orderInstagramProfile";
-import ImageWithFallback from "@/components/ui/imageWithCallback";
-import api from "@/hooks/swr/api-client";
+import { useGetOrderPrices } from "@/utils/getOrderPrices";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PenIcon } from "@phosphor-icons/react/dist/ssr";
 import type { AxiosError } from "axios";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { Pen } from "@phosphor-icons/react/dist/ssr";
-import { getOrderPrices, useGetOrderPrices } from "@/utils/getOrderPrices";
+import { CreditCard, Loader2, MapPin, Package, User } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import type React from "react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { mutate } from "swr";
+import * as z from "zod";
+import { OrderInstagramProfile } from "./orderInstagramProfile";
 
 const statusSchema = z.object({
   status: z.nativeEnum(ORDER_STATUS),
@@ -65,18 +65,14 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
         ...data,
       })
       .then(async (res) => {
-        toast({
-          title: t("statusUpdated"),
-        });
+        toast.success(t("statusUpdated"));
         await mutate(
-          (key: any) => typeof key === "string" && key.includes("/orders?page=")
+          (key: any) =>
+            typeof key === "string" && key.includes("/orders?page="),
         );
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
-        toast({
-          title: t_ec(e.response?.data.code),
-          variant: "destructive",
-        });
+        toast.error(t_ec(e.response?.data.code));
       })
       .finally(() => setIsLoading(false));
   };
@@ -85,16 +81,18 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
     return <LoadingSpinner />;
   }
 
-  const { isDiscount, paidPrice, totalPrice, shippingCost } = useGetOrderPrices(order.orderProducts);
+  const { isDiscount, paidPrice, totalPrice, shippingCost } = useGetOrderPrices(
+    order.orderProducts,
+  );
 
   return (
-    <div className="w-full h-full overflow-y-auto max-h-[calc(100vh-10rem)]">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-4">
+    <div className="h-full max-h-[calc(100vh-10rem)] w-full overflow-y-auto">
+      <div className="grid grid-cols-1 gap-6 pb-4 lg:grid-cols-2">
         {/* Left Column - Order Details */}
         <div className="space-y-6">
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="shadow-lg transition-shadow duration-300 hover:shadow-xl">
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <CardTitle>{t("orderDetails")}</CardTitle>
                 <Badge className="px-2 py-1">
                   {t(`orderStatus.${order.status}`)}
@@ -105,7 +103,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
               <div className="grid grid-cols-1 gap-6">
                 {/* Product Details Section */}
                 <div className="w-full">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center">
+                  <h3 className="mb-2 flex items-center text-lg font-semibold">
                     <Package className="mr-2" size={20} />
                     {t("productDetails")}
                   </h3>
@@ -113,22 +111,26 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                     {order.orderProducts.map((op) => (
                       <div
                         key={op.id}
-                        className="flex gap-x-3 items-center space-x-4 mb-4 p-2 rounded-md hover:bg-accent/10 transition-colors duration-200"
+                        className="hover:bg-accent/10 mb-4 flex items-center gap-x-3 space-x-4 rounded-md p-2 transition-colors duration-200"
                       >
                         <Image
                           src={op.product?.images[0]?.url || "/placeholder.svg"}
                           alt={op.product?.title}
                           width={64}
                           height={64}
-                          className="rounded-md shadow-sm flex-shrink-0"
+                          className="flex-shrink-0 rounded-md shadow-sm"
                         />
                         <div>
-                          <h4 className="font-medium">{op.product ? op.product?.title : t('productDeleted')}</h4>
-                          <p className="text-sm text-muted-foreground">
+                          <h4 className="font-medium">
+                            {op.product
+                              ? op.product?.title
+                              : t("productDeleted")}
+                          </h4>
+                          <p className="text-muted-foreground text-sm">
                             {t("quantity")}: {op.quantity} | {t("price")}:{" "}
                             {op.product?.price.toLocaleString()}
                           </p>
-                          <div className="flex gap-x-1 mt-1">
+                          <div className="mt-1 flex gap-x-1">
                             {op.attributeValues.map((av) => (
                               <Badge variant={"outline"}>{av.value}</Badge>
                             ))}
@@ -144,15 +146,15 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   <div>
                     {t("shippingCost")}: {shippingCost?.toLocaleString()}
                   </div>
-                  <div className="font-bold text-primary">
+                  <div className="text-primary font-bold">
                     {t("paidPrice")}: {paidPrice.toLocaleString()}
                   </div>
                 </div>
 
                 {/* Customer Details Section */}
                 <div className="space-y-4">
-                  <div className="bg-accent/5 p-4 rounded-md">
-                    <h3 className="text-lg font-semibold mb-2 flex items-center text-primary">
+                  <div className="bg-accent/5 rounded-md p-4">
+                    <h3 className="text-primary mb-2 flex items-center text-lg font-semibold">
                       <User className="mr-2" size={20} />
                       {t("customerDetails")}
                     </h3>
@@ -165,9 +167,9 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
 
                   {/* Product Field Values Section */}
                   {(order?.productFieldValues?.length || 0) > 0 && (
-                    <div className="bg-accent/5 p-4 rounded-md">
-                      <h3 className="text-lg font-semibold mb-2 flex items-center text-primary">
-                        <Pen className="mr-2" size={20} />
+                    <div className="bg-accent/5 rounded-md p-4">
+                      <h3 className="text-primary mb-2 flex items-center text-lg font-semibold">
+                        <PenIcon className="mr-2" size={20} />
                         {t("productFieldValues")}
                       </h3>
                       <div>
@@ -184,8 +186,8 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   )}
 
                   {/* Shipping Address Section */}
-                  <div className="bg-accent/5 p-4 rounded-md">
-                    <h3 className="text-lg font-semibold mb-2 flex items-center text-primary">
+                  <div className="bg-accent/5 rounded-md p-4">
+                    <h3 className="text-primary mb-2 flex items-center text-lg font-semibold">
                       <MapPin className="mr-2" size={20} />
                       {t("shippingAddress")}
                     </h3>
@@ -216,14 +218,14 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
         {/* Right Column - Card to Card Image and Status Changer */}
         <div className="space-y-6">
           {/* Card to Card Image */}
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="shadow-lg transition-shadow duration-300 hover:shadow-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-x-1">
                 <CreditCard className="mr-2" size={20} />
                 {t("cardToCardImage")}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center items-center">
+            <CardContent className="flex items-center justify-center">
               <Dialog
                 open={isImageModalOpen}
                 onOpenChange={setIsImageModalOpen}
@@ -231,23 +233,23 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="relative h-40 w-40 p-0 hover:shadow-md transition-shadow duration-300"
+                    className="relative h-40 w-40 p-0 transition-shadow duration-300 hover:shadow-md"
                   >
                     <Image
                       src={order.orderCardToCard.url ?? "/images/no-image.png"}
                       alt={t("cardToCardImage")}
                       fill
-                      className="w-full h-auto object-cover rounded-md"
+                      className="h-auto w-full rounded-md object-cover"
                     />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-3xl h-[90vh] max-h-[90vh]">
+                <DialogContent className="h-[90vh] max-h-[90vh] max-w-3xl">
                   <ImageWithFallback
                     src={order.orderCardToCard?.url ?? "/images/no-image.png"}
                     fallbackSrc="/images/no-image.png"
                     alt={t("cardToCardImage")}
                     fill
-                    className="w-full h-auto object-contain"
+                    className="h-auto w-full object-contain"
                   />
                 </DialogContent>
               </Dialog>
@@ -255,7 +257,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
           </Card>
 
           {/* Order Status Card */}
-          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card className="shadow-lg transition-shadow duration-300 hover:shadow-xl">
             <CardHeader>
               <CardTitle>{t("orderStatusTitle")}</CardTitle>
             </CardHeader>
@@ -285,7 +287,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
                 >
                   {isLoading ? (
                     <>

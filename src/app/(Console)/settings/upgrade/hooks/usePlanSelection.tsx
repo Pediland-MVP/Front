@@ -1,5 +1,5 @@
 "use client";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import useUser from "@/hooks/useUser";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { PlanNamespace } from "@/types/plans/plan.namespace";
@@ -33,9 +33,7 @@ export function usePlanSelection() {
   useEffect(() => {
     if (!plansError) return;
     const errorMessage = plansError.response?.data as ExceptionMessage;
-    toast({
-      title: t_ec(errorMessage?.code),
-    });
+    toast.error(t_ec(errorMessage?.code));
   }, [plansError]);
 
   useEffect(() => {

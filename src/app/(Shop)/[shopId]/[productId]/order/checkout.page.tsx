@@ -21,15 +21,12 @@ import OrderNotfound from "./components/order.notfound";
 import OrderProcessing from "./components/order.processing";
 // UI
 import { Card } from "@/components/ui/card";
-import {
-  FormStep,
-  FormStepperProvider,
-} from "@/components/ui/formStepper";
+import { FormStep, FormStepperProvider } from "@/components/ui/formStepper";
 import {
   House,
   User,
   CreditCard,
-  UploadSimple
+  UploadSimple,
 } from "@phosphor-icons/react/dist/ssr";
 import { CheckoutContext } from "./useCheckout";
 import useSWRImmutable from "swr/immutable";
@@ -42,7 +39,7 @@ import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import CheckoutError from "./components/checkout.error";
 import useSWR, { mutate } from "swr";
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
-import { toast } from "@/components/ui-custom/useToast";
+import { toast } from "sonner";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
@@ -65,7 +62,7 @@ const FloatingTimeCircle = dynamic(
   {
     loading: () => <FloatingTimeCircleSkeleton />,
     ssr: false,
-  }
+  },
 );
 
 const UploadTransaction = dynamic(
@@ -73,7 +70,7 @@ const UploadTransaction = dynamic(
   {
     loading: () => <UploadTransactionSkeleton />,
     ssr: false,
-  }
+  },
 );
 
 export const orderFormSchema = z.object({
@@ -95,10 +92,10 @@ export const orderFormSchema = z.object({
         label: z.string(),
         type: z.nativeEnum(ProductFieldTypeEnum),
         fieldId: z.string().uuid(),
-      })
+      }),
     )
     .optional(),
-  attributeValueIds: z.array(z.number())
+  attributeValueIds: z.array(z.number()),
 });
 
 export type CheckoutProps = {
@@ -132,7 +129,7 @@ export default function CheckoutPage({
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
     {
       refreshInterval: 30_000,
-    }
+    },
   );
 
   const {
@@ -141,7 +138,7 @@ export default function CheckoutPage({
     error: productError,
   } = useSWRImmutable<ProductNamespace.PublicProduct>(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${productId}`,
-    fetcher2
+    fetcher2,
   );
 
   const {
@@ -150,7 +147,7 @@ export default function CheckoutPage({
     error: errorLead,
   } = useSWRImmutable(
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/my/contact`,
-    fetcher2
+    fetcher2,
   );
 
   useEffect(() => {
@@ -176,7 +173,7 @@ export default function CheckoutPage({
       address: "",
       postalcode: "",
       productFieldValues: [],
-      attributeValueIds: []
+      attributeValueIds: [],
     },
   });
 
@@ -193,7 +190,6 @@ export default function CheckoutPage({
     }
   }, [lead]);
 
-
   const isProductFieldsInitialized = useRef(false);
   useEffect(() => {
     // Load field values
@@ -204,21 +200,21 @@ export default function CheckoutPage({
 
     const productFieldsTemp = product.fields.map((f, index) => {
       const pendingFieldValue = _pendingOrder?.productFieldValues?.find(
-        (v) => v.fieldId === f.id
-      )
-      
-      return ({...f, value: pendingFieldValue?.value ?? '', fieldId: f.id})
+        (v) => v.fieldId === f.id,
+      );
+
+      return { ...f, value: pendingFieldValue?.value ?? "", fieldId: f.id };
     });
-    form.setValue("productFieldValues", productFieldsTemp)
-    isProductFieldsInitialized.current = true
-  }, [product, _pendingOrder,isLoadingPendingOrder]);
+    form.setValue("productFieldValues", productFieldsTemp);
+    isProductFieldsInitialized.current = true;
+  }, [product, _pendingOrder, isLoadingPendingOrder]);
 
   const {
     data: shop,
     isLoading: isLoadingShop,
     error: shopError,
   } = useSWRImmutable<ShopNamespace.GET.Shop>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`
+    `${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`,
   );
 
   useEffect(() => {
@@ -245,10 +241,8 @@ export default function CheckoutPage({
   useEffect(() => {
     const orderCancleHandler = async () => {
       await mutate((key) => typeof key === "string" && key.includes("pending"));
-      toast({
-        title: "مدت زمان سفارش شما منقضی شد",
+      toast.error("مدت زمان سفارش شما منقضی شد", {
         description: "لطفا مجددا سفارش دهید",
-        variant: "destructive",
       });
       setCurrentStep(1);
       setTimeLeft((old) => {
@@ -260,7 +254,6 @@ export default function CheckoutPage({
       orderCancleHandler();
     }
   }, [timeLeft]);
-
 
   useEffect(() => {
     if (!_pendingOrder && currentStep > 1) {
@@ -354,7 +347,7 @@ export default function CheckoutPage({
       }}
     >
       <header>
-        <div className="container max-w-4xl px-3 sm:px-4 xl:px-0 mx-auto">
+        <div className="container mx-auto max-w-4xl px-3 sm:px-4 xl:px-0">
           <div className="_wrap flex items-center justify-between py-3 lg:py-4">
             <div className="_logo flex items-center gap-3">
               <Image
@@ -364,7 +357,7 @@ export default function CheckoutPage({
                 height={50}
                 className="rounded-lg"
               />
-              <span className="text-xl font-bold text-primary">
+              <span className="text-primary text-xl font-bold">
                 {shop?.name}
               </span>
             </div>
@@ -382,7 +375,7 @@ export default function CheckoutPage({
             />
           )} */}
 
-          <Card className="_checkout border rounded-xl p-0 md:p-10">
+          <Card className="_checkout rounded-xl border p-0 md:p-10">
             <ProductDetails />
 
             <FormStepperProvider
@@ -396,7 +389,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={1}
-                icon={<User className="w-6 h-6" />}
+                icon={<User className="h-6 w-6" />}
                 title="اطلاعات شخصی"
               >
                 <Suspense fallback={<CustomerDetailsSkeleton />}>
@@ -407,7 +400,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={2}
-                icon={<House className="w-6 h-6" />}
+                icon={<House className="h-6 w-6" />}
                 title="آدرس"
               >
                 <Suspense fallback={<CustomerAddressSkeleton />}>
@@ -418,7 +411,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={3}
-                icon={<CreditCard className="w-6 h-6" />}
+                icon={<CreditCard className="h-6 w-6" />}
                 title="پرداخت"
               >
                 <Suspense fallback={<PaymentSkeleton />}>
@@ -429,7 +422,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={4}
-                icon={<UploadSimple className="w-6 h-6" />}
+                icon={<UploadSimple className="h-6 w-6" />}
                 title="آپلود مدارک"
               >
                 <Suspense fallback={<UploadTransactionSkeleton />}>

@@ -1,12 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-
+import ButtonLoading from "@/components/ui/button-loading";
 import {
   Form,
   FormControl,
@@ -15,18 +9,23 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/components/ui-custom/useToast";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import ButtonLoading from "@/components/ui/button-loading";
-import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
-import { AxiosError } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { AxiosError } from "axios";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export default function VerifyOTP() {
   const t = useTranslations("Auth.Verify");
@@ -59,18 +58,12 @@ export default function VerifyOTP() {
     await api
       .post("/auth/mobile/verifyOtp", values)
       .then((res) => {
-        toast({
-          title: t("toasts.loginSuccess"),
-          description: t("toasts.welcomeMessage"),
-        });
+        toast.success(t("toasts.loginSuccess"));
         router.push("/");
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         const message = t_ec(e.response?.data?.code);
-        toast({
-          title: message,
-          variant: "destructive",
-        });
+        toast.error(message);
       })
       .finally(() => {
         setIsLoading(false);
@@ -82,16 +75,11 @@ export default function VerifyOTP() {
     await api
       .post("/auth/mobile/resendOtp")
       .then((res) => {
-        toast({
-          title: t("toasts.resendOk"),
-        });
+        toast.success(t("toasts.resendOk"));
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         const message = t_ec(e.response?.data?.code);
-        toast({
-          title: message,
-          variant: "destructive",
-        });
+        toast.error(message);
       })
       .finally(() => {
         setIsResendLoading(false);
@@ -105,21 +93,18 @@ export default function VerifyOTP() {
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
   const logoutHandler = async (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     e.preventDefault();
     setIsLogoutLoading(true);
     await api
       .delete("/auth/logout")
       .then(async (res) => {
-        clearAccessToken()
+        clearAccessToken();
         router.push(process.env.NEXT_PUBLIC_MAIN_SITE_URL);
       })
       .catch((e) => {
-        toast({
-          title: t("logoutFailed"),
-          variant: "destructive",
-        });
+        toast.error(t("logoutFailed"));
       })
       .finally(() => {
         setIsLogoutLoading(false);
@@ -127,21 +112,21 @@ export default function VerifyOTP() {
   };
 
   return (
-    <main className=" h-svh w-full flex justify-center items-center">
-      <div className="container max-w-6xl px-3 sm:px-4 xl:px-0 mx-auto">
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center w-full sm:w-1/3 mx-auto">
+    <main className="flex h-svh w-full items-center justify-center">
+      <div className="container mx-auto max-w-6xl px-3 sm:px-4 xl:px-0">
+        <div className="flex h-full items-center justify-center">
+          <div className="mx-auto w-full text-center sm:w-1/3">
             <h1 className="text-2xl font-semibold">{t("title")}</h1>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full flex flex-col justify-center items-center"
+                className="flex w-full flex-col items-center justify-center"
               >
                 <FormField
                   control={form.control}
                   name="otp"
                   render={({ field }) => (
-                    <FormItem className="my-6 flex flex-col justify-center items-center">
+                    <FormItem className="my-6 flex flex-col items-center justify-center">
                       <FormControl>
                         <InputOTP
                           maxLength={6}
@@ -168,7 +153,7 @@ export default function VerifyOTP() {
                 <ButtonLoading
                   isLoading={isLoading}
                   type="submit"
-                  className="col-span-4 text-white w-9/12"
+                  className="col-span-4 w-9/12 text-white"
                   color="success"
                   disabled={isLoading}
                   size={"lg"}
@@ -179,22 +164,22 @@ export default function VerifyOTP() {
             </Form>
             <div className="mt-4">
               <p
-                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
+                className="flex cursor-pointer items-center justify-center text-sm font-light text-gray-400 duration-300 hover:text-gray-700"
                 onClick={resendHandler}
               >
                 {isResendLoading ? (
-                  <CircleNotch className="animate-spin" />
+                  <CircleNotchIcon className="animate-spin" />
                 ) : (
                   t("resendCode")
                 )}
               </p>
 
               <p
-                className="text-sm text-gray-400 hover:text-gray-700 font-light duration-300 cursor-pointer flex justify-center items-center"
+                className="flex cursor-pointer items-center justify-center text-sm font-light text-gray-400 duration-300 hover:text-gray-700"
                 onClick={logoutHandler}
               >
                 {isLogoutLoading ? (
-                  <CircleNotch className="animate-spin" />
+                  <CircleNotchIcon className="animate-spin" />
                 ) : (
                   t("logout")
                 )}
