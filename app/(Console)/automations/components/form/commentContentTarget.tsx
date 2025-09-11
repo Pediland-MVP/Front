@@ -24,6 +24,9 @@ export default function CommentContentTarget() {
       setValue('instagramPost', null)
     }
     setValue('isCommentContentTargetEnabled', value)    
+    if (value === true) {
+      setValue('isDirect', false)
+    }
   }
 
   if (!watch("isComment")) {

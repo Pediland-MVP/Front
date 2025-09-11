@@ -1,9 +1,9 @@
 // app/(Console)/automations/components/form/trigger.tsx
 
 import { useTranslations } from "next-intl";
-import { Control, UseFormGetValues } from "react-hook-form";
+import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { z } from "zod";
-import { contentCycleFormSchema } from "../contentCycle";
+import { contentCycleFormSchema } from '../contentCycle';
 
 // UI Imports
 import HelpmeDialog from "@/components/global/helpme.dialog";
@@ -18,9 +18,12 @@ type TriggerProps = {
 
 export default function Trigger({ control, getValues }: TriggerProps) {
   const t = useTranslations("Automations.Trigger");
+  const {watch} = useFormContext<z.infer<typeof contentCycleFormSchema>>()
 
   return (
-    <div className="_trigger relative flex items-center gap-4 md:gap-6">
+    <div className="_trigger relative flex flex-col items-center w-full">
+      <div className="relative flex items-center gap-4 md:gap-6">
+
       <span className="text-sm font-medium">{t("userIn")}</span>
 
       <div className="flex flex-1 items-center gap-4 md:gap-6">
@@ -35,6 +38,7 @@ export default function Trigger({ control, getValues }: TriggerProps) {
                 id="direct"
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                disabled={!!watch('isCommentContentTargetEnabled')}
               />
               <FormLabel htmlFor="direct">{t("direct")}</FormLabel>
             </div>
@@ -57,13 +61,17 @@ export default function Trigger({ control, getValues }: TriggerProps) {
           )}
         />
       </div>
-
       <HelpmeDialog
         noAbsolute
         title={t("Help.title")}
         description={t("Help.description")}
         videoSrc={WizardVideoLinks.Automations.Hints.Triggers.video}
       />
+      </div>
+
+      {watch('isCommentContentTargetEnabled') && (<div className="mt-2">
+        <p className="text-xs">برای روشن کردن حالت دایرکت باید محدود کردن به پست خاص را خاموش کنید</p>
+      </div>)}
     </div>
   );
 }
