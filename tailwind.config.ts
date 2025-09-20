@@ -22,6 +22,8 @@ module.exports = {
     extend: {
       fontFamily: {
         Anjoman: ["AnjomanMaxVF", "sans-serif"],
+        Yekan: ["Yekan", "sans-serif"],
+        Iran: ["Iran", "sans-serif"],
         Roboto: ["Roboto", "sans-serif"],
       },
       colors: {
