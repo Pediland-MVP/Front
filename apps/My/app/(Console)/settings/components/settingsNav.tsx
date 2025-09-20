@@ -2,7 +2,7 @@ import { Card } from "@befroosh/ui";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { CreditCard, PaypalLogo, Plug, Rocket } from "@phosphor-icons/react/dist/ssr";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { usePathname } from "next/navigation";
 
 export default function SettingsNav() {

@@ -7,7 +7,7 @@ import {
 } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import type { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
@@ -17,10 +17,9 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@befroosh/ui";
-import { Button, ErrorMessage, Form } from "@befroosh/ui";
-import LoaderSpin from "@/components/ui-custom/LoaderSpin";
-import LoadingButton from "@befroosh/ui";
+import { Button, Form } from "@befroosh/ui";
+import { ErrorMessage, LoaderSpin } from "@befroosh/ui-custom";
+import { LoadingButton } from "@befroosh/ui";
 import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import {
   AutomationFormSchema,
@@ -41,6 +40,7 @@ import {
 import useSWRImmutable from "swr/immutable";
 import { mutate } from "swr";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
+import { ConnectInstagramAlert } from "../Global";
 
 type AutomationFormProps = {
   id?: string;

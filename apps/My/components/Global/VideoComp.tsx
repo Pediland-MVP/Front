@@ -1,7 +1,7 @@
 // src/components/Global/VideoComp.tsx
 "use client";
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { useRef, VideoHTMLAttributes } from "react";
 
 export interface VideoCompProps extends VideoHTMLAttributes<HTMLVideoElement> {

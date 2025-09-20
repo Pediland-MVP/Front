@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@befroosh/ui";
 import { toast } from "sonner";
-import { FileUpload } from "@/components/ui-custom/file-upload";
+import { FileUpload } from "@befroosh/ui-custom";
 import LoadingButton from "@befroosh/ui";
 import { Switch } from "@befroosh/ui";
 import { Label } from "@befroosh/ui";

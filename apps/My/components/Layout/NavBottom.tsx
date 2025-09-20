@@ -1,7 +1,7 @@
 // src/components/layout/NavBottom.tsx
 "use client";
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

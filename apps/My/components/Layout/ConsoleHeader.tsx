@@ -1,11 +1,11 @@
 // src/components/layout/consoleHeader.tsx
 "use client";
 
-import { useHeaderFeatures } from "@befroosh/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { usePathname } from "next/navigation";
 
 import { HeaderBreadcrumb, SidebarTrigger } from "@befroosh/ui";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();

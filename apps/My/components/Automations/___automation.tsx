@@ -7,7 +7,7 @@ import {
 } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
@@ -32,7 +32,7 @@ import {
   CommentTriggerInputs,
   Form,
 } from "@befroosh/ui";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import LoadingButton from "@befroosh/ui";
 import { toast } from "sonner";
 import {

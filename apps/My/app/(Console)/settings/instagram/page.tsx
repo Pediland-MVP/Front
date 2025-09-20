@@ -11,7 +11,7 @@ import { Button } from "@befroosh/ui";
 import { Card } from "@befroosh/ui";
 import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import { Plug } from "@phosphor-icons/react/dist/ssr";
 import ConnectInstagram from "./components/connectInstagram";
 

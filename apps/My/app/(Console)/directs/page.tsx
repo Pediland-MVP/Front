@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 // Just UI Imports Below
 import { Button } from "@befroosh/ui";
 import { ExcelExportDirectsDrawer } from "./components/excelExportDirects.drawer";
-import { useHeaderFeatures } from "@befroosh/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function page() {
   const t = useTranslations("Directs");

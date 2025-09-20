@@ -1,4 +1,4 @@
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { WsConversationMessage } from "@/types/conversations/conversation.ws";
 import { leadNamespace } from "@/types/lead";
 import { motion } from "framer-motion";

@@ -1,7 +1,7 @@
 // src/components/Automations/form/Contents/ProductContentItem.tsx
 "use client";
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";

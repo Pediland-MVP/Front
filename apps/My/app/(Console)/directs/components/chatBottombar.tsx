@@ -1,6 +1,6 @@
 import { buttonVariants } from "@befroosh/ui";
 import { Textarea } from "@befroosh/ui";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import useCurrentLead from "@/store/currentLead.store";
 import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
 import { messagesSocket } from "@/utils/socket";

@@ -2,7 +2,7 @@
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";

@@ -2,7 +2,7 @@
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
-import { useHeaderFeatures } from "@befroosh/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 

@@ -38,7 +38,7 @@ import { Input } from "@befroosh/ui";
 import { Button } from "@befroosh/ui";
 import { toast } from "sonner";
 import LoadingButton from "@befroosh/ui";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import api from "@/hooks/swr/api-client";
 
 export function ProfileForm() {

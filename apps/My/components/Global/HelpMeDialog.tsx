@@ -1,7 +1,7 @@
 // src/components/Global/HelpMe.dialog.tsx
 "use client";
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

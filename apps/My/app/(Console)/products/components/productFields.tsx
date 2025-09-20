@@ -37,7 +37,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { FormItem } from "@befroosh/ui";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 
 // Sortable item component
 const SortableFieldItem = ({

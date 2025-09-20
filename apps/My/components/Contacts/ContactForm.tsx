@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@befroosh/ui";
 
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import { toast } from "sonner";
 import {
   Form,

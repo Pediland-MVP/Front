@@ -12,7 +12,7 @@
   },
   "aliases": {
     "components": "@/components",
-    "utils": "@befroosh/lib/utils",
+    "utils": "@befroosh/lib",
     "ui": "@/components/ui",
     "lib": "@befroosh/lib",
     "hooks": "@/hooks"

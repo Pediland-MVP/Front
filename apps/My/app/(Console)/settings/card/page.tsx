@@ -19,7 +19,7 @@ import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
 import LoadingButton from "@befroosh/ui";
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import api from "@/hooks/swr/api-client";
 
 export const bankDetailsSchema = z.object({

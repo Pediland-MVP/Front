@@ -3,7 +3,7 @@
 import { memo, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { commentsSocket } from "@/utils/socket";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@befroosh/ui";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";

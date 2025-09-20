@@ -1,7 +1,6 @@
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
-import { useHeaderFeatures } from "@befroosh/lib/stores/useHeaderFeatures";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -14,6 +13,7 @@ import {
   SearchToggleButton,
 } from "@befroosh/ui";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function Page() {
   const t = useTranslations("Automations");

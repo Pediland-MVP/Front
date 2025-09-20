@@ -17,7 +17,7 @@ import {
   HelpMeDialog,
   Textarea,
 } from "@befroosh/ui";
-import { SeperateLine } from "@/components/ui-custom/SeperateLine";
+import { SeperateLine } from "@befroosh/ui-custom";
 
 export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =

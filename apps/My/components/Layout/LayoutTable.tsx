@@ -1,6 +1,6 @@
 // app/components/Layout/LayoutTable.tsx
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { FC, ReactNode } from "react";
 
 export const LayoutTable: FC<{ children: ReactNode; className?: string }> = ({

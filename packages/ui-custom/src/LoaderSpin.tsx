@@ -9,7 +9,7 @@ export interface LoaderSpinProps {
   className?: string;
   weight?: IconWeight;
 }
-const LoaderSpin: FC<LoaderSpinProps> = ({ className, ...props }) => {
+export const LoaderSpin: FC<LoaderSpinProps> = ({ className, ...props }) => {
   return (
     <div
       className={`flex h-full w-full flex-1 flex-col items-center justify-center ${className}`}
@@ -22,5 +22,3 @@ const LoaderSpin: FC<LoaderSpinProps> = ({ className, ...props }) => {
     </div>
   );
 };
-
-export default LoaderSpin;

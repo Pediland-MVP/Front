@@ -2,7 +2,7 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import { Button } from "@befroosh/ui";
 import {
   Form,

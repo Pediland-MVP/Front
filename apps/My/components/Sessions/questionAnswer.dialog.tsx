@@ -9,7 +9,7 @@ import { Button } from "@befroosh/ui";
 import { Card, CardContent, CardHeader } from "@befroosh/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
 import { ScrollArea } from "@befroosh/ui";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { Mailbox } from "@phosphor-icons/react/dist/ssr";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";

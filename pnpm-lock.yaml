@@ -26,6 +26,9 @@ importers:
       '@befroosh/hooks':
         specifier: workspace:*
         version: link:../../packages/hooks
+      '@befroosh/lib':
+        specifier: workspace:*
+        version: link:../../packages/lib
       '@befroosh/ui':
         specifier: workspace:*
         version: link:../../packages/ui

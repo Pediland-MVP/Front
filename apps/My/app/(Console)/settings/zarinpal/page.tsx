@@ -19,7 +19,7 @@ import { ErrorMessage } from "@befroosh/ui";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
 import { mutate } from "swr";

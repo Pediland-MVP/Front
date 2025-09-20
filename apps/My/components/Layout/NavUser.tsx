@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@befroosh/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import { toast } from "sonner";
 import {
   CaretUpDownIcon,

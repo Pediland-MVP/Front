@@ -7,7 +7,7 @@ import ProductListTable from "./components/productListTable";
 // Just UI Imports Below
 import { Button } from "@befroosh/ui";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
-import { useHeaderFeatures } from "@befroosh/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function Page() {
   const t = useTranslations("Products");

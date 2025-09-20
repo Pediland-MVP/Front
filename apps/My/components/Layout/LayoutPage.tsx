@@ -1,6 +1,6 @@
 // app/components/Layout/LayoutPage.tsx
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { FC, ReactNode } from "react";
 import { string } from "zod";
 

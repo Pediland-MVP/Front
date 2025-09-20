@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import LoadingSpinner from "@befroosh/ui-custom";
 import { Badge } from "@befroosh/ui";
 import { Button } from "@befroosh/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui";

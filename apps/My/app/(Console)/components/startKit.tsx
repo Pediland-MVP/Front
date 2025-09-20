@@ -3,13 +3,13 @@
 
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import useUser from "@/hooks/useUser";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 // UI Imports
-import DiscountText from "@/components/ui-custom/discountText";
+import DiscountText from "@befroosh/ui-custom";
 import { Button } from "@befroosh/ui";
 import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
 
