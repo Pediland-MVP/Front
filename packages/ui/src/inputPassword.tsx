@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Eye, EyeClosed } from "@phosphor-icons/react";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { useLocale } from "next-intl";
 
 interface InputProps extends React.ComponentProps<"input"> {

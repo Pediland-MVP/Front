@@ -6,7 +6,7 @@
 
 import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
-import { cn } from "@befroosh/lib/utils"
+import { cn } from "@befroosh/lib"
 import { Dot } from "@phosphor-icons/react/dist/ssr"
 import { useLocale } from "next-intl"
 

@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "main": "index.ts",
   "license": "MIT",
+  "devDependencies": {
+    "@befroosh/typescript-config": "workspace:*"
+  },
   "scripts": {
-    "build": "tsc",
-    "pkg-build": "tsc"
+    "build": "barrelsby -D --directory ./src/ && tsc -p tsconfig.json",
+    "pkg-build": "barrelsby -D --directory ./src/ && tsc -p tsconfig.json"
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@befroosh/hooks";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
 import * as React from "react";

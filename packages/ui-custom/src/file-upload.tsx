@@ -1,4 +1,4 @@
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";

@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "./command";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { X, XCircle } from "@phosphor-icons/react/dist/ssr";
 
 export interface Option {

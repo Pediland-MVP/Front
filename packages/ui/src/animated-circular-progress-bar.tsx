@@ -1,4 +1,4 @@
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 
 interface Props {
   max: number;

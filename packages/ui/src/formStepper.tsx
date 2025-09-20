@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { createContext, useContext, useMemo } from "react";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import {useEffect} from 'react';
 
 // Types

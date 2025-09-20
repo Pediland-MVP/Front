@@ -5,7 +5,7 @@ import {
   DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
 
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { ButtonProps, buttonVariants } from "./button";
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (

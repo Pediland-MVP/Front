@@ -325,6 +325,10 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+    devDependencies:
+      '@befroosh/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/typescript-config: {}
 
@@ -597,7 +601,11 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
 
-  packages/utils: {}
+  packages/utils:
+    devDependencies:
+      '@befroosh/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
 packages:
 

@@ -4,7 +4,7 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as Icons from "@phosphor-icons/react";
 import { XIcon } from "lucide-react";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 
 type PhosphorIconName = keyof typeof Icons;
 

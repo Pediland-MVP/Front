@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
-import { cn } from "@befroosh/lib/utils"
+import { cn } from "@befroosh/lib"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const

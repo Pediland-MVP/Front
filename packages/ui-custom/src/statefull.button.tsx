@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button, ButtonProps } from '@befroosh/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
-import { cn } from '@befroosh/lib/utils';
+import { cn } from '@befroosh/lib';
 import { ImSpinner2 } from 'react-icons/im';
  
 // mock async code

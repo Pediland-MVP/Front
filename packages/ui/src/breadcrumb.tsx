@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { cn } from "@befroosh/lib/utils";
+import { cn } from "@befroosh/lib";
 import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { useLocale } from "next-intl";
 
