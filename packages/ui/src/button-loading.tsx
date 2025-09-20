@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button, ButtonProps } from "./button";
 import { Loader2 } from "lucide-react";
 
 interface LoadingProps extends ButtonProps {

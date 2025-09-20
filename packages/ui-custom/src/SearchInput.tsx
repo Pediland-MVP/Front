@@ -1,7 +1,7 @@
 // src/components/SearchInput.tsx
 "use client";
 
-import { Input } from "@/components/index";
+import { Input } from "@befroosh/ui";
 import { useTranslations } from "next-intl";
 
 type Props = {

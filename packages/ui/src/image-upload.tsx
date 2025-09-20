@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Image from "next/image";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "./progress";
 import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 

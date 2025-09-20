@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-import AnimatedCircularProgressBar from "../../ui/src/animated-circular-progress-bar";
+import { AnimatedCircularProgressBar } from "@befroosh/ui";
 
 import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
 

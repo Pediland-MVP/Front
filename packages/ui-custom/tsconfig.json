@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["src", "../../apps/My/components/ui/discountText.tsx", "../../apps/My/components/Custom/userStateHandler.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

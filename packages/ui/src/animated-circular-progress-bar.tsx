@@ -9,7 +9,7 @@ interface Props {
   className?: string;
 }
 
-export default function AnimatedCircularProgressBar({
+export function AnimatedCircularProgressBar({
   max = 100,
   min = 0,
   value = 0,

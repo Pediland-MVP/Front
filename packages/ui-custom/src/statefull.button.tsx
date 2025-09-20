@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Button, ButtonProps } from '../../ui/src/button';
+import { Button, ButtonProps } from '@befroosh/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
 import { cn } from '@befroosh/lib/utils';

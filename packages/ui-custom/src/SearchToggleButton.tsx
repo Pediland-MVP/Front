@@ -1,9 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import {
   Button,
-  ListMagnifyingGlassIcon,
-  XCircleIcon,
-} from "@/components/index";
+} from "@befroosh/ui";
+
+import {ListMagnifyingGlassIcon,
+  XCircleIcon,} from '@phosphor-icons/react/dist/ssr'
 
 interface Props {
   setIsSearchVisible: Dispatch<SetStateAction<boolean>>;

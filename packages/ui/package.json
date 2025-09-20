@@ -5,6 +5,14 @@
   "license": "MIT",
   "dependencies": {
     "@befroosh/lib": "workspace:*",
+    "@befroosh/hooks": "workspace:*",
+    "react-resizable-panels": "^2.0.22",
+    "next-themes": "^0.4.6",
+    "cmdk": "^1.1.1",
+    "input-otp": "^1.4.1",
+    "react-beautiful-dnd": "^13.1.1",
+    "vaul": "^0.9.1",
+    "embla-carousel-react": "^8.5.2",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-avatar": "^1.1.0",
@@ -43,7 +51,8 @@
   "devDependencies": {
     "@types/react": "^19.1.9",
     "barrelsby": "^2.8.1",
-    "@befroosh/typescript-config": "workspace:*"
+    "@befroosh/typescript-config": "workspace:*",
+    "@types/node": "^24.1.0"
   },
   "scripts": {
     "build": "barrelsby -D --directory ./src/ && tsc -p tsconfig.json --noEmit",

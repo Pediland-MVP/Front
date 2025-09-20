@@ -4,13 +4,13 @@ import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import * as React from "react";
 import { forwardRef, useEffect } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "./badge";
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "./command";
 import { cn } from "@befroosh/lib/utils";
 import { X, XCircle } from "@phosphor-icons/react/dist/ssr";
 
@@ -260,8 +260,8 @@ const MultipleSelector = React.forwardRef<
             if (input.value === "" && selected.length > 0) {
               const lastSelectOption = selected[selected.length - 1];
               // If last item is fixed, we should not remove it.
-              if (!lastSelectOption.fixed) {
-                handleUnselect(selected[selected.length - 1]);
+              if (!lastSelectOption!.fixed) {
+                handleUnselect(selected[selected.length - 1]!);
               }
             }
           }
@@ -453,7 +453,7 @@ const MultipleSelector = React.forwardRef<
             ? commandProps.shouldFilter
             : !onSearch
         } // When onSearch is provided, we don't want to filter the options. You can still override it.
-        filter={commandFilter()}
+        filter={commandFilter()!}
       >
         <div
           className={cn(
@@ -593,7 +593,7 @@ const MultipleSelector = React.forwardRef<
                             <CommandItem
                               key={option.value}
                               value={option.label}
-                              disabled={option.disable}
+                              disabled={option.disable!}
                               onMouseDown={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
