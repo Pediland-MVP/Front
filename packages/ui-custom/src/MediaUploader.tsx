@@ -1,11 +1,5 @@
 "use client";
 
-import type {
-  FileUploaderProps,
-  FileWithPreview,
-  ExistingFile,
-  UploadedFile,
-} from "@/types/fileUploader";
 import { Button } from "@/components/ui/button";
 import {
   FileIcon,
@@ -22,6 +16,33 @@ import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
+
+export type FileWithPreview = {
+  file: File;
+  id: number;
+  process?: number;
+  isUploading?: boolean;
+};
+
+export type ExistingFile = {
+  id: number;
+  url: string;
+  mimeType: string;
+  originalName?: string;
+  originalSize?: number;
+};
+
+export type UploadedFile = FileWithPreview | ExistingFile;
+
+export interface FileUploaderProps {
+  multiple?: boolean;
+  // value: UploadedFile[]
+  onChange: (files: UploadedFile[], rejectedFiles?: any[]) => any;
+  files: UploadedFile[];
+  setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
+  accept?: string;
+}
+
 
 export const MediaUploader = ({
   multiple = false,
@@ -97,7 +118,7 @@ export const MediaUploader = ({
           },
           {} as Record<string, string[]>,
         )
-      : undefined,
+      : undefined as any,
     multiple,
     onDragEnter: () => setIsDragActive(true),
     onDragLeave: () => setIsDragActive(false),

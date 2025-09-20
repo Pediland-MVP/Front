@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@befroosh/lib": "workspace:*",
+    "@befroosh/ui": "workspace:*",
     "@befroosh/utils": "workspace:*",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",

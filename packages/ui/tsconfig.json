@@ -1,7 +1,8 @@
 {
   "extends": "@befroosh/typescript-config/nextjs.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "noImplicitAny": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

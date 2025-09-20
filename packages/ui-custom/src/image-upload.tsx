@@ -3,11 +3,11 @@
 
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button, buttonVariants } from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
 import Image from "next/image";
 import Link from "next/link";
-import RadialProgress from "@/components/ui-custom/radial.progress";
+import RadialProgress from "./radial.progress";
 
 import axios, { AxiosProgressEvent } from "axios";
 import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
