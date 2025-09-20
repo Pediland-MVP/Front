@@ -1,0 +1,10 @@
+{
+  "name": "@befroosh/utils",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "pkg-build": "tsc"
+  }
+}

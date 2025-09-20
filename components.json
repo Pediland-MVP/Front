@@ -12,9 +12,9 @@
   },
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils",
+    "utils": "@befroosh/lib/utils",
     "ui": "@/components/ui",
-    "lib": "@/lib",
+    "lib": "@befroosh/lib",
     "hooks": "@/hooks"
   },
   "iconLibrary": "lucide"

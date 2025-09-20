@@ -1,0 +1,14 @@
+{
+  "name": "@befroosh/lib",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "tailwind-merge": "^3.3.1",
+    "clsx": "^2.1.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "pkg-build": "tsc"
+  }
+}

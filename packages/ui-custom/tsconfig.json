@@ -1,0 +1,8 @@
+{
+  "extends": "@befroosh/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": ["src", "../../apps/My/components/ui/discountText.tsx"],
+  "exclude": ["node_modules", "dist"]
+}
