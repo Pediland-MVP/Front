@@ -30,7 +30,7 @@ import {
   useContentsContext,
   ButtonContent,
   MediaContent,
-} from "@/components/index";
+} from "@befroosh/ui";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,

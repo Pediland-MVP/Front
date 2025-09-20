@@ -24,7 +24,7 @@ import {
   ContentsUploaderContextProvider,
   ErrorMessage,
   HelpMeDialog
-} from "@/components/index";
+} from "@befroosh/ui";
 import {
   closestCenter,
   DndContext,

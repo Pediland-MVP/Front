@@ -5,7 +5,7 @@ import {
   AvatarImage,
   Button,
   Textarea,
-} from "@/components/index";
+} from "@befroosh/ui";
 import {
   useContentStore,
   useCurrentTextAreaValue,

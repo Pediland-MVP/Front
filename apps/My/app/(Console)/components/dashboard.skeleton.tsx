@@ -1,10 +1,10 @@
 "use client";
 import { useTranslations } from "next-intl";
 // UI
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@/components/ui/breadcrumb";
-import SidebarTrigger from "@/components/ui/sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui";
+import { Separator } from "@befroosh/ui";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "@befroosh/ui";
+import SidebarTrigger from "@befroosh/ui";
 import Link from "next/link";
 
 export default function DashboardSkeleton({ accessDenied = false }) {

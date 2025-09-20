@@ -7,17 +7,17 @@ import { cn } from "@befroosh/lib/utils";
 import { commentsSocket } from "@/utils/socket";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/card";
+import { Card } from "@befroosh/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@befroosh/ui";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";
 import logger from "@/utils/logger";
-import InfiniteScroll from "@/components/ui/infinite-scroll";
+import InfiniteScroll from "@befroosh/ui";
 
 interface CommentsListProps {
   children?: React.ReactNode;

@@ -13,9 +13,9 @@ import { AttributeValue, ProductItem, ProductNamespace } from "@/types/product";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 // UI Components from shadcn and custom theme
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
+import { Textarea } from "@befroosh/ui";
 import {
   Form,
   FormControl,
@@ -23,19 +23,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@befroosh/ui";
 import { toast } from "sonner";
 import { FileUpload } from "@/components/ui-custom/file-upload";
-import LoadingButton from "@/components/ui/button-loading";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import MultipleSelector from "@/components/ui/multi-selector";
+import LoadingButton from "@befroosh/ui";
+import { Switch } from "@befroosh/ui";
+import { Label } from "@befroosh/ui";
+import { Card } from "@befroosh/ui";
+import MultipleSelector from "@befroosh/ui";
 import useSWRImmutable from "swr/immutable";
 import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { ProductFields } from "./productFields";
-import { FormDescription } from "@/components/ui/form";
+import { FormDescription } from "@befroosh/ui";
 import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 import { ShippingCost } from "./shippingCost";
 

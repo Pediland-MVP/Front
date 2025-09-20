@@ -16,7 +16,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@befroosh/ui";
 import {
   AddressBookTabsIcon,
   BasketIcon,

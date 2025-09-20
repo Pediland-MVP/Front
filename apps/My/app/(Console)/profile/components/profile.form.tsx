@@ -25,19 +25,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@befroosh/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@befroosh/ui";
+import { Card } from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import { toast } from "sonner";
-import LoadingButton from "@/components/ui/button-loading";
+import LoadingButton from "@befroosh/ui";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
 

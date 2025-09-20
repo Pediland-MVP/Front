@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
-import { ErrorMessage, ProductContentItem } from "@/components/index";
+import { ErrorMessage, ProductContentItem } from "@befroosh/ui";
 import {
   closestCenter,
   DndContext,

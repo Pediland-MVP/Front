@@ -12,7 +12,7 @@ import {
   LayoutTable,
   SearchInput,
   SearchToggleButton,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default function Page() {

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent } from "@befroosh/ui"
+import { Button } from "@befroosh/ui"
 import { X } from 'lucide-react'
 
 interface FullScreenImageProps {

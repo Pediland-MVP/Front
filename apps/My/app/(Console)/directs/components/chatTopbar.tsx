@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@befroosh/ui";
 import { Info, Phone, Video } from "lucide-react";
 import { leadNamespace } from "@/types/lead";
 import { ArrowLeft, X } from "@phosphor-icons/react/dist/ssr";

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { FloatingTimeCircleSkeleton } from './floatingTimeCircle.skeleton'
 // UI
-import { Card } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { Card } from "@befroosh/ui"
+import { Progress } from "@befroosh/ui"
 import { mutate } from 'swr'
 import { useCheckout } from '../useCheckout'
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from '@/config/configs'

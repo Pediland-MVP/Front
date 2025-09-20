@@ -10,7 +10,7 @@ import { useRef, useState } from "react";
 
 // UI Imports
 import DiscountText from "@/components/ui-custom/discountText";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
 
 type StartKitProps = {

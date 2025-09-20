@@ -3,7 +3,7 @@
 import React from "react";
 import { FC } from "react";
 import { MagnifyingGlass } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/input';
+import { Input } from '@befroosh/ui';
 import { useTranslations } from "next-intl";
 
 

@@ -7,31 +7,31 @@ import { useTranslations } from "next-intl";
 import { orderFormSchema } from "../checkout.page";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UI
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@befroosh/ui";
 import { Package } from "@phosphor-icons/react/dist/ssr";
-import { Input } from "@/components/ui/input";
+import { Input } from "@befroosh/ui";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@befroosh/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@befroosh/ui";
 import useSWRImmutable from "swr/immutable";
 import { ProvinceNamespace } from "@/types/province";
 import { CityNamespace } from "@/types/city";
 import { useEffect } from "react";
-import LoadingButton from "@/components/ui/button-loading";
+import LoadingButton from "@befroosh/ui";
 import useShipping from "../hooks/useShipping";
-import { ErrorMessage } from "@/components/index";
-import { Button } from "@/components/ui/button";
+import { ErrorMessage } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import { useCheckout } from "../useCheckout";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import useCheckoutStep from "../hooks/useCheckoutStep";

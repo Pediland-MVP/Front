@@ -10,7 +10,7 @@ import {
   DialogStyledDescription,
   DialogStyledHeader,
   DialogStyledTitle,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { ContactForm } from "./ContactForm";
 
 type ContactDetailsDialogProps = {

@@ -1,8 +1,8 @@
 'use client'
 import { onInputP2EHandler } from "@/utils/p2eNumber";
-import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ErrorMessage } from "@/components/index";
+import { FormField, FormItem, FormLabel, FormMessage } from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui";
 import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";

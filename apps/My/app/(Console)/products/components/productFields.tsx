@@ -1,7 +1,7 @@
 "use client";
 // UI Components from shadcn and custom theme
-import { Input } from "@/components/ui/input";
-import { FormField, FormLabel } from "@/components/ui/form";
+import { Input } from "@befroosh/ui";
+import { FormField, FormLabel } from "@befroosh/ui";
 import {
   Select,
   SelectContent,
@@ -9,8 +9,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+} from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import {
   ArrowsVertical,
   PlusCircle,
@@ -36,7 +36,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { FormItem } from "@/components/ui/form";
+import { FormItem } from "@befroosh/ui";
 import { cn } from "@befroosh/lib/utils";
 
 // Sortable item component

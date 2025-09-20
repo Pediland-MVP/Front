@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 // Just UI Imports Below
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -21,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@befroosh/ui";
 import {
   DotsThreeOutlineVertical,
   Eye,
@@ -34,7 +34,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@befroosh/ui";
 import { ArrowClockwise, IntersectSquare } from "@phosphor-icons/react";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import useSWRImmutable from "swr/immutable";

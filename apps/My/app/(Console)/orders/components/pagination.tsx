@@ -1,12 +1,12 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@befroosh/ui";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

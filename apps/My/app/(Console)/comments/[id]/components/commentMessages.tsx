@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
 import formatTimestamp from "@/utils/formatTimestamp";
 import Reply from "./reply";
 import { CommentNamespace } from "@/types/comments/comment.namespace";

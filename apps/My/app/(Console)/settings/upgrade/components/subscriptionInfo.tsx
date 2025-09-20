@@ -6,9 +6,9 @@ import { useUpgradeContext } from "../context/upgrade.context"
 import { CircularProgress } from "./circularProgress"
 import { useCallback, useEffect, useState } from "react"
 // UI 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Badge } from "@befroosh/ui"
+import { Button } from "@befroosh/ui"
+import { Card } from "@befroosh/ui"
 import { ClockCounterClockwise } from "@phosphor-icons/react/dist/ssr"
 
 

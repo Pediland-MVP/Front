@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@befroosh/ui"
 import {
   Drawer,
   DrawerClose,
@@ -11,7 +11,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
+} from "@befroosh/ui"
 import { IPendingOrder } from "@/types/order/pendingOrder"
 import { ProductItem } from "@/types/product"
 

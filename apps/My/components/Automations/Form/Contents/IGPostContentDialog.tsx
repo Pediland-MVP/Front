@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   Skeleton,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 type IGPostContentDialogProps = {
   isOpen: boolean;

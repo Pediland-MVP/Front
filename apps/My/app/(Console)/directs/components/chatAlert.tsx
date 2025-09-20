@@ -3,7 +3,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from "@/components/ui/alert";
+} from "@befroosh/ui";
 import { RocketIcon, Cross1Icon } from "@radix-ui/react-icons";
 import { WarningCircle } from "@phosphor-icons/react";
 

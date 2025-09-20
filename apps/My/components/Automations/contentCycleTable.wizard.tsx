@@ -1,5 +1,5 @@
 import { VideoComp } from "@/components/Global/VideoComp";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import { useTranslations } from "next-intl";
 import { Plus } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";

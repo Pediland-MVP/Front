@@ -1,16 +1,16 @@
 "use client";
 
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { InputPassword } from "@/components/ui/inputPassword";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
+import { InputPassword } from "@befroosh/ui";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";

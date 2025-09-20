@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { TableRow, TableCell } from "@/components/ui/table";
+import { Skeleton } from "@befroosh/ui";
+import { TableRow, TableCell } from "@befroosh/ui";
 
 interface OrderListSkeletonProps {
   rowCount?: number;

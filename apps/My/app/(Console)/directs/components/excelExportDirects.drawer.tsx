@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import LoadingButton from "@/components/ui/button-loading";
+import { Button } from "@befroosh/ui";
+import LoadingButton from "@befroosh/ui";
 import {
   Drawer,
   DrawerClose,
@@ -9,7 +9,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
+} from "@befroosh/ui";
 import {
   Form,
   FormControl,
@@ -18,8 +18,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";

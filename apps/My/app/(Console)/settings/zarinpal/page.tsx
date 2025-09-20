@@ -1,21 +1,21 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@befroosh/ui";
+import { Card, CardContent } from "@befroosh/ui";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
+} from "@befroosh/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import LoadingButton from "@/components/ui/button-loading";
+import LoadingButton from "@befroosh/ui";
 import { useEffect, useState } from "react";
-import { ErrorMessage } from "@/components/index";
+import { ErrorMessage } from "@befroosh/ui";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
 import { ExceptionMessage } from "@/types/exceptionMessage";

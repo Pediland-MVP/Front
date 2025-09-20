@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react"
 import useSWR from "swr"
 import { useFormContext } from "react-hook-form"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { FormItem } from "@/components/ui/form"
-import MultipleSelector, { type Option } from "@/components/ui/multi-selector"
+import { Label } from "@befroosh/ui"
+import { Button } from "@befroosh/ui"
+import { FormItem } from "@befroosh/ui"
+import MultipleSelector, { type Option } from "@befroosh/ui"
 import api from "@/hooks/swr/api-client"
 import { useTranslations } from "next-intl"
 import { Plus, Trash } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@befroosh/ui"
 
 // Types for our API responses
 export interface Attribute {

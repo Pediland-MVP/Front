@@ -1,5 +1,5 @@
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Label } from "@befroosh/ui";
+import { Switch } from "@befroosh/ui";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 

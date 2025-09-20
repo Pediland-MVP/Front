@@ -5,24 +5,24 @@ import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
 // UI
-import { Input } from "@/components/ui/input";
+import { Input } from "@befroosh/ui";
 import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import LoadingButton from "@/components/ui/button-loading";
+} from "@befroosh/ui";
+import LoadingButton from "@befroosh/ui";
 import useOrder from "../hooks/useOrder";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import { useCheckout } from "../useCheckout";
 import useUpdateContact from "../hooks/useUpdateContact";
 import p2eNumbers, { onInputP2EHandler } from "@/utils/p2eNumber";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { useEffect, useState } from "react";
-import { ErrorMessage } from "@/components/index";
-import { Textarea } from "@/components/ui/textarea";
+import { ErrorMessage } from "@befroosh/ui";
+import { Textarea } from "@befroosh/ui";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");

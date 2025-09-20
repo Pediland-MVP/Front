@@ -1,19 +1,19 @@
 "use client";
 
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import ImageWithFallback from "@/components/ui/imageWithCallback";
+import { Badge } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui";
+import { Dialog, DialogContent, DialogTrigger } from "@befroosh/ui";
+import ImageWithFallback from "@befroosh/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+} from "@befroosh/ui";
+import { Separator } from "@befroosh/ui";
 import api from "@/hooks/swr/api-client";
 import type { ExceptionMessage } from "@/types/exceptionMessage";
 import {

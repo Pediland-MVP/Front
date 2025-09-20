@@ -11,7 +11,7 @@ import {
   LayoutTable,
   SearchInput,
   SearchToggleButton,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 export default function Page() {
   const t = useTranslations("Contacts");

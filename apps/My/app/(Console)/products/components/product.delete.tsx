@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@befroosh/ui";
 import { useTranslations } from "next-intl";
 
 interface DeleteConfirmationDialogProps {

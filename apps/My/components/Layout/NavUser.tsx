@@ -16,14 +16,14 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@befroosh/ui";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "@befroosh/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";
 import {

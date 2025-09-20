@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 // UI Imports
 import { AnimatedGradient } from "@/components/Global/animatedGradient";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import { IconProps } from "@phosphor-icons/react";
 import React, {
   HTMLAttributeAnchorTarget,

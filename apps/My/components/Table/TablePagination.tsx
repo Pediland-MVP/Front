@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/index";
+} from "@befroosh/ui";
 import type { Table } from "@tanstack/react-table";
 import {
   ChevronLeft,

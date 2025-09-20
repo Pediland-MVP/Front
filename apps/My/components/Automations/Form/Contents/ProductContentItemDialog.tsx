@@ -1,7 +1,7 @@
 // src/components/Automations/Form/Contents/ProductContentItemDialog.tsx
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@befroosh/ui";
+import { Skeleton } from "@befroosh/ui";
 import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { ProductNamespace } from "@/types/product";

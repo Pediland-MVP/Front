@@ -12,8 +12,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import {
   PencilIcon,
   TrashIcon,
@@ -21,7 +21,7 @@ import {
   CaretLeftIcon,
   EnvelopeSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { Card } from "@/components/ui/card";
+import { Card } from "@befroosh/ui";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { ContnetCycleTableWizard } from "./contentCycleTable.wizard";

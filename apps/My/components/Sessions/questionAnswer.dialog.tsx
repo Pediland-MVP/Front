@@ -3,18 +3,18 @@
 import { useTranslations } from 'next-intl';
 import * as React from "react";
 import { useMediaQuery } from "@react-hook/media-query";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTrigger } from "@befroosh/ui";
+import { Drawer, DrawerContent, DrawerTrigger } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
+import { Card, CardContent, CardHeader } from "@befroosh/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
+import { ScrollArea } from "@befroosh/ui";
 import { cn } from "@befroosh/lib/utils";
 import { Mailbox } from "@phosphor-icons/react/dist/ssr";
 import useSWRImmutable from "swr/immutable";
 import { fetcher } from "@/hooks/swr/fetcher";
 import { SessionNamespace } from "@/types/session";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@befroosh/ui";
 
 type QuestionAndAnswerProps = {
     questionId: number

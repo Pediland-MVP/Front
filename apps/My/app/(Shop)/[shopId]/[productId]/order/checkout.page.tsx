@@ -20,8 +20,8 @@ import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skel
 import OrderNotfound from "./components/order.notfound";
 import OrderProcessing from "./components/order.processing";
 // UI
-import { Card } from "@/components/ui/card";
-import { FormStep, FormStepperProvider } from "@/components/ui/formStepper";
+import { Card } from "@befroosh/ui";
+import { FormStep, FormStepperProvider } from "@befroosh/ui";
 import {
   House,
   User,

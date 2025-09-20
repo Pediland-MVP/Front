@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Button } from "@befroosh/ui";
+import { Form, FormControl, FormField, FormItem } from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
 import { toast } from "sonner";
 import api from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";

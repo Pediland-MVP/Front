@@ -1,8 +1,8 @@
 // components/InstagramAlert.tsx
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@befroosh/ui";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import Link from "next/link";
 
 export const ConnectInstagramAlert = () => {

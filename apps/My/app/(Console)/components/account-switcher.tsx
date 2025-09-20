@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@befroosh/ui"
 
 interface AccountSwitcherProps {
   isCollapsed: boolean

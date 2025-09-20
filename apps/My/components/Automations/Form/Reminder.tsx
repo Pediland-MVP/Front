@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 export const Reminder = () => {
   const {

@@ -15,7 +15,7 @@ import {
   DataTable,
   DeleteConfirmationDialog,
   TablePagination,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 export const AutomationsList = () => {
   const t = useTranslations("Automations.List");

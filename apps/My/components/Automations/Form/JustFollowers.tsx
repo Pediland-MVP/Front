@@ -20,7 +20,7 @@ import {
   Input,
   Switch,
   Textarea,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 type JustFollowersProps = {
   control: Control<AutomationFormType>;

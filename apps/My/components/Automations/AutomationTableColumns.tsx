@@ -18,7 +18,7 @@ import type { ColumnDef } from "@/types/tables";
 import type { Automation } from "@/schemas/automation";
 import Image from "next/image";
 import { memo, useState } from "react";
-import { Badge } from "@/components/index";
+import { Badge } from "@befroosh/ui";
 import { toJalaliDate } from "@/utils/jalali";
 import Link from "next/link";
 import {
@@ -28,7 +28,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 const AvatarCell = memo(function AvatarCell({
   src,

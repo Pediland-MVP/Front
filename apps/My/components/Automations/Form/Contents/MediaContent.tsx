@@ -19,7 +19,7 @@ import {
   FormMessage,
   MediaUploader,
   useContentsUploaderContext,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 interface MediaContentProps {
   index: number;

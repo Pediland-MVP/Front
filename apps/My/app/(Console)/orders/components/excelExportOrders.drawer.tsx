@@ -10,7 +10,7 @@ import persian from "react-date-object/calendars/persian";
 import DateObject from "react-date-object";
 import persian_fa from "react-date-object/locales/persian_fa";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Drawer,
   DrawerClose,
@@ -19,7 +19,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
+} from "@befroosh/ui";
 import {
   Form,
   FormControl,
@@ -28,15 +28,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
 import api from "@/hooks/swr/api-client";
 import { toast } from "sonner";
 import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";
 import { useState } from "react";
-import LoadingButton from "@/components/ui/button-loading";
+import LoadingButton from "@befroosh/ui";
 
 // Define a proper type for DateObject
 type DateObjectType =

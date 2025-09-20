@@ -1,11 +1,11 @@
-import ImageUploader from '@/components/ui/image-upload';
-import { Label } from '@/components/ui/label';
-import LoadingButton from '@/components/ui/button-loading';
+import ImageUploader from '@befroosh/ui';
+import { Label } from '@befroosh/ui';
+import LoadingButton from '@befroosh/ui';
 import { useTranslations } from 'next-intl';
 import { useCheckout } from '../useCheckout';
 import { mutate } from 'swr';
 import useProcessOrder from '../hooks/useProcessOrder';
-import { Button } from '@/components/ui/button';
+import { Button } from '@befroosh/ui';
 import { useState } from 'react';
 
 

@@ -7,25 +7,25 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import {
   Table,
   TableBody,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { TableCell } from "@/components/ui/table";
+} from "@befroosh/ui";
+import { Checkbox } from "@befroosh/ui";
+import { TableCell } from "@befroosh/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@befroosh/ui";
 import { ArrowUp, Eye } from "@phosphor-icons/react";
 import Image from "next/image";
 type Lead = {

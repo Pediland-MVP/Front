@@ -31,9 +31,9 @@ import {
   CommentContentTarget,
   CommentTriggerInputs,
   Form,
-} from "@/components/index";
+} from "@befroosh/ui";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import LoadingButton from "@/components/ui/button-loading";
+import LoadingButton from "@befroosh/ui";
 import { toast } from "sonner";
 import {
   AutomationFormSchema,

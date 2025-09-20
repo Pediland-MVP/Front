@@ -1,5 +1,5 @@
 // src/components/layout/NavUser.skeleton.tsx
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@befroosh/ui"
 
 export const NavUserSkeleton = () => {
   return (

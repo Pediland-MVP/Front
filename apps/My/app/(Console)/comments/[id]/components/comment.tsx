@@ -1,8 +1,8 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
+import { Card, CardContent } from "@befroosh/ui";
+import { ScrollArea } from "@befroosh/ui";
 import { fetcher } from "@/hooks/swr/fetcher";
 import CommentSkeleton from "./comment.skeleton";
 import CommentError from "./comment.error";

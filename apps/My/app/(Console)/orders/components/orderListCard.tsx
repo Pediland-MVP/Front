@@ -14,12 +14,12 @@ import {
   TableRow,
   TableCell,
   TableHead,
-} from "@/components/ui/table";
-import ImageWithFallback from "@/components/ui/imageWithCallback";
+} from "@befroosh/ui";
+import ImageWithFallback from "@befroosh/ui";
 import { Pencil } from "@phosphor-icons/react/dist/ssr";
-import { Card } from "@/components/ui/card";
+import { Card } from "@befroosh/ui";
 import OrderListSkeleton from "./orderListSkeleton";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@befroosh/ui";
 import EditOrderDialog from "./editOrderDialog";
 import CardToCardDialog from "./cardToCard.dialog";
 import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";

@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
-import { Toaster } from "@/components/index";
+import { Toaster } from "@befroosh/ui";
 
 export async function generateMetadata() {
   const cookieStore = await cookies();

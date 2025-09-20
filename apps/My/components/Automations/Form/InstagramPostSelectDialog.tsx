@@ -24,7 +24,7 @@ import {
   DialogTrigger,
   ErrorMessage,
   Skeleton,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 
 const PAGE_SIZE = 9;

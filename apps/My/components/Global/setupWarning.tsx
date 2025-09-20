@@ -7,8 +7,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 // UI Imports
-import { useSidebar } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import { useSidebar } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import { PlugIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface SetupWarningProps {

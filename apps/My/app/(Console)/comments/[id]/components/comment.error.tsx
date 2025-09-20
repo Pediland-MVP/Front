@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@befroosh/ui"
 import { AlertCircle } from "lucide-react"
 
 export default function CommentError({ message = "Error loading comment" }: { message?: string }) {

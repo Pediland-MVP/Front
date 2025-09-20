@@ -12,30 +12,30 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-// import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
+// import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@befroosh/ui"
+import { Button } from "@befroosh/ui";
 import {
   Table,
   TableBody,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { TableCell } from "@/components/ui/table";
+} from "@befroosh/ui";
+import { Checkbox } from "@befroosh/ui";
+import { TableCell } from "@befroosh/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@befroosh/ui";
 import { ArrowUp, Eye } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
-// import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-// import { Checkbox } from "@/components/ui/checkbox"
+// import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@befroosh/ui"
+// import { Checkbox } from "@befroosh/ui"
 
 export default function Table1() {
   const [search, setSearch] = useState("");

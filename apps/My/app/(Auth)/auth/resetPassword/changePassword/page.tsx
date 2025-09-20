@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Form,
   FormControl,
@@ -8,15 +8,15 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { InputPassword } from "@/components/ui/inputPassword";
+} from "@befroosh/ui";
+import { InputPassword } from "@befroosh/ui";
 import { REGEX_PASSWORD } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { KeyholeIcon } from "@phosphor-icons/react/dist/ssr";

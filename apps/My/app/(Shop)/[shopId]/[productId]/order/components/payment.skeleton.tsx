@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@befroosh/ui"
 
 export function PaymentSkeleton() {
   return (

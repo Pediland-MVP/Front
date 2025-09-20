@@ -6,14 +6,14 @@ import { useEffect, useState } from "react";
 import useSWRImmutable, { mutate } from "swr";
 import * as React from "react";
 import { cn } from "@befroosh/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@befroosh/ui";
 import {
   Drawer,
   DrawerClose,
@@ -22,14 +22,14 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
+} from "@befroosh/ui";
 import { InstagramLogo } from "@phosphor-icons/react";
 import { InstagramNamespace } from "@/types/instagram";
 import { APIError } from "@/types/apierror";
 import Image from "next/image";
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@befroosh/ui";
 import { useRouter } from "next/navigation";
 
 export type DrawerDialogDemoProps = {

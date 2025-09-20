@@ -1,6 +1,6 @@
 // app/(Console)/automations/add/page.tsx
 
-import { AutomationForm, LayoutPage } from "@/components/index";
+import { AutomationForm, LayoutPage } from "@befroosh/ui";
 
 export default function page() {
   return (

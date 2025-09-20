@@ -19,7 +19,7 @@ import {
   FormItem,
   FormLabel,
   Input,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {

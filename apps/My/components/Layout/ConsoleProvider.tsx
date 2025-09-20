@@ -12,7 +12,7 @@ import {
   SidebarProvider,
   ConsoleSidebar,
   ConsoleHeader,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 export const ConsoleProvider = ({
   children,

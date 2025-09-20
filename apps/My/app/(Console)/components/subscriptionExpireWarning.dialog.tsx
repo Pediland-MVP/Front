@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
-import { Button } from "@/components/ui/button"
+import { Button } from "@befroosh/ui"
 import {
   Dialog,
   DialogContent,
@@ -10,11 +10,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@befroosh/ui"
 import { AlertCircle } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import useUser from "@/hooks/useUser"
-import ButtonLoading from "@/components/ui/button-loading"
+import ButtonLoading from "@befroosh/ui"
 
 export default function SubscriptionExpireWarningDialog() {
   const [showPopup, setShowPopup] = useState(false)

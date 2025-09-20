@@ -2,14 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@befroosh/ui";
 import {
   Drawer,
   DrawerClose,
@@ -18,7 +18,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
+} from "@befroosh/ui";
 import ProductForm from "./product.form";
 
 export interface EditProductProps {

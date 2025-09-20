@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonLoading from "@/components/ui/button-loading";
+import ButtonLoading from "@befroosh/ui";
 import {
   Form,
   FormControl,
@@ -8,12 +8,12 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
+} from "@befroosh/ui";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
+} from "@befroosh/ui";
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";

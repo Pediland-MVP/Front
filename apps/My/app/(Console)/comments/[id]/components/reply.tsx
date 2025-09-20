@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@befroosh/ui";
 import formatTimestamp from "@/utils/formatTimestamp";
 import AdminReply from "./adminReply";
 import { CommentNamespace } from "@/types/comments/comment.namespace";

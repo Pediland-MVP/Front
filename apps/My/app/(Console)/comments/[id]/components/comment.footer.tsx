@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
-import { Form, FormField } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@befroosh/ui";
+import { CardFooter } from "@befroosh/ui";
+import { Form, FormField } from "@befroosh/ui";
+import { Textarea } from "@befroosh/ui";
 import api from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PaperPlaneRightIcon } from "@phosphor-icons/react/dist/ssr";

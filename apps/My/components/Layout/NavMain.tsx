@@ -17,12 +17,12 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@befroosh/ui";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@befroosh/ui";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@befroosh/lib/utils";
 

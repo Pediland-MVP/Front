@@ -1,4 +1,4 @@
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@befroosh/ui";
 import React from "react";
 import { Controller } from "react-hook-form";
 

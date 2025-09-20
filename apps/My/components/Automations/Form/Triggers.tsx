@@ -15,7 +15,7 @@ import {
   FormLabel,
   HelpMeDialog,
   Switch
-} from "@/components/index";
+} from "@befroosh/ui";
 
 type TriggersProps = {
   control: Control<AutomationFormType>;

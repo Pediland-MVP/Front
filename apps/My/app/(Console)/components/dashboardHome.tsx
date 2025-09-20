@@ -12,8 +12,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+} from "@befroosh/ui";
+import { Avatar, AvatarImage, AvatarFallback } from "@befroosh/ui";
 import {
   ChatDots,
   Package,

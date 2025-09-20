@@ -1,6 +1,6 @@
-import ImageWithFallback from "@/components/ui/imageWithCallback";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import ImageWithFallback from "@befroosh/ui";
+import { Dialog, DialogContent, DialogTrigger } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 

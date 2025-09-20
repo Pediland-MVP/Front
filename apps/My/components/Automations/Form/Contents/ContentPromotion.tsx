@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/index";
+} from "@befroosh/ui";
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,

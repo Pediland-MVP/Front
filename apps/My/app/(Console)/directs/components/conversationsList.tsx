@@ -6,17 +6,17 @@ import { messagesSocket } from "@/utils/socket";
 import ConversationsListSkeleton from "./conversationsList.skeleton";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/card";
+import { Card } from "@befroosh/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@befroosh/ui";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 
 import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
 import { useConversations } from "../context/conversations.context";
 import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
-import InfiniteScroll from "@/components/ui/infinite-scroll";
+import InfiniteScroll from "@befroosh/ui";
 
 const LIMIT = 15;
 function ConversationsList() {

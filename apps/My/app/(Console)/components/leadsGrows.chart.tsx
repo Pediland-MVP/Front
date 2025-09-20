@@ -8,13 +8,13 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui";
 import { EachMonthLeadGrow, StatsNamespace } from "../../../src/types/stats";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@befroosh/ui";
 
 export type LeadsGrowsChartProps = {
   eachMonthLeadGrow: StatsNamespace.Overall["eachMonthLeadGrows"] | undefined;

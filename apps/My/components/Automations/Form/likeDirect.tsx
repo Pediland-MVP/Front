@@ -1,11 +1,11 @@
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@befroosh/ui";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@befroosh/ui";
 import {
   AutomationFormType
 } from "@/schemas/automationForm";

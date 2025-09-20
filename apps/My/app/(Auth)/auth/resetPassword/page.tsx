@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@befroosh/ui";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@befroosh/ui";
+import { Input } from "@befroosh/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, KeyholeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";

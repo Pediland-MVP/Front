@@ -7,7 +7,7 @@ import {
   InputCounter,
   Label,
   Textarea,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { useTranslations } from "next-intl";
 

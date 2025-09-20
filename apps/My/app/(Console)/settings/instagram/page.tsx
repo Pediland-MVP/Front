@@ -7,8 +7,8 @@ import Accounts from "./components/accounts";
 import { useTranslations } from "next-intl";
 import { InstagramNamespace } from "@/types/instagram";
 // UI Imports Here
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from "@befroosh/ui";
+import { Card } from "@befroosh/ui";
 import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";

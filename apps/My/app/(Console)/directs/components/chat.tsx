@@ -1,5 +1,5 @@
 "use client";
-import { Card } from "@/components/ui/card";
+import { Card } from "@befroosh/ui";
 import useCurrentLead from "@/store/currentLead.store";
 import { leadNamespace } from "@/types/lead";
 import { AnimatePresence, motion } from "framer-motion";

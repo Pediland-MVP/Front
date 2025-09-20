@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui"
 import { Instagram } from 'lucide-react'
 import { useTranslations } from "next-intl"
 

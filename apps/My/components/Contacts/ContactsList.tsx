@@ -11,7 +11,7 @@ import {
   ContactDetailsDialog,
   DataTable,
   TablePagination,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { ContactTableColumns } from "./ContactTableColumns";
 
 export const ContactsList = ({ search }: { search: string }) => {

@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@befroosh/ui"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@befroosh/ui"
 import {
   Drawer,
   DrawerClose,
@@ -12,7 +12,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
+} from "@befroosh/ui"
 import { useTranslations } from "next-intl"
 import OrderDetails from "./orderDetails"
 import type { OrderNamespace } from "@/types/order/order.namespace"

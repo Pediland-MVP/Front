@@ -11,11 +11,11 @@ import usePayPlan from "../hooks/usePayPlan";
 import { useUpgradeContext } from "../context/upgrade.context";
 
 // UI Here
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+import { Form } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
-import { Card } from "@/components/ui/card";
+import { Card } from "@befroosh/ui";
 import DiscountText from "@/components/ui-custom/discountText";
 import logger from "@/utils/logger";
 import { DiscountCode } from "./discountCode";

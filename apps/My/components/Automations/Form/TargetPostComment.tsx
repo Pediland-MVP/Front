@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
   Switch,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 export const TargetPostComment = () => {
   const {

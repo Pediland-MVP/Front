@@ -17,10 +17,10 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/index";
-import { Button, ErrorMessage, Form } from "@/components/index";
+import { ConnectInstagramAlert } from "@befroosh/ui";
+import { Button, ErrorMessage, Form } from "@befroosh/ui";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
-import LoadingButton from "@/components/ui/button-loading";
+import LoadingButton from "@befroosh/ui";
 import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import {
   AutomationFormSchema,

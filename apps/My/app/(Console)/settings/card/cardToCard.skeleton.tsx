@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui";
+import { Skeleton } from "@befroosh/ui";
 
 export function CardToCardSkeleton() {
   return (

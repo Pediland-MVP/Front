@@ -1,11 +1,11 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@befroosh/ui";
 import {
     TableRow,
     TableCell,
     TableBody,
-} from "@/components/ui/table";
+} from "@befroosh/ui";
 
 interface ProductListSkeletonProps {
     rowCount?: number;

@@ -12,7 +12,7 @@ import {
   Button,
   ErrorMessage,
   InstagramPostSelectDialog,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { IGPostContentDialog } from "./IGPostContentDialog";
 
 const PAGE_SIZE = 9;

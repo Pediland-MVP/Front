@@ -16,8 +16,8 @@ import { cn } from "@befroosh/lib/utils";
 import ProductListSkeleton from "./productListSkeleton";
 
 // Just UI Imports Below
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@befroosh/ui";
 import { toast } from "sonner";
 import {
   CaretRightIcon,

@@ -20,7 +20,7 @@ import {
   FormItem,
   HelpMeDialog,
   Input,
-} from "@/components/index";
+} from "@befroosh/ui";
 import { XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ConditionsProps = {

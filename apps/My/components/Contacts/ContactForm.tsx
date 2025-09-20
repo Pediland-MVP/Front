@@ -26,7 +26,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/index";
+} from "@befroosh/ui";
 
 import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";

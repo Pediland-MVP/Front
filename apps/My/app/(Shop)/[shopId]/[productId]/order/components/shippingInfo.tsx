@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { Package, Truck, Info } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Card, CardContent } from "@befroosh/ui"
+import { Badge } from "@befroosh/ui"
+import { Separator } from "@befroosh/ui"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@befroosh/ui"
 import { useTranslations } from "next-intl"
 
 interface ShippingInfoProps {
