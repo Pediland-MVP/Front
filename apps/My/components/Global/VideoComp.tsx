@@ -1,4 +1,3 @@
-// src/components/Global/VideoComp.tsx
 "use client";
 
 import { cn } from "@befroosh/lib";

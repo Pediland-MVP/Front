@@ -1,6 +1,5 @@
 "use client";
 
-import { LoaderSpin } from "@befroosh/ui-custom";
 import { Button } from "@befroosh/ui";
 import {
   Form,
@@ -25,6 +24,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { LoaderSpin } from "@befroosh/ui-custom";
 
 export default function Signup() {
   const t = useTranslations("Auth.Signup");
@@ -280,7 +280,7 @@ export default function Signup() {
                   >
                     {t("signup")}
                     {isLoading && loginWith === "mobile" && (
-                      <LoadingSpinner className="mr-1" size={20} />
+                      <LoaderSpin className="mr-1" size={20} />
                     )}
                   </Button>
                 </form>

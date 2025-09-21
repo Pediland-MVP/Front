@@ -1,3 +1,4 @@
+'use client'
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import { ProductNamespace } from "@/types/product";

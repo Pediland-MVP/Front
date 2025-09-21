@@ -1,4 +1,4 @@
-// components/UserStateHandler.tsx
+'use client'
 import useUser from '@/hooks/useUser';
 import { ReactNode } from 'react';
 

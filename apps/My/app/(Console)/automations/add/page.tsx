@@ -1,8 +1,7 @@
-// app/(Console)/automations/add/page.tsx
-
+'use client'
 import { AutomationForm, LayoutPage } from "@/components";
 
-export default function page() {
+export default function Page() {
   return (
     <LayoutPage col="half">
       <AutomationForm />

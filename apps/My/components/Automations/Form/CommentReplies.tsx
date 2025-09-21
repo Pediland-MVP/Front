@@ -1,4 +1,3 @@
-// src/components/Automations/form/CommentReplies.tsx
 "use client";
 
 import { useTranslations } from "next-intl";

@@ -1,3 +1,4 @@
+'use client'
 export * from "./CommentReplies";
 export * from "./CommentTriggerInputs";
 export * from "./Conditions";

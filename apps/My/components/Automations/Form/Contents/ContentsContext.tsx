@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/useContentsContext.tsx
 "use client";
 
 import { AutomationFormType } from "@/schemas/automationForm";

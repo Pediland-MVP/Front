@@ -1,4 +1,4 @@
-// src/schemas/automationForm.ts
+'use client'
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import { REGEX_URL } from "@/utils/regex";

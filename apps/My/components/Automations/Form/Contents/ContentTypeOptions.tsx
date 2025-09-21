@@ -1,4 +1,4 @@
-// src/components/Automations/form/Contents/contentTypeOptions.tsx
+
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import {

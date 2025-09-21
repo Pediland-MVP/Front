@@ -1,8 +1,6 @@
-// app/components/Layout/LayoutPage.tsx
-
+'use client'
 import { cn } from "@befroosh/lib";
-import { FC, ReactNode } from "react";
-import { string } from "zod";
+import { ReactNode } from "react";
 
 interface LayoutPageProps {
   children: ReactNode;

@@ -1,4 +1,3 @@
-// src/components/Automations/form/Trigger.tsx
 "use client";
 
 import { AutomationFormType } from "@/schemas/automationForm";

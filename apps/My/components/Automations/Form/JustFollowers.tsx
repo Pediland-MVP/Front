@@ -1,4 +1,3 @@
-// app/(Console)/automations/components/form/justFollowers.tsx
 "use client";
 
 import useUser from "@/hooks/useUser";

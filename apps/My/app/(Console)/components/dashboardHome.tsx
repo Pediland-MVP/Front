@@ -1,7 +1,6 @@
 "use client";
 
 import useSWRImmutable from "swr/immutable";
-import { fetcher } from "@/hooks/swr/fetcher";
 import { StatsNamespace } from "@/types/stats";
 import moment from "moment-jalaali";
 import LeadsGrowsChart from "./leadsGrows.chart";

@@ -1,4 +1,3 @@
-// src/components/layout/headerFeaturesContext.tsx
 "use client";
 
 import type React from "react";

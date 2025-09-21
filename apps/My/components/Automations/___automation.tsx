@@ -1,4 +1,3 @@
-// src/components/Automations/Automation.tsx
 "use client";
 
 import {
@@ -16,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
-import { z } from "zod";
 import { CommentReplies } from "./Form/CommentReplies";
 import { Conditions } from "./Form/Conditions";
 import { Contents } from "./Form/Contents/Contents";
@@ -26,12 +24,7 @@ import { Triggers } from "./Form/Triggers";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
-import {
-  Card,
-  CommentContentTarget,
-  CommentTriggerInputs,
-  Form,
-} from "@befroosh/ui";
+import { Card, Form } from "@befroosh/ui";
 import { LoaderSpin } from "@befroosh/ui-custom";
 import LoadingButton from "@befroosh/ui";
 import { toast } from "sonner";

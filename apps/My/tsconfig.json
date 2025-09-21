@@ -1,4 +1,5 @@
 {
+  "extends": "@befroosh/typescript-config/nextjs.json",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "forceConsistentCasingInFileNames": true,

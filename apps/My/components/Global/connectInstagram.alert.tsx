@@ -1,4 +1,4 @@
-// components/InstagramAlert.tsx
+'use client'
 import { Alert, AlertDescription, AlertTitle } from "@befroosh/ui";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";

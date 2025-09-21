@@ -1,4 +1,3 @@
-// src/components/layout/NavBottom.tsx
 "use client";
 
 import { cn } from "@befroosh/lib";

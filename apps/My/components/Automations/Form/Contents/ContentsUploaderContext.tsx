@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/useContentsUploaderContext.tsx
 "use client";
 
 import { UploadedFile } from "@/types/fileUploader";

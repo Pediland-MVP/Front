@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/ContentItem.tsx
 "use client";
 
 import {

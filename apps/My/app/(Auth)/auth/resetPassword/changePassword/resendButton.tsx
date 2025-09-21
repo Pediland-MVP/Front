@@ -1,3 +1,4 @@
+'use client'
 import { LoadingButton } from "@befroosh/ui-custom";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";

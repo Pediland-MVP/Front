@@ -1,4 +1,3 @@
-// src/types/contact.ts
 
 import { Paginated } from "./api";
 

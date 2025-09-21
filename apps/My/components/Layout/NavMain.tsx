@@ -1,4 +1,3 @@
-// src/components/layout/navMain.tsx
 "use client";
 
 import { Icon } from "@phosphor-icons/react";

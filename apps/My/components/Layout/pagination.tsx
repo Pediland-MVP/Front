@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 // Just UI Imports Below

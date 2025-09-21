@@ -1,4 +1,3 @@
-// src/components/Automations/Form/Contents/IGPostContent.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
@@ -9,7 +8,6 @@ import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Button } from "@befroosh/ui";
 import { ErrorMessage } from "@befroosh/ui-custom";
-import { InstagramPostSelectDialog } from "@/components";
 import { IGPostContentDialog } from "./IGPostContentDialog";
 
 const PAGE_SIZE = 9;

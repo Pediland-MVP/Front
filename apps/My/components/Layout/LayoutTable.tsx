@@ -1,4 +1,4 @@
-// app/components/Layout/LayoutTable.tsx
+'use client'
 
 import { cn } from "@befroosh/lib";
 import { FC, ReactNode } from "react";

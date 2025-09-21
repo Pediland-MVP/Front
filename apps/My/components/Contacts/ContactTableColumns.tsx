@@ -1,4 +1,3 @@
-// src/app/leads/columns.tsx
 "use client";
 
 import { Contact } from "@/types/contact";

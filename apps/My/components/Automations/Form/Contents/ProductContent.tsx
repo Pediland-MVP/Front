@@ -1,4 +1,3 @@
-// app/(Console)/automations/components/form/catalogue.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";

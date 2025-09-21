@@ -1,4 +1,4 @@
-// src/utils/jalali.ts
+'use client'
 import dayjs from "@/utils/dayjs-jalali";
 import { toJalaali } from "jalaali-js";
 

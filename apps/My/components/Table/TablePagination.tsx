@@ -1,4 +1,4 @@
-// src/components/table/pagination.tsx
+'use client'
 
 import {
   Button,

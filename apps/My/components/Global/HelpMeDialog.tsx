@@ -1,4 +1,3 @@
-// src/components/Global/HelpMe.dialog.tsx
 "use client";
 
 import { cn } from "@befroosh/lib";

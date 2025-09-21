@@ -1,4 +1,3 @@
-// src/components/Automations/Form/Contents/IGPostContentDialog.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";

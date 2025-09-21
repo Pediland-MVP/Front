@@ -1,5 +1,4 @@
-// src/components/Automations/form/Contents/ContentsText.tsx
-
+'use client'
 import { FormField, FormItem, Label, Textarea } from "@befroosh/ui";
 import { InputCounter, ErrorMessage } from "@befroosh/ui-custom";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";

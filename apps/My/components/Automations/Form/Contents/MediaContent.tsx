@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/MediaContent.tsx
 "use client";
 
 import {

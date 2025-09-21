@@ -1,4 +1,3 @@
-// src/components/Contacts/contactForm.tsx
 "use client";
 
 import { useTranslations } from "next-intl";

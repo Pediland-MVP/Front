@@ -1,4 +1,3 @@
-// src/components/layout/navUser.tsx
 "use client";
 
 import api, { clearAccessToken } from "@/hooks/swr/api-client";

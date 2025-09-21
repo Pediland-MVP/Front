@@ -1,6 +1,6 @@
 @import "./fonts.css";
 @import "tailwindcss";
-@config "../../tailwind.config.ts";
+@config "../tailwind.config.ts";
 
 @custom-variant dark (&:is(.dark *));
 

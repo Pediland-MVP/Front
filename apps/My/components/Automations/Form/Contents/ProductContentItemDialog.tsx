@@ -1,4 +1,3 @@
-// src/components/Automations/Form/Contents/ProductContentItemDialog.tsx
 "use client";
 
 import { Button } from "@befroosh/ui";

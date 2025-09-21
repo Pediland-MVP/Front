@@ -1,3 +1,4 @@
+'use client'
 import { z } from "zod";
 
 // Define and export the schema separately if needed

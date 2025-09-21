@@ -1,4 +1,3 @@
-// src/hooks/swr/api-client.tsx
 "use client";
 
 import axios, { AxiosError, AxiosHeaders, AxiosRequestConfig } from "axios";

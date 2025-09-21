@@ -1,4 +1,3 @@
-// components/global/setupWarning.tsx
 "use client";
 
 import useUser from "@/hooks/useUser";

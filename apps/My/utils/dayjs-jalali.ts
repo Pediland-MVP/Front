@@ -1,4 +1,4 @@
-// src/utils/dayjs-jalali.ts
+'use client'
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";

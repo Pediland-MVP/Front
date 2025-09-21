@@ -1,4 +1,3 @@
-// app/(Console)/automations/components/form/commentConsent.tsx
 "use client";
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";

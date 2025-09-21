@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/ButtonContentItem.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";

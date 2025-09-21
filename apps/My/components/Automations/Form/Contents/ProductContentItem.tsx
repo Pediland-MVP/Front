@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/ProductContentItem.tsx
 "use client";
 
 import { cn } from "@befroosh/lib";

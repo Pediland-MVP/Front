@@ -1,4 +1,3 @@
-// src/components/layout/consoleSidebar.tsx
 "use client";
 
 import { UserNamespace } from "@/types/user";

@@ -1,4 +1,4 @@
-// src/components/layout/NavUser.skeleton.tsx
+'use client'
 import { Skeleton } from "@befroosh/ui"
 
 export const NavUserSkeleton = () => {

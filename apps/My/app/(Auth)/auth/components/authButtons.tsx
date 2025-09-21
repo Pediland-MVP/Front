@@ -1,4 +1,3 @@
-// app/(Console)/auth/layout/authButtons.tsx
 "use client";
 
 import { useEffect, useState } from "react";

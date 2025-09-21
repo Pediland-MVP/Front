@@ -1,4 +1,4 @@
-// src/lib/mappers/contact.ts
+'use client'
 import { Contact, ContactWire, Lead, LeadWire } from "@/types/contact";
 
 const toDate = (s: string | null | undefined): Date | null =>

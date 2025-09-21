@@ -1,4 +1,4 @@
-// src/schemas/contact.ts
+'use client'
 import { z } from "zod";
 
 export const ISODateString = z

@@ -1,4 +1,3 @@
-// src/app/leads/data-table.tsx
 "use client";
 
 import { formatNumber } from "@/utils/formatNumber";

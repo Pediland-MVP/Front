@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "main": "index.ts",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "react": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react": "^19.1.9",
     "barrelsby": "^2.8.1",
     "@befroosh/typescript-config": "workspace:*"
   },

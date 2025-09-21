@@ -52,13 +52,13 @@ export const ConversationsProvider = ({
         const conversation = updatedConversations[index];
         
         // Update the messages of the conversation
-        conversation.messages = [message];
+        conversation!.messages = [message];
         
         // Remove the conversation from its current position
         updatedConversations.splice(index, 1);
         
         // Add the conversation to the beginning of the array
-        updatedConversations.unshift(conversation);
+        updatedConversations.unshift(conversation!);
         
         return updatedConversations;
       }

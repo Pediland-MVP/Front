@@ -1,3 +1,4 @@
+'use client'
 export * from "./ButtonContent";
 export * from "./ContentButtonsItem";
 export * from "./ContentItem";

@@ -1,4 +1,3 @@
-// src/components/Automations/Form/TargetPostComment.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";

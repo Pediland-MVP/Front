@@ -1,9 +1,7 @@
-// app/(Console)/components/startKit.tsx
 "use client";
 
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import useUser from "@/hooks/useUser";
-import { cn } from "@befroosh/lib";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";

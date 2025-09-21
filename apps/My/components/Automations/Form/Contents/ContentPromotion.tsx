@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/ContentPromotion.tsx
 "use client";
 
 import { AutomationFormType } from "@/schemas/automationForm";

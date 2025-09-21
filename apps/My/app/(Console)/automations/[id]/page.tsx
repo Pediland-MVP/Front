@@ -1,5 +1,3 @@
-// src/app/(Console)/automations/[id]/page.tsx
-
 import { AutomationForm, LayoutPage } from "@/components";
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";

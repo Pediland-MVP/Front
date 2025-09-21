@@ -1,4 +1,3 @@
-// src/components/layout/consoleHeader.tsx
 "use client";
 
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";

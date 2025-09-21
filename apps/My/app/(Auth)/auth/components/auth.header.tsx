@@ -1,4 +1,3 @@
-// app/(Console)/auth/layout/header.tsx
 "use client";
 import Link from "next/link";
 import AuthButtons from "./authButtons";
