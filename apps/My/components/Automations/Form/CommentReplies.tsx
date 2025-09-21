@@ -18,7 +18,8 @@ import {
   Switch,
 } from "@befroosh/ui";
 import { TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
-import { SeperateLine, HelpMeDialog } from "@befroosh/ui-custom";
+import { SeperateLine } from "@befroosh/ui-custom";
+import { HelpMeDialog } from "@/components/Global";
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();

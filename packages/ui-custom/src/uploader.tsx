@@ -1,3 +1,5 @@
+
+"use client"
 import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
 import React, { useState } from "react";
 

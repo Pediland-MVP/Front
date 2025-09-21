@@ -10,17 +10,17 @@ import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
 import {
-  ErrorMessage,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  HelpMeDialog,
   Input,
   Switch,
   Textarea,
 } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
+import { HelpMeDialog } from "@/components";
 
 type JustFollowersProps = {
   control: Control<AutomationFormType>;
@@ -34,14 +34,14 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
 
   useEffect(() => {
     if (!user) return;
-    
+
     if (watch("justFollowers")) {
       // Set default values when enabling
       if (!watch("followMessage") && hasInstagram) {
         setValue(
           "followMessage",
           t("follow_message", {
-            username: `@${user?.instagrams[0].username}`,
+            username: `@${user?.instagrams[0]?.username}`,
           }),
         );
       }

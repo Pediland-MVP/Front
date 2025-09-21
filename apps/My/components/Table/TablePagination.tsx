@@ -2,13 +2,13 @@
 
 import {
   Button,
-  LoaderPulse,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@befroosh/ui";
+import { LoaderPulse } from "@befroosh/ui-custom";
 import type { Table } from "@tanstack/react-table";
 import {
   ChevronLeft,
@@ -102,7 +102,7 @@ export function TablePagination<TData>({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 md:flex-nowrap">
       {/* Display range text */}
-      <div className="text-muted-foreground hidden min-w-1/5 shrink-0 text-sm md:flex">
+      <div className="text-muted-foreground min-w-1/5 hidden shrink-0 text-sm md:flex">
         {isLoading ? (
           <LoaderPulse />
         ) : total === 0 ? (

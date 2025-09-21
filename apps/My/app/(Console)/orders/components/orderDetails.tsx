@@ -1,11 +1,11 @@
 "use client";
 
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { Badge } from "@befroosh/ui";
 import { Button } from "@befroosh/ui";
 import { Card, CardContent, CardHeader, CardTitle } from "@befroosh/ui";
 import { Dialog, DialogContent, DialogTrigger } from "@befroosh/ui";
-import ImageWithFallback from "@befroosh/ui";
+import { ImageWithFallback } from "@befroosh/ui";
 import {
   Select,
   SelectContent,
@@ -78,7 +78,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   };
 
   if (!order) {
-    return <LoadingSpinner />;
+    return <LoaderSpin />;
   }
 
   const { isDiscount, paidPrice, totalPrice, shippingCost } = useGetOrderPrices(
@@ -176,7 +176,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                         {order.productFieldValues?.map((pf, index) => (
                           <div key={index} className="mb-4">
                             <p className="font-medium">{pf.field.label}</p>
-                            <p className="text-sm break-words whitespace-pre-wrap">
+                            <p className="whitespace-pre-wrap break-words text-sm">
                               {pf.value}
                             </p>
                           </div>

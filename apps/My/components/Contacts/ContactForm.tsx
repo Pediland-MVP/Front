@@ -1,26 +1,15 @@
 // src/components/Contacts/contactForm.tsx
 "use client";
 
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import api from "@/hooks/swr/api-client";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import DateObject from "react-date-object";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { Controller, useForm } from "react-hook-form";
-import DatePicker from "react-multi-date-picker";
-import { mutate } from "swr";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
 
 import {
   Button,
   Input,
-  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -28,17 +17,15 @@ import {
   SelectValue,
 } from "@befroosh/ui";
 
-import LoadingSpinner from "@befroosh/ui-custom";
-import { toast } from "sonner";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "../Custom/form";
+} from "@befroosh/ui";
 
 export type ContactFormProps = {
   contactId: string;
@@ -274,12 +261,16 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           )}
         />
 
-        <div className="col-span-12 flex gap-2 mt-3 justify-center">
+        <div className="col-span-12 mt-3 flex justify-center gap-2">
           <Button type="submit">
             {t("saveChanges")}
-            {isSubmitLoading && <LoadingSpinner size={20} />}
+            {isSubmitLoading && <LoaderSpin size={20} />}
           </Button>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
             {t("cancel")}
           </Button>
         </div>

@@ -5,13 +5,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
-
-import {
-  ContactsList,
-  LayoutTable,
-  SearchInput,
-  SearchToggleButton,
-} from "@befroosh/ui";
+import { SearchInput, SearchToggleButton } from "@befroosh/ui-custom";
+import { ContactsList, LayoutTable } from "@/components/";
 
 export default function Page() {
   const t = useTranslations("Contacts");
@@ -33,7 +28,12 @@ export default function Page() {
   const effectiveSearch = normalized.length >= 2 ? normalized : "";
 
   const HeaderButton = useMemo(
-    () => <SearchToggleButton setIsSearchVisible={setIsSearchVisible} />,
+    () => (
+      <SearchToggleButton
+        setIsSearchVisible={setIsSearchVisible}
+        isSearchVisible={false}
+      />
+    ),
     [],
   );
 

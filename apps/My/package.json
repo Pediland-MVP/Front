@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@befroosh/typescript-config": "workspace:*",
     "@befroosh/ui": "workspace:*",
     "@befroosh/ui-custom": "workspace:*",
     "@befroosh/hooks": "workspace:*",

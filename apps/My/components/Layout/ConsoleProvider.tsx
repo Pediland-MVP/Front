@@ -7,12 +7,9 @@ import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 
 // UI Imports Here
-import {
-  SidebarInset,
-  SidebarProvider,
-  ConsoleSidebar,
-  ConsoleHeader,
-} from "@befroosh/ui";
+import { SidebarInset, SidebarProvider } from "@befroosh/ui";
+import { ConsoleSidebar } from "./ConsoleSidebar";
+import { ConsoleHeader } from "./ConsoleHeader";
 
 export const ConsoleProvider = ({
   children,

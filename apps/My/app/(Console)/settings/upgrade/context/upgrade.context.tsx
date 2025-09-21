@@ -5,7 +5,7 @@ import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspa
 import { createContext, useState, use, useContext, useEffect } from "react";
 import { usePlanSelection } from "../hooks/usePlanSelection";
 import useSWRImmutable from "swr/immutable";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import useSWR from "swr";
 import { AxiosError } from "axios";
 import useUser from "@/hooks/useUser";
@@ -106,7 +106,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
   }, [searchParams, isPlansLoading, isSubscriptionsLoading]);
 
   if (isSubscriptionsLoading || isPlansLoading) {
-    return <LoadingSpinner className="h-full" />;
+    return <LoaderSpin className="h-full" />;
   }
 
   return (

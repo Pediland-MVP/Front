@@ -7,12 +7,9 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-
-import {
-  Button,
-  ErrorMessage,
-  InstagramPostSelectDialog,
-} from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
+import { InstagramPostSelectDialog } from "@/components";
 import { IGPostContentDialog } from "./IGPostContentDialog";
 
 const PAGE_SIZE = 9;

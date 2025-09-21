@@ -1,13 +1,7 @@
 // src/components/Automations/form/Contents/ContentsText.tsx
 
-import {
-  ErrorMessage,
-  FormField,
-  FormItem,
-  InputCounter,
-  Label,
-  Textarea,
-} from "@befroosh/ui";
+import { FormField, FormItem, Label, Textarea } from "@befroosh/ui";
+import { InputCounter, ErrorMessage } from "@befroosh/ui-custom";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { useTranslations } from "next-intl";
 

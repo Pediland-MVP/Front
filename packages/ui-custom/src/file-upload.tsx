@@ -1,3 +1,4 @@
+"use client"
 import { cn } from "@befroosh/lib";
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";

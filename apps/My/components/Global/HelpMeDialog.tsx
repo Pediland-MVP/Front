@@ -15,8 +15,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  VideoComp,
 } from "@befroosh/ui";
+
+import { VideoComp } from "@/components";
 
 type Position =
   | "left"

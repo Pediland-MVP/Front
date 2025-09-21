@@ -20,21 +20,21 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  IGPostContent,
-  ProductContentComp,
-  TextContent,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  useContentsContext,
-  ButtonContent,
-  MediaContent,
 } from "@befroosh/ui";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { TextContent } from "./TextContent";
+import { IGPostContent } from "./IGPostContent";
+import { ProductContentComp } from "./ProductContent";
+import { ButtonContent } from "./ButtonContent";
+import { MediaContent } from "./MediaContent";
+import { useContentsContext } from "./ContentsContext";
 
 interface ReturnContentProps {
   index: number;
@@ -200,7 +200,7 @@ export const ContentItem = ({
             />
           </div>
           <div className="flex gap-2 text-sm font-medium text-blue-900">
-            <div className="flex size-5.5 items-center justify-center rounded-full bg-blue-900 p-0 text-xs leading-px font-medium text-white">
+            <div className="size-5.5 leading-px flex items-center justify-center rounded-full bg-blue-900 p-0 text-xs font-medium text-white">
               {index + 1}
             </div>
             {`${t_contentTypes("create_title")} ${typeLabel}`}
@@ -220,7 +220,7 @@ export const ContentItem = ({
         <ReturnContent
           mode={mode}
           index={index}
-          type={contents?.[index]?.type}
+          type={contents?.[index]?.type || AutomationContentTypesEnum.TEXT}
         />
 
         {contents?.[index]?.type === AutomationContentTypesEnum.TEXT &&
@@ -231,7 +231,7 @@ export const ContentItem = ({
               name={`contents.${index}.haveConsent`}
               control={control}
               render={({ field }) => (
-                <FormItem className="flex flex-col justify-start space-y-0 gap-y-2">
+                <FormItem className="flex flex-col justify-start gap-y-2 space-y-0">
                   <div className="flex items-center gap-x-2">
                     <FormControl>
                       <TooltipProvider>

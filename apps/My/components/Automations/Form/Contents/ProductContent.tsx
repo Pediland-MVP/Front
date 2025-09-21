@@ -6,8 +6,8 @@ import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-
-import { ErrorMessage, ProductContentItem } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
+import { ProductContentItem } from "@/components";
 import {
   closestCenter,
   DndContext,
@@ -124,9 +124,10 @@ export const ProductContentComp = ({
         </DndContext>
       </div>
 
-      {productsField.length === 10 && productsField.every(product => product.id) && (
-        <ErrorMessage>{t("limit")}</ErrorMessage>
-      )}
+      {productsField.length === 10 &&
+        productsField.every((product) => product.id) && (
+          <ErrorMessage>{t("limit")}</ErrorMessage>
+        )}
 
       {(errors as any)?.[
         mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"

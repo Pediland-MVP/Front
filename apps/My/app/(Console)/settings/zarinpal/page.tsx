@@ -13,13 +13,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import LoadingButton from "@befroosh/ui";
+import { LoadingButton } from "@befroosh/ui-custom";
 import { useEffect, useState } from "react";
-import { ErrorMessage } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
 import { ExceptionMessage } from "@/types/exceptionMessage";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import api from "@/hooks/swr/api-client";
 import { AxiosError } from "axios";
 import { mutate } from "swr";
@@ -73,7 +73,7 @@ export default function Zarinpal() {
       <div className="flex h-full">
         <div className="h-full w-full sm:w-3/5">
           <Card className="h-full w-full border-l-2 border-gray-100 p-6">
-            <LoadingSpinner className="h-full" />
+            <LoaderSpin className="h-full" />
           </Card>
         </div>
       </div>

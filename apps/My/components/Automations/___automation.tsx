@@ -32,7 +32,7 @@ import {
   CommentTriggerInputs,
   Form,
 } from "@befroosh/ui";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import LoadingButton from "@befroosh/ui";
 import { toast } from "sonner";
 import {
@@ -235,7 +235,7 @@ export const Automation = ({ id }: AutomationProps) => {
           )}
         >
           {isAutomationLoading ? (
-            <LoadingSpinner />
+            <LoaderSpin />
           ) : (
             <>
               {!hasInstagram && <ConnectInstagramAlert />}

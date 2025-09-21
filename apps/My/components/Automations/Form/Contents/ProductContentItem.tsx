@@ -7,12 +7,13 @@ import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { Button, ProductContentItemDialog } from "@befroosh/ui";
+import { Button } from "@befroosh/ui";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
+import { ProductContentItemDialog } from "./ProductContentItemDialog";
 
 type ProductContentItemProps = {
   id: string;

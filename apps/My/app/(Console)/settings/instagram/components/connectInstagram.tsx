@@ -1,5 +1,5 @@
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";

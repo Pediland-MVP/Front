@@ -23,7 +23,7 @@
     "paths": {
       "@/*": ["./*"],
       "@components": ["./components/index.ts"],
-      "@components/*": ["./components/*"],
+      "@components/*": ["./components/*"]
     },
     "target": "ES2020"
     // "types": ["node"] // اگر لازم داری بازش کن

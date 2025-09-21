@@ -1,45 +1,41 @@
 "use client";
 
+import { GENDERS_ENUM } from "@/constants/gender.constant";
+import { CityNamespace } from "@/types/city";
+import { ProvinceNamespace } from "@/types/province";
+import { UserNamespace } from "@/types/user";
+import logger from "@/utils/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
-import { z } from "zod";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { GENDERS_ENUM } from "@/constants/gender.constant";
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import DateObject from "react-date-object";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { useEffect, useState } from "react";
-import ProfileFormSkeleton from "./profileForm.sekeleton";
-import useSWRImmutable from "swr/immutable";
-import logger from "@/utils/logger";
-import useSWR, { mutate } from "swr";
-import { ProvinceNamespace } from "@/types/province";
-import { CityNamespace } from "@/types/city";
-import { UserNamespace } from "@/types/user";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import DateObject from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import DatePicker from "react-multi-date-picker";
+import { mutate } from "swr";
+import useSWRImmutable from "swr/immutable";
+import { z } from "zod";
 // UI
+import api from "@/hooks/swr/api-client";
 import {
+  Button,
+  Card,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@befroosh/ui";
-import {
+  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@befroosh/ui";
-import { Card } from "@befroosh/ui";
-import { Input } from "@befroosh/ui";
-import { Button } from "@befroosh/ui";
+import { LoaderSpin, LoadingButton } from "@befroosh/ui-custom";
 import { toast } from "sonner";
-import LoadingButton from "@befroosh/ui";
-import LoadingSpinner from "@befroosh/ui-custom";
-import api from "@/hooks/swr/api-client";
 
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
@@ -199,7 +195,7 @@ export function ProfileForm() {
     router.push("/");
   };
 
-  if (userIsLoading) return <LoadingSpinner className="h-full" />;
+  if (userIsLoading) return <LoaderSpin className="h-full" />;
 
   return (
     <Card className="h-full border-gray-100 p-6 md:border-l-2 md:p-10">
@@ -217,8 +213,8 @@ export function ProfileForm() {
                   <FormLabel>{t("gender")}</FormLabel>
                   <Select
                     onValueChange={(val) => val && field.onChange(val)}
-                    defaultValue={field.value}
-                    value={field.value}
+                    defaultValue={field.value || ""}
+                    value={field.value || ""}
                     dir="rtl"
                   >
                     <FormControl>
@@ -360,8 +356,8 @@ export function ProfileForm() {
                       <FormLabel>{t("state")}</FormLabel>
                       <Select
                         onValueChange={(val) => val && field.onChange(val)}
-                        defaultValue={field.value}
-                        value={field.value}
+                        defaultValue={field.value || ""}
+                        value={field.value || ""}
                         dir="rtl"
                       >
                         <FormControl>
@@ -392,9 +388,9 @@ export function ProfileForm() {
                       <FormLabel>{t("city")}</FormLabel>
                       <Select
                         onValueChange={(val) => val && field.onChange(val)}
-                        defaultValue={field.value}
+                        defaultValue={field.value || ""}
                         dir="rtl"
-                        value={field.value}
+                        value={field.value || ""}
                       >
                         <FormControl>
                           <SelectTrigger>

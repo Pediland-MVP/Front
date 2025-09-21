@@ -8,13 +8,13 @@ import { useFormContext } from "react-hook-form";
 import { InstagramPostSelectDialog } from "./InstagramPostSelectDialog";
 
 import {
-  ErrorMessage,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   Switch,
 } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 
 export const TargetPostComment = () => {
   const {
@@ -68,7 +68,9 @@ export const TargetPostComment = () => {
                   mode={AutomationContentModeEnum.AUTOMATION}
                 />
                 {(errors as any)?.instagramPost && (
-                  <ErrorMessage className="mt-1">{t_err("selection_required")}</ErrorMessage>
+                  <ErrorMessage className="mt-1">
+                    {t_err("selection_required")}
+                  </ErrorMessage>
                 )}
               </>
             )}

@@ -13,13 +13,13 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { FormProvider, useForm } from "react-hook-form";
-import { ErrorMessage } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
-import LoadingButton from "@befroosh/ui";
+import { LoadingButton } from "@befroosh/ui-custom";
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import api from "@/hooks/swr/api-client";
 
 export const bankDetailsSchema = z.object({
@@ -96,7 +96,7 @@ export default function BankDetails() {
       <div className="_card-to-card-page flex h-full">
         <div className="h-full w-full sm:w-3/5">
           <Card className="h-full border-l-2 border-gray-100 p-6">
-            <LoadingSpinner className="h-full" />
+            <LoaderSpin className="h-full" />
           </Card>
         </div>
       </div>
@@ -179,7 +179,7 @@ export default function BankDetails() {
                               dir="ltr"
                             />
                             <p
-                              className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"
+                              className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500"
                               dir="ltr"
                             >
                               IR -

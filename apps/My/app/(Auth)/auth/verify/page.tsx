@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonLoading from "@befroosh/ui";
+import { LoadingButton } from "@befroosh/ui-custom";
 import {
   Form,
   FormControl,
@@ -9,11 +9,7 @@ import {
   FormItem,
   FormMessage,
 } from "@befroosh/ui";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@befroosh/ui";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@befroosh/ui";
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -150,7 +146,7 @@ export default function VerifyOTP() {
                     </FormItem>
                   )}
                 />
-                <ButtonLoading
+                <LoadingButton
                   isLoading={isLoading}
                   type="submit"
                   className="col-span-4 w-9/12 text-white"
@@ -159,7 +155,7 @@ export default function VerifyOTP() {
                   size={"lg"}
                 >
                   {t("verifyButton")}
-                </ButtonLoading>
+                </LoadingButton>
               </form>
             </Form>
             <div className="mt-4">

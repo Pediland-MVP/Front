@@ -14,12 +14,11 @@ import { useUpgradeContext } from "../context/upgrade.context";
 import { Form } from "@befroosh/ui";
 import { Button } from "@befroosh/ui";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { Card } from "@befroosh/ui";
-import DiscountText from "@befroosh/ui-custom";
+import { DiscountText } from "@/components";
 import logger from "@/utils/logger";
 import { DiscountCode } from "./discountCode";
-import { usePlanSelection } from "../hooks/usePlanSelection";
 import { IPlan } from "@/types/plans/plans";
 
 const planSchema = z.object({
@@ -55,18 +54,23 @@ export default function PlanSelection() {
 
   useEffect(() => {
     if (!plans?.length) return;
-    form.setValue("planId", plans[0].id);
-    form.setValue("durationId", plans[0].durations[0].id);
-    setTotalPrice(plans[0].durations[0].price);
+    const firstPlan = plans[0];
+    form.setValue("planId", firstPlan?.id || 0);
+    const firstDuration = firstPlan?.durations?.[0];
+    if (firstDuration) {
+      form.setValue("durationId", firstDuration?.id || 0);
+      setTotalPrice(firstDuration?.price || 0);
+    }
   }, [plans, form]);
 
   const changePlan = (planId: number) => {
     form.setValue("planId", planId);
-    if (plans) {
-      const currentPlan = plans.find((p) => p.id === planId);
-      if (currentPlan) {
-        form.setValue("durationId", currentPlan.durations[0].id);
-        setTotalPrice(currentPlan.durations[0].price);
+    const foundPlan = plans?.find((p) => p.id === planId);
+    if (foundPlan) {
+      const firstDuration = foundPlan.durations?.[0];
+      if (firstDuration) {
+        form.setValue("durationId", firstDuration.id);
+        setTotalPrice(firstDuration.price);
       }
     }
   };
@@ -107,9 +111,7 @@ export default function PlanSelection() {
       <Card className="h-full p-6">
         <div className="mb-6">
           <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-          <p className="text-muted-foreground text-sm">
-            {t("description")}
-          </p>
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
           <DiscountText />
         </div>
 
@@ -276,7 +278,7 @@ export default function PlanSelection() {
                         disabled={isPayLoading && loadingPlanId === duration.id}
                       >
                         {isPayLoading && loadingPlanId === duration.id ? (
-                          <LoadingSpinner />
+                          <LoaderSpin />
                         ) : (
                           t("choosePlan")
                         )}

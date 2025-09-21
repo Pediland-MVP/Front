@@ -1,17 +1,13 @@
 "use client";
 
-import { toContact } from "@befroosh/lib/mappers/contact";
+import { toContact } from "@/lib/mappers/contact";
 import type { PageMeta, Paginated } from "@/types/api";
 import type { ContactWire } from "@/types/contact";
 import { Table } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
-import {
-  ContactDetailsDialog,
-  DataTable,
-  TablePagination,
-} from "@befroosh/ui";
+import { ContactDetailsDialog, DataTable, TablePagination } from "@/components";
 import { ContactTableColumns } from "./ContactTableColumns";
 
 export const ContactsList = ({ search }: { search: string }) => {

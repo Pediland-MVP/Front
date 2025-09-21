@@ -1,12 +1,12 @@
-import useSWR from 'swr';
-import { getAccessToken } from './swr/api-client';
-import { UserNamespace } from '@/types/user';
+"use client";
+import useSWR from "swr";
+import { getAccessToken } from "./swr/api-client";
+import { UserNamespace } from "@/types/user";
 
 export default function useUser() {
-  const { data, error, isLoading, mutate } = useSWR<UserNamespace.GET.User>(
-    '/users/me'
-  );
-  
+  const { data, error, isLoading, mutate } =
+    useSWR<UserNamespace.GET.User>("/users/me");
+
   return {
     user: data,
     isLoading,
@@ -15,6 +15,6 @@ export default function useUser() {
     mutate,
     hasSubscription: Boolean(data?.subscriptions?.length),
     hasInstagram: Boolean(data?.instagrams?.length),
-    error
+    error,
   };
 }

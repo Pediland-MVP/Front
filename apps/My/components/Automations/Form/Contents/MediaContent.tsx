@@ -14,12 +14,9 @@ import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { AxiosResponse, AxiosError } from "axios";
 import { toast } from "sonner";
-
-import {
-  FormMessage,
-  MediaUploader,
-  useContentsUploaderContext,
-} from "@befroosh/ui";
+import { FormMessage } from "@befroosh/ui";
+import { MediaUploader } from "@befroosh/ui-custom";
+import { useContentsUploaderContext } from "@/components";
 
 interface MediaContentProps {
   index: number;

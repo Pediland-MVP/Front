@@ -19,14 +19,14 @@ import { FormProvider, useForm } from "react-hook-form";
 // UI Imports
 import { Button, Form } from "@befroosh/ui";
 import { ErrorMessage, LoaderSpin } from "@befroosh/ui-custom";
-import { LoadingButton } from "@befroosh/ui";
+import { LoadingButton } from "@befroosh/ui-custom";
 import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import {
   AutomationFormSchema,
   type AutomationFormType,
 } from "@/schemas/automationForm";
 import { toast } from "sonner";
-import { SeperateLine } from "../ui-custom/SeperateLine";
+import { SeperateLine } from "@befroosh/ui-custom";
 import {
   CommentReplies,
   CommentTriggerInputs,

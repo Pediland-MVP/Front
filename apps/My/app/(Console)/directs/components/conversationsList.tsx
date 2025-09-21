@@ -11,12 +11,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@befroosh/ui";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 
 import { ConversationNamespace } from "@/types/conversations/conversation.namespace";
 import { useConversations } from "../context/conversations.context";
 import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
-import InfiniteScroll from "@befroosh/ui";
+import { InfiniteScroll } from "@befroosh/ui";
 
 const LIMIT = 15;
 function ConversationsList() {
@@ -29,7 +29,7 @@ function ConversationsList() {
   const [page, setPage] = useState(0);
 
   const sidebar = useSidebar();
-  const selectedChatId = useParams()?.chatId as string | undefined;
+  const selectedChatId = useParams()?.["chatId"] as string | undefined;
 
   const fetchConversations = useCallback(() => {
     setIsLoading(true);
@@ -48,7 +48,7 @@ function ConversationsList() {
   const handleConversations = useCallback((conversationsData: string) => {
     try {
       const newConversations = JSON.parse(
-        conversationsData
+        conversationsData,
       ) as ConversationNamespace.WS.Conversations;
       setConversations((prevConversations) => [
         ...prevConversations,
@@ -66,7 +66,7 @@ function ConversationsList() {
   const handleNewConversation = useCallback((conversationData: string) => {
     try {
       const newConversation = JSON.parse(
-        conversationData
+        conversationData,
       ) as ConversationNamespace.WS.NewConversation;
       addNewConversation(newConversation);
     } catch (error) {
@@ -85,7 +85,7 @@ function ConversationsList() {
       messagesSocket.off(WsMessageEvents.CONVERSATIONS, handleConversations);
       messagesSocket.off(
         WsMessageEvents.NEW_CONVERSATION,
-        handleNewConversation
+        handleNewConversation,
       );
     };
   }, []);
@@ -94,7 +94,7 @@ function ConversationsList() {
 
   const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
   const isMediumDevice = useMediaQuery(
-    "only screen and (min-width : 769px) and (max-width : 992px)"
+    "only screen and (min-width : 769px) and (max-width : 992px)",
   );
 
   const conversationClickHandler = (chatId: string) => () => {
@@ -116,7 +116,7 @@ function ConversationsList() {
 
   if (!conversations.length) {
     return (
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="flex h-full w-full items-center justify-center">
         <p className="text-muted-foreground">{t("noConversations")}</p>
       </div>
     );
@@ -130,23 +130,23 @@ function ConversationsList() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className="lg:w-1/3 w-full h-full bg-white"
+          className="h-full w-full bg-white lg:w-1/3"
         >
-          <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
+          <Card className="box-border flex h-full w-full flex-col overflow-hidden border-l-2 border-gray-100 p-4">
             <div
               id="chats-container"
-              className="flex-grow overflow-y-auto w-full"
+              className="w-full flex-grow overflow-y-auto"
             >
               <div
                 id="comments-container"
-                className="w-full _wrap min-h-[600px] max-h-[calc(100vh - 900px)] overflow-y-auto "
+                className="_wrap max-h-[calc(100vh - 900px)] min-h-[600px] w-full overflow-y-auto"
               >
-                <div className="w-full flex flex-col">
+                <div className="flex w-full flex-col">
                   {conversations.map((chat, index) => (
                     <div
                       onClick={conversationClickHandler(chat.id)}
                       key={chat.id || index}
-                      className="flex p-2 items-center gap-4 box-border rounded-lg hover:bg-accent duration-300 cursor-pointer"
+                      className="hover:bg-accent box-border flex cursor-pointer items-center gap-4 rounded-lg p-2 duration-300"
                     >
                       <Image
                         src={
@@ -163,7 +163,7 @@ function ConversationsList() {
                           {chat.firstname} {chat.lastname || ""}
                         </span>
                         {chat.messages && (
-                          <span className="text-muted-foreground text-xs truncate">
+                          <span className="text-muted-foreground truncate text-xs">
                             {chat.messages?.[0]?.text}
                           </span>
                         )}
@@ -177,15 +177,15 @@ function ConversationsList() {
                     hasMore={hasMore}
                   >
                     {hasMore && (
-                      <div className="w-full flex justify-center items-center text-center py-4">
-                        <LoadingSpinner />
+                      <div className="flex w-full items-center justify-center py-4 text-center">
+                        <LoaderSpin />
                       </div>
                     )}
                   </InfiniteScroll>
                 </div>
                 {/* <div className="w-full"> */}
                 {error && (
-                  <div className="text-center py-4 text-destructive">
+                  <div className="text-destructive py-4 text-center">
                     {error}
                   </div>
                 )}

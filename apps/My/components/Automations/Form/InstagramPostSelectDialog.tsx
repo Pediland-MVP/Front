@@ -22,9 +22,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  ErrorMessage,
   Skeleton,
 } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 
 const PAGE_SIZE = 9;
@@ -93,9 +93,12 @@ export const InstagramPostSelectDialog = ({
   }, [isOpen]);
 
   const selectPost = async (e: MouseEvent<HTMLDivElement>) => {
-    const mediaUrl = e.currentTarget.dataset.mediaurl;
-    const mediaId = e.currentTarget.dataset.postid!;
-    setValue("instagramPost", { picture: { url: mediaUrl }, mediaId });
+    const mediaUrl = e.currentTarget.dataset["mediaurl"];
+    const mediaId = e.currentTarget.dataset["postid"];
+    setValue("instagramPost", {
+      picture: { url: mediaUrl },
+      mediaId: mediaId!,
+    });
     await trigger("instagramPost");
     setIsOpen(false);
   };
@@ -107,7 +110,7 @@ export const InstagramPostSelectDialog = ({
           <div className="grid grid-cols-3 gap-2">
             <div className="flex cursor-pointer items-center justify-center rounded-lg bg-gray-200 duration-300 hover:bg-gray-300/90">
               {watch("instagramPost")?.picture?.url ? (
-                <div className="relative aspect-square size-42">
+                <div className="size-42 relative aspect-square">
                   <Image
                     src={watch("instagramPost")?.picture?.url || ""}
                     alt="cover"
@@ -121,7 +124,7 @@ export const InstagramPostSelectDialog = ({
                   </div>
                 </div>
               ) : (
-                <div className="flex size-42 cursor-pointer items-center justify-center rounded-lg bg-gray-200 duration-300 hover:bg-gray-300/90">
+                <div className="size-42 flex cursor-pointer items-center justify-center rounded-lg bg-gray-200 duration-300 hover:bg-gray-300/90">
                   <span className="text-sm">{t("select_post")}</span>
                   {errors?.contents?.[index]?.id && (
                     <ErrorMessage>

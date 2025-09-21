@@ -9,9 +9,9 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 // UI Imports
-import DiscountText from "@befroosh/ui-custom";
 import { Button } from "@befroosh/ui";
 import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
+import { DiscountText } from "@/components";
 
 type StartKitProps = {
   isAfterPurchasingPlan?: boolean;
@@ -69,7 +69,7 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
 
           {!isPlaying && (
             <Button
-              className="bg-primary/80 hover:bg-primary absolute top-1/2 left-1/2 z-10 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-white"
+              className="bg-primary/80 hover:bg-primary absolute left-1/2 top-1/2 z-10 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-white"
               size="icon"
               onClick={handlePlayPause}
             >

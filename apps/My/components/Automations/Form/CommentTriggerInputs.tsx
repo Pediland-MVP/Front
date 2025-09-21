@@ -14,10 +14,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  HelpMeDialog,
   Textarea,
 } from "@befroosh/ui";
 import { SeperateLine } from "@befroosh/ui-custom";
+import { HelpMeDialog } from "@/components/Global";
 
 export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =

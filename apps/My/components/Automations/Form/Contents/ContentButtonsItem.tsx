@@ -13,7 +13,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  ErrorMessage,
   FormDescription,
   FormField,
   FormItem,
@@ -26,6 +25,7 @@ import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { ErrorMessage } from "@befroosh/ui-custom";
 
 type ButtonContentItemProps = {
   id: string;

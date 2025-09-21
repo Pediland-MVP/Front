@@ -101,7 +101,7 @@ export const orderFormSchema = z.object({
 export type CheckoutProps = {
   shopId: string;
   productId: string;
-  token?: string;
+  token?: string | undefined;
 };
 
 export default function CheckoutPage({
@@ -277,10 +277,10 @@ export default function CheckoutPage({
 
       if (
         _pendingOrder.orderProducts?.length > 0 &&
-        _pendingOrder.orderProducts[0].product.id === product?.id
+        _pendingOrder.orderProducts[0]?.product?.id === product?.id
       ) {
         const orderProduct = _pendingOrder.orderProducts[0];
-        if (orderProduct.quantity) {
+        if (orderProduct?.quantity) {
           setQuantity(orderProduct.quantity);
         }
       }

@@ -22,7 +22,7 @@ export type CheckoutContextType = {
     shop: ShopNamespace.GET.Shop | undefined;
     isCompleted: boolean;
     setIsCompleted: Dispatch<React.SetStateAction<boolean>>,
-    paymentMethod?: ORDER_PAYMENT_METHODS,
+    paymentMethod: ORDER_PAYMENT_METHODS | undefined,
     setPaymentMethod?: Dispatch<React.SetStateAction<ORDER_PAYMENT_METHODS | undefined>>,
     timeLeft?: number,
     setTimeLeft: Dispatch<React.SetStateAction<number>>,

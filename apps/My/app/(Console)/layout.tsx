@@ -7,15 +7,11 @@ import { getLocale, getMessages } from "next-intl/server";
 // UI Imports
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
-import { ZodErrorsMapProvider } from "@befroosh/ui";
+import { ConsoleProvider, NavBottomProvider, ZodErrorsMapProvider } from "@/components";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
 
-import {
-  ConsoleProvider,
-  NavBottomProvider,
-  Toaster,
-} from "@befroosh/ui";
+import { Toaster } from "@befroosh/ui";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",

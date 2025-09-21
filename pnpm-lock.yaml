@@ -29,6 +29,9 @@ importers:
       '@befroosh/lib':
         specifier: workspace:*
         version: link:../../packages/lib
+      '@befroosh/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@befroosh/ui':
         specifier: workspace:*
         version: link:../../packages/ui

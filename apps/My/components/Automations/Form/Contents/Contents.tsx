@@ -2,29 +2,27 @@
 "use client";
 
 import {
+  ContentItem,
+  ContentPromotion,
+  ContentsContext,
+  ContentsUploaderContextProvider,
+  HelpMeDialog,
+} from "@/components";
+import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
 import useUser from "@/hooks/useUser";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { UploadedFile } from "@/types/fileUploader";
+import { Alert, AlertDescription, Button } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { contentTypeOptions } from "./ContentTypeOptions";
 
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  ContentItem,
-  ContentPromotion,
-  ContentsContext,
-  ContentsUploaderContextProvider,
-  ErrorMessage,
-  HelpMeDialog
-} from "@befroosh/ui";
 import {
   closestCenter,
   DndContext,
@@ -194,7 +192,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                   setIsChoosingType(false);
                   clearErrors(arrayName);
                 }}
-                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-none bg-blue-100/75 text-sm text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:pr-2 md:pl-6 [&_svg]:size-5"
+                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-none bg-blue-100/75 text-sm text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:pl-6 md:pr-2 [&_svg]:size-5"
               >
                 {option.icon}
                 {t_contentTypes(option.value)}

@@ -5,23 +5,14 @@ import { AutomationFormType } from "@/schemas/automationForm";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import {
-  Control,
-  useFieldArray,
-  UseFormGetValues
-} from "react-hook-form";
+import { Control, useFieldArray, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
-import {
-  Button,
-  ErrorMessage,
-  FormField,
-  FormItem,
-  HelpMeDialog,
-  Input,
-} from "@befroosh/ui";
+import { Button, FormField, FormItem, Input } from "@befroosh/ui";
 import { XCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { HelpMeDialog } from "@/components/Global";
+import { ErrorMessage } from "@befroosh/ui-custom";
 
 type ConditionsProps = {
   control: Control<AutomationFormType>;
@@ -48,7 +39,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
   useEffect(() => {
     if (isRendered || !conditionsField) return;
 
-    if (conditionsField?.[0].type) {
+    if (conditionsField?.[0]?.type) {
       setCurrentType(conditionsField[0].type as ContentCycleConditionTypes);
     }
   }, [conditionsField]);

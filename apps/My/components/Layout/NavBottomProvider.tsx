@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { NavBottom, NavItem, useSidebar } from "@befroosh/ui";
+import { useSidebar } from "@befroosh/ui";
 import {
   DotsThreeOutlineIcon,
   LightningIcon,
@@ -10,6 +10,7 @@ import {
   StorefrontIcon,
   TelegramLogoIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { NavBottom, NavItem } from "./NavBottom";
 
 export const NavBottomProvider = () => {
   const { setOpenMobile } = useSidebar();

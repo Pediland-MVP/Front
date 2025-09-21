@@ -175,7 +175,7 @@ const CommandEmpty = forwardRef<
 
 CommandEmpty.displayName = "CommandEmpty";
 
-const MultipleSelector = React.forwardRef<
+export const MultipleSelector = React.forwardRef<
   MultipleSelectorRef,
   MultipleSelectorProps
 >(

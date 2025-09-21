@@ -36,7 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@befroosh/ui";
 import { ArrowClockwise, IntersectSquare } from "@phosphor-icons/react";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
@@ -135,7 +135,7 @@ export default function Accounts({
   };
 
   if (isInstagramPagesLoading) {
-    return <LoadingSpinner />;
+    return <LoaderSpin />;
   }
 
   return (

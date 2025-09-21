@@ -12,12 +12,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@befroosh/ui";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";
 import logger from "@/utils/logger";
-import InfiniteScroll from "@befroosh/ui";
+import { InfiniteScroll } from "@befroosh/ui";
 
 interface CommentsListProps {
   children?: React.ReactNode;
@@ -54,7 +54,7 @@ function CommentsList({ children }: CommentsListProps) {
   const handleComments = useCallback((commentsData: string) => {
     try {
       const newComments = JSON.parse(
-        commentsData
+        commentsData,
       ) as CommentNamespace.WS.Comments;
       setComments((prevComments) => [...prevComments, ...newComments.items]);
       setHasMore(newComments.items.length === LIMIT);
@@ -79,7 +79,7 @@ function CommentsList({ children }: CommentsListProps) {
 
   const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
   const isMediumDevice = useMediaQuery(
-    "only screen and (min-width : 769px) and (max-width : 992px)"
+    "only screen and (min-width : 769px) and (max-width : 992px)",
   );
 
   const isCommentsListHidden =
@@ -91,7 +91,7 @@ function CommentsList({ children }: CommentsListProps) {
 
   if (!comments.length) {
     return (
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="flex h-full w-full items-center justify-center">
         <p>{t("noComments")}</p>
       </div>
     );
@@ -105,21 +105,21 @@ function CommentsList({ children }: CommentsListProps) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className="lg:w-1/3 w-full h-full bg-white"
+          className="h-full w-full bg-white lg:w-1/3"
         >
-          <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
+          <Card className="box-border flex h-full w-full flex-col overflow-hidden border-l-2 border-gray-100 p-4">
             <div
               id="comments-container"
-              className="w-full _wrap min-h-[600px] max-h-[calc(100vh - 900px)] overflow-y-auto "
+              className="_wrap max-h-[calc(100vh - 900px)] min-h-[600px] w-full overflow-y-auto"
             >
-              <div className="w-full flex flex-col">
+              <div className="flex w-full flex-col">
                 {comments.map((comment, index) => (
                   <Link
                     key={comment.id || index}
                     href={`/comments/${comment.id}`}
                     className={cn(
-                      "flex p-2 items-center gap-4 box-border rounded-lg hover:bg-accent duration-300 cursor-pointer",
-                      comment.id === selectedCommentId && "bg-zinc-100"
+                      "hover:bg-accent box-border flex cursor-pointer items-center gap-4 rounded-lg p-2 duration-300",
+                      comment.id === selectedCommentId && "bg-zinc-100",
                     )}
                   >
                     <Image
@@ -136,7 +136,7 @@ function CommentsList({ children }: CommentsListProps) {
                       <span className="font-medium">
                         {comment.leadInstagram?.name}
                       </span>
-                      <span className="text-muted-foreground text-xs truncate">
+                      <span className="text-muted-foreground truncate text-xs">
                         {comment.text}
                       </span>
                     </div>
@@ -149,15 +149,15 @@ function CommentsList({ children }: CommentsListProps) {
                   hasMore={hasMore}
                 >
                   {hasMore && (
-                    <div className="w-full flex justify-center items-center text-center py-4">
-                      <LoadingSpinner />
+                    <div className="flex w-full items-center justify-center py-4 text-center">
+                      <LoaderSpin />
                     </div>
                   )}
                 </InfiniteScroll>
               </div>
               {/* <div className="w-full"> */}
               {error && (
-                <div className="text-center py-4 text-destructive">{error}</div>
+                <div className="text-destructive py-4 text-center">{error}</div>
               )}
             </div>
           </Card>

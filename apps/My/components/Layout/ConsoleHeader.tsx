@@ -4,8 +4,10 @@
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { usePathname } from "next/navigation";
 
-import { HeaderBreadcrumb, SidebarTrigger } from "@befroosh/ui";
+import { SidebarTrigger } from "@befroosh/ui";
+
 import { cn } from "@befroosh/lib";
+import { HeaderBreadcrumb } from "./HeaderBreadcrumb";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();

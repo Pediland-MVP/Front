@@ -46,7 +46,7 @@ export default function OrderPage(props: {
     }
 
     const run = async () => {
-      if (pendingOrder.orderProducts[0].product.id != productId) {
+      if (pendingOrder?.orderProducts[0]?.product?.id != productId) {
         await api
           .delete("/orders/pending")
           .then(async () => {
@@ -76,6 +76,6 @@ export default function OrderPage(props: {
   }
 
   if (isReady && !isAuthenticationLoading) {
-    return <CheckoutPage shopId={shopId} productId={productId} token={token} />;
+    return <CheckoutPage token={token} shopId={shopId} productId={productId} />;
   }
 }

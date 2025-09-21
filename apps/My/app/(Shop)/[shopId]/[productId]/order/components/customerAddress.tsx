@@ -28,9 +28,9 @@ import useSWRImmutable from "swr/immutable";
 import { ProvinceNamespace } from "@/types/province";
 import { CityNamespace } from "@/types/city";
 import { useEffect } from "react";
-import LoadingButton from "@befroosh/ui";
+import { LoadingButton } from "@befroosh/ui-custom";
 import useShipping from "../hooks/useShipping";
-import { ErrorMessage } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 import { Button } from "@befroosh/ui";
 import { useCheckout } from "../useCheckout";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
@@ -258,7 +258,7 @@ export default function Address() {
       </FormProvider> */}
       <div className="mt-6 flex w-full items-center justify-center gap-x-2">
         <Button
-          onClick={() => setStep(prevStep())}
+          onClick={prevStep}
           className="w-4/12 bg-gray-500 hover:bg-gray-400"
         >
           {t("back")}

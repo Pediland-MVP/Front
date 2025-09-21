@@ -1,21 +1,15 @@
 // src/components/Automations/form/Trigger.tsx
 "use client";
 
-import {
-  AutomationFormType
-} from "@/schemas/automationForm";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
-import {
-  ErrorMessage,
-  FormField,
-  FormLabel,
-  HelpMeDialog,
-  Switch
-} from "@befroosh/ui";
+import { FormField, FormLabel, Switch } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
+import { HelpMeDialog } from "@/components";
 
 type TriggersProps = {
   control: Control<AutomationFormType>;

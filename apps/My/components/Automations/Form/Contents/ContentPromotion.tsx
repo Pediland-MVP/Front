@@ -10,7 +10,6 @@ import { Controller, useFormContext } from "react-hook-form";
 import {
   Button,
   Checkbox,
-  ContentPromotionDialog,
   FormControl,
   FormField,
   FormItem,
@@ -24,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@befroosh/ui";
+
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
@@ -37,6 +37,7 @@ import {
   StorefrontIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { ContentPromotionDialog } from "./ContentPromotionDialog";
 
 interface MessageTypeOption {
   value: AutomationContentTypesEnum | "media";

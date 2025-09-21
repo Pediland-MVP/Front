@@ -15,7 +15,7 @@ import {
   TableCell,
   TableHead,
 } from "@befroosh/ui";
-import ImageWithFallback from "@befroosh/ui";
+import { ImageWithFallback } from "@befroosh/ui";
 import { Pencil } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@befroosh/ui";
 import OrderListSkeleton from "./orderListSkeleton";
@@ -90,7 +90,9 @@ export default function OrderListCard({
   return (
     <Card className="border-b-2 border-gray-100">
       {/* <EditContactDialog orderId={orderId} open={open} setOpen={setOpen} /> */}
-      <EditOrderDialog open={open} setOpen={setOpen} order={selectedOrder} />
+      {selectedOrder && (
+        <EditOrderDialog open={open} setOpen={setOpen} order={selectedOrder} />
+      )}
 
       <div className="_table">
         <Table className="">
@@ -182,8 +184,8 @@ export default function OrderListCard({
                           <ImageWithFallback
                             fill={true}
                             src={
-                              order.orderProducts[0]?.product?.images[0].url ??
-                              "/images/no-image.png"
+                              order.orderProducts[0]?.product?.images?.[0]
+                                ?.url ?? "/images/no-image.png"
                             }
                             fallbackSrc="/images/no-image.png"
                             alt={`${order.id} order`}

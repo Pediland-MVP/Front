@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@befroosh/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@befroosh/ui";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { toast } from "sonner";
 import {
   CaretUpDownIcon,
@@ -139,7 +139,7 @@ const NavUser = ({
               onClick={logoutHandler}
               className="cursor-pointer"
             >
-              {isLogoutLoading ? <LoadingSpinner /> : <SignOutIcon size={22} />}
+              {isLogoutLoading ? <LoaderSpin /> : <SignOutIcon size={22} />}
               {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>

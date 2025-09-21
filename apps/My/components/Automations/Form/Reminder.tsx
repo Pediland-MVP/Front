@@ -12,14 +12,12 @@ import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 import { Contents } from "./Contents";
 
 // UI Imports
+import { HelpMeDialog } from "@/components";
 import {
-  ErrorMessage,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-  HelpMeDialog,
   Select,
   SelectContent,
   SelectGroup,
@@ -28,6 +26,7 @@ import {
   SelectValue,
   Switch,
 } from "@befroosh/ui";
+import { ErrorMessage } from "@befroosh/ui-custom";
 
 export const Reminder = () => {
   const {

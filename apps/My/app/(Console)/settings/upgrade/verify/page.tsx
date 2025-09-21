@@ -2,7 +2,7 @@
 import useSWRImmutable from "swr/immutable";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useEffect } from "react";
 import { mutate } from "swr";

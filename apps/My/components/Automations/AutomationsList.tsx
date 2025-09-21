@@ -9,13 +9,9 @@ import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
-
-import {
-  AutomationTableColumns,
-  DataTable,
-  DeleteConfirmationDialog,
-  TablePagination,
-} from "@befroosh/ui";
+import { AutomationTableColumns } from "./AutomationTableColumns";
+import { DeleteConfirmationDialog } from "../Global";
+import { DataTable, TablePagination } from "../Table";
 
 export const AutomationsList = () => {
   const t = useTranslations("Automations.List");

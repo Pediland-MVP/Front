@@ -28,7 +28,7 @@ import { InstagramNamespace } from "@/types/instagram";
 import { APIError } from "@/types/apierror";
 import Image from "next/image";
 import { toast } from "sonner";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { Skeleton } from "@befroosh/ui";
 import { useRouter } from "next/navigation";
 

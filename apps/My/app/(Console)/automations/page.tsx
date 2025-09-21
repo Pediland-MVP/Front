@@ -1,19 +1,13 @@
 "use client";
 
+import { AutomationsList, LayoutTable } from "@/components";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { Button } from "@befroosh/ui";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-
-import {
-  AutomationsList,
-  Button,
-  LayoutTable,
-  SearchInput,
-  SearchToggleButton,
-} from "@befroosh/ui";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 
 export default function Page() {
   const t = useTranslations("Automations");

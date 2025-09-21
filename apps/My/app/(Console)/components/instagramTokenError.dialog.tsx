@@ -14,7 +14,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
-import ButtonLoading from "@befroosh/ui";
+import { LoaderSpin } from "@befroosh/ui-custom";
 
 export default function InstagramTokenErrorDialog() {
   const [showPopup, setShowPopup] = useState(false);
@@ -37,7 +37,7 @@ export default function InstagramTokenErrorDialog() {
       if (
         user.instagrams.find(
           (ig) =>
-            ig.isIgTokenValid === false || ig.isIgWebhookSubscribed === false
+            ig.isIgTokenValid === false || ig.isIgWebhookSubscribed === false,
         )
       ) {
         setIsNavigationLoading(false);
@@ -72,12 +72,7 @@ export default function InstagramTokenErrorDialog() {
           <Button variant="outline" onClick={handleClose}>
             {t("buttons.ok")}
           </Button>
-          <ButtonLoading
-            isLoading={isNavigationLoading}
-            onClick={handleGoToSettings}
-          >
-            {t("buttons.relogin")}
-          </ButtonLoading>
+          <LoaderSpin />
         </DialogFooter>
       </DialogContent>
     </Dialog>

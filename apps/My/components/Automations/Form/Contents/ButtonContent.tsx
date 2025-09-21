@@ -22,15 +22,14 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 
 import {
   Button,
-  ButtonContentItem,
-  ErrorMessage,
   FormField,
   FormItem,
   FormLabel,
-  InputCounter,
   Textarea,
 } from "@befroosh/ui";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
+import { ErrorMessage, InputCounter } from "@befroosh/ui-custom";
+import { ButtonContentItem } from "./ContentButtonsItem";
 
 type ButtonContentProps = {
   mode: AutomationContentModeEnum;

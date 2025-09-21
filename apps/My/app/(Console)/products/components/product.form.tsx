@@ -25,12 +25,11 @@ import {
   FormMessage,
 } from "@befroosh/ui";
 import { toast } from "sonner";
-import { FileUpload } from "@befroosh/ui-custom";
-import LoadingButton from "@befroosh/ui";
+import { FileUpload, LoadingButton } from "@befroosh/ui-custom";
 import { Switch } from "@befroosh/ui";
 import { Label } from "@befroosh/ui";
 import { Card } from "@befroosh/ui";
-import MultipleSelector from "@befroosh/ui";
+import { MultipleSelector } from "@befroosh/ui";
 import useSWRImmutable from "swr/immutable";
 import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
@@ -90,7 +89,8 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         .min(5, { message: t("Alerts.descrptionLength") }),
       imageId: z
         .number({ message: t("Alerts.image") })
-        .min(1, t("Alerts.image")),
+        .min(1, t("Alerts.image"))
+        .optional(),
       isDigital: z.boolean(),
       haveColor: z.boolean().nullable(),
       haveSize: z.boolean().nullable(),
@@ -183,8 +183,10 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
       }
     });
 
+  type ProductFormValues = z.infer<typeof formSchema>;
+
   // مقداردهی اولیه فرم با در نظر گرفتن حالت ایجاد یا ویرایش
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       status: true,
@@ -235,7 +237,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
     if (shouldBeEdit.fields?.length) {
       const fieldsWith_xid = shouldBeEdit.fields.map((f) => {
-        f._xid = f.id;
+        f["_xid"] = f.id;
         return f;
       });
       form.setValue("fields", fieldsWith_xid);
@@ -352,6 +354,12 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const handleFileUpload = async (files: File[]) => {
     setIsUploading(true);
     const file = files[0];
+
+    if (!file) {
+      setIsUploading(false);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("image", file);
     const controller = new AbortController();
@@ -690,11 +698,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                               <FormControl>
                                 <MultipleSelector
                                   {...field}
-                                  //@ts-ignore
-                                  defaultOptions={attributeValues?.items.filter(
-                                    (vv) =>
-                                      vv.attributeId == colorAttribute?.id,
-                                  )}
+                                  value={field.value || []}
+                                  defaultOptions={
+                                    attributeValues?.items.filter(
+                                      (vv) =>
+                                        vv.attributeId == colorAttribute?.id,
+                                    ) ?? []
+                                  }
                                   placeholder={t("selectColor")}
                                   emptyIndicator={
                                     <p className="text-center text-gray-600 dark:text-gray-400">
@@ -738,9 +748,13 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
                               <FormControl>
                                 <MultipleSelector
                                   {...field}
-                                  defaultOptions={attributeValues?.items.filter(
-                                    (vv) => vv.attributeId == sizeAttribute?.id,
-                                  )}
+                                  value={field.value || []}
+                                  defaultOptions={
+                                    attributeValues?.items.filter(
+                                      (vv) =>
+                                        vv.attributeId == sizeAttribute?.id,
+                                    ) ?? []
+                                  }
                                   placeholder={t("selectSize")}
                                   emptyIndicator={
                                     <p className="text-center text-gray-600 dark:text-gray-400">

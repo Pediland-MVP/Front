@@ -15,7 +15,7 @@ interface PersianImageUploaderProps {
   defaultImageUrl?: string;
 }
 
-const ImageUploader: React.FC<PersianImageUploaderProps> = ({
+export const ImageUploader: React.FC<PersianImageUploaderProps> = ({
   onUploadComplete,
   url,
   fieldName,

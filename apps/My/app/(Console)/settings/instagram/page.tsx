@@ -11,7 +11,7 @@ import { Button } from "@befroosh/ui";
 import { Card } from "@befroosh/ui";
 import useUser from "@/hooks/useUser";
 import StartKit from "../../components/startKit";
-import LoadingSpinner from "@befroosh/ui-custom";
+import { LoaderSpin } from "@befroosh/ui-custom";
 import { Plug } from "@phosphor-icons/react/dist/ssr";
 import ConnectInstagram from "./components/connectInstagram";
 
@@ -41,7 +41,7 @@ export default function AccountPage({ searchParams }: AccountPageProps) {
       <div className="_accounts-page flex h-full">
         <div className="sm:w-3/5 h-full">
           <Card className="border-l-2 border-gray-100 h-full p-6">
-            <LoadingSpinner className="h-full" />
+            <LoaderSpin className="h-full" />
           </Card>
         </div>
       </div>
