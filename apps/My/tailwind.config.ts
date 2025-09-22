@@ -9,6 +9,8 @@ module.exports = {
     "./src/**/*.{ts,tsx}",
     "content/**/*.mdx",
     "registry/**/*.{ts,tsx}",
+    "../../packages/ui/**/*.{ts,tsx,js,jsx,mdx}",
+    "../../packages/ui-custom/**/*.{ts,tsx,js,jsx,mdx}",
   ],
   prefix: "",
   theme: {

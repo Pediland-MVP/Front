@@ -1,0 +1,7 @@
+{
+  "name": "@befroosh/fonts",
+  "version": "0.1.0",
+  "private": true,
+  "style": "index.css",
+  "type": "module"
+}

@@ -49,6 +49,6 @@ export * from "./sonner";
 export * from "./switch";
 export * from "./table";
 export * from "./tabs";
-export * from "./textDivider";
 export * from "./textarea";
+export * from "./textDivider";
 export * from "./tooltip";

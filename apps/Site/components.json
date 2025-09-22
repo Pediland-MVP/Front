@@ -1,0 +1,10 @@
+{
+  "tailwind": {
+    "config": "apps/Site/tailwind.config.ts",
+    "css": "apps/Site/styles/globals.css"
+  },
+  "aliases": {
+    "components": "@befroosh/ui",
+    "utils": "@befroosh/lib"
+  }
+}

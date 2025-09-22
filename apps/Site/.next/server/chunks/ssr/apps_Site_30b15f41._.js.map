@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 24, "column": 0}, "map": {"version":3,"sources":["file://D%3A/Coding%20Projects/Befroosh/front/apps/Site/app/page.tsx"],"sourcesContent":["import {\n  HomeCustomers,\n  HomeFAQ,\n  HomeHero,\n  HomeIntroMovie,\n  HomeMetaApi,\n  HomePricing,\n  HomeReturnPolicy,\n  HomeScreenRecord,\n  HomeSupport,\n  HomeFeatures,\n} from \"@/components\";\n\nexport default function Home() {\n  return (\n    <main>\n      <HomeHero />\n\n      <HomeScreenRecord />\n\n      <HomeIntroMovie />\n\n      <HomeFeatures />\n\n      <HomeMetaApi />\n\n      <HomeCustomers />\n\n      <HomePricing />\n\n      <HomeReturnPolicy />\n\n      <HomeFAQ />\n\n      <HomeSupport />\n    </main>\n  );\n}\n"],"names":[],"mappings":";;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAae,SAAS;IACtB,qBACE,6VAAC;;0BACC,6VAAC,+IAAA,CAAA,WAAQ;;;;;0BAET,6VAAC,uJAAA,CAAA,mBAAgB;;;;;0BAEjB,6VAAC,qJAAA,CAAA,iBAAc;;;;;0BAEf,6VAAC,oJAAA,CAAA,eAAY;;;;;0BAEb,6VAAC,kJAAA,CAAA,cAAW;;;;;0BAEZ,6VAAC,oJAAA,CAAA,gBAAa;;;;;0BAEd,6VAAC,oJAAA,CAAA,cAAW;;;;;0BAEZ,6VAAC,uJAAA,CAAA,mBAAgB;;;;;0BAEjB,6VAAC,8IAAA,CAAA,UAAO;;;;;0BAER,6VAAC,kJAAA,CAAA,cAAW;;;;;;;;;;;AAGlB","debugId":null}}]
+}

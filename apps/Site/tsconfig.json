@@ -1,0 +1,31 @@
+{
+  "extends": "@befroosh/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/components": ["./components/index"],
+      "@befroosh/fonts": ["../../packages/design-system/fonts"],
+      "@befroosh/theme": ["../../packages/design-system/theme"],
+      "@befroosh/tailwind-config": ["../../packages/design-system/tailwind-config"],
+    },
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "verbatimModuleSyntax": true,
+    "plugins": [{ "name": "next" }]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "tailwind.config.ts"],
+  "exclude": ["node_modules"]
+}

@@ -23,7 +23,9 @@ import {
   HouseSimpleIcon,
   SlidersIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { NavMain, NavUserSkeleton } from "@components/index";
+import { NavUserSkeleton } from "./NavUser.skeleton";
+import { NavMain } from "./NavMain";
+
 
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,

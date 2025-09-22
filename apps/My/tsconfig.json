@@ -1,33 +1,34 @@
 {
   "extends": "@befroosh/typescript-config/nextjs.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": false,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "verbatimModuleSyntax": false,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitAny": false,
-    "plugins": [{ "name": "next" }],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@components": ["./components/index.ts"],
-      "@components/*": ["./components/*"]
+      "@components/*": ["./components/*"],
+      "@components": ["./components"]
     },
-    "target": "ES2020"
-    // "types": ["node"] // اگر لازم داری بازش کن
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    "esModuleInterop": true,
+    "incremental": true,
+    "verbatimModuleSyntax": true,
+
+    "plugins": [{ "name": "next" }]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
