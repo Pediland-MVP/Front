@@ -9,7 +9,7 @@ import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
-import { Contents } from "./Contents";
+import { Contents } from "./_Contents";
 
 // UI Imports
 import {

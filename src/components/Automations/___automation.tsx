@@ -17,11 +17,11 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
-import { CommentReplies } from "./Form/_CommentReplies";
-import { Conditions } from "./Form/_Conditions";
-import { Contents } from "./Form/Contents/Contents";
-import { JustFollowers } from "./Form/JustFollowers";
-import { Reminder } from "./Form/Reminder";
+import { CommentReplies } from "./Form/CommentReplies";
+import { Conditions } from "./Form/Conditions";
+import { Contents } from "./Form/_Contents/Contents";
+import { JustFollowers } from "./Form/_JustFollowers";
+import { Reminder } from "./Form/_Reminder";
 import { Triggers } from "./Form/Triggers";
 
 // UI Imports
