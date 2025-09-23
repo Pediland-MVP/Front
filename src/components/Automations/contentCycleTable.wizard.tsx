@@ -1,4 +1,4 @@
-import { VideoComp } from "@/components/Global/VideoComp";
+import { VideoComp } from "@/components/_Global/VideoComp";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Plus } from "@phosphor-icons/react/dist/ssr";

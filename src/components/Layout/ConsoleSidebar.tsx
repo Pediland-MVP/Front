@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import useSWRImmutable from "swr/immutable";
 
 // UI Imports
-import { SetupWarning } from "@/components/Global/setupWarning";
+import { SetupWarning } from "@/components/_Global/setupWarning";
 import {
   Sidebar,
   SidebarContent,
