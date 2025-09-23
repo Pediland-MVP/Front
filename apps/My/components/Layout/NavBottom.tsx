@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

@@ -24,7 +24,6 @@ const nextConfig: NextConfig = {
     "@befroosh/ui-custom",
     "@befroosh/ui",
     "@befroosh/hooks",
-    "@befroosh/lib",
   ],
 };
 

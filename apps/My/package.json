@@ -16,9 +16,10 @@
 
     "@befroosh/typescript-config": "workspace:*",
     "@befroosh/ui": "workspace:*",
+    "@befroosh/theme": "workspace:*",
+    "@befroosh/fonts": "workspace:*",
     "@befroosh/ui-custom": "workspace:*",
     "@befroosh/hooks": "workspace:*",
-    "@befroosh/lib": "workspace:*",
     
     "@radix-ui/react-icons": "^1.3.0",
     "@dnd-kit/core": "^6.1.0",

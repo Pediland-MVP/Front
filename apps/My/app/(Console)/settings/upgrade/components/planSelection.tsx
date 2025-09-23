@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslations } from "next-intl";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import e2pNumber from "@/utils/e2pNumber";
 import usePayPlan from "../hooks/usePayPlan";
 import { useUpgradeContext } from "../context/upgrade.context";

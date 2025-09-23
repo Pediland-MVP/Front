@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

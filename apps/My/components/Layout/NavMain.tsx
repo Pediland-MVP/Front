@@ -23,7 +23,7 @@ import {
   CollapsibleTrigger,
 } from "@befroosh/ui";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 
 export const NavMain = ({
   items,

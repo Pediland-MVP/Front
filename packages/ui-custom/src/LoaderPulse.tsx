@@ -1,6 +1,6 @@
 // src/components/ui-custom/LoaderPulse.tsx
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { EllipsisIcon } from "lucide-react";
 
 interface LoaderPulseProps {

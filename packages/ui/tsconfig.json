@@ -2,7 +2,15 @@
   "extends": "@befroosh/typescript-config/nextjs.json",
   "compilerOptions": {
     "outDir": "dist",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+
+    /* این‌ها را اضافه/یا override کن */
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "types": ["react", "react-dom"],
+    "typeRoots": ["../../node_modules/@types"],
+    "moduleResolution": "bundler"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

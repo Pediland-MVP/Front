@@ -26,7 +26,7 @@ import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
 import useSWR from "swr";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import moment from "moment-jalaali";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { getOrderPrices } from "@/utils/getOrderPrices";
 
 type Lead = {

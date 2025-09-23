@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 
 interface InputCounterProps {
   placeholder?: string;

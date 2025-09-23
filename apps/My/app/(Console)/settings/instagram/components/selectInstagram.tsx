@@ -5,7 +5,7 @@ import { fetcher } from "@/hooks/swr/fetcher";
 import { useEffect, useState } from "react";
 import useSWRImmutable, { mutate } from "swr";
 import * as React from "react";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { Button } from "@befroosh/ui";
 import {
   Dialog,

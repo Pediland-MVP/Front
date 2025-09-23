@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@befroosh/ui";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 
 const faqs = [
   {

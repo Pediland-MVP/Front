@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { FC, ReactNode } from "react";
 
 export const LayoutTable: FC<{ children: ReactNode; className?: string }> = ({

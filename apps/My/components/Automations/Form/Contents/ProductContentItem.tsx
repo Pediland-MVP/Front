@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";

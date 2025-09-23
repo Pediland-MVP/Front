@@ -2,7 +2,7 @@
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { AxiosError } from "axios";

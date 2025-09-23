@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { SidebarTrigger } from "@befroosh/ui";
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { HeaderBreadcrumb } from "./HeaderBreadcrumb";
 
 export const ConsoleHeader = () => {

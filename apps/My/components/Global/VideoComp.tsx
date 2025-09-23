@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { useRef, VideoHTMLAttributes } from "react";
 
 export interface VideoCompProps extends VideoHTMLAttributes<HTMLVideoElement> {

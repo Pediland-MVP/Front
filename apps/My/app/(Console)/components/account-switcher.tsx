@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { cn } from "@befroosh/lib"
+import { cn } from "@befroosh/ui"
 import {
   Select,
   SelectContent,

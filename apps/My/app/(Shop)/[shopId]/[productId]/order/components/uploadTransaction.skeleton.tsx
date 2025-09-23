@@ -1,5 +1,5 @@
 import { Skeleton } from "@befroosh/ui"
-import { cn } from "@befroosh/lib"
+import { cn } from "@befroosh/ui"
 
 interface SkeletonButtonProps {
   className?: string

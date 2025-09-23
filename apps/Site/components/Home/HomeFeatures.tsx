@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 
 import { type IconProps } from "@phosphor-icons/react";
 import {

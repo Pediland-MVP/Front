@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@befroosh/hooks": "workspace:*",
-    "@befroosh/lib": "workspace:*",
     "@befroosh/theme": "workspace:*",
     "@befroosh/fonts": "workspace:*",
     "@befroosh/typescript-config": "workspace:*",

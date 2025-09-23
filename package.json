@@ -11,11 +11,13 @@
     ],
     "scripts": {
         "dev": "turbo run dev --parallel",
+        "ui": "cd packages/ui && pnpm dlx shadcn@latest",
         "build": "turbo run build",
         "start": "turbo run start",
         "lint": "turbo run lint",
         "typecheck": "turbo run typecheck",
-        "clean": "turbo run clean && rimraf node_modules .turbo"
+        "clean": "turbo run clean && rimraf node_modules .turbo",
+        "pkg-build": "turbo run pkg-build"
     },
     "devDependencies": {
         "@types/react": "^18.3.24",
@@ -24,6 +26,7 @@
         "eslint": "^9.32.0",
         "prettier": "^3.6.2",
         "rimraf": "^5.0.10",
+        "tsup": "^8.5.0",
         "turbo": "^2.5.6",
         "typescript": "5.8.2"
     }

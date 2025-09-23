@@ -12,7 +12,7 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { ProductDeleteDialog } from "./product.delete";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import ProductListSkeleton from "./productListSkeleton";
 
 // Just UI Imports Below

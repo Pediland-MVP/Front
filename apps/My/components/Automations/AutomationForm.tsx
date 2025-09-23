@@ -6,7 +6,7 @@ import {
 } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import type { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";

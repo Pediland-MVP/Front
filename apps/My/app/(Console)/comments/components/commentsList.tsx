@@ -3,7 +3,7 @@
 import { memo, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { commentsSocket } from "@/utils/socket";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";

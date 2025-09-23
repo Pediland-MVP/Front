@@ -1,7 +1,7 @@
 "use client";
 
 import { formatNumber } from "@/utils/formatNumber";
-import { cn } from "@befroosh/lib";
+import { cn } from "@befroosh/ui";
 import { ColumnDef, ColumnMeta } from "@/types/tables";
 import {
   Cell,
