@@ -25,7 +25,7 @@ import { Reminder } from "./Form/Reminder";
 import { Triggers } from "./Form/Triggers";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/_Global/connectInstagram.alert";
+import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
 import {
   Card,
   CommentContentTarget,

@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import Link from "next/link";
-import { DeleteConfirmationDialog } from "../_Global/DeleteConfirmationDialog";
+import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
 import { toast } from "sonner";
 import {
   Table,

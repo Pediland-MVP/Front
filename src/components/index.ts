@@ -1,6 +1,6 @@
 export * from "./Automations";
 export * from "./Contacts";
-export * from "./_Global";
+export * from "./Global";
 export * from "./Icons";
 export * from "./Layout";
 export * from "./Table";
