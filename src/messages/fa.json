@@ -1631,7 +1631,8 @@
     "PLAN_DISCOUNT_YOU_REACHED_LIMIT": "مقدار استفاده شما از این کد تخفیف به حداکثر رسید",
     "ERROR_CODES": "خطای پیش آمد",
     "CONNECTION_ERROR": "اتصال به اینترنت برقرار نشد",
-    "CHECK_CONNECTION": "اتصال خود را چک کنید"
+    "CHECK_CONNECTION": "اتصال خود را چک کنید",
+    "SERVER_CONNECTION_ERROR": "اتصال با سرور برقرار نشد"
   },
   "RESPONSE_CODES": {
     "PAID_FREE": "پرداخت رایگان انجام شد",
