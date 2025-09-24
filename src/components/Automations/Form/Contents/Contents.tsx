@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { contentTypeOptions } from "./_contentTypeOptions";
+import { contentTypeOptions } from "./ContentTypeOptions";
 
 import {
   Alert,

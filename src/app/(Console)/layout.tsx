@@ -5,8 +5,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
 // UI Imports
-import { StandaloneChecker } from "@/components/_global/standaloneChecker";
-import { GoftinoSnippet } from "@/components/_global/GoftinoSnippet";
+import { StandaloneChecker } from "@/components/Global/standaloneChecker";
+import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { ZodErrorsMapProvider } from "@/components/index";
 import InstagramTokenErrorDialog from "./components/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "./components/subscriptionExpireWarning.dialog";
