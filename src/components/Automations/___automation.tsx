@@ -17,15 +17,15 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
-import { CommentReplies } from "./Form/CommentReplies";
-import { Conditions } from "./Form/Conditions";
-import { Contents } from "./Form/Contents/Contents";
-import { JustFollowers } from "./Form/JustFollowers";
-import { Reminder } from "./Form/Reminder";
+import { CommentReplies } from "./Form/_commentReplies";
+import { Conditions } from "./Form/_conditions";
+import { Contents } from "./Form/_contents/Contents";
+import { JustFollowers } from "./Form/_justFollowers";
+import { Reminder } from "./Form/_reminder";
 import { Triggers } from "./Form/Triggers";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
+import { ConnectInstagramAlert } from "@/components/_global/connectInstagram.alert";
 import {
   Card,
   CommentContentTarget,

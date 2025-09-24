@@ -1,10 +1,9 @@
-export * from "./CommentReplies";
+export * from "./_commentReplies";
 export * from "./CommentTriggerInputs";
-export * from "./Conditions";
-export * from "./Contents";
-export * from "./JustFollowers";
-export * from "./Reminder";
+export * from "./_conditions";
+export * from "./_contents";
+export * from "./_justFollowers";
+export * from "./_reminder";
 export * from "./TargetPostComment";
 export * from "./Triggers";
 export * from "./InstagramPostSelectDialog";
-
