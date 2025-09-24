@@ -17,12 +17,12 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
-import { CommentReplies } from "./Form/CommentReplies";
-import { Conditions } from "./Form/Conditions";
-import { Contents } from "./Form/Contents/Contents";
-import { JustFollowers } from "./Form/JustFollowers";
-import { Reminder } from "./Form/Reminder";
-import { Triggers } from "./Form/Triggers";
+import { CommentReplies } from "./_form/CommentReplies";
+import { Conditions } from "./_form/Conditions";
+import { Contents } from "./_form/Contents/Contents";
+import { JustFollowers } from "./_form/JustFollowers";
+import { Reminder } from "./_form/Reminder";
+import { Triggers } from "./_form/Triggers";
 
 // UI Imports
 import { ConnectInstagramAlert } from "@/components/Global/connectInstagram.alert";
