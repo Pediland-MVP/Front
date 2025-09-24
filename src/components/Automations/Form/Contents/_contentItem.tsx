@@ -5,8 +5,8 @@ import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { UploadedFile } from "@/types/fileUploader";
+import type { AutomationFormType } from "@/schemas/automationForm";
+import type { UploadedFile } from "@/types/fileUploader";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
@@ -220,7 +220,7 @@ export const ContentItem = ({
         <ReturnContent
           mode={mode}
           index={index}
-          type={contents?.[index]?.type}
+          type={contents?.[index]?.type || AutomationContentTypesEnum.TEXT}
         />
 
         {contents?.[index]?.type === AutomationContentTypesEnum.TEXT &&

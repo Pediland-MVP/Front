@@ -6,13 +6,13 @@ import {
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
 import useUser from "@/hooks/useUser";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { UploadedFile } from "@/types/fileUploader";
+import type { AutomationFormType } from "@/schemas/automationForm";
+import type { UploadedFile } from "@/types/fileUploader";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { contentTypeOptions } from "./ContentTypeOptions";
+import { contentTypeOptions } from "./_contentTypeOptions";
 
 import {
   Alert,
@@ -23,17 +23,17 @@ import {
   ContentsContext,
   ContentsUploaderContextProvider,
   ErrorMessage,
-  HelpMeDialog
+  HelpMeDialog,
 } from "@/components/index";
 import {
   closestCenter,
   DndContext,
-  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
 import {
   rectSortingStrategy,
   SortableContext,

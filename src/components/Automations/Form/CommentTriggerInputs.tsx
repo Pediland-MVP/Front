@@ -2,7 +2,7 @@
 "use client";
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
-import { AutomationFormType } from "@/schemas/automationForm";
+import type { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
