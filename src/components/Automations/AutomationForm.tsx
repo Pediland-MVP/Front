@@ -37,7 +37,7 @@ import {
   Reminder,
   TargetPostComment,
   Triggers,
-} from "./_form";
+} from "./Form";
 import useSWRImmutable from "swr/immutable";
 import { mutate } from "swr";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";

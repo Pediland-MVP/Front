@@ -1,4 +1,4 @@
 export * from "./AutomationForm";
 export * from "./AutomationsList";
-export * from "./_form";
+export * from "./Form";
 export * from "./AutomationTableColumns";
