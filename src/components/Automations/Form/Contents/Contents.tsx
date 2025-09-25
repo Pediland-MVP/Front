@@ -164,7 +164,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
         )}
 
         {isChoosingType && (
-          <div className="flex w-full flex-wrap justify-start gap-x-2.5 gap-y-2.5">
+          <div className="grid w-full grid-cols-5 justify-start gap-x-2.5 gap-y-2.5">
             {contentTypeOptions.map((option) => (
               <Button
                 key={option.value}
@@ -201,7 +201,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
               </Button>
             ))}
 
-            <Alert variant="note">
+            <Alert variant="note" className="col-span-5">
               <AlertDescription>
                 {t_contentTypes("select_your_type")}
               </AlertDescription>

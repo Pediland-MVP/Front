@@ -17,8 +17,12 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 // UI Imports
-import { ConnectInstagramAlert } from "@/components/index";
-import { Button, ErrorMessage, Form } from "@/components/index";
+import {
+  Button,
+  ConnectInstagramAlert,
+  ErrorMessage,
+  Form,
+} from "@/components/index";
 import LoaderSpin from "@/components/ui-custom/LoaderSpin";
 import LoadingButton from "@/components/ui/button-loading";
 import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
@@ -26,7 +30,10 @@ import {
   AutomationFormSchema,
   type AutomationFormType,
 } from "@/schemas/automationForm";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { toast } from "sonner";
+import { mutate } from "swr";
+import useSWRImmutable from "swr/immutable";
 import { SeperateLine } from "../ui-custom/SeperateLine";
 import {
   CommentReplies,
@@ -38,9 +45,6 @@ import {
   TargetPostComment,
   Triggers,
 } from "./Form";
-import useSWRImmutable from "swr/immutable";
-import { mutate } from "swr";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 type AutomationFormProps = {
   id?: string;
@@ -56,8 +60,9 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { hasInstagram, isLoading } = useUser();
-  const t_ec = useTranslations("ERROR_CODES");
   const t = useTranslations("Automations");
+  const t_ec = useTranslations("ERROR_CODES");
+  const t_err = useTranslations("Automations.Errors");
 
   const isUUID = (s?: string) =>
     !!s &&
@@ -208,7 +213,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
         if (e.response?.data?.code == "INSTAGRAM_REQUIRED") {
           toast.error(t_ec(e.response?.data?.code), {
             action: {
-              label: t("goToInstagram"),
+              label: t_err("goToInstagram"),
               onClick: () => router.push("/settings/instagram"),
             },
           });
@@ -240,7 +245,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
   return (
     <FormProvider {...form}>
-      <div className={cn("_automation-form min-h-full")}>
+      <div className={cn("_automation-form flex min-h-full flex-col gap-5")}>
         {isAutomationLoading || isLoading ? (
           <LoaderSpin />
         ) : (
