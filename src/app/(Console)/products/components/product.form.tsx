@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { FileUpload } from "@/components/ui-custom/file-upload";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -842,9 +842,9 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
 
           {/* Submit */}
           <div className="xl:col-span-2">
-            <LoadingButton isLoading={isLoading} type="submit">
+            <ButtonLoading isLoading={isLoading} type="submit">
               {t("submitProduct")}
-            </LoadingButton>
+            </ButtonLoading>
           </div>
         </form>
       </Form>

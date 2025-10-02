@@ -17,9 +17,9 @@ import { ErrorMessage } from "@/components/index";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
 
 export const bankDetailsSchema = z.object({
@@ -96,7 +96,7 @@ export default function BankDetails() {
       <div className="_card-to-card-page flex h-full">
         <div className="h-full w-full sm:w-3/5">
           <Card className="h-full border-l-2 border-gray-100 p-6">
-            <LoadingSpinner className="h-full" />
+            <LoaderSpin className="h-full" />
           </Card>
         </div>
       </div>
@@ -194,9 +194,9 @@ export default function BankDetails() {
                   />
                 </div>
                 <div className="mt-6">
-                  <LoadingButton isLoading={isSubmitting} className="w-full">
+                  <ButtonLoading isLoading={isSubmitting} className="w-full">
                     {t("save")}
-                  </LoadingButton>
+                  </ButtonLoading>
                 </div>
               </form>
             </Form>

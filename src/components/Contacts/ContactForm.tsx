@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/index";
 
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";
 import {
   Form,
@@ -277,7 +277,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
         <div className="col-span-12 flex gap-2 mt-3 justify-center">
           <Button type="submit">
             {t("saveChanges")}
-            {isSubmitLoading && <LoadingSpinner size={20} />}
+            {isSubmitLoading && <LoaderSpin size={20} />}
           </Button>
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             {t("cancel")}

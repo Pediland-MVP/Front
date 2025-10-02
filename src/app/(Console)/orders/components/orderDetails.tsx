@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -78,7 +78,7 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   };
 
   if (!order) {
-    return <LoadingSpinner />;
+    return <LoaderSpin />;
   }
 
   const { isDiscount, paidPrice, totalPrice, shippingCost } = useGetOrderPrices(

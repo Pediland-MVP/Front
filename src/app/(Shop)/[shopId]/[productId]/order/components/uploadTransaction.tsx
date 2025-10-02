@@ -1,6 +1,6 @@
 import ImageUploader from '@/components/ui/image-upload';
 import { Label } from '@/components/ui/label';
-import LoadingButton from '@/components/ui/button-loading';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { useTranslations } from 'next-intl';
 import { useCheckout } from '../useCheckout';
 import { mutate } from 'swr';
@@ -39,9 +39,9 @@ export default function UploadTransaction() {
           {t('back')}
         </Button>
 
-            <LoadingButton disabled={!uploaded} isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" type="button">
+            <ButtonLoading disabled={!uploaded} isLoading={isOrderProcessLoading} onClick={processOrderHandler} className="w-full" type="button">
                 {t("paynow")}
-            </LoadingButton>
+            </ButtonLoading>
 
             </div>
         </div>

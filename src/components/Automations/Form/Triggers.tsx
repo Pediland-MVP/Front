@@ -1,9 +1,7 @@
 // src/components/Automations/form/Trigger.tsx
 "use client";
 
-import {
-  AutomationFormType
-} from "@/schemas/automationForm";
+import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
@@ -14,8 +12,9 @@ import {
   FormField,
   FormLabel,
   HelpMeDialog,
-  Switch
+  Switch,
 } from "@/components/index";
+import { toast } from "sonner";
 
 type TriggersProps = {
   control: Control<AutomationFormType>;
@@ -52,6 +51,17 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
                   id="direct"
                   checked={field.value}
                   onCheckedChange={(val) => {
+                    const isCommentContentTargetEnabled = getValues(
+                      "isCommentContentTargetEnabled",
+                    );
+
+                    if (isCommentContentTargetEnabled && val === true) {
+                      toast.error(
+                        "زمانی که گزینه محدود کردن به پست خاص فعال است نمی‌توانید دایرکت را فعال کنید.",
+                      );
+                      return;
+                    }
+
                     field.onChange(val);
                     trigger(["isDirect", "isComment"]);
                   }}

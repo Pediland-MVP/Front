@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { leadNamespace } from "@/types/lead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Message from "./message";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { useTranslations } from "next-intl";
 import { UseFetchMessage } from "./useFetchMessages";
 
@@ -23,7 +23,7 @@ export function ChatMessages({ lead, messagesData }: ChatScreenProps) {
   if (!lead?.id) {
     return (
       <div>
-        <LoadingSpinner size="sm" className="w-4 h-4 mx-auto" />
+        <LoaderSpin size="sm" className="w-4 h-4 mx-auto" />
       </div>
     );
   }
@@ -39,7 +39,7 @@ export function ChatMessages({ lead, messagesData }: ChatScreenProps) {
           dataLength={messagesList.length} // Length of the messages array
           next={next} // Function to fetch more data
           hasMore={hasMore} // Boolean to indicate whether more data is available
-          loader={<LoadingSpinner className="w-6 h-6  mx-auto" />} // A spinner or loading component
+          loader={<LoaderSpin className="w-6 h-6  mx-auto" />} // A spinner or loading component
           inverse={true} // To load items in reverse order (top down)
           endMessage={
             <p className="text-sm text-center mt-2 text-gray-500">

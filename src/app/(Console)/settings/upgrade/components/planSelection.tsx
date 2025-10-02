@@ -14,7 +14,7 @@ import { useUpgradeContext } from "../context/upgrade.context";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { Card } from "@/components/ui/card";
 import DiscountText from "@/components/ui-custom/discountText";
 import logger from "@/utils/logger";
@@ -276,7 +276,7 @@ export default function PlanSelection() {
                         disabled={isPayLoading && loadingPlanId === duration.id}
                       >
                         {isPayLoading && loadingPlanId === duration.id ? (
-                          <LoadingSpinner />
+                          <LoaderSpin />
                         ) : (
                           t("choosePlan")
                         )}

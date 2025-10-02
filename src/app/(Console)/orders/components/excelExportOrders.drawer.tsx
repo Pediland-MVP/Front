@@ -36,7 +36,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { IResponseMessage } from "@/types/responseMessage";
 import { useState } from "react";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 
 // Define a proper type for DateObject
 type DateObjectType =
@@ -273,9 +273,9 @@ export function ExcelExportOrdersDrawer({
               />
 
               <DrawerFooter>
-                <LoadingButton isLoading={isLoading} type="submit">
+                <ButtonLoading isLoading={isLoading} type="submit">
                   {t("buttons.export")}
-                </LoadingButton>
+                </ButtonLoading>
                 <DrawerClose asChild>
                   <Button variant="outline">{t("buttons.cancel")}</Button>
                 </DrawerClose>

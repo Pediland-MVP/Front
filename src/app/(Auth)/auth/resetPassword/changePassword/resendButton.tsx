@@ -1,4 +1,4 @@
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -69,7 +69,7 @@ export default function ResetButton({ mobile }: ResendButtonProps) {
         0{Math.floor(remainingTime / 60)}:
         {(remainingTime % 60).toString().padStart(2, "0")}
       </p>
-      <LoadingButton
+      <ButtonLoading
         isLoading={isLoading}
         disabled={remainingTime > 0}
         className="w-1/3 text-gray-600"
@@ -78,7 +78,7 @@ export default function ResetButton({ mobile }: ResendButtonProps) {
         variant={"outline"}
       >
         {t("resend")}
-      </LoadingButton>
+      </ButtonLoading>
     </div>
   );
 }

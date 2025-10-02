@@ -28,7 +28,7 @@ import useSWRImmutable from "swr/immutable";
 import { ProvinceNamespace } from "@/types/province";
 import { CityNamespace } from "@/types/city";
 import { useEffect } from "react";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import useShipping from "../hooks/useShipping";
 import { ErrorMessage } from "@/components/index";
 import { Button } from "@/components/ui/button";
@@ -264,14 +264,14 @@ export default function Address() {
           {t("back")}
         </Button>
 
-        <LoadingButton
+        <ButtonLoading
           onClick={updateShippingHandler}
           isLoading={isUpdateShippingLoading}
           className="w-8/12"
           type="button"
         >
           {t("nextStep")}
-        </LoadingButton>
+        </ButtonLoading>
       </div>
     </div>
   );

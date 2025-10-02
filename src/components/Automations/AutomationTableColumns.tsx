@@ -214,7 +214,7 @@ export const AutomationTableColumns = (
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
-                <Link href={`/automations/${row.id}`}>مشاهده</Link>
+                <Link href={`/automations/${row.id}`}>ویرایش</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"

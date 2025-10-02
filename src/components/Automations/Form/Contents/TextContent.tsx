@@ -1,4 +1,5 @@
-// src/components/Automations/form/Contents/ContentsText.tsx
+import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
+import { useTranslations } from "next-intl";
 
 import {
   ErrorMessage,
@@ -8,8 +9,6 @@ import {
   Label,
   Textarea,
 } from "@/components/index";
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { useTranslations } from "next-intl";
 
 export type TextContentProps = {
   index: number;

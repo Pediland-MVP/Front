@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import {
   Drawer,
   DrawerClose,
@@ -270,9 +270,9 @@ export function ExcelExportDirectsDrawer({
               />
 
               <DrawerFooter>
-                <LoadingButton isLoading={isLoading} type="submit">
+                <ButtonLoading isLoading={isLoading} type="submit">
                   {t("buttons.export")}
-                </LoadingButton>
+                </ButtonLoading>
                 <DrawerClose asChild>
                   <Button variant="outline">{t("buttons.cancel")}</Button>
                 </DrawerClose>

@@ -19,7 +19,7 @@ export default function CommentTopBar({ instagramPost }: CommentTopbarProps) {
   if (!instagramPost) {
     return (
       <div>
-        {/* <LoadingSpinner size="sm" className="w-4 h-4 mx-auto" /> */}
+        {/* <LoaderSpin size="sm" className="w-4 h-4 mx-auto" /> */}
       </div>
     );
   }

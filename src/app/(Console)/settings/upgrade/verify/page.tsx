@@ -2,7 +2,7 @@
 import useSWRImmutable from "swr/immutable";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useEffect } from "react";
 import { mutate } from "swr";
@@ -38,7 +38,7 @@ export default function VerifyPage() {
   return (
     <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center">
       {isLoading ? (
-        <LoadingSpinner/>
+        <LoaderSpin/>
       ) : error ? (
         <>
             <p className="text-4xl font-bold text-red-600">{t("error")}</p>

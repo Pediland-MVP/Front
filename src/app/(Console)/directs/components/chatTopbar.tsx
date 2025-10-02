@@ -17,7 +17,7 @@ export default function ChatTopbar({ lead }: ChatTopbarProps) {
   if (!lead) {
     return (
       <div>
-        {/* <LoadingSpinner size="sm" className="w-4 h-4 mx-auto" /> */}
+        {/* <LoaderSpin size="sm" className="w-4 h-4 mx-auto" /> */}
       </div>
     );
   }

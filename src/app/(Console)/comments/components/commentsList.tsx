@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { useComments } from "../context/comments.context";
 import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentsListSkeleton from "./commentsList.skeleton";
@@ -150,7 +150,7 @@ function CommentsList({ children }: CommentsListProps) {
                 >
                   {hasMore && (
                     <div className="w-full flex justify-center items-center text-center py-4">
-                      <LoadingSpinner />
+                      <LoaderSpin />
                     </div>
                   )}
                 </InfiniteScroll>

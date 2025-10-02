@@ -37,8 +37,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import LoadingButton from "@/components/ui/button-loading";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
 
 export function ProfileForm() {
@@ -199,7 +199,7 @@ export function ProfileForm() {
     router.push("/");
   };
 
-  if (userIsLoading) return <LoadingSpinner className="h-full" />;
+  if (userIsLoading) return <LoaderSpin className="h-full" />;
 
   return (
     <Card className="h-full border-gray-100 p-6 md:border-l-2 md:p-10">
@@ -417,13 +417,13 @@ export function ProfileForm() {
             )}
           </div>
           <div className="mt-10 grid grid-cols-2 gap-3">
-            <LoadingButton
+            <ButtonLoading
               isLoading={isSubmitting}
               type="submit"
               className="w-full"
             >
               {t("save")}
-            </LoadingButton>
+            </ButtonLoading>
             <Button
               onClick={onCancel}
               type="button"

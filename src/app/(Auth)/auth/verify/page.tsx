@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonLoading from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import {
   Form,
   FormControl,

@@ -28,7 +28,7 @@ import { InstagramNamespace } from "@/types/instagram";
 import { APIError } from "@/types/apierror";
 import Image from "next/image";
 import { toast } from "sonner";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 
@@ -197,7 +197,7 @@ function SelectPagesForm({
                   variant={"outline"}
                 >
                   {t("select")}
-                  {loading?.id === instagram.id && <LoadingSpinner size={20} />}
+                  {loading?.id === instagram.id && <LoaderSpin size={20} />}
                 </Button>
               </div>
             );

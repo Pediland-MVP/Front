@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import useOrder from "../hooks/useOrder";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "../useCheckout";
@@ -175,7 +175,7 @@ export default function CustomerDetails() {
         ))}
       </div>
       <div className="mt-6 w-full flex justify-center items-center gap-x-2">
-        <LoadingButton
+        <ButtonLoading
           onClick={createOrderHandler}
           isLoading={isCreateOrderLoading}
           className="w-full"
@@ -183,7 +183,7 @@ export default function CustomerDetails() {
           disabled={!product?.isInfinite && product?.quantity === 0}
         >
           {t("nextStep")}
-        </LoadingButton>
+        </ButtonLoading>
       </div>
     </div>
   );

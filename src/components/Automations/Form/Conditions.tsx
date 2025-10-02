@@ -1,15 +1,10 @@
-// src/components/Automations/form/Conditions.tsx
 "use client";
 
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import {
-  Control,
-  useFieldArray,
-  UseFormGetValues
-} from "react-hook-form";
+import { Control, useFieldArray, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 // UI Imports
@@ -48,7 +43,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
   useEffect(() => {
     if (isRendered || !conditionsField) return;
 
-    if (conditionsField?.[0].type) {
+    if (conditionsField?.[0]?.type) {
       setCurrentType(conditionsField[0].type as ContentCycleConditionTypes);
     }
   }, [conditionsField]);

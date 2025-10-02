@@ -34,13 +34,17 @@ export const MediaUploader = ({
   const t = useTranslations("Automations.Contents.Media.FileUploader");
 
   // Type guards and helpers
-  const isNewFile = (file: UploadedFile): file is FileWithPreview => 'file' in file;
-  const isExistingFile = (file: UploadedFile): file is ExistingFile => 'url' in file;
-  
+  const isNewFile = (file: UploadedFile): file is FileWithPreview =>
+    "file" in file;
+  const isExistingFile = (file: UploadedFile): file is ExistingFile =>
+    "url" in file;
+
   const getDisplayName = (file: UploadedFile): string => {
     if (isNewFile(file)) return file.file.name;
     if (isExistingFile(file)) {
-      return file.originalName ?? file.url.split('/').pop() ?? t("uploaded_file");
+      return (
+        file.originalName ?? file.url.split("/").pop() ?? t("uploaded_file")
+      );
     }
     return t("uploaded_file");
   };
@@ -196,7 +200,7 @@ export const MediaUploader = ({
                   {t("uploaded_file")}
                 </span>
                 {isUploading(file) ? (
-                  <span className="w-1/3 h-6 truncate text-left text-[13px] text-gray-500">
+                  <span className="h-6 w-1/3 truncate text-left text-[13px] text-gray-500">
                     {getDisplayName(file)}
                   </span>
                 ) : (
@@ -227,45 +231,39 @@ export const MediaUploader = ({
                   }}
                 />
               </div>
-              
+
               <div className="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
-                <span className="ltr">
-                  {getDisplaySize(file)}
-                </span>
-                {getProgressText(file) && (
-                  <span>
-                    {getProgressText(file)}
-                  </span>
-                )}
+                <span className="ltr">{getDisplaySize(file)}</span>
+                {getProgressText(file) && <span>{getProgressText(file)}</span>}
               </div>
             </div>
           </div>
         ))}
 
       <div className="flex flex-col items-start justify-center text-sm uppercase">
-        <div className="flex items-center gap-1">
+        <div className="inline-block">
           <span className="text-xs text-gray-500">
             {t("Limits.image.text")}
           </span>
-          .
+          <span className="mx-1">.</span>
           <span className="text-xs text-gray-500">
             {t("Limits.image.formats")}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="inline-block">
           <span className="text-xs text-gray-500">
             {t("Limits.video.text")}
           </span>
-          .
+          <span className="mx-1">.</span>
           <span className="text-xs text-gray-500">
             {t("Limits.video.formats")}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="inline-block">
           <span className="text-xs text-gray-500">
             {t("Limits.audio.text")}
           </span>
-          .
+          <span className="mx-1">.</span>
           <span className="text-xs text-gray-500">
             {t("Limits.audio.formats")}
           </span>

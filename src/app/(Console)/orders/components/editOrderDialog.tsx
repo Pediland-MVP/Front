@@ -16,7 +16,7 @@ import {
 import { useTranslations } from "next-intl"
 import OrderDetails from "./orderDetails"
 import type { OrderNamespace } from "@/types/order/order.namespace"
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin"
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin"
 
 export interface EditOrderProps {
   open: boolean
@@ -41,7 +41,7 @@ export default function EditOrderDialog({ open, setOpen, order }: EditOrderProps
   }
 
   if (open && !order) {
-    return <LoadingSpinner/>
+    return <LoaderSpin/>
   }
 
   if (isMobile) {

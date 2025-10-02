@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import {LoaderSpin} from "@/components/ui-custom/LoaderSpin";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -167,7 +167,7 @@ export default function SignIn() {
                   >
                     {t("login")}
                     {loginWith === "mobile" && isLoading ? (
-                      <LoadingSpinner className="mr-1" size={20} />
+                      <LoaderSpin className="mr-1" size={20} />
                     ) : null}
                   </Button>
                 </form>
@@ -192,7 +192,7 @@ export default function SignIn() {
                   disabled={isLoading}
                 >
                   {loginWith === "google" && isLoading ? (
-                    <LoadingSpinner className="ml-1" size={22} />
+                    <LoaderSpin className="ml-1" size={22} />
                   ) : (
                     ""
                   )}

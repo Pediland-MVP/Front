@@ -1,5 +1,5 @@
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,7 +28,7 @@ export default function ConnectInstagram() {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-y-3">
-      <LoadingSpinner size={'lg'} />
+      <LoaderSpin size={'lg'} />
       <p className="font-medium" >{t('connecting')}</p>
     </div>
   );

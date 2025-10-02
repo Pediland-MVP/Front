@@ -14,7 +14,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
-import ButtonLoading from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 
 export default function InstagramTokenErrorDialog() {
   const [showPopup, setShowPopup] = useState(false);
@@ -37,7 +37,7 @@ export default function InstagramTokenErrorDialog() {
       if (
         user.instagrams.find(
           (ig) =>
-            ig.isIgTokenValid === false || ig.isIgWebhookSubscribed === false
+            ig.isIgTokenValid === false || ig.isIgWebhookSubscribed === false,
         )
       ) {
         setIsNavigationLoading(false);

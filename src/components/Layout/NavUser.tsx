@@ -24,7 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import LoadingSpinner from "@/components/ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";
 import {
   CaretUpDownIcon,
@@ -139,7 +139,7 @@ const NavUser = ({
               onClick={logoutHandler}
               className="cursor-pointer"
             >
-              {isLogoutLoading ? <LoadingSpinner /> : <SignOutIcon size={22} />}
+              {isLogoutLoading ? <LoaderSpin /> : <SignOutIcon size={22} />}
               {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>

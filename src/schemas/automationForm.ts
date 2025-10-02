@@ -47,8 +47,7 @@ const ButtonSchema = z.object({
   title: z.string().min(1),
   url: z
     .string()
-    .regex(REGEX_URL)
-    .transform((val) => val.toLowerCase()),
+    .regex(REGEX_URL),
   _xid: z.string().optional().nullable(),
 });
 
@@ -152,6 +151,14 @@ export const AutomationFormSchema = z
     isCommentContentTargetEnabled: z.boolean(),
   })
   .superRefine((data, ctx) => {
+    if (data.isDirect && data.isCommentContentTargetEnabled) {
+      ctx.addIssue({
+        path: ["isDirect"],
+        code: "custom",
+        message: "در حالت دایرکت، نمی‌توانید TargetPostComment را فعال کنید",
+      });
+    }
+
     if (!data.isDirect && !data.isComment) {
       const issue = {
         code: "custom" as const,

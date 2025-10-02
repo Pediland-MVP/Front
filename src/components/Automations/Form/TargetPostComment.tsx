@@ -30,7 +30,6 @@ export const TargetPostComment = () => {
     if (value === false) {
       setValue("instagramPost", null);
     } else {
-      // When enabling target post comment, disable direct messages
       setValue("isDirect", false);
     }
     setValue("isCommentContentTargetEnabled", value);

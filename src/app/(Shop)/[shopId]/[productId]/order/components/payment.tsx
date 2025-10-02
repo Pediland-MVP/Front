@@ -8,7 +8,7 @@ import { Copy, CreditCard, Check } from "@phosphor-icons/react/dist/ssr";
 import { useCheckout } from "../useCheckout";
 import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
 import useStartPayment from "../hooks/useStartPayment";
-import LoadingButton from "@/components/ui/button-loading";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { Button } from "@/components/ui/button";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 import Image from "next/image";
@@ -67,18 +67,18 @@ export default function PaymentDetails() {
   };
 
   return (
-    <div className="_customer-details md:col-span-4 p-3">
-      <h2 className="text-lg font-semibold mb-4 border-b pb-2 flex items-center gap-2 text-primary">
+    <div className="_customer-details p-3 md:col-span-4">
+      <h2 className="text-primary mb-4 flex items-center gap-2 border-b pb-2 text-lg font-semibold">
         <CreditCard size={28} weight="duotone" className="text-primary" />
         {t("paymentMethod")}
       </h2>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <RadioGroup
           defaultValue={paymentMethod}
           onValueChange={paymentMehodChangeHandler}
           dir="rtl"
-          className="gap-4 items-start flex flex-col"
+          className="flex flex-col items-start gap-4"
         >
           {!!shop?.user?.paymentDetail.zarinpal && (
             <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export default function PaymentDetails() {
 
         <div className="_card-transfer-text">
           {paymentMethod === ORDER_PAYMENT_METHODS.ZARINPAL && (
-            <div className="flex justify-center items-center gap-x-5 h-[245.5px]">
+            <div className="flex h-[245.5px] items-center justify-center gap-x-5">
               <Image
                 width={80}
                 height={190}
@@ -120,7 +120,7 @@ export default function PaymentDetails() {
                 alt="لوگوی زرین پال"
                 quality={100}
               />
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm leading-relaxed text-gray-600">
                 در مرحله بعد به درگاه پرداخت زرین پال منتقل خواهید شد و پرداخت
                 شما با پرداخت ایمن زرین پال انجام میشود
               </p>
@@ -129,14 +129,15 @@ export default function PaymentDetails() {
 
           {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD && (
             <>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm leading-relaxed text-gray-600">
                 لطفا مبلغ{" "}
-                <span className="bg-yellow-100 font-semibold px-1 text-primary">
+                <span className="text-primary bg-yellow-100 px-1 font-semibold">
                   {(
                     (pendingOrder?.orderProducts?.[0]?.discountPrice
-                      ? pendingOrder?.orderProducts?.[0]?.discountPrice * orderQuantity
-                      : (pendingOrder?.orderProducts?.[0]?.price || 0) * orderQuantity) +
-                    (product?.shippingCost || 0)
+                      ? pendingOrder?.orderProducts?.[0]?.discountPrice *
+                        orderQuantity
+                      : (pendingOrder?.orderProducts?.[0]?.price || 0) *
+                        orderQuantity) + (product?.shippingCost || 0)
                   ).toLocaleString()}{" "}
                   تومان
                 </span>
@@ -146,9 +147,9 @@ export default function PaymentDetails() {
                 به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
                 بارگزاری نمایید.
               </p>
-              <div className="_card-template border-2 border-sky-600 border-b-[6px] border-b-sky-600 bg-sky-100/60 p-4 rounded-lg flex flex-col gap-8 mt-3">
+              <div className="_card-template mt-3 flex flex-col gap-8 rounded-lg border-2 border-b-[6px] border-sky-600 border-b-sky-600 bg-sky-100/60 p-4">
                 <p className="font-bold text-sky-900">{cardToCard?.bankName}</p>
-                <div className="flex flex-col gap-2 mb-3 text-sm text-gray-700">
+                <div className="mb-3 flex flex-col gap-2 text-sm text-gray-700">
                   <p className="flex items-center gap-2">
                     <span>شماره کارت:</span>{" "}
                     <span className="font-medium" dir="ltr">
@@ -199,7 +200,7 @@ export default function PaymentDetails() {
           )}
         </div>
       </div>
-      <div className="mt-2 w-full flex justify-center items-center gap-x-2">
+      <div className="mt-2 flex w-full items-center justify-center gap-x-2">
         <Button
           onClick={() => setStep(prevStep())}
           className="w-4/12 bg-gray-500 hover:bg-gray-400"
@@ -207,7 +208,7 @@ export default function PaymentDetails() {
           {t("back")}
         </Button>
 
-        <LoadingButton
+        <ButtonLoading
           isLoading={isStartPaymentLoading}
           onClick={startPaymentHandler}
           className="w-8/12"
@@ -215,7 +216,7 @@ export default function PaymentDetails() {
           {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
             ? t("nextStep")
             : t("payWithZarinpal")}
-        </LoadingButton>
+        </ButtonLoading>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-// src/components/Automations/AutomationForm.tsx
 "use client";
 
 import {
@@ -6,35 +5,34 @@ import {
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
+import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import useUser from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
+import {
+  AutomationFormSchema,
+  type AutomationFormType,
+} from "@/schemas/automationForm";
 import type { ExceptionMessage } from "@/types/exceptionMessage";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-
-// UI Imports
-import {
-  Button,
-  ConnectInstagramAlert,
-  ErrorMessage,
-  Form,
-} from "@/components/index";
-import LoaderSpin from "@/components/ui-custom/LoaderSpin";
-import LoadingButton from "@/components/ui/button-loading";
-import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
-import {
-  AutomationFormSchema,
-  type AutomationFormType,
-} from "@/schemas/automationForm";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
-import { SeperateLine } from "../ui-custom/SeperateLine";
+
+import {
+  Button,
+  ButtonLoading,
+  ConnectInstagramAlert,
+  ErrorMessage,
+  Form,
+  LoaderSpin,
+  SeperateLine,
+} from "@/components/index";
 import {
   CommentReplies,
   CommentTriggerInputs,
@@ -286,9 +284,9 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 />
 
                 <div className="mt-4 flex items-center gap-2">
-                  <LoadingButton isLoading={isSubmitting} className="w-full">
+                  <ButtonLoading isLoading={isSubmitting} className="w-full">
                     {id ? t("save_changes") : t("add_automation")}
-                  </LoadingButton>
+                  </ButtonLoading>
                   <Button
                     variant="outline"
                     type="button"
