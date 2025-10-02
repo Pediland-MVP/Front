@@ -29,6 +29,7 @@ export default async function ConsoleLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+
   return (
     <html
       lang={locale}

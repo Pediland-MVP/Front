@@ -1,6 +1,10 @@
 "use client";
 
-import {LoaderSpin} from "@/components/ui-custom/LoaderSpin";
+import {
+  LoadingLogo,
+  useLoadingOverlay,
+} from "@/components/Global/LoadingLogo";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,18 +22,18 @@ import { ArrowLeftIcon, KeyholeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export default function SignIn() {
   const t = useTranslations("Auth.Signin");
-
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [isLoading, setIsLoading] = useState(false);
   const [loginWith, setLoginWith] = useState<"mobile" | "google">();
+  const [showLoader, setShowLoader] = useState(true);
 
   const formSchema = z.object({
     emailOrMobile: z
@@ -86,105 +90,110 @@ export default function SignIn() {
   };
 
   return (
-    <main className="_signin-page h-full bg-blue-50/75">
-      <div className="container h-full max-w-6xl px-6 sm:px-0">
-        <div className="_wrapper relative flex h-full items-center justify-center">
-          <div className="_content mx-auto w-full sm:w-1/3">
-            <div className="_header mb-6 flex flex-col gap-2">
-              <div className="_title flex items-center justify-center gap-2">
-                <KeyholeIcon
-                  size={36}
-                  weight="light"
-                  className="text-primary"
-                />
-                <h1 className="text-primary text-2xl font-semibold">
-                  {t("loginTitle")}
-                </h1>
-              </div>
-              <p className="text-center text-sm text-gray-500">
-                {t("noAccount")}{" "}
-                <Link
-                  className="text-secondary font-medium underline underline-offset-8 duration-300"
-                  href="/auth/signup"
-                >
-                  {t("signUpHere")}
-                </Link>
-              </p>
-            </div>
+    <>
+      <LoadingLogo delay={3000} />
 
-            <div className="_form">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="grid grid-cols-4 gap-3"
-                >
-                  <FormField
-                    control={form.control}
-                    name="emailOrMobile"
-                    render={({ field }) => (
-                      <FormItem className="col-span-4">
-                        <FormControl>
-                          <Input
-                            autoComplete="username"
-                            placeholder={t("enterMobilePlaceholder")}
-                            onInput={onInputP2EHandler}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+      <main className="_signin-page h-full bg-blue-50/75 w-full">
+        <div className="container h-full max-w-6xl px-6 sm:px-0">
+          <div className="_wrapper relative flex h-full items-center justify-center">
+            <div className="_content mx-auto w-full sm:w-1/3">
+              <div className="_header mb-6 flex flex-col gap-2">
+                <div className="_title flex items-center justify-center gap-2">
+                  <KeyholeIcon
+                    size={36}
+                    weight="light"
+                    className="text-primary"
                   />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem className="col-span-4">
-                        <FormControl>
-                          <InputPassword
-                            {...field}
-                            autoComplete="current-password"
-                            placeholder={t("enterPasswordPlaceholder")}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="col-span-4 flex">
-                    <Link
-                      href={"/auth/resetPassword"}
-                      className="text-muted-foreground hover:text-secondary py-1 text-sm duration-300"
-                    >
-                      {t("forgotPassword")}
-                    </Link>
-                  </div>
-                  <Button
-                    type="submit"
-                    className="col-span-4 text-white"
-                    color="success"
-                    disabled={isLoading}
+                  <h1 className="text-primary text-2xl font-semibold">
+                    {t("loginTitle")}
+                  </h1>
+                </div>
+                <p className="text-center text-sm text-gray-500">
+                  {t("noAccount")}{" "}
+                  <Link
+                    className="text-secondary font-medium underline underline-offset-8 duration-300"
+                    href="/auth/signup"
                   >
-                    {t("login")}
-                    {loginWith === "mobile" && isLoading ? (
-                      <LoaderSpin className="mr-1" size={20} />
-                    ) : null}
-                  </Button>
-                </form>
-              </Form>
+                    {t("signUpHere")}
+                  </Link>
+                </p>
+              </div>
 
-              <Button
-                variant="link"
-                className="text-muted-foreground mt-10 w-full"
-                onClick={() => router.push(process.env.NEXT_PUBLIC_LANDING_URL)}
-              >
-                {t("backToSite")}
-                <ArrowLeftIcon className="h-5 w-5" />
-              </Button>
+              <div className="_form">
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="grid grid-cols-4 gap-3"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="emailOrMobile"
+                      render={({ field }) => (
+                        <FormItem className="col-span-4">
+                          <FormControl>
+                            <Input
+                              autoComplete="username"
+                              placeholder={t("enterMobilePlaceholder")}
+                              onInput={onInputP2EHandler}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="col-span-4">
+                          <FormControl>
+                            <InputPassword
+                              {...field}
+                              autoComplete="current-password"
+                              placeholder={t("enterPasswordPlaceholder")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="col-span-4 flex">
+                      <Link
+                        href={"/auth/resetPassword"}
+                        className="text-muted-foreground hover:text-secondary py-1 text-sm duration-300"
+                      >
+                        {t("forgotPassword")}
+                      </Link>
+                    </div>
+                    <Button
+                      type="submit"
+                      className="col-span-4 text-white"
+                      color="success"
+                      disabled={isLoading}
+                    >
+                      {t("login")}
+                      {loginWith === "mobile" && isLoading ? (
+                        <LoaderSpin className="mr-1" size={20} />
+                      ) : null}
+                    </Button>
+                  </form>
+                </Form>
 
-              {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
+                <Button
+                  variant="link"
+                  className="text-muted-foreground mt-10 w-full"
+                  onClick={() =>
+                    router.push(process.env.NEXT_PUBLIC_LANDING_URL)
+                  }
+                >
+                  {t("backToSite")}
+                  <ArrowLeftIcon className="h-5 w-5" />
+                </Button>
 
-              {/* <div className="w-full grid grid-cols-4 gap-3">
+                {/* <TextDivider size="lg">{t("orDivider")}</TextDivider> */}
+
+                {/* <div className="w-full grid grid-cols-4 gap-3">
                 <Button
                   onClick={loginWithGoogle}
                   className="col-span-4"
@@ -199,10 +208,11 @@ export default function SignIn() {
                   {t("continueWithGoogle")}
                 </Button>
               </div> */}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

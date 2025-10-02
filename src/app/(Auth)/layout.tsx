@@ -1,20 +1,22 @@
 import "@/styles/globals.css";
-import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
+
 import { Toaster } from "@/components/index";
 
 export async function generateMetadata() {
-  const cookieStore = await cookies();
-  const locale = cookieStore.get("NEXT_LOCALE");
+  const cookieStore = cookies();
+  const locale = (await cookieStore).get("NEXT_LOCALE")?.value || "fa";
   const t = await getTranslations({ locale, namespace: "Auth.Metadata" });
+
   return {
     title: t("title"),
     description: t("description"),
   };
 }
 
-export default async function ConsoleLayout({
+export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -30,10 +32,21 @@ export default async function ConsoleLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="min-h-screen">
+      <body className="bg-violet-50/80">
         <NextIntlClientProvider messages={messages}>
-          <div className="_main-wrap h-screen">{children}</div>
-          <Toaster />
+          <div className="container px-10 sm:max-w-sm">
+            <main className="flex min-h-screen flex-col items-center justify-center">
+              {children}
+            </main>
+          </div>
+
+          <Toaster
+            richColors
+            theme="light"
+            toastOptions={{
+              className: "font-Yekan text-[13px]",
+            }}
+          />
         </NextIntlClientProvider>
       </body>
     </html>
