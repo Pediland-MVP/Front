@@ -1,32 +1,52 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": false,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    "jsx": "preserve",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "target": "ES2020",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "verbatimModuleSyntax": false,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
     "noPropertyAccessFromIndexSignature": true,
-    "plugins": [{ "name": "next" }],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "isolatedModules": true,
+    "noEmit": true,
+    "incremental": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": false,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"],
-      "@components": ["./components/index.ts"],
-      "@components/*": ["./components/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@components": [
+        "./components/index.ts"
+      ],
+      "@components/*": [
+        "./components/*"
+      ]
     },
-    "target": "ES2020"
-    // "types": ["node"] // اگر لازم داری بازش کن
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

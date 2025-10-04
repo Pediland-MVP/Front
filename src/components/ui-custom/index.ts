@@ -1,4 +1,5 @@
 export * from "./ButtonLoading";
+export * from "./CounterDown";
 export * from "./ErrorMessage";
 export * from "./InputCounter";
 export * from "./LoaderPulse";

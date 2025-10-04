@@ -1,4 +1,9 @@
+// Refactored
 "use client";
+
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 import {
   Button,
@@ -8,14 +13,13 @@ import {
   FormItem,
   FormMessage,
   Input,
+  LoadingLogo,
 } from "@/components";
-import { LoadingLogo } from "@/components/Global/LoadingLogo";
 import { MoveLeftIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 
 export default function AuthPage() {
   const router = useRouter();
+  const t = useTranslations("Auth");
 
   const form = useForm({
     defaultValues: {
@@ -31,21 +35,22 @@ export default function AuthPage() {
     <>
       <LoadingLogo delay={3000} />
 
-      <div className="flex w-full flex-1 flex-col gap-10">
+      <div className="flex flex-1 flex-col gap-10">
         <div className="flex flex-1 items-end justify-center">
           <h1 className="text-gradient text-2xl font-extrabold">بـفـروش</h1>
         </div>
 
         <div className="space-y-5">
           <div className="text-center text-[15px] font-medium">
-            برای ورود یا ثبت نام
-            <br />
-            <span className="text-primary font-bold">شماره همراه</span> خود را
-            وارد کنید.
+            <p>
+              {t("for_login_or_register")}
+              <br />
+              {t("insert_your_mobile_number")}
+            </p>
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
               <FormField
                 control={form.control}
                 name="mobile"
@@ -56,7 +61,7 @@ export default function AuthPage() {
                         {...field}
                         className="text-center tracking-widest"
                         maxLength={11}
-                        placeholder="شـمـاره هـمـراه"
+                        placeholder={t("mobile")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -65,14 +70,13 @@ export default function AuthPage() {
               />
 
               <Button type="submit" className="w-full">
-                تایید و ادامه
+                {t("confirm_and_continue")}
               </Button>
-
-              <p className="text-muted-foreground text-center text-[13px]">
-                قوانین و مقررات استفاده از خدمات بفروش
-              </p>
             </form>
           </Form>
+          <p className="text-muted-foreground text-center text-[13px]">
+            {t("terms_and_conditions_message")}
+          </p>
         </div>
 
         <div className="flex flex-1 flex-col items-center justify-center">
@@ -82,7 +86,7 @@ export default function AuthPage() {
             className="text-muted-foreground"
             onClick={() => router.back()}
           >
-            بازگشت
+            {t("back")}
             <MoveLeftIcon />
           </Button>
         </div>

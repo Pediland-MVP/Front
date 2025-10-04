@@ -1,9 +1,10 @@
+// Refactored
 import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 
-import { Toaster } from "@/components/index";
+import { Toaster } from "@/components";
 
 export async function generateMetadata() {
   const cookieStore = cookies();
@@ -32,7 +33,7 @@ export default async function AuthLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="bg-violet-50/80">
+      <body className="bg-violet-50/70">
         <NextIntlClientProvider messages={messages}>
           <div className="container px-10 sm:max-w-sm">
             <main className="flex min-h-screen flex-col items-center justify-center">

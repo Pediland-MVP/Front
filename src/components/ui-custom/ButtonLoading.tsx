@@ -1,26 +1,25 @@
+import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import React, { FC } from "react";
+import React from "react";
 
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/index";
 
-interface ButtonLoadingProps extends ButtonProps {
+interface ButtonLoadingProps {
   isLoading: boolean;
+  className?: string;
   children: React.ReactNode;
+  disabled?: boolean;
 }
-export const ButtonLoading: FC<ButtonLoadingProps> = ({
-  isLoading,
-  children,
-  ...props
-}: ButtonLoadingProps) => {
+export const ButtonLoading = ({ isLoading, ...props }: ButtonLoadingProps) => {
   return (
     <Button
       {...props}
-      className={` ${props.className} transition-[with] duration-150`}
+      className={cn(props.className)}
       type="submit"
       disabled={props.disabled ? props.disabled : isLoading}
     >
       {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-      {children}
+      {props.children}
     </Button>
   );
 };

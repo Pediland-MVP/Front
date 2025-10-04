@@ -1,3 +1,4 @@
+
 export * from "./alert-dialog";
 export * from "./alert-dialog";
 export * from "./alert";
@@ -11,6 +12,7 @@ export * from "./dialog";
 export * from "./dialogStyled";
 export * from "./dropdown-menu";
 export * from "./form";
+export * from "./input-otp";
 export * from "./input";
 export * from "./label";
 export * from "./select";

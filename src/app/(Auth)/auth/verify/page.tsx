@@ -1,23 +1,9 @@
+//Refactored
 "use client";
 
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { AxiosError } from "axios";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useTranslations } from "next-intl";
@@ -27,15 +13,32 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import {
+  Button,
+  ButtonLoading,
+  CounterDown,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components";
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { MoveLeftIcon, RotateCwIcon } from "lucide-react";
+
 export default function VerifyOTP() {
   const t = useTranslations("Auth.Verify");
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isResendLoading, setIsResendLoading] = useState(false);
+  const [showResend, setShowResend] = useState(false);
 
   const formSchema = z.object({
-    otp: z.string().length(6, t("errors.otpLength")),
+    otp: z.string().length(5, t("errors.otpLength")),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -112,82 +115,109 @@ export default function VerifyOTP() {
   };
 
   return (
-    <main className="flex h-svh w-full items-center justify-center">
-      <div className="container mx-auto max-w-6xl px-3 sm:px-4 xl:px-0">
-        <div className="flex h-full items-center justify-center">
-          <div className="mx-auto w-full text-center sm:w-1/3">
-            <h1 className="text-2xl font-semibold">{t("title")}</h1>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex w-full flex-col items-center justify-center"
-              >
-                <FormField
-                  control={form.control}
-                  name="otp"
-                  render={({ field }) => (
-                    <FormItem className="my-6 flex flex-col items-center justify-center">
-                      <FormControl>
-                        <InputOTP
-                          maxLength={6}
-                          {...field}
-                          pattern={REGEXP_ONLY_DIGITS}
-                          ref={firstSlotRef}
-                          onComplete={otpCompleted}
-                        >
-                          <InputOTPGroup>
-                            <InputOTPSlot index={0} />
-                            <InputOTPSlot index={1} />
-                            <InputOTPSlot index={2} />
-                            <InputOTPSlot index={3} />
-                            <InputOTPSlot index={4} />
-                            <InputOTPSlot index={5} />
-                          </InputOTPGroup>
-                        </InputOTP>
-                      </FormControl>
-                      <FormDescription>{t("otpDescription")}</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <ButtonLoading
-                  isLoading={isLoading}
-                  type="submit"
-                  className="col-span-4 w-9/12 text-white"
-                  color="success"
-                  disabled={isLoading}
-                  size={"lg"}
-                >
-                  {t("verifyButton")}
-                </ButtonLoading>
-              </form>
-            </Form>
-            <div className="mt-4">
-              <p
-                className="flex cursor-pointer items-center justify-center text-sm font-light text-gray-400 duration-300 hover:text-gray-700"
-                onClick={resendHandler}
-              >
-                {isResendLoading ? (
-                  <CircleNotchIcon className="animate-spin" />
-                ) : (
-                  t("resendCode")
-                )}
-              </p>
+    <div className="flex flex-1 flex-col justify-center gap-10">
+      <div className="flex flex-1 items-end justify-center">
+        <h1 className="font-bold">ورود با رمز یکبار مصرف</h1>
+      </div>
 
-              <p
-                className="flex cursor-pointer items-center justify-center text-sm font-light text-gray-400 duration-300 hover:text-gray-700"
-                onClick={logoutHandler}
-              >
-                {isLogoutLoading ? (
-                  <CircleNotchIcon className="animate-spin" />
-                ) : (
-                  t("logout")
-                )}
-              </p>
-            </div>
+      <div className="space-y-3">
+        <div className="flex flex-col text-center text-[15px] font-medium">
+          <div>{t("code_sent_to_mobile")}</div>
+          <div className="flex items-center justify-center">
+            <span className="text-primary text-base tracking-widest">
+              09123786907
+            </span>
+
+            <Button
+              variant="link"
+              type="button"
+              size="sm"
+              className="text-muted-foreground text-[13px]"
+              onClick={() => router.back()}
+            >
+              {t("change_number")}
+            </Button>
           </div>
         </div>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col items-center justify-center space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="otp"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <InputOTP
+                      maxLength={5}
+                      {...field}
+                      pattern={REGEXP_ONLY_DIGITS}
+                      ref={firstSlotRef}
+                      onComplete={otpCompleted}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="text-muted-foreground flex items-center gap-2 text-[15px]">
+              {!showResend ? (
+                <CounterDown time={30} onEnd={() => setShowResend(true)} />
+              ) : (
+                <Button
+                  variant="link"
+                  type="button"
+                  size="sm"
+                  className="h-auto text-[13px] text-muted-foreground"
+                  onClick={resendHandler}
+                  disabled={isResendLoading}
+                >
+                  {isResendLoading ? (
+                    <CircleNotchIcon className="animate-spin" size={16} />
+                  ) : (
+                    <>
+                      <RotateCwIcon />
+                      {t("resend_code")}
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+
+            <ButtonLoading
+              isLoading={isLoading}
+              disabled={isLoading}
+              className="w-full"
+            >
+              {t("confirm_and_continue")}
+            </ButtonLoading>
+          </form>
+        </Form>
       </div>
-    </main>
+
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <Button
+          variant="link"
+          type="button"
+          className="text-muted-foreground"
+          onClick={() => router.back()}
+        >
+          {t("back")}
+          <MoveLeftIcon />
+        </Button>
+      </div>
+    </div>
   );
 }

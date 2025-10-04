@@ -9,12 +9,45 @@
     "youShouldBuySubscription": "برای استفاده از تمام خدمات باید اشتراک تهیه کنید"
   },
   "Auth": {
-    "signup": "ثبت نام",
-    "signin": "حساب کاربری",
+    "for_login_or_register": "برای ورود یا ثبت نام",
+    "insert_your_mobile_number": "شماره همراه خود را وارد کنید.",
+    "mobile": "شماره همراه",
+    "confirm_and_continue": "تایید و ادامه",
+    "terms_and_conditions_message": "قوانین و مقررات استفاده از خدمات بـفـروش",
+    "back": "بازگشت",
     "Metadata": {
       "title": "بفروش، مدیریت هوشمند مشتریان",
       "description": ""
     },
+    "Verify": {
+      "code_sent_to_mobile": "کد فعالسازی برای این شماره پیامک شد.",
+      "change_number": "تغییر شماره",
+      "confirm_and_continue": "تایید و ادامه",
+      "back": "بازگشت",
+      "resend_code": "ارسال مجدد کد",
+
+      "title": "تایید کد یکبار مصرف",
+      "verifyButton": "تایید کد",
+      "logout": "خروج",
+      "errors": {
+        "otpLength": "کد تایید باید 6 رقم باشد"
+      },
+      "toasts": {
+        "tryAgainLater": "لطفا ۲ دقیقه بعد امتحان کنید",
+        "alreadyVerified": "شما قبلا تایید شده اید",
+        "error": "خطا",
+        "invalidOTP": "کد تایید نامعتبر است",
+        "loginSuccess": "با موفقیت وارد شدید",
+        "welcomeMessage": "به حساب کاربری خود خوش آمدید",
+        "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
+        "resendOk": "کد تایید جدید ارسال شد",
+        "checkConnection": "اتصال خود را چک کنید"
+      }
+    },
+
+    "signup": "ثبت نام",
+    "signin": "حساب کاربری",
+
     "Signup": {
       "signupTitle": "ثبت نام کاربر جدید",
       "alreadyHaveAccount": "حساب کاربری دارید؟",
@@ -52,27 +85,6 @@
         "erros": {
           "required": "قبول کردن قوانین ضروری است"
         }
-      }
-    },
-    "Verify": {
-      "title": "تایید کد یکبار مصرف",
-      "otpDescription": "کد تاییدی که به موبایل شما ارسال شده را وارد کنید",
-      "verifyButton": "تایید کد",
-      "resendCode": "ارسال مجدد کد",
-      "logout": "خروج",
-      "errors": {
-        "otpLength": "کد تایید باید 6 رقم باشد"
-      },
-      "toasts": {
-        "tryAgainLater": "لطفا ۲ دقیقه بعد امتحان کنید",
-        "alreadyVerified": "شما قبلا تایید شده اید",
-        "error": "خطا",
-        "invalidOTP": "کد تایید نامعتبر است",
-        "loginSuccess": "با موفقیت وارد شدید",
-        "welcomeMessage": "به حساب کاربری خود خوش آمدید",
-        "waitTwoMinutes": "لطفا به مدت ۲ دقیقه صبر کنید",
-        "resendOk": "کد تایید جدید ارسال شد",
-        "checkConnection": "اتصال خود را چک کنید"
       }
     },
     "Signin": {
