@@ -35,9 +35,11 @@ export default function AuthPage() {
     <>
       <LoadingLogo delay={3000} />
 
-      <div className="flex flex-1 flex-col gap-10">
+      <div className="flex flex-1 flex-col gap-12">
         <div className="flex flex-1 items-end justify-center">
-          <h1 className="text-gradient text-2xl font-extrabold">بـفـروش</h1>
+          <h1 className="text-gradient text-2xl font-extrabold">
+            {t("title")}
+          </h1>
         </div>
 
         <div className="space-y-5">
@@ -50,7 +52,10 @@ export default function AuthPage() {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="min-w-[240px] space-y-3"
+            >
               <FormField
                 control={form.control}
                 name="mobile"

@@ -16,7 +16,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { InputPassword } from "@/components/ui/inputPassword";
+import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { REGEX_PASSWORD } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { KeyholeIcon } from "@phosphor-icons/react/dist/ssr";

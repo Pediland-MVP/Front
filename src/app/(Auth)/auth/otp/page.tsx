@@ -26,14 +26,14 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components";
-import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
-import { MoveLeftIcon, RotateCwIcon } from "lucide-react";
+import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react/dist/ssr";
+import { MoveLeftIcon, RefreshCwIcon } from "lucide-react";
 
-export default function VerifyOTP() {
-  const t = useTranslations("Auth.Verify");
+export default function OTPVerifyPage() {
+  const router = useRouter();
+  const t = useTranslations("Auth.OTP");
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const [isResendLoading, setIsResendLoading] = useState(false);
   const [showResend, setShowResend] = useState(false);
 
@@ -115,9 +115,12 @@ export default function VerifyOTP() {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center gap-10">
+    <div className="flex flex-1 flex-col justify-center gap-12">
       <div className="flex flex-1 items-end justify-center">
-        <h1 className="font-bold">ورود با رمز یکبار مصرف</h1>
+        <h1 className="flex items-center gap-2 text-lg font-bold">
+          <NumpadIcon size={28} weight="duotone" />
+          {t("title")}
+        </h1>
       </div>
 
       <div className="space-y-3">
@@ -180,7 +183,7 @@ export default function VerifyOTP() {
                   variant="link"
                   type="button"
                   size="sm"
-                  className="h-auto text-[13px] text-muted-foreground"
+                  className="text-muted-foreground h-auto text-[13px] font-normal"
                   onClick={resendHandler}
                   disabled={isResendLoading}
                 >
@@ -188,7 +191,7 @@ export default function VerifyOTP() {
                     <CircleNotchIcon className="animate-spin" size={16} />
                   ) : (
                     <>
-                      <RotateCwIcon />
+                      <RefreshCwIcon className="size-3.5" />
                       {t("resend_code")}
                     </>
                   )}

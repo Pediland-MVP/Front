@@ -1,20 +1,17 @@
 "use client";
 
-import {
-  LoadingLogo,
-  useLoadingOverlay,
-} from "@/components/Global/LoadingLogo";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { Button } from "@/components/ui/button";
+import { LoadingLogo } from "@/components";
+import { LoaderSpin } from "@/components";
+import { Button } from "@/components";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { InputPassword } from "@/components/ui/inputPassword";
+} from "@/components";
+import { Input } from "@/components";
+import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { REGEX_PASSWORD } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +19,7 @@ import { ArrowLeftIcon, KeyholeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -93,7 +90,7 @@ export default function SignIn() {
     <>
       <LoadingLogo delay={3000} />
 
-      <main className="_signin-page h-full bg-blue-50/75 w-full">
+      <main className="_signin-page h-full w-full bg-blue-50/75">
         <div className="container h-full max-w-6xl px-6 sm:px-0">
           <div className="_wrapper relative flex h-full items-center justify-center">
             <div className="_content mx-auto w-full sm:w-1/3">

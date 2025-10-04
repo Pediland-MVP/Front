@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { InputPassword } from "@/components/ui/inputPassword";
+import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { REGEX_MOBILE, REGEX_PASSWORD } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
