@@ -115,8 +115,8 @@ export default function OTPVerifyPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center gap-12">
-      <div className="flex flex-1 items-end justify-center">
+    <div className="flex flex-1 flex-col justify-center">
+      <div className="mb-12 flex flex-1 items-end justify-center">
         <h1 className="flex items-center gap-2 text-lg font-bold">
           <NumpadIcon size={28} weight="duotone" />
           {t("title")}

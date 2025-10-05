@@ -54,12 +54,16 @@
       "confirm_and_continue": "تایید و ادامه",
       "back": "بازگشت"
     },
+    "Register": {
+      "title": "ثبت نام کاربر جدید",
+      "complete_registration_form": "برای تکمیل ثبت نام اطلاعات زیر را وارد کنید.",
+      "firstname": "نام",
+      "lastname": "نام خانوادگی",
+      "instagram_id": "آیدی اینستاگرام",
+      "referral_code": "کد معرف",
+      "confirm_and_continue": "تایید و ادامه",
+      "back": "بازگشت",
 
-    "signup": "ثبت نام",
-    "signin": "حساب کاربری",
-
-    "Signup": {
-      "signupTitle": "ثبت نام کاربر جدید",
       "alreadyHaveAccount": "حساب کاربری دارید؟",
       "signInHere": "از اینجا وارد شوید.",
       "enterFirstnamePlaceholder": "نام",
@@ -97,6 +101,9 @@
         }
       }
     },
+
+    "signup": "ثبت نام",
+    "signin": "حساب کاربری",
     "Signin": {
       "loginTitle": "ورود به حساب کاربری",
       "noAccount": "حساب کاربری ندارید؟",

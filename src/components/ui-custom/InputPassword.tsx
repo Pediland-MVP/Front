@@ -4,7 +4,7 @@ import { useLocale } from "next-intl";
 import * as React from "react";
 
 import { Input } from "@/components";
-import { EyeClosedIcon, EyeIcon } from "@phosphor-icons/react";
+import { EyeClosedIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface InputProps extends React.ComponentProps<"input"> {
   iconName?: "Eye" | "EyeClosed";

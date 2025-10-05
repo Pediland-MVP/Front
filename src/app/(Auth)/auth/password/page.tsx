@@ -35,8 +35,8 @@ export default function PasswordPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center gap-12">
-      <div className="flex flex-1 items-end justify-center">
+    <div className="flex flex-1 flex-col justify-center">
+      <div className="flex flex-1 items-end justify-center mb-12">
         <h1 className="flex text-lg items-center gap-2 font-bold">
           <PasswordIcon size={28} weight="duotone" />
           {t("title")}

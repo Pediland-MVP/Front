@@ -2,6 +2,7 @@ export * from "./ButtonLoading";
 export * from "./CounterDown";
 export * from "./ErrorMessage";
 export * from "./InputCounter";
+export * from "./InputPassword";
 export * from "./LoaderPulse";
 export * from "./LoaderSpin";
 export * from "./MediaUploader";

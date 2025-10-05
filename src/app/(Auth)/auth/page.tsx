@@ -35,8 +35,8 @@ export default function AuthPage() {
     <>
       <LoadingLogo delay={3000} />
 
-      <div className="flex flex-1 flex-col gap-12">
-        <div className="flex flex-1 items-end justify-center">
+      <div className="flex flex-1 flex-col">
+        <div className="mb-12 flex flex-1 items-end justify-center">
           <h1 className="text-gradient text-2xl font-extrabold">
             {t("title")}
           </h1>
@@ -44,11 +44,11 @@ export default function AuthPage() {
 
         <div className="space-y-5">
           <div className="text-center text-[15px] font-medium">
-            <p>
+            <div>
               {t("for_login_or_register")}
               <br />
               {t("insert_your_mobile_number")}
-            </p>
+            </div>
           </div>
 
           <Form {...form}>
