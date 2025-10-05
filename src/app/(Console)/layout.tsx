@@ -38,7 +38,7 @@ export default async function ConsoleLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="h-screen bg-blue-50">
+      <body>
         <SWRProvider>
           <StandaloneChecker>
             <NextIntlClientProvider messages={messages}>

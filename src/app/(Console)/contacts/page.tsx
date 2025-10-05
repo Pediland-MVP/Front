@@ -33,8 +33,13 @@ export default function Page() {
   const effectiveSearch = normalized.length >= 2 ? normalized : "";
 
   const HeaderButton = useMemo(
-    () => <SearchToggleButton setIsSearchVisible={setIsSearchVisible} />,
-    [],
+    () => (
+      <SearchToggleButton
+        isSearchVisible={isSearchVisible}
+        setIsSearchVisible={setIsSearchVisible}
+      />
+    ),
+    [isSearchVisible, setIsSearchVisible],
   );
 
   const HeaderTools = useMemo(

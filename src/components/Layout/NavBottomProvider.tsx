@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { NavBottom, NavItem, useSidebar } from "@/components/index";
+import { NavBottom, NavItem, useSidebar } from "@/components";
 import {
   DotsThreeOutlineIcon,
   LightningIcon,

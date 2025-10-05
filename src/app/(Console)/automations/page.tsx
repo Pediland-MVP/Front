@@ -1,3 +1,4 @@
+// Refactored
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
@@ -12,8 +13,8 @@ import {
   LayoutTable,
   SearchInput,
   SearchToggleButton,
-} from "@/components/index";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+} from "@/components";
+import { CircleFadingPlusIcon } from "lucide-react";
 
 export default function Page() {
   const t = useTranslations("Automations");
@@ -37,35 +38,34 @@ export default function Page() {
   const HeaderButton = useMemo(() => {
     return (
       <>
-        {/* <SearchToggleButton
+        <SearchToggleButton
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
-        /> */}
-
-        <Link href="/automations/add">
-          <Button size={"sm"}>
+        />
+        <Button type="button" variant="outline" size={"sm"} asChild>
+          <Link href="/automations/add">
             {t("add")}
-            <PlusIcon />
-          </Button>
-        </Link>
+            <CircleFadingPlusIcon />
+          </Link>
+        </Button>
       </>
     );
   }, [isSearchVisible, setIsSearchVisible]);
 
-  // const HeaderTools = useMemo(
-  //   () => (
-  //     <SearchInput
-  //       value={search}
-  //       onChange={setSearch}
-  //       visible={isSearchVisible}
-  //     />
-  //   ),
-  //   [search, isSearchVisible, setSearch],
-  // );
+  const HeaderTools = useMemo(
+    () => (
+      <SearchInput
+        value={search}
+        onChange={setSearch}
+        visible={isSearchVisible}
+      />
+    ),
+    [search, isSearchVisible, setSearch],
+  );
 
   useEffect(() => {
     setButtons(HeaderButton);
-    // setTools(HeaderTools);
+    setTools(HeaderTools);
 
     return () => {
       clearButtons();
@@ -73,9 +73,9 @@ export default function Page() {
     };
   }, [
     HeaderButton,
-    // HeaderTools,
+    HeaderTools,
     setButtons,
-    // setTools,
+    setTools,
     clearButtons,
     clearTools,
   ]);

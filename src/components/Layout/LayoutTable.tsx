@@ -10,7 +10,7 @@ export const LayoutTable: FC<{ children: ReactNode; className?: string }> = ({
   return (
     <div
       className={cn(
-        "_layout-table flex h-full flex-col overflow-hidden",
+        "_layout-table flex h-full flex-col overflow-hidden rounded-t-3xl bg-white",
         className,
       )}
     >

@@ -103,7 +103,7 @@ export function HeaderBreadcrumb() {
               <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
                 {isLast ? (
                   <span
-                    className="block truncate whitespace-nowrap"
+                    className="block text-white truncate whitespace-nowrap"
                     aria-current="page"
                   >
                     {label}

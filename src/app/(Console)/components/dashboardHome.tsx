@@ -7,12 +7,7 @@ import moment from "moment-jalaali";
 import LeadsGrowsChart from "./leadsGrows.chart";
 import { useTranslations } from "next-intl";
 // Just UI Imports Below
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   ChatDots,
@@ -34,10 +29,10 @@ export default function DashboardHome() {
   const t = useTranslations("Console");
 
   return (
-    <div className="_dashboard h-full">
+    <div className="_dashboard h-full rounded-t-3xl p-4 bg-violet-50">
       <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
-          <Card className="border-l-2 border-gray-100 rounded-none">
+          <Card className="rounded-none border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("productCount")}
@@ -56,7 +51,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-2 border-gray-100 rounded-none">
+          <Card className="rounded-none border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("leadCount")}
@@ -75,7 +70,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-2 border-gray-100 rounded-none">
+          <Card className="rounded-none border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="tracking-normal">
                 {t("automations")}
@@ -109,7 +104,7 @@ export default function DashboardHome() {
         </div>
 
         <div className="col-span-1 grid h-full md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-1 border-y-2 border-l-2 border-gray-100 lg:col-span-4 rounded-none">
+          <Card className="col-span-1 rounded-none border-y-2 border-l-2 border-gray-100 lg:col-span-4">
             <CardHeader>
               <CardTitle className="tracking-normal">
                 {t("leadsGrowthChart")}
@@ -120,7 +115,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
 
-          <Card className="col-span-1 border-y-2 border-gray-100 lg:col-span-3 rounded-none">
+          <Card className="col-span-1 rounded-none border-y-2 border-gray-100 lg:col-span-3">
             <CardHeader>
               <CardTitle className="tracking-normal">
                 {t("recentSessions")}

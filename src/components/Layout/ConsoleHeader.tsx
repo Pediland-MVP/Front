@@ -1,22 +1,32 @@
-// src/components/layout/consoleHeader.tsx
+// Refactored
 "use client";
 
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
-import { HeaderBreadcrumb, SidebarTrigger } from "@/components/index";
-import { cn } from "@/lib/utils";
+import { HeaderBreadcrumb, SidebarTrigger } from "@/components";
+import { HeadsetIcon, ListIcon, SlidersIcon } from "@phosphor-icons/react";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();
   const pathname = usePathname();
 
-  if (pathname === "/") return null;
+  if (pathname === "/")
+    return (
+      <header className="flex h-16 items-center gap-4 px-4 text-white md:hidden">
+        <ListIcon size={28} />
+
+        <HeadsetIcon size={28} weight="duotone" />
+
+        <SlidersIcon size={28} weight="duotone" />
+      </header>
+    );
 
   return (
     <header
       className={cn(
-        "flex items-center border-b-2 border-gray-100 px-3 py-2.5",
+        "flex items-center border-gray-100 px-3 py-2.5 md:border-b-2",
         !tools && !buttons && "min-h-12",
       )}
     >
@@ -27,7 +37,9 @@ export const ConsoleHeader = () => {
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-2 md:order-3 md:flex-initial">
-          {buttons && <div className="_buttons flex gap-1.5">{buttons}</div>}
+          {buttons && (
+            <div className="_buttons flex items-center gap-1.5">{buttons}</div>
+          )}
         </div>
 
         {tools && (

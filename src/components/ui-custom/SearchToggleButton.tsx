@@ -1,9 +1,8 @@
+// Refactored
 import { Dispatch, SetStateAction } from "react";
-import {
-  Button,
-  ListMagnifyingGlassIcon,
-  XCircleIcon,
-} from "@/components/index";
+
+import { Button } from "@/components";
+import { CircleXIcon, SearchIcon } from "lucide-react";
 
 interface Props {
   setIsSearchVisible: Dispatch<SetStateAction<boolean>>;
@@ -24,9 +23,9 @@ export const SearchToggleButton = ({
       aria-label={"toggle_search"}
     >
       {isSearchVisible ? (
-        <XCircleIcon className="size-7 text-gray-400 xl:hidden" />
+        <CircleXIcon className="size-6 text-white xl:hidden" />
       ) : (
-        <ListMagnifyingGlassIcon className="text-foreground size-8 xl:hidden" />
+        <SearchIcon className="size-6 text-white xl:hidden" />
       )}
     </Button>
   );

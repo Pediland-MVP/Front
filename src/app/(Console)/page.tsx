@@ -8,9 +8,21 @@ import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import useUser from "@/hooks/useUser";
 import DashboardHome from "./components/dashboardHome";
 import StartKit from "./components/startKit";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useEffect, useMemo } from "react";
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const t = useTranslations("Console");
+
+  const { setTools, setButtons, clearTools, clearButtons } = useHeaderFeatures(
+    (s) => ({
+      setTools: s.setTools,
+      clearTools: s.clearTools,
+      setButtons: s.setButtons,
+      clearButtons: s.clearButtons,
+    }),
+  );
+
   const {
     data: stats,
     error: statsError,
@@ -19,6 +31,16 @@ export default function Dashboard() {
     `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`,
   );
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
+
+  const HeaderButton = useMemo(() => <div>Menu</div>, []);
+
+  useEffect(() => {
+    setButtons(HeaderButton);
+
+    return () => {
+      clearButtons();
+    };
+  }, [HeaderButton, setButtons, clearButtons]);
 
   if (isLoading) {
     return (
@@ -30,11 +52,5 @@ export default function Dashboard() {
     );
   }
 
-  return (
-    <div className="_dashboard h-full">
-      <div className="_wrapper flex h-full flex-1 flex-col">
-        {hasInstagram ? <DashboardHome /> : <StartKit />}
-      </div>
-    </div>
-  );
+  return <DashboardHome />;
 }

@@ -1,4 +1,4 @@
-// src/components/layout/consoleProvider.tsx
+// Refactored
 "use client";
 
 import { UserNamespace } from "@/types/user";
@@ -6,13 +6,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 
-// UI Imports Here
 import {
   SidebarInset,
   SidebarProvider,
   ConsoleSidebar,
   ConsoleHeader,
-} from "@/components/index";
+} from "@/components";
 
 export const ConsoleProvider = ({
   children,

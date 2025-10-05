@@ -1,4 +1,4 @@
-// src/components/theme/sidebar.tsx
+// Do not override this file
 "use client";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -141,7 +141,7 @@ function SidebarProvider({
             } as React.CSSProperties
           }
           className={cn(
-            "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full overflow-hidden md:max-h-screen md:p-3",
+            "group/sidebar-wrapper flex min-h-svh w-full overflow-hidden bg-gradient-to-tl from-blue-500 to-violet-700 md:max-h-screen md:p-3",
             className,
           )}
           {...props}
@@ -189,7 +189,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -239,7 +239,7 @@ function Sidebar({
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
           // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
-            ? "pt-5 pr-5 pb-3 pl-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+            ? "p-3 pl-0 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className,
         )}
@@ -248,7 +248,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar flex h-full w-full flex-col gap-4 p-0 group-data-[variant=floating]:rounded-xl group-data-[variant=floating]:border group-data-[variant=floating]:border-blue-800/20"
+          className="flex h-full w-full flex-col gap-4 rounded-xl bg-violet-50 p-3 group-data-[variant=floating]:rounded-xl group-data-[variant=floating]:border group-data-[variant=floating]:border-blue-800/20"
         >
           {children}
         </div>
@@ -315,8 +315,8 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "relative flex max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-auto border bg-white md:max-h-screen",
-        "overflow-hidden pb-20 md:pb-0 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0",
+        "relative flex max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-auto md:bg-violet-50 md:border md:max-h-screen",
+        "overflow-hidden pb-14 md:pb-0 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0",
         className,
       )}
       {...props}
