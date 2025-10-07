@@ -6,11 +6,16 @@ import { Button } from "@/components/index";
 
 interface ButtonLoadingProps {
   isLoading: boolean;
+  onClick?: () => void;
   className?: string;
   children: React.ReactNode;
   disabled?: boolean;
 }
-export const ButtonLoading = ({ isLoading, ...props }: ButtonLoadingProps) => {
+export const ButtonLoading = ({
+  isLoading,
+  onClick,
+  ...props
+}: ButtonLoadingProps) => {
   return (
     <Button
       {...props}

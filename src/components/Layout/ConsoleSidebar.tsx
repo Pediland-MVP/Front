@@ -1,30 +1,29 @@
-// src/components/layout/consoleSidebar.tsx
 "use client";
 
 import { UserNamespace } from "@/types/user";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { Suspense } from "react";
 import useSWRImmutable from "swr/immutable";
 
-// UI Imports
-import { SetupWarning } from "@/components/Global/setupWarning";
 import {
+  LogoSlogan,
+  LogoText,
+  NavMain,
+  NavUserSkeleton,
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@components";
 import {
   AddressBookTabsIcon,
   BasketIcon,
   ChatCircleTextIcon,
   HouseSimpleIcon,
   SlidersIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { NavMain, NavUserSkeleton } from "@components/index";
+} from "@phosphor-icons/react";
 
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,
@@ -142,24 +141,15 @@ export const ConsoleSidebar = ({
   return (
     <Sidebar variant="inset" collapsible="offcanvas" {...props}>
       <SidebarHeader className="flex-row gap-2">
-        <Image
-          src="/images/befroosh-logo.svg"
-          alt="Befroosh App Logo"
-          className="aspect-square"
-          width={32}
-          height={32}
-        />
-        <div className="flex items-center gap-1 truncate leading-tight">
-          <h1 className="text-sidebar-foreground font-bold">{t("name")}</h1>
-          <h2 className="text-sm">[{t("description")}]</h2>
+        <div className="flex items-center gap-1.5">
+          <LogoSlogan />
+          <LogoText size="md" />
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-
-      <SetupWarning />
 
       <SidebarFooter>
         <Suspense fallback={<NavUserSkeleton />}>

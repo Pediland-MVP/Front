@@ -14,6 +14,7 @@ import {
   FormMessage,
   Input,
   LoadingLogo,
+  LogoText,
 } from "@/components";
 import { MoveLeftIcon } from "lucide-react";
 
@@ -37,9 +38,7 @@ export default function AuthPage() {
 
       <div className="flex flex-1 flex-col">
         <div className="mb-12 flex flex-1 items-end justify-center">
-          <h1 className="text-gradient text-2xl font-extrabold">
-            {t("title")}
-          </h1>
+          <LogoText />
         </div>
 
         <div className="space-y-5">

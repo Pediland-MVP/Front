@@ -1,4 +1,3 @@
-// src/components/layout/navUser.tsx
 "use client";
 
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
@@ -7,25 +6,25 @@ import { AxiosResponse } from "axios";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
-// UI Imports
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
+  LoaderSpin,
+  NavUserSkeleton,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { toast } from "sonner";
+} from "@components";
 import {
   CaretUpDownIcon,
   IdentificationBadgeIcon,
@@ -33,7 +32,6 @@ import {
   SparkleIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { NavUserSkeleton } from "@components/index";
 
 const NavUser = ({
   user,
@@ -86,17 +84,14 @@ const NavUser = ({
       <SidebarMenuItem>
         <DropdownMenu dir="rtl">
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-none group-data-[collapsible=icon]:px-0"
-            >
-              <Avatar className="h-7 w-7 rounded-lg">
+            <SidebarMenuButton className="focus-visible:ring-none hover:text-primary text-secondary data-[state=open]:text-primary active:text-primary group-data-[collapsible=icon]:px-0 hover:bg-transparent active:bg-transparent data-[state=open]:bg-transparent">
+              <Avatar className="h-7 w-7 rounded-lg border-0 duration-300 focus-within:ring-0">
                 <AvatarImage src={undefined} alt={user.firstname} />
                 <AvatarFallback className="bg-transparent">
                   <UserCircleIcon size={28} weight="duotone" />
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-right text-sm leading-tight">
+              <div className="flex-1 text-right text-sm">
                 <span className="truncate font-semibold">
                   {user.firstname} {user.lastname}
                 </span>

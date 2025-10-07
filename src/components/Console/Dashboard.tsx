@@ -17,7 +17,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 
-export default function DashboardHome() {
+export const Dashboard = () => {
   const {
     data: stats,
     error: statsError,
@@ -29,8 +29,8 @@ export default function DashboardHome() {
   const t = useTranslations("Console");
 
   return (
-    <div className="_dashboard h-full rounded-t-3xl p-4 bg-violet-50">
-      <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
+    <div className="_dashboard flex-1 rounded-t-3xl bg-violet-50">
+      {/* <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
           <Card className="rounded-none border-l-2 border-gray-100">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -171,7 +171,7 @@ export default function DashboardHome() {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </div> */}
     </div>
   );
-}
+};

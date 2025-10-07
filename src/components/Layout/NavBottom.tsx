@@ -10,9 +10,17 @@ import React, {
   useState,
 } from "react";
 
-import { Button } from "@/components";
+import { Avatar, AvatarFallback, AvatarImage, Button } from "@/components";
 import { AnimatedGradient } from "@/components/Global/animatedGradient";
 import { IconProps } from "@phosphor-icons/react";
+import {
+  ChatCenteredDotsIcon,
+  ChatIcon,
+  HouseIcon,
+  PlusCircleIcon,
+  ShoppingBagIcon,
+  UserCircleIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export interface NavItem {
   icon: ReactElement<IconProps>;
@@ -24,85 +32,53 @@ export interface NavItem {
   isMain?: boolean;
 }
 
-interface BottomNavbarProps {
-  items: NavItem[];
-}
-
-export const NavBottom = ({ items }: BottomNavbarProps) => {
-  const [isNavigationPending, setIsNavigationPending] =
-    useState<boolean>(false);
-
+export const NavBottom = () => {
   const pathname = usePathname();
+
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 h-14 border-t border-gray-100 bg-gray-50 md:hidden">
-      {/* {isNavigationPending && (
-        <AnimatedGradient
-          colors={["#93c5fd", "#3b82f6", "#1e3a8a"]}
-          className="flex h-1 items-center justify-center rounded-lg"
-          animationDuration="1s"
-        ></AnimatedGradient>
-      )} */}
+    <nav className="fixed right-0 bottom-0 left-0 z-50 h-14 border-t border-gray-200/50 bg-white shadow-lg shadow-black md:hidden">
+      <div className="flex h-full items-center justify-around">
+        <Link href="/">
+          <HouseIcon
+            size={28}
+            className={cn(
+              "text-muted-foreground",
+              pathname === "/" && "text-primary",
+            )}
+          />
+        </Link>
 
-      <div className="flex items-end justify-around gap-x-2 px-2">
-        {items.map((item, index) => {
-          const Icon = item.icon;
-          const Label = item.label;
+        <Link href="/directs">
+          <ChatIcon
+            size={28}
+            className={cn(
+              "text-muted-foreground",
+              pathname === "/directs" && "text-primary",
+            )}
+          />
+        </Link>
 
-          // if (item.isMain) {
-          //   return (
-          //     <Button
-          //       key={index}
-          //       asChild
-          //       size="lg"
-          //       className={cn(
-          //         "z-50 -mt-5 flex h-18 flex-col gap-0.5 rounded-t-xl rounded-b-none bg-blue-200 px-2.5 text-blue-950 shadow-lg [&_svg]:-ml-0 [&_svg]:size-8",
-          //         pathname.startsWith(item.href) && "bg-blue-500 text-white",
-          //       )}
-          //       type="button"
-          //       {...(item.onClick && { onClick: item.onClick })}
-          //     >
-          //       <Link href={item.href} target={item.target}>
-          //         {React.cloneElement(Icon, {
-          //           className: cn(Icon.props.className),
-          //         })}
-          //         {React.cloneElement(Label, {
-          //           className: cn("text-xs font-normal", Label.props.className),
-          //         })}
-          //         <LinkStatusTracker
-          //           setIsNavigationPending={setIsNavigationPending}
-          //         />
-          //       </Link>
-          //     </Button>
-          //   );
-          // }
+        <Link href="/automations">
+          <PlusCircleIcon
+            size={32}
+            className={cn(
+              "text-muted-foreground",
+              pathname.startsWith("/automations") && "text-primary",
+            )}
+          />
+        </Link>
 
-          return (
-            <Button
-              {...(item.onClick && { onClick: item.onClick })}
-              type="button"
-              key={index}
-              variant="ghost"
-              size="lg"
-              asChild
-              className={cn(
-                "flex h-14 flex-col items-center justify-center gap-0.5 rounded-none px-0 [&_svg]:-ml-0 [&_svg]:size-6",
-                pathname.startsWith(item.href) && "bg-gray-200/75",
-              )}
-            >
-              <Link href={item.href} target={item.target}>
-                {React.cloneElement(Icon, {
-                  className: cn(Icon.props.className),
-                })}
-                {React.cloneElement(Label, {
-                  className: cn("text-xs font-normal", Label.props.className),
-                })}
-                {/* <LinkStatusTracker
-                  setIsNavigationPending={setIsNavigationPending}
-                /> */}
-              </Link>
-            </Button>
-          );
-        })}
+        <Link href="/orders">
+          <ShoppingBagIcon
+            size={28}
+            className={cn(
+              "text-muted-foreground",
+              pathname === "/orders" && "text-primary",
+            )}
+          />
+        </Link>
+
+        <UserCircleIcon size={30} weight="duotone" className="text-secondary" />
       </div>
     </nav>
   );

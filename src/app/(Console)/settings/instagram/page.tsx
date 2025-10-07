@@ -10,7 +10,7 @@ import { InstagramNamespace } from "@/types/instagram";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import useUser from "@/hooks/useUser";
-import StartKit from "../../components/startKit";
+import StartKit from "../../../../components/Console/startKit";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { Plug } from "@phosphor-icons/react/dist/ssr";
 import ConnectInstagram from "./components/connectInstagram";

@@ -4,24 +4,45 @@
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
-import { HeaderBreadcrumb, SidebarTrigger } from "@/components";
+import {
+  HeaderBreadcrumb,
+  LogoSlogan,
+  LogoText,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components";
 import { HeadsetIcon, ListIcon, SlidersIcon } from "@phosphor-icons/react";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();
   const pathname = usePathname();
 
-  if (pathname === "/")
+  if (pathname === "/") {
+    const { toggleSidebar } = useSidebar();
+
     return (
-      <header className="flex h-16 items-center gap-4 px-4 text-white md:hidden">
-        <ListIcon size={28} />
+      <header className="flex h-16 items-center justify-between gap-4 px-4 text-white md:hidden">
+        <div className="flex items-center gap-4">
+          <ListIcon size={28} onClick={toggleSidebar} />
 
-        <HeadsetIcon size={28} weight="duotone" />
+          <Link href="https://t.me/+989360226688" target="_blank">
+            <HeadsetIcon size={28} weight="duotone" />
+          </Link>
 
-        <SlidersIcon size={28} weight="duotone" />
+          <Link href="/settings">
+            <SlidersIcon size={28} weight="duotone" />
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <LogoSlogan variant="white" />
+          <LogoText variant="white" size="sm" />
+        </div>
       </header>
     );
+  }
 
   return (
     <header

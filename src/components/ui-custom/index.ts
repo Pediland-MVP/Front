@@ -9,3 +9,5 @@ export * from "./MediaUploader";
 export * from "./SearchInput";
 export * from "./SearchToggleButton";
 export * from "./SeperateLine";
+export * from "./dialogStyled";
+

@@ -1,5 +1,8 @@
 {
   "Components": {
+    "LogoText": {
+      "title": "بفروش"
+    },
     "SearchInput": {
       "search_placeholder": "جستجو ..."
     }
@@ -8,8 +11,16 @@
     "youDontHaveSubscription": "شما  اشتراک ندارید",
     "youShouldBuySubscription": "برای استفاده از تمام خدمات باید اشتراک تهیه کنید"
   },
+  "Connect": {
+    "title1": "برای استفاده از خدمات بـفـروش،",
+    "title2": "ابتدا اکانت اینستاگرام خود را متصل کنید.",
+    "connect_account": "اتـصـال اکـانـت",
+    "how_to_connect": "آمـوزش روش اتـصـال",
+    "befroosh_meta_partner": "بـفـروش، شریک تجاری متا",
+    "instagram_holding": "شرکت مادر اینستاگرام",
+    "description": "است و تمام پیام‌های ارسال شده توسط دایرکت هوشمند بـفـروش از طریق وب سرویس رسمی اینستاگرام انجام می‌شود."
+  },
   "Auth": {
-    "title": "بـفـروش",
     "for_login_or_register": "برای ورود یا ثبت نام",
     "insert_your_mobile_number": "شماره همراه خود را وارد کنید.",
     "mobile": "شماره همراه",
@@ -183,7 +194,7 @@
     "noRecentSessions": "فعلا خبری نیست :)",
     "Sidebar": {
       "name": "بِـفـروش",
-      "description": "مدیریت مشتریان",
+      "description": "دستیار هوشمند",
       "dashboard": "داشبورد",
       "contacts": "مخاطبین",
       "instagramConnections": "ارتباط در اینستاگرام",

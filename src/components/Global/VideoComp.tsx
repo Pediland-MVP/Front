@@ -1,21 +1,20 @@
-// src/components/Global/VideoComp.tsx
 "use client";
 
 import { cn } from "@/lib/utils";
 import { useRef, VideoHTMLAttributes } from "react";
 
-export interface VideoCompProps extends VideoHTMLAttributes<HTMLVideoElement> {
+interface VideoCompProps extends VideoHTMLAttributes<HTMLVideoElement> {
   shape: "square" | "rectangle" | "vertical";
-  variant: "bordered";
+  variant?: "no-border";
   className?: string;
 }
 
-export function VideoComp({
+export const VideoComp = ({
   shape,
   variant,
   className,
   ...params
-}: VideoCompProps) {
+}: VideoCompProps) => {
   const ref = useRef<HTMLVideoElement>(null);
 
   return (
@@ -23,11 +22,11 @@ export function VideoComp({
       {...params}
       className={cn(
         className,
+        "rounded-lg border-2",
         shape === "vertical" && "h-[462px] w-[260px]",
-        variant === "bordered" && "border-primary border",
-        "rounded-md",
+        variant === "no-border" && "border-0",
       )}
       ref={ref}
     ></video>
   );
-}
+};

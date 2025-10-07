@@ -6,10 +6,10 @@ import useSWRImmutable from "swr/immutable";
 // Just UI Imports Below
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import useUser from "@/hooks/useUser";
-import DashboardHome from "./components/dashboardHome";
-import StartKit from "./components/startKit";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { useEffect, useMemo } from "react";
+
+import { Dashboard } from "@/components/index";
 
 export default function DashboardPage() {
   const t = useTranslations("Console");
@@ -52,5 +52,5 @@ export default function DashboardPage() {
     );
   }
 
-  return <DashboardHome />;
+  return <Dashboard />;
 }

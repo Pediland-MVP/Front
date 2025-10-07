@@ -1,10 +1,8 @@
-// src/components/Global/HelpMe.dialog.tsx
 "use client";
 
 import { cn } from "@/lib/utils";
-import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 import {
   Button,
@@ -17,6 +15,7 @@ import {
   DialogTrigger,
   VideoComp,
 } from "@/components/index";
+import { InfoIcon, MonitorPlayIcon } from "@phosphor-icons/react/dist/ssr";
 
 type Position =
   | "left"
@@ -35,12 +34,13 @@ type Position =
 
 interface HelpDialogProps {
   title: string;
-  description: string;
+  description?: string;
   videoSrc: string;
   videoPoster?: string;
   position?: Position;
   className?: string;
   noAbsolute?: boolean;
+  children?: ReactNode;
 }
 
 const getPositionClasses = (
@@ -63,7 +63,11 @@ const getPositionClasses = (
     center: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
   };
 
-  return positions[position] || positions["right-top"];
+  if (!noAbsolute) {
+    return positions[position] || positions["right-top"];
+  }
+
+  return "";
 };
 
 export const HelpMeDialog = ({
@@ -74,54 +78,60 @@ export const HelpMeDialog = ({
   position = "right-top",
   className,
   noAbsolute = false,
+  children,
 }: HelpDialogProps) => {
   const [open, setOpen] = useState(false);
-
   const t = useTranslations("Helpme");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div
-          className={cn(
-            !noAbsolute && getPositionClasses(position),
-            className,
-            "cursor-pointer duration-100 hover:scale-110",
-          )}
-        >
-          <InfoIcon size={18} weight="duotone" className="text-gray-500" />
-          <span className="sr-only">{t("help")}</span>
-        </div>
+        {children ? (
+          children
+        ) : (
+          <div
+            className={cn(
+              noAbsolute ? "" : getPositionClasses(position),
+              className,
+              "cursor-pointer duration-100 hover:scale-110",
+            )}
+          >
+            <InfoIcon size={20} weight="duotone" className="text-gray-500" />
+            <span className="sr-only">{t("help")}</span>
+          </div>
+        )}
       </DialogTrigger>
-      <DialogContent className="h-full w-full gap-0 p-0 sm:h-auto sm:max-w-4xl">
-        <div className="flex h-full flex-col">
-          <DialogHeader className="p-6 pb-4">
-            <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
-            <DialogDescription className="text-muted-foreground text-base">
+
+      <DialogContent className="flex h-full max-w-full flex-col rounded-none md:p-10">
+        <DialogHeader>
+          <DialogTitle className="text-primary flex items-center justify-center gap-2 text-base font-semibold">
+            <MonitorPlayIcon size={22} /> {title}
+          </DialogTitle>
+          {description && (
+            <DialogDescription className="text-muted-foreground text-right text-[13px] md:mx-auto md:w-1/2 md:text-center">
               {description}
             </DialogDescription>
-          </DialogHeader>
+          )}
+        </DialogHeader>
 
-          <div className="flex w-full items-center justify-center">
-            <VideoComp
-              shape="vertical"
-              variant="bordered"
-              src={videoSrc}
-              poster={videoPoster}
-              controls
-              className="h-[800px] w-full object-cover"
-              preload="metadata"
-            >
-              {t("browserDosntSupport")}
-            </VideoComp>
-          </div>
-
-          <DialogFooter className="p-6 pt-4">
-            <Button onClick={() => setOpen(false)} className="w-full sm:w-auto">
-              {t("close")}
-            </Button>
-          </DialogFooter>
+        <div className="flex w-full flex-1 items-center justify-center">
+          <VideoComp
+            shape="vertical"
+            src={videoSrc}
+            poster={videoPoster}
+            controls
+            className="h-[800px] w-full object-cover"
+            preload="metadata"
+          >
+            {t("browserDosntSupport")}
+          </VideoComp>
         </div>
+
+        <DialogFooter>
+          <Button onClick={() => setOpen(false)} className="mx-auto w-[260px]">
+            {t("close")}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
