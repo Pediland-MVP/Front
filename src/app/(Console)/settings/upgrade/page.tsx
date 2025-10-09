@@ -3,11 +3,10 @@ import SubscriptionInfo from "./components/subscriptionInfo";
 import { UpgradeProvider } from "./context/upgrade.context";
 
 export default function Upgrade() {
-
-    return (
-        <UpgradeProvider>
-            <SubscriptionInfo />
-            <PlanSelection />
-        </UpgradeProvider>
-    )
+  return (
+    <UpgradeProvider>
+      <SubscriptionInfo />
+      <PlanSelection />
+    </UpgradeProvider>
+  );
 }

@@ -9,9 +9,9 @@ import useUser from "@/hooks/useUser";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { useEffect, useMemo } from "react";
 
-import { Dashboard } from "@/components/index";
+import { DashboardPage } from "@components";
 
-export default function DashboardPage() {
+export default function Page() {
   const t = useTranslations("Console");
 
   const { setTools, setButtons, clearTools, clearButtons } = useHeaderFeatures(
@@ -52,5 +52,5 @@ export default function DashboardPage() {
     );
   }
 
-  return <Dashboard />;
+  return <DashboardPage />;
 }

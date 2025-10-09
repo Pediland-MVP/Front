@@ -1,2 +1,3 @@
-export { Dashboard } from "./Dashboard";
+export * from "./Dashboard";
 export { UserDropdownMenu } from "./UserDropdownMenu";
+export * from "./ProgressRadial";

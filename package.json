@@ -84,7 +84,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-multi-date-picker": "^4.5.2",
     "react-resizable-panels": "^2.0.22",
-    "recharts": "^2.13.3",
+    "recharts": "2.15.4",
     "socket.io-client": "^4.7.5",
     "sonner": "^2.0.5",
     "swr": "^2.3.3",

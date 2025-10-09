@@ -1,35 +1,3 @@
-"use client";
-
-import useSWRImmutable from "swr/immutable";
-import { fetcher } from "@/hooks/swr/fetcher";
-import { StatsNamespace } from "@/types/stats";
-import moment from "moment-jalaali";
-import LeadsGrowsChart from "./leadsGrows.chart";
-import { useTranslations } from "next-intl";
-// Just UI Imports Below
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  ChatDots,
-  Package,
-  Robot,
-  Users,
-} from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
-
-export const Dashboard = () => {
-  const {
-    data: stats,
-    error: statsError,
-    isLoading: isStatsLoading,
-  } = useSWRImmutable<StatsNamespace.Overall>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/stats/overall`,
-  );
-
-  const t = useTranslations("Console");
-
-  return (
-    <div className="_dashboard flex-1 rounded-t-3xl bg-violet-50">
       {/* <div className="_wrapper min-h-[calc(100vh-5.5rem)]">
         <div className="grid grid-cols-1 lg:grid-cols-4">
           <Card className="rounded-none border-l-2 border-gray-100">
@@ -172,6 +140,3 @@ export const Dashboard = () => {
           </Card>
         </div>
       </div> */}
-    </div>
-  );
-};
