@@ -52,7 +52,7 @@ export default function AccountPage({ searchParams }: AccountPageProps) {
   }
 
   return (
-    <div className="_accounts-page flex h-full">
+    <div className="_accounts-page flex h-full bg-white">
       <div className="sm:w-3/5 h-full">
         <Card className="border-l-2 border-gray-100 h-full p-6">
 

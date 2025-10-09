@@ -18,10 +18,10 @@ import {
   useSidebar,
 } from "@components";
 import {
-  AddressBookTabsIcon,
+  AddressBookIcon,
   BasketIcon,
-  ChatCircleTextIcon,
-  HouseSimpleIcon,
+  ChatsIcon,
+  HouseIcon,
   SlidersIcon,
 } from "@phosphor-icons/react";
 
@@ -35,19 +35,19 @@ const generateData = (t: any, isMobile: boolean) => ({
     {
       title: t("dashboard"),
       url: "/",
-      icon: HouseSimpleIcon,
+      icon: HouseIcon,
       isActive: true,
     },
     {
       title: t("contacts"),
       url: "/contacts",
-      icon: AddressBookTabsIcon,
+      icon: AddressBookIcon,
       isActive: true,
     },
     {
       title: t("instagramConnections"),
       url: "#",
-      icon: ChatCircleTextIcon,
+      icon: ChatsIcon,
       isActive: false,
       items: [
         {

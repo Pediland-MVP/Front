@@ -1,37 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import ProductListTable from "./components/productListTable";
-// Just UI Imports Below
+
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { CircleFadingPlusIcon } from "lucide-react";
 
 export default function Page() {
   const t = useTranslations("Products");
 
-  const { setTools, clearTools } = useHeaderFeatures((s) => ({
-    setTools: s.setTools,
-    clearTools: s.clearTools,
-  }))
-  useEffect(() => {
-    setTools(
-      <Link href="/products/add">
-        <Button size={"sm"} className="mt-3 xl:mt-0">
+  const { setButtons, clearButtons } = useHeaderFeatures((s) => ({
+    setButtons: s.setButtons,
+    clearButtons: s.clearButtons,
+  }));
+
+  const HeaderButton = useMemo(() => {
+    return (
+      <Button size="md" asChild>
+        <Link href="/products/add">
           {t("add")}
-          <PlusIcon />
-        </Button>
-      </Link>,
+          <CircleFadingPlusIcon />
+        </Link>
+      </Button>
     );
+  }, []);
+
+  useEffect(() => {
+    setButtons(HeaderButton);
+
     return () => {
-      clearTools();
+      clearButtons();
     };
-  }, [setTools, clearTools]);
+  }, [HeaderButton, setButtons, clearButtons]);
 
   return (
-    <div className="_products overflow-auto">
+    <div className="_products flex h-full flex-col overflow-auto">
       <ProductListTable />
     </div>
   );

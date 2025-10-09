@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-// Just UI Imports Below
-import OrderListCard from "./components/orderListCard";
-import { Button } from "@/components/ui/button";
-import { ExcelExportOrdersDrawer } from "./components/excelExportOrders.drawer";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+import { Button, OrdersListCard } from "@components";
+import { DownloadIcon } from "lucide-react";
+import { ExcelExportOrdersDrawer } from "./components/excelExportOrders.drawer";
 
 export default function page() {
   const [search, setSearch] = useState<string>("");
@@ -13,13 +13,14 @@ export default function page() {
   const { setButtons, clearButtons } = useHeaderFeatures((s) => ({
     setButtons: s.setButtons,
     clearButtons: s.clearButtons,
-  }))
+  }));
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setButtons([
-      <Button onClick={() => setOpen(true)} key={"ExcelExport.title"}>
+      <Button size="md" onClick={() => setOpen(true)} key={"ExcelExport.title"}>
         {t("ExcelExport.title")}
+        <DownloadIcon />
       </Button>,
     ]);
 
@@ -29,9 +30,10 @@ export default function page() {
   }, [setButtons, clearButtons]);
 
   return (
-    <div className="_orders overflow-auto">
+    <div className="_orders flex flex-col h-full overflow-auto">
       <ExcelExportOrdersDrawer onOpenChange={setOpen} open={open} />
-      <OrderListCard search={search} setSearch={setSearch} />
+
+      <OrdersListCard search={search} setSearch={setSearch} />
     </div>
   );
 }

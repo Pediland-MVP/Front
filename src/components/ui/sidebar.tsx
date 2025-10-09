@@ -268,8 +268,9 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="link"
+      size="icon"
       className={cn(
-        "text-foreground hover:text-primary hidden cursor-pointer pr-0 pl-2 md:flex [&_svg]:size-7",
+        "md:text-secondary hover:text-primary w-auto text-white",
         className,
       )}
       onClick={(event) => {
@@ -278,7 +279,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <SidebarIcon weight="duotone" className="rotate-180" />
+      <SidebarIcon weight="duotone" className="size-6 rotate-180" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

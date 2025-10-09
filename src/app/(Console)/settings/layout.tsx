@@ -7,7 +7,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
     const t = useTranslations("Settings");
 
     return (
-        <div className="_settings-page">
+        <div className="_settings-page bg-white rounded-t-3xl">
             <div className="_wrapper flex w-full min-h-[calc(100vh-3.25rem)] md:min-h-[calc(100vh-5.5rem)]">
                 <div className="_settings-nav hidden sm:block w-full md:w-1/4">
                     <SettingsNav />

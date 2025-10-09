@@ -42,7 +42,7 @@ export default function Page() {
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
         />
-        <Button type="button" variant="outline" size={"sm"} asChild>
+        <Button type="button" size="md" asChild>
           <Link href="/automations/add">
             {t("add")}
             <CircleFadingPlusIcon />

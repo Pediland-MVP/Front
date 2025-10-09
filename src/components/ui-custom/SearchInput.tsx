@@ -26,7 +26,7 @@ export const SearchInput = ({
       onChange={(e) => onChange(e.target.value.replace(/\s+/g, " "))}
       placeholder={placeholder || t("search_placeholder")}
       aria-label={t("search_placeholder")}
-      className={visible ? "flex mt-1.5" : "hidden xl:flex"}
+      className={visible ? "mt-2 flex" : "hidden h-9 xl:flex"}
     />
   );
 };

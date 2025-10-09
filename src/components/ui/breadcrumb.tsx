@@ -1,7 +1,12 @@
+// Do not override this file
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
-import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
 import { useLocale } from "next-intl";
 
 const Breadcrumb = React.forwardRef<
@@ -19,8 +24,8 @@ const BreadcrumbList = React.forwardRef<
   <ol
     ref={ref}
     className={cn(
-      "flex flex-wrap items-center text-sm gap-1 xl:gap-1.5 break-words text-muted-foreground sm:gap-2",
-      className
+      "text-muted-foreground flex flex-wrap items-center gap-1 text-sm break-words sm:gap-2 xl:gap-1.5",
+      className,
     )}
     {...props}
   />
@@ -50,7 +55,10 @@ const BreadcrumbLink = React.forwardRef<
   return (
     <Comp
       ref={ref}
-      className={cn("transition-colors hover:text-foreground text-sm", className)}
+      className={cn(
+        "hover:text-foreground md:text-secondary text-sm text-white transition-colors",
+        className,
+      )}
       {...props}
     />
   );
@@ -70,11 +78,11 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
         role="link"
         aria-disabled="true"
         aria-current={isCurrent ? "page" : undefined}
-        className={cn("font-semibold text-primary", className)}
+        className={cn("text-primary font-semibold", className)}
         {...props}
       />
     );
-  }
+  },
 );
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
@@ -89,15 +97,18 @@ const BreadcrumbSeparator = ({
     <li
       role="presentation"
       aria-hidden="true"
-      className={cn("[&>svg]:w-4 [&>svg]:h-4", className)}
+      className={cn(
+        "md:text-secondary text-white [&>svg]:h-4 [&>svg]:w-4",
+        className,
+      )}
       {...props}
     >
-      {children ?? (locale === "fa" ? <ChevronLeftIcon /> : <ChevronRightIcon />)}
+      {children ??
+        (locale === "fa" ? <ChevronLeftIcon /> : <ChevronRightIcon />)}
     </li>
   );
 };
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
-
 
 const BreadcrumbEllipsis = ({
   className,

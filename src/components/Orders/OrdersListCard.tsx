@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pagination } from "./pagination";
+import { Pagination } from "../../app/(Console)/orders/components/pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 // import EditContactDialog from "./editContactDialog";
 import { useTranslations } from "next-intl";
@@ -18,10 +18,10 @@ import {
 import ImageWithFallback from "@/components/ui/imageWithCallback";
 import { Pencil } from "@phosphor-icons/react/dist/ssr";
 import { Card } from "@/components/ui/card";
-import OrderListSkeleton from "./orderListSkeleton";
+import OrderListSkeleton from "../../app/(Console)/orders/components/orderListSkeleton";
 import { Badge } from "@/components/ui/badge";
-import EditOrderDialog from "./editOrderDialog";
-import CardToCardDialog from "./cardToCard.dialog";
+import EditOrderDialog from "../../app/(Console)/orders/components/editOrderDialog";
+import CardToCardDialog from "../../app/(Console)/orders/components/cardToCard.dialog";
 import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
 import useSWR from "swr";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
@@ -37,15 +37,12 @@ type Lead = {
   lastSeen: string;
 };
 
-type OrderListCardProps = {
+type OrdersListCardProps = {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function OrderListCard({
-  search,
-  setSearch,
-}: OrderListCardProps) {
+export const OrdersListCard = ({ search, setSearch }: OrdersListCardProps) => {
   const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -88,11 +85,11 @@ export default function OrderListCard({
   const t = useTranslations("Orders.List");
 
   return (
-    <Card className="border-b-2 border-gray-100">
+    <div className="border-b-2 flex flex-col h-full border-gray-100 bg-white">
       {/* <EditContactDialog orderId={orderId} open={open} setOpen={setOpen} /> */}
       <EditOrderDialog open={open} setOpen={setOpen} order={selectedOrder} />
 
-      <div className="_table">
+      <div className="_table flex-1">
         <Table className="">
           <TableHeader>
             <TableRow>
@@ -274,6 +271,6 @@ export default function OrderListCard({
         totalItems={ordersMeta?.totalItems || limit}
         totalPages={ordersMeta?.totalPages || 1}
       />
-    </Card>
+    </div>
   );
-}
+};

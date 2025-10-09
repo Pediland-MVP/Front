@@ -1,5 +1,3 @@
-// src/components/table/pagination.tsx
-
 import {
   Button,
   LoaderPulse,
@@ -8,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/index";
+} from "@components";
 import type { Table } from "@tanstack/react-table";
 import {
   ChevronLeft,

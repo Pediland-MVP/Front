@@ -4,6 +4,7 @@ export * from "./Contacts";
 export * from "./Global";
 export * from "./Icons";
 export * from "./Layout";
+export * from "./Orders";
 export * from "./Table";
 export * from "./ui-custom";
 export * from "./ui";

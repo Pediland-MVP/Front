@@ -1,4 +1,3 @@
-// src/app/(Console)/contacts/page.tsx
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
@@ -11,7 +10,7 @@ import {
   LayoutTable,
   SearchInput,
   SearchToggleButton,
-} from "@/components/index";
+} from "@components";
 
 export default function Page() {
   const t = useTranslations("Contacts");
@@ -27,7 +26,6 @@ export default function Page() {
 
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
-
   const debouncedSearch = useDebounce(search, 300);
   const normalized = debouncedSearch.trim();
   const effectiveSearch = normalized.length >= 2 ? normalized : "";

@@ -144,9 +144,9 @@ export default function ProductListTable() {
   }
 
   return (
-    <Card className="border-b-2 border-gray-100">
+    <div className="flex h-full flex-col border-b-2 border-gray-100 bg-white">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
-      <div className="_table">
+      <div className="_table flex-1">
         <Table>
           <TableHeader>
             <TableRow>
@@ -269,6 +269,6 @@ export default function ProductListTable() {
         onConfirm={handleDeleteConfirm}
         itemId={itemToDelete || ""}
       />
-    </Card>
+    </div>
   );
 }

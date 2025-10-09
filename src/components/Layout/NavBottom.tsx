@@ -4,23 +4,17 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, {
-  HTMLAttributeAnchorTarget,
-  ReactElement,
-  useState,
-} from "react";
+import { HTMLAttributeAnchorTarget, ReactElement } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage, Button } from "@/components";
-import { AnimatedGradient } from "@/components/Global/animatedGradient";
-import { IconProps } from "@phosphor-icons/react";
+import { UserDropdownMenu } from "@components";
 import {
-  ChatCenteredDotsIcon,
-  ChatIcon,
+  BasketIcon,
+  ChatsIcon,
   HouseIcon,
+  IconProps,
   PlusCircleIcon,
-  ShoppingBagIcon,
   UserCircleIcon,
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react";
 
 export interface NavItem {
   icon: ReactElement<IconProps>;
@@ -40,6 +34,7 @@ export const NavBottom = () => {
       <div className="flex h-full items-center justify-around">
         <Link href="/">
           <HouseIcon
+            weight="duotone"
             size={28}
             className={cn(
               "text-muted-foreground",
@@ -49,7 +44,8 @@ export const NavBottom = () => {
         </Link>
 
         <Link href="/directs">
-          <ChatIcon
+          <ChatsIcon
+            weight="duotone"
             size={28}
             className={cn(
               "text-muted-foreground",
@@ -58,8 +54,9 @@ export const NavBottom = () => {
           />
         </Link>
 
-        <Link href="/automations">
+        <Link href="/automations/add">
           <PlusCircleIcon
+            weight="duotone"
             size={32}
             className={cn(
               "text-muted-foreground",
@@ -69,7 +66,8 @@ export const NavBottom = () => {
         </Link>
 
         <Link href="/orders">
-          <ShoppingBagIcon
+          <BasketIcon
+            weight="duotone"
             size={28}
             className={cn(
               "text-muted-foreground",
@@ -78,7 +76,13 @@ export const NavBottom = () => {
           />
         </Link>
 
-        <UserCircleIcon size={30} weight="duotone" className="text-secondary" />
+        <UserDropdownMenu size="sm">
+          <UserCircleIcon
+            size={30}
+            weight="duotone"
+            className="text-secondary"
+          />
+        </UserDropdownMenu>
       </div>
     </nav>
   );

@@ -11,7 +11,7 @@ import {
   SidebarProvider,
   ConsoleSidebar,
   ConsoleHeader,
-} from "@/components";
+} from "@components";
 
 export const ConsoleProvider = ({
   children,

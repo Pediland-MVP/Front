@@ -1,17 +1,17 @@
-import "@/styles/globals.css";
 import { SWRProvider } from "@/hooks/swr/api-client";
+import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
 // UI Imports
-import { StandaloneChecker } from "@/components/Global/standaloneChecker";
-import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
-import { ZodErrorsMapProvider } from "@/components/index";
 import InstagramTokenErrorDialog from "@/components/Console/instagramTokenError.dialog";
 import SubscriptionExpireWarningDialog from "@/components/Console/subscriptionExpireWarning.dialog";
+import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
+import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 
-import { ConsoleProvider, NavBottom, Toaster } from "@/components/index";
+import { ConsoleProvider, NavBottom, Toaster, ZodErrorsMapProvider } from "@components";
+
 export const metadata: Metadata = {
   title: "Befroosh Application",
   description: "This is first version of Befroosh application.",

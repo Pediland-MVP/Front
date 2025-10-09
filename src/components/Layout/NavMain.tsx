@@ -22,9 +22,7 @@ import {
 } from "@components";
 import { CaretLeftIcon } from "@phosphor-icons/react";
 
-export const NavMain = ({
-  items,
-}: {
+interface NavMainProps {
   items: {
     title: string;
     url: string;
@@ -35,7 +33,9 @@ export const NavMain = ({
       url: string;
     }[];
   }[];
-}) => {
+}
+
+export const NavMain = ({ items }: NavMainProps) => {
   const pathname = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -71,7 +71,7 @@ export const NavMain = ({
                       asChild
                       tooltip={item.title}
                       className={cn(
-                        "border border-dashed border-transparent text-secondary",
+                        "text-secondary border border-dashed border-transparent",
                         pathname === item.url
                           ? "text-foreground hover:text-foreground bg-blue-50"
                           : "hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100",
@@ -91,7 +91,7 @@ export const NavMain = ({
                     asChild
                     tooltip={item.title}
                     className={cn(
-                      "border border-dashed border-transparent text-secondary",
+                      "text-secondary border border-dashed border-transparent",
                       pathname === item.url
                         ? "text-primary hover:text-primary active:text-primary border-violet-300/70 bg-violet-100 hover:bg-violet-100 active:bg-violet-100"
                         : "hover:text-primary active:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100",
