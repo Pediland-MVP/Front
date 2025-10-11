@@ -15,9 +15,9 @@ import {
   DataTable,
   DeleteConfirmationDialog,
   TablePagination,
-} from "@/components/index";
+} from "@components";
 
-export const AutomationsList = () => {
+export const AutomationsListTable = () => {
   const t = useTranslations("Automations.List");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAutomationId, setSelectedAutomationId] = useState<

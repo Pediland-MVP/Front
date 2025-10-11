@@ -284,13 +284,13 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 />
 
                 <div className="mt-4 flex items-center gap-2">
-                  <ButtonLoading isLoading={isSubmitting} className="w-full">
+                  <ButtonLoading isLoading={isSubmitting} className="flex-1">
                     {id ? t("save_changes") : t("add_automation")}
                   </ButtonLoading>
                   <Button
                     variant="outline"
                     type="button"
-                    className="w-full"
+                    className="flex-1 border-gray-200/60 bg-gray-100 text-gray-600"
                     onClick={() => router.back()}
                   >
                     {t("cancel")}

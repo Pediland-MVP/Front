@@ -102,13 +102,13 @@ export const HelpMeDialog = ({
         )}
       </DialogTrigger>
 
-      <DialogContent className="flex h-full max-w-full flex-col rounded-none md:p-10">
+      <DialogContent className="flex min-h-full max-w-full flex-col overflow-auto rounded-none p-5 md:p-10">
         <DialogHeader>
-          <DialogTitle className="text-primary flex items-center justify-center gap-2 text-base font-semibold">
+          <DialogTitle className="text-primary flex text-right justify-center gap-2 text-base font-semibold">
             <MonitorPlayIcon size={22} /> {title}
           </DialogTitle>
           {description && (
-            <DialogDescription className="text-muted-foreground text-right text-[13px] md:mx-auto md:w-1/2 md:text-center">
+            <DialogDescription className="text-muted-foreground text-right text-[13px] md:mx-auto md:w-1/3 md:text-center">
               {description}
             </DialogDescription>
           )}

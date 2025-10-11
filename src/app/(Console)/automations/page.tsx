@@ -8,12 +8,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  AutomationsList,
+  AutomationsListCard,
   Button,
-  LayoutTable,
+  LayoutCard,
   SearchInput,
   SearchToggleButton,
-} from "@/components";
+} from "@components";
 import { CircleFadingPlusIcon } from "lucide-react";
 
 export default function Page() {
@@ -38,10 +38,10 @@ export default function Page() {
   const HeaderButton = useMemo(() => {
     return (
       <>
-        <SearchToggleButton
+        {/* <SearchToggleButton
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
-        />
+        /> */}
         <Button type="button" size="md" asChild>
           <Link href="/automations/add">
             {t("add")}
@@ -52,20 +52,20 @@ export default function Page() {
     );
   }, [isSearchVisible, setIsSearchVisible]);
 
-  const HeaderTools = useMemo(
-    () => (
-      <SearchInput
-        value={search}
-        onChange={setSearch}
-        visible={isSearchVisible}
-      />
-    ),
-    [search, isSearchVisible, setSearch],
-  );
+  // const HeaderTools = useMemo(
+  //   () => (
+  //     <SearchInput
+  //       value={search}
+  //       onChange={setSearch}
+  //       visible={isSearchVisible}
+  //     />
+  //   ),
+  //   [search, isSearchVisible, setSearch],
+  // );
 
   useEffect(() => {
     setButtons(HeaderButton);
-    setTools(HeaderTools);
+    // setTools(HeaderTools);
 
     return () => {
       clearButtons();
@@ -73,16 +73,16 @@ export default function Page() {
     };
   }, [
     HeaderButton,
-    HeaderTools,
+    // HeaderTools,
     setButtons,
-    setTools,
+    // setTools,
     clearButtons,
     clearTools,
   ]);
 
   return (
-    <LayoutTable className="_automation overflow-auto">
-      <AutomationsList />
-    </LayoutTable>
+    <LayoutCard className="_automation overflow-auto">
+      <AutomationsListCard />
+    </LayoutCard>
   );
 }

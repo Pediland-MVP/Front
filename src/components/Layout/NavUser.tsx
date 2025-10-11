@@ -11,8 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@components";
-import { CaretUpDownIcon, UserCircleIcon } from "@phosphor-icons/react";
-import { ChevronsUpDownIcon, EllipsisVerticalIcon } from "lucide-react";
+import { UserCircleIcon } from "@phosphor-icons/react";
+import { EllipsisVerticalIcon } from "lucide-react";
 import { UserDropdownMenu } from "../Console/UserDropdownMenu";
 
 const NavUser = ({

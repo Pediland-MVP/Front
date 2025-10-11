@@ -1,5 +1,6 @@
 export * from "./AutomationForm";
-export * from "./AutomationsList";
+export * from "./AutomationsListCard";
+export * from "./AutomationsListTable";
 export * from "./AutomationTableColumns";
 export * from "./ConnectInstagramAlert";
 export * from "./Form";
