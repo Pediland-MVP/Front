@@ -81,41 +81,12 @@ const generateData = (t: any, isMobile: boolean) => ({
         },
       ],
     },
-    ...(!isMobile
-      ? [
-          {
-            title: t("settings"),
-            url: "/settings",
-            icon: SlidersIcon,
-            isActive: true,
-          },
-        ]
-      : [
-          {
-            title: t("settings"),
-            url: "#",
-            icon: SlidersIcon,
-            isActive: false,
-            items: [
-              {
-                title: t("accounts"),
-                url: "/settings/instagram",
-              },
-              {
-                title: t("cardToCard"),
-                url: "/settings/card",
-              },
-              {
-                title: t("zarinpal"),
-                url: "/settings/zarinpal",
-              },
-              {
-                title: t("upgrade"),
-                url: "/settings/upgrade",
-              },
-            ],
-          },
-        ]),
+    {
+      title: t("settings"),
+      url: "/settings",
+      icon: SlidersIcon,
+      isActive: true,
+    },
   ],
 });
 

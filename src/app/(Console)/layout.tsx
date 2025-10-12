@@ -10,7 +10,13 @@ import SubscriptionExpireWarningDialog from "@/components/Console/subscriptionEx
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 
-import { ConsoleProvider, NavBottom, Toaster, ZodErrorsMapProvider } from "@components";
+import {
+  ConsoleProvider,
+  NavBottom,
+  Toaster,
+  ZodErrorsMapProvider,
+} from "@components";
+import { InstagramGuardProvider } from "@/components/Global/InstagramGuardProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -38,15 +44,17 @@ export default async function ConsoleLayout({
           <StandaloneChecker>
             <NextIntlClientProvider messages={messages}>
               <ZodErrorsMapProvider>
-                <ConsoleProvider>
-                  <InstagramTokenErrorDialog />
+                <InstagramGuardProvider>
+                  <ConsoleProvider>
+                    <InstagramTokenErrorDialog />
 
-                  <SubscriptionExpireWarningDialog />
+                    <SubscriptionExpireWarningDialog />
 
-                  {children}
+                    {children}
 
-                  <NavBottom />
-                </ConsoleProvider>
+                    <NavBottom />
+                  </ConsoleProvider>
+                </InstagramGuardProvider>
               </ZodErrorsMapProvider>
 
               <Toaster

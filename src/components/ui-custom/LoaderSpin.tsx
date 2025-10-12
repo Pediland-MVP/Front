@@ -1,23 +1,15 @@
-import { IconWeight } from "@phosphor-icons/react";
-import { SpinnerGapIcon } from "@phosphor-icons/react/dist/ssr";
-import { FC } from "react";
+import { cn } from "@/lib/utils";
 
-export interface LoaderSpinProps {
-  size?: "sm" | "md" | "lg" | number;
+import { Spinner } from "@components";
+
+interface LoaderSpinProps {
   className?: string;
-  weight?: IconWeight;
 }
 
-export const LoaderSpin: FC<LoaderSpinProps> = ({ className, ...props }) => {
+export const LoaderSpin = ({ className }: LoaderSpinProps) => {
   return (
-    <div
-      className={`flex h-full w-full flex-1 flex-col items-center justify-center ${className}`}
-    >
-      <SpinnerGapIcon
-        {...props}
-        className={`text-secondary animate-spin ${className}`}
-        size={28}
-      />
+    <div className="flex h-full w-full flex-1 flex-col items-center justify-center">
+      <Spinner className={cn("text-secondary size-7", className)} />
     </div>
   );
 };

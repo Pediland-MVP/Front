@@ -435,7 +435,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
   const { onFocus } = useSelectOnFocus();
 
   return (
-    <Card className="h-full p-4 xl:p-5">
+    <Card className="p-4 xl:p-5 rounded-none">
       <div className="mb-6">
         <h2 className="text-foreground mb-1 font-semibold">{t("title")}</h2>
         <p className="text-muted-foreground text-sm">{t("description")}</p>

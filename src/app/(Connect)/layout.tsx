@@ -10,6 +10,7 @@ import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 import { LogoText, Toaster, ZodErrorsMapProvider } from "@/components/index";
 import { HeadsetIcon } from "@phosphor-icons/react/dist/ssr";
+import { InstagramGuardProvider } from "@/components/Global/InstagramGuardProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -37,26 +38,28 @@ export default async function ConsoleLayout({
           <StandaloneChecker>
             <NextIntlClientProvider messages={messages}>
               <ZodErrorsMapProvider>
-                <InstagramTokenErrorDialog />
+                <InstagramGuardProvider>
+                  <InstagramTokenErrorDialog />
 
-                <main className="flex h-screen flex-col bg-gradient-to-tl from-blue-500 to-violet-700">
-                  <header className="flex h-16 items-center gap-4 px-4 text-white">
-                    <Link
-                      href="https://t.me/+989360226688"
-                      target="_blank"
-                      className="flex w-full items-center gap-2 md:justify-center"
-                    >
-                      <HeadsetIcon size={28} weight="duotone" />
-                      <span className="text-sm">پشتیبانی</span>
-                    </Link>
+                  <main className="flex h-screen flex-col bg-gradient-to-tl from-blue-500 to-violet-700">
+                    <header className="flex h-16 items-center gap-4 px-4 text-white">
+                      <Link
+                        href="https://t.me/+989360226688"
+                        target="_blank"
+                        className="flex w-full items-center gap-2 md:justify-center"
+                      >
+                        <HeadsetIcon size={28} weight="duotone" />
+                        <span className="text-sm">پشتیبانی</span>
+                      </Link>
 
-                    <LogoText variant="white" size="sm" />
-                  </header>
+                      <LogoText variant="white" size="sm" />
+                    </header>
 
-                  <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
-                    {children}
-                  </div>
-                </main>
+                    <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
+                      {children}
+                    </div>
+                  </main>
+                </InstagramGuardProvider>
               </ZodErrorsMapProvider>
 
               <Toaster

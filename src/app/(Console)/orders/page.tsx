@@ -3,7 +3,7 @@ import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-import { Button, OrdersListCard } from "@components";
+import { Button, LayoutPage, OrdersListCard } from "@components";
 import { DownloadIcon } from "lucide-react";
 import { ExcelExportOrdersDrawer } from "./components/excelExportOrders.drawer";
 
@@ -30,10 +30,10 @@ export default function page() {
   }, [setButtons, clearButtons]);
 
   return (
-    <div className="_orders flex flex-col h-full overflow-auto">
+    <LayoutPage className="_orders !p-0">
       <ExcelExportOrdersDrawer onOpenChange={setOpen} open={open} />
 
       <OrdersListCard search={search} setSearch={setSearch} />
-    </div>
+    </LayoutPage>
   );
 }

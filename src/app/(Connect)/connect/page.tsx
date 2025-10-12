@@ -59,15 +59,16 @@ export default function ConnectPage() {
             <Image
               src="/images/logo-instagram.svg"
               alt="Instagram Logo"
-              className="h-7"
+              className="h-7 w-auto"
               width={28}
               height={28}
             />
             <Image
               src="/images/logo-meta.svg"
               alt="Meta Logo"
+              className="h-6"
               width={120}
-              height={26}
+              height={24}
             />
           </div>
 

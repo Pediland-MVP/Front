@@ -16,11 +16,11 @@ import { Plug } from "@phosphor-icons/react/dist/ssr";
 import ConnectInstagram from "./components/connectInstagram";
 
 type AccountPageProps = {
-  searchParams: Promise<{ isAfterPurchasingPlan?: string, code: string }>;
+  searchParams: Promise<{ isAfterPurchasingPlan?: string; code: string }>;
 };
 export default function AccountPage({ searchParams }: AccountPageProps) {
   const isAfterPurchasingPlan = use(searchParams)?.isAfterPurchasingPlan;
-  const code = use(searchParams)?.code
+  const code = use(searchParams)?.code;
 
   const t = useTranslations("Settings.Accounts");
 
@@ -30,46 +30,41 @@ export default function AccountPage({ searchParams }: AccountPageProps) {
 
   const { hasSubscription, hasInstagram, isLoading, error } = useUser();
 
+  console.log("hasSubscription", hasSubscription);
+  console.log("hasInstagram", hasInstagram);
+  console.log("isLoading", isLoading);
+  console.log("error", error);
+
   if (code) {
-    return (
-      <ConnectInstagram/>
-    )
-  }
-
-  if (isLoading)
-    return (
-      <div className="_accounts-page flex h-full">
-        <div className="sm:w-3/5 h-full">
-          <Card className="border-l-2 border-gray-100 h-full p-6">
-            <LoaderSpin className="h-full" />
-          </Card>
-        </div>
-      </div>
-    );
-
-  if (!hasInstagram) {
-    return <StartKit isAfterPurchasingPlan />;
+    return <ConnectInstagram />;
   }
 
   return (
-    <div className="_accounts-page flex h-full bg-white">
-      <div className="sm:w-3/5 h-full">
-        <Card className="border-l-2 border-gray-100 h-full p-6">
+    <div className="_accounts-page flex h-full rounded-t-3xl bg-white md:rounded-t-none">
+      <div className="h-full w-full sm:w-3/5">
+        {isLoading ? (
+          <LoaderSpin />
+        ) : (
+          <>
+            <div className="h-full border-gray-100 px-4 py-5 md:border-l-2 md:p-6">
+              <div className="mb-6">
+                <h2 className="text-primary mb-1 font-semibold">
+                  {t("title")}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {t("description")}
+                </p>
+              </div>
 
-            <div className="mb-6">
-              <h2 className="font-semibold text-primary mb-1">{t("title")}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t("description")}
-              </p>
+              <Suspense>
+                <Accounts
+                  filteredInstagramPages={filteredInstagramPages}
+                  setFilteredInstagramPages={setfilteredInstagramPages}
+                />
+              </Suspense>
             </div>
-
-            <Suspense>
-              <Accounts
-                filteredInstagramPages={filteredInstagramPages}
-                setFilteredInstagramPages={setfilteredInstagramPages}
-              />
-            </Suspense>
-        </Card>
+          </>
+        )}
       </div>
     </div>
   );

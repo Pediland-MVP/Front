@@ -8,6 +8,7 @@ import ProductListTable from "./components/productListTable";
 import { Button } from "@/components/ui/button";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
 import { CircleFadingPlusIcon } from "lucide-react";
+import { LayoutPage } from "@/components";
 
 export default function Page() {
   const t = useTranslations("Products");
@@ -37,8 +38,8 @@ export default function Page() {
   }, [HeaderButton, setButtons, clearButtons]);
 
   return (
-    <div className="_products flex h-full flex-col overflow-auto">
+    <LayoutPage className="_products !p-0">
       <ProductListTable />
-    </div>
+    </LayoutPage>
   );
 }

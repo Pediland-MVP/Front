@@ -1,14 +1,21 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import {
+  Button,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { PlugsIcon } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "../ui";
-import { useTranslations } from "next-intl";
+} from "@components";
+import { InstagramLogoIcon } from "@phosphor-icons/react";
+import { PlugsIcon } from "@phosphor-icons/react";
+
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 interface HowToConnectDialogProps {
   open: boolean;
@@ -20,43 +27,81 @@ export const HowToConnectDialog = ({
   setOpen,
 }: HowToConnectDialogProps) => {
   const t = useTranslations("Connect");
+  const router = useRouter();
+  const [connecting, setConnecting] = useState(false);
+
+  useEffect(() => {
+    if (connecting) {
+      const timer = setTimeout(() => {
+        router.push(`${API_URL}/instagram/connectIG`);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [connecting, router]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="gap-7 bg-violet-50">
-        <DialogHeader className="gap-2">
-          <PlugsIcon
-            size={50}
-            weight="duotone"
-            className="text-primary mx-auto"
-          />
-          <DialogTitle className="text-primary text-base">
-            راهنمای اتصال اکانت اینستاگرام{" "}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent
+        className="gap-5 bg-violet-50"
+        onEscapeKeyDown={(e) => {
+          if (connecting) e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          if (connecting) e.preventDefault();
+        }}
+      >
+        {!connecting ? (
+          <>
+            <DialogHeader className="gap-2">
+              <PlugsIcon
+                size={46}
+                weight="duotone"
+                className="text-primary mx-auto"
+              />
+              <DialogTitle className="text-primary text-base">
+                {t("how_to_connect_title")}
+              </DialogTitle>
+            </DialogHeader>
 
-        <div className="space-y-2 text-[15px]">
-          <ol className="list-decimal space-y-2 pr-4 text-violet-950">
-            <li>ابتدا فیلترشکن خود را روشن کنید.</li>
-            <li>بعد از زدن دکمه زیر به سایت اینستاگرام منتقل می‌شوید.</li>
-            <li>با اکانت موردنظر خود لاگین کنید.</li>
-            <li>
-              دسترسی‌های خواسته شده را انتخاب کرده و بر روی دکمه{" "}
-              <span className="font-semibold">Allow</span> کلیک کنید.
-            </li>
-          </ol>
+            <div className="space-y-2">
+              <ol className="list-decimal space-y-2 pr-4 text-sm text-violet-950">
+                <li>{t("how_to_connect_list_1")}</li>
+                <li>{t("how_to_connect_list_2")}</li>
+                <li>{t("how_to_connect_list_3")}</li>
+                <li>{t("how_to_connect_list_4")}</li>
+              </ol>
 
-          <div className="mt-8 rounded-lg border border-dashed border-blue-500/60 bg-blue-50/50 p-3">
-            <p className="text-xs text-blue-900">
-              <span className="font-medium">{t("befroosh_meta_partner")}</span>{" "}
-              <span className="text-[11px]">({t("instagram_holding")})</span>{" "}
-              {t("description")}
-            </p>
+              <div className="mt-5 rounded-lg border border-dashed border-blue-500/60 bg-blue-50/50 p-3">
+                <p className="text-[13px] text-blue-900">
+                  <span className="font-medium">
+                    {t("befroosh_meta_partner")}
+                  </span>{" "}
+                  <span className="text-[11px]">
+                    ({t("instagram_holding")})
+                  </span>{" "}
+                  {t("description")}
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button className="w-full" onClick={() => setConnecting(true)}>
+                {t("how_to_connect_button")}
+              </Button>
+            </DialogFooter>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-primary flex flex-col items-center gap-2 font-bold">
+              <InstagramLogoIcon size={36} className="text-primary" />
+              {t("connecting_title")}
+            </div>
+            <div className="text-muted-foreground text-center text-sm">
+              {t("connecting_description")}
+            </div>
+
+            <div className="h-8 w-4/5 bg-[url('/images/loading.gif')] bg-cover bg-center bg-no-repeat"></div>
           </div>
-        </div>
-        <DialogFooter>
-          <Button className="w-full">انتقال به سایت اینستاگرام</Button>
-        </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

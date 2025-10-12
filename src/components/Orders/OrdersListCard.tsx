@@ -85,7 +85,7 @@ export const OrdersListCard = ({ search, setSearch }: OrdersListCardProps) => {
   const t = useTranslations("Orders.List");
 
   return (
-    <div className="border-b-2 flex flex-col h-full border-gray-100 bg-white">
+    <div className="border-b-2 flex flex-col  border-gray-100 bg-white">
       {/* <EditContactDialog orderId={orderId} open={open} setOpen={setOpen} /> */}
       <EditOrderDialog open={open} setOpen={setOpen} order={selectedOrder} />
 

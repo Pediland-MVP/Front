@@ -132,7 +132,7 @@ function ConversationsList() {
           transition={{ duration: 0.3 }}
           className="lg:w-1/3 w-full h-full bg-white"
         >
-          <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
+          <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100 rounded-none">
             <div
               id="chats-container"
               className="flex-grow overflow-y-auto w-full"

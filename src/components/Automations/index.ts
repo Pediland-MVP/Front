@@ -1,3 +1,4 @@
+export * from "./AutomationCard";
 export * from "./AutomationForm";
 export * from "./AutomationsListCard";
 export * from "./AutomationsListTable";

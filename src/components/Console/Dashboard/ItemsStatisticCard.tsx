@@ -6,13 +6,13 @@ import { CardSimple } from "@components";
 interface ItemsStatisticCardProps {
   data: {
     title: string;
-    total: number;
+    total: number | React.ReactNode;
     icon: string;
   };
 }
 
 export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
-  const Icon = (PhosphorIcons as any)[data.icon];
+  const Icon = (PhosphorIcons as any)[data?.icon];
 
   return (
     <CardSimple className="p-3">
@@ -26,10 +26,10 @@ export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
           <div className="text-xs text-gray-400">...</div>
         )}
         <h2 className="text-muted-foreground text-[13px] font-medium md:text-sm">
-          {data.title}
+          {data?.title}
         </h2>
         <div className="text-secondary/90 pt-1 text-xl leading-[14px] font-bold">
-          {data.total.toLocaleString("fa-IR")}
+          {typeof data?.total === 'number' ? data.total.toLocaleString("fa-IR") : data?.total || ""}
         </div>
       </div>
     </CardSimple>

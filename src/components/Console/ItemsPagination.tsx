@@ -98,7 +98,7 @@ export function ItemsPagination<TData>({
   const disabledAll = !!isLoading;
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 md:flex-nowrap">
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 md:flex-nowrap">
       {/* Display range text */}
       <div className="text-muted-foreground hidden min-w-1/5 shrink-0 text-sm md:flex">
         {isLoading ? (
@@ -117,7 +117,7 @@ export function ItemsPagination<TData>({
           <Button
             variant="outline"
             size="icon"
-            className="hidden size-8 lg:flex bg-white"
+            className="hidden size-8 bg-white lg:flex"
             onClick={() => onPageChange(totalPages)}
             disabled={disabledAll || atLastPage}
           >
@@ -162,7 +162,7 @@ export function ItemsPagination<TData>({
           <Button
             variant="outline"
             size="icon"
-            className="hidden size-8 lg:flex bg-white"
+            className="hidden size-8 bg-white lg:flex"
             onClick={() => onPageChange(1)}
             disabled={disabledAll || atFirstPage}
           >

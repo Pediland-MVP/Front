@@ -2,33 +2,29 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, Sidebar } from "@phosphor-icons/react/dist/ssr";
 
 export default function CommentsListSkeleton() {
-    return (
-      <div className="lg:w-1/3 w-full h-full bg-white animate-pulse">
-        <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
-          <div className="w-full flex lg:hidden justify-between mb-4">
-            <Sidebar
-              className="text-gray-300 bg-gray-200 rounded-md h-6 w-6"
-            />
-            <ArrowLeft
-              className="text-gray-300 bg-gray-200 rounded-md h-6 w-6"
-            />
-          </div>
-  
-          <div className="flex-grow overflow-y-auto w-full space-y-4">
-            {[...Array(10)].map((_, index) => (
-              <div
-                key={index}
-                className="flex p-2 items-center gap-4 box-border rounded-lg bg-gray-100"
-              >
-                <div className="bg-gray-200 rounded-full w-12 h-12"></div>
-                <div className="flex flex-col w-full">
-                  <div className="bg-gray-200 h-4 w-3/4 mb-2 rounded-md"></div>
-                  <div className="bg-gray-200 h-3 w-1/2 rounded-md"></div>
-                </div>
+  return (
+    <div className="h-full w-full animate-pulse bg-white lg:w-1/3">
+      <Card className="box-border flex h-full w-full flex-col overflow-hidden rounded-none border-l-2 border-gray-100 p-4">
+        <div className="mb-4 flex w-full justify-between lg:hidden">
+          <Sidebar className="h-6 w-6 rounded-md bg-gray-200 text-gray-300" />
+          <ArrowLeft className="h-6 w-6 rounded-md bg-gray-200 text-gray-300" />
+        </div>
+
+        <div className="w-full flex-grow space-y-4 overflow-y-auto">
+          {[...Array(10)].map((_, index) => (
+            <div
+              key={index}
+              className="box-border flex items-center gap-4 rounded-lg bg-gray-100 p-2"
+            >
+              <div className="h-12 w-12 rounded-full bg-gray-200"></div>
+              <div className="flex w-full flex-col">
+                <div className="mb-2 h-4 w-3/4 rounded-md bg-gray-200"></div>
+                <div className="h-3 w-1/2 rounded-md bg-gray-200"></div>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-    );
-  }
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}

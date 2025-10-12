@@ -8,3 +8,4 @@ export * from "./Orders";
 export * from "./Table";
 export * from "./ui-custom";
 export * from "./ui";
+export * from "./Settings";

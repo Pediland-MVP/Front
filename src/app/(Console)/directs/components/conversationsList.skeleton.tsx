@@ -6,7 +6,7 @@ import { Sidebar, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 export default function ConversationsListSkeleton() {
   return (
     <div className="lg:w-1/3 w-full h-full bg-white animate-pulse">
-      <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100">
+      <Card className="w-full h-full p-4 box-border overflow-hidden flex flex-col border-l-2 border-gray-100 rounded-none">
         <div className="w-full flex lg:hidden justify-between mb-4">
           <Sidebar
             className="text-gray-300 bg-gray-200 rounded-md h-6 w-6"

@@ -1,15 +1,14 @@
 "use client";
 
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import useUser from "@/hooks/useUser";
 import { PlanNamespace } from "@/types/plans/plan.namespace";
 import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspace";
-import { createContext, useState, use, useContext, useEffect } from "react";
-import { usePlanSelection } from "../hooks/usePlanSelection";
-import useSWRImmutable from "swr/immutable";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import useSWR from "swr";
 import { AxiosError } from "axios";
-import useUser from "@/hooks/useUser";
 import { useSearchParams } from "next/navigation";
+import { createContext, useContext, useEffect, useState } from "react";
+import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 
 export interface UpgradeContext {
   active: {
@@ -27,12 +26,15 @@ export interface UpgradeContext {
   plansData?: PlanNamespace.GET.PlansData;
   discountCode?: string;
   setDiscountCode: React.Dispatch<React.SetStateAction<string>>;
+  isLoading: boolean;
 }
 
 export const UpgradeContext = createContext<UpgradeContext | null>(null);
 
 export function UpgradeProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [initialized, setInitialized] = useState<boolean>(false);
 
@@ -68,10 +70,6 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
   );
   const plans = plansData?.plans;
 
-  //   useEffect(() => {
-  //     console.log("plansData", plansData);
-  //   }, [plansData]);
-
   useEffect(() => {
     if (initialized) return;
     if (isPlansLoading || isSubscriptionsLoading) return;
@@ -105,9 +103,9 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [searchParams, isPlansLoading, isSubscriptionsLoading]);
 
-  if (isSubscriptionsLoading || isPlansLoading) {
-    return <LoaderSpin className="h-full" />;
-  }
+  useEffect(() => {
+    setIsLoading(isPlansLoading || isSubscriptionsLoading);
+  }, [isPlansLoading, isSubscriptionsLoading]);
 
   return (
     <UpgradeContext.Provider
@@ -119,6 +117,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         plansData,
         discountCode,
         setDiscountCode,
+        isLoading,
       }}
     >
       {children}

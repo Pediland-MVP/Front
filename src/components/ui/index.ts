@@ -18,6 +18,7 @@ export * from "./label";
 export * from "./select";
 export * from "./sheet";
 export * from "./sidebar";
+export * from "./spinner";
 export * from "./skeleton";
 export * from "./sonner";
 export * from "./switch";

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-import { HeartIcon } from "@phosphor-icons/react/dist/ssr";
+import { HeartIcon } from "@phosphor-icons/react";
 
 interface LoadingLogoProps {
   delay?: number;

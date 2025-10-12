@@ -103,13 +103,11 @@ export default function PlanSelection() {
   if (!active.planSelection || !plans?.length) return null;
 
   return (
-    <div className="_plan-selection-page text-foreground relative box-border h-full max-h-full">
-      <Card className="h-full p-6">
+    <div className="_plan-selection-page text-foreground relative box-border h-full overflow-auto rounded-t-3xl bg-white md:rounded-t-none">
+      <div className="h-full px-4 py-5 md:p-4">
         <div className="mb-6">
           <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-          <p className="text-muted-foreground text-sm">
-            {t("description")}
-          </p>
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
           <DiscountText />
         </div>
 
@@ -303,7 +301,7 @@ export default function PlanSelection() {
             </Button>
           </div>
         ) : null}
-      </Card>
+      </div>
     </div>
   );
 }

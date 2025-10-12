@@ -10,7 +10,7 @@ export const LayoutCard = ({ children, className }: LayoutCardProps) => {
   return (
     <div
       className={cn(
-        "_layout-card flex h-full flex-col overflow-hidden rounded-t-3xl bg-violet-50 px-3 py-4 md:p-3 md:rounded-none",
+        "_layout-card flex h-full flex-col bg-gradient-to-t from-white/90 to-white overflow-hidden rounded-t-3xl px-3 py-4 md:rounded-none md:p-3",
         className,
       )}
     >

@@ -202,239 +202,235 @@ export function ProfileForm() {
   if (userIsLoading) return <LoaderSpin className="h-full" />;
 
   return (
-    <Card className="h-full border-gray-100 p-6 md:border-l-2 md:p-10">
-      <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-2"
-        >
-          <div className="grid gap-2 md:grid-cols-4">
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("gender")}</FormLabel>
-                  <Select
-                    onValueChange={(val) => val && field.onChange(val)}
-                    defaultValue={field.value}
-                    value={field.value}
-                    dir="rtl"
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("genderSelect")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="female">{t("female")}</SelectItem>
-                      <SelectItem value="male">{t("male")}</SelectItem>
-                      <SelectItem value="other">{t("other")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Controller
-              control={form.control}
-              name="birthDate"
-              rules={{ required: true }}
-              render={({
-                field: { onChange, name, value },
-                fieldState: { invalid, isDirty },
-                formState: { errors },
-              }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("birthDate")}</FormLabel>
-                  <DatePicker
-                    containerClassName="w-full"
-                    style={{ width: "100%" }}
-                    value={
-                      value
-                        ? new DateObject(+value)
-                            .setLocale(persian_fa)
-                            .setCalendar(persian)
-                            .format("YYYY/MM/DD")
-                        : ""
-                    }
-                    onChange={(date) => {
-                      onChange(
-                        date?.isValid ? (date.unix * 1000).toString() : "",
-                      );
-                    }}
-                    format={"YYYY/MM/DD"}
-                    calendar={persian}
-                    locale={persian_fa}
-                    render={<Input name="birthDate" />}
-                  />
-                  {errors &&
-                    errors[name] &&
-                    errors[name].type === "required" && (
-                      <span>{t("errors.birthDateRequired")}</span>
-                    )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="firstname"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("firstname")}</FormLabel>
+    <FormProvider {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-2"
+      >
+        <div className="grid gap-2 md:grid-cols-4">
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>{t("gender")}</FormLabel>
+                <Select
+                  onValueChange={(val) => val && field.onChange(val)}
+                  defaultValue={field.value}
+                  value={field.value}
+                  dir="rtl"
+                >
                   <FormControl>
-                    <Input {...field} />
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("genderSelect")} />
+                    </SelectTrigger>
                   </FormControl>
-                  {form.formState.errors?.firstname && (
-                    <span className="text-sm text-red-500">
-                      {t(
-                        `Errors.firstname.${form.formState.errors.firstname.type}`,
-                      )}
-                    </span>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastname"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("lastname")}</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  {form.formState.errors?.lastname && (
-                    <span className="text-sm text-red-500">
-                      {t(
-                        `Errors.lastname.${form.formState.errors.lastname.type}`,
-                      )}
-                    </span>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              disabled
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("email")}</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  {form.formState.errors?.email && (
-                    <span className="text-sm text-red-500">
-                      {t(`Errors.email.${form.formState.errors.email.type}`)}
-                    </span>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="mobile"
-              disabled
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>{t("mobile")}</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  {form.formState.errors?.mobile && (
-                    <span className="text-sm text-red-500">
-                      {t(`Errors.mobile.${form.formState.errors.mobile.type}`)}
-                    </span>
-                  )}
-                </FormItem>
-              )}
-            />
-            {locale === "fa" && (
-              <>
-                <FormField
-                  control={form.control}
-                  name="state"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>{t("state")}</FormLabel>
-                      <Select
-                        onValueChange={(val) => val && field.onChange(val)}
-                        defaultValue={field.value}
-                        value={field.value}
-                        dir="rtl"
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t("genderSelect")} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {provinces?.map((province) => (
-                            <SelectItem
-                              key={province.id}
-                              value={`${province.id}`}
-                            >
-                              {province.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="cityId"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>{t("city")}</FormLabel>
-                      <Select
-                        onValueChange={(val) => val && field.onChange(val)}
-                        defaultValue={field.value}
-                        dir="rtl"
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t("genderSelect")} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {cities?.map((city) => (
-                            <SelectItem key={city.id} value={`${city.id}`}>
-                              {city.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
+                  <SelectContent>
+                    <SelectItem value="female">{t("female")}</SelectItem>
+                    <SelectItem value="male">{t("male")}</SelectItem>
+                    <SelectItem value="other">{t("other")}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
-          <div className="mt-10 grid grid-cols-2 gap-3">
-            <ButtonLoading
-              isLoading={isSubmitting}
-              type="submit"
-              className="w-full"
-            >
-              {t("save")}
-            </ButtonLoading>
-            <Button
-              onClick={onCancel}
-              type="button"
-              className="w-full"
-              variant="outline"
-            >
-              {t("cancel")}
-            </Button>
-          </div>
-        </form>
-      </FormProvider>
-    </Card>
+          />
+          <Controller
+            control={form.control}
+            name="birthDate"
+            rules={{ required: true }}
+            render={({
+              field: { onChange, name, value },
+              fieldState: { invalid, isDirty },
+              formState: { errors },
+            }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>{t("birthDate")}</FormLabel>
+                <DatePicker
+                  containerClassName="w-full"
+                  style={{ width: "100%" }}
+                  value={
+                    value
+                      ? new DateObject(+value)
+                          .setLocale(persian_fa)
+                          .setCalendar(persian)
+                          .format("YYYY/MM/DD")
+                      : ""
+                  }
+                  onChange={(date) => {
+                    onChange(
+                      date?.isValid ? (date.unix * 1000).toString() : "",
+                    );
+                  }}
+                  format={"YYYY/MM/DD"}
+                  calendar={persian}
+                  locale={persian_fa}
+                  render={<Input name="birthDate" />}
+                />
+                {errors && errors[name] && errors[name].type === "required" && (
+                  <span>{t("errors.birthDateRequired")}</span>
+                )}
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="firstname"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>{t("firstname")}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                {form.formState.errors?.firstname && (
+                  <span className="text-sm text-red-500">
+                    {t(
+                      `Errors.firstname.${form.formState.errors.firstname.type}`,
+                    )}
+                  </span>
+                )}
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastname"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>{t("lastname")}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                {form.formState.errors?.lastname && (
+                  <span className="text-sm text-red-500">
+                    {t(
+                      `Errors.lastname.${form.formState.errors.lastname.type}`,
+                    )}
+                  </span>
+                )}
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            disabled
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>{t("email")}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                {form.formState.errors?.email && (
+                  <span className="text-sm text-red-500">
+                    {t(`Errors.email.${form.formState.errors.email.type}`)}
+                  </span>
+                )}
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="mobile"
+            disabled
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>{t("mobile")}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                {form.formState.errors?.mobile && (
+                  <span className="text-sm text-red-500">
+                    {t(`Errors.mobile.${form.formState.errors.mobile.type}`)}
+                  </span>
+                )}
+              </FormItem>
+            )}
+          />
+          {locale === "fa" && (
+            <>
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>{t("state")}</FormLabel>
+                    <Select
+                      onValueChange={(val) => val && field.onChange(val)}
+                      defaultValue={field.value}
+                      value={field.value}
+                      dir="rtl"
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("genderSelect")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {provinces?.map((province) => (
+                          <SelectItem
+                            key={province.id}
+                            value={`${province.id}`}
+                          >
+                            {province.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cityId"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>{t("city")}</FormLabel>
+                    <Select
+                      onValueChange={(val) => val && field.onChange(val)}
+                      defaultValue={field.value}
+                      dir="rtl"
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("genderSelect")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {cities?.map((city) => (
+                          <SelectItem key={city.id} value={`${city.id}`}>
+                            {city.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+        </div>
+        <div className="mt-10 grid grid-cols-2 gap-3">
+          <ButtonLoading
+            isLoading={isSubmitting}
+            type="submit"
+            className="w-full"
+          >
+            {t("save")}
+          </ButtonLoading>
+          <Button
+            onClick={onCancel}
+            type="button"
+            className="w-full"
+            variant="outline"
+          >
+            {t("cancel")}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
   );
 }

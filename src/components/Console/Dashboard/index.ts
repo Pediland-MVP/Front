@@ -1,4 +1,4 @@
 export { DashboardPage } from "./DashboardPage";
-export * from "./SubscriptionBoard";
+export * from "./DashboardStats";
 export * from "./ItemsStatisticCard";
-
+export * from "./SubscriptionBoard";

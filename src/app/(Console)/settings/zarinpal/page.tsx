@@ -68,56 +68,54 @@ export default function Zarinpal() {
       });
   };
 
-  if (isZarinpalLoading) {
-    return (
-      <div className="flex h-full">
-        <div className="h-full w-full sm:w-3/5">
-          <Card className="h-full w-full border-l-2 border-gray-100 p-6">
-            <LoaderSpin className="h-full" />
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex h-full">
-      <div className="h-full sm:w-3/5">
-        <Card className="h-full border-l-2 border-gray-100 p-6">
-          <div className="mb-6">
-            <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-            <p className="text-muted-foreground text-sm">{t("description")}</p>
-          </div>
+    <div className="flex h-full rounded-t-3xl bg-white md:rounded-t-none">
+      <div className="h-full w-full sm:w-3/5">
+        <div className="h-full border-gray-100 p-6 md:border-l-2">
+          {isZarinpalLoading ? (
+            <LoaderSpin />
+          ) : (
+            <>
+              <div className="mb-6">
+                <h2 className="text-primary mb-1 font-semibold">
+                  {t("title")}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {t("description")}
+                </p>
+              </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="grid gap-2">
-                <FormField
-                  control={form.control}
-                  name="merchantCode"
-                  render={({ field, fieldState: { error } }) => (
-                    <FormItem>
-                      <FormLabel>{t("merchantCode.label")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      {error && (
-                        <ErrorMessage>
-                          {t("merchantCode.Errors.required")}
-                        </ErrorMessage>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <div className="grid gap-2">
+                    <FormField
+                      control={form.control}
+                      name="merchantCode"
+                      render={({ field, fieldState: { error } }) => (
+                        <FormItem>
+                          <FormLabel>{t("merchantCode.label")}</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          {error && (
+                            <ErrorMessage>
+                              {t("merchantCode.Errors.required")}
+                            </ErrorMessage>
+                          )}
+                        </FormItem>
                       )}
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="mt-6">
-                <ButtonLoading isLoading={isSubmitting} className="w-full">
-                  {t("save")}
-                </ButtonLoading>
-              </div>
-            </form>
-          </Form>
-        </Card>
+                    />
+                  </div>
+                  <div className="mt-6">
+                    <ButtonLoading isLoading={isSubmitting} className="w-full">
+                      {t("save")}
+                    </ButtonLoading>
+                  </div>
+                </form>
+              </Form>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

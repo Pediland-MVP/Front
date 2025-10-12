@@ -91,117 +91,120 @@ export default function BankDetails() {
     formState: { errors },
   } = form;
 
-  if (cardToCardLoading) {
-    return (
-      <div className="_card-to-card-page flex h-full">
-        <div className="h-full w-full sm:w-3/5">
-          <Card className="h-full border-l-2 border-gray-100 p-6">
-            <LoaderSpin className="h-full" />
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="_card-to-card-page flex h-full">
-      <div className="h-full sm:w-3/5">
-        <Card className="h-full border-l-2 border-gray-100 p-6">
-          <div className="mb-6">
-            <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-            <p className="text-muted-foreground text-sm">{t("description")}</p>
-          </div>
-          <FormProvider {...form}>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="grid gap-2">
-                  <FormField
-                    control={control}
-                    name="bankName"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem>
-                        <FormLabel>{t("bankName.label")}</FormLabel>
-                        <FormControl>
-                          <Input id="bankname" {...field} />
-                        </FormControl>
-                        {error && (
-                          <ErrorMessage>{t("bankName.required")}</ErrorMessage>
+    <div className="_card-to-card-page flex h-full rounded-t-3xl bg-white md:rounded-t-none">
+      <div className="h-full w-full sm:w-3/5">
+        <div className="h-full border-gray-100 px-4 py-5 md:border-l-2 md:p-6">
+          {cardToCardLoading ? (
+            <LoaderSpin />
+          ) : (
+            <>
+              <div className="mb-6">
+                <h2 className="text-primary mb-1 font-semibold">
+                  {t("title")}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {t("description")}
+                </p>
+              </div>
+              <FormProvider {...form}>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <div className="grid gap-2">
+                      <FormField
+                        control={control}
+                        name="bankName"
+                        render={({ field, fieldState: { error } }) => (
+                          <FormItem>
+                            <FormLabel>{t("bankName.label")}</FormLabel>
+                            <FormControl>
+                              <Input id="bankname" {...field} />
+                            </FormControl>
+                            {error && (
+                              <ErrorMessage>
+                                {t("bankName.required")}
+                              </ErrorMessage>
+                            )}
+                          </FormItem>
                         )}
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="accountHolder"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem>
-                        <FormLabel>{t("accountHolder.label")}</FormLabel>
-                        <FormControl>
-                          <Input id="accountholder" {...field} />
-                        </FormControl>
-                        {error && (
-                          <ErrorMessage>
-                            {t("accountHolder.required")}
-                          </ErrorMessage>
+                      />
+                      <FormField
+                        control={control}
+                        name="accountHolder"
+                        render={({ field, fieldState: { error } }) => (
+                          <FormItem>
+                            <FormLabel>{t("accountHolder.label")}</FormLabel>
+                            <FormControl>
+                              <Input id="accountholder" {...field} />
+                            </FormControl>
+                            {error && (
+                              <ErrorMessage>
+                                {t("accountHolder.required")}
+                              </ErrorMessage>
+                            )}
+                          </FormItem>
                         )}
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="cardNumber"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem>
-                        <FormLabel>{t("cardNumber.label")}</FormLabel>
-                        <FormControl>
-                          <Input id="cardnumber" dir="ltr" {...field} />
-                        </FormControl>
-                        {error && (
-                          <ErrorMessage>
-                            {t("cardNumber.required")}
-                          </ErrorMessage>
+                      />
+                      <FormField
+                        control={control}
+                        name="cardNumber"
+                        render={({ field, fieldState: { error } }) => (
+                          <FormItem>
+                            <FormLabel>{t("cardNumber.label")}</FormLabel>
+                            <FormControl>
+                              <Input id="cardnumber" dir="ltr" {...field} />
+                            </FormControl>
+                            {error && (
+                              <ErrorMessage>
+                                {t("cardNumber.required")}
+                              </ErrorMessage>
+                            )}
+                          </FormItem>
                         )}
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="iban"
-                    render={({ field, fieldState: { error } }) => (
-                      <FormItem>
-                        <FormLabel>{t("iban.label")}</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Input
-                              id="iban"
-                              {...field}
-                              className="pl-10 text-left"
-                              dir="ltr"
-                            />
-                            <p
-                              className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"
-                              dir="ltr"
-                            >
-                              IR -
-                            </p>
-                          </div>
-                        </FormControl>
-                        {error && (
-                          <ErrorMessage>{t("iban.required")}</ErrorMessage>
+                      />
+                      <FormField
+                        control={control}
+                        name="iban"
+                        render={({ field, fieldState: { error } }) => (
+                          <FormItem>
+                            <FormLabel>{t("iban.label")}</FormLabel>
+                            <FormControl>
+                              <div className="relative w-full">
+                                <Input
+                                  id="iban"
+                                  {...field}
+                                  className="pl-10 text-left"
+                                  dir="ltr"
+                                />
+                                <p
+                                  className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"
+                                  dir="ltr"
+                                >
+                                  IR -
+                                </p>
+                              </div>
+                            </FormControl>
+                            {error && (
+                              <ErrorMessage>{t("iban.required")}</ErrorMessage>
+                            )}
+                          </FormItem>
                         )}
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="mt-6">
-                  <ButtonLoading isLoading={isSubmitting} className="w-full">
-                    {t("save")}
-                  </ButtonLoading>
-                </div>
-              </form>
-            </Form>
-          </FormProvider>
-        </Card>
+                      />
+                    </div>
+                    <div className="mt-6">
+                      <ButtonLoading
+                        isLoading={isSubmitting}
+                        className="w-full"
+                      >
+                        {t("save")}
+                      </ButtonLoading>
+                    </div>
+                  </form>
+                </Form>
+              </FormProvider>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -18,15 +18,26 @@
     "how_to_connect": "آمـوزش روش اتـصـال",
     "befroosh_meta_partner": "بـفـروش، شریک تجاری متا",
     "instagram_holding": "شرکت مادر اینستاگرام",
-    "description": "است و تمام پیام‌های ارسال شده توسط دایرکت هوشمند بـفـروش از طریق وب سرویس رسمی اینستاگرام انجام می‌شود."
+    "description": "است و تمام پیام‌های ارسال شده توسط دایرکت هوشمند بـفـروش از طریق وب سرویس رسمی اینستاگرام انجام می‌شود.",
+    "how_to_connect_title": "راهنمای اتصال اکانت اینستاگرام",
+    "how_to_connect_list_1": "ابتدا فیلترشکن خود را روشن کنید.",
+    "how_to_connect_list_2": "بعد از زدن دکمه زیر به سایت اینستاگرام منتقل می‌شوید.",
+    "how_to_connect_list_3": "با اکانت موردنظر خود لاگین کنید.",
+    "how_to_connect_list_4": "دسترسی‌های خواسته شده را انتخاب کرده و بر روی دکمه Allow کلیک کنید.",
+    "how_to_connect_button": "انتقال به سایت اینستاگرام",
+    "connecting_title": "در حال انتقال به سایت اینستاگرام",
+    "connecting_description": "تا چند لحظه دیگه به سایت رسمی اینستاگرام منتقل خواهید شد تا با اطلاعات کاربری خود دسترسی به اکانت موردنظرتون رو تایید کنید."
   },
   "Auth": {
     "for_login_or_register": "برای ورود یا ثبت نام",
     "insert_your_mobile_number": "شماره همراه خود را وارد کنید.",
-    "mobile": "شماره همراه",
+    "mobile_palceholder": "09xx xxx xxxx",
     "confirm_and_continue": "تایید و ادامه",
     "terms_and_conditions_message": "قوانین و مقررات استفاده از خدمات بـفـروش",
     "back": "بازگشت",
+    "Error": {
+      "number_should_start_with_09": "شماره باید با 09 شروع شود."
+    },
     "Metadata": {
       "title": "بفروش، مدیریت هوشمند مشتریان",
       "description": ""
@@ -693,10 +704,21 @@
       "responses": "جواب‌ها",
       "edit": "ویرایش",
       "delete": "حذف",
+      "no_automations": "هیچ پیام خودکاری وجود ندارد.",
       "Toast": {
         "deleted": "پیام خودکار با موفقیت حذف شد.",
         "delete_error": "حذف پیام خودکار با خطا مواجه شد."
       }
+    },
+
+    "Card": {
+      "conditions": "شرط‌ها:",
+      "active_in": "فعال در:",
+      "answers": "پاسخ‌ها",
+      "edit": "ویرایش",
+      "delete": "حذف",
+      "direct": "دایرکت",
+      "comment": "کامنت"
     },
 
     "ContentPromotionDialog": {

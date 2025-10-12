@@ -144,7 +144,7 @@ export default function ProductListTable() {
   }
 
   return (
-    <div className="flex h-full flex-col border-b-2 border-gray-100 bg-white">
+    <div className="flex flex-col border-b-2 border-gray-100 bg-white">
       <EditProduct productId={productId} open={open} setOpen={setOpen} />
       <div className="_table flex-1">
         <Table>

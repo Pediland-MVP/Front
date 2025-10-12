@@ -20,6 +20,7 @@ export default function SubscriptionInfo() {
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
+
   const reservedSubscriptions = subscriptions?.filter(
     (sub) => sub.status === SubscriptionStatusEnum.RESERVED,
   );
@@ -70,9 +71,9 @@ export default function SubscriptionInfo() {
   }
 
   return (
-    <div className="_subscription-info-page flex h-full">
-      <div className="h-full sm:w-3/5">
-        <Card className="h-full border-l-2 border-gray-100 p-6">
+    <div className="_subscription-info-page flex h-full rounded-t-3xl bg-white md:rounded-t-none">
+      <div className="h-full w-full sm:w-3/5">
+        <div className="h-full border-gray-100 p-6 md:border-l-2">
           <div className="mb-6">
             <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
             <p className="text-muted-foreground text-sm">
@@ -181,7 +182,7 @@ export default function SubscriptionInfo() {
               {t("reserve")}
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
