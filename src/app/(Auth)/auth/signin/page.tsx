@@ -31,7 +31,7 @@ import { MoveLeftIcon, RefreshCwIcon } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
-export default function OtpPage() {
+export default function SignInPage() {
   const router = useRouter();
   const t = useTranslations("Auth.OTP");
   const t_ec = useTranslations("ERROR_CODES");
@@ -83,7 +83,7 @@ export default function OtpPage() {
     setIsResendLoading(true);
 
     try {
-      const res = await axios.post(`${API_URL}/auth/pelogin`, {
+      const res = await axios.get(`${API_URL}/auth/prelogin`, {
         params: {
           mobile,
         },
@@ -130,9 +130,9 @@ export default function OtpPage() {
     console.log("Form values:", values);
 
     try {
-      const res = await api.post("/auth/mobile/verifyOtp", values);
+      const res = await api.post("/auth/mobile/oneTime/signIn", values);
       toast.success(t("toasts.loginSuccess"));
-      router.push("/auth/register");
+      router.push("/");
     } catch (e: any) {
       const message = t_ec(e.response?.data?.code);
       toast.error(message);

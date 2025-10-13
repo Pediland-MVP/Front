@@ -1,14 +1,18 @@
 // Refactored
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import z from "zod";
 
 import {
   Button,
+  ButtonLoading,
   Form,
   FormControl,
   FormField,
@@ -19,8 +23,6 @@ import {
   LogoText,
 } from "@/components";
 import { MoveLeftIcon } from "lucide-react";
-import axios from "axios";
-import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -28,14 +30,12 @@ export default function AuthPage() {
   const router = useRouter();
   const t = useTranslations("Auth");
   const t_err = useTranslations("ERROR_CODES");
+  const [isLoading, setIsLoading] = useState(false);
 
   const formSchema = z.object({
-    mobile: z.string().refine((val) => {
-      // Allow empty for initial state
-      if (val.length === 0) return false;
-      // Must be exactly 11 digits starting with 09
-      return /^09\d{9}$/.test(val);
-    }, t("Error.number_should_start_with_09")),
+    mobile: z.string().regex(/^(?:|0|09|09\d{1,9})$/, {
+      message: t("Error.number_should_start_with_09"),
+    }),
   });
 
   const form = useForm({
@@ -49,28 +49,51 @@ export default function AuthPage() {
   const onSubmit = async (data: { mobile: string }) => {
     console.log("Form submitted with data:", data);
     console.log("API_URL:", API_URL);
-    
+
+    setIsLoading(true);
+
     try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("prelogin_mobile", data.mobile);
+      }
+
       const response = await axios.get(`${API_URL}/auth/prelogin`, {
         params: {
           mobile: data.mobile,
         },
       });
 
-      console.log("API Response:", response.data);
-      const result = response.data;
-      if (result?.next === "password") {
+      const next = response.data?.data?.next;
+      console.log("✅ API Response:", response.data?.data);
+
+      if (next === "password") {
         router.push(`/auth/password`);
       }
-      if (result?.next === "otp") {
-        router.push(`/auth/otp`);
+
+      if (next === "otp") {
+        router.push(`/auth/signin`);
       }
     } catch (error) {
-      console.error("API Error:", error);
+      console.error("❌ API Error:", error);
+
       if (error?.response?.data?.code === "USER_NOT_FOUND") {
-        return router.push(`/auth/register`);
+        try {
+          const signUp = await axios.post(`${API_URL}/auth/mobile/signUp`, {
+            mobile: data.mobile,
+          });
+          router.push(`/auth/otp`);
+        } catch (error) {
+          console.error("❌ API Error:", error);
+          const message = t_err(error?.code);
+          toast.error(message);
+        }
+      } else if (error?.response?.data?.statusCode === 429) {
+        toast.error("بین هر درخواست کد باید 2 دقیقه فاصله باشد.");
+        setIsLoading(false);
+      } else {
+        toast.error(t_err(error?.code));
+        setIsLoading(false);
       }
-      toast.error(t_err(error?.response?.data?.code));
     }
   };
 
@@ -110,12 +133,10 @@ export default function AuthPage() {
                         inputMode="numeric"
                         pattern="[0-9]*"
                         maxLength={11}
-                        name={field.name}
                         value={field.value}
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, "");
                           field.onChange(value);
-                          form.trigger("mobile");
                         }}
                         onBlur={field.onBlur}
                         ref={field.ref}
@@ -128,13 +149,13 @@ export default function AuthPage() {
                 )}
               />
 
-              <Button
-                type="submit"
+              <ButtonLoading
+                isLoading={isLoading}
                 className="w-full"
-                disabled={!form.formState.isValid || form.formState.isSubmitting}
+                disabled={!/^09\d{9}$/.test(form.watch("mobile"))}
               >
                 {t("confirm_and_continue")}
-              </Button>
+              </ButtonLoading>
             </form>
           </Form>
           <p className="text-muted-foreground text-center text-[13px]">
@@ -147,7 +168,7 @@ export default function AuthPage() {
             variant="link"
             type="button"
             className="text-muted-foreground"
-            onClick={() => router.back()}
+            onClick={() => router.push("https://befroosh.app")}
           >
             {t("back")}
             <MoveLeftIcon />

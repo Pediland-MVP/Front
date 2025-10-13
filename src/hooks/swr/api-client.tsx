@@ -138,7 +138,7 @@ api.interceptors.response.use(
           // Refresh failed (malformed or missing token in response)
           processQueue(new Error("Failed to refresh token"));
           clearAccessToken();
-          window.location.href = "/auth/signin";
+          window.location.href = "/auth";
           return Promise.reject(error);
         }
 
@@ -158,7 +158,7 @@ api.interceptors.response.use(
         // Refresh request itself failed: reject all queued and redirect
         processQueue(refreshError as any);
         clearAccessToken();
-        window.location.href = "/auth/signin";
+        window.location.href = "/auth";
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

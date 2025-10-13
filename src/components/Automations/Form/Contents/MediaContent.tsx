@@ -164,7 +164,7 @@ export const MediaContent = ({ index, mode, type }: MediaContentProps) => {
         files={files}
         setFiles={setFiles}
         onChange={onChange}
-        accept="audio/*,video/*,image/*"
+        accept="audio/*,video/*,image/*,audio/m4a,audio/x-m4a"
       />
 
       {uploadError && (

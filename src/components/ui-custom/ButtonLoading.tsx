@@ -1,29 +1,37 @@
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 import React from "react";
 
-import { Button } from "@/components/index";
+import { Button, Spinner } from "@components";
 
 interface ButtonLoadingProps {
   isLoading: boolean;
+  variant?: "default" | "outline" | "ghost" | "link" | "destructive";
   onClick?: () => void;
   className?: string;
   children: React.ReactNode;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+  size?: "default" | "sm" | "lg";
 }
 export const ButtonLoading = ({
   isLoading,
+  variant = "default",
   onClick,
+  type = "submit",
+  size = "default",
   ...props
 }: ButtonLoadingProps) => {
   return (
     <Button
+      type={type}
+      variant={variant}
+      size={size}
       {...props}
-      className={cn(props.className)}
-      type="submit"
+      onClick={onClick}
       disabled={props.disabled ? props.disabled : isLoading}
+      className={cn(props.className)}
     >
-      {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+      {isLoading && <Spinner />}
       {props.children}
     </Button>
   );
