@@ -23,7 +23,7 @@ export const LoadingLogo = ({ delay = 0 }: LoadingLogoProps) => {
 
       return () => clearTimeout(timer);
     } else {
-      setFadeOut(true);
+      // setFadeOut(true);
       const removeTimer = setTimeout(() => setVisible(false), 500);
       return () => clearTimeout(removeTimer);
     }

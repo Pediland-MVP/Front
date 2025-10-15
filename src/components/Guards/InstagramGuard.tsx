@@ -6,34 +6,38 @@ import { useEffect, useState } from "react";
 
 import { LoadingLogo } from "@components";
 
-export const InstagramGuardProvider = ({
+export const InstagramGuard = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { hasInstagram, isLoading } = useUser();
+  const { hasInstagram, isLoading, status } = useUser();
   const [pageShow, setPageShow] = useState(false);
 
   useEffect(() => {
-    if (isLoading || !pathname || !router) {
+    if (isLoading || !pathname || !router || !status) {
       return;
     }
 
     const isConnectPage = pathname === "/connect";
 
-    if (hasInstagram) {
-      if (isConnectPage) {
-        router.push("/");
-      } else {
-        setPageShow(true);
-      }
+    if (status === "onboarding") {
+      router.push("/auth/register");
     } else {
-      if (isConnectPage) {
-        setPageShow(true);
+      if (hasInstagram) {
+        if (isConnectPage) {
+          router.push("/");
+        } else {
+          setPageShow(true);
+        }
       } else {
-        router.push("/connect");
+        if (isConnectPage) {
+          setPageShow(true);
+        } else {
+          router.push("/connect");
+        }
       }
     }
   }, [hasInstagram, isLoading, pathname, router]);

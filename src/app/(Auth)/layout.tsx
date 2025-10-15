@@ -1,10 +1,10 @@
 // Refactored
+import AuthProvider from "@/components/Providers/AuthProvider";
 import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
-
-import { Toaster } from "@/components";
+import { Toaster } from "sonner";
 
 export async function generateMetadata() {
   const cookieStore = cookies();
@@ -25,6 +25,9 @@ export default async function AuthLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
+  const token = (await cookies()).get("token");
+  let initialAuth = { isLoggedIn: !!token }; // فقط همین کافی است
+
   return (
     <html
       lang={locale}
@@ -33,22 +36,24 @@ export default async function AuthLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="bg-violet-50/70">
-        <NextIntlClientProvider messages={messages}>
-          <div className="container px-10 sm:max-w-sm">
-            <main className="flex min-h-screen flex-col items-center justify-center">
-              {children}
-            </main>
-          </div>
+      <body className="bg-violet-50">
+        <AuthProvider initialAuth={initialAuth}>
+          <NextIntlClientProvider messages={messages}>
+            <div className="container px-10 sm:max-w-sm">
+              <main className="flex min-h-screen flex-col items-center justify-center">
+                {children}
+              </main>
+            </div>
 
-          <Toaster
-            richColors
-            theme="light"
-            toastOptions={{
-              className: "font-Yekan text-[13px]",
-            }}
-          />
-        </NextIntlClientProvider>
+            <Toaster
+              richColors
+              theme="light"
+              toastOptions={{
+                className: "font-Yekan text-[13px]",
+              }}
+            />
+          </NextIntlClientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -61,8 +61,7 @@ const nextConfig = {
   reactStrictMode: false,
 };
 
-const withNextIntlConfig = withNextIntl(nextConfig);
-export default withNextIntlConfig;
+export default withNextIntl(nextConfig);
 
 // withSentryConfig(withNextIntlConfig, {
 //   // For all available options, see:

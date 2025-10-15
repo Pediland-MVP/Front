@@ -1,5 +1,15 @@
 "use client";
 
+import api, { setAccessToken, getAccessToken } from "@/hooks/swr/api-client";
+import { useGlobalLoading } from "@/components/Providers/GlobalLoadingProvider";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
 import {
   Button,
   ButtonLoading,
@@ -8,46 +18,63 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  InputOTP,
-} from "@/components";
-import { InputPassword } from "@/components/ui-custom/InputPassword";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PasswordIcon } from "@phosphor-icons/react/dist/ssr";
+  InputPassword,
+  LoadingLogo,
+} from "@components";
+import { PasswordIcon } from "@phosphor-icons/react";
 import { MoveLeftIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import axios from "axios";
-import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function PasswordPage() {
+  const router = useRouter();
+  const { setLoading: setGlobalLoading } = useGlobalLoading();
+  const t = useTranslations("Auth");
+  const t_err = useTranslations("Auth.Errors");
+  const t_ec = useTranslations("ERROR_CODES");
+
+  const [mobile, setMobile] = useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isForgetLoading, setIsForgetLoading] = useState(false);
-  const t = useTranslations("Auth.Password");
-  const t_ec = useTranslations("ERROR_CODES");
-  const router = useRouter();
-  const [mobile, setMobile] = useState<string | null>(null);
 
+  // -------------------------
+  // 1️⃣ Security Check (مانند OTP)
+  // -------------------------
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedMobile = sessionStorage.getItem("prelogin_mobile");
+    const accessToken = getAccessToken();
+    const storedMobile = sessionStorage.getItem("prelogin_mobile");
 
-      if (storedMobile) {
-        setMobile(storedMobile);
-      } else {
-        router.push("/auth");
-      }
+    // اگر لاگین کرده نباید وارد این صفحه بشه
+    if (accessToken) {
+      setGlobalLoading(true);
+      router.replace("/");
+      return;
     }
-  }, [router]);
 
+    // اگر شماره موبایل وجود نداشت → /auth
+    if (!storedMobile) {
+      setGlobalLoading(true);
+      router.replace("/auth");
+      return;
+    }
+
+    // ✅ شرایط درست
+    setMobile(storedMobile);
+    setIsChecking(false);
+    setGlobalLoading(false);
+
+    // پاکسازی هنگام خروج از صفحه
+    return () => sessionStorage.removeItem("prelogin_mobile");
+  }, [router, setGlobalLoading]);
+
+  // -------------------------
+  // 2️⃣ Form Schema
+  // -------------------------
   const formSchema = z.object({
     emailOrMobile: z.string(),
-    password: z.string().min(6, t_ec("PASSWORD_LENGTH_MIN")),
+    password: z.string().min(6, t_err("password_min_length")),
   });
 
   const form = useForm({
@@ -60,32 +87,28 @@ export default function PasswordPage() {
   });
 
   useEffect(() => {
-    if (mobile) {
-      form.setValue("emailOrMobile", mobile);
-    }
+    if (mobile) form.setValue("emailOrMobile", mobile);
   }, [mobile, form]);
 
+  // -------------------------
+  // 3️⃣ Handlers
+  // -------------------------
   const forgetPasswordHandler = async () => {
     setIsForgetLoading(true);
-
     try {
-      const response = await axios.post(
-        `${API_URL}/auth/mobile/forgetPassword`,
-        {
-          mobile: mobile,
-        },
-      );
-
-      const next = response.data?.data?.next;
-
-      if (next === "otp") {
-        router.push(`/auth/signin`);
+      const response = await api.post(`${API_URL}/auth/mobile/forgetPassword`, {
+        mobile,
+      });
+      if (response.data?.data?.next === "otp") {
+        setGlobalLoading(true);
+        router.push("/auth/otp");
       }
     } catch (error) {
       if (error?.response?.data?.statusCode === 429) {
-        toast.error("بین هر درخواست کد باید 2 دقیقه فاصله باشد.");
+        toast.error(t_ec("TOO_MANY_REQUESTS"));
       } else {
-        toast.error(t_ec(error?.code));
+        console.error("❌ API Error:", error.response?.data);
+        toast.error(error.response?.data?.message);
       }
       setIsForgetLoading(false);
     }
@@ -93,9 +116,17 @@ export default function PasswordPage() {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-
     try {
-      const res = await axios.post(`${API_URL}/auth/mobile/signIn`, data);
+      const res = await api.post(`${API_URL}/auth/mobile/signIn`, data, {
+        withCredentials: true,
+      });
+      setAccessToken(res?.data?.data?.accessToken);
+      useAuthStore.getState().setAuth({
+        isLoggedIn: true,
+        token: res.data.data.accessToken,
+      });
+
+      setGlobalLoading(true);
       router.push("/");
     } catch (error) {
       const message = error.response?.data?.message;
@@ -104,17 +135,26 @@ export default function PasswordPage() {
       } else {
         toast.error(message);
       }
-    } finally {
       setIsLoading(false);
     }
   };
 
+  // -------------------------
+  // 4️⃣ Render Control (بدون فلیکر)
+  // -------------------------
+  if (isChecking || !mobile) {
+    return <LoadingLogo />;
+  }
+
+  // -------------------------
+  // 5️⃣ Render Form
+  // -------------------------
   return (
     <div className="flex flex-1 flex-col justify-center">
       <div className="mb-12 flex flex-1 items-end justify-center">
         <h1 className="flex items-center gap-2 text-lg font-bold">
           <PasswordIcon size={28} weight="duotone" />
-          {t("title")}
+          {t("title_password")}
         </h1>
       </div>
 
@@ -125,13 +165,15 @@ export default function PasswordPage() {
             <span className="text-primary text-base tracking-widest">
               {mobile}
             </span>
-
             <Button
               variant="link"
               type="button"
               size="sm"
               className="text-muted-foreground text-[13px]"
-              onClick={() => router.push("/auth")}
+              onClick={() => {
+                setGlobalLoading(true);
+                router.push("/auth");
+              }}
             >
               {t("change_number")}
             </Button>
@@ -176,12 +218,7 @@ export default function PasswordPage() {
             <ButtonLoading
               className="w-full"
               isLoading={isLoading}
-              disabled={
-                isLoading ||
-                !form.watch("password") ||
-                form.watch("password").length < 6 ||
-                !form.formState.isValid
-              }
+              disabled={isLoading || !form.formState.isValid}
             >
               {t("confirm_and_continue")}
             </ButtonLoading>
@@ -194,7 +231,10 @@ export default function PasswordPage() {
           variant="link"
           type="button"
           className="text-muted-foreground"
-          onClick={() => router.push("/auth")}
+          onClick={() => {
+            setGlobalLoading(true);
+            router.push("/auth");
+          }}
         >
           {t("back")}
           <MoveLeftIcon />

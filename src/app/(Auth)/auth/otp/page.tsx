@@ -1,10 +1,8 @@
-//Refactored
 "use client";
 
-import api, { clearAccessToken } from "@/hooks/swr/api-client";
-import { ExceptionMessage } from "@/types/exceptionMessage";
+import api, { setAccessToken, getAccessToken } from "@/hooks/swr/api-client";
+import { useGlobalLoading } from "@/components/Providers/GlobalLoadingProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosError } from "axios";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -25,35 +23,60 @@ import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
+  LoadingLogo,
 } from "@/components";
-import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react/dist/ssr";
-import { MoveLeftIcon, RefreshCwIcon } from "lucide-react";
+import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
+import { RefreshCwIcon } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function OtpPage() {
   const router = useRouter();
-  const t = useTranslations("Auth.OTP");
+  const { setLoading: setGlobalLoading } = useGlobalLoading();
+  const t = useTranslations("Auth");
+  const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
+
+  const [mobile, setMobile] = useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isResendLoading, setIsResendLoading] = useState(false);
   const [showResend, setShowResend] = useState(false);
-  const [mobile, setMobile] = useState<string | null>(null);
 
+  // -------------------------
+  // 1️⃣ Security Check
+  // -------------------------
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedMobile = sessionStorage.getItem("prelogin_mobile");
+    const accessToken = getAccessToken();
+    const storedMobile = sessionStorage.getItem("prelogin_mobile");
 
-      if (storedMobile) {
-        setMobile(storedMobile);
-      } else {
-        router.push("/auth");
-      }
+    if (accessToken) {
+      // 🔹 در حال ریدایرکت به صفحه اصلی
+      setGlobalLoading(true);
+      router.replace("/");
+      return;
     }
-  }, [router]);
 
+    if (!storedMobile) {
+      // 🔹 در حال ریدایرکت به صفحه ورود
+      setGlobalLoading(true);
+      router.replace("/auth");
+      return;
+    }
+
+    // ✅ شرایط درست
+    setMobile(storedMobile);
+    setIsChecking(false);
+    setGlobalLoading(false);
+
+    return () => sessionStorage.removeItem("prelogin_mobile");
+  }, [router, setGlobalLoading]);
+
+  // -------------------------
+  // 2️⃣ Form
+  // -------------------------
   const formSchema = z.object({
-    otp: z.string().length(6, t("errors.otpLength")),
+    otp: z.string().length(5, t_err("otp_length")),
     mobile: z.string(),
   });
 
@@ -66,87 +89,59 @@ export default function OtpPage() {
   });
 
   useEffect(() => {
-    if (mobile) {
-      form.setValue("mobile", mobile);
-    }
+    if (mobile) form.setValue("mobile", mobile);
   }, [mobile, form]);
 
-  const firstSlotRef = useRef<HTMLInputElement>(null);
+  const otpCompleted = () => form.handleSubmit(onSubmit)();
 
-  useEffect(() => {
-    if (firstSlotRef.current) {
-      firstSlotRef.current.focus();
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post("/auth/mobile/oneTime/signIn", values);
+      setAccessToken(res?.data?.data?.accessToken);
+      const me = await api.get("/users/me");
+
+      // پاکسازی sessionStorage
+      sessionStorage.removeItem("prelogin_mobile");
+
+      setGlobalLoading(true);
+      if (me?.data?.status === "onboarding") router.push("/auth/register");
+      else router.push("/");
+    } catch (error) {
+      console.error("❌ API Error:", error.response?.data);
+      toast.error(t_ec(error.response?.data?.code));
+      setIsLoading(false);
     }
-  }, []);
+  };
 
   const resendHandler = async () => {
     setIsResendLoading(true);
-
     try {
-      const res = await axios.post(`${API_URL}/auth/pelogin`, {
-        params: {
-          mobile,
-        },
-      });
-      console.log("✅ API Response:", res.data?.data);
-      toast.success(t("toasts.resendOk"));
-    } catch (e: any) {
-      console.log("❌ API Error:", e.response?.data);
-      const message = t_ec(e.response?.data?.code);
-      toast.error(message);
+      await api.get(`${API_URL}/auth/prelogin`, { params: { mobile } });
+      setShowResend(false);
+      toast.success(t("Toasts.code_resent"));
+    } catch (error) {
+      if (error?.response?.data?.statusCode === 429)
+        toast.error(t_ec("TOO_MANY_REQUESTS"));
+      else toast.error(error.response?.data?.message || "Error");
     } finally {
       setIsResendLoading(false);
     }
   };
 
-  const otpCompleted = () => {
-    form.handleSubmit(onSubmit)();
-  };
-
-  // const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-
-  // const logoutHandler = async (
-  //   e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  // ) => {
-  //   e.preventDefault();
-  //   setIsLogoutLoading(true);
-  //   await api
-  //     .delete("/auth/logout")
-  //     .then(async (res) => {
-  //       clearAccessToken();
-  //       router.push(process.env.NEXT_PUBLIC_MAIN_SITE_URL);
-  //     })
-  //     .catch((e) => {
-  //       toast.error(t("logoutFailed"));
-  //     })
-  //     .finally(() => {
-  //       setIsLogoutLoading(false);
-  //     });
-  // };
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-
-    console.log("Form values:", values);
-
-    try {
-      const res = await api.post("/auth/mobile/verifyOtp", values);
-      toast.success(t("toasts.loginSuccess"));
-      router.push("/auth/register");
-    } catch (e: any) {
-      const message = t_ec(e.response?.data?.code);
-      toast.error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // -------------------------
+  // 3️⃣ Render Control
+  // -------------------------
+  if (isChecking || !mobile) {
+    return <LoadingLogo />;
+  }
 
   return (
     <div className="flex flex-1 flex-col justify-center">
       <div className="mb-12 flex flex-1 items-end justify-center">
         <h1 className="flex items-center gap-2 text-lg font-bold">
           <NumpadIcon size={28} weight="duotone" />
-          {t("title")}
+          {t("title_login_otp")}
         </h1>
       </div>
 
@@ -157,13 +152,15 @@ export default function OtpPage() {
             <span className="text-primary text-base tracking-widest">
               {mobile}
             </span>
-
             <Button
               variant="link"
               type="button"
               size="sm"
               className="text-muted-foreground text-[13px]"
-              onClick={() => router.push("/auth")}
+              onClick={() => {
+                setGlobalLoading(true);
+                router.push("/auth");
+              }}
             >
               {t("change_number")}
             </Button>
@@ -182,10 +179,9 @@ export default function OtpPage() {
                 <FormItem>
                   <FormControl>
                     <InputOTP
-                      maxLength={6}
+                      maxLength={5}
                       {...field}
                       pattern={REGEXP_ONLY_DIGITS}
-                      ref={firstSlotRef}
                       onComplete={otpCompleted}
                     >
                       <InputOTPGroup>
@@ -194,11 +190,10 @@ export default function OtpPage() {
                         <InputOTPSlot index={2} />
                         <InputOTPSlot index={3} />
                         <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-center" />
                 </FormItem>
               )}
             />
@@ -229,7 +224,9 @@ export default function OtpPage() {
 
             <ButtonLoading
               isLoading={isLoading}
-              disabled={isLoading}
+              disabled={
+                isLoading || !form.watch("otp") || !form.formState.isValid
+              }
               className="w-full"
               onClick={form.handleSubmit(onSubmit)}
             >
@@ -238,7 +235,6 @@ export default function OtpPage() {
           </form>
         </Form>
       </div>
-
       <div className="flex flex-1 flex-col items-center justify-center"></div>
     </div>
   );

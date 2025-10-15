@@ -22,7 +22,11 @@ export default getRequestConfig(async () => {
   if (locale) {
     return {
       locale,
-      messages: { ...(await import(`../messages/${locale}.json`)).default },
+      messages: {
+        ...(await import(`../messages/${locale}.json`)).default,
+        ...(await import(`../messages/${locale}/Auth.json`)).default,
+        ...(await import(`../messages/${locale}/ErrorCodes.json`)).default,
+      },
     };
   }
 
@@ -36,6 +40,10 @@ export default getRequestConfig(async () => {
 
   return {
     locale: "fa",
-    messages: (await import(`../messages/${"fa"}.json`)).default,
+    messages: {
+      ...(await import(`../messages/${"fa"}.json`)).default,
+      ...(await import(`../messages/${"fa"}/Auth.json`)).default,
+      ...(await import(`../messages/${"fa"}/ErrorCodes.json`)).default,
+    },
   };
 });

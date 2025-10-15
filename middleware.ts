@@ -41,7 +41,7 @@ export default async function middleware(request: NextRequest) {
 }
 
 async function consoleMiddleware(request: NextRequest) {
-  const token = request.cookies.get("token2");
+  const token = request.cookies.get("token");
 
   if (!token) {
     return CustomResponse.redirect(new URL("/auth", request.url), request);
@@ -51,15 +51,10 @@ async function consoleMiddleware(request: NextRequest) {
 }
 
 async function authMiddleware(request: NextRequest) {
-  const token = request.cookies.get("token2");
+  const token = request.cookies.get("token");
 
   if (!token) {
-    const isVerifyPage = request.nextUrl.pathname === "/auth/verify";
-    if (isVerifyPage) {
-      return CustomResponse.redirect(new URL("/auth", request.url), request);
-    }
-
-    return CustomResponse.next(request);
+    return CustomResponse.redirect(new URL("/auth", request.url), request);
   }
 
   const jwt = await parseJwt(token.value, request);
