@@ -38,27 +38,27 @@ export default function RegisterPage() {
   // ----------------------------
   // 1️⃣ Routing Logic (Protected)
   // ----------------------------
-  useEffect(() => {
-    console.log("user", user);
+  // useEffect(() => {
+  //   console.log("user", user);
 
-    if (isLoading) return;
+  //   if (isLoading) return;
 
-    // if (!user) return;
+  //   // if (!user) return;
 
-    if (!isAuthenticated) {
-      setGlobalLoading(true);
-      router.replace("/auth");
-      return;
-    }
+  //   if (!isAuthenticated) {
+  //     setGlobalLoading(true);
+  //     router.replace("/auth");
+  //     return;
+  //   }
 
-    if (user.status !== "onboarding") {
-      setGlobalLoading(true);
-      router.replace("/");
-      return;
-    }
+  //   if (user.status !== "onboarding") {
+  //     setGlobalLoading(true);
+  //     router.replace("/");
+  //     return;
+  //   }
 
-    setGlobalLoading(false);
-  }, [isLoading, isAuthenticated, user, router, setGlobalLoading]);
+  //   setGlobalLoading(false);
+  // }, [isLoading, isAuthenticated, user, router, setGlobalLoading]);
 
   // ----------------------------
   // 2️⃣ Schema & Form
@@ -119,13 +119,13 @@ export default function RegisterPage() {
   // ----------------------------
   // 5️⃣ Render Control (No Flicker)
   // ----------------------------
-  if (isLoading || !isAuthenticated) {
-    return <LoadingLogo />;
-  }
+  // if (isLoading || !isAuthenticated) {
+  //   return <LoadingLogo />;
+  // }
 
-  if (user?.status !== "onboarding") {
-    return <LoadingLogo />;
-  }
+  // if (user?.status !== "onboarding") {
+  //   return <LoadingLogo />;
+  // }
 
   // ----------------------------
   // 6️⃣ UI

@@ -25,8 +25,8 @@ export default async function AuthLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
-  const token = (await cookies()).get("token");
-  let initialAuth = { isLoggedIn: !!token }; // فقط همین کافی است
+  // const token = (await cookies()).get("token");
+  // let initialAuth = { isLoggedIn: !!token }; // فقط همین کافی است
 
   return (
     <html
@@ -37,7 +37,7 @@ export default async function AuthLayout({
       }
     >
       <body className="bg-violet-50">
-        <AuthProvider initialAuth={initialAuth}>
+        {/* <AuthProvider initialAuth={initialAuth}> */}
           <NextIntlClientProvider messages={messages}>
             <div className="container px-10 sm:max-w-sm">
               <main className="flex min-h-screen flex-col items-center justify-center">
@@ -53,7 +53,7 @@ export default async function AuthLayout({
               }}
             />
           </NextIntlClientProvider>
-        </AuthProvider>
+        {/* </AuthProvider> */}
       </body>
     </html>
   );

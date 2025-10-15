@@ -16,39 +16,39 @@ export const InstagramGuard = ({
   const { hasInstagram, isLoading, status } = useUser();
   const [pageShow, setPageShow] = useState(false);
 
-  useEffect(() => {
-    if (isLoading || !pathname || !router || !status) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (isLoading || !pathname || !router || !status) {
+  //     return;
+  //   }
 
-    const isConnectPage = pathname === "/connect";
+  //   const isConnectPage = pathname === "/connect";
 
-    if (status === "onboarding") {
-      router.push("/auth/register");
-    } else {
-      if (hasInstagram) {
-        if (isConnectPage) {
-          router.push("/");
-        } else {
-          setPageShow(true);
-        }
-      } else {
-        if (isConnectPage) {
-          setPageShow(true);
-        } else {
-          router.push("/connect");
-        }
-      }
-    }
-  }, [hasInstagram, isLoading, pathname, router]);
+  //   if (status === "onboarding") {
+  //     router.push("/auth/register");
+  //   } else {
+  //     if (hasInstagram) {
+  //       if (isConnectPage) {
+  //         router.push("/");
+  //       } else {
+  //         setPageShow(true);
+  //       }
+  //     } else {
+  //       if (isConnectPage) {
+  //         setPageShow(true);
+  //       } else {
+  //         router.push("/connect");
+  //       }
+  //     }
+  //   }
+  // }, [hasInstagram, isLoading, pathname, router]);
 
-  if (isLoading) {
-    return <LoadingLogo />;
-  }
+  // if (isLoading) {
+  //   return <LoadingLogo />;
+  // }
 
-  if (!pageShow) {
-    return null;
-  }
+  // if (!pageShow) {
+  //   return null;
+  // }
 
   return <>{children}</>;
 };

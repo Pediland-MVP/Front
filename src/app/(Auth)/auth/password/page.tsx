@@ -43,27 +43,27 @@ export default function PasswordPage() {
   // 1️⃣ Security Check (مانند OTP)
   // -------------------------
   useEffect(() => {
-    const accessToken = getAccessToken();
+    // const accessToken = getAccessToken();
     const storedMobile = sessionStorage.getItem("prelogin_mobile");
 
     // اگر لاگین کرده نباید وارد این صفحه بشه
-    if (accessToken) {
-      setGlobalLoading(true);
-      router.replace("/");
-      return;
-    }
+    // if (accessToken) {
+    //   // setGlobalLoading(true);
+    //   router.replace("/");
+    //   return;
+    // }
 
     // اگر شماره موبایل وجود نداشت → /auth
     if (!storedMobile) {
-      setGlobalLoading(true);
+      // setGlobalLoading(true);
       router.replace("/auth");
       return;
     }
 
     // ✅ شرایط درست
     setMobile(storedMobile);
-    setIsChecking(false);
-    setGlobalLoading(false);
+    // setIsChecking(false);
+    // setGlobalLoading(false);
 
     // پاکسازی هنگام خروج از صفحه
     return () => sessionStorage.removeItem("prelogin_mobile");
@@ -142,9 +142,9 @@ export default function PasswordPage() {
   // -------------------------
   // 4️⃣ Render Control (بدون فلیکر)
   // -------------------------
-  if (isChecking || !mobile) {
-    return <LoadingLogo />;
-  }
+  // if (isChecking || !mobile) {
+  //   return <LoadingLogo />;
+  // }
 
   // -------------------------
   // 5️⃣ Render Form

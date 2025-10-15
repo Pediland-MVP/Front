@@ -10,9 +10,5 @@ export default function Page() {
 
   const { isLoading } = useUser();
 
-  if (isLoading) {
-    return <LoaderSpin />;
-  }
-
   return <DashboardPage />;
 }

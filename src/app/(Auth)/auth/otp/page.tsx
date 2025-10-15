@@ -47,18 +47,17 @@ export default function OtpPage() {
   // 1️⃣ Security Check
   // -------------------------
   useEffect(() => {
-    const accessToken = getAccessToken();
+    // const accessToken = getAccessToken();
     const storedMobile = sessionStorage.getItem("prelogin_mobile");
 
-    if (accessToken) {
-      // 🔹 در حال ریدایرکت به صفحه اصلی
-      setGlobalLoading(true);
-      router.replace("/");
-      return;
-    }
+    // if (accessToken) {
+    //   // 🔹 در حال ریدایرکت به صفحه اصلی
+    //   setGlobalLoading(true);
+    //   router.replace("/");
+    //   return;
+    // }
 
     if (!storedMobile) {
-      // 🔹 در حال ریدایرکت به صفحه ورود
       setGlobalLoading(true);
       router.replace("/auth");
       return;
@@ -66,8 +65,8 @@ export default function OtpPage() {
 
     // ✅ شرایط درست
     setMobile(storedMobile);
-    setIsChecking(false);
-    setGlobalLoading(false);
+    // setIsChecking(false);
+    // setGlobalLoading(false);
 
     return () => sessionStorage.removeItem("prelogin_mobile");
   }, [router, setGlobalLoading]);
@@ -132,9 +131,9 @@ export default function OtpPage() {
   // -------------------------
   // 3️⃣ Render Control
   // -------------------------
-  if (isChecking || !mobile) {
-    return <LoadingLogo />;
-  }
+  // if (isChecking || !mobile) {
+  //   return <LoadingLogo />;
+  // }
 
   return (
     <div className="flex flex-1 flex-col justify-center">

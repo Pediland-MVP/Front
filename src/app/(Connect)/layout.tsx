@@ -32,33 +32,33 @@ export default async function ConsoleLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
-  // 1️⃣ بررسی توکن در SSR
-  const token = (await cookies()).get("token")?.value;
-  if (!token) {
-    redirect("/auth");
-  }
+  // // 1️⃣ بررسی توکن در SSR
+  // const token = (await cookies()).get("token")?.value;
+  // if (!token) {
+  //   redirect("/auth");
+  // }
 
-  // 2️⃣ از /users/me وضعیت اتصال کاربر را بگیر
-  let user: any = null;
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      },
-    );
-    if (res.ok) user = await res.json();
-  } catch (err) {
-    console.warn("⚠️ Error fetching /users/me in ConnectLayout:", err);
-  }
+  // // 2️⃣ از /users/me وضعیت اتصال کاربر را بگیر
+  // let user: any = null;
+  // try {
+  //   const res = await fetch(
+  //     `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
+  //     {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //       cache: "no-store",
+  //     },
+  //   );
+  //   if (res.ok) user = await res.json();
+  // } catch (err) {
+  //   console.warn("⚠️ Error fetching /users/me in ConnectLayout:", err);
+  // }
 
-  const isConnected = Boolean(user?.instagrams?.length);
+  // const isConnected = Boolean(user?.instagrams?.length);
 
-  // 3️⃣ اگر کاربر Instagram دارد، نگذار صفحه Connect دیده شود
-  if (isConnected) {
-    redirect("/");
-  }
+  // // 3️⃣ اگر کاربر Instagram دارد، نگذار صفحه Connect دیده شود
+  // if (isConnected) {
+  //   redirect("/");
+  // }
 
   return (
     <html

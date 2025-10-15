@@ -53,9 +53,9 @@ async function consoleMiddleware(request: NextRequest) {
 async function authMiddleware(request: NextRequest) {
   const token = request.cookies.get("token");
 
-  if (!token) {
-    return CustomResponse.redirect(new URL("/auth", request.url), request);
-  }
+  // if (!token) {
+  //   return CustomResponse.redirect(new URL("/auth", request.url), request);
+  // }
 
   const jwt = await parseJwt(token.value, request);
 
@@ -63,7 +63,7 @@ async function authMiddleware(request: NextRequest) {
     return CustomResponse.next(request);
   }
 
-  if (request.nextUrl.pathname === '/auth/register') {
+  if (request.nextUrl.pathname === "/auth/register") {
     return CustomResponse.next(request);
   }
 

@@ -84,14 +84,14 @@ export default function AuthPage() {
     }
   };
 
-  useEffect(() => {
-    if (hydrated && !loading) {
-      if (!isLoggedIn) router.replace("/auth");
-      if (isConnected) router.replace("/");
-    }
-  }, [hydrated, loading, isLoggedIn, isConnected, router]);
+  // useEffect(() => {
+  //   if (hydrated && !loading) {
+  //     if (!isLoggedIn) router.replace("/auth");
+  //     if (isConnected) router.replace("/");
+  //   }
+  // }, [hydrated, loading, isLoggedIn, isConnected, router]);
 
-  if (!hydrated || loading) return <LoadingLogo />;
+  // if (!hydrated || loading) return <LoadingLogo />;
 
   return (
     <>

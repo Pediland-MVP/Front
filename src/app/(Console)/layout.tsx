@@ -36,41 +36,41 @@ export default async function ConsoleLayout({
   const messages = await getMessages();
 
   // 1️⃣ Read token from cookie
-  const token = (await cookies()).get("token")?.value;
+  // const token = (await cookies()).get("token")?.value;
 
-  console.log("token............ ⭕⭕⭕", token);
+  // console.log("token............ ⭕⭕⭕", token);
 
-  if (!token) {
-    redirect("/auth");
-  }
+  // if (!token) {
+  //   redirect("/auth");
+  // }
 
-  let initialAuth = {
-    isLoggedIn: false,
-    isOnboarding: false,
-    isConnected: false,
-    token: null,
-  };
+  // let initialAuth = {
+  //   isLoggedIn: false,
+  //   isOnboarding: false,
+  //   isConnected: false,
+  //   token: null,
+  // };
 
   // 2️⃣ If token exists, fetch user data
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-      },
-    );
+  // try {
+  //   const res = await fetch(
+  //     `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       cache: "no-store",
+  //     },
+  //   );
 
-    if (res.ok) {
-      const data = await res.json();
-      initialAuth.isOnboarding = data.status === "onboarding";
-      initialAuth.isConnected = Boolean(data.instagrams?.length);
-    }
-  } catch (err) {
-    console.warn("⚠️ Error fetching /users/me:", err);
-  }
+  //   if (res.ok) {
+  //     const data = await res.json();
+  //     initialAuth.isOnboarding = data.status === "onboarding";
+  //     initialAuth.isConnected = Boolean(data.instagrams?.length);
+  //   }
+  // } catch (err) {
+  //   console.warn("⚠️ Error fetching /users/me:", err);
+  // }
 
   return (
     <html
@@ -81,12 +81,12 @@ export default async function ConsoleLayout({
       }
     >
       <body className="bg-red-600">
-        <AuthProvider initialAuth={initialAuth}>
+        {/* <AuthProvider initialAuth={initialAuth}> */}
           <SWRProvider>
             <StandaloneChecker>
               <NextIntlClientProvider messages={messages}>
                 <ZodErrorsMapProvider>
-                  <InstagramGuard>
+                  {/* <InstagramGuard> */}
                     <ConsoleProvider>
                       <InstagramTokenErrorDialog />
 
@@ -96,7 +96,7 @@ export default async function ConsoleLayout({
 
                       <NavBottom />
                     </ConsoleProvider>
-                  </InstagramGuard>
+                  {/* </InstagramGuard> */}
                 </ZodErrorsMapProvider>
 
                 <Toaster
@@ -109,7 +109,7 @@ export default async function ConsoleLayout({
               </NextIntlClientProvider>
             </StandaloneChecker>
           </SWRProvider>
-        </AuthProvider>
+        {/* </AuthProvider> */}
         <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
     </html>
