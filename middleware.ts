@@ -63,10 +63,11 @@ async function authMiddleware(request: NextRequest) {
     return CustomResponse.next(request);
   }
 
-  if (jwt.payload.isVerified) {
-    return CustomResponse.redirect(new URL("/console", request.url), request);
+  if (request.nextUrl.pathname === '/auth/register') {
+    return CustomResponse.next(request);
   }
-  return CustomResponse.next(request);
+
+  return CustomResponse.redirect(new URL("/", request.url), request);
 }
 
 async function parseJwt(token: string, request: NextRequest) {
