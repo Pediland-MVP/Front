@@ -1,6 +1,6 @@
 "use client";
 
-import api, { clearAccessToken } from "@/hooks/swr/api-client";
+import api, { useLogout } from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -16,11 +16,12 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  Input
+  Input,
 } from "@components";
 import { UserCirclePlusIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function OnboardingPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
+  const logout = useLogout();
 
   const formSchema = z.object({
     firstname: z.string().min(3, t_err("first_name_length", { length: 3 })),
@@ -68,12 +70,12 @@ export default function OnboardingPage() {
     setIsCanceling(true);
 
     try {
-      await api.post("/auth/logout");
+      await logout();
+      router.replace(SITE_URL || "https://befroosh.app");
     } catch (error) {
       console.error("❌ Logout error:", error);
     } finally {
-      clearAccessToken();
-      router.replace("/auth");
+      setIsCanceling(false);
     }
   };
 

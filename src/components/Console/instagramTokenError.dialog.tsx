@@ -16,6 +16,8 @@ import { usePathname, useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function InstagramTokenErrorDialog() {
   const [showPopup, setShowPopup] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
@@ -47,7 +49,7 @@ export default function InstagramTokenErrorDialog() {
   }, [user, isAborted, pathname]);
 
   const handleGoToSettings = () => {
-    router.push(`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`);
+    router.push(`${API_URL}/instagram/connectIG`);
     setIsNavigationLoading(true);
     setIsAborted(true);
     // setShowPopup(false)

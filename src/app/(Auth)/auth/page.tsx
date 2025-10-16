@@ -24,6 +24,7 @@ import {
 import { MoveLeftIcon } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function AuthPage() {
   const router = useRouter();
@@ -147,7 +148,7 @@ export default function AuthPage() {
           type="button"
           disabled={isLoading}
           className="text-muted-foreground"
-          onClick={() => router.push("https://befroosh.app")}
+          onClick={() => router.push(SITE_URL || "https://befroosh.app")}
         >
           {t("back")}
           <MoveLeftIcon />

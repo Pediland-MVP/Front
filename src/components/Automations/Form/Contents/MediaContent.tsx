@@ -21,6 +21,8 @@ import {
   useContentsUploaderContext,
 } from "@/components/index";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 interface MediaContentProps {
   index: number;
   mode: AutomationContentModeEnum;
@@ -88,26 +90,22 @@ export const MediaContent = ({ index, mode, type }: MediaContentProps) => {
       const formData = new FormData();
       formData.append("file", files[0].file);
       const res = api
-        .post(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/contentCycle/upload`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            withCredentials: true,
-            onUploadProgress: (progressEvent) => {
-              if (progressEvent.total) {
-                const process = Math.round(
-                  (progressEvent.loaded / progressEvent.total) * 100,
-                );
-                setFiles((prev) => {
-                  return [{ ...prev[0], process: process }];
-                });
-              }
-            },
+        .post(`${API_URL}/contentCycle/upload`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
-        )
+          withCredentials: true,
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const process = Math.round(
+                (progressEvent.loaded / progressEvent.total) * 100,
+              );
+              setFiles((prev) => {
+                return [{ ...prev[0], process: process }];
+              });
+            }
+          },
+        })
         .then((res: AxiosResponse<FileNamespace.File>) => {
           const originalFile = files[0];
           setFiles([

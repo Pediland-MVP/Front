@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function useStartPayment() {
   const [loading, setLoading] = useState<boolean>(false);
   const {
@@ -25,7 +27,7 @@ export default function useStartPayment() {
   async function startPayment() {
     setLoading(true);
     await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${pendingOrder?.id}/startPayment`,
+      `${API_URL}/orders/${shopId}/${pendingOrder?.id}/startPayment`,
       {
         method: "POST",
         headers: {

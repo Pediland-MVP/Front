@@ -11,6 +11,8 @@ import { OrderNamespace } from "@/types/order/order.namespace";
 import useCheckoutStep from "./useCheckoutStep";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function useOrder() {
   const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>();
   const { shopId, productId, orderQuantity, setStep } = useCheckout();
@@ -29,7 +31,7 @@ export default function useOrder() {
       productFieldValues,
       attributeValueIds,
     } = values || getValues();
-    await fetch(`${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}`, {
+    await fetch(`${API_URL}/orders/${shopId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

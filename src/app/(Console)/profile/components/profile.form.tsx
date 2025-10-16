@@ -41,6 +41,8 @@ import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import api from "@/hooks/swr/api-client";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export function ProfileForm() {
   const t = useTranslations("Profile.Form");
   const locale = useLocale();
@@ -114,13 +116,10 @@ export function ProfileForm() {
     data: userData,
     error: userError,
     isLoading: userIsLoading,
-  } = useSWRImmutable<UserNamespace.GET.User>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
-    {
-      revalidateOnMount: true,
-      refreshInterval: 30_000,
-    },
-  );
+  } = useSWRImmutable<UserNamespace.GET.User>(`${API_URL}/users/me`, {
+    revalidateOnMount: true,
+    refreshInterval: 30_000,
+  });
 
   const resetWithUserData = () => {
     if (!userData || userError) return;
@@ -149,12 +148,9 @@ export function ProfileForm() {
     error: provincesError,
     isLoading: provincesIsLoading,
     mutate: fetchProvinces,
-  } = useSWRImmutable<ProvinceNamespace.GET>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities/provinces`,
-    {
-      revalidateOnMount: true,
-    },
-  );
+  } = useSWRImmutable<ProvinceNamespace.GET>(`${API_URL}/cities/provinces`, {
+    revalidateOnMount: true,
+  });
 
   const {
     data: cities,
@@ -162,9 +158,7 @@ export function ProfileForm() {
     isLoading: citiesIsLoading,
     mutate: fetchCities,
   } = useSWRImmutable<CityNamespace.GET>(
-    () =>
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities?provinceId=` +
-      `${form.getValues().state}`,
+    () => `${API_URL}/cities?provinceId=` + `${form.getValues().state}`,
     {
       revalidateOnMount: true,
     },
@@ -184,7 +178,7 @@ export function ProfileForm() {
       })
       .then((res) => {
         toast(t("profileUpdated"));
-        mutate(`${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`);
+        mutate(`${API_URL}/users/me`);
       })
       .catch((e) => {
         toast.error(t("profileUpdateFailed"));

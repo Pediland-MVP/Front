@@ -10,6 +10,8 @@ import useCheckoutStep from "./useCheckoutStep";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function useShipping() {
   const { getValues } = useFormContext<z.infer<typeof orderFormSchema>>();
   const { setStep, pendingOrder } = useCheckout();
@@ -25,22 +27,19 @@ export default function useShipping() {
   const updateShipping = async (values?: z.infer<typeof orderFormSchema>) => {
     setLoading(true);
     const { cityId, address, postalcode } = values || getValues();
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${pendingOrder?.id}/updateShipping`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cityId,
-          address,
-          postalcode,
-          productIds: [productId],
-        }),
-        credentials: "include",
+    await fetch(`${API_URL}/orders/${pendingOrder?.id}/updateShipping`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      body: JSON.stringify({
+        cityId,
+        address,
+        postalcode,
+        productIds: [productId],
+      }),
+      credentials: "include",
+    })
       .then(async (res) => {
         if (res.ok) {
           const json = (await res.json()) as OrderNamespace.POST.UpdateShipping;

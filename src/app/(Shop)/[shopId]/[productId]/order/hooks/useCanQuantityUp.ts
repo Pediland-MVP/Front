@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { OrderNamespace } from "@/types/order/order.namespace";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export function useCanQuantityUp() {
   const t_err = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,19 +21,16 @@ export function useCanQuantityUp() {
     setLoading: Dispatch<React.SetStateAction<boolean>>,
   ): Promise<boolean> => {
     setLoading(true);
-    return await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${productId}/canQuantityUp`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quantity: orderQuantity + 1,
-        }),
+    return await fetch(`${API_URL}/orders/${productId}/canQuantityUp`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      body: JSON.stringify({
+        quantity: orderQuantity + 1,
+      }),
+    })
       .then(async (res) => {
         const json = (
           (await res.json()) as OrderNamespace.POST.CanQuantityUp

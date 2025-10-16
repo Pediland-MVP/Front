@@ -45,6 +45,8 @@ import { IResponseMessage } from "@/types/responseMessage";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { Warning } from "@phosphor-icons/react/dist/ssr";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 type AccountsProps = {
   filteredInstagramPages: InstagramNamespace.GET["Accounts"] | null | undefined;
   setFilteredInstagramPages: React.Dispatch<
@@ -71,7 +73,7 @@ export default function Accounts({
     error: instagramPagesError,
     mutate,
   } = useSWRImmutable<InstagramNamespace.GET["Accounts"]>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
+    `${API_URL}/instagram/accounts`,
     {
       revalidateOnMount: true,
     },
@@ -172,9 +174,7 @@ export default function Accounts({
                 </div>
 
                 {!instagram.isIgTokenValid && (
-                  <Link
-                    href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
-                  >
+                  <Link href={`${API_URL}/instagram/connectIG`}>
                     <Button variant={"destructive"}>
                       نیاز به ورود مجدد <Warning />
                     </Button>
@@ -219,7 +219,7 @@ export default function Accounts({
                         <DropdownMenuItem>
                           <Link
                             className="flex items-center gap-2"
-                            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
+                            href={`${API_URL}/instagram/connectIG`}
                             target="_self"
                             rel="noopener noreferrer"
                           >

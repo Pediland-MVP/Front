@@ -25,7 +25,8 @@ import {
   ErrorMessage,
   Skeleton,
 } from "@/components/index";
-import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
+
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 const PAGE_SIZE = 9;
 
@@ -68,8 +69,8 @@ export const InstagramPostSelectDialog = ({
     await api
       .get(
         afterCursor
-          ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure?after=${afterCursor}`
-          : `${process.env.NEXT_PUBLIC_BACK_API_URL}/posts/pure`,
+          ? `${API_URL}/posts/pure?after=${afterCursor}`
+          : `${API_URL}/posts/pure`,
       )
       .then(async (res) => {
         setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);

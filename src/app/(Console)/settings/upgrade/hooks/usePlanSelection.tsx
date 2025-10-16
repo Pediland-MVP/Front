@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export function usePlanSelection() {
   const [selectedPlan, setSelectedPlan] =
     useState<PlanNamespace.GET.PlansData["plans"][0]>();
@@ -26,7 +28,7 @@ export function usePlanSelection() {
     mutate,
   } = useSWR<PlanNamespace.GET.PlansData, AxiosError>(
     isAuthenticated
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`
+      ? `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`
       : null,
   );
 

@@ -4,6 +4,8 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function useQuantityUpDown() {
   const t_ec = useTranslations("ERROR_CODES");
   const { pendingOrder, shopId, setOrderQuantity, setOutOfStock, productId } =
@@ -12,7 +14,7 @@ export default function useQuantityUpDown() {
   async function updateQuantity(adjustment: "increment" | "decrement") {
     setLoading(true);
     await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${shopId}/${pendingOrder!.id}/${adjustment === "decrement" ? "quantityDown" : "quantityUp"}`,
+      `${API_URL}/orders/${shopId}/${pendingOrder!.id}/${adjustment === "decrement" ? "quantityDown" : "quantityUp"}`,
       {
         headers: {
           "Content-Type": "application/json",

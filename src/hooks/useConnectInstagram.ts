@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { InstagramNamespace } from "@/types/instagram";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { mutate } from "swr";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 export default function useConnectInstagram() {
   const t = useTranslations("Settings.Accounts");
@@ -23,6 +25,8 @@ export default function useConnectInstagram() {
     await api
       .get(`/instagram/callbackIG?code=${code}`)
       .then(async (res) => {
+        router.push("/");
+        await mutate(mutateIncludeStringKey("me"));
         toast.success(t("instagramConnected"));
       })
       .catch((e) => {

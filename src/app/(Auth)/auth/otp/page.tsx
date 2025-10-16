@@ -27,6 +27,8 @@ import {
 } from "@/components";
 import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
+import { mutate } from "swr";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -81,7 +83,7 @@ export default function OtpPage() {
       const res = await api.post("/auth/mobile/oneTime/signIn", values);
       setAccessToken(res?.data?.data?.accessToken);
       const me = await api.get("/users/me");
-
+      await mutate(mutateIncludeStringKey("/users/me"));
       sessionStorage.removeItem("prelogin_mobile");
 
       if (me?.data?.status === "onboarding") router.push("/auth/onboarding");

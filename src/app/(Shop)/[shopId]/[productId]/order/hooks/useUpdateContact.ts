@@ -9,6 +9,8 @@ import useCheckoutStep from "./useCheckoutStep";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function useUpdateContact() {
   const { getValues } = useFormContext();
   const { pendingOrder, setStep } = useCheckout();
@@ -21,19 +23,16 @@ export default function useUpdateContact() {
 
   async function updateContact() {
     setLoading(true);
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${pendingOrder?.id}/updateContact`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          ...getValues(),
-        }),
-        credentials: "include",
+    await fetch(`${API_URL}/orders/${pendingOrder?.id}/updateContact`, {
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      method: "POST",
+      body: JSON.stringify({
+        ...getValues(),
+      }),
+      credentials: "include",
+    })
       .then(async (res) => {
         if (res.ok) {
           const json = (await res.json()) as OrderNamespace.POST.UpdateContact;

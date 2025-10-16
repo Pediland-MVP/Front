@@ -10,6 +10,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export interface UpgradeContext {
   active: {
     subscriptionInfo: boolean;
@@ -53,7 +55,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     error: subscriptionsError,
   } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(
     isAuthenticated
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`
+      ? `${API_URL}/subscriptions?page=1&limit=5&status=active,reserved`
       : null,
     {
       revalidateOnMount: true,
@@ -69,7 +71,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     mutate,
   } = useSWR<PlanNamespace.GET.PlansData, AxiosError>(
     isAuthenticated
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`
+      ? `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`
       : null,
     {
       shouldRetryOnError: false,

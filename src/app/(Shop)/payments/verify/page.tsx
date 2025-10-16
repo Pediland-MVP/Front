@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 type VerifyPageProps = {
   searchParams: Promise<{
     ItsFree?: boolean;
@@ -30,7 +32,7 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
     if (!Authority && !Status) return;
     setIsLoading(true);
     fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/zarinpal/verify?Authority=${Authority}&Status=${Status}`,
+      `${API_URL}/payments/zarinpal/verify?Authority=${Authority}&Status=${Status}`,
       {
         credentials: "include",
       },

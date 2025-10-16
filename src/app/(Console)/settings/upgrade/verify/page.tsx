@@ -9,6 +9,8 @@ import { mutate } from "swr";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function VerifyPage() {
   const searchParams = useSearchParams();
   const {
@@ -17,35 +19,38 @@ export default function VerifyPage() {
     error,
   } = useSWRImmutable(
     searchParams.get("Authority") && searchParams.get("Status")
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/payments/subscription/zarinpal/verify?Authority=${searchParams.get("Authority")}&Status=${searchParams.get("Status")}`
-      : null
+      ? `${API_URL}/payments/subscription/zarinpal/verify?Authority=${searchParams.get("Authority")}&Status=${searchParams.get("Status")}`
+      : null,
   );
   const t = useTranslations("Upgrade.Verify");
   const t_ec = useTranslations("ERROR_CODES");
 
   useEffect(() => {
-    mutate(mutateIncludeStringKey("plans"))
-  }, [])
+    mutate(mutateIncludeStringKey("plans"));
+  }, []);
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     if (refId) {
-      router.push(`/settings/instagram?isAfterPurchasingPlan`)
+      router.push(`/settings/instagram?isAfterPurchasingPlan`);
     }
-  }, [refId, router])
+  }, [refId, router]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-y-2">
       {isLoading ? (
-        <LoaderSpin/>
+        <LoaderSpin />
       ) : error ? (
         <>
-            <p className="text-4xl font-bold text-red-600">{t("error")}</p>
-            <p>{error.data ? t_ec((error.data as ExceptionMessage)?.code) : t_ec('SERVER_CONNECTION_ERROR')}</p>
+          <p className="text-4xl font-bold text-red-600">{t("error")}</p>
+          <p>
+            {error.data
+              ? t_ec((error.data as ExceptionMessage)?.code)
+              : t_ec("SERVER_CONNECTION_ERROR")}
+          </p>
         </>
-      ) :
-      (
+      ) : (
         <>
           <p className="text-4xl font-bold text-green-600">{t("sucessFull")}</p>
           <p>{t("sucessFullDescription")}</p>

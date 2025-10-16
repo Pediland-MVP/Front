@@ -13,6 +13,8 @@ import {
   ConsoleHeader,
 } from "@components";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export const ConsoleProvider = ({
   children,
 }: {
@@ -26,13 +28,10 @@ export const ConsoleProvider = ({
     data: userData,
     error: userError,
     isLoading: userIsLoading,
-  } = useSWRImmutable<UserNamespace.GET.User>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
-    {
-      revalidateOnMount: true,
-      refreshInterval: 30_000,
-    },
-  );
+  } = useSWRImmutable<UserNamespace.GET.User>(`${API_URL}/users/me`, {
+    revalidateOnMount: true,
+    refreshInterval: 30_000,
+  });
 
   useEffect(() => {
     if (!userIsLoading && userData) {

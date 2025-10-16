@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function useProcessOrder() {
   const { pendingOrder, setIsCompleted } = useCheckout();
   const [loading, setLoading] = useState(false);
@@ -12,16 +14,13 @@ export default function useProcessOrder() {
 
   async function processOrder() {
     setLoading(true);
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/${pendingOrder?.id}/process`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
+    await fetch(`${API_URL}/orders/${pendingOrder?.id}/process`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      credentials: "include",
+    })
       .then(async (res) => {
         if (res.ok) {
           setIsCompleted(true);

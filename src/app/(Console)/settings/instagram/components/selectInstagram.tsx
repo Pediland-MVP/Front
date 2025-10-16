@@ -32,6 +32,8 @@ import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export type DrawerDialogDemoProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -110,7 +112,7 @@ function SelectPagesForm({
     isLoading: isInstagramPagesLoading,
     error: instagramPagesError,
   } = useSWRImmutable<InstagramNamespace.GET["Pages"] | APIError>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/${facebookAccountId}/instagramPages`,
+    `${API_URL}/instagram/${facebookAccountId}/instagramPages`,
     fetcher,
   );
 
@@ -125,13 +127,10 @@ function SelectPagesForm({
     e.preventDefault();
     const pageId = e.currentTarget.dataset.id;
     setLoading({ id: pageId! });
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/select/${facebookAccountId}/${pageId}`,
-      {
-        method: "PATCH",
-        credentials: "include",
-      },
-    )
+    await fetch(`${API_URL}/instagram/select/${facebookAccountId}/${pageId}`, {
+      method: "PATCH",
+      credentials: "include",
+    })
       .then(async (res) => {
         const response = await res.json();
         if (!res.ok) {
@@ -142,9 +141,7 @@ function SelectPagesForm({
           return;
         }
         toast(t("accountSelectedSuccess"));
-        await mutate(
-          `${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/accounts`,
-        );
+        await mutate(`${API_URL}/instagram/accounts`);
         setOpen(false);
         router.push("/accounts");
       })

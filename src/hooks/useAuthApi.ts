@@ -1,21 +1,15 @@
-import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
+import { useLogout } from "./swr/api-client";
 
 export function useAuthApi() {
   const router = useRouter();
-  const { setAuth, logout } = useAuthStore();
+  const logout = useLogout();
 
   const refreshToken = async () => {
     try {
       const res = await fetch("/api/refresh-token", { credentials: "include" });
       if (!res.ok) throw new Error("refresh failed");
       const data = await res.json();
-      setAuth({
-        isLoggedIn: true,
-        isOnboarding: data.status === "onboarding",
-        isConnected: data.instagramConnected,
-        token: data.token,
-      });
       return true;
     } catch {
       logout();
@@ -33,11 +27,6 @@ export function useAuthApi() {
         return fetchProfile();
       }
       const data = await res.json();
-      setAuth({
-        isLoggedIn: true,
-        isOnboarding: data.status === "onboarding",
-        isConnected: data.instagramConnected,
-      });
     } catch (e) {
       logout();
       router.replace("/auth");

@@ -17,6 +17,8 @@ import { CommentNamespace } from "@/types/comments/comment.namespace";
 import CommentTopBar from "./commentTopBar";
 import CommentMessages from "./commentMessages";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function Component({ id }: { id: string }) {
   const [comment, setComment] = useState<CommentNamespace.GET.Comment>();
   const [lastReplyId, setLastReplyId] = useState<string>();
@@ -26,14 +28,14 @@ export default function Component({ id }: { id: string }) {
     isLoading,
     mutate: mutateComments,
   } = useSWR<CommentNamespace.GET.Comment>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/${id}?includeReplies=true`
+    `${API_URL}/comments/${id}?includeReplies=true`,
   );
 
   useEffect(() => {
     if (!isLoading && !error) {
       if (lastReplyId) {
         const isHaveLastReply = data?.replies?.some(
-          (reply) => reply.commentId === lastReplyId
+          (reply) => reply.commentId === lastReplyId,
         );
         if (isHaveLastReply) {
           setLastReplyId(undefined);
@@ -65,7 +67,7 @@ export default function Component({ id }: { id: string }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        className="w-full md:w-2/3 bg-white h-full border-l-2 border-gray-100"
+        className="h-full w-full border-l-2 border-gray-100 bg-white md:w-2/3"
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
@@ -74,8 +76,8 @@ export default function Component({ id }: { id: string }) {
         {isLoading || !comment ? (
           <CommentSkeleton />
         ) : (
-          <Card className="flex w-full h-full p-5">
-            <div className="w-full flex flex-col h-svh lg:max-h-[calc(100vh-138px)]">
+          <Card className="flex h-full w-full p-5">
+            <div className="flex h-svh w-full flex-col lg:max-h-[calc(100vh-138px)]">
               <CommentTopBar instagramPost={comment.instagramPost} />
               <CommentMessages comment={comment} />
               <CommentFooter commentId={id} addReply={addReply} />

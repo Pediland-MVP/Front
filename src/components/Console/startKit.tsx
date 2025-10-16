@@ -13,6 +13,8 @@ import DiscountText from "@/components/ui-custom/discountText";
 import { Button } from "@/components/ui/button";
 import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 type StartKitProps = {
   isAfterPurchasingPlan?: boolean;
 };
@@ -81,9 +83,7 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
         <DiscountText />
 
         <div className="text-center">
-          <Link
-            href={`${process.env.NEXT_PUBLIC_BACK_API_URL}/instagram/connectIG`}
-          >
+          <Link href={`${API_URL}/instagram/connectIG`}>
             <Button className="mt-4 w-full bg-green-500 text-white hover:bg-green-400">
               <>
                 <PlugIcon weight="duotone" className="h-5 w-5" />

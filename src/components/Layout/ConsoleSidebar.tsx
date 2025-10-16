@@ -25,6 +25,8 @@ import {
   SlidersIcon,
 } from "@phosphor-icons/react";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,
   ssr: false,
@@ -101,13 +103,10 @@ export const ConsoleSidebar = ({
     data: userData,
     error: userError,
     isLoading: userIsLoading,
-  } = useSWRImmutable<UserNamespace.GET.User>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/users/me`,
-    {
-      revalidateOnMount: true,
-      refreshInterval: 30_000,
-    },
-  );
+  } = useSWRImmutable<UserNamespace.GET.User>(`${API_URL}/users/me`, {
+    revalidateOnMount: true,
+    refreshInterval: 30_000,
+  });
 
   return (
     <Sidebar variant="inset" collapsible="offcanvas" {...props}>

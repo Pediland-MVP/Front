@@ -7,6 +7,8 @@ import { OrderNamespace } from "@/types/order/order.namespace";
 import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function OrderPage(props: {
   params: Promise<{ shopId: string; productId: string }>;
   searchParams: Promise<{ token?: string }>;
@@ -21,7 +23,7 @@ export default function OrderPage(props: {
     error: authenticationError,
   } = useSWRImmutable(
     token && shopId && productId
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/auth/leadInstagram/${shopId}/${productId}?token=${token}`
+      ? `${API_URL}/auth/leadInstagram/${shopId}/${productId}?token=${token}`
       : null,
   );
   const {
@@ -30,9 +32,7 @@ export default function OrderPage(props: {
     error: pendingOrderError,
     mutate,
   } = useSWR<OrderNamespace.GET.Pending>(
-    token && shopId && productId
-      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`
-      : null,
+    token && shopId && productId ? `${API_URL}/orders/pending` : null,
   );
 
   //NOTE: Delete pending order if this new order product is not equal to previous

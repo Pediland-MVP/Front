@@ -16,6 +16,8 @@ import { mutate } from "swr";
 import { z } from "zod";
 import { EmojiPicker } from "../../../directs/components/emojiPicker";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 interface RedesignedCommentFooterProps {
   commentId: string;
   addReply: (replyData: any) => void;
@@ -44,7 +46,7 @@ export default function RedesignedCommentFooter({
   const onSubmit = async (data: FormData) => {
     try {
       const response = await api.post<{ message: string[] }>(
-        `${process.env.NEXT_PUBLIC_BACK_API_URL}/comments/reply/${commentId}`,
+        `${API_URL}/comments/reply/${commentId}`,
         data,
         {
           withCredentials: true,

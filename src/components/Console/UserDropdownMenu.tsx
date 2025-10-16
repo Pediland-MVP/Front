@@ -1,11 +1,10 @@
 "use client";
 
 import { useLogout } from "@/hooks/swr/api-client";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 import {
   DropdownMenu,
@@ -42,6 +41,7 @@ export const UserDropdownMenu = ({
 
   const logoutHandler = async () => {
     setIsLogoutLoading(true);
+
     try {
       const success = await logout();
       if (success) {

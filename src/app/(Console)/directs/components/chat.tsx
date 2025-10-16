@@ -11,6 +11,8 @@ import { ChatMessages } from "./chatMessages";
 import ChatTopbar from "./chatTopbar";
 import useFetchMessages from "./useFetchMessages";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 interface ChatProps {
   leadId: string;
 }
@@ -23,7 +25,7 @@ export function Chat({ leadId }: ChatProps) {
     isLoading: isLeadLoading,
     error: leadError,
   } = useSWR<leadNamespace.GET["One"]>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/${leadId}?leadInstagram=true`,
+    `${API_URL}/leads/${leadId}?leadInstagram=true`,
   );
 
   useEffect(() => {

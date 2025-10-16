@@ -3,6 +3,8 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export const useUpdateAttributes = () => {
   const [loading, setLoading] = useState(false);
   const t = useTranslations("Checkout");
@@ -10,19 +12,16 @@ export const useUpdateAttributes = () => {
 
   const updateAttributes = async (attributeValueIds: number[]) => {
     setLoading(true);
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/updateAttributes`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          attributeValueIds,
-        }),
+    await fetch(`${API_URL}/orders/updateAttributes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      credentials: "include",
+      body: JSON.stringify({
+        attributeValueIds,
+      }),
+    })
       .then(async (res) => {
         if (res.ok) {
           return;

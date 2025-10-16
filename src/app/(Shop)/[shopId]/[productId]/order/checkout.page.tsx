@@ -42,6 +42,8 @@ import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
 import { toast } from "sonner";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
   loading: () => <CustomerDetailsSkeleton />,
   ssr: false,
@@ -125,19 +127,16 @@ export default function CheckoutPage({
     data: _pendingOrder,
     isLoading: isLoadingPendingOrder,
     error: errorPendingOrder,
-  } = useSWR<OrderNamespace.GET.Pending>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/orders/pending`,
-    {
-      refreshInterval: 30_000,
-    },
-  );
+  } = useSWR<OrderNamespace.GET.Pending>(`${API_URL}/orders/pending`, {
+    refreshInterval: 30_000,
+  });
 
   const {
     data: product,
     isLoading: isLoadingProduct,
     error: productError,
   } = useSWRImmutable<ProductNamespace.PublicProduct>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/products/${productId}`,
+    `${API_URL}/products/${productId}`,
     fetcher2,
   );
 
@@ -145,10 +144,7 @@ export default function CheckoutPage({
     data: lead,
     isLoading: isLoadingLead,
     error: errorLead,
-  } = useSWRImmutable(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/leads/my/contact`,
-    fetcher2,
-  );
+  } = useSWRImmutable(`${API_URL}/leads/my/contact`, fetcher2);
 
   useEffect(() => {
     if (errorLead) {
@@ -213,9 +209,7 @@ export default function CheckoutPage({
     data: shop,
     isLoading: isLoadingShop,
     error: shopError,
-  } = useSWRImmutable<ShopNamespace.GET.Shop>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/shops/${shopId}`,
-  );
+  } = useSWRImmutable<ShopNamespace.GET.Shop>(`${API_URL}/shops/${shopId}`);
 
   useEffect(() => {
     if (shop) {

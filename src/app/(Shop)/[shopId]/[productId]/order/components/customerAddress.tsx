@@ -37,6 +37,8 @@ import { onInputP2EHandler } from "@/utils/p2eNumber";
 import useCheckoutStep from "../hooks/useCheckoutStep";
 import { ShippingInfo } from "./shippingInfo";
 
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+
 export default function Address() {
   const t = useTranslations("Checkout");
 
@@ -57,12 +59,9 @@ export default function Address() {
     error: provincesError,
     isLoading: provincesIsLoading,
     mutate: fetchProvinces,
-  } = useSWRImmutable<ProvinceNamespace.GET>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities/provinces`,
-    {
-      revalidateOnMount: true,
-    },
-  );
+  } = useSWRImmutable<ProvinceNamespace.GET>(`${API_URL}/cities/provinces`, {
+    revalidateOnMount: true,
+  });
 
   const {
     data: cities,
@@ -70,9 +69,7 @@ export default function Address() {
     isLoading: citiesIsLoading,
     mutate: fetchCities,
   } = useSWRImmutable<CityNamespace.GET>(
-    () =>
-      `${process.env.NEXT_PUBLIC_BACK_API_URL}/cities?provinceId=` +
-      `${watch("state")}`,
+    () => `${API_URL}/cities?provinceId=` + `${watch("state")}`,
     {
       revalidateOnMount: true,
     },
