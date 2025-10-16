@@ -25,7 +25,7 @@ import { UserCirclePlusIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
-export default function RegisterPage() {
+export default function OnboardingPage() {
   const { user, isLoading, isAuthenticated, mutate } = useUser();
   const { setLoading: setGlobalLoading } = useGlobalLoading();
   const router = useRouter();

@@ -6,47 +6,30 @@ import { useEffect, useState } from "react";
 
 import { LoadingLogo } from "@components";
 
-export const InstagramGuard = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { hasInstagram, isLoading, status } = useUser();
-  const [pageShow, setPageShow] = useState(false);
+export const InstagramGuard = ({ children }: { children: React.ReactNode }) => {
+  // const router = useRouter();
+  // const pathname = usePathname();
+  // const { hasInstagram, isLoading: isUserLoading } = useUser();
+  // const [isPageShow, setIsPageShow] = useState(false);
 
   // useEffect(() => {
-  //   if (isLoading || !pathname || !router || !status) {
+  //   if (isUserLoading || !pathname || !router) {
   //     return;
   //   }
 
   //   const isConnectPage = pathname === "/connect";
-
-  //   if (status === "onboarding") {
-  //     router.push("/auth/register");
-  //   } else {
-  //     if (hasInstagram) {
-  //       if (isConnectPage) {
-  //         router.push("/");
-  //       } else {
-  //         setPageShow(true);
-  //       }
-  //     } else {
-  //       if (isConnectPage) {
-  //         setPageShow(true);
-  //       } else {
-  //         router.push("/connect");
-  //       }
-  //     }
+  //   if (!isConnectPage && !hasInstagram) {
+  //     return router.push("/connect");
   //   }
-  // }, [hasInstagram, isLoading, pathname, router]);
 
-  // if (isLoading) {
+  //   setIsPageShow(true);
+  // }, [hasInstagram, isUserLoading, pathname, router]);
+
+  // if (isUserLoading) {
   //   return <LoadingLogo />;
   // }
 
-  // if (!pageShow) {
+  // if (!isPageShow) {
   //   return null;
   // }
 

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import * as jose from "jose";
 
 const UUID_REGEX =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -55,43 +54,17 @@ async function authMiddleware(request: NextRequest) {
   const token = request.cookies.get("token");
 
   if (!token) {
-    if (request.nextUrl.pathname === "/auth/register") {
+    if (request.nextUrl.pathname === "/auth/onboarding") {
       return CustomResponse.redirect(new URL("/auth", request.url), request);
     }
     return CustomResponse.next(request);
   }
 
-  const jwt = await parseJwt(token.value, request);
-  console.log("✅ Valid token, redirecting to home", jwt);
-
-  // if (!jwt) {
-  //   console.log("❌ Invalid token, allowing access to auth pages");
-  //   return CustomResponse.next(request);
-  // }
-
-  if (request.nextUrl.pathname === "/auth/register") {
+  if (request.nextUrl.pathname === "/auth/onboarding") {
     return CustomResponse.next(request);
   }
 
   return CustomResponse.redirect(new URL("/", request.url), request);
-}
-
-// JWT Validation
-async function parseJwt(token: string, request: NextRequest) {
-  try {
-    console.log("🔐 Validating JWT...");
-    console.log("Token (first 50 chars):", token.substring(0, 50) + "...");
-    console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET);
-    
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const jwt = await jose.jwtVerify(token, secret);
-    console.log("✅ JWT validation successful");
-    return jwt;
-  } catch (error) {
-    console.log("❌ JWT validation failed:", error.message);
-    console.log("Error type:", error.constructor.name);
-    return false;
-  }
 }
 
 // Custom Response

@@ -104,7 +104,7 @@ export default function OtpPage() {
       sessionStorage.removeItem("prelogin_mobile");
 
       // setGlobalLoading(true);
-      if (me?.data?.status === "onboarding") router.push("/auth/register");
+      if (me?.data?.status === "onboarding") router.push("/auth/onboarding");
       else router.push("/");
     } catch (error) {
       console.error("❌ API Error:", error.response?.data);

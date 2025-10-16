@@ -1,32 +1,47 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import useUser from "@/hooks/useUser";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AuthProvider({
-  initialAuth,
   children,
 }: {
-  initialAuth: any;
   children: React.ReactNode;
 }) {
-  const { isLoggedIn, setIsLoggedIn } = useAuthStore();
+  const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const { isOnboarding, hasInstagram, isLoading: isUserLoading } = useUser();
 
   useEffect(() => {
-    // Set initial auth state from server
-    if (initialAuth?.isLoggedIn !== undefined) {
-      setIsLoggedIn(initialAuth.isLoggedIn);
-    }
-  }, [initialAuth, setIsLoggedIn]);
+    if (isUserLoading) return;
 
-  useEffect(() => {
-    // Redirect to home if user is logged in
-    if (isLoggedIn) {
-      router.push('/');
+    if (pathname === "/connect") {
+      if (!isOnboarding) {
+        return router.push("/auth/onboarding");
+      }
+
+      if (hasInstagram) {
+        return router.push("/");
+      }
+      return;
     }
-  }, [isLoggedIn, router]);
+
+    if (!isOnboarding) {
+      return setIsAllowed(true);
+    }
+
+    if (!hasInstagram) {
+      return router.push("/connect");
+    }
+    router.push("/auth/onboarding");
+  }, [isOnboarding, isUserLoading]);
+
+  if (!isAllowed) {
+    return null;
+  }
 
   return <>{children}</>;
 }
