@@ -53,7 +53,6 @@ export default async function ConsoleLayout({
             <StandaloneChecker>
               <NextIntlClientProvider messages={messages}>
                 <ZodErrorsMapProvider>
-                  {/* <InstagramGuard> */}
                   <ConsoleProvider>
                     <InstagramTokenErrorDialog />
 
@@ -63,7 +62,6 @@ export default async function ConsoleLayout({
 
                     <NavBottom />
                   </ConsoleProvider>
-                  {/* </InstagramGuard> */}
                 </ZodErrorsMapProvider>
 
                 <Toaster

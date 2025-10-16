@@ -18,29 +18,43 @@ export default function AuthProvider({
   useEffect(() => {
     if (isUserLoading) return;
 
-    if (pathname === "/connect") {
-      if (!isOnboarding) {
-        return router.push("/auth/onboarding");
+    if (pathname.startsWith("/auth")) {
+      if (pathname === "/auth/onboarding") {
+        if (!isOnboarding) {
+          return router.push("/");
+        }
+
+        return setIsAllowed(true);
       }
 
-      if (hasInstagram) {
-        return router.push("/");
-      }
-      return;
-    }
-
-    if (!isOnboarding) {
       return setIsAllowed(true);
     }
 
-    if (!hasInstagram) {
+    if (pathname === "/connect") {
+      if (hasInstagram) {
+        return router.push("/");
+      }
+
+      if (isOnboarding) {
+        return router.push("/auth/onboarding");
+      }
+
+      return setIsAllowed(true);
+    }
+
+    if (isOnboarding) {
+      return router.push("/auth/onboarding");
+    }
+
+    if (!isOnboarding && !hasInstagram) {
       return router.push("/connect");
     }
-    router.push("/auth/onboarding");
-  }, [isOnboarding, isUserLoading]);
+
+    return setIsAllowed(true);
+  }, [isOnboarding, isUserLoading, pathname]);
 
   if (!isAllowed) {
-    return null;
+    return <>Not Allowed ⛔</>;
   }
 
   return <>{children}</>;

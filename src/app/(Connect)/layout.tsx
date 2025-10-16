@@ -16,6 +16,7 @@ import {
   ZodErrorsMapProvider,
 } from "@components";
 import { HeadsetIcon, SignOutIcon } from "@phosphor-icons/react/dist/ssr";
+import AuthProvider from "@/components/Providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -40,10 +41,10 @@ export default async function ConsoleLayout({
     >
       <body className="bg-pink-400">
         <SWRProvider>
-          <StandaloneChecker>
-            <NextIntlClientProvider messages={messages}>
-              <ZodErrorsMapProvider>
-                <InstagramGuard>
+          <AuthProvider>
+            <StandaloneChecker>
+              <NextIntlClientProvider messages={messages}>
+                <ZodErrorsMapProvider>
                   <InstagramTokenErrorDialog />
 
                   <main className="flex h-screen flex-col bg-gradient-to-tl from-blue-500 to-violet-700">
@@ -70,18 +71,18 @@ export default async function ConsoleLayout({
                       {children}
                     </div>
                   </main>
-                </InstagramGuard>
-              </ZodErrorsMapProvider>
+                </ZodErrorsMapProvider>
 
-              <Toaster
-                richColors
-                theme="light"
-                toastOptions={{
-                  className: "font-Yekan text-[13px]",
-                }}
-              />
-            </NextIntlClientProvider>
-          </StandaloneChecker>
+                <Toaster
+                  richColors
+                  theme="light"
+                  toastOptions={{
+                    className: "font-Yekan text-[13px]",
+                  }}
+                />
+              </NextIntlClientProvider>
+            </StandaloneChecker>
+          </AuthProvider>
         </SWRProvider>
         <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
