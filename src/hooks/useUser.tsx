@@ -9,23 +9,21 @@ import { useEffect } from "react";
 export default function useUser() {
   const { data, error, isLoading, mutate } =
     useSWR<UserNamespace.GET.User>("/users/me");
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const { setIsLoggedIn } = useAuthStore();
 
   useEffect(() => {
     if (data) {
-      setAuth({
-        isLoggedIn: true,
-        isOnboarding: data.status === "onboarding",
-        isConnected: Boolean(data.instagrams?.length),
-      });
+      setIsLoggedIn(true);
+    } else if (error) {
+      setIsLoggedIn(false);
     }
-  }, [data, setAuth]);
+  }, [data, error, setIsLoggedIn]);
 
   return {
     error,
     hasInstagram: Boolean(data?.instagrams?.length),
     hasSubscription: Boolean(data?.subscriptions?.length),
-    isAuthenticated: !!getAccessToken(),
+    isAuthenticated: !!data && !error, // Only authenticated if we have user data and no error
     isError: !!error,
     isLoading,
     mutate,

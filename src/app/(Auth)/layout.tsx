@@ -25,8 +25,8 @@ export default async function AuthLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
-  // const token = (await cookies()).get("token");
-  // let initialAuth = { isLoggedIn: !!token }; // فقط همین کافی است
+  const token = (await cookies()).get("token");
+  let initialAuth = { isLoggedIn: !!token };
 
   return (
     <html

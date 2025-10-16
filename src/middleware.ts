@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import * as jose from "jose";
-import createNextIntlPlugin from "next-intl/plugin";
 
-const withNextIntl = createNextIntlPlugin();
 const UUID_REGEX =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
@@ -27,6 +25,7 @@ export default async function middleware(request: NextRequest) {
   // Check for shops that's are like this: /cvexor/0f7d0b72-fac4-4c52-a9af-0a0607bee542/order
   const splittedPathname = request.nextUrl.pathname.split("/");
   splittedPathname.shift();
+
   if (splittedPathname.length === 3 && splittedPathname.at(-1) === "order") {
     if (UUID_REGEX.test(splittedPathname[1])) {
       return CustomResponse.next(request);
@@ -40,6 +39,7 @@ export default async function middleware(request: NextRequest) {
   return consoleMiddleware(request);
 }
 
+// Console Middleware
 async function consoleMiddleware(request: NextRequest) {
   const token = request.cookies.get("token");
 
@@ -50,18 +50,24 @@ async function consoleMiddleware(request: NextRequest) {
   return CustomResponse.next(request);
 }
 
+// Auth Middleware
 async function authMiddleware(request: NextRequest) {
   const token = request.cookies.get("token");
 
-  // if (!token) {
-  //   return CustomResponse.redirect(new URL("/auth", request.url), request);
-  // }
-
-  const jwt = await parseJwt(token.value, request);
-
-  if (!jwt) {
+  if (!token) {
+    if (request.nextUrl.pathname === "/auth/register") {
+      return CustomResponse.redirect(new URL("/auth", request.url), request);
+    }
     return CustomResponse.next(request);
   }
+
+  const jwt = await parseJwt(token.value, request);
+  console.log("✅ Valid token, redirecting to home", jwt);
+
+  // if (!jwt) {
+  //   console.log("❌ Invalid token, allowing access to auth pages");
+  //   return CustomResponse.next(request);
+  // }
 
   if (request.nextUrl.pathname === "/auth/register") {
     return CustomResponse.next(request);
@@ -70,19 +76,25 @@ async function authMiddleware(request: NextRequest) {
   return CustomResponse.redirect(new URL("/", request.url), request);
 }
 
+// JWT Validation
 async function parseJwt(token: string, request: NextRequest) {
   try {
-    console.time("jwtVerify");
+    console.log("🔐 Validating JWT...");
+    console.log("Token (first 50 chars):", token.substring(0, 50) + "...");
+    console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET);
+    
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const jwt = await jose.jwtVerify(token, secret);
-    console.timeEnd("jwtVerify");
+    console.log("✅ JWT validation successful");
     return jwt;
-    // return !!token ? {payload: {isVerified: true}} : false
   } catch (error) {
+    console.log("❌ JWT validation failed:", error.message);
+    console.log("Error type:", error.constructor.name);
     return false;
   }
 }
 
+// Custom Response
 export class CustomResponse {
   static redirect(
     url: string | URL,
@@ -101,6 +113,7 @@ export class CustomResponse {
   }
 }
 
+// Config
 export const config = {
   matcher: [
     "/((?!api|payments/verify|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|fonts).*)",

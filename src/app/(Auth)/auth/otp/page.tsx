@@ -94,7 +94,7 @@ export default function OtpPage() {
   const otpCompleted = () => form.handleSubmit(onSubmit)();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const res = await api.post("/auth/mobile/oneTime/signIn", values);
       setAccessToken(res?.data?.data?.accessToken);
@@ -103,7 +103,7 @@ export default function OtpPage() {
       // پاکسازی sessionStorage
       sessionStorage.removeItem("prelogin_mobile");
 
-      setGlobalLoading(true);
+      // setGlobalLoading(true);
       if (me?.data?.status === "onboarding") router.push("/auth/register");
       else router.push("/");
     } catch (error) {
@@ -183,7 +183,7 @@ export default function OtpPage() {
                       pattern={REGEXP_ONLY_DIGITS}
                       onComplete={otpCompleted}
                     >
-                      <InputOTPGroup>
+                      <InputOTPGroup autoFocus>
                         <InputOTPSlot index={0} />
                         <InputOTPSlot index={1} />
                         <InputOTPSlot index={2} />

@@ -1,4 +1,4 @@
-import { SWRProvider } from "@/hooks/swr/api-client";
+import api, { SWRProvider } from "@/hooks/swr/api-client";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -21,6 +21,10 @@ import { cookies } from "next/headers";
 import * as jose from "jose";
 import AuthProvider from "@/components/Providers/AuthProvider";
 import { redirect } from "next/navigation";
+import useUser from "@/hooks/useUser";
+import axios from "axios";
+
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -37,8 +41,6 @@ export default async function ConsoleLayout({
 
   // 1️⃣ Read token from cookie
   // const token = (await cookies()).get("token")?.value;
-
-  // console.log("token............ ⭕⭕⭕", token);
 
   // if (!token) {
   //   redirect("/auth");
@@ -82,33 +84,33 @@ export default async function ConsoleLayout({
     >
       <body className="bg-red-600">
         {/* <AuthProvider initialAuth={initialAuth}> */}
-          <SWRProvider>
-            <StandaloneChecker>
-              <NextIntlClientProvider messages={messages}>
-                <ZodErrorsMapProvider>
-                  {/* <InstagramGuard> */}
-                    <ConsoleProvider>
-                      <InstagramTokenErrorDialog />
+        <SWRProvider>
+          <StandaloneChecker>
+            <NextIntlClientProvider messages={messages}>
+              <ZodErrorsMapProvider>
+                {/* <InstagramGuard> */}
+                <ConsoleProvider>
+                  <InstagramTokenErrorDialog />
 
-                      <SubscriptionExpireWarningDialog />
+                  <SubscriptionExpireWarningDialog />
 
-                      {children}
+                  {children}
 
-                      <NavBottom />
-                    </ConsoleProvider>
-                  {/* </InstagramGuard> */}
-                </ZodErrorsMapProvider>
+                  <NavBottom />
+                </ConsoleProvider>
+                {/* </InstagramGuard> */}
+              </ZodErrorsMapProvider>
 
-                <Toaster
-                  richColors
-                  theme="light"
-                  toastOptions={{
-                    className: "font-Yekan text-[13px]",
-                  }}
-                />
-              </NextIntlClientProvider>
-            </StandaloneChecker>
-          </SWRProvider>
+              <Toaster
+                richColors
+                theme="light"
+                toastOptions={{
+                  className: "font-Yekan text-[13px]",
+                }}
+              />
+            </NextIntlClientProvider>
+          </StandaloneChecker>
+        </SWRProvider>
         {/* </AuthProvider> */}
         <GoftinoSnippet goftinoKey="amN3YU" />
       </body>

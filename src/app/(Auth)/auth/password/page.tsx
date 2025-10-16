@@ -121,12 +121,14 @@ export default function PasswordPage() {
         withCredentials: true,
       });
       setAccessToken(res?.data?.data?.accessToken);
-      useAuthStore.getState().setAuth({
-        isLoggedIn: true,
-        token: res.data.data.accessToken,
-      });
 
-      setGlobalLoading(true);
+      // useAuthStore.getState().setAuth({
+      //   isLoggedIn: true,
+      //   token: res.data.data.accessToken,
+      // });
+
+      // setGlobalLoading(true);
+
       router.push("/");
     } catch (error) {
       const message = error.response?.data?.message;

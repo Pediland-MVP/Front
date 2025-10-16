@@ -45,19 +45,23 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
 
   const [discountCode, setDiscountCode] = useState<string>("");
 
+  const { isAuthenticated } = useUser();
+
   const {
     data: subscriptionsData,
     isLoading: isSubscriptionsLoading,
     error: subscriptionsError,
   } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(
-    `${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`,
+    isAuthenticated 
+      ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`
+      : null,
     {
       revalidateOnMount: true,
       refreshInterval: 30_000,
+      shouldRetryOnError: false,
+      errorRetryCount: 0,
     },
   );
-
-  const { isAuthenticated } = useUser();
   const {
     data: plansData,
     isLoading: isPlansLoading,
@@ -67,6 +71,10 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated
       ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`
       : null,
+    {
+      shouldRetryOnError: false,
+      errorRetryCount: 0,
+    }
   );
   const plans = plansData?.plans;
 
@@ -107,13 +115,29 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(isPlansLoading || isSubscriptionsLoading);
   }, [isPlansLoading, isSubscriptionsLoading]);
 
+  // Handle errors gracefully
+  if (plansError || subscriptionsError) {
+    console.error('API Error:', { plansError, subscriptionsError });
+    return (
+      <div className="p-4 text-red-600">
+        <p>Unable to load subscription data. Please try again later.</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-2 px-4 py-2 bg-red-100 rounded"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <UpgradeContext.Provider
       value={{
         active,
         setActive,
-        subscriptions: subscriptionsData?.items!,
-        plans: plans!,
+        subscriptions: subscriptionsData?.items || [],
+        plans: plans || [],
         plansData,
         discountCode,
         setDiscountCode,
