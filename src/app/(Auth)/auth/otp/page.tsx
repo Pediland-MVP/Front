@@ -156,8 +156,9 @@ export default function OtpPage() {
                       {...field}
                       pattern={REGEXP_ONLY_DIGITS}
                       onComplete={otpCompleted}
+                      autoFocus
                     >
-                      <InputOTPGroup autoFocus>
+                      <InputOTPGroup>
                         <InputOTPSlot index={0} />
                         <InputOTPSlot index={1} />
                         <InputOTPSlot index={2} />

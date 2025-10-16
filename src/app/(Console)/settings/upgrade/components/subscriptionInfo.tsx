@@ -66,10 +66,6 @@ export default function SubscriptionInfo() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  if (!active.subscriptionInfo) {
-    return null;
-  }
-
   return (
     <div className="_subscription-info-page flex h-full rounded-t-3xl bg-white md:rounded-t-none">
       <div className="h-full w-full sm:w-3/5">

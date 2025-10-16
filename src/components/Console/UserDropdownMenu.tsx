@@ -1,11 +1,11 @@
 "use client";
 
-import api, { clearAccessToken } from "@/hooks/swr/api-client";
-import { AxiosResponse } from "axios";
+import { useLogout } from "@/hooks/swr/api-client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 import {
   DropdownMenu,
@@ -14,11 +14,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  LoaderSpin,
+  Spinner,
   useSidebar,
 } from "@components";
 import { CrownIcon, LogOutIcon, UserRoundPenIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface UserDropdownMenuProps {
   children: React.ReactNode;
@@ -32,6 +31,7 @@ export const UserDropdownMenu = ({
   const router = useRouter();
   const { isMobile, setOpenMobile } = useSidebar();
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
+  const logout = useLogout();
 
   const t = useTranslations("Console.Sidebar");
 
@@ -40,23 +40,18 @@ export const UserDropdownMenu = ({
     setOpenMobile(false);
   };
 
-  const logoutHandler = async (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => {
-    e.preventDefault();
+  const logoutHandler = async () => {
     setIsLogoutLoading(true);
-    await api
-      .delete("/auth/logout")
-      .then(async (res: AxiosResponse) => {
-        clearAccessToken();
-        routeHandler(process.env.NEXT_PUBLIC_LANDING_URL);
-      })
-      .catch((e) => {
-        toast.error(t("logoutFailed"));
-      })
-      .finally(() => {
-        setIsLogoutLoading(false);
-      });
+    try {
+      const success = await logout();
+      if (success) {
+        router.push(process.env.NEXT_PUBLIC_LANDING_URL || "/auth");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setIsLogoutLoading(false);
+    }
   };
 
   return (
@@ -75,7 +70,7 @@ export const UserDropdownMenu = ({
       >
         <DropdownMenuGroup>
           <DropdownMenuItem
-            className="hover:text-primary cursor-pointer"
+            className="hover:text-primary text-secondary cursor-pointer"
             onClick={() => routeHandler("/settings/upgrade")}
           >
             <CrownIcon />
@@ -87,7 +82,7 @@ export const UserDropdownMenu = ({
 
         <DropdownMenuGroup>
           <DropdownMenuItem
-            className="hover:text-primary cursor-pointer"
+            className="hover:text-primary text-secondary cursor-pointer"
             onClick={() => routeHandler("/profile")}
           >
             <UserRoundPenIcon />
@@ -99,9 +94,9 @@ export const UserDropdownMenu = ({
 
         <DropdownMenuItem
           onClick={logoutHandler}
-          className="hover:text-primary cursor-pointer"
+          className="text-secondary flex cursor-pointer items-center"
         >
-          {isLogoutLoading ? <LoaderSpin /> : <LogOutIcon />}
+          {isLogoutLoading ? <Spinner /> : <LogOutIcon />}
           {t("logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>

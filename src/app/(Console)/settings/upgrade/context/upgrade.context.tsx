@@ -52,7 +52,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     isLoading: isSubscriptionsLoading,
     error: subscriptionsError,
   } = useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(
-    isAuthenticated 
+    isAuthenticated
       ? `${process.env.NEXT_PUBLIC_BACK_API_URL}/subscriptions?page=1&limit=5&status=active,reserved`
       : null,
     {
@@ -74,7 +74,7 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     {
       shouldRetryOnError: false,
       errorRetryCount: 0,
-    }
+    },
   );
   const plans = plansData?.plans;
 
@@ -114,22 +114,6 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setIsLoading(isPlansLoading || isSubscriptionsLoading);
   }, [isPlansLoading, isSubscriptionsLoading]);
-
-  // Handle errors gracefully
-  if (plansError || subscriptionsError) {
-    console.error('API Error:', { plansError, subscriptionsError });
-    return (
-      <div className="p-4 text-red-600">
-        <p>Unable to load subscription data. Please try again later.</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-2 px-4 py-2 bg-red-100 rounded"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
 
   return (
     <UpgradeContext.Provider

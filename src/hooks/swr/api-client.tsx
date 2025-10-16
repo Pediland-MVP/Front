@@ -240,9 +240,8 @@ export function useLogout() {
 
   return async () => {
     try {
-      await api.post("/auth/logout");
+      await api.delete("/auth/logout");
       clearAccessToken();
-      // Invalidate everything in SWR cache (no revalidate)
       await mutate(() => true, undefined, { revalidate: false });
       return true;
     } catch (error) {

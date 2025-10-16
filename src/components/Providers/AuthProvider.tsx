@@ -1,7 +1,7 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LoadingLogo } from "../Global";
 
@@ -13,6 +13,7 @@ export default function AuthProvider({
   const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { isOnboarding, hasInstagram, isLoading: isUserLoading } = useUser();
 
@@ -24,6 +25,7 @@ export default function AuthProvider({
     const isAuthRoute = pathname.startsWith("/auth");
     const isOnboardingPage = pathname === "/auth/onboarding";
     const isConnectPage = pathname === "/connect";
+    const isInstagramPage = pathname === "/settings/instagram";
 
     if (isAuthRoute) {
       if (isOnboardingPage && !isOnboarding) redirect = "/";
@@ -34,15 +36,19 @@ export default function AuthProvider({
       else setIsAllowed(true);
     } else {
       if (isOnboarding) redirect = "/auth/onboarding";
-      else if (!hasInstagram) redirect = "/connect";
-      else setIsAllowed(true);
+      else if (!hasInstagram) {
+        if (isInstagramPage && searchParams.get("code")) {
+          setIsAllowed(true);
+        } else {
+          redirect = "/connect";
+        }
+      } else setIsAllowed(true);
     }
 
     if (redirect) router.push(redirect);
-  }, [isOnboarding, isUserLoading, pathname]);
+  }, [isOnboarding, isUserLoading, pathname, searchParams]);
 
   if (!isAllowed) {
-    // return <>Not Allowed ⛔</>;
     return <LoadingLogo />;
   }
 
