@@ -1,15 +1,13 @@
 "use client";
 
 import api, { clearAccessToken } from "@/hooks/swr/api-client";
-import { useGlobalLoading } from "@/components/Providers/GlobalLoadingProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import useUser from "@/hooks/useUser";
 
 import {
   ButtonLoading,
@@ -18,51 +16,21 @@ import {
   FormField,
   FormItem,
   FormMessage,
-  Input,
-  LoadingLogo,
+  Input
 } from "@components";
 import { UserCirclePlusIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function OnboardingPage() {
-  const { user, isLoading, isAuthenticated, mutate } = useUser();
-  const { setLoading: setGlobalLoading } = useGlobalLoading();
   const router = useRouter();
   const t = useTranslations("Auth");
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
 
-  // ----------------------------
-  // 1️⃣ Routing Logic (Protected)
-  // ----------------------------
-  // useEffect(() => {
-  //   console.log("user", user);
-
-  //   if (isLoading) return;
-
-  //   // if (!user) return;
-
-  //   if (!isAuthenticated) {
-  //     setGlobalLoading(true);
-  //     router.replace("/auth");
-  //     return;
-  //   }
-
-  //   if (user.status !== "onboarding") {
-  //     setGlobalLoading(true);
-  //     router.replace("/");
-  //     return;
-  //   }
-
-  //   setGlobalLoading(false);
-  // }, [isLoading, isAuthenticated, user, router, setGlobalLoading]);
-
-  // ----------------------------
-  // 2️⃣ Schema & Form
-  // ----------------------------
   const formSchema = z.object({
     firstname: z.string().min(3, t_err("first_name_length", { length: 3 })),
     lastname: z.string().min(3, t_err("last_name_length", { length: 3 })),
@@ -83,15 +51,11 @@ export default function OnboardingPage() {
     },
   });
 
-  // ----------------------------
-  // 3️⃣ Submit Handler
-  // ----------------------------
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
+
     try {
       await api.post(`${API_URL}/auth/completeOnboarding`, values);
-      await mutate(); // refetch user info
-      setGlobalLoading(true);
       router.push("/connect");
     } catch (error) {
       console.error("❌ Onboarding error:", error);
@@ -100,36 +64,19 @@ export default function OnboardingPage() {
     }
   };
 
-  // ----------------------------
-  // 4️⃣ Cancel Registration (Logout)
-  // ----------------------------
   const handleCancel = async () => {
-    setIsSubmitting(true);
+    setIsCanceling(true);
+
     try {
       await api.post("/auth/logout");
-    } catch {
-      // ignore error
+    } catch (error) {
+      console.error("❌ Logout error:", error);
     } finally {
       clearAccessToken();
-      setGlobalLoading(true);
       router.replace("/auth");
     }
   };
 
-  // ----------------------------
-  // 5️⃣ Render Control (No Flicker)
-  // ----------------------------
-  // if (isLoading || !isAuthenticated) {
-  //   return <LoadingLogo />;
-  // }
-
-  // if (user?.status !== "onboarding") {
-  //   return <LoadingLogo />;
-  // }
-
-  // ----------------------------
-  // 6️⃣ UI
-  // ----------------------------
   return (
     <div className="flex flex-1 flex-col justify-center">
       <div className="mb-12 flex flex-1 items-end justify-center">
@@ -214,7 +161,8 @@ export default function OnboardingPage() {
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <ButtonLoading
-          isLoading={isSubmitting}
+          isLoading={isCanceling}
+          disabled={isSubmitting}
           onClick={handleCancel}
           variant="link"
           type="button"

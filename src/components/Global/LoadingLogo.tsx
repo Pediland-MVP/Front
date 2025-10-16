@@ -10,20 +10,17 @@ interface LoadingLogoProps {
 }
 
 export const LoadingLogo = ({ delay = 0 }: LoadingLogoProps) => {
-  const [fadeOut, setFadeOut] = useState(false);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     if (delay > 0) {
       const timer = setTimeout(() => {
-        setFadeOut(true);
         const removeTimer = setTimeout(() => setVisible(false), 500);
         return () => clearTimeout(removeTimer);
       }, delay);
 
       return () => clearTimeout(timer);
     } else {
-      // setFadeOut(true);
       const removeTimer = setTimeout(() => setVisible(false), 500);
       return () => clearTimeout(removeTimer);
     }
@@ -34,8 +31,7 @@ export const LoadingLogo = ({ delay = 0 }: LoadingLogoProps) => {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-10 flex h-screen flex-col items-center justify-center bg-gradient-to-tl from-violet-700 to-blue-400 transition-opacity duration-500",
-        fadeOut ? "opacity-0" : "opacity-100",
+        "fixed inset-0 z-10 flex h-screen flex-col items-center justify-center bg-gradient-to-tl from-violet-700 to-blue-400",
       )}
     >
       <div className="text-center">

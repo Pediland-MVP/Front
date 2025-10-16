@@ -32,48 +32,30 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function OtpPage() {
   const router = useRouter();
-  const { setLoading: setGlobalLoading } = useGlobalLoading();
   const t = useTranslations("Auth");
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
 
   const [mobile, setMobile] = useState<string | null>(null);
-  const [isChecking, setIsChecking] = useState(true);
+  const [checked, setChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isResendLoading, setIsResendLoading] = useState(false);
   const [showResend, setShowResend] = useState(false);
 
-  // -------------------------
-  // 1️⃣ Security Check
-  // -------------------------
   useEffect(() => {
-    // const accessToken = getAccessToken();
     const storedMobile = sessionStorage.getItem("prelogin_mobile");
 
-    // if (accessToken) {
-    //   // 🔹 در حال ریدایرکت به صفحه اصلی
-    //   setGlobalLoading(true);
-    //   router.replace("/");
-    //   return;
-    // }
-
     if (!storedMobile) {
-      setGlobalLoading(true);
       router.replace("/auth");
       return;
     }
 
-    // ✅ شرایط درست
     setMobile(storedMobile);
-    // setIsChecking(false);
-    // setGlobalLoading(false);
+    setChecked(true);
 
     return () => sessionStorage.removeItem("prelogin_mobile");
-  }, [router, setGlobalLoading]);
+  }, [router]);
 
-  // -------------------------
-  // 2️⃣ Form
-  // -------------------------
   const formSchema = z.object({
     otp: z.string().length(5, t_err("otp_length")),
     mobile: z.string(),
@@ -94,16 +76,14 @@ export default function OtpPage() {
   const otpCompleted = () => form.handleSubmit(onSubmit)();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     try {
       const res = await api.post("/auth/mobile/oneTime/signIn", values);
       setAccessToken(res?.data?.data?.accessToken);
       const me = await api.get("/users/me");
 
-      // پاکسازی sessionStorage
       sessionStorage.removeItem("prelogin_mobile");
 
-      // setGlobalLoading(true);
       if (me?.data?.status === "onboarding") router.push("/auth/onboarding");
       else router.push("/");
     } catch (error) {
@@ -128,12 +108,7 @@ export default function OtpPage() {
     }
   };
 
-  // -------------------------
-  // 3️⃣ Render Control
-  // -------------------------
-  // if (isChecking || !mobile) {
-  //   return <LoadingLogo />;
-  // }
+  if (!checked) return null;
 
   return (
     <div className="flex flex-1 flex-col justify-center">
@@ -157,7 +132,6 @@ export default function OtpPage() {
               size="sm"
               className="text-muted-foreground text-[13px]"
               onClick={() => {
-                setGlobalLoading(true);
                 router.push("/auth");
               }}
             >

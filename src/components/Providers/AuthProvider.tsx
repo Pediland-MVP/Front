@@ -3,6 +3,7 @@
 import useUser from "@/hooks/useUser";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LoadingLogo } from "../Global";
 
 export default function AuthProvider({
   children,
@@ -18,43 +19,31 @@ export default function AuthProvider({
   useEffect(() => {
     if (isUserLoading) return;
 
-    if (pathname.startsWith("/auth")) {
-      if (pathname === "/auth/onboarding") {
-        if (!isOnboarding) {
-          return router.push("/");
-        }
+    let redirect: string | null = null;
 
-        return setIsAllowed(true);
-      }
+    const isAuthRoute = pathname.startsWith("/auth");
+    const isOnboardingPage = pathname === "/auth/onboarding";
+    const isConnectPage = pathname === "/connect";
 
-      return setIsAllowed(true);
+    if (isAuthRoute) {
+      if (isOnboardingPage && !isOnboarding) redirect = "/";
+      else setIsAllowed(true);
+    } else if (isConnectPage) {
+      if (hasInstagram) redirect = "/";
+      else if (isOnboarding) redirect = "/auth/onboarding";
+      else setIsAllowed(true);
+    } else {
+      if (isOnboarding) redirect = "/auth/onboarding";
+      else if (!hasInstagram) redirect = "/connect";
+      else setIsAllowed(true);
     }
 
-    if (pathname === "/connect") {
-      if (hasInstagram) {
-        return router.push("/");
-      }
-
-      if (isOnboarding) {
-        return router.push("/auth/onboarding");
-      }
-
-      return setIsAllowed(true);
-    }
-
-    if (isOnboarding) {
-      return router.push("/auth/onboarding");
-    }
-
-    if (!isOnboarding && !hasInstagram) {
-      return router.push("/connect");
-    }
-
-    return setIsAllowed(true);
+    if (redirect) router.push(redirect);
   }, [isOnboarding, isUserLoading, pathname]);
 
   if (!isAllowed) {
-    return <>Not Allowed ⛔</>;
+    // return <>Not Allowed ⛔</>;
+    return <LoadingLogo />;
   }
 
   return <>{children}</>;

@@ -1,4 +1,4 @@
-import api, { SWRProvider } from "@/hooks/swr/api-client";
+import { SWRProvider } from "@/hooks/swr/api-client";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -10,19 +10,13 @@ import SubscriptionExpireWarningDialog from "@/components/Console/subscriptionEx
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 
+import AuthProvider from "@/components/Providers/AuthProvider";
 import {
   ConsoleProvider,
   NavBottom,
   Toaster,
   ZodErrorsMapProvider,
 } from "@components";
-import { InstagramGuard } from "@/components/Guards/InstagramGuard";
-import { cookies } from "next/headers";
-import * as jose from "jose";
-import AuthProvider from "@/components/Providers/AuthProvider";
-import { redirect } from "next/navigation";
-import useUser from "@/hooks/useUser";
-import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -47,7 +41,7 @@ export default async function ConsoleLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="bg-red-600">
+      <body>
         <SWRProvider>
           <AuthProvider>
             <StandaloneChecker>
