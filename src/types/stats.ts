@@ -1,54 +1,51 @@
-export namespace StatsNamespace {
-    export type Overall = OverallStats;
+export type OverallStats = {
+  products: Leads;
+  leads: Leads;
+  sessions: Leads;
+  sales: Leads;
+  contentCycles: ContentCycles;
+  eachMonthLeadGrows: EachMonthLeadGrow[];
+  recentSessions: RecentSessions[];
 }
 
-export interface OverallStats {
-    products:           Leads;
-    leads:              Leads;
-    sessions:           Leads;
-    contentCycles:      ContentCycles;
-    eachMonthLeadGrows: EachMonthLeadGrow[];
-    recentSessions: RecentSessions[]
+export type ContentCycles = {
+  count: number;
 }
 
-export interface ContentCycles {
-    count: number;
+export type EachMonthLeadGrow = {
+  monthName: string;
+  count: number;
+  startDate: Date;
+  endDate: Date;
 }
 
-export interface EachMonthLeadGrow {
-    monthName: string;
-    count:     number;
-    startDate: Date;
-    endDate:   Date;
+export type Leads = {
+  count: number;
+  total: number;
+  growth: number;
 }
 
-export interface Leads {
-    count:  number;
-    growth: number;
+export type RecentSessions = {
+  updateDate: string;
+  passedFlows: any[];
+  id: number;
+  contentCycle: ContentCycle;
+  leadInstagram: LeadInstagram;
 }
 
-
-export interface RecentSessions {
-    updateDate:         string
-    passedFlows:   any[];
-    id:            number;
-    contentCycle:  ContentCycle;
-    leadInstagram: LeadInstagram;
+export type ContentCycle = {
+  id: string;
+  title: string;
 }
 
-export interface ContentCycle {
-    id:    string;
-    title: string;
+export type LeadInstagram = {
+  id: string;
+  name: string;
+  username: string;
+  profilePicture: ProfilePicture;
 }
 
-export interface LeadInstagram {
-    id:             string;
-    name:           string;
-    username:       string;
-    profilePicture: ProfilePicture;
-}
-
-export interface ProfilePicture {
-    id:  number;
-    url: string;
+export type ProfilePicture = {
+  id: number;
+  url: string;
 }

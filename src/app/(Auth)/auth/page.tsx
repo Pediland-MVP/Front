@@ -22,17 +22,16 @@ import {
   LogoText,
 } from "@/components";
 import { MoveLeftIcon } from "lucide-react";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function AuthPage() {
   const router = useRouter();
-
   const t = useTranslations("Auth");
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
-
   const [isLoading, setIsLoading] = useState(false);
 
   const formSchema = z.object({
@@ -113,6 +112,7 @@ export default function AuthPage() {
                       pattern="[0-9]*"
                       maxLength={11}
                       value={field.value}
+                      onInput={onInputP2EHandler}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, "");
                         field.onChange(value);

@@ -37,15 +37,15 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
 
   return (
     <div className="_trigger relative flex flex-col gap-2">
-      <div className="flex flex-1 items-center gap-4">
+      <div className="flex flex-1 flex-col gap-2.5 md:flex-row md:items-center">
         <span className="text-sm font-medium">{t("user_in")}</span>
 
-        <div className="flex flex-1 items-center gap-4 md:gap-6">
+        <div className="flex flex-1 items-center gap-5">
           <FormField
             control={control}
             name="isDirect"
             render={({ field }) => (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <Switch
                   type="button"
                   id="direct"
@@ -66,7 +66,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
                     trigger(["isDirect", "isComment"]);
                   }}
                 />
-                <FormLabel htmlFor="direct">{t("direct")}</FormLabel>
+                <FormLabel htmlFor="direct">{t("direct_story")}</FormLabel>
               </div>
             )}
           />
@@ -74,7 +74,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
             control={control}
             name="isComment"
             render={({ field }) => (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <Switch
                   type="button"
                   id="comment"
@@ -84,14 +84,15 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
                     trigger(["isDirect", "isComment"]);
                   }}
                 />
-                <FormLabel htmlFor="comment">{t("comment")}</FormLabel>
+                <FormLabel htmlFor="comment">{t("comment_post")}</FormLabel>
               </div>
             )}
           />
         </div>
 
         <HelpMeDialog
-          noAbsolute
+          position="top-left"
+          className="left-0 top-0"
           title={t("Help.title")}
           description={t("Help.description")}
           videoSrc={WizardVideoLinks.Automations.Hints.Triggers.video}

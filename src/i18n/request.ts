@@ -26,6 +26,7 @@ export default getRequestConfig(async () => {
         ...(await import(`../messages/${locale}.json`)).default,
         ...(await import(`../messages/${locale}/Auth.json`)).default,
         ...(await import(`../messages/${locale}/ErrorCodes.json`)).default,
+        ...(await import(`../messages/${locale}/Console.json`)).default,
       },
     };
   }
@@ -44,6 +45,7 @@ export default getRequestConfig(async () => {
       ...(await import(`../messages/${"fa"}.json`)).default,
       ...(await import(`../messages/${"fa"}/Auth.json`)).default,
       ...(await import(`../messages/${"fa"}/ErrorCodes.json`)).default,
+      ...(await import(`../messages/${"fa"}/Console.json`)).default,
     },
   };
 });

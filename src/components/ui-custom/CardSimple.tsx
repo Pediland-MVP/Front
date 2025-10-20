@@ -8,7 +8,7 @@ interface CardSimpleProps {
 
 export const CardSimple = ({ children, className }: CardSimpleProps) => {
   return (
-    <Card className={cn("p-4 shadow-md shadow-gray-200/70", className)}>
+    <Card className={cn("gap-0 p-0 shadow-md shadow-gray-200/70", className)}>
       {children}
     </Card>
   );

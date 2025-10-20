@@ -72,15 +72,7 @@ export const HowToConnectDialog = ({
               </ol>
 
               <div className="mt-5 rounded-lg border border-dashed border-blue-500/60 bg-blue-50/50 p-3">
-                <p className="text-[13px] text-blue-900">
-                  <span className="font-medium">
-                    {t("befroosh_meta_partner")}
-                  </span>{" "}
-                  <span className="text-[11px]">
-                    ({t("instagram_holding")})
-                  </span>{" "}
-                  {t("description")}
-                </p>
+                <p className="text-[13px] text-blue-900">{t("description")}</p>
               </div>
             </div>
             <DialogFooter>

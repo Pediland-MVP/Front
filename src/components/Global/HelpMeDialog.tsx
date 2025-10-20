@@ -104,7 +104,7 @@ export const HelpMeDialog = ({
 
       <DialogContent className="flex min-h-full max-w-full flex-col overflow-auto rounded-none p-5 md:p-10">
         <DialogHeader>
-          <DialogTitle className="text-primary flex text-right justify-center gap-2 text-base font-semibold">
+          <DialogTitle className="text-primary flex justify-center gap-2 text-right text-base font-semibold">
             <MonitorPlayIcon size={22} /> {title}
           </DialogTitle>
           {description && (
@@ -119,7 +119,9 @@ export const HelpMeDialog = ({
             shape="vertical"
             src={videoSrc}
             poster={videoPoster}
-            controls
+            autoPlay
+            loop
+            // controls
             className="h-[800px] w-full object-cover"
             preload="metadata"
           >

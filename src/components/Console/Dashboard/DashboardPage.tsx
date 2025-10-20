@@ -5,7 +5,7 @@ import { DashboardStats, LayoutPage, SubscriptionBoard } from "@components";
 
 export const DashboardPage = () => {
   return (
-    <LayoutPage>
+    <LayoutPage className="px-3">
       <div className="_dashboard-page space-y-4">
         <UpgradeProvider>
           <SubscriptionBoard />

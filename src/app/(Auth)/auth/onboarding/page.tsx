@@ -4,7 +4,7 @@ import api, { useLogout } from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import {
   FormItem,
   FormMessage,
   Input,
+  Switch,
 } from "@components";
 import { UserCirclePlusIcon } from "@phosphor-icons/react";
 
@@ -31,16 +32,19 @@ export default function OnboardingPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
+  const [showReferralCode, setShowReferralCode] = useState(false);
   const logout = useLogout();
 
-  const formSchema = z.object({
+  const formSchema = useMemo(() => z.object({
     firstname: z.string().min(3, t_err("first_name_length", { length: 3 })),
     lastname: z.string().min(3, t_err("last_name_length", { length: 3 })),
     submittedInstagramUsername: z
       .string()
       .min(3, t_err("instagram_id_length", { length: 3 })),
-    referralCode: z.string().optional(),
-  });
+    referralCode: showReferralCode 
+      ? z.string().min(1, t_err("referral_code_required"))
+      : z.string().optional(),
+  }), [showReferralCode, t_err]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,6 +56,13 @@ export default function OnboardingPage() {
       referralCode: "",
     },
   });
+
+  // Update form resolver when schema changes
+  useEffect(() => {
+    form.clearErrors();
+    const currentValues = form.getValues();
+    form.reset(currentValues, { keepValues: true });
+  }, [formSchema, form]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -131,18 +142,30 @@ export default function OnboardingPage() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="referralCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input {...field} placeholder={t("referral_code")} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={showReferralCode}
+                onCheckedChange={setShowReferralCode}
+              />
+              <span className="text-sm text-primary">
+                {t("have_referral_code")}
+              </span>
+            </div>
+            {showReferralCode && (
+              <FormField
+                control={form.control}
+                name="referralCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} placeholder={t("referral_code")} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <ButtonLoading
               className="w-full"
@@ -151,6 +174,7 @@ export default function OnboardingPage() {
                 !form.watch("firstname") ||
                 !form.watch("lastname") ||
                 !form.watch("submittedInstagramUsername") ||
+                (showReferralCode && !form.watch("referralCode")) ||
                 !form.formState.isValid
               }
               isLoading={isSubmitting}

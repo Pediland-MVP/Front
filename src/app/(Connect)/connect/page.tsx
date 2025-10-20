@@ -76,6 +76,7 @@ export default function ConnectPage() {
             className="flex items-center gap-2 md:justify-center"
           >
             <HeadsetIcon size={28} weight="duotone" />
+            <span className="text-sm">پشتیبانی</span>
           </Link>
         </div>
 

@@ -1,0 +1,51 @@
+{
+  "Console": {
+    "Dashboard": {
+      "automation": "پیام خودکار",
+      "sessions": "پاسخ‌ها",
+      "leads": "مخاطب",
+      "products": "کالا/خدمت",
+      "orders": "سفارش",
+      "sales": "فروش",
+      "million": "م",
+      "details": "جـزئـیـات",
+      "remainingDays": "باقی مانده اشتراک شما",
+      "day": "روز",
+      "view": "مشاهده"
+    },
+
+    "accessDenied": "اول باید اینستاگرام خود  را وصل نمایید",
+    "accessNote": "لطفا اکانت اینستاگرام خود را متصل نمایید.",
+    "dashboard": "داشبورد",
+    "productCount": "تعداد کالاها / خدمات",
+    "leadCount": "تعداد مخاطبین",
+    "automations": "تعداد پیام خودکار",
+    "responseCount": "تعداد پاسخ‌ها",
+    "growthFromLastMonth": "{growth}% از ماه پیش",
+    "leadsGrowthChart": "نمودار رشد مخاطبین",
+    "recentSessions": "آخرین نشست‌ها",
+    "noRecentSessions": "فعلا خبری نیست :)",
+    "Sidebar": {
+      "name": "بِـفـروش",
+      "description": "دستیار هوشمند",
+      "dashboard": "داشبورد",
+      "contacts": "مخاطبین",
+      "instagramConnections": "ارتباط در اینستاگرام",
+      "directs": "دایرکت‌ها",
+      "comments": "کامنت‌ها",
+      "automations": "پیام‌های خودکار",
+      "shop": "فروشگاه",
+      "ordersList": "سفارشات",
+      "products": "کالاها / خدمات",
+      "settings": "تنظیمات",
+      "upgradeAccount": "اشتراک کاربری",
+      "soon": "بزودی",
+      "profile": "حساب کاربری",
+      "logout": "خروج",
+      "accounts": "مدیریت اکانت‌های اینستاگرام",
+      "cardToCard": "مدیریت حساب‌های بانکی",
+      "zarinpal": "مدیریت زرین پال",
+      "upgrade": "مدیریت اشتراک کاربری"
+    }
+  }
+}
