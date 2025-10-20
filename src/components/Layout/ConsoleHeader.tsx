@@ -1,7 +1,7 @@
 // Refactored
 "use client";
 
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Link from "next/link";

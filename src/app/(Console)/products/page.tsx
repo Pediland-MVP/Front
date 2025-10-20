@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import ProductListTable from "./components/productListTable";
 
 import { Button } from "@/components/ui/button";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { CircleFadingPlusIcon } from "lucide-react";
 import { LayoutPage } from "@/components";
 

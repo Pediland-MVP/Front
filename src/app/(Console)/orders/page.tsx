@@ -1,5 +1,5 @@
 "use client";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 

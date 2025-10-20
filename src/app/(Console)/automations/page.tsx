@@ -1,10 +1,9 @@
 // Refactored
 "use client";
 
-import { useDebounce } from "@/hooks/useDebounce";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -17,55 +16,58 @@ import {
 import { CircleFadingPlusIcon } from "lucide-react";
 
 export default function Page() {
+  const router = useRouter();
   const t = useTranslations("Automations");
 
-  const { setTools, clearTools, setButtons, clearButtons } = useHeaderFeatures(
-    (s) => ({
+  const { setTools, clearTools, setButtons, clearButtons, error } =
+    useHeaderFeatures((s) => ({
       setTools: s.setTools,
       clearTools: s.clearTools,
       setButtons: s.setButtons,
       clearButtons: s.clearButtons,
-    }),
-  );
+      error: s.error,
+    }));
 
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
-
-  const debouncedSearch = useDebounce(search, 300);
-  const normalized = debouncedSearch.trim();
-  const effectiveSearch = normalized.length >= 2 ? normalized : "";
+  const [effectiveSearch, setEffectiveSearch] = useState<string>("");
 
   const HeaderButton = useMemo(() => {
     return (
       <>
-        {/* <SearchToggleButton
+        <SearchToggleButton
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
-        /> */}
-        <Button type="button" size="md" asChild>
-          <Link href="/automations/add">
-            {t("add")}
-            <CircleFadingPlusIcon />
-          </Link>
+        />
+        <Button
+          type="button"
+          size="md"
+          onClick={() => router.push("/automations/add")}
+          disabled={error}
+        >
+          {t("add")}
+          <CircleFadingPlusIcon />
         </Button>
       </>
     );
-  }, [isSearchVisible, setIsSearchVisible]);
+  }, [isSearchVisible, setIsSearchVisible, error, router]);
 
-  // const HeaderTools = useMemo(
-  //   () => (
-  //     <SearchInput
-  //       value={search}
-  //       onChange={setSearch}
-  //       visible={isSearchVisible}
-  //     />
-  //   ),
-  //   [search, isSearchVisible, setSearch],
-  // );
+  const HeaderTools = useMemo(
+    () => (
+      <SearchInput
+        value={search}
+        onChange={setSearch}
+        onEffectiveSearchChange={setEffectiveSearch}
+        visible={isSearchVisible}
+        disabled={error}
+      />
+    ),
+    [search, isSearchVisible, setSearch, error, setEffectiveSearch],
+  );
 
   useEffect(() => {
     setButtons(HeaderButton);
-    // setTools(HeaderTools);
+    setTools(HeaderTools);
 
     return () => {
       clearButtons();
@@ -73,16 +75,16 @@ export default function Page() {
     };
   }, [
     HeaderButton,
-    // HeaderTools,
+    HeaderTools,
     setButtons,
-    // setTools,
+    setTools,
     clearButtons,
     clearTools,
   ]);
 
   return (
     <LayoutCard className="_automation overflow-auto">
-      <AutomationsListCard />
+      <AutomationsListCard search={effectiveSearch} />
     </LayoutCard>
   );
 }

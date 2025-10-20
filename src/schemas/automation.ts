@@ -20,9 +20,17 @@ export const AutomationSchema = z.object({
   isRemindersEnabled: z.boolean(),
   commentTexts: z.array(z.string()),
   instagramId: z.string(),
+  instagramPost: z.object({
+    mediaUrl: z.string().optional().nullable(),
+    mediaId: z.string().min(1),
+    picture: z
+      .object({ url: z.string().optional().nullable() })
+      .optional()
+      .nullable(),
+  }).optional().nullable(),
   contents: z.array(ContentItemSchema),
   conditions: z.array(ContentItemConditionSchema),
-  instagramPostId: z.string().optional().nullable(),
+  sessionsCount: z.number(),
 });
 
 export const AutomationResponseSchema = z.object({

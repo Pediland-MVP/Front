@@ -2,7 +2,19 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-const WordsList = ["بـاعـشـق", "راحـت", "تـو سـفـر", "تـو خـواب"];
+const WordsList = [
+  "بـاعـشـق",
+  "راحـت",
+  "تـو سـفـر",
+  "تـو خـواب",
+  "اتـومـات",
+  "سـریـع",
+  "هـوشـمنـد",
+  "زیاد",
+  "تـو خـونـه",
+  "آنـلایـن",
+  "بـیـشـتـر",
+];
 
 interface LogoSloganProps {
   variant?: "default" | "white";

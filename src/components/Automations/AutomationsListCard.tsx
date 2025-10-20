@@ -1,10 +1,11 @@
 "use client";
 
 import api from "@/hooks/swr/api-client";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import type { Table } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 
@@ -14,17 +15,24 @@ import type { PageMeta } from "@/schemas/pageMeta";
 
 import {
   AutomationCard,
-  AutomationTableColumns,
   DeleteConfirmationDialog,
   ItemsPagination,
+  LoaderSpin,
+  NoDataError,
 } from "@components";
 
-export const AutomationsListCard = () => {
+interface AutomationsListCardProps {
+  search: string;
+}
+
+export const AutomationsListCard = ({ search }: AutomationsListCardProps) => {
   const t = useTranslations("Automations.List");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAutomationId, setSelectedAutomationId] = useState<
     string | null
   >(null);
+
+  const { setError } = useHeaderFeatures();
 
   // Handle delete action
   const handleDelete = (id: string) => {
@@ -55,10 +63,6 @@ export const AutomationsListCard = () => {
     setSelectedAutomationId(null);
   };
 
-  // Table
-  const [tableInstance, setTableInstance] = useState<Table<any> | null>(null);
-  const columns = useMemo(() => AutomationTableColumns(handleDelete), []);
-
   // Server-side pagination state (1-based page)
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(21);
@@ -74,12 +78,26 @@ export const AutomationsListCard = () => {
   }, []);
 
   // TODO: Better type for AutomationResponse
-  const apiUrl = `/contentCycle?page=${page}&limit=${limit}`;
+  let searchParams = "";
+  search ? (searchParams = `&search=${search}`) : null;
+  const apiUrl = `/contentCycle?page=${page}&limit=${limit}${searchParams}&isDirect=false&isComment=false&haveInstagramPost=false`;
 
-  const { data, isLoading } = useSWR<AutomationResponse | null>(apiUrl);
+  const {
+    data: automations,
+    isLoading: isAutomationsLoading,
+    error: FetchAutomationsError,
+  } = useSWR<AutomationResponse | null>(apiUrl);
+
+  console.log("Automations...", automations);
+
+  useEffect(() => {
+    if (FetchAutomationsError) {
+      setError(true);
+    }
+  }, [FetchAutomationsError]);
 
   // Map Wire -> Domain (memoized)
-  const items = data?.items ?? [];
+  const items = automations?.items ?? [];
 
   // Safe meta (fallback while loading)
   const defaultMeta: PageMeta = {
@@ -89,7 +107,15 @@ export const AutomationsListCard = () => {
     totalItems: 0,
     totalPages: 1,
   };
-  const meta: PageMeta = data?.meta ?? defaultMeta;
+  const meta: PageMeta = automations?.meta ?? defaultMeta;
+
+  if (FetchAutomationsError) {
+    return <NoDataError />;
+  }
+
+  if (isAutomationsLoading) {
+    return <LoaderSpin />;
+  }
 
   return (
     <>
@@ -120,8 +146,7 @@ export const AutomationsListCard = () => {
       </div>
 
       <ItemsPagination
-        isLoading={isLoading}
-        table={tableInstance}
+        isLoading={isAutomationsLoading}
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
         totalCount={meta.totalItems}

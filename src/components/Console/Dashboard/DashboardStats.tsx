@@ -74,7 +74,11 @@ export const DashboardStats = () => {
     },
     {
       title: t("sales"),
-      total: isStatsLoading ? <LoaderPulse /> : rlsPriceFormat(1500000),
+      total: isStatsLoading ? (
+        <LoaderPulse />
+      ) : (
+        rlsPriceFormat(stats?.sales?.total)
+      ),
       icon: "Coins",
       link: "/comments",
     },

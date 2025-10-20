@@ -1,7 +1,7 @@
 "use client";
 
 import { useDebounce } from "@/hooks/useDebounce";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeatures";
+import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 

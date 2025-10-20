@@ -516,12 +516,13 @@
 
     "Card": {
       "conditions": "شرط‌ها:",
-      "active_in": "فعال در:",
+      "active_in": "فعال در",
       "answers": "پاسخ‌ها",
       "edit": "ویرایش",
       "delete": "حذف",
       "direct": "دایرکت",
-      "comment": "کامنت"
+      "comment": "کامنت",
+      "specified_post": "پست خاص"
     },
 
     "ContentPromotionDialog": {
