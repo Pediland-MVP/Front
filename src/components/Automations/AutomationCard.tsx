@@ -3,17 +3,23 @@
 import { Automation } from "@/schemas/automation";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { memo } from "react";
 
 import { Badge, Button, Card, CardContent, CardFooter } from "@components";
 import { CircleXIcon, MessageSquareMoreIcon, PencilIcon } from "lucide-react";
 import Image from "next/image";
+import { CrosshairIcon } from "@phosphor-icons/react/dist/ssr";
+import { CardImage } from "../Global/CardImage";
 
 interface AutomationCardProps {
   item: Automation;
   handleDelete: (id: string) => void;
 }
 
-export const AutomationCard = ({ item, handleDelete }: AutomationCardProps) => {
+const AutomationCardComponent = ({
+  item,
+  handleDelete,
+}: AutomationCardProps) => {
   const router = useRouter();
   const t = useTranslations("Automations.Card");
   const specifiedPost = item.instagramPost?.picture?.url;
@@ -24,7 +30,8 @@ export const AutomationCard = ({ item, handleDelete }: AutomationCardProps) => {
         <div className="flex">
           <div className="flex-1 space-y-3 p-2 text-sm">
             <div className="flex flex-col gap-1.5">
-              <div className="text-secondary font-medium">
+              <div className="text-secondary flex items-center gap-1 font-medium">
+                <CrosshairIcon size={18} weight="duotone" />
                 {t("conditions")}
               </div>
               <div className="line-clamp-1 space-x-1.5">
@@ -47,21 +54,27 @@ export const AutomationCard = ({ item, handleDelete }: AutomationCardProps) => {
                     {item.isDirect ? (
                       <div className="text-primary">{t("direct")}</div>
                     ) : (
-                      <div className="text-gray-300 font-light">{t("direct")}</div>
+                      <div className="font-light text-gray-300">
+                        {t("direct")}
+                      </div>
                     )}
                   </div>
                   <div className="border-l border-gray-200 pl-2">
                     {item.isComment ? (
                       <div className="text-primary">{t("comment")}</div>
                     ) : (
-                      <div className="text-gray-300 font-light">{t("comment")}</div>
+                      <div className="font-light text-gray-300">
+                        {t("comment")}
+                      </div>
                     )}
                   </div>
                   <div>
                     {item.instagramPost ? (
                       <div className="text-primary">{t("specified_post")}</div>
                     ) : (
-                      <div className="text-gray-300 font-light">{t("specified_post")}</div>
+                      <div className="font-light text-gray-300">
+                        {t("specified_post")}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -69,22 +82,16 @@ export const AutomationCard = ({ item, handleDelete }: AutomationCardProps) => {
             </div>
           </div>
 
-          {!item.instagramPost && (
-            <div className="relative h-auto w-20 rounded-lg">
-              <Image
-                // src={item.instagramPost?.picture?.url}
-                src={"/images/demo-0.jpg"}
-                alt=""
-                className="rounded-lg object-cover"
-                fill
-              />
+          {item.instagramPost && (
+            <div className="relative h-auto w-20">
+              <CardImage src={item.instagramPost?.picture?.url} />
             </div>
           )}
         </div>
       </CardContent>
       <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
         <Button
-          className="text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-green-100 hover:text-green-800"
+          className="text-muted-foreground hover:text-secondary h-9 w-full flex-1 rounded-none rounded-br-xl hover:bg-blue-100"
           variant="ghost"
           type="button"
           size="sm"
@@ -94,7 +101,7 @@ export const AutomationCard = ({ item, handleDelete }: AutomationCardProps) => {
         </Button>
 
         <Button
-          className="text-muted-foreground hover:text-secondary h-9 w-full flex-1 rounded-none rounded-br-xl hover:bg-blue-100"
+          className="text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-green-100 hover:text-green-800"
           variant="ghost"
           type="button"
           size="sm"
@@ -118,3 +125,5 @@ export const AutomationCard = ({ item, handleDelete }: AutomationCardProps) => {
     </Card>
   );
 };
+
+export const AutomationCard = memo(AutomationCardComponent);

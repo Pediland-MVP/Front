@@ -188,7 +188,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="text-sidebar-foreground w-(--sidebar-width) bg-violet-50 p-0 [&>button]:hidden"
+          className="text-sidebar-foreground w-(--sidebar-width) bg-gradient-to-t from-blue-50 to-violet-50 p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -247,7 +247,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="flex h-full w-full flex-col gap-4 rounded-xl bg-violet-50 p-3 group-data-[variant=floating]:rounded-xl group-data-[variant=floating]:border group-data-[variant=floating]:border-blue-800/20"
+          className="flex h-full w-full flex-col gap-4 rounded-xl bg-gradient-to-t from-white/85 to-violet-50 p-3 pt-4 group-data-[variant=floating]:rounded-xl group-data-[variant=floating]:border group-data-[variant=floating]:border-blue-800/20"
         >
           {children}
         </div>

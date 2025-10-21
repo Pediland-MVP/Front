@@ -26,11 +26,11 @@ export const SettingsOptions = () => {
       url: "/settings/card",
       icon: CreditCardIcon,
     },
-    {
-      title: t("zarinpal"),
-      url: "/settings/zarinpal",
-      icon: PaypalLogoIcon,
-    },
+    // {
+    //   title: t("zarinpal"),
+    //   url: "/settings/zarinpal",
+    //   icon: PaypalLogoIcon,
+    // },
     {
       title: t("upgradePlan"),
       url: "/settings/upgrade",

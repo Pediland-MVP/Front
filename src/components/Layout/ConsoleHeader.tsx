@@ -46,7 +46,7 @@ export const ConsoleHeader = () => {
   return (
     <header
       className={cn(
-        "flex items-center border-gray-100 px-3 py-2.5 md:min-h-14 md:border-b-2 md:bg-white md:py-0",
+        "flex items-center px-3 py-2.5 md:min-h-14 md:bg-white md:py-0",
         !tools && !buttons && "min-h-14",
       )}
     >

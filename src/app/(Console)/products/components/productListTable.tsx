@@ -49,18 +49,22 @@ interface ContentItem {
 }
 
 export default function ProductListTable() {
-  const t = useTranslations("Products.List");
-  const t_ec = useTranslations("ERROR_CODES");
-  const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
   const [search, setSearch] = useState("");
   const debouncedSearchTerm = useDebounce(search, 500);
-  const [open, setOpen] = useState<boolean>(false);
-  const [productId, setProductId] = useState<string>("");
+  const t = useTranslations("Products.List");
+  const t_ec = useTranslations("ERROR_CODES");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  
+  
+  
+  
+  const [open, setOpen] = useState<boolean>(false);
+  const [productId, setProductId] = useState<string>("");
 
-  const {
+  const { 
     data: productsData,
     error: productsError,
     isLoading: isProductsLoading,

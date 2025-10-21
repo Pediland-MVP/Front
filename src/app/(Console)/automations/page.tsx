@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  AutomationsListCard,
+  AutomationsCardList,
   Button,
   LayoutCard,
   SearchInput,
@@ -18,6 +18,9 @@ import { CircleFadingPlusIcon } from "lucide-react";
 export default function Page() {
   const router = useRouter();
   const t = useTranslations("Automations");
+  const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+  const [effectiveSearch, setEffectiveSearch] = useState<string>("");
 
   const { setTools, clearTools, setButtons, clearButtons, error } =
     useHeaderFeatures((s) => ({
@@ -27,10 +30,6 @@ export default function Page() {
       clearButtons: s.clearButtons,
       error: s.error,
     }));
-
-  const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
-  const [effectiveSearch, setEffectiveSearch] = useState<string>("");
 
   const HeaderButton = useMemo(() => {
     return (
@@ -84,7 +83,7 @@ export default function Page() {
 
   return (
     <LayoutCard className="_automation overflow-auto">
-      <AutomationsListCard search={effectiveSearch} />
+      <AutomationsCardList search={effectiveSearch} />
     </LayoutCard>
   );
 }

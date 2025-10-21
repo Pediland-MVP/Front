@@ -17,6 +17,7 @@ export interface ProductItem {
   updateDate: string;
   title: string;
   price: number;
+  status: boolean;
   discountPrice: number | null;
   description: string;
   quantity?: number;
@@ -26,7 +27,7 @@ export interface ProductItem {
   productVariations: ProductVariation[];
   orderButtonText: string;
   orderProcessText: string;
-  shippingCost: number
+  shippingCost: number;
   fields: {
     id: string;
     label: string;
@@ -54,7 +55,7 @@ export interface ProductVariation {
   id: string;
   createDate: string;
   updateDate: string;
-  attributes: Attribute[]
+  attributes: Attribute[];
 }
 
 export interface Attribute {

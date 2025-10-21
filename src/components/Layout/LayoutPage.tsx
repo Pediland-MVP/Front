@@ -13,10 +13,10 @@ export const LayoutPage = ({
   children,
 }: LayoutPageProps) => {
   return (
-    <div className="scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-white flex flex-1 flex-col overflow-auto rounded-t-3xl bg-white md:rounded-t-none">
+    <div className="scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-white flex flex-1 flex-col overflow-auto rounded-t-3xl md:rounded-t-none">
       <div
         className={cn(
-          "_layout-page flex flex-1 flex-col border-gray-100 px-4 py-5 md:p-5 bg-white",
+          "_layout-page flex flex-1 flex-col border-gray-100 bg-gradient-to-t from-white/85 to-white px-4 py-5 md:p-5",
           col === "small" && "md:border-l-2 xl:w-1/3",
           col === "half" && "md:border-l-2 xl:w-1/2 2xl:w-1/3",
           col === "full" && "w-full",
