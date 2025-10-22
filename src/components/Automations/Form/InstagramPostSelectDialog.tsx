@@ -24,7 +24,7 @@ import {
   DialogTrigger,
   ErrorMessage,
   Skeleton,
-} from "@/components/index";
+} from "@components";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -145,7 +145,11 @@ export const InstagramPostSelectDialog = ({
             next={() => fetchPosts(after)}
             hasMore={hasMore}
             loader={<></>}
-            endMessage={<p>{t("there_is_no_more")}</p>}
+            endMessage={
+              <p className="text-muted-foreground mt-4 text-center text-sm">
+                {t("there_is_no_more")}
+              </p>
+            }
             scrollableTarget="scrollableDiv"
           >
             <div

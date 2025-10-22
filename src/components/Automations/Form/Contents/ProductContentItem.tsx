@@ -7,7 +7,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { Button, ProductContentItemDialog } from "@/components/index";
+import { Button, ProductContentItemDialog } from "@components";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,

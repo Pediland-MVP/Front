@@ -3,9 +3,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "@/styles/globals.css";
 // UI
-import { Toaster } from "@/components/index";
+import { Toaster } from "@components";
 import SWRProvider from "./swr.prvider";
-import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
+import { GoftinoSnippet } from "@components/Global/GoftinoSnippet";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",

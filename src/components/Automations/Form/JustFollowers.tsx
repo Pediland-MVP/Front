@@ -20,7 +20,7 @@ import {
   Input,
   Switch,
   Textarea,
-} from "@/components/index";
+} from "@components";
 
 type JustFollowersProps = {
   control: Control<AutomationFormType>;

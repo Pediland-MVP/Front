@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
   Switch,
-} from "@/components/index";
+} from "@components";
 
 export const TargetPostComment = () => {
   const {
@@ -67,7 +67,9 @@ export const TargetPostComment = () => {
                   mode={AutomationContentModeEnum.AUTOMATION}
                 />
                 {(errors as any)?.instagramPost && (
-                  <ErrorMessage className="mt-1">{t_err("selection_required")}</ErrorMessage>
+                  <ErrorMessage className="mt-1">
+                    {t_err("selection_required")}
+                  </ErrorMessage>
                 )}
               </>
             )}

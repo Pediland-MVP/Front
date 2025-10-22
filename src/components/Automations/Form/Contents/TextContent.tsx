@@ -8,7 +8,7 @@ import {
   InputCounter,
   Label,
   Textarea,
-} from "@/components/index";
+} from "@components";
 
 export type TextContentProps = {
   index: number;

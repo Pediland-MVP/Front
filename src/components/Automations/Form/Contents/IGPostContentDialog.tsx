@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   Skeleton,
-} from "@/components/index";
+} from "@components";
 
 type IGPostContentDialogProps = {
   isOpen: boolean;
@@ -107,7 +107,11 @@ export const IGPostContentDialog = ({
           next={() => fetchPosts(after)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>{t("there_is_no_more")}</p>}
+          endMessage={
+            <p className="text-muted-foreground mt-4 text-center text-sm">
+              {t("there_is_no_more")}
+            </p>
+          }
           scrollableTarget="scrollableDiv"
         >
           <div

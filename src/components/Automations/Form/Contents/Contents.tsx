@@ -5,13 +5,14 @@ import {
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
 import useUser from "@/hooks/useUser";
-import type { AutomationFormType } from "@/schemas/automationForm";
-import type { UploadedFile } from "@/types/fileUploader";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { contentTypeOptions } from "./ContentTypeOptions";
+// TODO: Refactor Types & Schemas
+import type { AutomationFormType } from "@/schemas/automationForm";
+import type { UploadedFile } from "@/types/fileUploader";
 
 import {
   Alert,
@@ -23,7 +24,8 @@ import {
   ContentsUploaderContextProvider,
   ErrorMessage,
   HelpMeDialog,
-} from "@/components/index";
+} from "@components";
+import type { DragEndEvent } from "@dnd-kit/core";
 import {
   closestCenter,
   DndContext,
@@ -32,13 +34,12 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
 import {
   rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusCircleIcon } from "lucide-react";
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;
@@ -47,10 +48,10 @@ type ContentsProps = {
 
 export const Contents = ({ mode, automationId }: ContentsProps) => {
   const { user } = useUser();
-  const isPromotion = user?.instagrams?.[0]?.isPromotion;
   const t = useTranslations("Automations.Contents");
   const t_contentTypes = useTranslations("Automations.Contents.Types");
   const t_err = useTranslations("Automations.Contents.Errors");
+  const isPromotion = user?.instagrams?.[0]?.isPromotion;
 
   const {
     control,
@@ -151,19 +152,19 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                   </ContentsUploaderContextProvider>
                 ))}
             </SortableContext>
-
-            <SortableContext
-              disabled
-              items={contents.map((field) => field._xid)}
-              strategy={rectSortingStrategy}
-            >
-              {isPromotion && <ContentPromotion />}
-            </SortableContext>
           </DndContext>
         )}
 
+        <SortableContext
+          disabled
+          items={contents.map((field) => field._xid)}
+          strategy={rectSortingStrategy}
+        >
+          {isPromotion && <ContentPromotion />}
+        </SortableContext>
+
         {isChoosingType && (
-          <div className="grid w-full grid-cols-5 justify-start gap-x-2.5 gap-y-2.5">
+          <div className="grid w-full grid-cols-5 justify-start gap-x-1.5 gap-y-2.5">
             {contentTypeOptions.map((option) => (
               <Button
                 key={option.value}
@@ -193,7 +194,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                   setIsChoosingType(false);
                   clearErrors(arrayName);
                 }}
-                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-none bg-blue-100/75 text-sm text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:pr-2 md:pl-6 [&_svg]:size-5"
+                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-md bg-blue-100 text-[13px] text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:!px-2 [&_svg:not([class*='size-'])]:size-4.5"
               >
                 {option.icon}
                 {t_contentTypes(option.value)}
@@ -216,11 +217,12 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           <Button
             variant="ghost"
             type="button"
+            className="text-blue-600"
             disabled={isChoosingType}
             onClick={() => setIsChoosingType(true)}
           >
-            <PlusCircleIcon size={22} className="text-blue-600" />
-            <span className="text-blue-600">{t("add_content")}</span>
+            <PlusCircleIcon />
+            {t("add_content")}
           </Button>
 
           <HelpMeDialog

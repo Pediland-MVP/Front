@@ -10,7 +10,7 @@ import {
   DialogStyledDescription,
   DialogStyledHeader,
   DialogStyledTitle,
-} from "@/components/index";
+} from "@components";
 import { ContactForm } from "./ContactForm";
 
 type ContactDetailsDialogProps = {

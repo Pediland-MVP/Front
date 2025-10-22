@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { useEffect, useState } from "react";
-import { ErrorMessage } from "@/components/index";
+import { ErrorMessage } from "@components";
 import useSWRImmutable from "swr/immutable";
 import { toast } from "sonner";
 import { ExceptionMessage } from "@/types/exceptionMessage";

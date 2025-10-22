@@ -1,4 +1,4 @@
-import { AutomationForm, LayoutPage } from "@/components/index";
+import { AutomationForm, LayoutPage } from "@components";
 
 export default function page() {
   return (

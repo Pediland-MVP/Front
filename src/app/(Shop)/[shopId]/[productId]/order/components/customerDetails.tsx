@@ -1,28 +1,22 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { orderFormSchema } from "../checkout.page";
 // UI
-import { Input } from "@/components/ui/input";
-import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
+import { ProductFieldTypeEnum } from "@/types/product.enum";
 import {
-  FormControl,
+  ButtonLoading, ErrorMessage, FormControl,
   FormField,
   FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+  FormLabel, Input, Textarea
+} from "@components";
+import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
 import useOrder from "../hooks/useOrder";
-import { Button } from "@/components/ui/button";
-import { useCheckout } from "../useCheckout";
 import useUpdateContact from "../hooks/useUpdateContact";
-import p2eNumbers, { onInputP2EHandler } from "@/utils/p2eNumber";
-import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { useEffect, useState } from "react";
-import { ErrorMessage } from "@/components/index";
-import { Textarea } from "@/components/ui/textarea";
+import { useCheckout } from "../useCheckout";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");

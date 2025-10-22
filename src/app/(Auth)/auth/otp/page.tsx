@@ -23,8 +23,7 @@ import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-  LoadingLogo,
-} from "@/components";
+} from "@components";
 import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
 import { mutate } from "swr";

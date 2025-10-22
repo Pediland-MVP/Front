@@ -19,7 +19,7 @@ import {
   FormMessage,
   MediaUploader,
   useContentsUploaderContext,
-} from "@/components/index";
+} from "@components";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

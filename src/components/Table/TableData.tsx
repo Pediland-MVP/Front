@@ -24,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/index";
+} from "@components";
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {

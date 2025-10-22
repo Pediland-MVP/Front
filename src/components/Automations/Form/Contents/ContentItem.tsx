@@ -30,7 +30,7 @@ import {
   useContentsContext,
   ButtonContent,
   MediaContent,
-} from "@/components/index";
+} from "@components";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
@@ -199,8 +199,8 @@ export const ContentItem = ({
               className="text-gray-500 hover:text-blue-900"
             />
           </div>
-          <div className="flex gap-2 text-sm font-medium text-blue-900">
-            <div className="flex size-5.5 items-center justify-center rounded-full bg-blue-900 p-0 text-xs leading-px font-medium text-white">
+          <div className="text-secondary flex gap-2 text-[13px] font-semibold">
+            <div className="bg-secondary flex size-5.5 items-center justify-center rounded-full p-0 text-xs leading-px font-medium text-white">
               {index + 1}
             </div>
             {`${t_contentTypes("create_title")} ${typeLabel}`}

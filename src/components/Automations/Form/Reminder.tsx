@@ -18,7 +18,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   HelpMeDialog,
   Select,
   SelectContent,
@@ -26,8 +25,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
-} from "@/components/index";
+  Switch
+} from "@components";
 
 export const Reminder = () => {
   const {

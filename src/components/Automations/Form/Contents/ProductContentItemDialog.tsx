@@ -88,14 +88,20 @@ export const ProductContentItemDialog = ({
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
           <DialogTitle>{t("select_product")}</DialogTitle>
-          <DialogDescription>{t("select_product_description")}</DialogDescription>
+          <DialogDescription>
+            {t("select_product_description")}
+          </DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={products.length}
           next={() => fetchProducts(page)}
           hasMore={hasMore}
           loader={<></>}
-          endMessage={<p>{t("no_more_posts")}</p>}
+          endMessage={
+            <p className="text-muted-foreground mt-4 text-center text-sm">
+              {t("no_more_posts")}
+            </p>
+          }
           scrollableTarget="scrollableDiv"
         >
           <div

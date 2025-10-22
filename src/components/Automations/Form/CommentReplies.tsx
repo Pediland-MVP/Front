@@ -16,10 +16,10 @@ import {
   FormMessage,
   HelpMeDialog,
   Input,
+  SeperateLine,
   Switch,
-} from "@/components/index";
+} from "@components";
 import { TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
-import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();

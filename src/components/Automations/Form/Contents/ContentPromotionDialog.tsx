@@ -1,18 +1,19 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
 import {
+  Button,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { AlertCircle } from "lucide-react";
-import Link from "next/link";
+} from "@components";
+import { CrownSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface ContentPromotionDialogProps {
   isOpen: boolean;
@@ -26,32 +27,27 @@ export const ContentPromotionDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger id={ContentPromotionDialog.name} />
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
+          <DialogTitle className="text-primary">
+            <CrownSimpleIcon size={20} weight="duotone" />
             {t("title")}
           </DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex flex-col gap-2">
-          <Button
-            className="w-full"
-            onClick={() => setIsOpen(false)}
-            variant="outline"
-          >
-            {t("buttons.close")}
-          </Button>
-
-          <Link
-            href="/settings/upgrade?active=planSelection"
-            className="w-full"
-          >
-            <Button className="w-full" variant="default">
+        <DialogFooter>
+          <Button variant="default" asChild>
+            <Link href="/settings/upgrade?active=planSelection">
               {t("buttons.upgrade")}
-            </Button>
-          </Link>
+            </Link>
+          </Button>
+          <DialogClose asChild>
+            <Button variant="outline">{t("buttons.close")}</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

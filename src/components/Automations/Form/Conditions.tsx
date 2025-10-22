@@ -15,7 +15,7 @@ import {
   FormItem,
   HelpMeDialog,
   Input,
-} from "@/components/index";
+} from "@components";
 import { XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ConditionsProps = {
@@ -133,7 +133,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
         ))}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-1">
         <p className="text-sm font-medium">{t("send_message_below")}</p>
         <p className="text-[13px] text-gray-600">{t("note")}</p>
       </div>

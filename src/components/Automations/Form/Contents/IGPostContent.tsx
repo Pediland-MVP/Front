@@ -8,11 +8,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import {
-  Button,
-  ErrorMessage,
-  InstagramPostSelectDialog,
-} from "@/components/index";
+import { Button, ErrorMessage } from "@components";
 import { IGPostContentDialog } from "./IGPostContentDialog";
 
 const PAGE_SIZE = 9;

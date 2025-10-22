@@ -29,7 +29,7 @@ import {
   FormLabel,
   InputCounter,
   Textarea,
-} from "@/components/index";
+} from "@components";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ButtonContentProps = {

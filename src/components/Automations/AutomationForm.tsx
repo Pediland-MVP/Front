@@ -32,7 +32,7 @@ import {
   Form,
   LoaderSpin,
   SeperateLine,
-} from "@/components/index";
+} from "@components";
 import {
   CommentReplies,
   CommentTriggerInputs,
@@ -290,7 +290,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   <Button
                     variant="outline"
                     type="button"
-                    className="flex-1 border-gray-200/60 bg-gray-100 text-gray-600"
+                    className="flex-1"
                     onClick={() => router.back()}
                   >
                     {t("cancel")}

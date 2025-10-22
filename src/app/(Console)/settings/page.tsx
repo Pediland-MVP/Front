@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { SettingsOptions } from "@/components";
+import { SettingsOptions } from "@components";
 
 export default function SettingsPage() {
   const t = useTranslations("Settings");

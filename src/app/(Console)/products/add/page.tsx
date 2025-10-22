@@ -1,9 +1,8 @@
 "use client";
 
-import { Layout } from "lucide-react";
 import ProductForm from "../components/product.form";
 import { useTranslations } from "next-intl";
-import { LayoutPage } from "@/components";
+import { LayoutPage } from "@components";
 
 export default function Page() {
   const t = useTranslations("Products");

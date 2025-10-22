@@ -13,7 +13,7 @@ import {
   FormLabel,
   HelpMeDialog,
   Switch,
-} from "@/components/index";
+} from "@components";
 import { toast } from "sonner";
 
 type TriggersProps = {

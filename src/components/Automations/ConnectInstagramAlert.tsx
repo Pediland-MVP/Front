@@ -6,7 +6,7 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
-} from "@/components/index";
+} from "@components";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const ConnectInstagramAlert = () => {

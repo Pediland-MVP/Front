@@ -12,7 +12,7 @@ import {
   LogoText,
   SidebarTrigger,
   useSidebar,
-} from "@/components";
+} from "@components";
 import { HeadsetIcon, ListIcon, SlidersIcon } from "@phosphor-icons/react";
 
 export const ConsoleHeader = () => {

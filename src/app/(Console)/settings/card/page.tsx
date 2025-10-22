@@ -1,26 +1,21 @@
 "use client";
 
-import { z } from "zod";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import api from "@/hooks/swr/api-client";
+import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
 import {
-  Form,
+  ButtonLoading, ErrorMessage, Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+  FormLabel, Input, LoaderSpin
+} from "@components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { FormProvider, useForm } from "react-hook-form";
-import { ErrorMessage } from "@/components/index";
 import { useEffect, useState } from "react";
-import useSWRImmutable from "swr/immutable";
+import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import api from "@/hooks/swr/api-client";
+import useSWRImmutable from "swr/immutable";
+import { z } from "zod";
 
 export const bankDetailsSchema = z.object({
   bankName: z

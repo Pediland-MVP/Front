@@ -15,9 +15,9 @@ import {
   FormLabel,
   FormMessage,
   HelpMeDialog,
+  SeperateLine,
   Textarea,
-} from "@/components/index";
-import { SeperateLine } from "@/components/ui-custom/SeperateLine";
+} from "@components";
 
 export const CommentTriggerInputs = () => {
   const { watch, control, getValues, setValue } =

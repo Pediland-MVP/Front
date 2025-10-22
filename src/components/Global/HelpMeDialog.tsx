@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
   VideoComp,
-} from "@/components/index";
+} from "@components";
 import { InfoIcon, MonitorPlayIcon } from "@phosphor-icons/react/dist/ssr";
 
 type Position =

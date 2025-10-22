@@ -1,34 +1,26 @@
 // src/app/leads/columns.tsx
 "use client";
 
-import type { Contact } from "@/types/contact";
-import {
-  ChatCircleTextIcon,
-  ChatTeardropTextIcon,
-  CheckSquareIcon,
-  DotsThreeOutlineIcon,
-  EyeIcon,
-  SquareIcon,
-  TrashSimpleIcon,
-  UserCircleIcon,
-  XSquareIcon,
-  CheckCircleIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import type { ColumnDef } from "@/types/tables";
 import type { Automation } from "@/schemas/automation";
-import Image from "next/image";
-import { memo, useState } from "react";
-import { Badge } from "@/components/index";
+import type { ColumnDef } from "@/types/tables";
 import { toJalaliDate } from "@/utils/jalali";
+import Image from "next/image";
 import Link from "next/link";
+import { memo, useState } from "react";
+
 import {
+  Badge,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/index";
+} from "@components";
+import {
+  ChatCircleTextIcon,
+  CheckCircleIcon,
+  DotsThreeOutlineIcon,
+  UserCircleIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 const AvatarCell = memo(function AvatarCell({
   src,
@@ -216,10 +208,7 @@ export const AutomationTableColumns = (
               <DropdownMenuItem>
                 <Link href={`/automations/${row.id}`}>ویرایش</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={() => onDelete?.(row.original.id)}
-              >
+              <DropdownMenuItem onClick={() => onDelete?.(row.original.id)}>
                 حذف
               </DropdownMenuItem>
             </DropdownMenuContent>

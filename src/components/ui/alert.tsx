@@ -1,12 +1,11 @@
-// This file is custom. Do not overwrite it.
-
+// Do not overwrite this file
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:right-2.5 [&>svg]:top-2.5 [&>svg]:text-foreground [&>svg~*]:pr-6 [&>svg]:size-5",
+  "relative w-full rounded-md border px-3 h-10 flex items-center [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:right-2.5 [&>svg]:top-2.5 [&>svg]:text-foreground [&>svg~*]:pr-6 [&>svg]:size-5",
   {
     variants: {
       variant: {
@@ -53,7 +52,7 @@ const AlertDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    className={cn("text-[13px] [&_p]:leading-relaxed", className)}
     {...props}
   />
 ));

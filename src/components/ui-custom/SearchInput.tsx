@@ -1,7 +1,7 @@
 // src/components/SearchInput.tsx
 "use client";
 
-import { Input } from "@/components/index";
+import { Input } from "@components";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
@@ -24,7 +24,7 @@ export const SearchInput = ({
   disabled = false,
 }: Props) => {
   const t = useTranslations("Components.SearchInput");
-  
+
   const debouncedSearch = useDebounce(value, 300);
   const normalized = debouncedSearch.trim();
   const effectiveSearch = normalized.length >= 2 ? normalized : "";

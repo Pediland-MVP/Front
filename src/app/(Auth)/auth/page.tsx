@@ -20,7 +20,7 @@ import {
   FormMessage,
   Input,
   LogoText,
-} from "@/components";
+} from "@components";
 import { MoveLeftIcon } from "lucide-react";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 
