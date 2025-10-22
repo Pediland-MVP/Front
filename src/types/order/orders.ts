@@ -18,7 +18,10 @@ interface Item {
   orderProducts: OrderProduct[];
   orderShipping: OrderShipping;
   lead: OrdersLead;
+  leadId: string;
   instagram: Instagram;
+  instagramId: string;
+  secret: string;
   productFieldValues?: ProductFieldValue[]
 }
 

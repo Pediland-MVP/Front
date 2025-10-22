@@ -644,6 +644,8 @@
       }
     },
     "List": {
+      "no_orders": "هیچ سفارشی وجود ندارد.",
+
       "date": "تاریخ",
       "image": "کارت‌ به کارت",
       "product": "محصول",
@@ -663,6 +665,24 @@
         "invalid_data": "اطلاعات نامعتبر",
         "cancelled": "لغو شده"
       }
+    },
+    "Card": {
+      "delete": "حذف",
+      "digital": "دیجیتال",
+      "order_details": "جزئیات سفارش",
+      "number": "عدد",
+      "physical": "فیزیکی",
+      "tooman": "تومان",
+      "unlimited": "نامحدود",
+      "card_to_card": "کارت به کارت",
+      "zarinpal": "زرین پال",
+      "pending": "درحال خرید",
+      "payment": "درحال پرداخت",
+      "processing": "آماده پردازش",
+      "sending": "در حال ارسال",
+      "completed": "تکمیل شده",
+      "invalid_data": "اطلاعات نامعتبر",
+      "cancelled": "لغو شده"
     },
     "OrderDetails": {
       "shippingCost": "هزینه ارسال",

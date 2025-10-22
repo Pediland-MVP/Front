@@ -1,4 +1,5 @@
 import { GENDERS_ENUM } from "@/constants/gender.constant";
+import { ProvinceNamespace } from "./province";
 
 export namespace UserNamespace {
   export type user = IUser;
@@ -34,9 +35,8 @@ export interface IUser {
 export interface City {
   id: number;
   name: string;
+  province?: ProvinceNamespace.Province;
   slug: string;
-  province?: City;
-  tel_prefix?: string;
 }
 
 export interface Instagram {

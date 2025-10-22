@@ -40,7 +40,7 @@ export default function Page() {
         <Button
           type="button"
           size="md"
-          onClick={() => router.push("/automations/add")}
+          onClick={() => router.push("/products/add")}
           disabled={error}
         >
           {t("add")}

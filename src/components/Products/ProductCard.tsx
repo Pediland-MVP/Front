@@ -3,21 +3,22 @@
 import { cn } from "@/lib/utils";
 import { ProductNamespace } from "@/types/product";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
 
-import { Button, Card, CardContent, CardFooter } from "@components";
+import { Button, Card, CardContent, CardFooter, CardImage } from "@components";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { CircleXIcon, PencilIcon } from "lucide-react";
-import { CardImage } from "../Global/CardImage";
 
-interface ProductCardProps {
+interface ProductCardComponentProps {
   product: ProductNamespace.Product;
   handleDelete: (id: string) => void;
 }
 
-const ProductCardComponent = ({ product, handleDelete }: ProductCardProps) => {
+const ProductCardComponent = ({
+  product,
+  handleDelete,
+}: ProductCardComponentProps) => {
   const router = useRouter();
   const t = useTranslations("Products.Card");
 

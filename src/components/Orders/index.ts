@@ -1,1 +1,2 @@
-export { OrdersListCard } from "./OrdersListCard";
+export { OrderCard } from "./OrderCard";
+export { OrdersCardList } from "./OrdersCardList";
