@@ -10,19 +10,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@components";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  instagram?: boolean;
 }
 
 export const DeleteConfirmationDialog = ({
   isOpen,
   onClose,
   onConfirm,
+  instagram,
 }: DeleteConfirmationDialogProps) => {
   const t = useTranslations("DeleteConfirmationDialog");
 
@@ -32,9 +34,11 @@ export const DeleteConfirmationDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle className="text-destructive flex items-center gap-1">
             <WarningCircleIcon size={24} weight="duotone" />
-            {t("title")}
+            {instagram ? t("title_instagram") : t("title")}
           </AlertDialogTitle>
-          <AlertDialogDescription>{t("description")}</AlertDialogDescription>
+          <AlertDialogDescription>
+            {instagram ? t("description_instagram") : t("description")}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction onClick={onConfirm}>

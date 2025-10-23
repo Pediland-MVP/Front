@@ -1,45 +1,37 @@
 "use client";
 
+import { GENDERS_ENUM } from "@/constants/gender.constant";
+import api from "@/hooks/swr/api-client";
+import logger from "@/utils/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
-import { z } from "zod";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { GENDERS_ENUM } from "@/constants/gender.constant";
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import DateObject from "react-date-object";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { useEffect, useState } from "react";
-import ProfileFormSkeleton from "./profileForm.sekeleton";
-import useSWRImmutable from "swr/immutable";
-import logger from "@/utils/logger";
-import useSWR, { mutate } from "swr";
-import { ProvinceNamespace } from "@/types/province";
-import { CityNamespace } from "@/types/city";
-import { UserNamespace } from "@/types/user";
 import { useRouter } from "next/navigation";
-// UI
+import { useEffect, useState } from "react";
+import DateObject from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import DatePicker from "react-multi-date-picker";
+import { toast } from "sonner";
+import { mutate } from "swr";
+import useSWRImmutable from "swr/immutable";
+import { z } from "zod";
+// TODO: Refactor Types & Schemas
+import { CityNamespace } from "@/types/city";
+import { ProvinceNamespace } from "@/types/province";
+import { UserNamespace } from "@/types/user";
+
 import {
-  FormControl,
+  ButtonLoading, FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
+  FormMessage, Input, LoaderSpin, Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import api from "@/hooks/swr/api-client";
+  SelectValue
+} from "@components";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -177,7 +169,7 @@ export function ProfileForm() {
         ...data,
       })
       .then((res) => {
-        toast(t("profileUpdated"));
+        toast.success(t("profileUpdated"));
         mutate(`${API_URL}/users/me`);
       })
       .catch((e) => {
@@ -193,14 +185,11 @@ export function ProfileForm() {
     router.push("/");
   };
 
-  if (userIsLoading) return <LoaderSpin className="h-full" />;
+  if (userIsLoading) return <LoaderSpin />;
 
   return (
     <FormProvider {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-2/3">
         <div className="grid gap-2 md:grid-cols-4">
           <FormField
             control={form.control}
@@ -407,23 +396,13 @@ export function ProfileForm() {
             </>
           )}
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-3">
-          <ButtonLoading
-            isLoading={isSubmitting}
-            type="submit"
-            className="w-full"
-          >
-            {t("save")}
-          </ButtonLoading>
-          <Button
-            onClick={onCancel}
-            type="button"
-            className="w-full"
-            variant="outline"
-          >
-            {t("cancel")}
-          </Button>
-        </div>
+        <ButtonLoading
+          isLoading={isSubmitting}
+          type="submit"
+          className="mt-4 w-full"
+        >
+          {t("save")}
+        </ButtonLoading>
       </form>
     </FormProvider>
   );

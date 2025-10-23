@@ -2,22 +2,23 @@
 
 import { useTranslations } from "next-intl";
 
-import { SettingsOptions } from "@components";
+import { LayoutPage, SettingsOptions } from "@components";
 
-export default function SettingsLayout({
-  children,
-}: {
+interface SettingsLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function SettingsLayout({ children }: SettingsLayoutProps) {
   const t = useTranslations("Settings");
 
   return (
-    <div className="_settings-page flex h-full flex-col">
-      <div className="flex flex-1">
-        <div className="hidden md:block md:w-1/4">
+    <div className="_settings-page flex h-full flex-col rounded-t-3xl bg-gradient-to-t from-white/85 to-white md:rounded-t-none">
+      <div className="flex flex-1 gap-3 md:p-3 md:pt-0">
+        <div className="hidden rounded-xl border-2 border-gray-100 bg-white p-4 md:block">
           <SettingsOptions />
         </div>
-        <div className="flex-1 md:w-3/4">{children}</div>
+
+        {children}
       </div>
     </div>
   );

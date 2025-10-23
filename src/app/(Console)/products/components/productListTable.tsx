@@ -118,7 +118,7 @@ export default function ProductListTable() {
       await api
         .delete(`/products/${itemToDelete}`)
         .then((res) => {
-          toast(t("deleted"));
+          toast.success(t("deleted"));
           mutate(mutateIncludeStringKey("products"));
         })
         .catch((e: AxiosError<ExceptionMessage>) => {

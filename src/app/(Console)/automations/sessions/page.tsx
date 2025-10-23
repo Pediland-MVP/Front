@@ -1,3 +1,4 @@
+import { LayoutTable } from "@/components";
 import SessionsTable from "../../../../components/Sessions/sessions.table";
 import { getTranslations } from "next-intl/server";
 // Just UI Imports Below
@@ -7,10 +8,10 @@ export default async function SessionsPage(props: {
 }) {
   const t = await getTranslations("Sessions");
   return (
-    <div className="_automation overflow-auto">
+    <LayoutTable className="_sessions">
       <SessionsTable
         contentCycleId={(await props.searchParams).contentCycleId || undefined}
       />
-    </div>
+    </LayoutTable>
   );
 }

@@ -83,7 +83,7 @@ export const UserDropdownMenu = ({
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="hover:text-primary text-secondary cursor-pointer"
-            onClick={() => routeHandler("/profile")}
+            onClick={() => routeHandler("/settings/profile")}
           >
             <UserRoundPenIcon />
             {t("profile")}

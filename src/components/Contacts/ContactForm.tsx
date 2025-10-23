@@ -99,16 +99,11 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
   //   await api
   //     .put(`/contacts/${contactId}`, values)
   //     .then(async (res) => {
-  //       toast({
-  //         title: t("updated"),
-  //       });
+  //       toast.success(t("updated"));
   //       await mutate(mutateIncludeStringKey("contacts"));
   //     })
   //     .catch((e: AxiosError<ExceptionMessage>) => {
-  //       toast({
-  //         title: t_ec(e.response?.data?.code),
-  //         variant: "destructive",
-  //       });
+  //       toast.error(t_ec(e.response?.data?.code));
   //     })
   //     .finally(() => {
   //       setIsSubmitLoading(false);

@@ -119,11 +119,11 @@ export function ExcelExportOrdersDrawer({
     await api
       .post("/orders/excelExport", values)
       .then((res: AxiosResponse<IResponseMessage>) => {
-        toast(t("success"));
+        toast.success(t("success"));
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         const error = t_ec(e.code);
-        toast(error);
+        toast.error(error);
       })
       .finally(() => setIsLoading(false));
     onOpenChange(false);

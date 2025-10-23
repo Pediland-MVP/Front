@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
+import { LoaderSpin } from "../ui-custom";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -37,7 +38,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
     isLoading: isSessionsLoading,
     mutate: mutateSessions,
   } = useSWR<SessionNamespace.Sessions>(
-    `/sessions?page=${currentPage}&limit=10${contentCycleId ? `&contentCycleId=${contentCycleId}` : ""}`
+    `/sessions?page=${currentPage}&limit=10${contentCycleId ? `&contentCycleId=${contentCycleId}` : ""}`,
   );
 
   const nextPage = () => {
@@ -55,17 +56,11 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
   };
 
   if (isSessionsLoading || !sessions) {
-    return (
-      <Card className="border-b-2 border-gray-100">
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      </Card>
-    );
+    return <LoaderSpin />;
   }
 
   return (
-    <Card className="border-b-2 border-gray-100">
+    <div>
       {sessionsError ? (
         <div className="text-center text-red-500">{sessionsError}</div>
       ) : (
@@ -126,11 +121,9 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                           questionId={item.id}
                           leadInstagram={item.leadInstagram}
                         />
-                        <Link
-                          href={`/directs/${item.leadInstagram.lead.id}`}
-                        >
+                        <Link href={`/directs/${item.leadInstagram.lead.id}`}>
                           <Button variant="ghost" size="sm">
-                            <ChatCircleText className="h-4 w-4 ml-2" />
+                            <ChatCircleText className="ml-2 h-4 w-4" />
                             {t("viewChat")}
                           </Button>
                         </Link>
@@ -142,13 +135,13 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
             </Table>
           </div>
           {sessions.meta && (
-            <div className="flex justify-between items-center mt-4">
+            <div className="mt-4 flex items-center justify-between">
               <Button
                 variant="outline"
                 onClick={prevPage}
                 disabled={currentPage === 1}
               >
-                <ChevronRight className="h-4 w-4 ml-2" />
+                <ChevronRight className="ml-2 h-4 w-4" />
                 {t("previous")}
               </Button>
               <span>
@@ -163,12 +156,12 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                 disabled={currentPage === sessions.meta.totalPages}
               >
                 {t("next")}
-                <ChevronLeft className="h-4 w-4 mr-2" />
+                <ChevronLeft className="mr-2 h-4 w-4" />
               </Button>
             </div>
           )}
         </>
       )}
-    </Card>
+    </div>
   );
 }

@@ -2,13 +2,6 @@
 
 import api from "@/hooks/swr/api-client";
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import {
-  ButtonLoading, ErrorMessage, Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel, Input, LoaderSpin
-} from "@components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -16,6 +9,18 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
+
+import {
+  ButtonLoading,
+  ErrorMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+  LoaderSpin,
+} from "@components";
 
 export const bankDetailsSchema = z.object({
   bankName: z
@@ -38,7 +43,7 @@ export const bankDetailsSchema = z.object({
     .max(255, { message: "maximum" }),
 });
 
-export default function BankDetails() {
+export default function BankCardPage() {
   const t = useTranslations("Settings.BankDetails");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,7 +75,7 @@ export default function BankDetails() {
     await api
       .post("/payments/cardToCard", data)
       .then((res) => {
-        toast(t("cardToCardUpdated"));
+        toast.success(t("cardToCardUpdated"));
       })
       .catch((e) => {
         toast.error(t("cardToCardUpdateFailed"));
@@ -87,24 +92,23 @@ export default function BankDetails() {
   } = form;
 
   return (
-    <div className="_card-to-card-page flex h-full rounded-t-3xl bg-white md:rounded-t-none">
-      <div className="h-full w-full sm:w-3/5">
-        <div className="h-full border-gray-100 px-4 py-5 md:border-l-2 md:p-6">
+    <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
+      <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
+        <div className="mb-5">
+          <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
+        </div>
+        <div className="flex-1">
           {cardToCardLoading ? (
             <LoaderSpin />
           ) : (
             <>
-              <div className="mb-6">
-                <h2 className="text-primary mb-1 font-semibold">
-                  {t("title")}
-                </h2>
-                <p className="text-muted-foreground text-sm">
-                  {t("description")}
-                </p>
-              </div>
               <FormProvider {...form}>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="w-full md:w-1/2"
+                  >
                     <div className="grid gap-2">
                       <FormField
                         control={control}

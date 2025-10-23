@@ -26,7 +26,7 @@ export default function ChatBottombar() {
 
   const handleSend = async () => {
     if (!currentLead) {
-      return toast(t("errors.send"));
+      return toast.error(t("errors.send"));
     }
 
     if (message.trim()) {

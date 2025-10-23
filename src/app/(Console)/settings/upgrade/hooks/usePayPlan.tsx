@@ -26,7 +26,7 @@ export default function usePayPlan() {
       .then(
         async (res: AxiosResponse<SubscriptionNamespace.POST.Subscribe>) => {
           if (res.data.code === "PAID_FREE") {
-            toast(t_rc(res.data.code));
+            toast.success(t_rc(res.data.code));
             await mutate(mutateIncludeStringKey("subscriptions"));
             mutate(mutateIncludeStringKey("plans"));
             setActive({

@@ -28,6 +28,8 @@ const knownSegmentKey = (seg: string): string | null => {
     case "edit":
       return "edit";
 
+    case "password":
+      return "password";
     case "contacts":
       return "contacts";
     case "directs":
@@ -103,7 +105,7 @@ export function HeaderBreadcrumb() {
               <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
                 {isLast ? (
                   <span
-                    className="md:text-secondary md:font-medium block truncate whitespace-nowrap text-white"
+                    className="md:text-secondary block truncate whitespace-nowrap text-white md:font-medium"
                     aria-current="page"
                   >
                     {label}

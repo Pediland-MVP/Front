@@ -41,7 +41,7 @@ export function DiscountCode() {
         setDiscountCode(values.code);
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
-        toast(t_ec(e?.response?.data.code));
+        toast.error(t_ec(e?.response?.data.code));
       });
     setActive({
       planSelection: true,

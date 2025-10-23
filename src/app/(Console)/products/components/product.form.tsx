@@ -336,7 +336,7 @@ export default function ProductForm({ shouldBeEdit }: ProductFormProps) {
         url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
         data: values,
       });
-      toast(t("productAddedSuccess"));
+      toast.success(t("productAddedSuccess"));
       await mutate(
         (key) => typeof key === "string" && key.includes("products"),
       );

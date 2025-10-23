@@ -1,14 +1,15 @@
 "use client";
 
-import api, { setAccessToken, getAccessToken } from "@/hooks/swr/api-client";
-import { useGlobalLoading } from "@/components/Providers/GlobalLoadingProvider";
+import api, { setAccessToken } from "@/hooks/swr/api-client";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { mutate } from "swr";
 import { z } from "zod";
 
 import {
@@ -26,8 +27,6 @@ import {
 } from "@components";
 import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
-import { mutate } from "swr";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -96,6 +95,7 @@ export default function OtpPage() {
 
   const resendHandler = async () => {
     setIsResendLoading(true);
+
     try {
       await api.get(`${API_URL}/auth/prelogin`, { params: { mobile } });
       setShowResend(false);

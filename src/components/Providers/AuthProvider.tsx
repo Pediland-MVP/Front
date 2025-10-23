@@ -14,7 +14,6 @@ export default function AuthProvider({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const { isOnboarding, hasInstagram, isLoading: isUserLoading } = useUser();
 
   useEffect(() => {
@@ -31,7 +30,9 @@ export default function AuthProvider({
       if (isOnboardingPage && !isOnboarding) redirect = "/";
       else setIsAllowed(true);
     } else if (isConnectPage) {
-      if (hasInstagram) redirect = "/";
+      if (isInstagramPage && searchParams.get("code")) {
+        setIsAllowed(true);
+      } else if (hasInstagram) redirect = "/";
       else if (isOnboarding) redirect = "/auth/onboarding";
       else setIsAllowed(true);
     } else {

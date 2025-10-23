@@ -46,10 +46,10 @@ export default function useUpdateContact() {
         }
 
         const resJson = (await res.json()) as ExceptionMessage;
-        toast(t_ec(resJson.code));
+        toast.error(t_ec(resJson.code));
       })
       .catch((e) => {
-        toast(t_ec("CHECK_CONNECTION"));
+        toast.error(t_ec("CHECK_CONNECTION"));
       })
       .finally(() => setLoading(false));
   }

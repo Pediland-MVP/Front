@@ -1,15 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
   CreditCardIcon,
-  PaypalLogoIcon,
-  PlugIcon,
-  RocketIcon,
+  CrownSimpleIcon,
+  InstagramLogoIcon,
+  PasswordIcon,
+  UserCircleIcon,
 } from "@phosphor-icons/react";
 
 export const SettingsOptions = () => {
@@ -19,10 +20,15 @@ export const SettingsOptions = () => {
     {
       title: t("accounts"),
       url: "/settings/instagram",
-      icon: PlugIcon,
+      icon: InstagramLogoIcon,
     },
     {
-      title: t("bankAccounts"),
+      title: t("upgrade_plan"),
+      url: "/settings/upgrade",
+      icon: CrownSimpleIcon,
+    },
+    {
+      title: t("bank_accounts"),
       url: "/settings/card",
       icon: CreditCardIcon,
     },
@@ -32,34 +38,40 @@ export const SettingsOptions = () => {
     //   icon: PaypalLogoIcon,
     // },
     {
-      title: t("upgradePlan"),
-      url: "/settings/upgrade",
-      icon: RocketIcon,
+      title: t("profile"),
+      url: "/settings/profile",
+      icon: UserCircleIcon,
+    },
+    {
+      title: t("password"),
+      url: "/settings/password",
+      icon: PasswordIcon,
     },
   ];
 
   const pathname = usePathname();
 
   return (
-    <div className="h-full w-full rounded-t-3xl border-gray-100 bg-white px-4 py-5 md:rounded-t-none md:border-l-2 md:p-4">
-      <div className="flex flex-col gap-2">
-        {items.map((item, index) => (
-          <div key={index}>
-            <Link
-              href={item.url}
-              className={cn(
-                "group text-secondary flex items-center gap-2.5 rounded-md bg-blue-50 p-4 font-medium duration-300 hover:bg-blue-100/80 md:p-3",
-                pathname.startsWith(item.url) && "bg-blue-100",
-              )}
-            >
-              <item.icon className="group-hover:text-secondary size-6 duration-300 md:size-5" />
-              <span className="group-hover:text-secondary text-sm duration-300">
-                {item.title}
-              </span>
-            </Link>
-          </div>
-        ))}
-      </div>
+    <div className="flex flex-col gap-2.5 px-4 py-5 md:p-0">
+      {items.map((item, index) => (
+        <div key={index}>
+          <Link
+            href={item.url}
+            className={cn(
+              "group text-secondary flex h-12 min-w-60 items-center gap-2.5 rounded-md bg-blue-50 px-4 font-medium shadow shadow-blue-200/90 duration-300 hover:bg-blue-100/80 md:h-11 md:px-3",
+              pathname.startsWith(item.url) && "bg-blue-100",
+            )}
+          >
+            <item.icon
+              className="group-hover:text-secondary size-5.5 duration-300 md:size-5"
+              weight="duotone"
+            />
+            <span className="group-hover:text-secondary text-sm duration-300">
+              {item.title}
+            </span>
+          </Link>
+        </div>
+      ))}
     </div>
   );
 };

@@ -8,9 +8,9 @@ export default function SettingsPage() {
   const t = useTranslations("Settings");
 
   return (
-    <div className="flex h-full justify-center rounded-t-3xl bg-white md:items-center md:rounded-t-none">
-      <p className="hidden text-sm text-gray-600 md:block">
-        {t("chooseOneOption")}
+    <div className="flex w-full md:items-center justify-center rounded-t-3xl md:rounded-t-none">
+      <p className="text-muted-foreground hidden text-sm md:block">
+        {t("choose_one_option")}
       </p>
 
       <div className="w-full md:hidden">
