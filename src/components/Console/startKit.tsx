@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 // UI Imports
-import DiscountText from "@/components/ui-custom/discountText";
+import { DiscountAlert } from "@/components/Settings/DiscountAlert";
 import { Button } from "@/components/ui/button";
 import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
 
@@ -28,7 +28,7 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
 
   const handleConnect = () => {
     if (!hasSubscription) {
-      router.push(`/settings/upgrade`);
+      router.push(`/settings/subscription`);
       return;
     }
     connectIG();
@@ -80,7 +80,7 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
           )}
         </div>
 
-        <DiscountText />
+        <DiscountAlert />
 
         <div className="text-center">
           <Link href={`${API_URL}/instagram/connectIG`}>

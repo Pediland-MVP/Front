@@ -1,17 +1,26 @@
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+"use client";
+
 import api from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
-import { useUpgradeContext } from "../context/upgrade.context";
-import { AxiosError } from "axios";
+import { useSubscriptionContext } from "@/app/(Console)/settings/subscription/context/SubscriptionContext";
+// TODO: Refactor Types & Schemas
 import { ExceptionMessage } from "@/types/exceptionMessage";
 
-export function DiscountCode() {
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  Input,
+} from "@components";
+
+export const DiscountCode = () => {
   const schema = z.object({
     code: z.string().min(1),
   });
@@ -23,13 +32,13 @@ export function DiscountCode() {
   const t = useTranslations("UpdateReferralCode");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const { setDiscountCode, setActive } = useUpgradeContext();
+  const { setDiscountCode, setActive } = useSubscriptionContext();
 
   const deleteCode = () => {
     setDiscountCode("");
     form.setValue("code", "");
     setActive({
-      planSelection: true,
+      choosePlan: true,
       subscriptionInfo: false,
     });
   };
@@ -44,17 +53,14 @@ export function DiscountCode() {
         toast.error(t_ec(e?.response?.data.code));
       });
     setActive({
-      planSelection: true,
+      choosePlan: true,
       subscriptionInfo: false,
     });
   };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto my-6 flex flex-col gap-y-2 lg:w-2/6"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
         <FormField
           control={form.control}
           name="code"
@@ -65,32 +71,25 @@ export function DiscountCode() {
                   <Input
                     type="text"
                     placeholder={t("Code.placeholder")}
-                    className="w-full"
+                    className="min-w-[200px]"
                     {...field}
                   />
                 </FormControl>
               </FormItem>
             );
           }}
-        ></FormField>
-        <div className="flex gap-x-2">
-          <Button
-            type="button"
-            onClick={form.handleSubmit(onSubmit)}
-            className="w-full bg-green-600"
-          >
-            {t("update")}
-          </Button>
-          <Button
-            type="button"
-            variant={"ghost"}
-            onClick={deleteCode}
-            className="w-full"
-          >
-            {t("delete")}
-          </Button>
-        </div>
+        />
+        <Button
+          type="button"
+          onClick={form.handleSubmit(onSubmit)}
+          className="bg-green-600"
+        >
+          {t("update")}
+        </Button>
+        <Button type="button" variant={"outline"} onClick={deleteCode}>
+          {t("delete")}
+        </Button>
       </form>
     </Form>
   );
-}
+};

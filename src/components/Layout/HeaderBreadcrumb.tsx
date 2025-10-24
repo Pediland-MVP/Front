@@ -27,9 +27,10 @@ const knownSegmentKey = (seg: string): string | null => {
       return "new";
     case "edit":
       return "edit";
-
     case "password":
       return "password";
+    case "subscription":
+      return "subscription";
     case "contacts":
       return "contacts";
     case "directs":

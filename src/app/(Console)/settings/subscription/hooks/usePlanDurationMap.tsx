@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useUpgradeContext } from "../context/upgrade.context";
+import { useUpgradeContext } from "../context/SubscriptionContext";
 
 export default function usePlanDurationMap() {
   const { plans } = useUpgradeContext();

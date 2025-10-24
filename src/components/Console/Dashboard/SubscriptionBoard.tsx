@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 // TODO: Should Refactor
-import { useUpgradeContext } from "@/app/(Console)/settings/upgrade/context/upgrade.context";
+import { useSubscriptionContext } from "@/app/(Console)/settings/subscription/context/SubscriptionContext";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 import {
@@ -17,7 +17,7 @@ import { ChevronLeftIcon } from "lucide-react";
 
 export const SubscriptionBoard = () => {
   const t = useTranslations("Console.Dashboard");
-  const { subscriptions, isLoading } = useUpgradeContext();
+  const { subscriptions, isLoading } = useSubscriptionContext();
 
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,

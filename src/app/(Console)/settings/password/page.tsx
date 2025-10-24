@@ -25,6 +25,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
   InputPassword,
+  LayoutSettings,
   LoaderSpin,
 } from "@components";
 import { CircleNotchIcon, LockIcon, LockOpenIcon } from "@phosphor-icons/react";
@@ -162,164 +163,158 @@ export default function PasswordPage() {
   };
 
   return (
-    <div className="_password-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
-      <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
-        <div className="mb-5">
-          <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-          <div className="text-muted-foreground inline-flex flex-wrap items-center gap-1 text-sm">
-            {havePassword ? (
-              <LockIcon size={20} weight="duotone" />
-            ) : (
-              <LockOpenIcon size={20} weight="duotone" />
-            )}
-            <span>{t("description")}</span>
-            <span
-              className={cn(
-                "font-semibold",
-                havePassword ? "text-green-600" : "text-destructive",
-              )}
-            >
-              {havePassword ? t("is_active") : t("is_not_active")}
-            </span>
-          </div>
-        </div>
-        <div className="flex-1">
-          {isLoading ? (
-            <LoaderSpin />
-          ) : showForm ? (
-            <div className="w-full md:w-1/2">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(submitHandler)}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>رمز عبور</FormLabel>
-                        <FormControl>
-                          <InputPassword
-                            {...field}
-                            onBlur={handlePasswordBlur}
-                            autoFocus
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>تأیید رمز عبور</FormLabel>
-                        <FormControl>
-                          <InputPassword
-                            {...field}
-                            onBlur={handleConfirmPasswordBlur}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="otp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>کد فعالسازی</FormLabel>
-                        <FormControl>
-                          <InputOTP
-                            maxLength={5}
-                            {...field}
-                            pattern={REGEXP_ONLY_DIGITS}
-                            onBlur={handleOtpBlur}
-                          >
-                            <InputOTPGroup className="flex w-full justify-between gap-2.5">
-                              {[0, 1, 2, 3, 4].map((i) => (
-                                <InputOTPSlot
-                                  className="w-full"
-                                  key={i}
-                                  index={i}
-                                />
-                              ))}
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="text-muted-foreground flex items-center justify-center gap-2 text-[15px]">
-                    {!showResend ? (
-                      <CounterDown
-                        time={120}
-                        onEnd={() => setShowResend(true)}
-                      />
-                    ) : (
-                      <Button
-                        variant="link"
-                        type="button"
-                        size="sm"
-                        className="text-muted-foreground h-auto text-[13px] font-normal"
-                        onClick={requestHandler}
-                        disabled={isRequesting}
-                      >
-                        {isRequesting ? (
-                          <CircleNotchIcon className="animate-spin" size={16} />
-                        ) : (
-                          <>
-                            <RefreshCwIcon className="size-3.5" />
-                            {t("resend_code")}
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-
-                  <div className="flex w-full gap-2">
-                    <ButtonLoading
-                      isLoading={isSubmitting}
-                      type="submit"
-                      className="flex-1"
-                      disabled={!isFormValid || isRequesting}
-                    >
-                      {havePassword
-                        ? t("change_password")
-                        : t("create_password")}
-                    </ButtonLoading>
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={() => setShowForm(false)}
-                      className="flex-1"
-                    >
-                      {t("cancel")}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </div>
+    <LayoutSettings className="_password-page">
+      <div className="mb-5">
+        <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
+        <div className="text-muted-foreground inline-flex flex-wrap items-center gap-1 text-sm">
+          {havePassword ? (
+            <LockIcon size={20} weight="duotone" />
           ) : (
-            <div className="w-full md:w-1/2">
-              <ButtonLoading
-                isLoading={isRequesting}
-                onClick={requestHandler}
-                className="w-full"
-              >
-                {havePassword ? t("change_password") : t("create_password")}
-              </ButtonLoading>
-            </div>
+            <LockOpenIcon size={20} weight="duotone" />
           )}
+          <span>{t("description")}</span>
+          <span
+            className={cn(
+              "font-semibold",
+              havePassword ? "text-green-600" : "text-destructive",
+            )}
+          >
+            {havePassword ? t("is_active") : t("is_not_active")}
+          </span>
         </div>
       </div>
-    </div>
+
+      <div className="flex-1">
+        {isLoading ? (
+          <LoaderSpin />
+        ) : showForm ? (
+          <div className="w-full md:w-1/2">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(submitHandler)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>رمز عبور</FormLabel>
+                      <FormControl>
+                        <InputPassword
+                          {...field}
+                          onBlur={handlePasswordBlur}
+                          autoFocus
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>تأیید رمز عبور</FormLabel>
+                      <FormControl>
+                        <InputPassword
+                          {...field}
+                          onBlur={handleConfirmPasswordBlur}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="otp"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>کد فعالسازی</FormLabel>
+                      <FormControl>
+                        <InputOTP
+                          maxLength={5}
+                          {...field}
+                          pattern={REGEXP_ONLY_DIGITS}
+                          onBlur={handleOtpBlur}
+                        >
+                          <InputOTPGroup className="flex w-full justify-between gap-2.5">
+                            {[0, 1, 2, 3, 4].map((i) => (
+                              <InputOTPSlot
+                                className="w-full"
+                                key={i}
+                                index={i}
+                              />
+                            ))}
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="text-muted-foreground flex items-center justify-center gap-2 text-[15px]">
+                  {!showResend ? (
+                    <CounterDown time={120} onEnd={() => setShowResend(true)} />
+                  ) : (
+                    <Button
+                      variant="link"
+                      type="button"
+                      size="sm"
+                      className="text-muted-foreground h-auto text-[13px] font-normal"
+                      onClick={requestHandler}
+                      disabled={isRequesting}
+                    >
+                      {isRequesting ? (
+                        <CircleNotchIcon className="animate-spin" size={16} />
+                      ) : (
+                        <>
+                          <RefreshCwIcon className="size-3.5" />
+                          {t("resend_code")}
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex w-full gap-2">
+                  <ButtonLoading
+                    isLoading={isSubmitting}
+                    type="submit"
+                    className="flex-1"
+                    disabled={!isFormValid || isRequesting}
+                  >
+                    {havePassword ? t("change_password") : t("create_password")}
+                  </ButtonLoading>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="flex-1"
+                  >
+                    {t("cancel")}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        ) : (
+          <div className="w-full md:w-1/2">
+            <ButtonLoading
+              isLoading={isRequesting}
+              onClick={requestHandler}
+              className="w-full"
+            >
+              {havePassword ? t("change_password") : t("create_password")}
+            </ButtonLoading>
+          </div>
+        )}
+      </div>
+    </LayoutSettings>
   );
 }

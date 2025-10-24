@@ -35,7 +35,7 @@ export default function InstagramTokenErrorDialog() {
     if (pathname.startsWith("/settings/instagram")) return;
 
     // Show the popup only once when the component mounts
-    if (!isAborted && user) {
+    if (!isAborted && user && user.instagrams) {
       if (
         user.instagrams.find(
           (ig) =>

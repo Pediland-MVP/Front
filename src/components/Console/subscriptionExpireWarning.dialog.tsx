@@ -30,7 +30,7 @@ export default function SubscriptionExpireWarningDialog() {
     if (!user || isAborted) return;
 
     // Don't show on upgrade settings page
-    if (pathname.startsWith("/settings/upgrade")) return;
+    if (pathname.startsWith("/settings/subscription")) return;
 
     const isHaveReserved = user.subscriptions.find(
       (sub) => sub.status === "reserved",
@@ -59,7 +59,7 @@ export default function SubscriptionExpireWarningDialog() {
   const handleUpgrade = () => {
     setShowPopup(false);
     setIsAborted(true);
-    router.push("/settings/upgrade?active=planSelection");
+    router.push("/settings/subscription?active=planSelection");
   };
 
   const handleClose = () => {

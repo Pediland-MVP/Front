@@ -41,7 +41,7 @@ export const ContentPromotionDialog = ({
         </DialogHeader>
         <DialogFooter>
           <Button variant="default" asChild>
-            <Link href="/settings/upgrade?active=planSelection">
+            <Link href="/settings/subscription?active=planSelection">
               {t("buttons.upgrade")}
             </Link>
           </Button>

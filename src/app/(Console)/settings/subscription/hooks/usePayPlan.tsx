@@ -4,7 +4,7 @@ import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspa
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { UpgradeContext } from "../context/upgrade.context";
+import { UpgradeContext } from "../context/SubscriptionContext";
 import { mutate } from "swr";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import api from "@/hooks/swr/api-client";

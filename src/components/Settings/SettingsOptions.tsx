@@ -24,7 +24,7 @@ export const SettingsOptions = () => {
     },
     {
       title: t("upgrade_plan"),
-      url: "/settings/upgrade",
+      url: "/settings/subscription",
       icon: CrownSimpleIcon,
     },
     {

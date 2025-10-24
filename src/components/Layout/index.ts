@@ -6,6 +6,7 @@ export * from "./HeaderBreadcrumb";
 export * from "./HeaderFeaturesContext";
 export * from "./LayoutCard";
 export * from "./LayoutPage";
+export * from "./LayoutSettings";
 export * from "./LayoutTable";
 export * from "./NavBottom";
 export * from "./NavMain";
