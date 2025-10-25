@@ -122,9 +122,9 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const arrayErrorMsg = arrayErrors?.root?.message ?? arrayErrors?.message;
   const arrayErrorType = arrayErrors?.root?.type ?? arrayErrors?.type;
 
-  useEffect(() => {
-    console.log("Watching contents...", contents);
-  }, [contents]);
+  // useEffect(() => {
+  //   console.log("Watching contents...", contents);
+  // }, [contents]);
 
   return (
     <ContentsContext.Provider

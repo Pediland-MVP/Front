@@ -989,7 +989,7 @@
     },
     "BankDetails": {
       "description": "برای فعال شدن شیوه پرداخت کارت به کارت، اطلاعات زیر را تکمیل کنید.",
-      "title": "مدیریت حساب بانکی",
+      "title": "مدیریت کارت بانکی",
       "bankName": {
         "label": "نام بانک",
         "required": "نام بانک الزامی است"
@@ -1390,31 +1390,39 @@
     "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید",
     "dropIt": "رها کنید"
   },
-  "Upgrade": {
+  "Subscription": {
+    "title": "مدیریت اشتراک کاربری",
+    "no_active_subscription": "هیچ اشتراک فعالی وجود ندارد. ",
+    "plan_title": "بسته مناسب برای پیج شما",
+    "package_title": "اشتراک مناسب خود را انتخاب کنید",
+    "subscription": "اشتراک",
+    "toman": "تـومـان",
+    "free": "رایـگـان",
+    "buy": "خـریـد",
+    "remaining_days": "باقی مانده",
+    "day": "روز",
+
+    "subscriptionStatus": "در اینجا لیست اشتراک‌های فعال و رزرو شده خود را مشاهده می‌کنید.",
+    "selectPlan": "پلن خود را انتخاب کنید",
+    "activeSubscription": "اشتراک فعال",
+    "reservedSubscriptions": "اشتراک‌های رزرو شده",
+    "active": "فعال",
+    "reserved": "رزرو شده",
+    "expired": "منقضی شده",
+    "pending": "در انتظار",
+    "cancelled": "لغو شده",
+    "daysRemaining": "روز باقی مانده",
+    "reserve": "رزرو اشتراک",
+    "lastDay": "روز آخر!",
+
     "Verify": {
       "error": "پرداخت با خطا مواجه شد",
       "sucessFull": "عملیات با موفقیت انجام شد",
       "sucessFullDescription": "پرداخت شما موفق بود و سرویس برای شما فعال شد",
       "refId": "شماره پیگیری: {refId}"
     },
-    "Subscriptions": {
-      "title": "مدیریت اشتراک کاربری",
-      "subscriptionStatus": "در اینجا لیست اشتراک‌های فعال و رزرو شده خود را مشاهده می‌کنید.",
-      "selectPlan": "پلن خود را انتخاب کنید",
-      "activeSubscription": "اشتراک فعال",
-      "reservedSubscriptions": "اشتراک‌های رزرو شده",
-      "noActiveSubscription": "هیچ اشتراک فعالی وجود ندارد.",
-      "active": "فعال",
-      "reserved": "رزرو شده",
-      "expired": "منقضی شده",
-      "pending": "در انتظار",
-      "cancelled": "لغو شده",
-      "daysRemaining": "روز باقی مانده",
-      "reserve": "رزرو اشتراک",
-      "lastDay": "روز آخر!"
-    },
+
     "PlanSelection": {
-      "title": "مدیریت اشتراک کاربری",
       "description": "برای استفاده از امکانات ویژه بفروش نیاز به فعال سازی اشتراک دارید. لطفا با در نظر گرفتن تعداد فالوورهایتان، یکی از پلن‌های یک ماهه، سه ماهه یا یک ساله را انتخاب کنید",
       "selectPlan": "پلن خود را انتخاب کنید",
       "planDescription": "در این قسمت میتوانید پلن خود را انتخاب کنید",
@@ -1451,6 +1459,8 @@
     }
   },
   "UpdateReferralCode": {
+    "have_coupon": "کد تخفیف دارید؟",
+    "cancel": "انصراف",
     "update": "اعمال کد",
     "delete": "حذف کد",
     "Code": {

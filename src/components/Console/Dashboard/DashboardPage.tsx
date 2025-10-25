@@ -1,15 +1,18 @@
-// TODO: Should Refactor
-import { SubscriptionProvider } from "@/app/(Console)/settings/subscription/context/SubscriptionContext";
+import useUser from "@/hooks/useUser";
+import { useSubscriptionData } from "@/store/subscriptionStore";
 
 import { DashboardStats, LayoutPage, SubscriptionBoard } from "@components";
 
 export const DashboardPage = () => {
+  useSubscriptionData();
+  const { user } = useUser();
+
+  console.log("User....", user);
+
   return (
     <LayoutPage className="px-3">
       <div className="_dashboard-page space-y-4">
-        <SubscriptionProvider>
-          <SubscriptionBoard />
-        </SubscriptionProvider>
+        <SubscriptionBoard />
 
         <DashboardStats />
       </div>

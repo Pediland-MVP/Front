@@ -8,46 +8,53 @@ export namespace UserNamespace {
   }
 }
 export interface IUser {
-  birthDate: Date;
-  categoryId: string;
-  city: City;
-  createDate: Date;
-  deleteFlagId: string;
-  email: string;
-  firstname: string;
-  gender: GENDERS_ENUM;
-  id: string;
-  instagrams: Instagram[];
-  isDeleteFlages: boolean;
-  lastname: string;
-  mobile: string;
-  paymentDetailId: string;
-  referralUserId: string;
-  status: string;
-  submittedInstagramUsername: string;
-  subscriptions: Subscription[];
-  updateDate: Date;
-  verified: boolean;
-  wallet: string;
-  walletId: string;
+  code: string;
+  message: string;
+  statusCode: number;
+  data: {
+    birthDate: Date;
+    categoryId: string;
+    city: City;
+    createDate: Date;
+    deleteFlagId: string;
+    email: string;
+    firstname: string;
+    gender: GENDERS_ENUM;
+    havePassword: boolean;
+    id: string;
+    instagrams: Instagram[];
+    isDeleteFlages: boolean;
+    lastname: string;
+    mobile: string;
+    paymentDetailId: string;
+    referralUserId: string;
+    status: string;
+    submittedInstagramUsername: string;
+    subscriptions: Subscription[];
+    updateDate: Date;
+    verified: boolean;
+    wallet: string;
+    walletId: string;
+  };
 }
 
 export interface City {
   id: number;
   name: string;
   province?: ProvinceNamespace.Province;
+  provinceId: number;
   slug: string;
 }
 
 export interface Instagram {
   id: string;
-  username: string;
   isIgTokenValid: boolean;
   isIgWebhookSubscribed: boolean;
   isPromotion: boolean;
   profilePicture: {
     url?: string;
   } | null;
+  username: string;
 }
 
 export interface Subscription {

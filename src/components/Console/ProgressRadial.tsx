@@ -8,6 +8,8 @@ interface ProgressRadialProps {
   size: number;
   strokeWidth: number;
   id?: string;
+  type?: "percentage" | "days";
+  totalDays?: number;
 }
 
 export const ProgressRadial: FC<ProgressRadialProps> = ({
@@ -15,10 +17,17 @@ export const ProgressRadial: FC<ProgressRadialProps> = ({
   size,
   strokeWidth,
   id = "circular-progress-gradient",
+  type = "percentage",
+  totalDays,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  
+  const actualPercentage = type === "days" && totalDays 
+    ? (percentage / totalDays) * 100 
+    : percentage;
+    
+  const strokeDashoffset = circumference - (actualPercentage / 100) * circumference;
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -49,7 +58,7 @@ export const ProgressRadial: FC<ProgressRadialProps> = ({
         stroke={`url(#${id})`}
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
-        strokeDashoffset={circumference}
+        strokeDashoffset={strokeDashoffset}
         strokeLinecap="round"
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
         initial={{ strokeDashoffset: circumference }}
@@ -63,18 +72,18 @@ export const ProgressRadial: FC<ProgressRadialProps> = ({
         y="50%"
         textAnchor="middle"
         dy=".3em"
-        fontSize="14"
+        fontSize="15"
         fontWeight="bold"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
         className={cn(
-          percentage < 50
+          actualPercentage < 50
             ? "fill-[theme(colors.blue.600)]"
             : "fill-[theme(colors.violet.700)]",
         )}
       >
-        {`${Math.round(percentage)}%`}
+        {type === "days" ? `${percentage} روز` : `${Math.round(actualPercentage)}%`}
       </motion.text>
     </svg>
   );

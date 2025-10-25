@@ -74,8 +74,6 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
     mutate: mutateContact,
   } = useSWRImmutable(`/contacts/${contactId}`);
 
-  console.log(contact);
-
   const form = useForm<ContactFormData>();
 
   // useEffect(() => {
@@ -269,12 +267,16 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           )}
         />
 
-        <div className="col-span-12 flex gap-2 mt-3 justify-center">
+        <div className="col-span-12 mt-3 flex justify-center gap-2">
           <Button type="submit">
             {t("saveChanges")}
             {isSubmitLoading && <LoaderSpin size={20} />}
           </Button>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
             {t("cancel")}
           </Button>
         </div>

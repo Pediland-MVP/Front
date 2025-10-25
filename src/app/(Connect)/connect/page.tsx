@@ -18,6 +18,7 @@ import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
 import { SquarePlayIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useConnectInstagram from "@/hooks/useConnectInstagram";
+import useUser from "@/hooks/useUser";
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
@@ -32,6 +33,11 @@ export default function ConnectPage() {
 
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
+
+  const { user, hasInstagram } = useUser();
+
+  console.log(user);
+  console.log(hasInstagram);
 
   useEffect(() => {
     const submitCode = async (code: string) => {

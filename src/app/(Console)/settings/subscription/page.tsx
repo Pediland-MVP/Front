@@ -1,24 +1,24 @@
-import { SubscriptionProvider } from "./context/SubscriptionContext";
+"use client";
 
-import { ChoosePlan, SubscriptionsDetails } from "@components";
+import { useSubscriptionData } from "@/store/subscriptionStore";
 import { useTranslations } from "next-intl";
 
-export default function Upgrade() {
-  const t = useTranslations("Upgrade");
+import { ChoosePlan, LayoutSettings, SubscriptionsDetails } from "@components";
+
+export default function SubscriptionPage() {
+  const t = useTranslations("Subscription");
+
+  useSubscriptionData();
 
   return (
-    <SubscriptionProvider>
-      <div className="_subscription-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
-        <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
-          <div className="mb-3 space-y-1">
-            <h2 className="text-primary font-semibold">{t("title")}</h2>
-            {/* <p className="text-muted-foreground text-sm">{t("description")}</p> */}
-          </div>
-
-          <SubscriptionsDetails />
-          <ChoosePlan />
-        </div>
+    <LayoutSettings className="_subscription-page">
+      <div className="mb-3 space-y-1">
+        <h2 className="text-primary font-semibold">{t("title")}</h2>
       </div>
-    </SubscriptionProvider>
+
+      <SubscriptionsDetails />
+
+      <ChoosePlan />
+    </LayoutSettings>
   );
 }

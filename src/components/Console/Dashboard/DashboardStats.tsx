@@ -39,8 +39,6 @@ export const DashboardStats = () => {
     );
   };
 
-  console.log("Stats", stats);
-
   const homeItems: HomeItems[] = [
     {
       title: t("automation"),

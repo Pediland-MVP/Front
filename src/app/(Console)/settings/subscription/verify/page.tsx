@@ -22,7 +22,7 @@ export default function VerifyPage() {
       ? `${API_URL}/payments/subscription/zarinpal/verify?Authority=${searchParams.get("Authority")}&Status=${searchParams.get("Status")}`
       : null,
   );
-  const t = useTranslations("Upgrade.Verify");
+  const t = useTranslations("Subscription.Verify");
   const t_ec = useTranslations("ERROR_CODES");
 
   useEffect(() => {

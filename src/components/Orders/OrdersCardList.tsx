@@ -44,8 +44,6 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   });
   const orders = ordersData?.items ?? [];
 
-  console.log("orders..............", orders);
-
   // ------- Pagination Start -------
   const defaultMeta: PageMeta = {
     currentPage: page,

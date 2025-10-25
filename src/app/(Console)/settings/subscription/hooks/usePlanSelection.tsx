@@ -19,17 +19,16 @@ export function usePlanSelection() {
   const [discountCode, setDiscountCode] = useState<string>();
 
   const t_ec = useTranslations("ERROR_CODES");
-
   const { isAuthenticated } = useUser();
+
+  const plansApiUrl = `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`;
   const {
     data: plansData,
     isLoading: isPlansLoading,
     error: plansError,
     mutate,
   } = useSWR<PlanNamespace.GET.PlansData, AxiosError>(
-    isAuthenticated
-      ? `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`
-      : null,
+    isAuthenticated ? plansApiUrl : null,
   );
 
   useEffect(() => {
@@ -41,14 +40,14 @@ export function usePlanSelection() {
   useEffect(() => {
     if (plansData) {
       // console.log('PLANS UPDATED IN USEPLANSELECTION', plansData)
-      setSelectedPlan(plansData.plans[0]);
-      setSelectedDuration(plansData.plans[0].durations[0]);
+      setSelectedPlan(plansData.data.plans[0]);
+      setSelectedDuration(plansData.data.plans[0].durations[0]);
     }
   }, [plansData]);
 
   return {
-    plansData,
-    plans: plansData?.plans,
+    plansData: plansData?.data,
+    plans: plansData?.data.plans,
     isPlansLoading,
     selectedPlan,
     setSelectedPlan,

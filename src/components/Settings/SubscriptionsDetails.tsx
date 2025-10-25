@@ -1,17 +1,33 @@
 "use client";
 
-import { useSubscriptionContext } from "@/app/(Console)/settings/subscription/context/SubscriptionContext";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-
-import { Badge, Button, ProgressRadial } from "@components";
-import { ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
+import { CardSimple, LoaderPulse } from "../ui-custom";
+import { Button, CardContent } from "../ui";
+import { ProgressRadial } from "../Console";
+import { useCallback } from "react";
+import { Badge, ClockIcon } from "lucide-react";
+import { toJalaliDate } from "@/utils/jalali";
+import { formatNumber } from "@/utils/formatNumber";
+import {
+  CircleIcon,
+  ClockCountdownIcon,
+  PackageIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export const SubscriptionsDetails = () => {
-  const t = useTranslations("Upgrade.Subscriptions");
+  const t = useTranslations("Subscription");
 
-  const { subscriptions, active, setActive, plans } = useSubscriptionContext();
+  const {
+    active,
+    setActive,
+    plans,
+    subscriptions,
+    isLoading: isSubscriptionsLoading,
+    discountCode,
+    setDiscountCode,
+  } = useSubscriptionStore();
 
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
@@ -25,6 +41,7 @@ export const SubscriptionsDetails = () => {
     const now = new Date();
     const expire = new Date(expireDate);
     const diffTime = expire.getTime() - now.getTime();
+
     return Math.ceil(diffTime / (1000 * 3600 * 24));
   }, []);
 
@@ -32,145 +49,121 @@ export const SubscriptionsDetails = () => {
     ? getRemainingDays(activeSubscription.expire)
     : 0;
 
-  const getPlanById = (planId: number) => {
-    return plans?.find((plan) => plan.id === planId);
-  };
+  const remainingPercentage = activeSubscription
+    ? (getRemainingDays(activeSubscription.expire) /
+        activeSubscription.planDuration.durationDays) *
+      100
+    : 0;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-500";
-      case "reserved":
-        return "bg-blue-500";
-      case "expired":
-        return "bg-red-500";
-      case "pending":
-        return "bg-yellow-500";
-      case "cancelled":
-        return "bg-gray-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
+  const labelClass = "text-muted-foreground text-sm font-me";
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  if (!active.subscriptionInfo) return null;
 
   return (
-    <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
-      <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
-        <div className="mb-5">
-          <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-          <p className="text-muted-foreground text-sm">
-            {t("subscriptionStatus")}
-          </p>
-        </div>
-        <div className="_wrapper">
-          {activeSubscription ? (
-            <div className="_active-subscription mb-6">
-              <h3 className="mb-3 text-base font-semibold">
-                {t("activeSubscription")}
-              </h3>
-              <div className="_subscription-card flex items-center justify-between rounded-lg border-2 border-green-200 bg-green-50/50 p-4">
-                <div className="_info flex flex-col gap-2 text-sm text-green-700">
-                  <div className="flex items-center gap-1">
-                    <span>وضعیت:</span>
-                    <span>{t(activeSubscription.status)}</span>
-                  </div>
-                  {getPlanById(activeSubscription.planDuration.planId)
-                    ?.name && (
-                    <div className="flex items-center gap-1">
-                      <span>نوع اشتراک:</span>
-                      <span>
-                        {
-                          getPlanById(activeSubscription.planDuration.planId)
-                            ?.name
-                        }
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1">
-                    <span>مدت اشتراک:</span>
-                    <span>{activeSubscription.planDuration.name}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span>زمان باقی مانده:</span>
-                    <span>
-                      {remainingDays === 1 || remainingDays === 0
-                        ? t("lastDay")
-                        : `${getRemainingDays(activeSubscription.expire!)} روز`}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center">
-                  <ProgressRadial
-                    percentage={
-                      (getRemainingDays(activeSubscription.expire!) /
-                        activeSubscription.planDuration.durationDays) *
-                      100
-                    }
-                    size={isMobile ? 90 : 100}
-                    strokeWidth={10}
+    <div className="space-y-3">
+      {activeSubscription ? (
+        <CardSimple className="border-violet-200 bg-violet-50/50">
+          <CardContent className="flex flex-col gap-2 p-4 text-[15px] md:p-5">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>وضعیت:</span>
+                  <span className="text-primary flex items-center gap-1 font-semibold">
+                    {t(activeSubscription.status)}
+                  </span>
+                  <CircleIcon
+                    size={10}
+                    weight="fill"
+                    className="animate-pulse text-green-500"
                   />
                 </div>
-              </div>
-            </div>
-          ) : (
-            <p>{t("noActiveSubscription")}</p>
-          )}
 
-          {reservedSubscriptions?.length ? (
-            <div className="_reserved-subscription mb-6">
-              <h3 className="mb-1 text-base font-semibold">
-                {t("reservedSubscriptions")}
-              </h3>
-              <p className="text-muted-foreground mb-3 text-sm">
-                اشتراک‌های زیر به ترتیب اولویت و بعد از اتمام اشتراک فعال شما،
-                فعال خواهند شد.
-              </p>
-              {reservedSubscriptions?.map((sub, index) => (
-                <div
-                  className="_subscription-card mb-4 flex items-center justify-between rounded-lg border-2 border-stone-200/80 bg-stone-50/50 p-4 last:mb-0"
-                  key={sub.id}
-                >
-                  <div className="_info flex flex-col gap-2 text-sm text-stone-500">
-                    <div className="flex items-center gap-1">
-                      <span>نوع اشتراک:</span>
-                      <span>{getPlanById(sub.planDuration.planId)?.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span>مدت اشتراک:</span>
-                      <span>{sub.planDuration.name}</span>
-                    </div>
-                  </div>
-                  <Badge
-                    className={`${getStatusColor(sub.status)} rounded-full px-3 py-1 text-white`}
-                  >
-                    {t(sub.status)}
-                  </Badge>
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>نوع اشتراک:</span>
+                  <span className="text-primary font-semibold">
+                    {activeSubscription.planDuration.name}
+                  </span>
                 </div>
-              ))}
-            </div>
-          ) : null}
 
-          <Button
-            variant={"link"}
-            size={"lg"}
-            onClick={() =>
-              setActive({ subscriptionInfo: false, choosePlan: true })
-            }
-          >
-            <ClockCounterClockwiseIcon className="h-6 w-6" />
-            {t("reserve")}
-          </Button>
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>تاریخ شروع:</span>
+                  <span className="text-primary font-semibold">
+                    {toJalaliDate(activeSubscription.planDuration.createDate)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>قیمت بسته:</span>
+                  <span className="text-primary font-semibold">
+                    {formatNumber(activeSubscription.planDuration.price)}{" "}
+                    تـومـان
+                  </span>
+                </div>
+              </div>
+              <ProgressRadial
+                percentage={isSubscriptionsLoading ? 0 : remainingDays}
+                size={100}
+                strokeWidth={10}
+                type="days"
+                totalDays={activeSubscription.planDuration.durationDays}
+              />
+            </div>
+          </CardContent>
+        </CardSimple>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          {t("no_active_subscription")}
+        </p>
+      )}
+
+      {reservedSubscriptions?.length && (
+        <div className="_reserved-subscription mt-6">
+          <div className="text-secondary mb-3 flex items-center gap-1.5">
+            <div>
+              <ClockCountdownIcon size={20} />
+            </div>
+            <p className="text-sm">
+              اشتراک‌های زیر پس از اتمام اشتراک فعال به ترتیب اولویت فعال خواهند
+              شد.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2">
+            {reservedSubscriptions?.map((sub, index) => (
+              <CardSimple
+                className="border-dashed border-blue-200/80 bg-blue-50/50"
+                key={sub.id}
+              >
+                <CardContent className="text-secondary/70 flex flex-col gap-1 p-4 text-[15px] md:p-5">
+                  <div className="flex items-center gap-1.5">
+                    <span className={labelClass}>وضعیت:</span>
+                    <span className="font-medium">{t(sub.status)}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className={labelClass}>نوع اشتراک:</span>
+                    <span className="font-medium">{sub.planDuration.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className={labelClass}>قیمت بسته:</span>
+                    <span className="font-medium">
+                      {formatNumber(sub.planDuration.price)} تـومـان
+                    </span>
+                  </div>
+                </CardContent>
+              </CardSimple>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      <Button
+        variant={"outline"}
+        onClick={() => setActive({ subscriptionInfo: false, choosePlan: true })}
+        className="w-full md:w-auto"
+      >
+        <ClockIcon />
+        {t("reserve")}
+      </Button>
     </div>
   );
 };

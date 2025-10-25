@@ -19,7 +19,7 @@ const NavUser = ({
   user,
   isLoading,
 }: {
-  user: UserNamespace.GET.User | undefined;
+  user: UserNamespace.GET.User['data'] | undefined;
   isLoading: boolean;
 }) => {
   if (isLoading || !user) {

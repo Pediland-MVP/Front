@@ -1,118 +1,93 @@
 "use client";
 
-import { useSubscriptionContext } from "@/app/(Console)/settings/subscription/context/SubscriptionContext";
-import usePayPlan from "@/app/(Console)/settings/subscription/hooks/usePayPlan";
-import { cn } from "@/lib/utils";
-import e2pNumber from "@/utils/e2pNumber";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { IPlan } from "@/types/plans/plans";
-import { formatNumber } from "@/utils/formatNumber";
-import logger from "@/utils/logger";
-import { DiscountAlert, DiscountCode, LoaderSpin } from "@components";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { Button, Card, CardContent, CardFooter } from "../ui";
 import {
   ClockCountdownIcon,
   PackageIcon,
   SealCheckIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { IPlan } from "@/types/plans/plans";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/utils/formatNumber";
+import { ButtonLoading } from "../ui-custom";
+import usePayPlan from "@/app/(Console)/settings/subscription/hooks/usePayPlan";
+import { ArrowLeftIcon, MoveLeftIcon } from "lucide-react";
+import { DiscountAlert } from "./DiscountAlert";
+import { DiscountCode } from "./DiscountCode";
+import { z } from "zod";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const planSchema = z.object({
   planId: z.number(),
   durationId: z.number(),
+  discountCode: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof planSchema>;
 
 export const ChoosePlan = () => {
-  const t = useTranslations("Upgrade.PlanSelection");
+  const t = useTranslations("Subscription");
+  const [currentPlan, setCurrentPlan] = useState<IPlan>();
+  const [selectedDurationId, setSelectedDurationId] = useState<number | null>(
+    null,
+  );
 
   const {
-    isLoading: isPlansLoading,
     active,
     setActive,
-    subscriptions,
-    plansData,
     plans,
+    subscriptions,
+    isLoading: isSubscriptionsLoading,
     discountCode,
-  } = useSubscriptionContext();
-
-  console.log("Active...", active);
-  console.log("Subscriptions...", subscriptions);
-  console.log("PlansData...", plansData);
-  console.log("Plans...", plans);
-  console.log("DiscountCode...", discountCode);
-
-  const [period, setPeriod] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [loadingPlanId, setLoadingPlanId] = useState<number | null>(null);
-  const [currentPlan, setCurrentPlan] = useState<IPlan>();
-  const { pay, isPayLoading } = usePayPlan();
+    setDiscountCode,
+  } = useSubscriptionStore();
 
   useEffect(() => {
-    // if (!planId || !plansData || !plans) return;
-    const myPlan = plans[0];
-
-    setCurrentPlan(myPlan);
+    setCurrentPlan(plans[0]);
   }, [plans]);
-  console.log("plans", currentPlan);
+
+  const { pay, isPayLoading } = usePayPlan();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(planSchema),
     defaultValues: {
       planId: 0,
       durationId: 0,
+      discountCode: "",
     },
   });
-  const planId = form.watch("planId");
 
   useEffect(() => {
-    if (!plans?.length) return;
-    form.setValue("planId", plans[0].id);
-    form.setValue("durationId", plans[0].durations[0].id);
-    setTotalPrice(plans[0].durations[0].price);
-  }, [plans, form]);
-
-  const changePlan = (planId: number) => {
-    form.setValue("planId", planId);
-    if (plans) {
-      const currentPlan = plans.find((p) => p.id === planId);
-      if (currentPlan) {
-        form.setValue("durationId", currentPlan.durations[0].id);
-        setTotalPrice(currentPlan.durations[0].price);
-      }
+    if (currentPlan?.id) {
+      form.setValue("planId", currentPlan.id);
     }
+  }, [currentPlan, form]);
+
+  const selectPlanHandler = (durationId: number) => {
+    setSelectedDurationId(durationId);
+    form.setValue("durationId", durationId);
+    onSubmit(form.getValues());
   };
 
   const onSubmit = async (data: FormValues) => {
-    // setLoadingPlanId(data.planId);
-    // try {
-    //   await pay({ ...data, ...(discountCode && { discountCode }) }, setActive);
-    // } finally {
-    //   setLoadingPlanId(null);
-    // }
+    try {
+      const paymentData = {
+        planId: data.planId,
+        durationId: data.durationId,
+        ...(discountCode && { discountCode }),
+      };
+      await pay(paymentData, setActive);
+    } catch (error) {
+      console.error("Error in onSubmit", error);
+      toast.error(error);
+    }
   };
 
-  // const getPriceString = (price: number, durationDays: number) => {
-  //   if (price === 0) return t("free");
-
-  //   logger.debug("period", period, price);
-  //   return e2pNumber(
-  //     (
-  //       Math.trunc(+(price / (durationDays / 30)).toFixed(0) / 500) * 500
-  //     ).toLocaleString(),
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   console.log("p-active", plans, active);
-  // }, [active, plans]);
-
-  console.log("ChoosePlan", active.choosePlan);
   if (!active.choosePlan) return null;
 
   return (
@@ -120,17 +95,13 @@ export const ChoosePlan = () => {
       <Card className="border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-violet-50 pb-7">
         <CardContent>
           <h2 className="text-gradient mb-5 flex items-center gap-2 text-lg font-semibold">
-            <PackageIcon
-              size={26}
-              weight="duotone"
-              className="text-secondary"
-            />
-            بسته مناسب برای پیج‌ شما: ({currentPlan?.name})
+            <PackageIcon weight="duotone" className="text-secondary h-8 w-8" />
+            {t("plan_title")}:<br className="md:hidden" /> ({currentPlan?.name})
           </h2>
 
           {currentPlan?.features.length > 0 && (
             <div>
-              <ul className="grid grid-cols-2 gap-2.5 px-1.5">
+              <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
                 {currentPlan.features.map((feature, id) => (
                   <li
                     key={id}
@@ -149,15 +120,17 @@ export const ChoosePlan = () => {
           )}
         </CardContent>
       </Card>
+
       <DiscountAlert />
+
       {currentPlan?.durations.length > 0 && (
         <div>
           <h3 className="text-secondary mb-4 flex items-center gap-1 text-[15px] font-medium">
             <ClockCountdownIcon size={20} />
-            لطفا اشتراک مناسب خود را انتخاب کنید:
+            {t("package_title")}:
           </h3>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4 md:flex-row">
             {currentPlan.durations.map((duration, id) => {
               const topId = 2;
 
@@ -173,7 +146,7 @@ export const ChoosePlan = () => {
                 >
                   <CardContent
                     className={cn(
-                      "flex w-full flex-col items-center justify-around rounded-t-xl px-4 py-5",
+                      "flex w-full flex-1 flex-col items-center justify-around rounded-t-xl px-4 py-5",
                       id === topId ? "bg-violet-50/50" : "bg-blue-50/30",
                     )}
                   >
@@ -185,14 +158,16 @@ export const ChoosePlan = () => {
                           : "text-secondary/70 font-medium",
                       )}
                     >
-                      اشتراک {duration.name}
+                      {t("subscription")} {duration.name}
                     </h4>
                     <div className="flex w-full items-center justify-center gap-1">
                       <div className="flex flex-col items-center">
-                        <div className="text-gray-400 line-through">
-                          {formatNumber(155000)}
-                        </div>
-                        {/* <div>{duration.discountPrice}</div> */}
+                        {duration.discountPrice != null && (
+                          <div className="text-gray-400 line-through">
+                            {formatNumber(duration.price)}
+                          </div>
+                        )}
+
                         <div
                           className={cn(
                             "text-xl font-bold",
@@ -201,26 +176,40 @@ export const ChoosePlan = () => {
                               : "text-secondary/70",
                           )}
                         >
-                          {formatNumber(duration.price)}
+                          {duration.discountPrice != null
+                            ? duration.discountPrice !== 0 &&
+                              formatNumber(duration.discountPrice)
+                            : formatNumber(duration.price)}
                         </div>
-                        <div className="text-muted-foreground">تـومـان</div>
+                        {duration.discountPrice !== 0 ? (
+                          <div className="text-muted-foreground">
+                            {t("toman")}
+                          </div>
+                        ) : (
+                          <div className="text-xl font-semibold text-green-600">
+                            {t("free")}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter className="w-full p-0">
-                    <Button
+                    <ButtonLoading
+                      isLoading={
+                        selectedDurationId === duration.id && isPayLoading
+                      }
                       type="button"
                       variant="ghost"
                       className={cn(
-                        "h-9 w-full !rounded-t-none !rounded-b-xl",
+                        "h-9 w-full !rounded-t-none !rounded-b-xl font-semibold",
                         id === topId
                           ? "text-primary hover:text-primary bg-violet-100/90 hover:bg-violet-200/70"
                           : "text-secondary/70 hover:text-secondary bg-blue-100/70 hover:bg-blue-100",
                       )}
-                      onClick={() => changePlan(duration.id)}
+                      onClick={() => selectPlanHandler(duration.id)}
                     >
-                      خرید
-                    </Button>
+                      {t("buy")}
+                    </ButtonLoading>
                   </CardFooter>
                 </Card>
               );
@@ -229,198 +218,22 @@ export const ChoosePlan = () => {
         </div>
       )}
 
-      <DiscountCode />
+      <div className="my-6 flex flex-col items-center justify-between gap-3 md:mb-0 md:flex-row">
+        <DiscountCode />
+
+        {subscriptions?.length > 0 && (
+          <Button
+            onClick={() =>
+              setActive({ choosePlan: false, subscriptionInfo: true })
+            }
+            variant="link"
+            className="font-normal"
+          >
+            اشتراک‌های من
+            <MoveLeftIcon />
+          </Button>
+        )}
+      </div>
     </div>
-
-    //     <div className="_plans-wrapper">
-    //       <div className="_selector flex flex-col items-center justify-center">
-    //         <div className="inline-flex w-full flex-col items-center gap-1.5 rounded-xl border p-1 shadow-sm sm:rounded-full md:w-fit md:flex-row">
-    //           {plans.map((plan) => (
-    //             <button
-    //               key={plan.id}
-    //               type="button"
-    //               onClick={() => changePlan(plan.id)}
-    //               className={cn(
-    //                 "w-full rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-300 md:w-fit md:rounded-full",
-    //                 plan.id === form.getValues("planId")
-    //                   ? "bg-gray-300"
-    //                   : "text-zinc-600 hover:text-zinc-900",
-    //               )}
-    //             >
-    //               {plan.name}
-    //             </button>
-    //           ))}
-    //         </div>
-    //       </div>
-
-    //       <Form {...form}>
-    //         <form
-    //           onSubmit={form.handleSubmit(onSubmit)}
-    //           className="my-6 grid grid-cols-1 gap-4 md:grid-cols-3"
-    //         >
-    //           {currentPlan?.durations.map((duration) => {
-    //             const haveMonthlyDiscount =
-    //               typeof duration.monthlyDiscount === "number" &&
-    //               duration.monthlyDiscount >= 0;
-
-    //             const haveDurationDiscount =
-    //               typeof duration.discountPrice === "number" &&
-    //               duration.discountPrice >= 0;
-
-    //             return (
-    //               <div
-    //                 key={duration.id}
-    //                 className={cn(
-    //                   "group relative backdrop-blur-sm",
-    //                   "rounded-xl transition-all duration-300",
-    //                   "flex flex-col",
-    //                   "bg-gradient-to-b from-green-100/25 to-transparent",
-    //                   "border shadow-md hover:shadow-lg",
-    //                   "min-h-64",
-    //                 )}
-    //               >
-    //                 <div className="p-4">
-    //                   <h3 className="mb-4 text-center text-xl font-semibold text-teal-900">
-    //                     {duration.name}
-    //                   </h3>
-    //                   <div className="flex flex-col items-center justify-center">
-    //                     {haveDurationDiscount && duration.discountPrice == 0 ? (
-    //                       <>
-    //                         <span
-    //                           className={cn(
-    //                             "font-bold text-green-700",
-    //                             "text-muted-foreground text-2xl font-medium line-through",
-    //                           )}
-    //                         >
-    //                           {getPriceString(
-    //                             duration.price,
-    //                             duration.durationDays,
-    //                           )}
-    //                         </span>
-    //                         <p className="text-xl font-bold text-green-700">
-    //                           {t("free")}
-    //                         </p>
-    //                       </>
-    //                     ) : haveDurationDiscount ? (
-    //                       <>
-    //                         <span
-    //                           className={cn(
-    //                             "font-bold text-green-700",
-    //                             "text-muted-foreground text-2xl font-medium line-through",
-    //                           )}
-    //                         >
-    //                           {getPriceString(
-    //                             duration.price,
-    //                             duration.durationDays,
-    //                           )}
-    //                         </span>
-
-    //                         <span
-    //                           className={cn(
-    //                             "text-3xl font-bold text-green-700",
-    //                           )}
-    //                         >
-    //                           {e2pNumber(
-    //                             (+(
-    //                               (duration?.discountPrice || 0) as number
-    //                             ).toFixed(0)).toLocaleString(),
-    //                           )}
-    //                         </span>
-    //                         <span className="text-muted-foreground text-lg font-medium">
-    //                           {t("currency")} در {t("month")}
-    //                         </span>
-    //                       </>
-    //                     ) : haveMonthlyDiscount ? (
-    //                       <>
-    //                         <span
-    //                           className={cn(
-    //                             "font-bold text-green-700",
-    //                             "text-muted-foreground text-2xl font-medium line-through",
-    //                           )}
-    //                         >
-    //                           {e2pNumber(
-    //                             (+(duration.monthlyDiscount as number).toFixed(
-    //                               0,
-    //                             )).toLocaleString(),
-    //                           )}
-    //                         </span>
-
-    //                         <span
-    //                           className={cn(
-    //                             "text-3xl font-bold text-green-700",
-    //                           )}
-    //                         >
-    //                           {getPriceString(
-    //                             duration.price,
-    //                             duration.durationDays,
-    //                           )}
-    //                         </span>
-    //                         <span className="text-muted-foreground text-lg font-medium">
-    //                           {t("currency")} در {t("month")}
-    //                         </span>
-    //                       </>
-    //                     ) : (
-    //                       <>
-    //                         <span
-    //                           className={cn(
-    //                             "text-3xl font-bold text-green-700",
-    //                           )}
-    //                         >
-    //                           {getPriceString(
-    //                             duration.price,
-    //                             duration.durationDays,
-    //                           )}
-    //                         </span>
-    //                         <span className="text-muted-foreground text-lg font-medium">
-    //                           {t("currency")} در {t("month")}
-    //                         </span>
-    //                       </>
-    //                     )}
-    //                   </div>
-    //                 </div>
-
-    //                 <div className="mt-auto p-6 pt-2">
-    //                   <Button
-    //                     type="button"
-    //                     onClick={() => {
-    //                       form.setValue("durationId", duration.id);
-    //                       setTotalPrice(duration.price);
-    //                       form.handleSubmit(onSubmit)();
-    //                     }}
-    //                     className={cn(
-    //                       "relative h-10 w-full border border-zinc-200 bg-green-600 text-white shadow-sm transition-all duration-300 hover:border-green-700 hover:bg-green-700 hover:shadow-md",
-    //                     )}
-    //                     disabled={isPayLoading && loadingPlanId === duration.id}
-    //                   >
-    //                     {isPayLoading && loadingPlanId === duration.id ? (
-    //                       <LoaderSpin />
-    //                     ) : (
-    //                       t("choosePlan")
-    //                     )}
-    //                   </Button>
-    //                 </div>
-    //               </div>
-    //             );
-    //           })}
-    //         </form>
-    //       </Form>
-    //     </div>
-
-    //     {subscriptions?.length ? (
-    //       <div className="mb-12 text-left md:mb-0">
-    //         <Button
-    //           onClick={() =>
-    //             setActive({ planSelection: false, subscriptionInfo: true })
-    //           }
-    //           variant="link"
-    //           size={"lg"}
-    //         >
-    //           بازگشت به اشتراک‌های من
-    //           <ArrowLeft className="h-5 w-5" />
-    //         </Button>
-    //       </div>
-    //     ) : null}
-    //   </div>
-    // </div>
   );
 };

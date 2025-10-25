@@ -2,22 +2,21 @@
 
 import useSWR from "swr";
 import { UserNamespace } from "@/types/user";
-import { useEffect } from "react";
 
 export default function useUser() {
-  const { data, error, isLoading, mutate } =
+  const { data: user, error, isLoading, mutate } =
     useSWR<UserNamespace.GET.User>("/users/me");
 
   return {
     error,
-    isOnboarding: data?.status === 'onboarding',
-    hasInstagram: Boolean(data?.instagrams?.length),
-    hasSubscription: Boolean(data?.subscriptions?.length),
-    isAuthenticated: !!data && !error, // Only authenticated if we have user data and no error
+    isOnboarding: user?.data.status === "onboarding",
+    hasInstagram: Boolean(user?.data.instagrams?.length),
+    hasSubscription: Boolean(user?.data.subscriptions?.length),
+    isAuthenticated: !!user && !error,
     isError: !!error,
-    isLoading: !data && !error,
+    isLoading: !user && !error,
     mutate,
-    status: data?.status,
-    user: data,
+    status: user?.data.status,
+    user: user?.data,
   };
 }

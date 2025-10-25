@@ -24,8 +24,7 @@ import {
   HouseIcon,
   SlidersIcon,
 } from "@phosphor-icons/react";
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+import useUser from "@/hooks/useUser";
 
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,
@@ -100,13 +99,10 @@ export const ConsoleSidebar = ({
   const data = generateData(t, isMobile);
 
   const {
-    data: userData,
+    user: userData,
     error: userError,
     isLoading: userIsLoading,
-  } = useSWRImmutable<UserNamespace.GET.User>(`${API_URL}/users/me`, {
-    revalidateOnMount: true,
-    refreshInterval: 30_000,
-  });
+  } = useUser();
 
   return (
     <Sidebar variant="inset" collapsible="offcanvas" {...props}>

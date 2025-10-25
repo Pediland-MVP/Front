@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 // TODO: Should Refactor
-import { useSubscriptionContext } from "@/app/(Console)/settings/subscription/context/SubscriptionContext";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 import {
@@ -14,10 +14,21 @@ import {
   ProgressRadial,
 } from "@components";
 import { ChevronLeftIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const SubscriptionBoard = () => {
+  const router = useRouter();
   const t = useTranslations("Console.Dashboard");
-  const { subscriptions, isLoading } = useSubscriptionContext();
+  
+  const {
+    active,
+    setActive,
+    plans,
+    subscriptions,
+    isLoading: isSubscriptionsLoading,
+    discountCode,
+    setDiscountCode,
+  } = useSubscriptionStore();
 
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
@@ -46,21 +57,28 @@ export const SubscriptionBoard = () => {
       <CardContent className="p-3 md:p-5">
         <div className="flex items-center gap-4">
           <ProgressRadial
-            percentage={isLoading ? 0 : remainingPercentage}
-            size={70}
-            strokeWidth={9}
+            percentage={isSubscriptionsLoading ? 0 : remainingDays}
+            size={100}
+            strokeWidth={10}
+            type="days"
+            totalDays={activeSubscription?.planDuration?.durationDays}
           />
           <div className="text-secondary flex flex-1 flex-col justify-center">
             <div className="text-muted-foreground text-[13px]">
               {t("remainingDays")}
             </div>
             <div className="text-gradient flex items-center gap-1 text-xl font-bold">
-              {isLoading ? <LoaderPulse /> : remainingDays}
+              {isSubscriptionsLoading ? <LoaderPulse /> : remainingDays}
               <span>{t("day")}</span>
             </div>
           </div>
           <div>
-            <Button variant="link" size="sm" className="gap-0 !px-0 text-xs">
+            <Button
+              variant="link"
+              size="sm"
+              className="gap-0 !px-0 text-xs"
+              onClick={() => router.push("/settings/subscription")}
+            >
               {t("view")}
               <ChevronLeftIcon />
             </Button>
