@@ -34,7 +34,7 @@ export const HowToConnectDialog = ({
     if (connecting) {
       const timer = setTimeout(() => {
         router.push(
-          `https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+          `https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
         );
       }, 3000);
       return () => clearTimeout(timer);
