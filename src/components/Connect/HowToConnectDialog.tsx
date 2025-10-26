@@ -33,7 +33,9 @@ export const HowToConnectDialog = ({
   useEffect(() => {
     if (connecting) {
       const timer = setTimeout(() => {
-        router.push(`${API_URL}/instagram/connectIG`);
+        router.push(
+          `https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+        );
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -72,7 +74,9 @@ export const HowToConnectDialog = ({
               </ol>
 
               <div className="mt-5 rounded-lg border border-dashed border-blue-500/60 bg-blue-50/50 p-3">
-                <p className="text-[13px] text-blue-900">{t("description")}</p>
+                <p className="text-[13px] text-blue-900">
+                  {t("how_to_connect_description")}
+                </p>
               </div>
             </div>
             <DialogFooter>

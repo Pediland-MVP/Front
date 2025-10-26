@@ -4,6 +4,7 @@ import useUser from "@/hooks/useUser";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LoadingLogo } from "../Global";
+import { LoaderSpin } from "../ui-custom";
 
 export default function AuthProvider({
   children,
@@ -50,7 +51,11 @@ export default function AuthProvider({
   }, [isOnboarding, isUserLoading, pathname, searchParams]);
 
   if (!isAllowed) {
-    return <LoadingLogo />;
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <LoaderSpin />
+      </div>
+    );
   }
 
   return <>{children}</>;

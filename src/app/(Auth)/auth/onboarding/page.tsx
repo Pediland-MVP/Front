@@ -35,16 +35,20 @@ export default function OnboardingPage() {
   const [showReferralCode, setShowReferralCode] = useState(false);
   const logout = useLogout();
 
-  const formSchema = useMemo(() => z.object({
-    firstname: z.string().min(3, t_err("first_name_length", { length: 3 })),
-    lastname: z.string().min(3, t_err("last_name_length", { length: 3 })),
-    submittedInstagramUsername: z
-      .string()
-      .min(3, t_err("instagram_id_length", { length: 3 })),
-    referralCode: showReferralCode 
-      ? z.string().min(1, t_err("referral_code_required"))
-      : z.string().optional(),
-  }), [showReferralCode, t_err]);
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        firstname: z.string().min(3, t_err("first_name_length", { length: 3 })),
+        lastname: z.string().min(3, t_err("last_name_length", { length: 3 })),
+        submittedInstagramUsername: z
+          .string()
+          .min(3, t_err("instagram_id_length", { length: 3 })),
+        referralCode: showReferralCode
+          ? z.string().min(1, t_err("referral_code_required"))
+          : z.string().optional(),
+      }),
+    [showReferralCode, t_err],
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -112,7 +116,11 @@ export default function OnboardingPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} placeholder={t("first_name")} />
+                    <Input
+                      {...field}
+                      placeholder={t("first_name")}
+                      className="text-center"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,7 +132,11 @@ export default function OnboardingPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} placeholder={t("last_name")} />
+                    <Input
+                      {...field}
+                      placeholder={t("last_name")}
+                      className="text-center"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -136,7 +148,19 @@ export default function OnboardingPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} placeholder={t("instagram_id")} />
+                    <Input
+                      {...field}
+                      onChange={(e) => {
+                        const filteredValue = e.target.value.replace(
+                          /[^a-zA-Z0-9_.]/g,
+                          "",
+                        );
+                        field.onChange(filteredValue);
+                      }}
+                      placeholder={t("instagram_id")}
+                      dir="ltr"
+                      className="text-center"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,7 +172,7 @@ export default function OnboardingPage() {
                 checked={showReferralCode}
                 onCheckedChange={setShowReferralCode}
               />
-              <span className="text-sm text-primary">
+              <span className="text-primary text-sm">
                 {t("have_referral_code")}
               </span>
             </div>
@@ -159,7 +183,19 @@ export default function OnboardingPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} placeholder={t("referral_code")} />
+                      <Input
+                        {...field}
+                        placeholder={t("referral_code")}
+                        onChange={(e) => {
+                          const filteredValue = e.target.value.replace(
+                            /[^a-zA-Z0-9_.]/g,
+                            "",
+                          );
+                          field.onChange(filteredValue);
+                        }}
+                        dir="ltr"
+                        className="text-center"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

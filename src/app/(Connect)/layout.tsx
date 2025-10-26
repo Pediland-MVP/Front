@@ -31,7 +31,7 @@ export default async function ConsoleLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="bg-gradient-to-tl from-violet-700 to-blue-400">
+      <body>
         <SWRProvider>
           <AuthProvider>
             <StandaloneChecker>

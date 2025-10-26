@@ -2,6 +2,7 @@
 
 import api, { setAccessToken } from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useTranslations } from "next-intl";
@@ -160,11 +161,11 @@ export default function OtpPage() {
                       autoFocus
                     >
                       <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={0} onInput={onInputP2EHandler} />
+                        <InputOTPSlot index={1} onInput={onInputP2EHandler} />
+                        <InputOTPSlot index={2} onInput={onInputP2EHandler} />
+                        <InputOTPSlot index={3} onInput={onInputP2EHandler} />
+                        <InputOTPSlot index={4} onInput={onInputP2EHandler} />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>
