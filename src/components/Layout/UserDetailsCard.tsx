@@ -90,7 +90,7 @@ export const UserDetailsCard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <span className="text-muted-foreground">وضعیت:</span>
-                    <span>{t(activeSubscription?.status || "UNKNOWN")}</span>
+                    <span>{t(activeSubscription?.status || "unknown")}</span>
                     <CircleIcon
                       size={10}
                       weight="fill"

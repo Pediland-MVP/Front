@@ -25,6 +25,7 @@ import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { EyeIcon, Plug2Icon, Trash2Icon } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export const InstagramAccounts = () => {
   const router = useRouter();
@@ -32,6 +33,11 @@ export const InstagramAccounts = () => {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [imgError, setImgError] = useState(false);
+
+
+  console.log('INSTAGRAM_CLIENT_ID', INSTAGRAM_CLIENT_ID)
+  console.log('API_URL', API_URL)
 
   const apiUrl = `${API_URL}/instagram/accounts`;
   const {
@@ -105,11 +111,16 @@ export const InstagramAccounts = () => {
                   <div className="_avatar">
                     {instagram.profilePictureUrl ? (
                       <Image
-                        className="rounded-full"
-                        src={instagram.profilePictureUrl || "/placeholder.svg"}
+                        className="aspect-square rounded-full"
+                        src={
+                          !imgError && instagram.profilePictureUrl
+                            ? instagram.profilePictureUrl
+                            : "/images/placeholder.webp"
+                        }
                         width={60}
                         height={60}
                         alt={instagram.name}
+                        onError={() => setImgError(true)}
                       />
                     ) : (
                       <InstagramLogoIcon size={60} />
@@ -151,17 +162,19 @@ export const InstagramAccounts = () => {
                   variant="ghost"
                   type="button"
                   size="sm"
-                  asChild
+                  onClick={() => {
+                    router.push(
+                      `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+                    );
+                  }}
                 >
-                  <Link href={`${API_URL}/instagram/connectIG`}>
-                    <Plug2Icon
-                      className={cn(
-                        "text-secondary",
-                        !instagram.isIgTokenValid && "text-white",
-                      )}
-                    />
-                    {t("relogin")}
-                  </Link>
+                  <Plug2Icon
+                    className={cn(
+                      "text-secondary",
+                      !instagram.isIgTokenValid && "text-white",
+                    )}
+                  />
+                  {t("relogin")}
                 </Button>
                 <Button
                   className="text-muted-foreground hover:text-destructive h-9 w-full flex-1 rounded-none rounded-bl-xl hover:bg-rose-100"

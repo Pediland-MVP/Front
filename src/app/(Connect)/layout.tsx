@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import InstagramTokenErrorDialog from "@/components/Console/instagramTokenError.dialog";
+import InstagramTokenErrorDialog from "@/components/Console/InstagramInvalidDialog";
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 import AuthProvider from "@/components/Providers/AuthProvider";

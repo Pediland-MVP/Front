@@ -84,7 +84,6 @@ export default function PasswordPage() {
     } catch (error) {
       if (error?.response?.data?.statusCode === 429) {
         toast.error(t_ec("TOO_MANY_REQUESTS"));
-        console.log(mobile);
       } else {
         console.error("❌ API Error:", error.response?.data);
         toast.error(error.response?.data?.message);

@@ -34,7 +34,7 @@ export function usePlanSelection() {
   useEffect(() => {
     if (!plansError) return;
     const errorMessage = plansError.response?.data as ExceptionMessage;
-    toast.error(t_ec(errorMessage?.code));
+    toast.error(t_ec(errorMessage?.code) || errorMessage?.message);
   }, [plansError]);
 
   useEffect(() => {

@@ -36,9 +36,6 @@ export default function ConnectPage() {
 
   const { user, hasInstagram } = useUser();
 
-  console.log(user);
-  console.log(hasInstagram);
-
   useEffect(() => {
     const submitCode = async (code: string) => {
       await callbackIG(code);

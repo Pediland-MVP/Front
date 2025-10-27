@@ -15,10 +15,12 @@ import { AlertCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
-export default function InstagramTokenErrorDialog() {
+export const InstagramInvalidDialog = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
   const [isNavigationLoading, setIsNavigationLoading] = useState(false);
@@ -49,7 +51,10 @@ export default function InstagramTokenErrorDialog() {
   }, [user, isAborted, pathname]);
 
   const handleGoToSettings = () => {
-    router.push(`${API_URL}/instagram/connectIG`);
+    // router.push(`${API_URL}/instagram/connectIG`);
+    router.push(
+      `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+    );
     setIsNavigationLoading(true);
     setIsAborted(true);
     // setShowPopup(false)
@@ -64,24 +69,31 @@ export default function InstagramTokenErrorDialog() {
     <Dialog open={showPopup} onOpenChange={setShowPopup}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            {t("title")}
+          <DialogTitle className="text-destructive flex items-center gap-2">
+            <WarningCircleIcon weight="duotone" size={22} />
+            خطای حساب اینستاگرام
           </DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription className="text-destructive">
+            اعتبار نشست امنیتی اینستاگرام شما به پایان رسیده است. برای تمدید آن
+            لازم است تا دوباره اکانت اینستاگرام خود را متصل نمایید. تا آن زمان
+            سرویس دایرکت هوشمند شما غیرفعال است.
+          </DialogDescription>
         </DialogHeader>
+
         <DialogFooter className="flex gap-x-2">
-          <Button variant="outline" onClick={handleClose}>
-            {t("buttons.ok")}
-          </Button>
           <ButtonLoading
             isLoading={isNavigationLoading}
             onClick={handleGoToSettings}
+            className="bg-destructive/90 hover:bg-destructive text-white"
           >
             {t("buttons.relogin")}
           </ButtonLoading>
+
+          <Button variant="outline" onClick={handleClose}>
+            متوجه شدم!
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};

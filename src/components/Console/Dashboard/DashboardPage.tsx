@@ -7,8 +7,6 @@ export const DashboardPage = () => {
   useSubscriptionData();
   const { user } = useUser();
 
-  console.log("User....", user);
-
   return (
     <LayoutPage className="px-3">
       <div className="_dashboard-page space-y-4">

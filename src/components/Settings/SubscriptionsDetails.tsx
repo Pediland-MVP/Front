@@ -3,7 +3,7 @@
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 import { useTranslations } from "next-intl";
-import { CardSimple, LoaderPulse } from "../ui-custom";
+import { CardSimple, LoaderPulse, LoaderSpin } from "../ui-custom";
 import { Button, CardContent } from "../ui";
 import { ProgressRadial } from "../Console";
 import { useCallback } from "react";
@@ -58,6 +58,8 @@ export const SubscriptionsDetails = () => {
   const labelClass = "text-muted-foreground text-sm font-me";
 
   if (!active.subscriptionInfo) return null;
+
+  if (isSubscriptionsLoading || !subscriptions) return <LoaderSpin />;
 
   return (
     <div className="space-y-3">

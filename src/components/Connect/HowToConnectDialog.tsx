@@ -16,6 +16,7 @@ import { InstagramLogoIcon } from "@phosphor-icons/react";
 import { PlugsIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 interface HowToConnectDialogProps {
   open: boolean;
@@ -34,7 +35,7 @@ export const HowToConnectDialog = ({
     if (connecting) {
       const timer = setTimeout(() => {
         router.push(
-          `https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+          `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
         );
       }, 3000);
       return () => clearTimeout(timer);

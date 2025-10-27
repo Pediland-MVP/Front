@@ -1,19 +1,29 @@
 import { usePlanSelection } from "@/app/(Console)/settings/subscription/hooks/usePlanSelection";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
 // TODO: Refactor Types & Schemas
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 
 import { Card, CardContent } from "@components";
 
 export const DiscountAlert = () => {
-  const { plansData } = usePlanSelection();
-  const discountFrom = plansData?.discount?.from;
-  const discount = plansData?.discount?.discount;
-  const referralCodeType = plansData?.discount?.type;
+  const {
+    active,
+    setActive,
+    plans,
+    subscriptions,
+    isLoading: isSubscriptionsLoading,
+    discountCode,
+    setDiscountCode,
+  } = useSubscriptionStore();
+
+  const discountFrom = plans?.discount?.from;
+  const discount = plans?.discount?.discount;
+  const referralCodeType = plans?.discount?.type;
   const fixed = referralCodeType === ReferralCodeTypeEnum.FIXED;
 
   return (
     <>
-      {plansData?.discount?.haveDiscount && (
+      {plans?.discount?.haveDiscount && (
         <Card className="rounded-lg border-green-200 bg-green-50 p-0 text-[13px] font-medium text-green-600">
           <CardContent className="px-3 py-2">
             <div className="space-y-1 text-center">

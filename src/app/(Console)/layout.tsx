@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
 // UI Imports
-import InstagramTokenErrorDialog from "@/components/Console/instagramTokenError.dialog";
+import { InstagramInvalidDialog } from "@components";
 import SubscriptionExpireWarningDialog from "@/components/Console/subscriptionExpireWarning.dialog";
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
@@ -48,7 +48,7 @@ export default async function ConsoleLayout({
               <NextIntlClientProvider messages={messages}>
                 <ZodErrorsMapProvider>
                   <ConsoleProvider>
-                    <InstagramTokenErrorDialog />
+                    <InstagramInvalidDialog />
 
                     <SubscriptionExpireWarningDialog />
 

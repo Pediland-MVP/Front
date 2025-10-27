@@ -6,21 +6,25 @@ import {
   ClockCountdownIcon,
   PackageIcon,
   SealCheckIcon,
+  WarningCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { IPlan } from "@/types/plans/plans";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/utils/formatNumber";
-import { ButtonLoading } from "../ui-custom";
+import { ButtonLoading, CardSimple } from "../ui-custom";
 import usePayPlan from "@/app/(Console)/settings/subscription/hooks/usePayPlan";
-import { ArrowLeftIcon, MoveLeftIcon } from "lucide-react";
+import { AlertCircleIcon, ArrowLeftIcon, MoveLeftIcon } from "lucide-react";
 import { DiscountAlert } from "./DiscountAlert";
 import { DiscountCode } from "./DiscountCode";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import useUser from "@/hooks/useUser";
+import { InstagramInvalid } from "../Console";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -31,11 +35,16 @@ const planSchema = z.object({
 type FormValues = z.infer<typeof planSchema>;
 
 export const ChoosePlan = () => {
+  const router = useRouter();
   const t = useTranslations("Subscription");
   const [currentPlan, setCurrentPlan] = useState<IPlan>();
   const [selectedDurationId, setSelectedDurationId] = useState<number | null>(
     null,
   );
+
+  const { user } = useUser();
+
+  const isIgTokenInvalid = user?.instagrams[0]?.isIgTokenValid === false;
 
   const {
     active,
@@ -92,36 +101,44 @@ export const ChoosePlan = () => {
 
   return (
     <div className="flex-1 space-y-4">
-      <Card className="border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-violet-50 pb-7">
-        <CardContent>
-          <h2 className="text-gradient mb-5 flex items-center gap-2 text-lg font-semibold">
-            <PackageIcon weight="duotone" className="text-secondary h-8 w-8" />
-            {t("plan_title")}:<br className="md:hidden" /> ({currentPlan?.name})
-          </h2>
+      {isIgTokenInvalid ? (
+        <InstagramInvalid />
+      ) : (
+        <Card className="border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-violet-50 pb-7">
+          <CardContent>
+            <h2 className="text-gradient mb-5 flex items-center gap-2 text-lg font-semibold">
+              <PackageIcon
+                weight="duotone"
+                className="text-secondary h-8 w-8"
+              />
+              {t("plan_title")}:<br className="md:hidden" /> (
+              {currentPlan?.name})
+            </h2>
 
-          {currentPlan?.features.length > 0 && (
-            <div>
-              <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
-                {currentPlan.features.map((feature, id) => (
-                  <li
-                    key={id}
-                    className="text-secondary flex items-center gap-2 text-sm font-medium"
-                  >
-                    <SealCheckIcon
-                      size={16}
-                      weight="duotone"
-                      className="text-green-700/80"
-                    />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            {currentPlan?.features.length > 0 && (
+              <div>
+                <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
+                  {currentPlan.features.map((feature, id) => (
+                    <li
+                      key={id}
+                      className="text-secondary flex items-center gap-2 text-sm font-medium"
+                    >
+                      <SealCheckIcon
+                        size={16}
+                        weight="duotone"
+                        className="text-green-700/80"
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
-      <DiscountAlert />
+      {/* <DiscountAlert /> */}
 
       {currentPlan?.durations.length > 0 && (
         <div>
@@ -131,6 +148,7 @@ export const ChoosePlan = () => {
           </h3>
 
           <div className="flex flex-col gap-4 md:flex-row">
+            asas
             {currentPlan.durations.map((duration, id) => {
               const topId = 2;
 
@@ -219,7 +237,7 @@ export const ChoosePlan = () => {
       )}
 
       <div className="my-6 flex flex-col items-center justify-between gap-3 md:mb-0 md:flex-row">
-        <DiscountCode />
+        {!isIgTokenInvalid && <DiscountCode />}
 
         {subscriptions?.length > 0 && (
           <Button
