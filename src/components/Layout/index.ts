@@ -11,4 +11,5 @@ export * from "./LayoutTable";
 export * from "./NavBottom";
 export * from "./NavMain";
 export * from "./NavUser.skeleton";
+export * from "./UserDetailsCard";
 export * from "./ZodErrorsMapProvider";

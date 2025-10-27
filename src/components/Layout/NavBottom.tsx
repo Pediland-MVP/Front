@@ -1,4 +1,3 @@
-// Refactored
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -8,11 +7,11 @@ import { HTMLAttributeAnchorTarget, ReactElement } from "react";
 
 import { UserDropdownMenu } from "@components";
 import {
-  BasketIcon,
-  ChatsIcon,
   HouseIcon,
   IconProps,
+  LightningIcon,
   PlusCircleIcon,
+  ShoppingBagIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
 
@@ -43,13 +42,13 @@ export const NavBottom = () => {
           />
         </Link>
 
-        <Link href="/directs">
-          <ChatsIcon
+        <Link href="/automations">
+          <LightningIcon
             weight="duotone"
             size={28}
             className={cn(
               "text-muted-foreground",
-              pathname === "/directs" && "text-primary",
+              pathname === "/automations" && "text-primary",
             )}
           />
         </Link>
@@ -60,13 +59,13 @@ export const NavBottom = () => {
             size={32}
             className={cn(
               "text-muted-foreground",
-              pathname.startsWith("/automations") && "text-primary",
+              pathname.startsWith("/automations/add") && "text-primary",
             )}
           />
         </Link>
 
         <Link href="/orders">
-          <BasketIcon
+          <ShoppingBagIcon
             weight="duotone"
             size={28}
             className={cn(

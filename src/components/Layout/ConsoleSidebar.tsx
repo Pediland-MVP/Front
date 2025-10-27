@@ -1,11 +1,10 @@
 "use client";
 
-import { UserNamespace } from "@/types/user";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import useSWRImmutable from "swr/immutable";
 
+import useUser from "@/hooks/useUser";
 import {
   LogoSlogan,
   LogoText,
@@ -15,16 +14,17 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  UserDetailsCard,
   useSidebar,
 } from "@components";
 import {
   AddressBookIcon,
-  BasketIcon,
-  ChatsIcon,
+  CubeIcon,
   HouseIcon,
+  LightningIcon,
+  ShoppingBagIcon,
   SlidersIcon,
 } from "@phosphor-icons/react";
-import useUser from "@/hooks/useUser";
 
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,
@@ -40,48 +40,66 @@ const generateData = (t: any, isMobile: boolean) => ({
       isActive: true,
     },
     {
+      title: t("automations"),
+      url: "/automations",
+      icon: LightningIcon,
+      isActive: true,
+    },
+    {
       title: t("contacts"),
       url: "/contacts",
       icon: AddressBookIcon,
       isActive: true,
     },
     {
-      title: t("instagramConnections"),
-      url: "#",
-      icon: ChatsIcon,
-      isActive: false,
-      items: [
-        {
-          title: t("directs"),
-          url: "/directs",
-        },
-        {
-          title: t("comments"),
-          url: "/comments",
-        },
-        {
-          title: t("automations"),
-          url: "/automations",
-        },
-      ],
+      title: t("products"),
+      url: "/products",
+      icon: CubeIcon,
+      isActive: true,
+    },
+    {
+      title: t("ordersList"),
+      url: "/orders",
+      icon: ShoppingBagIcon,
+      isActive: true,
     },
 
-    {
-      title: t("shop"),
-      url: "#",
-      icon: BasketIcon,
-      isActive: false,
-      items: [
-        {
-          title: t("ordersList"),
-          url: "/orders",
-        },
-        {
-          title: t("products"),
-          url: "/products",
-        },
-      ],
-    },
+    // {
+    //   title: t("instagramConnections"),
+    //   url: "#",
+    //   icon: ChatsIcon,
+    //   isActive: false,
+    //   items: [
+    //     {
+    //       title: t("directs"),
+    //       url: "/directs",
+    //     },
+    //     {
+    //       title: t("comments"),
+    //       url: "/comments",
+    //     },
+    //     {
+    //       title: t("automations"),
+    //       url: "/automations",
+    //     },
+    //   ],
+    // },
+    // {
+    //   title: t("shop"),
+    //   url: "#",
+    //   icon: BasketIcon,
+    //   isActive: false,
+    //   items: [
+    //     {
+    //       title: t("ordersList"),
+    //       url: "/orders",
+    //     },
+    //     {
+    //       title: t("products"),
+    //       url: "/products",
+    //     },
+    //   ],
+    // },
     {
       title: t("settings"),
       url: "/settings",
@@ -118,9 +136,10 @@ export const ConsoleSidebar = ({
       </SidebarContent>
 
       <SidebarFooter>
-        <Suspense fallback={<NavUserSkeleton />}>
+        {/* <Suspense fallback={<NavUserSkeleton />}>
           <NavUser user={userData} isLoading={userIsLoading} />
-        </Suspense>
+        </Suspense> */}
+        <UserDetailsCard />
       </SidebarFooter>
     </Sidebar>
   );

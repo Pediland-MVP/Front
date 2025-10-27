@@ -12,22 +12,22 @@ interface ProgressRadialProps {
   totalDays?: number;
 }
 
-export const ProgressRadial: FC<ProgressRadialProps> = ({
+export const ProgressRadial = ({
   percentage,
   size,
   strokeWidth,
   id = "circular-progress-gradient",
   type = "percentage",
   totalDays,
-}) => {
+}: ProgressRadialProps) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  
-  const actualPercentage = type === "days" && totalDays 
-    ? (percentage / totalDays) * 100 
-    : percentage;
-    
-  const strokeDashoffset = circumference - (actualPercentage / 100) * circumference;
+
+  const actualPercentage =
+    type === "days" && totalDays ? (percentage / totalDays) * 100 : percentage;
+
+  const strokeDashoffset =
+    circumference - (actualPercentage / 100) * circumference;
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -83,7 +83,9 @@ export const ProgressRadial: FC<ProgressRadialProps> = ({
             : "fill-[theme(colors.violet.700)]",
         )}
       >
-        {type === "days" ? `${percentage} روز` : `${Math.round(actualPercentage)}%`}
+        {type === "days"
+          ? `${percentage} روز`
+          : `${Math.round(actualPercentage)}%`}
       </motion.text>
     </svg>
   );

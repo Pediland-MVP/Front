@@ -96,10 +96,14 @@ export function ContactTableColumns(
       id: "fullName",
       size: 70,
       enableSorting: false,
-      accessorFn: (row) =>
-        !row.lead.firstname && !row.lead.lastname
-          ? "نامشخص"
-          : `${row.lead.firstname ?? ""} ${row.lead.lastname ?? ""}`.trim(),
+      accessorFn: (row) => {
+        const name =
+          !row.lead.firstname && !row.lead.lastname
+            ? "نامشخص"
+            : `${row.lead.firstname ?? ""} ${row.lead.lastname ?? ""}`.trim();
+
+        return name.length > 20 ? `${name.slice(0, 20)}...` : name;
+      },
       header: () => <div className="text-right">نام کاربر</div>,
       cell: ({ row }) => (
         <div

@@ -116,7 +116,7 @@ export const SubscriptionsDetails = () => {
         </p>
       )}
 
-      {reservedSubscriptions?.length && (
+      {reservedSubscriptions?.length > 0 && (
         <div className="_reserved-subscription mt-6">
           <div className="text-secondary mb-3 flex items-center gap-1.5">
             <div>

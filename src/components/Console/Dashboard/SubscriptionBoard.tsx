@@ -15,21 +15,16 @@ import {
 } from "@components";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import useUser from "@/hooks/useUser";
+import { CircleIcon } from "@phosphor-icons/react";
 
 export const SubscriptionBoard = () => {
   const router = useRouter();
   const t = useTranslations("Console.Dashboard");
-  
-  const {
-    active,
-    setActive,
-    plans,
-    subscriptions,
-    isLoading: isSubscriptionsLoading,
-    discountCode,
-    setDiscountCode,
-  } = useSubscriptionStore();
+  const { user } = useUser();
 
+  const { subscriptions, isLoading: isSubscriptionsLoading } =
+    useSubscriptionStore();
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
@@ -52,36 +47,75 @@ export const SubscriptionBoard = () => {
       100
     : 0;
 
+  if (isSubscriptionsLoading) return null;
+
   return (
     <CardSimple>
       <CardContent className="p-3 md:p-5">
-        <div className="flex items-center gap-4">
-          <ProgressRadial
-            percentage={isSubscriptionsLoading ? 0 : remainingDays}
-            size={100}
-            strokeWidth={10}
-            type="days"
-            totalDays={activeSubscription?.planDuration?.durationDays}
-          />
-          <div className="text-secondary flex flex-1 flex-col justify-center">
-            <div className="text-muted-foreground text-[13px]">
-              {t("remainingDays")}
-            </div>
-            <div className="text-gradient flex items-center gap-1 text-xl font-bold">
-              {isSubscriptionsLoading ? <LoaderPulse /> : remainingDays}
-              <span>{t("day")}</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-3 md:gap-5">
           <div>
-            <Button
-              variant="link"
-              size="sm"
-              className="gap-0 !px-0 text-xs"
-              onClick={() => router.push("/settings/subscription")}
-            >
-              {t("view")}
-              <ChevronLeftIcon />
-            </Button>
+            <ProgressRadial
+              percentage={isSubscriptionsLoading ? 0 : remainingDays}
+              size={90}
+              strokeWidth={10}
+              type="days"
+              totalDays={activeSubscription?.planDuration?.durationDays}
+            />
+          </div>
+          <div className="w-full">
+            <div className="text-secondary mb-1 text-[13px] font-semibold md:text-sm">
+              {user?.firstname} {user?.lastname}، خوش آمدید!
+            </div>
+            <div className="flex w-full items-center">
+              <div className="text-secondary flex flex-1 flex-col gap-0.5 text-[13px] md:gap-1 md:text-sm">
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">همراه:</span>
+                  <span className="font-semibold tracking-wider">
+                    {user?.mobile}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">نوع اشتراک:</span>
+                  <span className="font-medium">
+                    {isSubscriptionsLoading ? (
+                      <LoaderPulse />
+                    ) : (
+                      activeSubscription?.planDuration?.name
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">وضعیت:</span>
+                  {isSubscriptionsLoading ? (
+                    <LoaderPulse />
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">
+                        {t(activeSubscription?.status || "unknown")}
+                      </span>
+                      <CircleIcon
+                        size={10}
+                        weight="fill"
+                        className="animate-pulse text-green-500"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="gap-0 !px-0"
+                  onClick={() => router.push("/settings/subscription")}
+                >
+                  {activeSubscription?.status === SubscriptionStatusEnum.ACTIVE
+                    ? "جـزئـیـات"
+                    : "تمدید"}
+                  <ChevronLeftIcon />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>
