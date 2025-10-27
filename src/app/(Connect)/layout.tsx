@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import InstagramTokenErrorDialog from "@/components/Console/InstagramInvalidDialog";
 import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
 import { StandaloneChecker } from "@/components/Global/standaloneChecker";
 import AuthProvider from "@/components/Providers/AuthProvider";
@@ -37,8 +36,6 @@ export default async function ConsoleLayout({
             <StandaloneChecker>
               <NextIntlClientProvider messages={messages}>
                 <ZodErrorsMapProvider>
-                  <InstagramTokenErrorDialog />
-
                   <main className="flex h-screen flex-col bg-gradient-to-tl from-blue-500 to-violet-700">
                     {children}
                   </main>

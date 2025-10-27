@@ -17,6 +17,7 @@ import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
 import { CircleIcon } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 
 export const SubscriptionBoard = () => {
   const router = useRouter();
@@ -25,8 +26,14 @@ export const SubscriptionBoard = () => {
 
   const { subscriptions, isLoading: isSubscriptionsLoading } =
     useSubscriptionStore();
+
+  console.log("subscriptions", subscriptions);
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
+  );
+
+  const expiredSubscription = subscriptions?.find(
+    (sub) => sub.status === SubscriptionStatusEnum.EXPIRED,
   );
 
   const getRemainingDays = useCallback((expireDate: string) => {
@@ -80,7 +87,7 @@ export const SubscriptionBoard = () => {
                     {isSubscriptionsLoading ? (
                       <LoaderPulse />
                     ) : (
-                      activeSubscription?.planDuration?.name
+                      activeSubscription?.planDuration?.name || "ندارید"
                     )}
                   </span>
                 </div>
@@ -91,12 +98,20 @@ export const SubscriptionBoard = () => {
                   ) : (
                     <div className="flex items-center gap-1">
                       <span className="font-medium">
-                        {t(activeSubscription?.status || "unknown")}
+                        {activeSubscription?.status ===
+                        SubscriptionStatusEnum.ACTIVE
+                          ? "فعال"
+                          : "غیرفعال"}
                       </span>
                       <CircleIcon
                         size={10}
                         weight="fill"
-                        className="animate-pulse text-green-500"
+                        className={cn(
+                          activeSubscription?.status ===
+                            SubscriptionStatusEnum.ACTIVE
+                            ? "animate-pulse text-green-500"
+                            : "text-gray-400/80",
+                        )}
                       />
                     </div>
                   )}

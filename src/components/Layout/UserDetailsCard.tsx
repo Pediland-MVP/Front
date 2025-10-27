@@ -90,7 +90,12 @@ export const UserDetailsCard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <span className="text-muted-foreground">وضعیت:</span>
-                    <span>{t(activeSubscription?.status || "unknown")}</span>
+                    <span>
+                      {activeSubscription?.status ===
+                      SubscriptionStatusEnum.ACTIVE
+                        ? "فعال"
+                        : "غیرفعال"}
+                    </span>
                     <CircleIcon
                       size={10}
                       weight="fill"
@@ -113,7 +118,10 @@ export const UserDetailsCard = () => {
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">نوع اشتراک:</span>
                   <span className="flex-1">
-                    {activeSubscription?.planDuration?.name}
+                    {activeSubscription?.status ===
+                    SubscriptionStatusEnum.ACTIVE
+                      ? activeSubscription?.planDuration?.name
+                      : "ندارید"}
                   </span>
                   <span className="text-primary text-[13px]">
                     {remainingDays} روز مانده

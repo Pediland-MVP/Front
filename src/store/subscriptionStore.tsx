@@ -86,7 +86,7 @@ export function useSubscriptionData() {
 
   const { isAuthenticated } = useUser();
 
-  const subscriptionApiUrl = `${API_URL}/subscriptions?page=1&limit=5&status=active,reserved`;
+  const subscriptionApiUrl = `${API_URL}/subscriptions?page=1&limit=5&status=active,reserved,expired`;
   const { data: subscriptionsData, isLoading: isSubscriptionsLoading } =
     useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(
       isAuthenticated ? subscriptionApiUrl : null,
@@ -97,6 +97,8 @@ export function useSubscriptionData() {
         errorRetryCount: 0,
       },
     );
+
+  console.log("subscriptionsData", subscriptionsData);
 
   const planApiUrl = `${API_URL}/plans${
     discountCode ? `?discountCode=${discountCode}` : ""

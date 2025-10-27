@@ -1,7 +1,7 @@
 "use client";
 
 import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { Button, Card, CardContent, CardFooter } from "../ui";
+import { Alert, Button, Card, CardContent, CardFooter } from "../ui";
 import {
   ClockCountdownIcon,
   PackageIcon,
@@ -103,7 +103,7 @@ export const ChoosePlan = () => {
     <div className="flex-1 space-y-4">
       {isIgTokenInvalid ? (
         <InstagramInvalid />
-      ) : (
+      ) : currentPlan ? (
         <Card className="border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-violet-50 pb-7">
           <CardContent>
             <h2 className="text-gradient mb-5 flex items-center gap-2 text-lg font-semibold">
@@ -136,6 +136,10 @@ export const ChoosePlan = () => {
             )}
           </CardContent>
         </Card>
+      ) : (
+        <Alert className="border-yellow-600/40 bg-yellow-50 text-sm text-yellow-600">
+          متاسفانه هیچ بسته اشتراکی برای شما وجود ندارد.
+        </Alert>
       )}
 
       {/* <DiscountAlert /> */}
@@ -237,7 +241,7 @@ export const ChoosePlan = () => {
       )}
 
       <div className="my-6 flex flex-col items-center justify-between gap-3 md:mb-0 md:flex-row">
-        {!isIgTokenInvalid && <DiscountCode />}
+        {!isIgTokenInvalid && currentPlan && <DiscountCode />}
 
         {subscriptions?.length > 0 && (
           <Button
