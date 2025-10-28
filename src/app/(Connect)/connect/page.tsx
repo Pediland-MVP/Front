@@ -95,11 +95,28 @@ export default function ConnectPage() {
         <div className="container mx-auto flex h-full flex-col justify-around md:max-w-sm">
           <div className="flex flex-col items-center space-y-6">
             <PlugsIcon size={60} weight="duotone" className="text-secondary" />
-            <p className="text-center font-medium">
-              {t("title1")}
-              <br />
-              {t("title2")}
-            </p>
+
+            <div className="space-y-3">
+              <p className="text-center font-medium">
+                {t("title1")}
+                <br />
+                {t("title2")}
+              </p>
+              <div className="flex flex-col items-center text-[15px]">
+                <div className="text-muted-foreground">
+                  همراه:{" "}
+                  <span className="font-semibold text-secondary">
+                    {user?.mobile}
+                  </span>
+                </div>
+                <div className="text-muted-foreground">
+                  اینستاگرام:{" "}
+                  <span className="font-semibold text-secondary">
+                    {user?.submittedInstagramUsername}
+                  </span>
+                </div>
+              </div>
+            </div>
             <Button
               className="w-full"
               onClick={() => setDialogOpen(true)}
