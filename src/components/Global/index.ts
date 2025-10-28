@@ -6,6 +6,6 @@ export * from "./LogoText";
 export * from "./NoDataError";
 export * from "./VideoComp";
 export * from "./CardImage";
-export { StandaloneChecker } from "./StandaloneChecker";
+export { StandaloneChecker } from "./_StandaloneChecker";
 
 
