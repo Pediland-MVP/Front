@@ -154,7 +154,7 @@ export default function OnboardingPage() {
                         const filteredValue = e.target.value.replace(
                           /[^a-zA-Z0-9_.]/g,
                           "",
-                        );
+                        ).toLowerCase();
                         field.onChange(filteredValue);
                       }}
                       placeholder={t("instagram_id")}
