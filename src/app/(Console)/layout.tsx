@@ -4,21 +4,14 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-// UI Imports
-import { InstagramInvalidDialog } from "@components";
-import SubscriptionExpireWarningDialog from "@/components/Console/subscriptionExpireWarning.dialog";
-import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
-import { StandaloneChecker } from "@/components/Global/standaloneChecker";
-
-import AuthProvider from "@/components/Providers/AuthProvider";
 import {
+  AuthProvider,
   ConsoleProvider,
+  InstagramInvalidDialog,
   NavBottom,
-  Toaster,
+  SiteProvider,
   ZodErrorsMapProvider,
 } from "@components";
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -44,32 +37,22 @@ export default async function ConsoleLayout({
       <body>
         <SWRProvider>
           <AuthProvider>
-            <StandaloneChecker>
-              <NextIntlClientProvider messages={messages}>
-                <ZodErrorsMapProvider>
+            <NextIntlClientProvider messages={messages}>
+              <ZodErrorsMapProvider>
+                {/* All third party configuration goes inside SiteProvider */}
+                <SiteProvider>
                   <ConsoleProvider>
                     <InstagramInvalidDialog />
-
-                    <SubscriptionExpireWarningDialog />
 
                     {children}
 
                     <NavBottom />
                   </ConsoleProvider>
-                </ZodErrorsMapProvider>
-
-                <Toaster
-                  richColors
-                  theme="light"
-                  toastOptions={{
-                    className: "font-Yekan text-[13px]",
-                  }}
-                />
-              </NextIntlClientProvider>
-            </StandaloneChecker>
+                </SiteProvider>
+              </ZodErrorsMapProvider>
+            </NextIntlClientProvider>
           </AuthProvider>
         </SWRProvider>
-        <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
     </html>
   );

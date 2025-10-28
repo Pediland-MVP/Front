@@ -4,10 +4,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import { GoftinoSnippet } from "@/components/Global/GoftinoSnippet";
-import { StandaloneChecker } from "@/components/Global/standaloneChecker";
-import AuthProvider from "@/components/Providers/AuthProvider";
-import { Toaster, ZodErrorsMapProvider } from "@components";
+import { AuthProvider, SiteProvider, ZodErrorsMapProvider } from "@components";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -33,26 +30,17 @@ export default async function ConsoleLayout({
       <body>
         <SWRProvider>
           <AuthProvider>
-            <StandaloneChecker>
-              <NextIntlClientProvider messages={messages}>
-                <ZodErrorsMapProvider>
+            <NextIntlClientProvider messages={messages}>
+              <ZodErrorsMapProvider>
+                <SiteProvider>
                   <main className="flex h-screen flex-col bg-gradient-to-tl from-blue-500 to-violet-700">
                     {children}
                   </main>
-                </ZodErrorsMapProvider>
-
-                <Toaster
-                  richColors
-                  theme="light"
-                  toastOptions={{
-                    className: "font-Yekan text-[13px]",
-                  }}
-                />
-              </NextIntlClientProvider>
-            </StandaloneChecker>
+                </SiteProvider>
+              </ZodErrorsMapProvider>
+            </NextIntlClientProvider>
           </AuthProvider>
         </SWRProvider>
-        <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
     </html>
   );

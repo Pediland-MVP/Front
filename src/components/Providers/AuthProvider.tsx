@@ -3,14 +3,13 @@
 import useUser from "@/hooks/useUser";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LoadingLogo } from "../Global";
 import { LoaderSpin } from "../ui-custom";
 
-export default function AuthProvider({
-  children,
-}: {
+interface AuthProviderProps {
   children: React.ReactNode;
-}) {
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();

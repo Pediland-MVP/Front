@@ -1,14 +1,19 @@
-"use client";
-
 import useUser from "@/hooks/useUser";
-import { useTranslations } from "next-intl";
+import { useSubscriptionData } from "@/store/subscriptionStore";
 
-import { DashboardPage, LoaderSpin } from "@components";
+import { DashboardStats, LayoutPage, SubscriptionBoard } from "@components";
 
-export default function Page() {
-  const t = useTranslations("Console");
+export const DashboardPage = () => {
+  useSubscriptionData();
+  const { user } = useUser();
 
-  const { isLoading } = useUser();
+  return (
+    <LayoutPage className="px-3">
+      <div className="_dashboard-page space-y-4">
+        <SubscriptionBoard />
 
-  return <DashboardPage />;
-}
+        <DashboardStats />
+      </div>
+    </LayoutPage>
+  );
+};
