@@ -1,5 +1,6 @@
 "use client";
 
+import { useLogout } from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { useTranslations } from "next-intl";
@@ -25,7 +26,6 @@ import {
   SignOutIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { useLogout } from "@/hooks/swr/api-client";
 
 export const UserDetailsCard = () => {
   const router = useRouter();
@@ -87,7 +87,7 @@ export const UserDetailsCard = () => {
           pathname !== "/settings/subscription" &&
           !isSubscriptionsLoading && (
             <div className="flex flex-1 flex-col pb-1">
-              <div className="text-secondary mb-3 flex flex-col gap-1.5 text-sm">
+              <div className="text-secondary mb-3 flex flex-col gap-1 text-[13px]">
                 <div className="flex items-center justify-between">
                   {activeSubscription?.status ===
                   SubscriptionStatusEnum.ACTIVE ? (
@@ -135,7 +135,7 @@ export const UserDetailsCard = () => {
                         activeSubscription?.planDuration?.name
                       )}
                     </span>
-                    <span className="text-primary text-[13px]">
+                    <span className="text-primary">
                       {activeSubscription?.type === "credit"
                         ? `${activeSubscription?.credit} پیام`
                         : `${remainingDays} روز`}{" "}
@@ -146,6 +146,12 @@ export const UserDetailsCard = () => {
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">همراه:</span>
                   <span className="tracking-wider">{userData?.mobile}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">اینستاگرام:</span>
+                  <span className="tracking-wider">
+                    {userData?.instagrams?.[0]?.username}
+                  </span>
                 </div>
               </div>
               <ProgressLine
@@ -158,8 +164,8 @@ export const UserDetailsCard = () => {
           )}
 
         <div className="text-secondary flex items-center">
-          <div className="flex flex-1 items-center gap-1 text-sm">
-            <Avatar className="h-7 w-7 rounded-lg border-0 duration-300 focus-within:ring-0">
+          <div className="flex flex-1 items-center gap-1 text-[13px]">
+            <Avatar className="h-6 w-6 rounded-lg border-0 duration-300 focus-within:ring-0">
               <AvatarImage src={undefined} alt={userData.firstname} />
               <AvatarFallback className="bg-transparent">
                 <UserCircleIcon size={28} weight="duotone" />

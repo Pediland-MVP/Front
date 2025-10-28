@@ -86,6 +86,12 @@ export const SubscriptionBoard = () => {
                     {user?.mobile}
                   </span>
                 </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">اینستاگرام:</span>
+                  <span className="font-semibold tracking-wider line-clamp-1">
+                    {user?.instagrams?.[0]?.username}
+                  </span>
+                </div>
                 {activeSubscription?.status ===
                   SubscriptionStatusEnum.ACTIVE && (
                   <div className="flex items-center gap-1">
@@ -99,33 +105,35 @@ export const SubscriptionBoard = () => {
                         activeSubscription?.planDuration?.name
                       )}
                     </span>
+
+                    <div className="flex items-center gap-1">
+                      {isSubscriptionsLoading ? (
+                        <LoaderPulse />
+                      ) : activeSubscription?.status ===
+                        SubscriptionStatusEnum.ACTIVE ? (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <CircleIcon
+                            size={10}
+                            weight="fill"
+                            className={cn("animate-pulse")}
+                          />
+                          فعال
+                        </div>
+                      ) : (
+                        <div className="text-destructive flex items-center gap-1">
+                          <CircleIcon
+                            size={10}
+                            weight="fill"
+                            className={cn("animate-pulse")}
+                          />
+                          غیرفعال
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
-                <div className="flex items-center gap-1">
-                  {isSubscriptionsLoading ? (
-                    <LoaderPulse />
-                  ) : activeSubscription?.status ===
-                    SubscriptionStatusEnum.ACTIVE ? (
-                    <div className="flex items-center gap-1 text-green-600">
-                      <CircleIcon
-                        size={10}
-                        weight="fill"
-                        className={cn("animate-pulse")}
-                      />
-                      اشتراک فعال است
-                    </div>
-                  ) : (
-                    <div className="text-destructive flex items-center gap-1">
-                      <CircleIcon
-                        size={10}
-                        weight="fill"
-                        className={cn("animate-pulse")}
-                      />
-                      اشتراک فعال ندارید
-                    </div>
-                  )}
-                </div>
               </div>
+
               <div>
                 <Button
                   variant="link"
@@ -136,7 +144,6 @@ export const SubscriptionBoard = () => {
                   {activeSubscription?.status === SubscriptionStatusEnum.ACTIVE
                     ? "جـزئـیـات"
                     : "تمدید"}
-                  <ChevronLeftIcon />
                 </Button>
               </div>
             </div>

@@ -1,19 +1,30 @@
-import useUser from "@/hooks/useUser";
+"use client";
+
 import { useSubscriptionData } from "@/store/subscriptionStore";
 
-import { DashboardStats, LayoutPage, SubscriptionBoard } from "@components";
+import {
+  DashboardStats,
+  DashboardTelegramBanner,
+  DashboardInstagramBanner,
+  LayoutPage,
+  SubscriptionBoard,
+} from "@components";
 
-export const DashboardPage = () => {
+export default function DashboardPage() {
   useSubscriptionData();
-  const { user } = useUser();
 
   return (
     <LayoutPage className="px-3">
-      <div className="_dashboard-page space-y-4">
+      <div className="_dashboard-page space-y-5">
         <SubscriptionBoard />
 
         <DashboardStats />
+
+        <div className="grid gap-3 md:grid-cols-2">
+          <DashboardTelegramBanner />
+          <DashboardInstagramBanner />
+        </div>
       </div>
     </LayoutPage>
   );
-};
+}
