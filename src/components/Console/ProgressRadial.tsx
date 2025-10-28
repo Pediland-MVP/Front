@@ -8,7 +8,7 @@ interface ProgressRadialProps {
   size: number;
   strokeWidth: number;
   id?: string;
-  type?: "percentage" | "days";
+  type?: "percentage" | "days" | "credit";
   totalDays?: number;
 }
 
@@ -72,7 +72,7 @@ export const ProgressRadial = ({
         y="50%"
         textAnchor="middle"
         dy=".3em"
-        fontSize="15"
+        fontSize="14"
         fontWeight="bold"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -81,11 +81,14 @@ export const ProgressRadial = ({
           actualPercentage < 50
             ? "fill-[theme(colors.blue.600)]"
             : "fill-[theme(colors.violet.700)]",
+          actualPercentage === 0 && "fill-[theme(colors.rose.500)]",
         )}
       >
         {type === "days"
           ? `${percentage} روز`
-          : `${Math.round(actualPercentage)}%`}
+          : type === "credit"
+            ? `${percentage} پیام`
+            : `${Math.round(actualPercentage)}%`}
       </motion.text>
     </svg>
   );

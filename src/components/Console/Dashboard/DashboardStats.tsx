@@ -33,6 +33,8 @@ export const DashboardStats = () => {
     isLoading: isStatsLoading,
   } = useSWRImmutable<OverallStats>(`${API_URL}/stats/overall`);
 
+  console.log(stats);
+
   const rlsPriceFormat = (price: number) => {
     if (!price) return "0";
 

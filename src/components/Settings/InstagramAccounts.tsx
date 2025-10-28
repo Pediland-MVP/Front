@@ -35,10 +35,6 @@ export const InstagramAccounts = () => {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
 
-
-  console.log('INSTAGRAM_CLIENT_ID', INSTAGRAM_CLIENT_ID)
-  console.log('API_URL', API_URL)
-
   const apiUrl = `${API_URL}/instagram/accounts`;
   const {
     data: instagramPages,

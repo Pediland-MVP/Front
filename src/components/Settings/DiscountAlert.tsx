@@ -1,4 +1,3 @@
-import { usePlanSelection } from "@/app/(Console)/settings/subscription/hooks/usePlanSelection";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 // TODO: Refactor Types & Schemas
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
@@ -9,21 +8,21 @@ export const DiscountAlert = () => {
   const {
     active,
     setActive,
-    plans,
+    plansData,
     subscriptions,
     isLoading: isSubscriptionsLoading,
     discountCode,
     setDiscountCode,
   } = useSubscriptionStore();
 
-  const discountFrom = plans?.discount?.from;
-  const discount = plans?.discount?.discount;
-  const referralCodeType = plans?.discount?.type;
+  const discountFrom = plansData?.discount?.from;
+  const discount = plansData?.discount?.discount;
+  const referralCodeType = plansData?.discount?.type;
   const fixed = referralCodeType === ReferralCodeTypeEnum.FIXED;
 
   return (
     <>
-      {plans?.discount?.haveDiscount && (
+      {plansData?.discount?.haveDiscount && (
         <Card className="rounded-lg border-green-200 bg-green-50 p-0 text-[13px] font-medium text-green-600">
           <CardContent className="px-3 py-2">
             <div className="space-y-1 text-center">

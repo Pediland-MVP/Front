@@ -83,7 +83,9 @@ export const SubscriptionsDetails = () => {
                 <div className="flex items-center gap-1.5">
                   <span className={labelClass}>نوع اشتراک:</span>
                   <span className="text-primary font-semibold">
-                    {activeSubscription.planDuration.name}
+                    {activeSubscription.type === "credit"
+                      ? "300 پیام رایگان"
+                      : activeSubscription.planDuration.name}
                   </span>
                 </div>
 
@@ -103,10 +105,16 @@ export const SubscriptionsDetails = () => {
                 </div>
               </div>
               <ProgressRadial
-                percentage={isSubscriptionsLoading ? 0 : remainingDays}
+                percentage={
+                  isSubscriptionsLoading
+                    ? 0
+                    : activeSubscription?.type === "credit"
+                      ? activeSubscription?.credit
+                      : remainingDays
+                }
                 size={100}
                 strokeWidth={10}
-                type="days"
+                type={activeSubscription?.type === "credit" ? "credit" : "days"}
                 totalDays={activeSubscription.planDuration.durationDays}
               />
             </div>

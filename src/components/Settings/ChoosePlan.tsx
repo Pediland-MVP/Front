@@ -142,7 +142,7 @@ export const ChoosePlan = () => {
         </Alert>
       )}
 
-      {/* <DiscountAlert /> */}
+      <DiscountAlert />
 
       {currentPlan?.durations.length > 0 && (
         <div>
@@ -152,7 +152,6 @@ export const ChoosePlan = () => {
           </h3>
 
           <div className="flex flex-col gap-4 md:flex-row">
-            asas
             {currentPlan.durations.map((duration, id) => {
               const topId = 2;
 

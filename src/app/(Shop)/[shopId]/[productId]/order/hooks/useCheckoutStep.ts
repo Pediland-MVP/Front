@@ -81,9 +81,7 @@ const useCheckoutStep = () => {
    */
   const prevStep = () => {
     const currentIndex = validSteps.indexOf(step);
-    console.log("ValidSteps", validSteps);
-    console.log("CurrentIndex", currentIndex);
-    console.log("Calculated Prev", validSteps[currentIndex - 1]);
+
     return validSteps[currentIndex - 1];
   };
 

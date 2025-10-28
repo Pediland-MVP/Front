@@ -17,6 +17,7 @@ import {
   ButtonLoading,
   CardContent,
   CardSimple,
+  LoaderPulse,
   ProgressLine,
 } from "@components";
 import {
@@ -88,20 +89,26 @@ export const UserDetailsCard = () => {
             <div className="flex flex-1 flex-col pb-1">
               <div className="text-secondary mb-3 flex flex-col gap-1.5 text-sm">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <span className="text-muted-foreground">وضعیت:</span>
-                    <span>
-                      {activeSubscription?.status ===
-                      SubscriptionStatusEnum.ACTIVE
-                        ? "فعال"
-                        : "غیرفعال"}
-                    </span>
-                    <CircleIcon
-                      size={10}
-                      weight="fill"
-                      className="animate-pulse text-green-500"
-                    />
-                  </div>
+                  {activeSubscription?.status ===
+                  SubscriptionStatusEnum.ACTIVE ? (
+                    <div className="flex items-center gap-1 text-green-600">
+                      <CircleIcon
+                        size={10}
+                        weight="fill"
+                        className="animate-pulse"
+                      />
+                      <span>اشتراک فعال است</span>
+                    </div>
+                  ) : (
+                    <div className="text-destructive flex items-center gap-1">
+                      <CircleIcon
+                        size={10}
+                        weight="fill"
+                        className="animate-pulse"
+                      />
+                      <span>اشتراک فعال ندارید</span>
+                    </div>
+                  )}
 
                   <Button
                     variant="link"
@@ -115,18 +122,27 @@ export const UserDetailsCard = () => {
                       : "تمدید"}
                   </Button>
                 </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">نوع اشتراک:</span>
-                  <span className="flex-1">
-                    {activeSubscription?.status ===
-                    SubscriptionStatusEnum.ACTIVE
-                      ? activeSubscription?.planDuration?.name
-                      : "ندارید"}
-                  </span>
-                  <span className="text-primary text-[13px]">
-                    {remainingDays} روز مانده
-                  </span>
-                </div>
+                {activeSubscription?.status ===
+                  SubscriptionStatusEnum.ACTIVE && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">نوع اشتراک:</span>
+                    <span className="flex-1">
+                      {isSubscriptionsLoading ? (
+                        <LoaderPulse />
+                      ) : activeSubscription.type === "credit" ? (
+                        "رایـگـان"
+                      ) : (
+                        activeSubscription?.planDuration?.name
+                      )}
+                    </span>
+                    <span className="text-primary text-[13px]">
+                      {activeSubscription?.type === "credit"
+                        ? `${activeSubscription?.credit} پیام`
+                        : `${remainingDays} روز`}{" "}
+                      مانده
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">همراه:</span>
                   <span className="tracking-wider">{userData?.mobile}</span>

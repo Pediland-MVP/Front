@@ -98,8 +98,6 @@ export function useSubscriptionData() {
       },
     );
 
-  console.log("subscriptionsData", subscriptionsData);
-
   const planApiUrl = `${API_URL}/plans${
     discountCode ? `?discountCode=${discountCode}` : ""
   }`;

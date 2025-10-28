@@ -27,7 +27,6 @@ export const SubscriptionBoard = () => {
   const { subscriptions, isLoading: isSubscriptionsLoading } =
     useSubscriptionStore();
 
-  console.log("subscriptions", subscriptions);
   const activeSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
@@ -62,10 +61,16 @@ export const SubscriptionBoard = () => {
         <div className="flex items-center gap-3 md:gap-5">
           <div>
             <ProgressRadial
-              percentage={isSubscriptionsLoading ? 0 : remainingDays}
+              percentage={
+                isSubscriptionsLoading
+                  ? 0
+                  : activeSubscription?.type === "credit"
+                    ? activeSubscription?.credit
+                    : remainingDays
+              }
               size={90}
-              strokeWidth={10}
-              type="days"
+              strokeWidth={9}
+              type={activeSubscription?.type === "credit" ? "credit" : "days"}
               totalDays={activeSubscription?.planDuration?.durationDays}
             />
           </div>
@@ -81,38 +86,42 @@ export const SubscriptionBoard = () => {
                     {user?.mobile}
                   </span>
                 </div>
+                {activeSubscription?.status ===
+                  SubscriptionStatusEnum.ACTIVE && (
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">نوع اشتراک:</span>
+                    <span className="font-medium">
+                      {isSubscriptionsLoading ? (
+                        <LoaderPulse />
+                      ) : activeSubscription.type === "credit" ? (
+                        "رایـگـان"
+                      ) : (
+                        activeSubscription?.planDuration?.name
+                      )}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">نوع اشتراک:</span>
-                  <span className="font-medium">
-                    {isSubscriptionsLoading ? (
-                      <LoaderPulse />
-                    ) : (
-                      activeSubscription?.planDuration?.name || "ندارید"
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">وضعیت:</span>
                   {isSubscriptionsLoading ? (
                     <LoaderPulse />
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">
-                        {activeSubscription?.status ===
-                        SubscriptionStatusEnum.ACTIVE
-                          ? "فعال"
-                          : "غیرفعال"}
-                      </span>
+                  ) : activeSubscription?.status ===
+                    SubscriptionStatusEnum.ACTIVE ? (
+                    <div className="flex items-center gap-1 text-green-600">
                       <CircleIcon
                         size={10}
                         weight="fill"
-                        className={cn(
-                          activeSubscription?.status ===
-                            SubscriptionStatusEnum.ACTIVE
-                            ? "animate-pulse text-green-500"
-                            : "text-gray-400/80",
-                        )}
+                        className={cn("animate-pulse")}
                       />
+                      اشتراک فعال است
+                    </div>
+                  ) : (
+                    <div className="text-destructive flex items-center gap-1">
+                      <CircleIcon
+                        size={10}
+                        weight="fill"
+                        className={cn("animate-pulse")}
+                      />
+                      اشتراک فعال ندارید
                     </div>
                   )}
                 </div>

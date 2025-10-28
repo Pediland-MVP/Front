@@ -1,35 +1,38 @@
 import { SubscriptionStatusEnum } from "./enums/subscriptionStatus.enum";
 
 export interface ISubscriptions {
-    items: Subscription[];
-    meta: Meta;
+  items: Subscription[];
+  meta: Meta;
 }
 
 interface Subscription {
-    id: string;
-    createDate: string;
-    updateDate: string;
-    expire: string;
-    status: SubscriptionStatusEnum;
-    planDurationId: number;
-    userId: string;
-    planDuration: PlanDuration;
+  activator: string;
+  createDate: string;
+  credit: number;
+  expire: string;
+  id: string;
+  planDuration: PlanDuration;
+  planDurationId: number;
+  status: SubscriptionStatusEnum;
+  type: string;
+  updateDate: string;
+  userId: string;
 }
 
 interface PlanDuration {
-    id: number;
-    createDate: string;
-    updateDate: string;
-    name: string;
-    price: number;
-    durationDays: number;
-    planId: number;
+  id: number;
+  createDate: string;
+  updateDate: string;
+  name: string;
+  price: number;
+  durationDays: number;
+  planId: number;
 }
 
 interface Meta {
-    itemCount: number;
-    totalItems: number;
-    currentPage: number;
-    itemsPerPage: number;
-    totalPages: number;
+  itemCount: number;
+  totalItems: number;
+  currentPage: number;
+  itemsPerPage: number;
+  totalPages: number;
 }

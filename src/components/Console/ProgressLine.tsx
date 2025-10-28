@@ -34,19 +34,21 @@ export const ProgressLine = ({
 
   const actualPercentage =
     type === "days" && totalDays ? (percentage / totalDays) * 100 : percentage;
-  
+
   // Ensure we have a valid percentage
   const validPercentage = Math.max(0, Math.min(100, actualPercentage || 0));
 
   return (
     <div className={cn("flex flex-col", showText ? "gap-2" : "")}>
       {/* نوار پیشرفت */}
-      <div className="relative w-full" style={{ transform: 'scaleX(-1)' }}>
-        <svg 
-          width={useFullWidth ? "100%" : finalWidth} 
-          height={finalHeight} 
-          className="rounded-full overflow-hidden"
-          viewBox={useFullWidth ? undefined : `0 0 ${finalWidth} ${finalHeight}`}
+      <div className="relative w-full" style={{ transform: "scaleX(-1)" }}>
+        <svg
+          width={useFullWidth ? "100%" : finalWidth}
+          height={finalHeight}
+          className="overflow-hidden rounded-full"
+          viewBox={
+            useFullWidth ? undefined : `0 0 ${finalWidth} ${finalHeight}`
+          }
         >
           {/* پس‌زمینه خاکستری */}
           <rect
@@ -61,15 +63,15 @@ export const ProgressLine = ({
 
           {/* تعریف گرادیانت */}
           <defs>
-            <linearGradient 
-              id={id} 
-              x1="0%" 
-              y1="0%" 
-              x2="100%" 
-              y2="0%"
-            >
-              <stop offset="0%" className="[stop-color:theme(colors.violet.600)]" />
-              <stop offset="100%" className="[stop-color:theme(colors.blue.400)]" />
+            <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop
+                offset="0%"
+                className="[stop-color:theme(colors.violet.600)]"
+              />
+              <stop
+                offset="100%"
+                className="[stop-color:theme(colors.blue.400)]"
+              />
             </linearGradient>
           </defs>
 
@@ -82,11 +84,11 @@ export const ProgressLine = ({
             fill={`url(#${id})`}
             rx={finalHeight / 2}
             ry={finalHeight / 2}
-            initial={{ 
-              width: "0%"
+            initial={{
+              width: "0%",
             }}
-            animate={{ 
-              width: `${validPercentage}%`
+            animate={{
+              width: `${validPercentage}%`,
             }}
             transition={{ duration: 1, ease: "easeInOut" }}
           />
@@ -104,9 +106,8 @@ export const ProgressLine = ({
           <span
             className={cn(
               "text-sm font-bold",
-              validPercentage < 50
-                ? "text-blue-600"
-                : "text-violet-700",
+              validPercentage < 50 ? "text-blue-600" : "text-violet-700",
+              validPercentage === 0 && "text-destructive",
             )}
           >
             {type === "days"
