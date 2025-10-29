@@ -1403,6 +1403,8 @@
     "buy": "خـریـد",
     "remaining_days": "باقی مانده",
     "day": "روز",
+    "reserve_subscription": "رزرو اشتراک",
+    "buy_subscription": "خرید اشتراک",
 
     "subscriptionStatus": "در اینجا لیست اشتراک‌های فعال و رزرو شده خود را مشاهده می‌کنید.",
     "selectPlan": "پلن خود را انتخاب کنید",
@@ -1414,7 +1416,6 @@
     "pending": "در انتظار",
     "cancelled": "لغو شده",
     "daysRemaining": "روز باقی مانده",
-    "reserve": "رزرو اشتراک",
     "lastDay": "روز آخر!",
 
     "Verify": {

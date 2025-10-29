@@ -1,6 +1,5 @@
 import Script from "next/script";
 import { GoftinoSnippet } from "../Global/GoftinoSnippet";
-import { Toaster } from "../ui";
 
 interface SiteProviderProps {
   children: React.ReactNode;
@@ -35,14 +34,6 @@ export function SiteProvider({ children }: SiteProviderProps) {
       )}
 
       {children}
-
-      <Toaster
-        richColors
-        theme="light"
-        toastOptions={{
-          className: "font-Yekan text-[13px]",
-        }}
-      />
 
       {shouldLoadGTM && (
         <noscript>

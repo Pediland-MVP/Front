@@ -4,7 +4,12 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import { AuthProvider, SiteProvider, ZodErrorsMapProvider } from "@components";
+import {
+  AuthProvider,
+  SiteProvider,
+  Toaster,
+  ZodErrorsMapProvider,
+} from "@components";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -37,6 +42,13 @@ export default async function ConsoleLayout({
                     {children}
                   </main>
                 </SiteProvider>
+                <Toaster
+                  richColors
+                  theme="light"
+                  toastOptions={{
+                    className: "font-Yekan text-[13px]",
+                  }}
+                />
               </ZodErrorsMapProvider>
             </NextIntlClientProvider>
           </AuthProvider>

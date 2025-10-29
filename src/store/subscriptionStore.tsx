@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { AxiosError } from "axios";
 import useUser from "@/hooks/useUser";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -12,6 +12,8 @@ import { useSearchParams } from "next/navigation";
 // Types
 import { PlanNamespace } from "@/types/plans/plan.namespace";
 import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspace";
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
+import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -98,6 +100,12 @@ export function useSubscriptionData() {
       },
     );
 
+  const allowedSubscriptions = subscriptionsData?.items.filter(
+    (sub) =>
+      sub.status === SubscriptionStatusEnum.ACTIVE ||
+      sub.status === SubscriptionStatusEnum.RESERVED,
+  );
+
   const planApiUrl = `${API_URL}/plans${
     discountCode ? `?discountCode=${discountCode}` : ""
   }`;
@@ -109,9 +117,13 @@ export function useSubscriptionData() {
     errorRetryCount: 0,
   });
 
+  useEffect(() => {
+    mutate(mutateIncludeStringKey("/instagram"));
+  }, [plansData]);
+
   // Update store when data changes
   useEffect(() => {
-    if (subscriptionsData?.items) setSubscriptions(subscriptionsData.items);
+    if (allowedSubscriptions) setSubscriptions(allowedSubscriptions);
 
     if (plansData?.data?.plans) {
       setPlans(plansData.data.plans);
@@ -124,7 +136,7 @@ export function useSubscriptionData() {
     if (initialized) return;
     if (isPlansLoading || isSubscriptionsLoading) return;
 
-    if (!subscriptionsData?.items?.length) {
+    if (!allowedSubscriptions?.length) {
       setActive({
         choosePlan: true,
         subscriptionInfo: false,
@@ -144,19 +156,6 @@ export function useSubscriptionData() {
 
     setInitialized(true);
   }, [subscriptionsData, initialized, isPlansLoading, isSubscriptionsLoading]);
-
-  // Handle URL param ?active=choosePlan
-  useEffect(() => {
-    if (isPlansLoading && isSubscriptionsLoading) return;
-
-    if (searchParams.get("active") === "choosePlan") {
-      setActive({
-        subscriptionInfo: false,
-        choosePlan: true,
-      });
-      setInitialized(true);
-    }
-  }, [searchParams, isPlansLoading, isSubscriptionsLoading]);
 
   // Loading state
   useEffect(() => {

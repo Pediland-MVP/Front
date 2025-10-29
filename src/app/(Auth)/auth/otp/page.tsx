@@ -158,14 +158,15 @@ export default function OtpPage() {
                       {...field}
                       pattern={REGEXP_ONLY_DIGITS}
                       onComplete={otpCompleted}
+                      onInput={onInputP2EHandler}
                       autoFocus
                     >
                       <InputOTPGroup>
-                        <InputOTPSlot index={0} onInput={onInputP2EHandler} />
-                        <InputOTPSlot index={1} onInput={onInputP2EHandler} />
-                        <InputOTPSlot index={2} onInput={onInputP2EHandler} />
-                        <InputOTPSlot index={3} onInput={onInputP2EHandler} />
-                        <InputOTPSlot index={4} onInput={onInputP2EHandler} />
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>

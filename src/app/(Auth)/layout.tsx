@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 
-import { AuthProvider, SiteProvider } from "@components";
+import { AuthProvider, SiteProvider, Toaster } from "@components";
 
 export async function generateMetadata() {
   const cookieStore = cookies();
@@ -45,6 +45,15 @@ export default async function AuthLayout({
                   </main>
                 </div>
               </SiteProvider>
+
+              <Toaster
+                richColors
+                position="top-center"
+                theme="light"
+                toastOptions={{
+                  className: "font-Yekan text-[13px]",
+                }}
+              />
             </NextIntlClientProvider>
           </AuthProvider>
         </SWRProvider>

@@ -1,33 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import useUser from "@/hooks/useUser";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import {
+  Button,
+  ButtonLoading,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { AlertCircle } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+} from "@components";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export const InstagramInvalidDialog = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const t = useTranslations("instagramTokenError");
+
   const [showPopup, setShowPopup] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
   const [isNavigationLoading, setIsNavigationLoading] = useState(false);
-  const t = useTranslations("instagramTokenError");
-  const pathname = usePathname();
-
-  const router = useRouter();
 
   const { user } = useUser();
 
@@ -67,7 +67,11 @@ export const InstagramInvalidDialog = () => {
 
   return (
     <Dialog open={showPopup} onOpenChange={setShowPopup}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="sm:max-w-md"
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-2">
             <WarningCircleIcon weight="duotone" size={22} />

@@ -14,10 +14,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { isOnboarding, hasInstagram, isLoading: isUserLoading } = useUser();
+  const {
+    error,
+    isOnboarding,
+    hasInstagram,
+    isLoading: isUserLoading,
+    user,
+  } = useUser();
+
+  console.log("Poshtesh............", error);
 
   useEffect(() => {
     if (isUserLoading) return;
+
+    if (error) {
+      if (error.response?.status >= 500) {
+        console.log("Error Server:", error);
+        router.push("/server-down?isUserOnline");
+        return;
+      }
+
+      if (error.code === "ERR_NETWORK") {
+        console.log("Error Network:", error);
+        router.push("/network-down");
+        return;
+      }
+    }
 
     let redirect: string | null = null;
 

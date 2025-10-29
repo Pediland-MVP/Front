@@ -7,7 +7,7 @@ import { CardSimple, LoaderPulse, LoaderSpin } from "../ui-custom";
 import { Button, CardContent } from "../ui";
 import { ProgressRadial } from "../Console";
 import { useCallback } from "react";
-import { Badge, ClockIcon } from "lucide-react";
+import { Badge, ClockIcon, ShoppingCartIcon } from "lucide-react";
 import { toJalaliDate } from "@/utils/jalali";
 import { formatNumber } from "@/utils/formatNumber";
 import {
@@ -166,14 +166,28 @@ export const SubscriptionsDetails = () => {
         </div>
       )}
 
-      <Button
-        variant={"outline"}
-        onClick={() => setActive({ subscriptionInfo: false, choosePlan: true })}
-        className="w-full md:w-auto"
-      >
-        <ClockIcon />
-        {t("reserve")}
-      </Button>
+      {activeSubscription ? (
+        <Button
+          variant={"outline"}
+          onClick={() =>
+            setActive({ subscriptionInfo: false, choosePlan: true })
+          }
+          className="w-full md:w-auto"
+        >
+          <ClockIcon />
+          {t("reserve_subscription")}
+        </Button>
+      ) : (
+        <Button
+          onClick={() =>
+            setActive({ subscriptionInfo: false, choosePlan: true })
+          }
+          className="w-full md:w-auto"
+        >
+          <ShoppingCartIcon />
+          {t("buy_subscription")}
+        </Button>
+      )}
     </div>
   );
 };

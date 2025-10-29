@@ -10,6 +10,7 @@ import {
   InstagramInvalidDialog,
   NavBottom,
   SiteProvider,
+  Toaster,
   ZodErrorsMapProvider,
 } from "@components";
 
@@ -49,6 +50,13 @@ export default async function ConsoleLayout({
                     <NavBottom />
                   </ConsoleProvider>
                 </SiteProvider>
+                <Toaster
+                  richColors
+                  theme="light"
+                  toastOptions={{
+                    className: "font-Yekan text-[13px]",
+                  }}
+                />
               </ZodErrorsMapProvider>
             </NextIntlClientProvider>
           </AuthProvider>
