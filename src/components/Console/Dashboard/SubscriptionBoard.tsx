@@ -69,7 +69,7 @@ export const SubscriptionBoard = () => {
     ? Math.max(0, getRemainingDays(currentSubscription.expire))
     : 0;
 
-  if (isSubscriptionsLoading || activeSubscription.type === "credit")
+  if (isSubscriptionsLoading || activeSubscription?.type === "credit")
     return null;
 
   return (
