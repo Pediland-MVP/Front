@@ -96,110 +96,118 @@ export const UserDetailsCard = () => {
   return (
     <CardSimple className="border-dashed border-blue-300/70 bg-gradient-to-t from-white/80 to-white/50">
       <CardContent className="flex flex-col gap-1.5 p-3">
-        {pathname !== "/" && !isSubscriptionsLoading && (
-          <div className="text-secondary flex flex-col pb-1 text-[13px]">
-            <div className="mb-1 flex items-center justify-between">
-              <div
-                className={cn(
-                  "flex items-center gap-1 text-green-600",
-                  hasActiveSubscription ? "text-green-600" : "text-destructive",
-                )}
-              >
-                <CircleIcon size={10} weight="fill" className="animate-pulse" />
+        {pathname !== "/" &&
+          !isSubscriptionsLoading &&
+          activeSubscription?.type !== "credit" && (
+            <div className="text-secondary flex flex-col pb-1 text-[13px]">
+              <div className="mb-1 flex items-center justify-between">
+                <div
+                  className={cn(
+                    "flex items-center gap-1 text-green-600",
+                    hasActiveSubscription
+                      ? "text-green-600"
+                      : "text-destructive",
+                  )}
+                >
+                  <CircleIcon
+                    size={10}
+                    weight="fill"
+                    className="animate-pulse"
+                  />
 
-                {hasActiveSubscription ? (
-                  <span>اشتراک فعال است</span>
-                ) : (
-                  <span>اشتراک فعال ندارید</span>
-                )}
+                  {hasActiveSubscription ? (
+                    <span>اشتراک فعال است</span>
+                  ) : (
+                    <span>اشتراک فعال ندارید</span>
+                  )}
+                </div>
+
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto gap-0 !px-0"
+                  onClick={() => router.push("/settings/subscription")}
+                >
+                  {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"}
+                </Button>
               </div>
 
-              <Button
-                variant="link"
-                size="sm"
-                className="h-auto gap-0 !px-0"
-                onClick={() => router.push("/settings/subscription")}
-              >
-                {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"}
-              </Button>
-            </div>
-
-            <div className="mb-1 flex items-center gap-1">
-              <span className="text-muted-foreground">نوع اشتراک:</span>
-              <span
-                className={cn(
-                  "flex-1",
-                  !hasActiveSubscription && "text-muted-foreground",
-                )}
-              >
-                {isSubscriptionsLoading ? (
-                  <LoaderPulse />
-                ) : currentSubscription?.type === "credit" ? (
-                  "رایـگـان"
-                ) : (
-                  currentSubscription?.planDuration?.name
-                )}
-              </span>
-              <span
-                className={cn(
-                  "text-primary",
-                  !hasActiveSubscription && "text-muted-foreground",
-                )}
-              >
-                {currentSubscription?.type === "credit"
-                  ? `${currentSubscription?.credit} پیام`
-                  : `${remainingDays} روز`}{" "}
-                مانده
-              </span>
-            </div>
-
-            <div className="mb-0.5 flex items-center gap-1">
-              <span className="text-muted-foreground">همراه:</span>
-              <span className="tracking-wider">{userData?.mobile}</span>
-            </div>
-
-            <div className="mb-2 flex items-center gap-1">
-              <div className="flex items-center gap-1">
-                {instagramValid ? (
-                  <PlugsConnectedIcon
-                    size={16}
-                    weight="duotone"
-                    className="text-green-600"
-                  />
-                ) : (
-                  <PlugsIcon
-                    size={16}
-                    weight="duotone"
-                    className="text-destructive"
-                  />
-                )}
+              <div className="mb-1 flex items-center gap-1">
+                <span className="text-muted-foreground">نوع اشتراک:</span>
                 <span
                   className={cn(
-                    "text-muted-foreground",
+                    "flex-1",
+                    !hasActiveSubscription && "text-muted-foreground",
+                  )}
+                >
+                  {isSubscriptionsLoading ? (
+                    <LoaderPulse />
+                  ) : currentSubscription?.type === "credit" ? (
+                    "رایـگـان"
+                  ) : (
+                    currentSubscription?.planDuration?.name
+                  )}
+                </span>
+                <span
+                  className={cn(
+                    "text-primary",
+                    !hasActiveSubscription && "text-muted-foreground",
+                  )}
+                >
+                  {currentSubscription?.type === "credit"
+                    ? `${currentSubscription?.credit} پیام`
+                    : `${remainingDays} روز`}{" "}
+                  مانده
+                </span>
+              </div>
+
+              <div className="mb-0.5 flex items-center gap-1">
+                <span className="text-muted-foreground">همراه:</span>
+                <span className="tracking-wider">{userData?.mobile}</span>
+              </div>
+
+              <div className="mb-2 flex items-center gap-1">
+                <div className="flex items-center gap-1">
+                  {instagramValid ? (
+                    <PlugsConnectedIcon
+                      size={16}
+                      weight="duotone"
+                      className="text-green-600"
+                    />
+                  ) : (
+                    <PlugsIcon
+                      size={16}
+                      weight="duotone"
+                      className="text-destructive"
+                    />
+                  )}
+                  <span
+                    className={cn(
+                      "text-muted-foreground",
+                      !instagramValid && "text-destructive",
+                    )}
+                  >
+                    اینستاگرام:
+                  </span>
+                </div>
+                <span
+                  className={cn(
+                    "line-clamp-1 font-semibold tracking-wider",
                     !instagramValid && "text-destructive",
                   )}
                 >
-                  اینستاگرام:
+                  {userData?.instagrams?.[0]?.username}
                 </span>
               </div>
-              <span
-                className={cn(
-                  "line-clamp-1 font-semibold tracking-wider",
-                  !instagramValid && "text-destructive",
-                )}
-              >
-                {userData?.instagrams?.[0]?.username}
-              </span>
-            </div>
 
-            <ProgressLine
-              percentage={isSubscriptionsLoading ? 0 : remainingDays}
-              height={5}
-              type="days"
-              totalDays={currentSubscription?.planDuration?.durationDays}
-            />
-          </div>
-        )}
+              <ProgressLine
+                percentage={isSubscriptionsLoading ? 0 : remainingDays}
+                height={5}
+                type="days"
+                totalDays={currentSubscription?.planDuration?.durationDays}
+              />
+            </div>
+          )}
 
         <div className="text-secondary flex items-center">
           <div className="flex flex-1 items-center gap-1 text-[13px]">

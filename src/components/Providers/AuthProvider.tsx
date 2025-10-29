@@ -22,21 +22,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
   } = useUser();
 
-  console.log("Poshtesh............", error);
-
   useEffect(() => {
     if (isUserLoading) return;
 
     if (error) {
       if (error.response?.status >= 500) {
-        console.log("Error Server:", error);
-        router.push("/server-down?isUserOnline");
+        console.error("Error Server:", error);
+        router.push("/not-found?server");
         return;
       }
 
       if (error.code === "ERR_NETWORK") {
-        console.log("Error Network:", error);
-        router.push("/network-down");
+        console.error("Error Network:", error);
+        router.push("/not-found?network");
         return;
       }
     }

@@ -12,9 +12,17 @@ import {
   PasswordIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 export const SettingsOptions = () => {
   const t = useTranslations("Settings.Navigation");
+
+  const { subscriptions } = useSubscriptionStore();
+
+  const activeSubscription = subscriptions?.find(
+    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
+  );
 
   const items = [
     {
@@ -22,11 +30,15 @@ export const SettingsOptions = () => {
       url: "/settings/instagram",
       icon: InstagramLogoIcon,
     },
-    {
-      title: t("upgrade_plan"),
-      url: "/settings/subscription",
-      icon: CrownSimpleIcon,
-    },
+    ...(activeSubscription?.type !== "credit"
+      ? [
+          {
+            title: t("upgrade_plan"),
+            url: "/settings/subscription",
+            icon: CrownSimpleIcon,
+          },
+        ]
+      : []),
     {
       title: t("bank_accounts"),
       url: "/settings/card",

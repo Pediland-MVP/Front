@@ -1,12 +1,14 @@
 "use client";
 
 import { useLogout } from "@/hooks/swr/api-client";
+import useConnectInstagram from "@/hooks/useConnectInstagram";
+import useUser from "@/hooks/useUser";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { HowToConnectDialog } from "@/components/Connect/HowToConnectDialog";
 import {
   Button,
   HelpMeDialog,
@@ -14,26 +16,23 @@ import {
   LogoText,
   Spinner,
 } from "@components";
+import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
 import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
 import { SquarePlayIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import useConnectInstagram from "@/hooks/useConnectInstagram";
-import useUser from "@/hooks/useUser";
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function ConnectPage() {
   const router = useRouter();
   const t = useTranslations("Connect");
+
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
-  const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
-
-  const logout = useLogout();
 
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
-
+  const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
+  const logout = useLogout();
   const { user, hasInstagram } = useUser();
 
   useEffect(() => {
@@ -105,16 +104,18 @@ export default function ConnectPage() {
               <div className="flex flex-col items-center text-[15px]">
                 <div className="text-muted-foreground">
                   همراه:{" "}
-                  <span className="font-semibold text-secondary">
+                  <span className="text-secondary font-semibold">
                     {user?.mobile}
                   </span>
                 </div>
-                <div className="text-muted-foreground">
-                  اینستاگرام:{" "}
-                  <span className="font-semibold text-secondary">
-                    {user?.submittedInstagramUsername}
-                  </span>
-                </div>
+                {user?.submittedInstagramUsername && (
+                  <div className="text-muted-foreground">
+                    اینستاگرام:{" "}
+                    <span className="text-secondary font-semibold">
+                      {user?.submittedInstagramUsername}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             <Button
