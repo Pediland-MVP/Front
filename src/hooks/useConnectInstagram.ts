@@ -9,6 +9,7 @@ import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 export default function useConnectInstagram() {
   const t = useTranslations("Settings.Accounts");
+  const t_ec = useTranslations("ErrorCodes");
   const router = useRouter();
   const [isCallbackIGLoading, setIsCallbackIGLoading] = useState(false);
 
@@ -29,8 +30,8 @@ export default function useConnectInstagram() {
         await mutate(mutateIncludeStringKey("me"));
         toast.success(t("instagramConnected"));
       })
-      .catch((e) => {
-        toast.error(t("instagramConnectionError"));
+      .catch((error) => {
+        toast.error(t_ec(error.response?.data?.code));
       })
       .finally(() => {
         setIsCallbackIGLoading(false);
