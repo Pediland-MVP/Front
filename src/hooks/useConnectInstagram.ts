@@ -9,7 +9,7 @@ import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 
 export default function useConnectInstagram() {
   const t = useTranslations("Settings.Accounts");
-  const t_ec = useTranslations("ErrorCodes");
+  const t_ec = useTranslations("ERROR_CODES");
   const router = useRouter();
   const [isCallbackIGLoading, setIsCallbackIGLoading] = useState(false);
 
