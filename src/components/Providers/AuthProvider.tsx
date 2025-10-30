@@ -28,13 +28,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) {
       if (error.response?.status >= 500) {
         console.error("Error Server:", error);
-        router.push("/not-found?server");
+        router.push("/not-found?status=server");
         return;
       }
 
       if (error.code === "ERR_NETWORK") {
         console.error("Error Network:", error);
-        router.push("/not-found?network");
+        router.push("/not-found?status=network");
         return;
       }
     }
