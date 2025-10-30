@@ -50,7 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (isOnboardingPage && !isOnboarding) redirect = "/";
       else setIsAllowed(true);
     } else if (isConnectPage) {
-      if (isInstagramPage && searchParams.get("code")) {
+      if (searchParams.get("code")) {
         setIsAllowed(true);
       } else if (hasInstagram) redirect = "/";
       else if (isOnboarding) redirect = "/auth/onboarding";
