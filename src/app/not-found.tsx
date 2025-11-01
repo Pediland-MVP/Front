@@ -4,10 +4,11 @@ import "@/styles/globals.css";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { Button } from "@/components";
+import { Button, LoaderSpin } from "@/components";
 import { CloudSlashIcon, CloudXIcon, CoffeeIcon } from "@phosphor-icons/react";
+import { Suspense } from "react";
 
-export default function NotFound() {
+function NotFoundContent() {
   const params = useSearchParams();
   const status = params.get("status");
 
@@ -73,5 +74,13 @@ export default function NotFound() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function NotFound() {
+  return (
+    <Suspense fallback={<LoaderSpin />}>
+      <NotFoundContent />
+    </Suspense>
   );
 }
