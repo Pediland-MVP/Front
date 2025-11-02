@@ -21,6 +21,7 @@ import {
 } from "@components";
 import { PasswordIcon } from "@phosphor-icons/react";
 import { MoveLeftIcon } from "lucide-react";
+import { mutate } from "swr";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -99,7 +100,7 @@ export default function PasswordPage() {
         withCredentials: true,
       });
       setAccessToken(res?.data?.data?.accessToken);
-
+      await mutate(() => true);
       router.push("/");
     } catch (error) {
       const message = error.response?.data?.message;
