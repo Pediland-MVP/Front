@@ -138,7 +138,18 @@ export default function AuthPage() {
           </form>
         </Form>
         <p className="text-muted-foreground text-center text-[13px]">
-          {t("terms_and_conditions_message")}
+          {t.rich("terms_and_conditions_message", {
+            a: (chunks) => (
+              <a
+                href="https://befroosh.app/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-secondary"
+              >
+                {chunks}
+              </a>
+            ),
+          })}
         </p>
       </div>
 

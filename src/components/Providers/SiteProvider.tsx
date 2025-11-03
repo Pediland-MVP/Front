@@ -1,5 +1,8 @@
+"use client";
+
 import Script from "next/script";
 import { GoftinoSnippet } from "../Global/GoftinoSnippet";
+import { useEffect, useState } from "react";
 
 interface SiteProviderProps {
   children: React.ReactNode;
@@ -14,15 +17,20 @@ const BLOCKED_DOMAINS = [
 ];
 
 export function SiteProvider({ children }: SiteProviderProps) {
-  const host =
-    typeof window !== "undefined" ? window.location.hostname : undefined;
-  const shouldLoadGTM = host ? !BLOCKED_DOMAINS.includes(host) : true;
+  const [shouldLoadGTM, setShouldLoadGTM] = useState(false);
+
+  useEffect(() => {
+    const host = window.location.hostname;
+    if (!BLOCKED_DOMAINS.includes(host)) {
+      setShouldLoadGTM(true);
+    }
+  }, []);
 
   return (
     <>
       {/* GTM - Head */}
       {shouldLoadGTM && (
-        <Script id="gtm-head" strategy="beforeInteractive">
+        <Script id="gtm-head" strategy="afterInteractive">
           {`
           (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
