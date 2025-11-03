@@ -17,6 +17,7 @@ import { useState } from "react";
 import useOrder from "../hooks/useOrder";
 import useUpdateContact from "../hooks/useUpdateContact";
 import { useCheckout } from "../useCheckout";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
