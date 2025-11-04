@@ -29,8 +29,12 @@ export const SubscriptionBoard = () => {
   const { user } = useUser();
   const [isMobile, setIsMobile] = useState(false);
 
-  const { subscriptions, isLoading: isSubscriptionsLoading } =
-    useSubscriptionStore();
+  const {
+    subscriptions,
+    isLoading: isSubscriptionsLoading,
+    totalRemainingDays,
+    totalPurchasedDays,
+  } = useSubscriptionStore();
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -58,17 +62,6 @@ export const SubscriptionBoard = () => {
       ? true
       : false;
 
-  const getRemainingDays = useCallback((expireDate: string) => {
-    const now = new Date();
-    const expire = new Date(expireDate);
-    const diffTime = expire.getTime() - now.getTime();
-    return Math.ceil(diffTime / (1000 * 3600 * 24));
-  }, []);
-
-  const remainingDays = currentSubscription
-    ? Math.max(0, getRemainingDays(currentSubscription.expire))
-    : 0;
-
   if (isSubscriptionsLoading || activeSubscription?.type === "credit")
     return null;
 
@@ -84,61 +77,59 @@ export const SubscriptionBoard = () => {
                     ? 0
                     : currentSubscription?.type === "credit"
                       ? currentSubscription?.credit
-                      : remainingDays
+                      : totalRemainingDays
                 }
-                size={isMobile ? 85 : 100}
-                strokeWidth={isMobile ? 8 : 10}
+                size={isMobile ? 85 : 95}
+                strokeWidth={isMobile ? 8 : 9}
                 type={
                   currentSubscription?.type === "credit" ? "credit" : "days"
                 }
-                totalDays={currentSubscription?.planDuration?.durationDays}
+                totalDays={totalPurchasedDays}
               />
             </div>
-            <div className="text-secondary flex-1 space-y-1 text-sm">
-              <div className="font-semibold">
+            <div className="text-secondary flex-1 text-sm">
+              <div className="mb-1.5 font-semibold">
                 {user?.firstname} {user?.lastname}، خوش آمدید!
               </div>
-              <div className="flex items-center gap-1">
+              <div className="mb-1 flex items-center gap-1">
                 <span className="text-muted-foreground">همراه:</span>
                 <span className="font-semibold tracking-wider">
                   {user?.mobile}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="flex items-center gap-1">
-                  {instagramValid ? (
-                    <PlugsConnectedIcon
-                      size={20}
-                      weight="duotone"
-                      className="text-green-600"
-                    />
-                  ) : (
-                    <PlugsIcon
-                      size={20}
-                      weight="duotone"
-                      className="text-destructive"
-                    />
-                  )}
-                  <span
-                    className={cn(
-                      "text-muted-foreground",
-                      !instagramValid && "text-destructive",
-                    )}
-                  >
-                    اینستاگرام:
-                  </span>
-                </div>
                 <span
                   className={cn(
-                    "line-clamp-1 font-semibold tracking-wider",
+                    "text-muted-foreground",
+                    !instagramValid && "text-destructive",
+                  )}
+                >
+                  اینستاگرام:
+                </span>
+                <span
+                  className={cn(
+                    "line-clamp-1 flex-1 font-semibold tracking-wider md:ml-1 md:flex-initial",
                     !instagramValid && "text-destructive",
                   )}
                 >
                   {user?.instagrams?.[0]?.username}
                 </span>
+                {instagramValid ? (
+                  <PlugsConnectedIcon
+                    size={22}
+                    weight="duotone"
+                    className="text-green-600"
+                  />
+                ) : (
+                  <PlugsIcon
+                    size={22}
+                    weight="duotone"
+                    className="text-destructive"
+                  />
+                )}
               </div>
 
-              <div className="flex items-center gap-1">
+              {/* <div className="flex items-center gap-1">
                 <span className="text-muted-foreground">نوع اشتراک:</span>
                 <span
                   className={cn(
@@ -178,7 +169,7 @@ export const SubscriptionBoard = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div>

@@ -2,10 +2,11 @@
 
 import { useLogout } from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
+import { cn } from "@/lib/utils";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useMemo, useState } from "react";
 
 // TODO: Refactor Types & Schemas
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
@@ -22,13 +23,11 @@ import {
   ProgressLine,
 } from "@components";
 import {
-  CircleIcon,
   PlugsConnectedIcon,
   PlugsIcon,
   SignOutIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { cn } from "@/lib/utils";
 
 export const UserDetailsCard = () => {
   const router = useRouter();
@@ -43,22 +42,27 @@ export const UserDetailsCard = () => {
     isLoading: userIsLoading,
   } = useUser();
   const {
-    active,
-    setActive,
-    plans,
     subscriptions,
     isLoading: isSubscriptionsLoading,
-    discountCode,
-    setDiscountCode,
+    totalRemainingDays,
+    totalPurchasedDays,
   } = useSubscriptionStore();
 
-  const activeSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-  );
+  const activeSubscription = useMemo(() => {
+    if (!subscriptions?.length) return undefined;
 
-  const expiredSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.EXPIRED,
-  );
+    return subscriptions?.find(
+      (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
+    );
+  }, [subscriptions]);
+
+  const expiredSubscription = useMemo(() => {
+    if (!subscriptions?.length) return undefined;
+
+    return subscriptions?.find(
+      (sub) => sub.status === SubscriptionStatusEnum.EXPIRED,
+    );
+  }, [subscriptions]);
 
   const currentSubscription = activeSubscription || expiredSubscription;
   const instagramValid = userData?.instagrams?.[0]?.isIgTokenValid;
@@ -67,23 +71,16 @@ export const UserDetailsCard = () => {
       ? true
       : false;
 
-  const getRemainingDays = useCallback((expireDate: string) => {
-    const now = new Date();
-    const expire = new Date(expireDate);
-    const diffTime = expire.getTime() - now.getTime();
-    return Math.ceil(diffTime / (1000 * 3600 * 24));
-  }, []);
-
-  const remainingDays = currentSubscription
-    ? Math.max(0, getRemainingDays(currentSubscription.expire))
-    : 0;
-
   const logoutHandler = async () => {
     setIsLogoutLoading(true);
 
     try {
       const success = await logout();
       if (success) {
+        const subStore = useSubscriptionStore.getState();
+        subStore.setSubscriptions([]);
+        subStore.setPlans([]);
+        subStore.setPlansData(undefined);
         router.push(process.env.NEXT_PUBLIC_LANDING_URL || "/auth");
       }
     } catch (error) {
@@ -93,6 +90,10 @@ export const UserDetailsCard = () => {
     }
   };
 
+  const hasHydrated = useSubscriptionStore((state) => state._hasHydrated);
+
+  if (!hasHydrated) return <LoaderPulse />;
+
   return (
     <CardSimple className="border-dashed border-blue-300/70 bg-gradient-to-t from-white/80 to-white/50">
       <CardContent className="flex flex-col gap-1.5 p-3">
@@ -100,7 +101,7 @@ export const UserDetailsCard = () => {
           !isSubscriptionsLoading &&
           activeSubscription?.type !== "credit" && (
             <div className="text-secondary flex flex-col pb-1 text-[13px]">
-              <div className="mb-1 flex items-center justify-between">
+              {/* <div className="mb-1 flex items-center justify-between">
                 <div
                   className={cn(
                     "flex items-center gap-1 text-green-600",
@@ -122,17 +123,6 @@ export const UserDetailsCard = () => {
                   )}
                 </div>
 
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="h-auto gap-0 !px-0"
-                  onClick={() => router.push("/settings/subscription")}
-                >
-                  {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"}
-                </Button>
-              </div>
-
-              <div className="mb-1 flex items-center gap-1">
                 <span className="text-muted-foreground">نوع اشتراک:</span>
                 <span
                   className={cn(
@@ -148,39 +138,39 @@ export const UserDetailsCard = () => {
                     currentSubscription?.planDuration?.name
                   )}
                 </span>
-                <span
-                  className={cn(
-                    "text-primary",
-                    !hasActiveSubscription && "text-muted-foreground",
-                  )}
+              </div> */}
+
+              <div className="mb-1 flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <span className="text-muted-foreground">مانده اعتبار:</span>
+                  <span
+                    className={cn(
+                      "text-primary",
+                      !hasActiveSubscription && "text-muted-foreground",
+                    )}
+                  >
+                    {currentSubscription?.type === "credit"
+                      ? `${currentSubscription?.credit} پیام`
+                      : `${totalRemainingDays} روز`}
+                  </span>
+                </div>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto gap-0 !px-0"
+                  onClick={() => router.push("/settings/subscription")}
                 >
-                  {currentSubscription?.type === "credit"
-                    ? `${currentSubscription?.credit} پیام`
-                    : `${remainingDays} روز`}{" "}
-                  مانده
-                </span>
+                  {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"}
+                </Button>
               </div>
 
-              <div className="mb-0.5 flex items-center gap-1">
+              <div className="mb-1 flex items-center gap-1">
                 <span className="text-muted-foreground">همراه:</span>
                 <span className="tracking-wider">{userData?.mobile}</span>
               </div>
 
               <div className="mb-2 flex items-center gap-1">
                 <div className="flex items-center gap-1">
-                  {instagramValid ? (
-                    <PlugsConnectedIcon
-                      size={16}
-                      weight="duotone"
-                      className="text-green-600"
-                    />
-                  ) : (
-                    <PlugsIcon
-                      size={16}
-                      weight="duotone"
-                      className="text-destructive"
-                    />
-                  )}
                   <span
                     className={cn(
                       "text-muted-foreground",
@@ -192,19 +182,32 @@ export const UserDetailsCard = () => {
                 </div>
                 <span
                   className={cn(
-                    "line-clamp-1 font-semibold tracking-wider",
+                    "line-clamp-1 flex-1 font-semibold tracking-wider",
                     !instagramValid && "text-destructive",
                   )}
                 >
                   {userData?.instagrams?.[0]?.username}
                 </span>
+                {instagramValid ? (
+                  <PlugsConnectedIcon
+                    size={20}
+                    weight="duotone"
+                    className="text-green-600"
+                  />
+                ) : (
+                  <PlugsIcon
+                    size={20}
+                    weight="duotone"
+                    className="text-destructive"
+                  />
+                )}
               </div>
 
               <ProgressLine
-                percentage={isSubscriptionsLoading ? 0 : remainingDays}
+                percentage={isSubscriptionsLoading ? 0 : totalRemainingDays}
                 height={5}
                 type="days"
-                totalDays={currentSubscription?.planDuration?.durationDays}
+                totalDays={totalPurchasedDays}
               />
             </div>
           )}

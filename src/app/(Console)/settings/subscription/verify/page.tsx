@@ -1,18 +1,24 @@
 "use client";
-import useSWRImmutable from "swr/immutable";
-import { useSearchParams } from "next/navigation";
+
+import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { useTranslations } from "next-intl";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { ExceptionMessage } from "@/types/exceptionMessage";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { mutate } from "swr";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { useRouter } from "next/navigation";
+import useSWRImmutable from "swr/immutable";
+
+import { ExceptionMessage } from "@/types/exceptionMessage";
+
+import { LoaderSpin } from "@components";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function VerifyPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("Subscription.Verify");
+  const t_ec = useTranslations("ERROR_CODES");
+
   const {
     data: refId,
     isLoading,
@@ -22,19 +28,19 @@ export default function VerifyPage() {
       ? `${API_URL}/payments/subscription/zarinpal/verify?Authority=${searchParams.get("Authority")}&Status=${searchParams.get("Status")}`
       : null,
   );
-  const t = useTranslations("Subscription.Verify");
-  const t_ec = useTranslations("ERROR_CODES");
 
   useEffect(() => {
     mutate(mutateIncludeStringKey("plans"));
   }, []);
 
-  const router = useRouter();
-
   useEffect(() => {
-    if (refId) {
-      router.push(`/settings/instagram?isAfterPurchasingPlan`);
-    }
+    const run = async () => {
+      if (refId) {
+        await mutate(mutateIncludeStringKey("subscription"));
+        router.push(`/settings/instagram?isAfterPurchasingPlan`);
+      }
+    };
+    run();
   }, [refId, router]);
 
   return (

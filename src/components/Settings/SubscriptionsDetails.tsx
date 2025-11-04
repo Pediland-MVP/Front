@@ -2,19 +2,19 @@
 
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
-import { useTranslations } from "next-intl";
-import { CardSimple, LoaderPulse, LoaderSpin } from "../ui-custom";
-import { Button, CardContent } from "../ui";
-import { ProgressRadial } from "../Console";
-import { useCallback } from "react";
-import { Badge, ClockIcon, ShoppingCartIcon } from "lucide-react";
-import { toJalaliDate } from "@/utils/jalali";
 import { formatNumber } from "@/utils/formatNumber";
+import { toJalaliDate } from "@/utils/jalali";
+import { useTranslations } from "next-intl";
+
 import {
-  CircleIcon,
-  ClockCountdownIcon,
-  PackageIcon,
-} from "@phosphor-icons/react/dist/ssr";
+  Button,
+  CardContent,
+  CardSimple,
+  LoaderSpin,
+  ProgressRadial,
+} from "@components";
+import { CircleIcon, ClockCountdownIcon } from "@phosphor-icons/react/dist/ssr";
+import { ClockIcon, ShoppingCartIcon } from "lucide-react";
 
 export const SubscriptionsDetails = () => {
   const t = useTranslations("Subscription");
@@ -22,11 +22,10 @@ export const SubscriptionsDetails = () => {
   const {
     active,
     setActive,
-    plans,
     subscriptions,
     isLoading: isSubscriptionsLoading,
-    discountCode,
-    setDiscountCode,
+    totalRemainingDays,
+    totalPurchasedDays,
   } = useSubscriptionStore();
 
   const activeSubscription = subscriptions?.find(
@@ -36,24 +35,6 @@ export const SubscriptionsDetails = () => {
   const reservedSubscriptions = subscriptions?.filter(
     (sub) => sub.status === SubscriptionStatusEnum.RESERVED,
   );
-
-  const getRemainingDays = useCallback((expireDate: string) => {
-    const now = new Date();
-    const expire = new Date(expireDate);
-    const diffTime = expire.getTime() - now.getTime();
-
-    return Math.ceil(diffTime / (1000 * 3600 * 24));
-  }, []);
-
-  const remainingDays = activeSubscription
-    ? getRemainingDays(activeSubscription.expire)
-    : 0;
-
-  const remainingPercentage = activeSubscription
-    ? (getRemainingDays(activeSubscription.expire) /
-        activeSubscription.planDuration.durationDays) *
-      100
-    : 0;
 
   const labelClass = "text-muted-foreground text-sm font-me";
 
@@ -110,12 +91,12 @@ export const SubscriptionsDetails = () => {
                     ? 0
                     : activeSubscription?.type === "credit"
                       ? activeSubscription?.credit
-                      : remainingDays
+                      : totalRemainingDays
                 }
                 size={100}
                 strokeWidth={10}
                 type={activeSubscription?.type === "credit" ? "credit" : "days"}
-                totalDays={activeSubscription.planDuration.durationDays}
+                totalDays={totalPurchasedDays}
               />
             </div>
           </CardContent>
@@ -138,7 +119,7 @@ export const SubscriptionsDetails = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-2">
             {reservedSubscriptions?.map((sub, index) => (
               <CardSimple
                 className="border-dashed border-blue-200/80 bg-blue-50/50"

@@ -66,10 +66,19 @@ export const ProgressRadial = ({
         transition={{ duration: 1, ease: "easeInOut" }}
       />
 
-      {/* متن درصد */}
       <motion.text
         x="50%"
-        y="50%"
+        y="39%"
+        textAnchor="middle"
+        dy=".3em"
+        fontSize="12"
+        className={"fill-[theme(colors.gray.400)]"}
+      >
+        اعـتـبـار
+      </motion.text>
+      <motion.text
+        x="50%"
+        y="57%"
         textAnchor="middle"
         dy=".3em"
         fontSize="14"
