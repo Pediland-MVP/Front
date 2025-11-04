@@ -21,10 +21,6 @@ export const ContactsList = ({ search }: { search: string }) => {
 
   // Table
   const [tableInstance, setTableInstance] = useState<Table<any> | null>(null);
-  const columns = useMemo(
-    () => ContactTableColumns(setOpen, setContactId),
-    [setOpen, setContactId],
-  );
 
   // Server-side pagination state (1-based page)
   const [page, setPage] = useState(1);
@@ -61,6 +57,11 @@ export const ContactsList = ({ search }: { search: string }) => {
   // Map Wire -> Domain (memoized)
   const rawItems = data?.items ?? [];
   const items = useMemo(() => rawItems.map(toContact), [rawItems]);
+
+  const columns = useMemo(
+    () => ContactTableColumns(setOpen, setContactId, items),
+    [items],
+  );
 
   // Safe meta (fallback while loading)
   const defaultMeta: PageMeta = {

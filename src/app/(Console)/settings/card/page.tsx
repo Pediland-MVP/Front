@@ -21,6 +21,7 @@ import {
   Input,
   LoaderSpin,
 } from "@components";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 export const bankDetailsSchema = z.object({
   bankName: z
@@ -151,7 +152,12 @@ export default function BankCardPage() {
                           <FormItem>
                             <FormLabel>{t("cardNumber.label")}</FormLabel>
                             <FormControl>
-                              <Input id="cardnumber" dir="ltr" {...field} />
+                              <Input
+                                id="cardnumber"
+                                dir="ltr"
+                                {...field}
+                                onInput={onInputP2EHandler}
+                              />
                             </FormControl>
                             {error && (
                               <ErrorMessage>
@@ -174,6 +180,7 @@ export default function BankCardPage() {
                                   {...field}
                                   className="pl-10 text-left"
                                   dir="ltr"
+                                  onInput={onInputP2EHandler}
                                 />
                                 <p
                                   className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"

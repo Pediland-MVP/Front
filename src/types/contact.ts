@@ -50,9 +50,33 @@ export interface Lead {
   id: string;
   instagramId: string;
   lastname: string | null;
+  leadInstagram: LeadInstagram;
   profilePic: string | null;
   updateDate: Date;
-  userId: string;
+}
+
+export interface LeadInstagram {
+  ASID: string;
+  PSID: string;
+  createDate: Date;
+  followerCount: number;
+  id: string;
+  isAdmin: boolean;
+  isBusinessFollowUser: boolean;
+  isUserFollowBusiness: boolean;
+  isVerifiedUser: boolean;
+  lastUpdate: Date;
+  leadId: string;
+  name: string;
+  profilePicture: ProfilePicture;
+  profilePictureId: number;
+  updatedDate: Date;
+  username: string;
+}
+
+export interface ProfilePicture {
+  id: number;
+  url: string;
 }
 
 export interface Contact {

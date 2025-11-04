@@ -76,7 +76,7 @@ export function ContactTableColumns(
   cols.push(
     {
       id: "profilePic",
-      accessorFn: (row) => row.lead?.profilePic ?? null,
+      accessorFn: (row) => row.lead?.leadInstagram?.profilePicture?.url ?? null,
       header: "تصویر",
       size: 10,
       enableSorting: false,
