@@ -4,11 +4,11 @@ import logger from "@/utils/logger";
 import { z } from "zod";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { orderFormSchema } from "../checkout.page";
+import { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
 import { zodResolver } from "@hookform/resolvers/zod";
 // UI
 import { Textarea } from "@/components/ui/textarea";
-import { Package } from "@phosphor-icons/react/dist/ssr";
+import { PackageIcon, TruckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input";
 import {
   FormControl,
@@ -99,23 +99,24 @@ export default function Address() {
   // }, [pendingOrder]);
 
   return (
-    <div className="_customer-address p-3">
+    <div className="_customer-address p-4">
       <h2 className="text-primary mb-2 flex items-center gap-2 border-b pb-2 text-lg font-semibold">
-        <Package size={28} weight="duotone" className="text-primary" />
-        {t("address")}
+        <TruckIcon size={28} weight="duotone" className="text-primary" />
+        اطلاعات ارسال
       </h2>
 
       <ShippingInfo
         shippingCost={pendingOrder?.orderProducts[0]?.shippingCost}
       />
+
       {/* <FormProvider {...form}>
         <form onSubmit={form.handleSubmit((data) => console.log(data))}> */}
-      <div className="grid gap-2">
+      <div className="grid gap-2 md:grid-cols-2">
         <FormField
           control={control}
           name="state"
           render={({ field, fieldState: { error } }) => (
-            <FormItem className="md:col-span-2">
+            <FormItem>
               <FormLabel>{t("state")}</FormLabel>
               <Select
                 onValueChange={(val) => val && field.onChange(val)}
@@ -148,7 +149,7 @@ export default function Address() {
           control={control}
           name="cityId"
           render={({ field, fieldState: { error } }) => (
-            <FormItem className="md:col-span-2">
+            <FormItem>
               <FormLabel>{t("city")}</FormLabel>
               <Select
                 onValueChange={(val) => val && field.onChange(val)}
@@ -239,6 +240,7 @@ export default function Address() {
               <FormControl>
                 <Input
                   id="postalcode"
+                  maxLength={10}
                   inputMode="numeric"
                   onInput={onInputP2EHandler}
                   {...register("postalcode", { required: true })}
@@ -254,13 +256,6 @@ export default function Address() {
       {/* </form>
       </FormProvider> */}
       <div className="mt-6 flex w-full items-center justify-center gap-x-2">
-        <Button
-          onClick={() => setStep(prevStep())}
-          className="w-4/12 bg-gray-500 hover:bg-gray-400"
-        >
-          {t("back")}
-        </Button>
-
         <ButtonLoading
           onClick={updateShippingHandler}
           isLoading={isUpdateShippingLoading}
@@ -269,6 +264,9 @@ export default function Address() {
         >
           {t("nextStep")}
         </ButtonLoading>
+        <Button onClick={() => setStep(prevStep())} className="w-4/12" variant="outline">
+          {t("back")}
+        </Button>
       </div>
     </div>
   );

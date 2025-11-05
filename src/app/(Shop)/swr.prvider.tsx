@@ -13,7 +13,11 @@ export default function SWRProvider({
         fetcher,
         onError: (err, key, config) => {
           "use client";
-          console.log("Errror", err, err.data, key, config);
+          // Don't log expected "not found" errors
+          if (err?.data?.code === "ORDER_PENDING_NOT_FOUND") {
+            return;
+          }
+          console.log("Error", err, err.data, key, config);
         },
       }}
     >

@@ -1,6 +1,7 @@
 export * from "./Automations";
 export * from "./Console";
 export * from "./Contacts";
+export * from "./Shop";
 export * from "./Global";
 export * from "./Guards";
 export * from "./Icons";

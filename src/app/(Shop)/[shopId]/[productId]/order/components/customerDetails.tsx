@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { orderFormSchema } from "../checkout.page";
+import { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
 // UI
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import {
@@ -12,7 +12,7 @@ import {
   FormItem,
   FormLabel, Input, Textarea
 } from "@components";
-import { UserRectangle } from "@phosphor-icons/react/dist/ssr";
+import { UserRectangleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import useOrder from "../hooks/useOrder";
 import useUpdateContact from "../hooks/useUpdateContact";
@@ -80,13 +80,13 @@ export default function CustomerDetails() {
 
 
   return (
-    <div className="_customer-details p-3">
-      <h2 className="text-lg font-semibold mb-2 border-b pb-2 flex items-center gap-2 text-primary">
-        <UserRectangle size={28} weight="duotone" className="text-primary" />
+    <div className="_customer-details px-4 pb-6">
+      <h2 className="text-lg font-semibold mb-2 md:mb-4 border-b pb-2 flex items-center gap-2 text-primary">
+        <UserRectangleIcon size={28} weight="duotone" className="text-primary" />
         {t("customerDetails")}
       </h2>
 
-      <div className="grid gap-2">
+      <div className="grid md:grid-cols-3 gap-2 md:gap-3">
         <FormField
           control={control}
           name="firstname"
@@ -135,6 +135,7 @@ export default function CustomerDetails() {
                 <Input
                   id="mobile"
                   type="tel"
+                  maxLength={11}
                   onInput={onInputP2EHandler}
                   {...register("mobile", { required: true })}
                 />

@@ -11,32 +11,32 @@ import { fetcher2 } from "@/hooks/swr/fetcher2";
 import { REGEX_MOBILE } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GENDERS_ENUM } from "@/constants/gender.constant";
-import ProductDetails from "./components/productDetails";
-import { CustomerDetailsSkeleton } from "./components/customerDetail.skeleton";
-import { CustomerAddressSkeleton } from "./components/customerAddress.skeleton";
-import { PaymentSkeleton } from "./components/payment.skeleton";
-import { UploadTransactionSkeleton } from "./components/uploadTransaction.skeleton";
-import { FloatingTimeCircleSkeleton } from "./components/floatingTimeCircle.skeleton";
-import OrderNotfound from "./components/order.notfound";
-import OrderProcessing from "./components/order.processing";
+import ProductDetails from "../../app/(Shop)/[shopId]/[productId]/order/components/productDetails";
+import { CustomerDetailsSkeleton } from "../../app/(Shop)/[shopId]/[productId]/order/components/customerDetail.skeleton";
+import { CustomerAddressSkeleton } from "../../app/(Shop)/[shopId]/[productId]/order/components/customerAddress.skeleton";
+import { PaymentSkeleton } from "../../app/(Shop)/[shopId]/[productId]/order/components/payment.skeleton";
+import { UploadTransactionSkeleton } from "../../app/(Shop)/[shopId]/[productId]/order/components/uploadTransaction.skeleton";
+import { FloatingTimeCircleSkeleton } from "../../app/(Shop)/[shopId]/[productId]/order/components/floatingTimeCircle.skeleton";
+import OrderNotfound from "../../app/(Shop)/[shopId]/[productId]/order/components/order.notfound";
+import OrderProcessing from "../../app/(Shop)/[shopId]/[productId]/order/components/order.processing";
 // UI
 import { Card } from "@/components/ui/card";
 import { FormStep, FormStepperProvider } from "@/components/ui/formStepper";
 import {
-  House,
-  User,
-  CreditCard,
-  UploadSimple,
+  HouseIcon,
+  UserIcon,
+  CreditCardIcon,
+  UploadSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { CheckoutContext } from "./useCheckout";
+import { CheckoutContext } from "../../app/(Shop)/[shopId]/[productId]/order/useCheckout";
 import useSWRImmutable from "swr/immutable";
 import { ProductNamespace } from "@/types/product";
 import { ShopNamespace } from "@/types/shops/shop.namespace";
 import { ORDER_STATUS, OrderNamespace } from "@/types/order/order.namespace";
-import UnAuthorized from "./components/unAuthorized";
+import UnAuthorized from "../../app/(Shop)/[shopId]/[productId]/order/components/unAuthorized";
 import Image from "next/image";
 import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
-import CheckoutError from "./components/checkout.error";
+import CheckoutError from "../../app/(Shop)/[shopId]/[productId]/order/components/checkout.error";
 import useSWR, { mutate } from "swr";
 import { MAX_PAYMENT_LIFE_TIME_IN_SEC } from "@/config/configs";
 import { toast } from "sonner";
@@ -44,23 +44,42 @@ import { ProductFieldTypeEnum } from "@/types/product.enum";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
-const CustomerDetails = dynamic(() => import("./components/customerDetails"), {
-  loading: () => <CustomerDetailsSkeleton />,
-  ssr: false,
-});
+const CustomerDetails = dynamic(
+  () =>
+    import(
+      "../../app/(Shop)/[shopId]/[productId]/order/components/customerDetails"
+    ),
+  {
+    loading: () => <CustomerDetailsSkeleton />,
+    ssr: false,
+  },
+);
 
-const Address = dynamic(() => import("./components/customerAddress"), {
-  loading: () => <CustomerAddressSkeleton />,
-  ssr: false,
-});
+const Address = dynamic(
+  () =>
+    import(
+      "../../app/(Shop)/[shopId]/[productId]/order/components/customerAddress"
+    ),
+  {
+    loading: () => <CustomerAddressSkeleton />,
+    ssr: false,
+  },
+);
 
-const PaymentDetails = dynamic(() => import("./components/payment"), {
-  loading: () => <PaymentSkeleton />,
-  ssr: false,
-});
+const PaymentDetails = dynamic(
+  () =>
+    import("../../app/(Shop)/[shopId]/[productId]/order/components/payment"),
+  {
+    loading: () => <PaymentSkeleton />,
+    ssr: false,
+  },
+);
 
 const FloatingTimeCircle = dynamic(
-  () => import("./components/floatingTimeCircle"),
+  () =>
+    import(
+      "../../app/(Shop)/[shopId]/[productId]/order/components/floatingTimeCircle"
+    ),
   {
     loading: () => <FloatingTimeCircleSkeleton />,
     ssr: false,
@@ -68,7 +87,10 @@ const FloatingTimeCircle = dynamic(
 );
 
 const UploadTransaction = dynamic(
-  () => import("./components/uploadTransaction"),
+  () =>
+    import(
+      "../../app/(Shop)/[shopId]/[productId]/order/components/uploadTransaction"
+    ),
   {
     loading: () => <UploadTransactionSkeleton />,
     ssr: false,
@@ -106,11 +128,7 @@ export type CheckoutProps = {
   token?: string;
 };
 
-export default function CheckoutPage({
-  token,
-  shopId,
-  productId,
-}: CheckoutProps) {
+export const CheckoutPage = ({ token, shopId, productId }: CheckoutProps) => {
   const t = useTranslations("Checkout");
   const [paymentMethod, setPaymentMethod] = useState<ORDER_PAYMENT_METHODS>();
   const [outOfStock, setOutOfStock] = useState(false);
@@ -340,26 +358,21 @@ export default function CheckoutPage({
         setTimeLeft,
       }}
     >
-      <header>
-        <div className="container mx-auto max-w-4xl px-3 sm:px-4 xl:px-0">
-          <div className="_wrap flex items-center justify-between py-3 lg:py-4">
-            <div className="_logo flex items-center gap-3">
-              <Image
-                src={shop?.profilePicture?.url || "/images/befroosh-logo.svg"}
-                alt="logo"
-                width={50}
-                height={50}
-                className="rounded-lg"
-              />
-              <span className="text-primary text-xl font-bold">
-                {shop?.name}
-              </span>
-            </div>
-          </div>
+      <header className="py-2 md:py-3">
+        <div className="_logo flex items-center gap-3">
+          <Image
+            src={shop?.profilePicture?.url || "/images/befroosh-logo.svg"}
+            alt="logo"
+            width={46}
+            height={46}
+            className="rounded-md"
+          />
+          <span className="text-secondary text-lg font-bold">{shop?.name}</span>
         </div>
       </header>
+
       <FormProvider {...form}>
-        <form className="w-full" onSubmit={form.handleSubmit(() => {})}>
+        <form onSubmit={form.handleSubmit(() => {})}>
           {/* {product && pendingOrder && (
             <OrderConfirmationDrawer
               product={product}
@@ -369,11 +382,10 @@ export default function CheckoutPage({
             />
           )} */}
 
-          <Card className="_checkout rounded-xl border p-0 md:p-10">
+          <Card className="_checkout p-0 md:p-5">
             <ProductDetails />
 
             <FormStepperProvider
-              className="mt-5"
               setCurrentStep={setCurrentStep}
               currentStep={currentStep}
               disableNavigation
@@ -383,7 +395,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={1}
-                icon={<User className="h-6 w-6" />}
+                icon={<UserIcon className="h-6 w-6" />}
                 title="اطلاعات شخصی"
               >
                 <Suspense fallback={<CustomerDetailsSkeleton />}>
@@ -394,7 +406,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={2}
-                icon={<House className="h-6 w-6" />}
+                icon={<HouseIcon className="h-6 w-6" />}
                 title="آدرس"
               >
                 <Suspense fallback={<CustomerAddressSkeleton />}>
@@ -405,7 +417,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={3}
-                icon={<CreditCard className="h-6 w-6" />}
+                icon={<CreditCardIcon className="h-6 w-6" />}
                 title="پرداخت"
               >
                 <Suspense fallback={<PaymentSkeleton />}>
@@ -416,7 +428,7 @@ export default function CheckoutPage({
               <FormStep
                 disableTitle
                 step={4}
-                icon={<UploadSimple className="h-6 w-6" />}
+                icon={<UploadSimpleIcon className="h-6 w-6" />}
                 title="آپلود مدارک"
               >
                 <Suspense fallback={<UploadTransactionSkeleton />}>
@@ -424,6 +436,7 @@ export default function CheckoutPage({
                 </Suspense>
               </FormStep>
             </FormStepperProvider>
+            
             <Suspense fallback={<FloatingTimeCircleSkeleton />}>
               {pendingOrder?.status === ORDER_STATUS.PAYMENT &&
                 pendingOrder.startPaymentDate && (
@@ -437,4 +450,4 @@ export default function CheckoutPage({
       </FormProvider>
     </CheckoutContext.Provider>
   );
-}
+};

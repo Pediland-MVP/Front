@@ -1,11 +1,10 @@
+import "@/styles/globals.css";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import "@/styles/globals.css";
-// UI
-import { Toaster } from "@components";
 import SWRProvider from "./swr.prvider";
-import { GoftinoSnippet } from "@components/Global/GoftinoSnippet";
+
+import { SiteProvider, ZodErrorsMapProvider } from "@components";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -28,26 +27,25 @@ export default async function ShopLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="bg-fuchsia-50/75">
-        <Toaster />
-
+      <body className="flex h-full min-h-screen flex-col bg-gradient-to-b from-violet-50 to-blue-50">
         <SWRProvider>
           <NextIntlClientProvider messages={messages}>
-            <main>
-              <div className="container mx-auto max-w-4xl px-3 sm:px-4 xl:px-0">
-                {children}
-              </div>
-            </main>
+            <ZodErrorsMapProvider>
+              <SiteProvider>
+                <main className="container mx-auto flex max-w-4xl flex-1 flex-col px-4">
+                  {children}
+                </main>
+                <footer className="py-5">
+                  <div className="container mx-auto max-w-4xl px-4">
+                    <p className="text-muted-foreground text-center text-xs">
+                      تمامی حقوق ناشی از این وب‌سایت برای بـفـروش محفوظ است.
+                    </p>
+                  </div>
+                </footer>
+              </SiteProvider>
+            </ZodErrorsMapProvider>
           </NextIntlClientProvider>
         </SWRProvider>
-        <footer>
-          <div className="container mx-auto max-w-4xl px-3 pt-6 pb-4 sm:px-4 xl:px-0">
-            <p className="text-center text-sm text-gray-500">
-              تمامی حقوق ناشی از این وب‌سایت برای بـفـروش محفوظ است.
-            </p>
-          </div>
-        </footer>
-        <GoftinoSnippet goftinoKey="amN3YU" />
       </body>
     </html>
   );

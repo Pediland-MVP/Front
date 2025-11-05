@@ -1,20 +1,25 @@
 "use client";
-import useSWRImmutable from "swr/immutable";
-import CheckoutPage from "./checkout.page";
-import { use, useEffect, useState } from "react";
-import useSWR, { mutate } from "swr";
-import { OrderNamespace } from "@/types/order/order.namespace";
+
 import api from "@/hooks/swr/api-client";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
+import { OrderNamespace } from "@/types/order/order.namespace";
+import { useSearchParams } from "next/navigation";
+import { Suspense, use, useEffect, useState } from "react";
+import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
+
+import { CheckoutPage, LoaderSpin } from "@components";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
-export default function OrderPage(props: {
-  params: Promise<{ shopId: string; productId: string }>;
-  searchParams: Promise<{ token?: string }>;
+function OrderPageContent({
+  shopId,
+  productId,
+}: {
+  shopId: string;
+  productId: string;
 }) {
-  const { shopId, productId } = use(props.params);
-  const { token } = use(props.searchParams);
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? undefined;
   const [isReady, setIsReady] = useState<boolean>(false);
 
   const {
@@ -67,15 +72,21 @@ export default function OrderPage(props: {
     run();
   }, [pendingOrder, isPendingOrderLoading, productId]);
 
-  if (!isReady && isAuthenticationLoading) {
-    return (
-      <div className="flex h-svh w-full items-center justify-center">
-        <span className="text-2xl font-semibold">درحال بارگذاری...</span>
-      </div>
-    );
+  if (isAuthenticationLoading || !isReady) {
+    return <LoaderSpin />;
   }
 
-  if (isReady && !isAuthenticationLoading) {
-    return <CheckoutPage shopId={shopId} productId={productId} token={token} />;
-  }
+  return <CheckoutPage shopId={shopId} productId={productId} token={token} />;
+}
+
+export default function OrderPage(props: {
+  params: Promise<{ shopId: string; productId: string }>;
+}) {
+  const { shopId, productId } = use(props.params);
+
+  return (
+    <Suspense fallback={<LoaderSpin />}>
+      <OrderPageContent shopId={shopId} productId={productId} />
+    </Suspense>
+  );
 }

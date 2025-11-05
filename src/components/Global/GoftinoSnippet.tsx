@@ -1,14 +1,14 @@
-'use client'
-import Script from 'next/script';
-import React, { FC, useEffect } from 'react';
+"use client";
+import Script from "next/script";
+import React, { FC, useEffect } from "react";
 
-export type IGetMessageType = 'text' | 'file' | 'voice';
+export type IGetMessageType = "text" | "file" | "voice";
 
 export type ISendMessageType =
   | IGetMessageType
-  | 'startForm'
-  | 'delayForm'
-  | 'offlineForm';
+  | "startForm"
+  | "delayForm"
+  | "offlineForm";
 
 export interface IContentForm {
   label: string;
@@ -57,28 +57,28 @@ export const GoftinoSnippet: FC<IGoftinoProps> = (props) => {
   useEffect(() => {
     // An event for when the user sent a message
     if (!!onSendMessage) {
-      window.addEventListener('goftino_sendMessage', function (d: any) {
+      window.addEventListener("goftino_sendMessage", function (d: any) {
         onSendMessage(d);
       });
     }
 
     // An event for when a new message receives
     if (!!onGetMessage) {
-      window.addEventListener('goftino_getMessage', function (d: any) {
+      window.addEventListener("goftino_getMessage", function (d: any) {
         onGetMessage(d);
       });
     }
 
     // An event for when the form opens
     if (!!onOpen) {
-      window.addEventListener('goftino_openWidget', function () {
+      window.addEventListener("goftino_openWidget", function () {
         onOpen();
       });
     }
 
     // An event for when the form closes
     if (!!onClose) {
-      window.addEventListener('goftino_closeWidget', function () {
+      window.addEventListener("goftino_closeWidget", function () {
         onClose();
       });
     }
@@ -87,21 +87,19 @@ export const GoftinoSnippet: FC<IGoftinoProps> = (props) => {
   useEffect(() => {}, [onClose]);
 
   return (
-    <div>
-      <Script
-        type="text/javascript"
-        referrerPolicy="no-referrer-when-downgrade"
-        src={
-          typeof localStorage !== 'undefined' &&
-          !!localStorage?.getItem('goftino_' + goftinoKey)
-            ? `https://www.goftino.com/widget/${goftinoKey}?o=${localStorage.getItem(
-                'goftino_' + goftinoKey
-              )}`
-            : `https://www.goftino.com/widget/${goftinoKey}`
-        }
-        defer={defer}
-        async={!defer}
-      />
-    </div>
+    <Script
+      type="text/javascript"
+      referrerPolicy="no-referrer-when-downgrade"
+      src={
+        typeof localStorage !== "undefined" &&
+        !!localStorage?.getItem("goftino_" + goftinoKey)
+          ? `https://www.goftino.com/widget/${goftinoKey}?o=${localStorage.getItem(
+              "goftino_" + goftinoKey,
+            )}`
+          : `https://www.goftino.com/widget/${goftinoKey}`
+      }
+      defer={defer}
+      async={!defer}
+    />
   );
 };

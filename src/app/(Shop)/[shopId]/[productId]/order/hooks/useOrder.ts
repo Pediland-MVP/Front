@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useState } from "react";
 import { z } from "zod";
-import { orderFormSchema } from "../checkout.page";
+import { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
 import { mutate } from "swr";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import useCheckoutStep from "./useCheckoutStep";

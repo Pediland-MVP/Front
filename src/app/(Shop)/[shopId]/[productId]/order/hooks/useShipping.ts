@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { set, z } from "zod";
-import { orderFormSchema } from "../checkout.page";
+import { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
 import { useCheckout } from "../useCheckout";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 import { useTranslations } from "next-intl";

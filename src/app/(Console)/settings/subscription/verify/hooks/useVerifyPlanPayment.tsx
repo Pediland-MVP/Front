@@ -1,3 +1,5 @@
+"use client";
+
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { toast } from "sonner";
 import api from "@/hooks/swr/api-client";

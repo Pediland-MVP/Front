@@ -30,8 +30,11 @@ export default function UploadTransaction() {
   return (
     <div className="p-3">
       <div className="_uploader mb-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="picture" className="mb-3 font-normal">
+        <div className="grid w-full items-center gap-1.5">
+          <Label
+            htmlFor="picture"
+            className="mb-3 font-normal md:justify-center"
+          >
             لطفا تصویر رسید وجه پرداختی را بارگذاری نمایید.
           </Label>
           <ImageUploader
@@ -47,19 +50,18 @@ export default function UploadTransaction() {
         </div>
       </div>
       <div className="mt-6 flex w-full items-center justify-center gap-x-2">
-        <Button onClick={() => setStep(3)} className="3/12 bg-gray-500">
-          {t("back")}
-        </Button>
-
         <ButtonLoading
           disabled={!uploaded}
           isLoading={isOrderProcessLoading}
           onClick={processOrderHandler}
-          className="w-full"
+          className="flex-1"
           type="button"
         >
           {t("paynow")}
         </ButtonLoading>
+        <Button onClick={() => setStep(3)} variant="outline">
+          {t("back")}
+        </Button>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { createContext, useContext, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import {useEffect} from 'react';
+import { useEffect } from "react";
 
 // Types
 interface FormStepperContextValue {
@@ -14,16 +14,17 @@ interface FormStepperContextValue {
   disableNavigation?: boolean;
 }
 
-interface FormStepperProviderProps extends React.HTMLAttributes<HTMLDivElement> {
+interface FormStepperProviderProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   currentStep?: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   onStepChange?: (step: number) => void;
   disableNavigation?: boolean;
-  disable?: boolean
+  disable?: boolean;
 }
 
-interface FormStepProps  {
+interface FormStepProps {
   icon: React.ReactNode;
   title: string;
   step: number;
@@ -34,7 +35,7 @@ interface FormStepProps  {
 
 // Context
 const FormStepperContext = createContext<FormStepperContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 // Custom Hook
@@ -67,7 +68,6 @@ export function FormStepperProvider({
     });
   }, []);
 
-
   const value = useMemo(
     () => ({
       currentStep: currentStep,
@@ -76,13 +76,18 @@ export function FormStepperProvider({
       registerStep,
       disableNavigation,
     }),
-    [currentStep, setCurrentStep, steps, registerStep, disableNavigation]
+    [currentStep, setCurrentStep, steps, registerStep, disableNavigation],
   );
 
   return (
     <FormStepperContext.Provider value={value}>
-      <div className={cn("w-full", className)}>
-        <div className={cn("mb-8 flex items-center justify-center", disable && 'hidden')} >
+      <div>
+        <div
+          className={cn(
+            "mb-8 flex items-center justify-center",
+            disable && "hidden",
+          )}
+        >
           {steps.map((step, index) => {
             const isActive = step.step === currentStep;
             const isCompleted = step.step < currentStep;
@@ -103,7 +108,7 @@ export function FormStepperProvider({
                         !isCompleted &&
                         "bg-muted text-muted-foreground",
                       disableNavigation && "cursor-default",
-                      !disableNavigation && "hover:opacity-90"
+                      !disableNavigation && "hover:opacity-90",
                     )}
                     disabled={disableNavigation}
                   >
@@ -113,8 +118,8 @@ export function FormStepperProvider({
                 {!isLast && (
                   <div
                     className={cn(
-                      "h-[5px] w-[10%] mx-2 rounded-full transition-colors duration-300",
-                      isCompleted ? "bg-primary" : "bg-muted"
+                      "mx-2 h-[5px] w-[10%] rounded-full transition-colors duration-300",
+                      isCompleted ? "bg-primary" : "bg-muted",
                     )}
                   />
                 )}
@@ -122,7 +127,7 @@ export function FormStepperProvider({
             );
           })}
         </div>
-        <div className="mt-4">{children}</div>
+        {children}
       </div>
     </FormStepperContext.Provider>
   );
@@ -157,7 +162,7 @@ export function FormStep({
     <div
       className={cn(
         "animate-in fade-in-50 duration-500 ease-in-out",
-        className
+        className,
       )}
     >
       {!disableTitle && (

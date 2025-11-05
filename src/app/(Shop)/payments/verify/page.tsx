@@ -3,19 +3,16 @@ import { toast } from "sonner";
 import { PaymentNamespace } from "@/types/payments/payment.namespace";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
-type VerifyPageProps = {
-  searchParams: Promise<{
-    ItsFree?: boolean;
-    Authority?: string;
-    Status?: "OK" | "NOK";
-  }>;
-};
-export default function VerifyPage({ searchParams }: VerifyPageProps) {
-  const { Authority, Status, ItsFree } = use(searchParams);
+function VerifyPageContent() {
+  const searchParams = useSearchParams();
+  const Authority = searchParams.get("Authority");
+  const Status = searchParams.get("Status") as "OK" | "NOK" | null;
+  const ItsFree = searchParams.get("ItsFree") === "true";
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
   const [isOk, setIsOk] = useState<boolean>();
@@ -101,5 +98,21 @@ export default function VerifyPage({ searchParams }: VerifyPageProps) {
         )
       )}
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-svh items-center justify-center">
+          <span className="loading loading-spinner text-primary">
+            درحال بارگزاری
+          </span>
+        </div>
+      }
+    >
+      <VerifyPageContent />
+    </Suspense>
   );
 }

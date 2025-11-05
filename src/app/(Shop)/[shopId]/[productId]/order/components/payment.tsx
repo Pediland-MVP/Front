@@ -4,7 +4,14 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Copy, CreditCard, Check } from "@phosphor-icons/react/dist/ssr";
+import {
+  Copy,
+  CreditCard,
+  Check,
+  CreditCardIcon,
+  CheckIcon,
+  CopyIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { useCheckout } from "../useCheckout";
 import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
 import useStartPayment from "../hooks/useStartPayment";
@@ -67,13 +74,13 @@ export default function PaymentDetails() {
   };
 
   return (
-    <div className="_customer-details p-3 md:col-span-4">
+    <div className="_customer-details p-4">
       <h2 className="text-primary mb-4 flex items-center gap-2 border-b pb-2 text-lg font-semibold">
-        <CreditCard size={28} weight="duotone" className="text-primary" />
+        <CreditCardIcon size={28} weight="duotone" className="text-primary" />
         {t("paymentMethod")}
       </h2>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="mb-6 grid gap-2">
         <RadioGroup
           defaultValue={paymentMethod}
           onValueChange={paymentMehodChangeHandler}
@@ -110,7 +117,7 @@ export default function PaymentDetails() {
           )}
         </RadioGroup>
 
-        <div className="_card-transfer-text">
+        <div className="_card-transfer-text flex flex-col md:items-start">
           {paymentMethod === ORDER_PAYMENT_METHODS.ZARINPAL && (
             <div className="flex h-[245.5px] items-center justify-center gap-x-5">
               <Image
@@ -131,7 +138,7 @@ export default function PaymentDetails() {
             <>
               <p className="text-sm leading-relaxed text-gray-600">
                 لطفا مبلغ{" "}
-                <span className="text-primary bg-yellow-100 px-1 font-semibold">
+                <span className="text-secondary bg-yellow-100 px-1 font-semibold">
                   {(
                     (pendingOrder?.orderProducts?.[0]?.discountPrice
                       ? pendingOrder?.orderProducts?.[0]?.discountPrice *
@@ -142,72 +149,72 @@ export default function PaymentDetails() {
                   تومان
                 </span>
                 {product?.shippingCost
-                  ? `(شامل ${product.shippingCost} تومان هزینه ارسال) `
+                  ? `(شامل ${product.shippingCost.toLocaleString()} تومان هزینه ارسال) `
                   : " "}
                 به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
                 بارگزاری نمایید.
               </p>
-              <div className="_card-template mt-3 flex flex-col gap-8 rounded-lg border-2 border-b-[6px] border-sky-600 border-b-sky-600 bg-sky-100/60 p-4">
-                <p className="font-bold text-sky-900">{cardToCard?.bankName}</p>
-                <div className="mb-3 flex flex-col gap-2 text-sm text-gray-700">
-                  <p className="flex items-center gap-2">
-                    <span>شماره کارت:</span>{" "}
-                    <span className="font-medium" dir="ltr">
-                      {separateTextBySpace(cardToCard?.cardNumber)}
-                    </span>
-                    <button
-                      onClick={copyCardNumber}
-                      className="transition-all duration-300 ease-in-out"
-                    >
-                      {cardNumberCopied ? (
-                        <Check
-                          size={22}
-                          weight="duotone"
-                          className="text-green-500"
-                        />
-                      ) : (
-                        <Copy size={22} weight="duotone" />
-                      )}
-                    </button>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span>شبا:</span>
-                    <span className="font-medium">IR - {cardToCard?.iban}</span>
-                    <button
-                      onClick={copyIban}
-                      className="transition-all duration-300 ease-in-out"
-                    >
-                      {ibanCopied ? (
-                        <Check
-                          size={22}
-                          weight="duotone"
-                          className="text-green-500"
-                        />
-                      ) : (
-                        <Copy size={22} weight="duotone" />
-                      )}
-                    </button>
-                  </p>
-                  <p>
-                    <span>دارنده حساب:</span>{" "}
-                    <span className="font-medium">
-                      {cardToCard?.accountHolder}
-                    </span>
-                  </p>
+
+              <div className="_card-template mt-3 flex flex-col gap-3 rounded-lg border border-b-[3px] border-sky-600 border-b-sky-600 bg-gradient-to-bl from-blue-50 to-blue-100 p-3">
+                <p className="text-secondary font-bold">
+                  {cardToCard?.bankName}
+                </p>
+                <div className="text-secondary flex flex-col text-sm">
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">شماره کارت:</span>
+                    <div className="flex w-full items-center justify-end gap-2">
+                      <span className="font-medium" dir="ltr">
+                        {separateTextBySpace(cardToCard?.cardNumber)}
+                      </span>
+                      <button
+                        onClick={copyCardNumber}
+                        className="transition-all duration-300 ease-in-out"
+                      >
+                        {cardNumberCopied ? (
+                          <CheckIcon
+                            size={22}
+                            weight="duotone"
+                            className="text-green-500"
+                          />
+                        ) : (
+                          <CopyIcon size={22} weight="duotone" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">شبا:</span>
+                    <div className="flex w-full items-center justify-end gap-2">
+                      <span className="font-medium">
+                        IR - {cardToCard?.iban}
+                      </span>
+                      <button
+                        onClick={copyIban}
+                        className="transition-all duration-300 ease-in-out"
+                      >
+                        {ibanCopied ? (
+                          <Check
+                            size={22}
+                            weight="duotone"
+                            className="text-green-500"
+                          />
+                        ) : (
+                          <Copy size={22} weight="duotone" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
+                <p className="text-secondary text-sm font-medium">
+                  <span>دارنده حساب:</span>{" "}
+                  <span>{cardToCard?.accountHolder}</span>
+                </p>
               </div>
             </>
           )}
         </div>
       </div>
       <div className="mt-2 flex w-full items-center justify-center gap-x-2">
-        <Button
-          onClick={() => setStep(prevStep())}
-          className="w-4/12 bg-gray-500 hover:bg-gray-400"
-        >
-          {t("back")}
-        </Button>
-
         <ButtonLoading
           isLoading={isStartPaymentLoading}
           onClick={startPaymentHandler}
@@ -217,6 +224,14 @@ export default function PaymentDetails() {
             ? t("nextStep")
             : t("payWithZarinpal")}
         </ButtonLoading>
+
+        <Button
+          onClick={() => setStep(prevStep())}
+          className="w-4/12"
+          variant="outline"
+        >
+          {t("back")}
+        </Button>
       </div>
     </div>
   );

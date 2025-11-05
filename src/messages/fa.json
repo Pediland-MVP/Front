@@ -878,7 +878,7 @@
     "required": "این فیلد الزامی است",
     "orderCardToCardNotUploaded": "لطفا اول رسید کارت به کارت خود را آپلود نمایید",
     "orderProcessing": "سفارش شما با موفقیت ثبت شد",
-    "orderProcessingDescription": "✅ اطلاعات شما با موفقیت دریافت شد. به‌زودی با شما در ارتباط خواهیم بود.",
+    "orderProcessingDescription": "اطلاعات شما با موفقیت دریافت شد. به‌زودی با شما در ارتباط خواهیم بود.",
     "orderInvalid": "سفارش مورد نظر شما منقضی یا پرداخت شده است.",
     "invalidEmail": "ایمیل نامعتبر",
     "selectGender": "یک مورد انتخاب کنید",
