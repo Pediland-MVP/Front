@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { GoftinoSnippet } from "../Global/GoftinoSnippet";
 import { useEffect, useState } from "react";
+import { useSubscriptionData } from "@/store/subscriptionStore";
 
 interface SiteProviderProps {
   children: React.ReactNode;
@@ -18,6 +19,8 @@ const BLOCKED_DOMAINS = [
 
 export function SiteProvider({ children }: SiteProviderProps) {
   const [shouldLoadGTM, setShouldLoadGTM] = useState(false);
+
+  useSubscriptionData();
 
   useEffect(() => {
     const host = window.location.hostname;

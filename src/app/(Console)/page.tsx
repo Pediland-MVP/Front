@@ -1,7 +1,5 @@
 "use client";
 
-import { useSubscriptionData } from "@/store/subscriptionStore";
-
 import {
   DashboardStats,
   DashboardTelegramBanner,
@@ -11,8 +9,6 @@ import {
 } from "@components";
 
 export default function DashboardPage() {
-  useSubscriptionData();
-
   return (
     <LayoutPage className="px-3">
       <div className="_dashboard-page space-y-5">

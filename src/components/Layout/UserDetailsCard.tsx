@@ -41,6 +41,7 @@ export const UserDetailsCard = () => {
     error: userError,
     isLoading: userIsLoading,
   } = useUser();
+
   const {
     subscriptions,
     isLoading: isSubscriptionsLoading,
@@ -89,10 +90,6 @@ export const UserDetailsCard = () => {
       setIsLogoutLoading(false);
     }
   };
-
-  const hasHydrated = useSubscriptionStore((state) => state._hasHydrated);
-
-  if (!hasHydrated) return <LoaderPulse />;
 
   return (
     <CardSimple className="border-dashed border-blue-300/70 bg-gradient-to-t from-white/80 to-white/50">

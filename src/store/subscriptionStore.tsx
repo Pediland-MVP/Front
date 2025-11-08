@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 import { AxiosError } from "axios";
 import useUser from "@/hooks/useUser";
 import useSWR, { mutate } from "swr";
@@ -31,7 +31,6 @@ interface SubscriptionState {
   discountCode?: string;
   isLoading: boolean;
   initialized: boolean;
-  _hasHydrated?: boolean;
   totalRemainingDays: number;
   totalPurchasedDays: number;
 
@@ -49,93 +48,76 @@ interface SubscriptionState {
 }
 
 export const useSubscriptionStore = create<SubscriptionState>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        active: {
-          choosePlan: false,
-          subscriptionInfo: false,
-          showCoupon: false,
-        },
-        subscriptions: [],
-        plans: [],
-        plansData: undefined,
-        discountCode: "",
-        isLoading: false,
-        initialized: false,
-        _hasHydrated: false,
-        totalRemainingDays: 0,
-        totalPurchasedDays: 0,
+  devtools((set, get) => ({
+    active: {
+      choosePlan: false,
+      subscriptionInfo: false,
+      showCoupon: false,
+    },
+    subscriptions: [],
+    plans: [],
+    plansData: undefined,
+    discountCode: "",
+    isLoading: false,
+    initialized: false,
+    totalRemainingDays: 0,
+    totalPurchasedDays: 0,
 
-        setActive: (active) => set({ active }),
-        setDiscountCode: (discountCode) => set({ discountCode }),
-        setIsLoading: (isLoading) => set({ isLoading }),
-        setInitialized: (initialized) => set({ initialized }),
-        setSubscriptions: (subscriptions) =>
-          set({ subscriptions }, false, "setSubscriptions"),
-        setPlans: (plans) => set({ plans }),
-        setPlansData: (plansData) => set({ plansData }),
+    setActive: (active) => set({ active }),
+    setDiscountCode: (discountCode) => set({ discountCode }),
+    setIsLoading: (isLoading) => set({ isLoading }),
+    setInitialized: (initialized) => set({ initialized }),
+    setSubscriptions: (subscriptions) =>
+      set({ subscriptions }, false, "setSubscriptions"),
+    setPlans: (plans) => set({ plans }),
+    setPlansData: (plansData) => set({ plansData }),
 
-        calculateDays: () => {
-          const { subscriptions } = get();
+    calculateDays: () => {
+      const { subscriptions } = get();
 
-          if (!subscriptions?.length)
-            return set({ totalRemainingDays: 0, totalPurchasedDays: 0 });
+      if (!subscriptions?.length)
+        return set({ totalRemainingDays: 0, totalPurchasedDays: 0 });
 
-          const now = new Date();
+      const now = new Date();
 
-          // اشتراک فعال
-          const active = subscriptions.find(
-            (s) => s.status === SubscriptionStatusEnum.ACTIVE,
-          );
+      // اشتراک فعال
+      const active = subscriptions.find(
+        (s) => s.status === SubscriptionStatusEnum.ACTIVE,
+      );
 
-          // اشتراک‌های رزروشده
-          const reserved = subscriptions.filter(
-            (s) => s.status === SubscriptionStatusEnum.RESERVED,
-          );
+      // اشتراک‌های رزروشده
+      const reserved = subscriptions.filter(
+        (s) => s.status === SubscriptionStatusEnum.RESERVED,
+      );
 
-          // مجموع کل روزهای خریداری‌شده
-          const totalPurchasedDays = subscriptions.reduce(
-            (sum, s) => sum + (s.planDuration?.durationDays ?? 0),
-            0,
-          );
+      // مجموع کل روزهای خریداری‌شده
+      const totalPurchasedDays = subscriptions.reduce(
+        (sum, s) => sum + (s.planDuration?.durationDays ?? 0),
+        0,
+      );
 
-          // مجموع روزهای رزروشده
-          const reservedDays = reserved.reduce(
-            (sum, s) => sum + (s.planDuration?.durationDays ?? 0),
-            0,
-          );
+      // مجموع روزهای رزروشده
+      const reservedDays = reserved.reduce(
+        (sum, s) => sum + (s.planDuration?.durationDays ?? 0),
+        0,
+      );
 
-          const getRemainingDays = (expireDate: string) => {
-            const expire = new Date(expireDate);
-            const diff = expire.getTime() - now.getTime();
-            return Math.max(0, Math.ceil(diff / (1000 * 3600 * 24)));
-          };
+      const getRemainingDays = (expireDate: string) => {
+        const expire = new Date(expireDate);
+        const diff = expire.getTime() - now.getTime();
+        return Math.max(0, Math.ceil(diff / (1000 * 3600 * 24)));
+      };
 
-          const activeDays = active ? getRemainingDays(active.expire) : 0;
-          const totalRemainingDays = activeDays + reservedDays;
+      const activeDays = active ? getRemainingDays(active.expire) : 0;
+      const totalRemainingDays = activeDays + reservedDays;
 
-          set({ totalRemainingDays, totalPurchasedDays });
-        },
-      }),
-      {
-        name: "subscription-store",
-        onRehydrateStorage: () => {
-          return (state) => {
-            if (state) {
-              state._hasHydrated = true;
-            }
-          };
-        },
-      },
-    ),
-  ),
+      set({ totalRemainingDays, totalPurchasedDays });
+    },
+  })),
 );
 
 // ============ Hook for Data Fetching ============
-
 export function useSubscriptionData() {
-  const hasHydrated = useSubscriptionStore((s) => s._hasHydrated);
   const {
     setActive,
     setSubscriptions,
@@ -186,7 +168,6 @@ export function useSubscriptionData() {
 
   // Update store when data changes
   useEffect(() => {
-    if (!hasHydrated) return;
     if (allowedSubscriptions) {
       setSubscriptions(allowedSubscriptions);
       calculateDays();
