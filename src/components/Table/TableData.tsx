@@ -24,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@components";
+} from "@/components/ui";
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {
@@ -234,7 +234,7 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows?.map((row) => (
               <TableRow
                 key={row.id}
-                className="text-gray-500 hover:text-primary group"
+                className="hover:text-primary group text-gray-500"
                 data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
               >
                 {row.getVisibleCells().map((cell) => (

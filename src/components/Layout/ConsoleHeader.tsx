@@ -1,19 +1,15 @@
-// Refactored
 "use client";
 
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import {
-  HeaderBreadcrumb,
-  LogoSlogan,
-  LogoText,
-  SidebarTrigger,
-  useSidebar,
-} from "@components";
 import { HeadsetIcon, ListIcon, SlidersIcon } from "@phosphor-icons/react";
+import { LogoSlogan } from "../Global/LogoSlogan";
+import { LogoText } from "../Global/LogoText";
+import { SidebarTrigger, useSidebar } from "../ui";
+import { HeaderBreadcrumb } from "./HeaderBreadcrumb";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();

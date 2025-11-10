@@ -13,8 +13,7 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardImage,
-} from "@components";
+} from "@/components/ui";
 import {
   AlertTriangleIcon,
   BarcodeIcon,
@@ -24,6 +23,7 @@ import {
   TruckIcon,
   XCircleIcon,
 } from "lucide-react";
+import { CardImage } from "../Global/CardImage";
 
 interface OrderCardComponentProps {
   order: OrderNamespace.GET.OneItemOfOrders;

@@ -14,17 +14,9 @@ import { contentTypeOptions } from "./ContentTypeOptions";
 import type { AutomationFormType } from "@/schemas/automationForm";
 import type { UploadedFile } from "@/types/fileUploader";
 
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  ContentItem,
-  ContentPromotion,
-  ContentsContext,
-  ContentsUploaderContextProvider,
-  ErrorMessage,
-  HelpMeDialog,
-} from "@components";
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
+import { Alert, AlertDescription, Button } from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import type { DragEndEvent } from "@dnd-kit/core";
 import {
   closestCenter,
@@ -40,6 +32,10 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { PlusCircleIcon } from "lucide-react";
+import { ContentItem } from "./ContentItem";
+import { ContentPromotion } from "./ContentPromotion";
+import { ContentsContext } from "./ContentsContext";
+import { ContentsUploaderContextProvider } from "./ContentsUploaderContext";
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;

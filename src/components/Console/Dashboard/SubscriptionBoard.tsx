@@ -1,24 +1,18 @@
 "use client";
 
+import useUser from "@/hooks/useUser";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 // TODO: Should Refactor
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
-import {
-  Button,
-  CardContent,
-  CardSimple,
-  LoaderPulse,
-  ProgressRadial,
-} from "@components";
-import { ChevronLeftIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
-import { CircleIcon } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
+import { Button, CardContent } from "@/components/ui";
+import { CardSimple } from "@/components/ui-custom/CardSimple";
 import { PlugsConnectedIcon, PlugsIcon } from "@phosphor-icons/react/dist/ssr";
+import { ProgressRadial } from "../ProgressRadial";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;

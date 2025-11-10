@@ -1,7 +1,8 @@
 import { isUUID } from "class-validator";
 import { redirect } from "next/navigation";
 
-import { AutomationForm, LayoutPage } from "@components";
+import { AutomationForm } from "@/components/Automations/AutomationForm";
+import { LayoutPage } from "@/components/Layout/LayoutPage";
 
 type PageProps = {
   params: Promise<{

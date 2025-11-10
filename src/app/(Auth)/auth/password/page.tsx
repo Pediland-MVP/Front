@@ -7,21 +7,21 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { mutate } from "swr";
 import { z } from "zod";
 
 import {
   Button,
-  ButtonLoading,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-  InputPassword,
-} from "@components";
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { PasswordIcon } from "@phosphor-icons/react";
 import { MoveLeftIcon } from "lucide-react";
-import { mutate } from "swr";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

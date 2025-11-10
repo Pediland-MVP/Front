@@ -1,7 +1,7 @@
-// Refactored
 "use client";
 
 import api from "@/hooks/swr/api-client";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -10,19 +10,18 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
+import { LogoText } from "@/components/Global/LogoText";
 import {
   Button,
-  ButtonLoading,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
   Input,
-  LogoText,
-} from "@components";
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { MoveLeftIcon } from "lucide-react";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;

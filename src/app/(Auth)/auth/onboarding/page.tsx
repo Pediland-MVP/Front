@@ -4,13 +4,12 @@ import api, { useLogout } from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import {
-  ButtonLoading,
   Form,
   FormControl,
   FormField,
@@ -18,7 +17,8 @@ import {
   FormMessage,
   Input,
   Switch,
-} from "@components";
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { UserCirclePlusIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
@@ -151,10 +151,9 @@ export default function OnboardingPage() {
                     <Input
                       {...field}
                       onChange={(e) => {
-                        const filteredValue = e.target.value.replace(
-                          /[^a-zA-Z0-9_.]/g,
-                          "",
-                        ).toLowerCase();
+                        const filteredValue = e.target.value
+                          .replace(/[^a-zA-Z0-9_.]/g, "")
+                          .toLowerCase();
                         field.onChange(filteredValue);
                       }}
                       placeholder={t("instagram_id")}

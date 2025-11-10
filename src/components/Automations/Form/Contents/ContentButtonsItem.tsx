@@ -13,13 +13,13 @@ import {
   Card,
   CardContent,
   CardHeader,
-  ErrorMessage,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   Input,
-} from "@components";
+} from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {

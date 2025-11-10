@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@components";
+} from "@/components/ui";
 import { CrownSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface ContentPromotionDialogProps {

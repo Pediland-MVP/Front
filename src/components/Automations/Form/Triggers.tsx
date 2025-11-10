@@ -1,4 +1,3 @@
-// src/components/Automations/form/Trigger.tsx
 "use client";
 
 import { AutomationFormType } from "@/schemas/automationForm";
@@ -6,14 +5,9 @@ import { useTranslations } from "next-intl";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
-// UI Imports
-import {
-  ErrorMessage,
-  FormField,
-  FormLabel,
-  HelpMeDialog,
-  Switch,
-} from "@components";
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
+import { FormField, FormLabel, Switch } from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { toast } from "sonner";
 
 type TriggersProps = {

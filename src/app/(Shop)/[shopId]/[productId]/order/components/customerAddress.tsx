@@ -1,22 +1,28 @@
 "use client";
 
-import logger from "@/utils/logger";
-import { z } from "zod";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { CityNamespace } from "@/types/city";
+import { ProvinceNamespace } from "@/types/province";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
+import { TruckIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
-import { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
-import { zodResolver } from "@hookform/resolvers/zod";
-// UI
-import { Textarea } from "@/components/ui/textarea";
-import { PackageIcon, TruckIcon } from "@phosphor-icons/react/dist/ssr";
-import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
+import useSWRImmutable from "swr/immutable";
+import { z } from "zod";
+import useCheckoutStep from "../hooks/useCheckoutStep";
+import useShipping from "../hooks/useShipping";
+
+import { orderFormSchema } from "@/components/Shop/CheckoutPage";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -24,17 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useSWRImmutable from "swr/immutable";
-import { ProvinceNamespace } from "@/types/province";
-import { CityNamespace } from "@/types/city";
-import { useEffect } from "react";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import useShipping from "../hooks/useShipping";
-import { ErrorMessage } from "@components";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useCheckout } from "../useCheckout";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
-import useCheckoutStep from "../hooks/useCheckoutStep";
 import { ShippingInfo } from "./shippingInfo";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
@@ -264,7 +261,11 @@ export default function Address() {
         >
           {t("nextStep")}
         </ButtonLoading>
-        <Button onClick={() => setStep(prevStep())} className="w-4/12" variant="outline">
+        <Button
+          onClick={() => setStep(prevStep())}
+          className="w-4/12"
+          variant="outline"
+        >
           {t("back")}
         </Button>
       </div>

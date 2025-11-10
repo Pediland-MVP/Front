@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@components";
+} from "@/components/ui";
 import { InstagramLogoIcon } from "@phosphor-icons/react";
 import { PlugsIcon } from "@phosphor-icons/react";
 

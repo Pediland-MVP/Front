@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 
-import { InstagramAccounts } from "@components";
+import { InstagramAccounts } from "@/components/Settings/InstagramAccounts";
 
 export default function Page() {
   const t = useTranslations("Settings.Accounts");

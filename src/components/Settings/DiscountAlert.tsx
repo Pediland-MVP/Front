@@ -2,7 +2,7 @@ import { useSubscriptionStore } from "@/store/subscriptionStore";
 // TODO: Refactor Types & Schemas
 import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
 
-import { Card, CardContent } from "@components";
+import { Card, CardContent } from "@/components/ui";
 
 export const DiscountAlert = () => {
   const {

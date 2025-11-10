@@ -10,7 +10,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div
-      className="font-Yekan flex h-screen flex-col items-center justify-center gap-5 bg-gradient-to-t from-violet-200 to-blue-200 antialiased"
+      className="font-Yekan flex h-screen flex-col items-center justify-center gap-5 bg-linear-to-t from-violet-200 to-blue-200 antialiased"
       dir="rtl"
     >
       <div>

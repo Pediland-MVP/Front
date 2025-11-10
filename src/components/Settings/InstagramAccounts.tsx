@@ -18,11 +18,11 @@ import {
   Card,
   CardContent,
   CardFooter,
-  DeleteConfirmationDialog,
-  LoaderSpin,
-} from "@components";
+} from "@/components/ui";
 import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { EyeIcon, Plug2Icon, Trash2Icon } from "lucide-react";
+import { LoaderSpin } from "../ui-custom/LoaderSpin";
+import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;

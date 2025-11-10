@@ -1,6 +1,7 @@
 "use client";
 
 import api from "@/hooks/swr/api-client";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -11,44 +12,41 @@ import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
 
 import {
-  ButtonLoading,
-  ErrorMessage,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   Input,
-  LoaderSpin,
-} from "@components";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
 export const bankDetailsSchema = z.object({
-  bankName: z
-    .string()
-    .min(1, { message: "minimun" })
-    .max(255, { message: "maximum" }),
+  bankName: z.string().min(1).max(255),
+  accountHolder: z.string().min(1).max(255),
   cardNumber: z
     .string()
     .regex(REGEX_NUMBERICAL_STRING, { message: "required" })
-    .min(16, { message: "minimun" })
-    .max(16, { message: "maximum" }),
+    .length(16, { message: "must be 16 digits" }),
   iban: z
     .string()
-    .regex(REGEX_NUMBERICAL_STRING, { message: "required" })
-    .min(24, { message: "minimun" })
-    .max(24, { message: "maximum" }),
-  accountHolder: z
-    .string()
-    .min(1, { message: "minimun" })
-    .max(255, { message: "maximum" }),
+    .transform((val) => (val === "" ? undefined : val))
+    .optional()
+    .refine((val) => !val || REGEX_NUMBERICAL_STRING.test(val), {
+      message: "required",
+    })
+    .refine((val) => !val || val.length === 24, {
+      message: "must be 24 digits",
+    }),
 });
 
 export default function BankCardPage() {
   const t = useTranslations("Settings.BankDetails");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof bankDetailsSchema>>({
     defaultValues: {
       bankName: "",
       cardNumber: "",
@@ -68,22 +66,30 @@ export default function BankCardPage() {
 
   useEffect(() => {
     if (!cardToCardData) return;
-    form.reset(cardToCardData);
+
+    form.reset({
+      bankName: cardToCardData.bankName ?? "",
+      cardNumber: cardToCardData.cardNumber ?? "",
+      iban: cardToCardData.iban ?? "",
+      accountHolder: cardToCardData.accountHolder ?? "",
+    });
   }, [cardToCardData]);
 
   const onSubmit = async (data: z.infer<typeof bankDetailsSchema>) => {
     setIsSubmitting(true);
-    await api
-      .post("/payments/cardToCard", data)
-      .then((res) => {
+
+    try {
+      const res = await api.post("/payments/cardToCard", data);
+      if (res.status >= 200 && res.status < 300) {
         toast.success(t("cardToCardUpdated"));
-      })
-      .catch((e) => {
+      } else {
         toast.error(t("cardToCardUpdateFailed"));
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+      }
+    } catch (e) {
+      toast.error(t("cardToCardUpdateFailed"));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const {
@@ -155,8 +161,12 @@ export default function BankCardPage() {
                               <Input
                                 id="cardnumber"
                                 dir="ltr"
+                                maxLength={16}
                                 {...field}
-                                onInput={onInputP2EHandler}
+                                onChange={(e) => {
+                                  onInputP2EHandler(e);
+                                  field.onChange(e);
+                                }}
                               />
                             </FormControl>
                             {error && (
@@ -180,7 +190,11 @@ export default function BankCardPage() {
                                   {...field}
                                   className="pl-10 text-left"
                                   dir="ltr"
-                                  onInput={onInputP2EHandler}
+                                  maxLength={24}
+                                  onChange={(e) => {
+                                    onInputP2EHandler(e);
+                                    field.onChange(e);
+                                  }}
                                 />
                                 <p
                                   className="absolute top-1/2 left-3 -translate-y-1/2 transform text-gray-500"

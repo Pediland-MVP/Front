@@ -6,20 +6,20 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  NavUserSkeleton,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@components";
+} from "@/components/ui";
 import { UserCircleIcon } from "@phosphor-icons/react";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { UserDropdownMenu } from "../Console/UserDropdownMenu";
+import { NavUserSkeleton } from "./NavUser.skeleton";
 
 const NavUser = ({
   user,
   isLoading,
 }: {
-  user: UserNamespace.GET.User['data'] | undefined;
+  user: UserNamespace.GET.User["data"] | undefined;
   isLoading: boolean;
 }) => {
   if (isLoading || !user) {

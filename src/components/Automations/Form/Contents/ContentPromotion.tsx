@@ -12,7 +12,6 @@ import { AutomationFormType } from "@/schemas/automationForm";
 
 import {
   Checkbox,
-  ContentPromotionDialog,
   FormControl,
   FormField,
   FormItem,
@@ -25,8 +24,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@components";
+} from "@/components/ui";
 import { TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { ContentPromotionDialog } from "./ContentPromotionDialog";
 
 export const ContentPromotion = () => {
   const t = useTranslations("Automations.Contents");

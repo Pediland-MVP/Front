@@ -3,7 +3,8 @@
 import useUser from "@/hooks/useUser";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LoaderSpin } from "../ui-custom";
+
+import { LoaderSpin } from "../ui-custom/LoaderSpin";
 
 interface AuthProviderProps {
   children: React.ReactNode;

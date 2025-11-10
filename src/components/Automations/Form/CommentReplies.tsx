@@ -1,11 +1,10 @@
-// src/components/Automations/form/CommentReplies.tsx
 "use client";
 
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
-// UI Imports
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import {
   Button,
   FormControl,
@@ -14,11 +13,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  HelpMeDialog,
   Input,
-  SeperateLine,
   Switch,
-} from "@components";
+} from "@/components/ui";
+import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 import { TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const CommentReplies = () => {

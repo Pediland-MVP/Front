@@ -26,7 +26,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components";
+} from "@/components/ui";
 
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { toast } from "sonner";

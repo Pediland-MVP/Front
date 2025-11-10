@@ -7,16 +7,10 @@ import { useEffect, useState } from "react";
 import { Control, useFieldArray, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
-// UI Imports
-import {
-  Button,
-  ErrorMessage,
-  FormField,
-  FormItem,
-  HelpMeDialog,
-  Input,
-} from "@components";
-import { XCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
+import { Button, FormField, FormItem, Input } from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { XCircleIcon } from "@phosphor-icons/react";
 
 type ConditionsProps = {
   control: Control<AutomationFormType>;

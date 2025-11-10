@@ -3,17 +3,14 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import useSWRImmutable from "swr/immutable";
-
 // TODO: Should Refactor
 import { OverallStats } from "@/types/stats";
 
-import {
-  CardContent,
-  CardSimple,
-  ItemsStatisticCard,
-  LoaderPulse,
-} from "@components";
+import { CardContent } from "@/components/ui";
+import { CardSimple } from "@/components/ui-custom/CardSimple";
+import { LoaderPulse } from "@/components/ui-custom/LoaderPulse";
 import { PlusCircleIcon } from "@phosphor-icons/react";
+import { ItemsStatisticCard } from "./ItemsStatisticCard";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

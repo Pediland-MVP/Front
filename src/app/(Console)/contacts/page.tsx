@@ -5,12 +5,10 @@ import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  ContactsList,
-  LayoutTable,
-  SearchInput,
-  SearchToggleButton,
-} from "@components";
+import { ContactsList } from "@/components/Contacts/ContactsList";
+import { LayoutTable } from "@/components/Layout/LayoutTable";
+import { SearchInput } from "@/components/ui-custom/SearchInput";
+import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 
 export default function Page() {
   const t = useTranslations("Contacts");

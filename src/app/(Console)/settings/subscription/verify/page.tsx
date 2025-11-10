@@ -9,7 +9,7 @@ import useSWRImmutable from "swr/immutable";
 
 import { ExceptionMessage } from "@/types/exceptionMessage";
 
-import { LoaderSpin } from "@components";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

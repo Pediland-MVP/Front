@@ -7,15 +7,15 @@ import { useEffect, useState } from "react";
 
 import {
   Button,
-  ButtonLoading,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@components";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+} from "@/components/ui";
+import { ButtonLoading } from "../ui-custom/ButtonLoading";
+import { WarningCircleIcon } from "@phosphor-icons/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;

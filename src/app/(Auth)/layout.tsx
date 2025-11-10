@@ -1,11 +1,12 @@
-// Refactored
 import { SWRProvider } from "@/hooks/swr/api-client";
 import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 
-import { AuthProvider, SiteProvider, Toaster } from "@components";
+import { AuthProvider } from "@/components/Providers/AuthProvider";
+import { SiteProvider } from "@/components/Providers/SiteProvider";
+import { Toaster } from "sonner";
 
 export async function generateMetadata() {
   const cookieStore = cookies();

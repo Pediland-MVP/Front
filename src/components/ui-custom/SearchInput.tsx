@@ -1,10 +1,10 @@
-// src/components/SearchInput.tsx
 "use client";
 
-import { Input } from "@components";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
+
+import { Input } from "@/components/ui/input";
 
 type Props = {
   value: string;

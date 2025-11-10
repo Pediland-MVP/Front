@@ -4,12 +4,10 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import {
-  AuthProvider,
-  SiteProvider,
-  Toaster,
-  ZodErrorsMapProvider,
-} from "@components";
+import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
+import { AuthProvider } from "@/components/Providers/AuthProvider";
+import { SiteProvider } from "@/components/Providers/SiteProvider";
+import { Toaster } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -38,7 +36,7 @@ export default async function ConsoleLayout({
             <NextIntlClientProvider messages={messages}>
               <ZodErrorsMapProvider>
                 <SiteProvider>
-                  <main className="flex h-screen flex-col bg-gradient-to-tl from-blue-500 to-violet-700">
+                  <main className="flex h-screen flex-col bg-linear-to-tl from-blue-500 to-violet-700">
                     {children}
                   </main>
                 </SiteProvider>

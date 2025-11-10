@@ -17,7 +17,7 @@ import {
   FormField,
   FormItem,
   Input,
-} from "@components";
+} from "@/components/ui";
 import { CheckIcon, TicketIcon, XIcon } from "lucide-react";
 
 const schema = z.object({

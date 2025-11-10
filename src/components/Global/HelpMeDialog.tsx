@@ -13,9 +13,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  VideoComp,
-} from "@components";
-import { InfoIcon, MonitorPlayIcon } from "@phosphor-icons/react/dist/ssr";
+} from "@/components/ui";
+import { InfoIcon, MonitorPlayIcon } from "@phosphor-icons/react";
+import { VideoComp } from "./VideoComp";
 
 type Position =
   | "left"

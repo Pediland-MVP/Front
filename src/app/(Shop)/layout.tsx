@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import SWRProvider from "./swr.prvider";
-
-import { SiteProvider, ZodErrorsMapProvider } from "@components";
+import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
+import { SiteProvider } from "@/components/Providers/SiteProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",
@@ -27,7 +27,7 @@ export default async function ShopLayout({
         locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
       }
     >
-      <body className="flex h-full min-h-screen flex-col bg-gradient-to-b from-violet-50 to-blue-50">
+      <body className="flex h-full min-h-screen flex-col bg-linear-to-b from-violet-50 to-blue-50">
         <SWRProvider>
           <NextIntlClientProvider messages={messages}>
             <ZodErrorsMapProvider>

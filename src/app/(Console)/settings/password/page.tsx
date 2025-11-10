@@ -11,10 +11,9 @@ import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { LayoutSettings } from "@/components/Layout/LayoutSettings";
 import {
   Button,
-  ButtonLoading,
-  CounterDown,
   Form,
   FormControl,
   FormField,
@@ -24,10 +23,11 @@ import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-  InputPassword,
-  LayoutSettings,
-  LoaderSpin,
-} from "@components";
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { CounterDown } from "@/components/ui-custom/CounterDown";
+import { InputPassword } from "@/components/ui-custom/InputPassword";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { CircleNotchIcon, LockIcon, LockOpenIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
 
@@ -62,7 +62,9 @@ export default function PasswordPage() {
   const [isRequesting, setIsRequesting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user, isLoading, mutate: mutateUser } = useUser();
-  const havePassword = true;
+  const havePassword = user?.havePassword;
+
+  console.log(user);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

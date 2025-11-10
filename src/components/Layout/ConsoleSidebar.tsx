@@ -1,22 +1,9 @@
 "use client";
 
+import useUser from "@/hooks/useUser";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
 
-import useUser from "@/hooks/useUser";
-import {
-  LogoSlogan,
-  LogoText,
-  NavMain,
-  NavUserSkeleton,
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  UserDetailsCard,
-  useSidebar,
-} from "@components";
 import {
   AddressBookIcon,
   CubeIcon,
@@ -24,7 +11,19 @@ import {
   LightningIcon,
   ShoppingBagIcon,
   SlidersIcon,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
+import { LogoSlogan } from "../Global/LogoSlogan";
+import { LogoText } from "../Global/LogoText";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  useSidebar,
+} from "../ui";
+import { NavMain } from "./NavMain";
+import { NavUserSkeleton } from "./NavUser.skeleton";
+import { UserDetailsCard } from "./UserDetailsCard";
 
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,

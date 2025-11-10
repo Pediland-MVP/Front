@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@components";
+} from "@/components/ui";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface DeleteConfirmationDialogProps {

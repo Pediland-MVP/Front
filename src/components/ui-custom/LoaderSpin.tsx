@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-import { Spinner } from "@components";
+import { Spinner } from "../ui/spinner";
 
 interface LoaderSpinProps {
   className?: string;

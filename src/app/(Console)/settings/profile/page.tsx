@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
-import { ProfileForm } from "@components";
+
+import { ProfileForm } from "@/components/Settings/ProfileForm";
 
 export default function ProfilePage() {
   const t = useTranslations("Settings.Profile");

@@ -7,12 +7,11 @@ import { Table } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
-import {
-  ContactDetailsDialog,
-  DataTable,
-  TablePagination,
-} from "@components";
+
 import { ContactTableColumns } from "./ContactTableColumns";
+import { ContactDetailsDialog } from "./ContactDetailsDialog";
+import { DataTable } from "../Table/TableData";
+import { TablePagination } from "../Table/TablePagination";
 
 export const ContactsList = ({ search }: { search: string }) => {
   // Dialog

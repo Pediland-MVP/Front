@@ -15,8 +15,6 @@ import { z } from "zod";
 
 import {
   Button,
-  ButtonLoading,
-  CounterDown,
   Form,
   FormControl,
   FormField,
@@ -25,7 +23,9 @@ import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@components";
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { CounterDown } from "@/components/ui-custom/CounterDown";
 import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
 

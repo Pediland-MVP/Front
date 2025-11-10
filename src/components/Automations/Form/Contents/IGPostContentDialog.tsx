@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   Skeleton,
-} from "@components";
+} from "@/components/ui";
 
 type IGPostContentDialogProps = {
   isOpen: boolean;

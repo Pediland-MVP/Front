@@ -1,4 +1,3 @@
-// src/components/Automations/Form/TargetPostComment.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
@@ -8,13 +7,13 @@ import { useFormContext } from "react-hook-form";
 import { InstagramPostSelectDialog } from "./InstagramPostSelectDialog";
 
 import {
-  ErrorMessage,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   Switch,
-} from "@components";
+} from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 
 export const TargetPostComment = () => {
   const {

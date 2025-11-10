@@ -1,30 +1,29 @@
 "use client";
 
+import usePayPlan from "@/app/(Console)/settings/subscription/hooks/usePayPlan";
+import useUser from "@/hooks/useUser";
+import { cn } from "@/lib/utils";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { Alert, Button, Card, CardContent, CardFooter } from "../ui";
+import { IPlan } from "@/types/plans/plans";
+import { formatNumber } from "@/utils/formatNumber";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ClockCountdownIcon,
   PackageIcon,
   SealCheckIcon,
-  WarningCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { MoveLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { IPlan } from "@/types/plans/plans";
-import { cn } from "@/lib/utils";
-import { formatNumber } from "@/utils/formatNumber";
-import { ButtonLoading, CardSimple } from "../ui-custom";
-import usePayPlan from "@/app/(Console)/settings/subscription/hooks/usePayPlan";
-import { AlertCircleIcon, ArrowLeftIcon, MoveLeftIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { InstagramInvalid } from "../Console/InstagramInvalid";
+import { Alert, Button, Card, CardContent, CardFooter } from "../ui";
+import { ButtonLoading } from "../ui-custom/ButtonLoading";
 import { DiscountAlert } from "./DiscountAlert";
 import { DiscountCode } from "./DiscountCode";
-import { z } from "zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import useUser from "@/hooks/useUser";
-import { InstagramInvalid } from "../Console";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -104,7 +103,7 @@ export const ChoosePlan = () => {
       {isIgTokenInvalid ? (
         <InstagramInvalid />
       ) : currentPlan ? (
-        <Card className="border-dashed border-blue-200 bg-gradient-to-br from-blue-50 to-violet-50 pb-7">
+        <Card className="border-dashed border-blue-200 bg-linear-to-br from-blue-50 to-violet-50 pb-7">
           <CardContent>
             <h2 className="text-gradient mb-5 flex items-center gap-2 text-lg font-semibold">
               <PackageIcon

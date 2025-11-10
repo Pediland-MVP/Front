@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HTMLAttributeAnchorTarget, ReactElement } from "react";
 
-import { UserDropdownMenu } from "@components";
 import {
   HouseIcon,
   IconProps,
@@ -14,6 +13,7 @@ import {
   ShoppingBagIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
+import { UserDropdownMenu } from "../Console/UserDropdownMenu";
 
 export interface NavItem {
   icon: ReactElement<IconProps>;

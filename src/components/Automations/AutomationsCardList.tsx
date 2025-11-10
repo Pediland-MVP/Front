@@ -15,13 +15,11 @@ import type { AutomationResponse } from "@/schemas/automation";
 import type { PageMeta } from "@/schemas/pageMeta";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 
-import {
-  AutomationCard,
-  DeleteConfirmationDialog,
-  ItemsPagination,
-  LoaderSpin,
-  NoDataError,
-} from "@components";
+import { ItemsPagination } from "../Console/ItemsPagination";
+import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
+import { NoDataError } from "../Global/NoDataError";
+import { LoaderSpin } from "../ui-custom/LoaderSpin";
+import { AutomationCard } from "./AutomationCard";
 
 interface AutomationsListCardProps {
   search: string;

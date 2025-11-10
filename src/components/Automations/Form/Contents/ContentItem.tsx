@@ -1,4 +1,3 @@
-// src/components/Automations/form/Contents/ContentItem.tsx
 "use client";
 
 import {
@@ -20,21 +19,21 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  IGPostContent,
-  ProductContentComp,
-  TextContent,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  useContentsContext,
-  ButtonContent,
-  MediaContent,
-} from "@components";
+} from "@/components/ui";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { ButtonContent } from "./ButtonContent";
+import { useContentsContext } from "./ContentsContext";
+import { IGPostContent } from "./IGPostContent";
+import { MediaContent } from "./MediaContent";
+import { ProductContentComp } from "./ProductContent";
+import { TextContent } from "./TextContent";
 
 interface ReturnContentProps {
   index: number;

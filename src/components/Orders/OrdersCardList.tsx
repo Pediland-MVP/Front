@@ -5,17 +5,14 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 
-import {
-  ItemsPagination,
-  LoaderSpin,
-  NoDataError,
-  ProductCard,
-} from "@components";
 import { PageMeta } from "@/schemas/pageMeta";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { OrderCard } from "./OrderCard";
 import { OrderNamespace } from "@/types/order/order.namespace";
 import EditOrderDialog from "@/app/(Console)/orders/components/editOrderDialog";
+import { NoDataError } from "../Global/NoDataError";
+import { LoaderSpin } from "../ui-custom/LoaderSpin";
+import { ItemsPagination } from "../Console/ItemsPagination";
 
 interface OrdersCardListProps {
   search: string;

@@ -3,6 +3,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { ContactForm } from "./ContactForm";
 import {
   DialogStyled,
   DialogStyledBody,
@@ -10,8 +11,7 @@ import {
   DialogStyledDescription,
   DialogStyledHeader,
   DialogStyledTitle,
-} from "@components";
-import { ContactForm } from "./ContactForm";
+} from "../ui-custom/dialogStyled";
 
 type ContactDetailsDialogProps = {
   open: boolean;
@@ -30,7 +30,9 @@ export const ContactDetailsDialog = ({
     <DialogStyled open={open} onOpenChange={setOpen}>
       <DialogStyledContent showCloseButton={false}>
         <DialogStyledHeader>
-          <DialogStyledTitle icon={'AddressBookTabsIcon'}>{t("detailsInfo")}</DialogStyledTitle>
+          <DialogStyledTitle icon={"AddressBookTabsIcon"}>
+            {t("detailsInfo")}
+          </DialogStyledTitle>
           <DialogStyledDescription></DialogStyledDescription>
         </DialogStyledHeader>
         <DialogStyledBody>

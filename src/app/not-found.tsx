@@ -3,10 +3,11 @@
 import "@/styles/globals.css";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
-import { Button, LoaderSpin } from "@/components";
-import { CloudSlashIcon, CloudXIcon, CoffeeIcon } from "@phosphor-icons/react";
 import { Suspense } from "react";
+
+import { CloudSlashIcon, CloudXIcon, CoffeeIcon } from "@phosphor-icons/react";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import { Button } from "@/components/ui";
 
 function NotFoundContent() {
   const params = useSearchParams();
@@ -14,7 +15,7 @@ function NotFoundContent() {
 
   return (
     <div
-      className="font-Yekan flex h-screen flex-col items-center justify-center gap-3 bg-gradient-to-t from-violet-300 to-blue-200 antialiased"
+      className="font-Yekan flex h-screen flex-col items-center justify-center gap-3 bg-linear-to-t from-violet-300 to-blue-200 antialiased"
       dir="rtl"
     >
       <div>

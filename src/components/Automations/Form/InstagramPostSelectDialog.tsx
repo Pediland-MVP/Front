@@ -1,4 +1,3 @@
-// src/components/Automations/Form/InstagramPostSelectDialog.tsx
 "use client";
 
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
@@ -22,9 +21,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  ErrorMessage,
   Skeleton,
-} from "@components";
+} from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -115,7 +114,7 @@ export const InstagramPostSelectDialog = ({
                     fill
                     className="rounded-lg object-cover"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-t from-black to-transparent opacity-0 duration-150 hover:opacity-100">
+                  <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-linear-to-t from-black to-transparent opacity-0 duration-150 hover:opacity-100">
                     <span className="text-xs text-white hover:no-underline">
                       {t("change_post")}
                     </span>

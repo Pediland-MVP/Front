@@ -9,13 +9,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
+import { LogoSlogan } from "@/components/Global/LogoSlogan";
+import { LogoText } from "@/components/Global/LogoText";
 import {
   Button,
-  HelpMeDialog,
-  LogoSlogan,
-  LogoText,
   Spinner,
-} from "@components";
+} from "@/components/ui";
 import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
 import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
 import { SquarePlayIcon } from "lucide-react";

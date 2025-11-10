@@ -1,4 +1,3 @@
-// app/(Console)/automations/components/form/justFollowers.tsx
 "use client";
 
 import useUser from "@/hooks/useUser";
@@ -8,19 +7,18 @@ import { useEffect } from "react";
 import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
-// UI Imports
 import {
-  ErrorMessage,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  HelpMeDialog,
   Input,
   Switch,
   Textarea,
-} from "@components";
+} from "@/components/ui";
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 
 type JustFollowersProps = {
   control: Control<AutomationFormType>;
@@ -34,7 +32,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
 
   useEffect(() => {
     if (!user) return;
-    
+
     if (watch("justFollowers")) {
       // Set default values when enabling
       if (!watch("followMessage") && hasInstagram) {

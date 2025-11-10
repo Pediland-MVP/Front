@@ -1,7 +1,7 @@
-import { LayoutTable } from "@/components";
-import SessionsTable from "../../../../components/Sessions/sessions.table";
 import { getTranslations } from "next-intl/server";
-// Just UI Imports Below
+
+import { LayoutTable } from "@/components/Layout/LayoutTable";
+import SessionsTable from "@/components/Sessions/sessions.table";
 
 export default async function SessionsPage(props: {
   searchParams: Promise<{ contentCycleId?: string }>;

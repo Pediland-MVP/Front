@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { Card } from "@components";
+
+import { Card } from "@/components/ui/card";
 
 interface CardSimpleProps {
   children: React.ReactNode;

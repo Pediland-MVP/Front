@@ -1,6 +1,7 @@
 // src/components/Automations/Form/Contents/ButtonContent.tsx
 "use client";
 
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { AutomationFormType } from "@/schemas/automationForm";
 import {
@@ -18,19 +19,18 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { useTranslations } from "next-intl";
-import { useFieldArray, useFormContext } from "react-hook-form";
 
 import {
   Button,
-  ButtonContentItem,
-  ErrorMessage,
   FormField,
   FormItem,
   FormLabel,
-  InputCounter,
   Textarea,
-} from "@components";
+} from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { InputCounter } from "@/components/ui-custom/InputCounter";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
+import { ButtonContentItem } from "./ContentButtonsItem";
 
 type ButtonContentProps = {
   mode: AutomationContentModeEnum;

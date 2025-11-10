@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
   Spinner,
   useSidebar,
-} from "@components";
+} from "@/components/ui";
 import { CrownIcon, LogOutIcon, UserRoundPenIcon } from "lucide-react";
 
 interface UserDropdownMenuProps {

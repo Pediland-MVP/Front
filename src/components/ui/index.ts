@@ -1,7 +1,5 @@
-
-export * from "./alert-dialog";
-export * from "./alert-dialog";
 export * from "./alert";
+export * from "./alert-dialog";
 export * from "./avatar";
 export * from "./badge";
 export * from "./breadcrumb";
@@ -12,15 +10,15 @@ export * from "./collapsible";
 export * from "./dialog";
 export * from "./dropdown-menu";
 export * from "./form";
-export * from "./input-otp";
 export * from "./input";
+export * from "./input-otp";
 export * from "./label";
 export * from "./select";
 export * from "./sheet";
 export * from "./sidebar";
-export * from "./spinner";
 export * from "./skeleton";
 export * from "./sonner";
+export * from "./spinner";
 export * from "./switch";
 export * from "./table";
 export * from "./textarea";

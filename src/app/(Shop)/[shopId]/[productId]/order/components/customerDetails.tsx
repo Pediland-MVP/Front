@@ -1,23 +1,27 @@
 "use client";
 
+import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
-// UI
-import { ProductFieldTypeEnum } from "@/types/product.enum";
-import {
-  ButtonLoading, ErrorMessage, FormControl,
-  FormField,
-  FormItem,
-  FormLabel, Input, Textarea
-} from "@components";
-import { UserRectangleIcon } from "@phosphor-icons/react/dist/ssr";
-import { useState } from "react";
 import useOrder from "../hooks/useOrder";
 import useUpdateContact from "../hooks/useUpdateContact";
-import { useCheckout } from "../useCheckout";
+
+import { orderFormSchema } from "@/components/Shop/CheckoutPage";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+  Textarea,
+} from "@/components/ui";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
+import { UserRectangleIcon } from "@phosphor-icons/react/dist/ssr";
+import { useCheckout } from "../useCheckout";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
@@ -31,17 +35,16 @@ export default function CustomerDetails() {
     trigger,
     clearErrors,
     getValues,
-    watch
+    watch,
   } = useFormContext<z.infer<typeof orderFormSchema>>();
 
   const { createOrder, loading: isCreateOrderLoading } = useOrder();
 
   const { updateContact, loading: isUpdateContactLoading } = useUpdateContact();
 
-  const [isProductFieldsError, setIsProductFieldsError] = useState<{ [key: number]: boolean }>({});
-
-  
-  
+  const [isProductFieldsError, setIsProductFieldsError] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const createOrderHandler = async () => {
     await trigger("firstname");
@@ -52,18 +55,18 @@ export default function CustomerDetails() {
       return;
     }
 
-    const productFieldValues = watch('productFieldValues')
+    const productFieldValues = watch("productFieldValues");
     if ((product?.fields?.length || 0) > 0) {
-      let haveError = false
+      let haveError = false;
       productFieldValues?.forEach((pf, index) => {
         if (pf.isRequired && !pf.value) {
           setIsProductFieldsError((prevState: any) => ({
             ...prevState,
             [index]: true,
           }));
-          haveError = true
+          haveError = true;
         }
-      })
+      });
 
       if (haveError) return;
     }
@@ -78,15 +81,18 @@ export default function CustomerDetails() {
     clearErrors();
   };
 
-
   return (
     <div className="_customer-details px-4 pb-6">
-      <h2 className="text-lg font-semibold mb-2 md:mb-4 border-b pb-2 flex items-center gap-2 text-primary">
-        <UserRectangleIcon size={28} weight="duotone" className="text-primary" />
+      <h2 className="text-primary mb-2 flex items-center gap-2 border-b pb-2 text-lg font-semibold md:mb-4">
+        <UserRectangleIcon
+          size={28}
+          weight="duotone"
+          className="text-primary"
+        />
         {t("customerDetails")}
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-2 md:gap-3">
+      <div className="grid gap-2 md:grid-cols-3 md:gap-3">
         <FormField
           control={control}
           name="firstname"
@@ -100,7 +106,7 @@ export default function CustomerDetails() {
                 />
               </FormControl>
               {errors.firstname && (
-                <span className="text-red-500 text-sm">{t("required")}</span>
+                <span className="text-sm text-red-500">{t("required")}</span>
               )}
             </FormItem>
           )}
@@ -119,7 +125,7 @@ export default function CustomerDetails() {
                 />
               </FormControl>
               {errors.lastname && (
-                <span className="text-red-500 text-sm">{t("required")}</span>
+                <span className="text-sm text-red-500">{t("required")}</span>
               )}
             </FormItem>
           )}
@@ -141,18 +147,18 @@ export default function CustomerDetails() {
                 />
               </FormControl>
               {errors.mobile && (
-                <span className="text-red-500 text-sm">{t("required")}</span>
+                <span className="text-sm text-red-500">{t("required")}</span>
               )}
             </FormItem>
           )}
         />
 
-        {watch('productFieldValues')?.map((f, index) => (
+        {watch("productFieldValues")?.map((f, index) => (
           <FormField
             key={index}
             control={control}
             name={`productFieldValues.${index}.value`}
-            render={({ field, fieldState: {error} }) => (
+            render={({ field, fieldState: { error } }) => (
               <FormItem>
                 <FormLabel>{f.label}</FormLabel>
                 <FormControl>
@@ -162,15 +168,15 @@ export default function CustomerDetails() {
                     f.type === ProductFieldTypeEnum.TEXT && <Input {...field} />
                   )}
                 </FormControl>
-                  {
-                    isProductFieldsError[index] && <ErrorMessage>{t('required')}</ErrorMessage>
-                  }
+                {isProductFieldsError[index] && (
+                  <ErrorMessage>{t("required")}</ErrorMessage>
+                )}
               </FormItem>
             )}
           />
         ))}
       </div>
-      <div className="mt-6 w-full flex justify-center items-center gap-x-2">
+      <div className="mt-6 flex w-full items-center justify-center gap-x-2">
         <ButtonLoading
           onClick={createOrderHandler}
           isLoading={isCreateOrderLoading}

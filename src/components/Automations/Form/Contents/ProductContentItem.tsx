@@ -7,12 +7,13 @@ import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { Button, ProductContentItemDialog } from "@components";
+import { Button } from "@/components/ui";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
+import { ProductContentItemDialog } from "./ProductContentItemDialog";
 
 type ProductContentItemProps = {
   id: string;
@@ -90,7 +91,7 @@ export const ProductContentItem = ({
                 height={0}
                 className="aspect-square rounded-lg object-cover"
               />
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gradient-to-t from-black to-transparent opacity-0 duration-150 group-hover:opacity-100">
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-linear-to-t from-black to-transparent opacity-0 duration-150 group-hover:opacity-100">
                 <Button
                   type="button"
                   size="sm"

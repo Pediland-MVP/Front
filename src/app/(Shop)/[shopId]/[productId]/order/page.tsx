@@ -7,7 +7,8 @@ import { Suspense, use, useEffect, useState } from "react";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 
-import { CheckoutPage, LoaderSpin } from "@components";
+import { CheckoutPage } from "@/components/Shop/CheckoutPage";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

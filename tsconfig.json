@@ -27,8 +27,8 @@
       "@/*": [
         "./*"
       ],
-      "@components": [
-        "./components/index.ts"
+      "@/components/ui": [
+        "./components/ui/index.ts"
       ],
       "@components/*": [
         "./components/*"

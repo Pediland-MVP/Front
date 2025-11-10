@@ -1,12 +1,11 @@
 import {
   Button,
-  LoaderPulse,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components";
+} from "@/components/ui";
 import type { Table } from "@tanstack/react-table";
 import {
   ChevronLeft,
@@ -14,6 +13,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import { LoaderPulse } from "../ui-custom/LoaderPulse";
 
 interface ItemsPaginationProps<TData> {
   table?: Table<TData> | null; // Optional TanStack table instance

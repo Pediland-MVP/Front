@@ -22,16 +22,18 @@ import { ProvinceNamespace } from "@/types/province";
 import { UserNamespace } from "@/types/user";
 
 import {
-  ButtonLoading, FormControl,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, Input, LoaderSpin, Select,
+  FormMessage, Input, Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@components";
+} from "@/components/ui";
+import { LoaderSpin } from "../ui-custom/LoaderSpin";
+import { ButtonLoading } from "../ui-custom/ButtonLoading";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

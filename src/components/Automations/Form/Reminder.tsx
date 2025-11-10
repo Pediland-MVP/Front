@@ -1,4 +1,3 @@
-// src/components/Automations/form/Reminder.tsx
 "use client";
 
 import {
@@ -9,24 +8,23 @@ import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
-import { Contents } from "./Contents";
 
-// UI Imports
+import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import {
-  ErrorMessage,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  HelpMeDialog,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch
-} from "@components";
+  Switch,
+} from "@/components/ui";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { Contents } from "./Contents";
 
 export const Reminder = () => {
   const {

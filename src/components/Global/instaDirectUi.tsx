@@ -5,7 +5,7 @@ import {
   AvatarImage,
   Button,
   Textarea,
-} from "@components";
+} from "@/components/ui";
 import {
   useContentStore,
   useCurrentTextAreaValue,

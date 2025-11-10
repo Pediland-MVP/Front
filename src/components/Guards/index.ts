@@ -1,2 +1,2 @@
 // export { AuthCheckGuard } from "./AuthCheckGuard";
-export { InstagramGuard } from "./InstagramGuard";
+// export { InstagramGuard } from "./InstagramGuard";

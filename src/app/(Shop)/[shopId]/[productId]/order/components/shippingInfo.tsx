@@ -1,17 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Package, Truck, Info } from "lucide-react";
-import { Card, CardContent } from "@components";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+import { Card, CardContent } from "@/components/ui";
+import { Badge } from "@/components/ui/badge";
 
 interface ShippingInfoProps {
   shippingCost: number | null | undefined;

@@ -1,12 +1,10 @@
 "use client";
 
-import {
-  DashboardStats,
-  DashboardTelegramBanner,
-  DashboardInstagramBanner,
-  LayoutPage,
-  SubscriptionBoard,
-} from "@components";
+import { DashboardInstagramBanner } from "@/components/Console/Dashboard/DashboardInstagramBanner";
+import { DashboardStats } from "@/components/Console/Dashboard/DashboardStats";
+import { DashboardTelegramBanner } from "@/components/Console/Dashboard/DashboardTelegramBanner";
+import { SubscriptionBoard } from "@/components/Console/Dashboard/SubscriptionBoard";
+import { LayoutPage } from "@/components/Layout/LayoutPage";
 
 export default function DashboardPage() {
   return (

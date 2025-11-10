@@ -8,8 +8,9 @@ import Image from "next/image";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import { Button, ErrorMessage } from "@components";
+import { Button } from "@/components/ui";
 import { IGPostContentDialog } from "./IGPostContentDialog";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 
 const PAGE_SIZE = 9;
 
@@ -47,7 +48,7 @@ export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
               height={0}
               className="aspect-square rounded-lg object-cover"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black to-transparent opacity-0 duration-150 hover:opacity-100">
+            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-t from-black to-transparent opacity-0 duration-150 hover:opacity-100">
               <Button
                 type="button"
                 className="text-white hover:no-underline"

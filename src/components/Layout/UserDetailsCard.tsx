@@ -12,22 +12,21 @@ import { useMemo, useState } from "react";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-  ButtonLoading,
-  CardContent,
-  CardSimple,
-  LoaderPulse,
-  ProgressLine,
-} from "@components";
-import {
   PlugsConnectedIcon,
   PlugsIcon,
   SignOutIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { ProgressLine } from "../Console/ProgressLine";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  CardContent,
+} from "../ui";
+import { ButtonLoading } from "../ui-custom/ButtonLoading";
+import { CardSimple } from "../ui-custom/CardSimple";
 
 export const UserDetailsCard = () => {
   const router = useRouter();
@@ -92,7 +91,7 @@ export const UserDetailsCard = () => {
   };
 
   return (
-    <CardSimple className="border-dashed border-blue-300/70 bg-gradient-to-t from-white/80 to-white/50">
+    <CardSimple className="bg-gradient-to-t border-dashed border-blue-300/70 from-white/85 to-white/50">
       <CardContent className="flex flex-col gap-1.5 p-3">
         {pathname !== "/" &&
           !isSubscriptionsLoading &&

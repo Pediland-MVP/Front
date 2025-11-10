@@ -6,15 +6,12 @@ import { formatNumber } from "@/utils/formatNumber";
 import { toJalaliDate } from "@/utils/jalali";
 import { useTranslations } from "next-intl";
 
-import {
-  Button,
-  CardContent,
-  CardSimple,
-  LoaderSpin,
-  ProgressRadial,
-} from "@components";
+import { Button, CardContent } from "@/components/ui";
 import { CircleIcon, ClockCountdownIcon } from "@phosphor-icons/react/dist/ssr";
 import { ClockIcon, ShoppingCartIcon } from "lucide-react";
+import { LoaderSpin } from "../ui-custom/LoaderSpin";
+import { CardSimple } from "../ui-custom/CardSimple";
+import { ProgressRadial } from "../Console/ProgressRadial";
 
 export const SubscriptionsDetails = () => {
   const t = useTranslations("Subscription");

@@ -17,9 +17,9 @@ import { toast } from "sonner";
 
 import {
   FormMessage,
-  MediaUploader,
-  useContentsUploaderContext,
-} from "@components";
+} from "@/components/ui";
+import { useContentsUploaderContext } from "./ContentsUploaderContext";
+import { MediaUploader } from "@/components/ui-custom/MediaUploader";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

@@ -2,8 +2,9 @@
 
 import { useTranslations } from "next-intl";
 
-import { CardContent, CardFooter, CardSimple } from "@components";
 import * as PhosphorIcons from "@phosphor-icons/react";
+import { CardSimple } from "@/components/ui-custom/CardSimple";
+import { CardContent, CardFooter } from "@/components/ui";
 
 interface ItemsStatisticCardProps {
   data: {
@@ -39,7 +40,7 @@ export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="text-muted-foreground md:group-hover:text-secondary justify-center !rounded-b-xl bg-gray-50 p-1.5 text-[11px] font-medium duration-300 md:group-hover:bg-blue-100/50">
+      <CardFooter className="text-muted-foreground md:group-hover:text-secondary justify-center rounded-b-xl! bg-gray-50 p-1.5 text-[11px] font-medium duration-300 md:group-hover:bg-blue-100/50">
         {t("details")}
       </CardFooter>
     </CardSimple>

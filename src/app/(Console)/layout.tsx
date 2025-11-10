@@ -3,16 +3,14 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { Toaster } from "sonner";
 
-import {
-  AuthProvider,
-  ConsoleProvider,
-  InstagramInvalidDialog,
-  NavBottom,
-  SiteProvider,
-  Toaster,
-  ZodErrorsMapProvider,
-} from "@components";
+import { InstagramInvalidDialog } from "@/components/Console/InstagramInvalidDialog";
+import { ConsoleProvider } from "@/components/Layout/ConsoleProvider";
+import { NavBottom } from "@/components/Layout/NavBottom";
+import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
+import { AuthProvider } from "@/components/Providers/AuthProvider";
+import { SiteProvider } from "@/components/Providers/SiteProvider";
 
 export const metadata: Metadata = {
   title: "Befroosh Application",

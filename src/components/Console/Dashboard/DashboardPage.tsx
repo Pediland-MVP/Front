@@ -1,10 +1,8 @@
-import useUser from "@/hooks/useUser";
-
-import { DashboardStats, LayoutPage, SubscriptionBoard } from "@components";
+import { LayoutPage } from "@/components/Layout/LayoutPage";
+import { SubscriptionBoard } from "./SubscriptionBoard";
+import { DashboardStats } from "./DashboardStats";
 
 export const DashboardPage = () => {
-  const { user } = useUser();
-
   return (
     <LayoutPage className="px-3">
       <div className="_dashboard-page space-y-4">

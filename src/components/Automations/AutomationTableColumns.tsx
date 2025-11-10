@@ -9,18 +9,18 @@ import Link from "next/link";
 import { memo, useState } from "react";
 
 import {
-  Badge,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@components";
-import {
   ChatCircleTextIcon,
   CheckCircleIcon,
   DotsThreeOutlineIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import {
+  Badge,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui";
 
 const AvatarCell = memo(function AvatarCell({
   src,

@@ -5,14 +5,13 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  Button,
-  LayoutCard,
-  ProducstCardList,
-  SearchInput,
-  SearchToggleButton,
-} from "@components";
+import { LayoutCard } from "@/components/Layout/LayoutCard";
+import { ProducstCardList } from "@/components/Products/ProducstCardList";
+import { Button } from "@/components/ui";
+import { SearchInput } from "@/components/ui-custom/SearchInput";
+import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { CircleFadingPlusIcon } from "lucide-react";
+import useSWRImmutable from "swr/immutable";
 
 export default function Page() {
   const router = useRouter();
@@ -30,6 +29,12 @@ export default function Page() {
       error: s.error,
     }));
 
+  const { data: cardToCardData } = useSWRImmutable(`/payments/cardToCard`, {
+    revalidateOnMount: true,
+  });
+
+  const allowAdd = !!cardToCardData;
+
   const HeaderButton = useMemo(() => {
     return (
       <>
@@ -41,7 +46,7 @@ export default function Page() {
           type="button"
           size="md"
           onClick={() => router.push("/products/add")}
-          disabled={error}
+          disabled={error || !allowAdd}
         >
           {t("add")}
           <CircleFadingPlusIcon />
@@ -82,7 +87,7 @@ export default function Page() {
 
   return (
     <LayoutCard className="_products">
-      <ProducstCardList search={effectiveSearch} />
+      <ProducstCardList search={effectiveSearch} allowAdd={allowAdd} />
     </LayoutCard>
   );
 }

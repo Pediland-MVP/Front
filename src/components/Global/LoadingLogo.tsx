@@ -31,7 +31,7 @@ export const LoadingLogo = ({ delay = 0 }: LoadingLogoProps) => {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-10 flex h-screen flex-col items-center justify-center bg-gradient-to-tl from-violet-700 to-blue-400",
+        "fixed inset-0 z-10 flex h-screen flex-col items-center justify-center bg-linear-to-tl from-violet-700 to-blue-400",
       )}
     >
       <div className="text-center">

@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 
-import { Button, Spinner } from "@components";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 interface ButtonLoadingProps {
   isLoading: boolean;

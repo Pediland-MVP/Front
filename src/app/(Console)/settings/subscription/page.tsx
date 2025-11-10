@@ -2,7 +2,9 @@
 
 import { useTranslations } from "next-intl";
 
-import { ChoosePlan, LayoutSettings, SubscriptionsDetails } from "@components";
+import { LayoutSettings } from "@/components/Layout/LayoutSettings";
+import { ChoosePlan } from "@/components/Settings/ChoosePlan";
+import { SubscriptionsDetails } from "@/components/Settings/SubscriptionsDetails";
 
 export default function SubscriptionPage() {
   const t = useTranslations("Subscription");

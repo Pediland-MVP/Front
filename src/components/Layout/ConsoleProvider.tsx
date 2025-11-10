@@ -1,21 +1,15 @@
-// Refactored
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
-
-import {
-  ConsoleHeader,
-  ConsoleSidebar,
-  SidebarInset,
-  SidebarProvider,
-} from "@components";
+import { useLocale } from "next-intl";
+import { SidebarInset, SidebarProvider } from "../ui";
+import { ConsoleHeader } from "./ConsoleHeader";
+import { ConsoleSidebar } from "./ConsoleSidebar";
 
 export const ConsoleProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const t = useTranslations("ConsoleLayout");
   const locale = useLocale();
 
   return (

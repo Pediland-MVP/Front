@@ -5,10 +5,9 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
 
-import { Badge, Button, Card, CardContent, CardFooter } from "@components";
-import { CircleXIcon, MessageSquareMoreIcon, PencilIcon } from "lucide-react";
-import Image from "next/image";
+import { Badge, Button, Card, CardContent, CardFooter } from "@/components/ui";
 import { CrosshairIcon } from "@phosphor-icons/react/dist/ssr";
+import { CircleXIcon, MessageSquareMoreIcon, PencilIcon } from "lucide-react";
 import { CardImage } from "../Global/CardImage";
 
 interface AutomationCardProps {

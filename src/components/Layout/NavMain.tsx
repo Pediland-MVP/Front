@@ -19,7 +19,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@components";
+} from "../ui";
 import { CaretLeftIcon } from "@phosphor-icons/react";
 
 interface NavMainProps {

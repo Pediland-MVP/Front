@@ -10,12 +10,10 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 
-import {
-  AutomationTableColumns,
-  DataTable,
-  DeleteConfirmationDialog,
-  TablePagination,
-} from "@components";
+import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
+import { DataTable } from "../Table/TableData";
+import { TablePagination } from "../Table/TablePagination";
+import { AutomationTableColumns } from "./AutomationTableColumns";
 
 export const AutomationsListTable = () => {
   const t = useTranslations("Automations.List");

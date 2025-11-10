@@ -155,7 +155,7 @@ export default function PaymentDetails() {
                 بارگزاری نمایید.
               </p>
 
-              <div className="_card-template mt-3 flex flex-col gap-3 rounded-lg border border-b-[3px] border-sky-600 border-b-sky-600 bg-gradient-to-bl from-blue-50 to-blue-100 p-3">
+              <div className="_card-template mt-3 flex flex-col gap-3 rounded-lg border border-b-[3px] border-sky-600 border-b-sky-600 bg-linear-to-bl from-blue-50 to-blue-100 p-3">
                 <p className="text-secondary font-bold">
                   {cardToCard?.bankName}
                 </p>

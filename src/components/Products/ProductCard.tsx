@@ -6,9 +6,10 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
 
-import { Button, Card, CardContent, CardFooter, CardImage } from "@components";
+import { Button, Card, CardContent, CardFooter } from "@/components/ui";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { CircleXIcon, PencilIcon } from "lucide-react";
+import { CardImage } from "../Global/CardImage";
 
 interface ProductCardComponentProps {
   product: ProductNamespace.Product;

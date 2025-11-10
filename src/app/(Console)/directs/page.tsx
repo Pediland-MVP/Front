@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { ExcelExportDirectsDrawer } from "./components/excelExportDirects.drawer";
 
-import { Button } from "@components";
+import { Button } from "@/components/ui";
 
 export default function page() {
   const t = useTranslations("Directs");
@@ -18,7 +18,9 @@ export default function page() {
 
   useEffect(() => {
     setButtons([
-      <Button size="md" onClick={() => setOpen(true)}>{t("ExcelExport.title")}</Button>,
+      <Button size="md" onClick={() => setOpen(true)}>
+        {t("ExcelExport.title")}
+      </Button>,
     ]);
 
     return () => {

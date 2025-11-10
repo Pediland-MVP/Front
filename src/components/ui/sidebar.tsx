@@ -140,7 +140,7 @@ function SidebarProvider({
             } as React.CSSProperties
           }
           className={cn(
-            "group/sidebar-wrapper flex min-h-svh w-full overflow-hidden bg-gradient-to-tl from-blue-500 to-violet-700 md:max-h-screen md:p-4",
+            "group/sidebar-wrapper flex min-h-svh w-full overflow-hidden bg-linear-to-tl from-blue-500 to-violet-700 md:max-h-screen md:p-4",
             className,
           )}
           {...props}
@@ -188,7 +188,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="text-sidebar-foreground w-(--sidebar-width) bg-gradient-to-t from-blue-50 to-violet-50 p-0 [&>button]:hidden"
+          className="text-sidebar-foreground w-(--sidebar-width) bg-linear-to-t from-blue-50 to-violet-50 p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,

@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
-import { ErrorMessage, ProductContentItem } from "@components";
 import {
   closestCenter,
   DndContext,
@@ -22,6 +21,8 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
+import { ProductContentItem } from "./ProductContentItem";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 
 type ProductContentProps = {
   index: number;

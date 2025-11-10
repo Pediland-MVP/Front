@@ -2,13 +2,13 @@ import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { useTranslations } from "next-intl";
 
 import {
-  ErrorMessage,
   FormField,
   FormItem,
-  InputCounter,
   Label,
   Textarea,
-} from "@components";
+} from "@/components/ui";
+import { InputCounter } from "@/components/ui-custom/InputCounter";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 
 export type TextContentProps = {
   index: number;
