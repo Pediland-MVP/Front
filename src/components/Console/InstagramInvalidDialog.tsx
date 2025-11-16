@@ -9,13 +9,14 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui";
 import { ButtonLoading } from "../ui-custom/ButtonLoading";
-import { WarningCircleIcon } from "@phosphor-icons/react";
+import { PlugsIcon } from "@phosphor-icons/react";
+import { toast } from "sonner";
+import { CopyIcon, PlugIcon } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
@@ -50,7 +51,7 @@ export const InstagramInvalidDialog = () => {
     }
   }, [user, isAborted, pathname]);
 
-  const handleGoToSettings = () => {
+  const handleReLogin = () => {
     // router.push(`${API_URL}/instagram/connectIG`);
     router.push(
       `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
@@ -72,7 +73,7 @@ export const InstagramInvalidDialog = () => {
         onEscapeKeyDown={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader>
+        {/* <DialogHeader>
           <DialogTitle className="text-destructive flex items-center gap-2">
             <WarningCircleIcon weight="duotone" size={22} />
             خطای حساب اینستاگرام
@@ -82,19 +83,54 @@ export const InstagramInvalidDialog = () => {
             لازم است تا دوباره اکانت اینستاگرام خود را متصل نمایید. تا آن زمان
             سرویس دایرکت هوشمند شما غیرفعال است.
           </DialogDescription>
+        </DialogHeader> */}
+
+        <DialogHeader className="gap-2">
+          <PlugsIcon
+            size={46}
+            weight="duotone"
+            className="text-destructive mx-auto"
+          />
+          <DialogTitle className="text-destructive text-base sm:justify-center">
+            {t("title")}
+          </DialogTitle>
         </DialogHeader>
 
-        <DialogFooter className="flex gap-x-2">
+        <div className="space-y-3">
+          <ol className="list-decimal space-y-1 pr-4 text-sm text-rose-900">
+            <li>{t("list_1")}</li>
+            <li>{t("list_2")}</li>
+            <li>{t("list_3")}</li>
+            <li>{t("list_4")}</li>
+          </ol>
+
+          <div className="rounded-lg border border-dashed border-rose-300/70 bg-rose-50/80 p-3">
+            <p className="text-destructive text-[13px]">{t("description")}</p>
+          </div>
+        </div>
+
+        <DialogFooter className="flex w-full items-center justify-center">
           <ButtonLoading
             isLoading={isNavigationLoading}
-            onClick={handleGoToSettings}
-            className="bg-destructive/90 hover:bg-destructive text-white"
+            onClick={handleReLogin}
+            className="bg-destructive/90 hover:bg-destructive w-full text-white sm:flex-1"
           >
-            {t("buttons.relogin")}
+            <PlugIcon />
+            {t("relogin")}
           </ButtonLoading>
 
-          <Button variant="outline" onClick={handleClose}>
-            متوجه شدم!
+          <Button
+            variant="outline"
+            className="w-full sm:flex-1"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
+              );
+              toast.success("لینک اتصال با موفقیت کپی شد!");
+            }}
+          >
+            <CopyIcon />
+            کپی لینک اتصال
           </Button>
         </DialogFooter>
       </DialogContent>

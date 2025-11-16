@@ -75,14 +75,12 @@ export const UserDetailsCard = () => {
     setIsLogoutLoading(true);
 
     try {
-      const success = await logout();
-      if (success) {
-        const subStore = useSubscriptionStore.getState();
-        subStore.setSubscriptions([]);
-        subStore.setPlans([]);
-        subStore.setPlansData(undefined);
-        router.push(process.env.NEXT_PUBLIC_LANDING_URL || "/auth");
-      }
+      await logout();
+      const subStore = useSubscriptionStore.getState();
+      subStore.setSubscriptions([]);
+      subStore.setPlans([]);
+      subStore.setPlansData(undefined);
+      router.replace("/auth");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -91,7 +89,7 @@ export const UserDetailsCard = () => {
   };
 
   return (
-    <CardSimple className="bg-gradient-to-t border-dashed border-blue-300/70 from-white/85 to-white/50">
+    <CardSimple className="border-dashed border-blue-300/70 bg-gradient-to-t from-white/85 to-white/50">
       <CardContent className="flex flex-col gap-1.5 p-3">
         {pathname !== "/" &&
           !isSubscriptionsLoading &&
@@ -153,10 +151,11 @@ export const UserDetailsCard = () => {
                 <Button
                   variant="link"
                   size="sm"
-                  className="h-auto gap-0 !px-0"
+                  className="h-auto gap-0 px-0!"
                   onClick={() => router.push("/settings/subscription")}
                 >
-                  {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"}
+                  تـمـدیـد
+                  {/* {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"} */}
                 </Button>
               </div>
 

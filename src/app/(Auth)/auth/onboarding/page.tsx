@@ -86,7 +86,7 @@ export default function OnboardingPage() {
 
     try {
       await logout();
-      router.replace(SITE_URL || "https://befroosh.app");
+      router.replace("/auth");
     } catch (error) {
       console.error("❌ Logout error:", error);
     } finally {

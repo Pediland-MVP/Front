@@ -153,7 +153,7 @@ export default function AuthPage() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center">
-        <Button
+        {/* <Button
           variant="link"
           type="button"
           disabled={isLoading}
@@ -162,7 +162,7 @@ export default function AuthPage() {
         >
           {t("back")}
           <MoveLeftIcon />
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

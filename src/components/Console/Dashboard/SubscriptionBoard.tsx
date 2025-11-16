@@ -173,7 +173,8 @@ export const SubscriptionBoard = () => {
                 className="w-full"
                 onClick={() => router.push("/settings/subscription")}
               >
-                {hasActiveSubscription ? "جـزئـیـات" : "تمدید اشتراک"}
+                تمدید اشتراک
+                {/* {hasActiveSubscription ? "جـزئـیـات" : "تمدید اشتراک"} */}
               </Button>
             ) : (
               <Button

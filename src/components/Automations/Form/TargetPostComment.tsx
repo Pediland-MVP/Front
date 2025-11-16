@@ -7,6 +7,9 @@ import { useFormContext } from "react-hook-form";
 import { InstagramPostSelectDialog } from "./InstagramPostSelectDialog";
 
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   FormControl,
   FormField,
   FormItem,
@@ -14,6 +17,10 @@ import {
   Switch,
 } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import {
+  MessageCircleWarningIcon,
+  MessageSquareWarningIcon,
+} from "lucide-react";
 
 export const TargetPostComment = () => {
   const {
@@ -75,6 +82,12 @@ export const TargetPostComment = () => {
           </FormItem>
         )}
       />
+
+      <Alert variant="note">
+        <AlertDescription icon>
+          {t("note")}
+        </AlertDescription>
+      </Alert>
     </>
   );
 };

@@ -15,7 +15,7 @@ import type { AutomationFormType } from "@/schemas/automationForm";
 import type { UploadedFile } from "@/types/fileUploader";
 
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
-import { Alert, AlertDescription, Button } from "@/components/ui";
+import { Alert, AlertDescription, AlertTitle, Button } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import type { DragEndEvent } from "@dnd-kit/core";
 import {
@@ -198,9 +198,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
             ))}
 
             <Alert variant="note" className="col-span-5">
-              <AlertDescription>
-                {t_contentTypes("select_your_type")}
-              </AlertDescription>
+              <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
             </Alert>
           </div>
         )}

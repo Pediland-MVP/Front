@@ -43,10 +43,8 @@ export const UserDropdownMenu = ({
     setIsLogoutLoading(true);
 
     try {
-      const success = await logout();
-      if (success) {
-        router.push(process.env.NEXT_PUBLIC_LANDING_URL || "/auth");
-      }
+      await logout();
+      router.replace("/auth");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
