@@ -1,64 +1,59 @@
 import { SWRProvider } from "@/hooks/swr/api-client";
 import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages, getTranslations } from "next-intl/server";
-import { cookies } from "next/headers";
+import { getMessages, getTranslations } from "next-intl/server";
+import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/components/Providers/AuthProvider";
 import { SiteProvider } from "@/components/Providers/SiteProvider";
-import { Toaster } from "sonner";
+import { Metadata } from "next";
 
-export async function generateMetadata() {
-  const cookieStore = cookies();
-  const locale = (await cookieStore).get("NEXT_LOCALE")?.value || "fa";
-  const t = await getTranslations({ locale, namespace: "Auth.Metadata" });
+// TODO: Refactor Intl metadata with this code
+// export async function generateMetadata() {
+//   const cookieStore = cookies();
+//   const locale = (await cookieStore).get("NEXT_LOCALE")?.value || "fa";
+//   const t = await getTranslations({ locale, namespace: "Auth.Metadata" });
 
-  return {
-    title: t("title"),
-    description: t("description"),
-  };
-}
+//   return {
+//     title: t("title"),
+//     description: t("description"),
+//   };
+// }
+
+export const metadata: Metadata = {
+  title: {
+    default: "بفروش | مدیریت مشتریان",
+    template: "%s | بفروش",
+  },
+};
 
 export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
   const messages = await getMessages();
 
   return (
-    <html
-      lang={locale}
-      dir={locale === "fa" ? "rtl" : "ltr"}
-      className={
-        locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
-      }
-    >
-      <body className="bg-violet-50">
-        <SWRProvider>
-          <AuthProvider>
-            <NextIntlClientProvider messages={messages}>
-              <SiteProvider>
-                <div className="container px-10 sm:max-w-sm">
-                  <main className="flex min-h-screen flex-col items-center justify-center">
-                    {children}
-                  </main>
-                </div>
-              </SiteProvider>
+    <SWRProvider>
+      <AuthProvider>
+        <NextIntlClientProvider messages={messages}>
+          <SiteProvider>
+            <main className="flex min-h-screen flex-col items-center justify-center bg-violet-50">
+              <div className="container px-10 sm:max-w-sm">{children}</div>
+            </main>
+          </SiteProvider>
 
-              <Toaster
-                richColors
-                position="top-center"
-                theme="light"
-                toastOptions={{
-                  className: "font-Yekan text-[13px]",
-                }}
-              />
-            </NextIntlClientProvider>
-          </AuthProvider>
-        </SWRProvider>
-      </body>
-    </html>
+          <Toaster
+            richColors
+            position="top-center"
+            theme="light"
+            toastOptions={{
+              className: "font-Yekan text-[13px]",
+            }}
+          />
+        </NextIntlClientProvider>
+      </AuthProvider>
+    </SWRProvider>
   );
 }
