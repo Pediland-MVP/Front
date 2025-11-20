@@ -187,43 +187,44 @@ export const ChoosePlan = () => {
 
       {isIgTokenInvalid ? (
         <InstagramInvalid />
-      ) : currentPlan ? (
-        <Card className="border-dashed border-blue-200 bg-linear-to-br from-blue-50 to-violet-50 pb-7">
-          <CardContent>
-            <h2 className="text-gradient mb-5 flex items-center gap-3 text-lg font-semibold">
-              <PackageIcon
-                weight="duotone"
-                className="text-secondary size-10"
-              />
-              {t("plan_title")}:<br className="md:hidden" /> (
-              {currentPlan?.name})
-            </h2>
-
-            {currentPlan?.features.length > 0 && (
-              <div>
-                <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
-                  {currentPlan.features.map((feature, id) => (
-                    <li
-                      key={id}
-                      className="text-secondary flex items-center gap-2 text-sm font-medium"
-                    >
-                      <SealCheckIcon
-                        size={16}
-                        weight="duotone"
-                        className="text-green-700/80"
-                      />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </CardContent>
-        </Card>
       ) : (
-        <Alert className="border-yellow-600/40 bg-yellow-50 text-sm text-yellow-600">
-          متاسفانه هیچ بسته اشتراکی برای شما وجود ندارد.
-        </Alert>
+        !currentPlan && (
+          <Alert className="border-yellow-600/40 bg-yellow-50 text-sm text-yellow-600">
+            متاسفانه هیچ بسته اشتراکی برای شما وجود ندارد.
+          </Alert>
+          // <Card className="border-dashed border-blue-200 bg-linear-to-br from-blue-50 to-violet-50 p-0">
+          //   <CardContent className="p-4">
+          //     <h2 className="text-gradient flex items-center gap-3 text-lg font-semibold">
+          //       <PackageIcon
+          //         weight="duotone"
+          //         className="text-secondary size-8"
+          //       />
+          //       {t("plan_title")}:<br className="md:hidden" /> (
+          //       {currentPlan?.name})
+          //     </h2>
+
+          //     {currentPlan?.features.length > 0 && (
+          //       <div>
+          //         <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
+          //           {currentPlan.features.map((feature, id) => (
+          //             <li
+          //               key={id}
+          //               className="text-secondary flex items-center gap-2 text-sm font-medium"
+          //             >
+          //               <SealCheckIcon
+          //                 size={16}
+          //                 weight="duotone"
+          //                 className="text-green-700/80"
+          //               />
+          //               {feature}
+          //             </li>
+          //           ))}
+          //         </ul>
+          //       </div>
+          //     )}
+          //   </CardContent>
+          // </Card>
+        )
       )}
 
       <DiscountAlert />
