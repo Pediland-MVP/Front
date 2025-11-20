@@ -28,6 +28,7 @@ interface NavMainProps {
     url: string;
     icon: Icon;
     isActive?: boolean;
+    external?: boolean;
     items?: {
       title: string;
       url: string;
@@ -100,7 +101,10 @@ export const NavMain = ({ items }: NavMainProps) => {
                       if (isMobile) toggleSidebar();
                     }}
                   >
-                    <Link href={item.url}>
+                    <Link
+                      href={item.url}
+                      target={item.external ? "_blank" : "_self"}
+                    >
                       <item.icon size={24} weight="duotone" />
                       <span>{item.title}</span>
                     </Link>

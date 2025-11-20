@@ -89,13 +89,11 @@ export const UserDetailsCard = () => {
   };
 
   return (
-    <CardSimple className="border-dashed border-blue-300/70 bg-gradient-to-t from-white/85 to-white/50">
+    <CardSimple className="border-dashed border-blue-300/70 bg-linear-to-t from-white/85 to-white/50">
       <CardContent className="flex flex-col gap-1.5 p-3">
-        {pathname !== "/" &&
-          !isSubscriptionsLoading &&
-          activeSubscription?.type !== "credit" && (
-            <div className="text-secondary flex flex-col pb-1 text-[13px]">
-              {/* <div className="mb-1 flex items-center justify-between">
+        {!isSubscriptionsLoading && (
+          <div className="text-secondary flex flex-col pb-1 text-[13px]">
+            {/* <div className="mb-1 flex items-center justify-between">
                 <div
                   className={cn(
                     "flex items-center gap-1 text-green-600",
@@ -134,6 +132,7 @@ export const UserDetailsCard = () => {
                 </span>
               </div> */}
 
+            {activeSubscription?.type !== "credit" && (
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">مانده اعتبار:</span>
@@ -158,54 +157,55 @@ export const UserDetailsCard = () => {
                   {/* {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"} */}
                 </Button>
               </div>
+            )}
 
-              <div className="mb-1 flex items-center gap-1">
-                <span className="text-muted-foreground">همراه:</span>
-                <span className="tracking-wider">{userData?.mobile}</span>
-              </div>
+            <div className="mb-1 flex items-center gap-1">
+              <span className="text-muted-foreground">همراه:</span>
+              <span className="tracking-wider">{userData?.mobile}</span>
+            </div>
 
-              <div className="mb-2 flex items-center gap-1">
-                <div className="flex items-center gap-1">
-                  <span
-                    className={cn(
-                      "text-muted-foreground",
-                      !instagramValid && "text-destructive",
-                    )}
-                  >
-                    اینستاگرام:
-                  </span>
-                </div>
+            <div className="mb-2 flex items-center gap-1">
+              <div className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "line-clamp-1 flex-1 font-semibold tracking-wider",
+                    "text-muted-foreground",
                     !instagramValid && "text-destructive",
                   )}
                 >
-                  {userData?.instagrams?.[0]?.username}
+                  اینستاگرام:
                 </span>
-                {instagramValid ? (
-                  <PlugsConnectedIcon
-                    size={20}
-                    weight="duotone"
-                    className="text-green-600"
-                  />
-                ) : (
-                  <PlugsIcon
-                    size={20}
-                    weight="duotone"
-                    className="text-destructive"
-                  />
-                )}
               </div>
-
-              <ProgressLine
-                percentage={isSubscriptionsLoading ? 0 : totalRemainingDays}
-                height={5}
-                type="days"
-                totalDays={totalPurchasedDays}
-              />
+              <span
+                className={cn(
+                  "line-clamp-1 flex-1 font-semibold tracking-wider",
+                  !instagramValid && "text-destructive",
+                )}
+              >
+                {userData?.instagrams?.[0]?.username}
+              </span>
+              {instagramValid ? (
+                <PlugsConnectedIcon
+                  size={20}
+                  weight="duotone"
+                  className="text-green-600"
+                />
+              ) : (
+                <PlugsIcon
+                  size={20}
+                  weight="duotone"
+                  className="text-destructive"
+                />
+              )}
             </div>
-          )}
+
+            <ProgressLine
+              percentage={isSubscriptionsLoading ? 0 : totalRemainingDays}
+              height={5}
+              type="days"
+              totalDays={totalPurchasedDays}
+            />
+          </div>
+        )}
 
         <div className="text-secondary flex items-center">
           <div className="flex flex-1 items-center gap-1 text-[13px]">
