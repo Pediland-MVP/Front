@@ -202,6 +202,47 @@
                 "birthDateRequired": "Birth date is required",
                 "update": "An error occurred"
             }
+        },
+        "ExcelExport": {
+            "title": "Excel Export",
+            "description": "Fill in the details to export contacts to Excel",
+            "form": {
+                "startDate": {
+                    "label": "Start Date",
+                    "error": "Start date is required"
+                },
+                "endDate": {
+                    "label": "End Date",
+                    "error": "End date is required",
+                    "refinementError": "End date must be after start date"
+                },
+                "email": {
+                    "label": "Email",
+                    "placeholder": "your@email.com",
+                    "description": "The Excel file will be sent to this email address",
+                    "error": "Please enter a valid email address"
+                },
+                "count": {
+                    "label": "Count (Optional)",
+                    "placeholder": "10000",
+                    "description": "Maximum number of contacts to export (Max: 10,000)",
+                    "error": "Count must be 10,000 or less"
+                },
+                "justHaveNumber": {
+                    "label": "Just Have Number",
+                    "description": "Only export contacts that have a phone number"
+                }
+            },
+            "success": "Request sent",
+            "excelWillSentToYourEmail": "The Excel file will be sent to your email shortly",
+            "buttons": {
+                "export": "Send Request",
+                "cancel": "Cancel"
+            },
+            "toast": {
+                "title": "Export Request",
+                "description": "Exporting contacts from {startDate} to {endDate} to {email}"
+            }
         }
     },
     "Inbox": {
