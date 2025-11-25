@@ -12,13 +12,17 @@ import { useEffect, useState } from "react";
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { LogoSlogan } from "@/components/Global/LogoSlogan";
 import { LogoText } from "@/components/Global/LogoText";
-import {
-  Button,
-  Spinner,
-} from "@/components/ui";
+import { Button, Spinner } from "@/components/ui";
 import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
 import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
-import { SquarePlayIcon } from "lucide-react";
+import {
+  ClipboardCopyIcon,
+  CopyIcon,
+  PlayIcon,
+  SquarePlayIcon,
+  TvMinimalPlayIcon,
+} from "lucide-react";
+import { toast } from "sonner";
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
@@ -50,7 +54,7 @@ export default function ConnectPage() {
 
     try {
       await logout();
-      router.replace(SITE_URL || "https://befroosh.app");
+      router.replace("/auth");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -91,7 +95,7 @@ export default function ConnectPage() {
       <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
         <HowToConnectDialog open={isDialogOpen} setOpen={setDialogOpen} />
 
-        <div className="container mx-auto flex h-full flex-col justify-around md:max-w-sm">
+        <div className="container mx-auto flex h-full flex-col justify-around px-5 md:max-w-sm">
           <div className="flex flex-col items-center space-y-6">
             <PlugsIcon size={60} weight="duotone" className="text-secondary" />
 
@@ -145,7 +149,7 @@ export default function ConnectPage() {
               size="lg"
               className="text-muted-foreground"
             >
-              <SquarePlayIcon className="size-5.5" />
+              <TvMinimalPlayIcon className="size-6" />
               {t("how_to_connect")}
             </Button>
           </HelpMeDialog>
@@ -182,6 +186,20 @@ export default function ConnectPage() {
               <span className="text-sm">({t("instagram_holding")})</span>{" "}
               {t("description")}
             </p>
+
+            <Button
+              variant="link"
+              className="text-muted-foreground mt-4 text-sm font-normal"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
+                );
+                toast.success("لینک اتصال با موفقیت کپی شد!");
+              }}
+            >
+              کپی لینک اتصال دستی
+              <CopyIcon />
+            </Button>
           </div>
         </div>
       </div>

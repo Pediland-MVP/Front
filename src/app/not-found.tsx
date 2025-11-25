@@ -13,6 +13,7 @@ function NotFoundContent() {
   const params = useSearchParams();
   const status = params.get("status");
 
+  
   return (
     <div
       className="font-Yekan flex h-screen flex-col items-center justify-center gap-3 bg-linear-to-t from-violet-300 to-blue-200 antialiased"

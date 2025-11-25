@@ -196,8 +196,8 @@ export function useSubscriptionData() {
 
     if (subscriptionsData?.items.length) {
       setActive({
-        subscriptionInfo: true,
-        choosePlan: false,
+        subscriptionInfo: false,
+        choosePlan: true,
         showCoupon: false,
       });
     }

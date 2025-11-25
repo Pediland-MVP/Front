@@ -17,6 +17,8 @@ import {
   useSidebar,
 } from "@/components/ui";
 import { CrownIcon, LogOutIcon, UserRoundPenIcon } from "lucide-react";
+import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 interface UserDropdownMenuProps {
   children: React.ReactNode;
@@ -32,6 +34,12 @@ export const UserDropdownMenu = ({
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
   const logout = useLogout();
 
+  const { subscriptions } = useSubscriptionStore();
+
+  const activeSubscription = subscriptions?.find(
+    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
+  );
+
   const t = useTranslations("Console.Sidebar");
 
   const routeHandler = (route: string) => {
@@ -43,10 +51,8 @@ export const UserDropdownMenu = ({
     setIsLogoutLoading(true);
 
     try {
-      const success = await logout();
-      if (success) {
-        router.push(process.env.NEXT_PUBLIC_LANDING_URL || "/auth");
-      }
+      await logout();
+      router.replace("/auth");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -68,17 +74,21 @@ export const UserDropdownMenu = ({
         align="start"
         sideOffset={4}
       >
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            className="hover:text-primary text-secondary cursor-pointer"
-            onClick={() => routeHandler("/settings/subscription")}
-          >
-            <CrownIcon />
-            <span>{t("upgradeAccount")}</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        {activeSubscription?.type !== "credit" && (
+          <>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                className="hover:text-primary text-secondary cursor-pointer"
+                onClick={() => routeHandler("/settings/subscription")}
+              >
+                <CrownIcon />
+                <span>{t("upgradeAccount")}</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
 
-        <DropdownMenuSeparator />
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         <DropdownMenuGroup>
           <DropdownMenuItem

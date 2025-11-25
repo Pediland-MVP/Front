@@ -8,6 +8,7 @@ import {
   AddressBookIcon,
   CubeIcon,
   HouseIcon,
+  LifebuoyIcon,
   LightningIcon,
   ShoppingBagIcon,
   SlidersIcon,
@@ -104,6 +105,13 @@ const generateData = (t: any, isMobile: boolean) => ({
       url: "/settings",
       icon: SlidersIcon,
       isActive: true,
+    },
+    {
+      title: t("support"),
+      url: "https://t.me/befroosh_support",
+      icon: LifebuoyIcon,
+      isActive: true,
+      external: true,
     },
   ],
 });

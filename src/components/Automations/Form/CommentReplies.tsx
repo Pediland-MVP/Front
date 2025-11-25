@@ -6,6 +6,8 @@ import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import {
+  Alert,
+  AlertDescription,
   Button,
   FormControl,
   FormDescription,
@@ -124,6 +126,11 @@ export const CommentReplies = () => {
                     />
                   ),
                 )}
+
+                <Alert variant="note">
+                  <AlertDescription icon>{t("note")}</AlertDescription>
+                </Alert>
+
                 <div className="flex flex-col">
                   <Button
                     onClick={onAddComment}

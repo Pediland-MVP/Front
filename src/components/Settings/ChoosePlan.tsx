@@ -8,11 +8,17 @@ import { IPlan } from "@/types/plans/plans";
 import { formatNumber } from "@/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  CircleIcon,
   ClockCountdownIcon,
   PackageIcon,
   SealCheckIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { MoveLeftIcon } from "lucide-react";
+import {
+  MoveLeftIcon,
+  ShoppingBagIcon,
+  ShoppingBasketIcon,
+  ShoppingCartIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,6 +30,10 @@ import { Alert, Button, Card, CardContent, CardFooter } from "../ui";
 import { ButtonLoading } from "../ui-custom/ButtonLoading";
 import { DiscountAlert } from "./DiscountAlert";
 import { DiscountCode } from "./DiscountCode";
+import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
+import { CardSimple } from "../ui-custom/CardSimple";
+import { toJalaliDate } from "@/utils/jalali";
+import { ProgressRadial } from "../Console/ProgressRadial";
 
 const planSchema = z.object({
   planId: z.number(),
@@ -53,7 +63,17 @@ export const ChoosePlan = () => {
     isLoading: isSubscriptionsLoading,
     discountCode,
     setDiscountCode,
+    totalRemainingDays,
+    totalPurchasedDays,
   } = useSubscriptionStore();
+
+  const activeSubscription = subscriptions?.find(
+    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
+  );
+
+  const reservedSubscriptions = subscriptions?.filter(
+    (sub) => sub.status === SubscriptionStatusEnum.RESERVED,
+  );
 
   useEffect(() => {
     setCurrentPlan(plans[0]);
@@ -96,49 +116,115 @@ export const ChoosePlan = () => {
     }
   };
 
+  const labelClass = "text-muted-foreground text-sm font-me";
+
   if (!active.choosePlan) return null;
 
   return (
     <div className="flex-1 space-y-4">
+      {activeSubscription ? (
+        <CardSimple className="border-violet-200 bg-violet-50/50">
+          <CardContent className="flex flex-col gap-2 p-3 text-[15px] md:p-5">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>وضعیت:</span>
+                  <span className="text-primary flex items-center gap-1 font-semibold">
+                    {t(activeSubscription.status)}
+                  </span>
+                  <CircleIcon
+                    size={10}
+                    weight="fill"
+                    className="animate-pulse text-green-500"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>نوع اشتراک:</span>
+                  <span className="text-primary font-semibold">
+                    {activeSubscription.type === "credit"
+                      ? "300 پیام رایگان"
+                      : activeSubscription.planDuration.name}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>تاریخ شروع:</span>
+                  <span className="text-primary font-semibold">
+                    {toJalaliDate(activeSubscription.planDuration.createDate)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className={labelClass}>قیمت بسته:</span>
+                  <span className="text-primary font-semibold">
+                    {formatNumber(activeSubscription.planDuration.price)}{" "}
+                    تـومـان
+                  </span>
+                </div>
+              </div>
+              <ProgressRadial
+                percentage={
+                  isSubscriptionsLoading
+                    ? 0
+                    : activeSubscription?.type === "credit"
+                      ? activeSubscription?.credit
+                      : totalRemainingDays
+                }
+                size={100}
+                strokeWidth={10}
+                type={activeSubscription?.type === "credit" ? "credit" : "days"}
+                totalDays={totalPurchasedDays}
+              />
+            </div>
+          </CardContent>
+        </CardSimple>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          {t("no_active_subscription")}
+        </p>
+      )}
+
       {isIgTokenInvalid ? (
         <InstagramInvalid />
-      ) : currentPlan ? (
-        <Card className="border-dashed border-blue-200 bg-linear-to-br from-blue-50 to-violet-50 pb-7">
-          <CardContent>
-            <h2 className="text-gradient mb-5 flex items-center gap-2 text-lg font-semibold">
-              <PackageIcon
-                weight="duotone"
-                className="text-secondary h-8 w-8"
-              />
-              {t("plan_title")}:<br className="md:hidden" /> (
-              {currentPlan?.name})
-            </h2>
-
-            {currentPlan?.features.length > 0 && (
-              <div>
-                <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
-                  {currentPlan.features.map((feature, id) => (
-                    <li
-                      key={id}
-                      className="text-secondary flex items-center gap-2 text-sm font-medium"
-                    >
-                      <SealCheckIcon
-                        size={16}
-                        weight="duotone"
-                        className="text-green-700/80"
-                      />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </CardContent>
-        </Card>
       ) : (
-        <Alert className="border-yellow-600/40 bg-yellow-50 text-sm text-yellow-600">
-          متاسفانه هیچ بسته اشتراکی برای شما وجود ندارد.
-        </Alert>
+        !currentPlan && (
+          <Alert className="border-yellow-600/40 bg-yellow-50 text-sm text-yellow-600">
+            متاسفانه هیچ بسته اشتراکی برای شما وجود ندارد.
+          </Alert>
+          // <Card className="border-dashed border-blue-200 bg-linear-to-br from-blue-50 to-violet-50 p-0">
+          //   <CardContent className="p-4">
+          //     <h2 className="text-gradient flex items-center gap-3 text-lg font-semibold">
+          //       <PackageIcon
+          //         weight="duotone"
+          //         className="text-secondary size-8"
+          //       />
+          //       {t("plan_title")}:<br className="md:hidden" /> (
+          //       {currentPlan?.name})
+          //     </h2>
+
+          //     {currentPlan?.features.length > 0 && (
+          //       <div>
+          //         <ul className="grid gap-2.5 px-1.5 md:grid-cols-2">
+          //           {currentPlan.features.map((feature, id) => (
+          //             <li
+          //               key={id}
+          //               className="text-secondary flex items-center gap-2 text-sm font-medium"
+          //             >
+          //               <SealCheckIcon
+          //                 size={16}
+          //                 weight="duotone"
+          //                 className="text-green-700/80"
+          //               />
+          //               {feature}
+          //             </li>
+          //           ))}
+          //         </ul>
+          //       </div>
+          //     )}
+          //   </CardContent>
+          // </Card>
+        )
       )}
 
       <DiscountAlert />
@@ -151,97 +237,109 @@ export const ChoosePlan = () => {
           </h3>
 
           <div className="flex flex-col gap-4 md:flex-row">
-            {currentPlan.durations.map((duration, id) => {
-              const topId = 2;
+            {currentPlan.durations
+              .sort((a, b) => b.id - a.id)
+              .map((duration, id) => {
+                console.log("discountPrice", duration.discountPrice);
+                console.log("price", duration.price);
 
-              return (
-                <Card
-                  key={id}
-                  className={cn(
-                    "flex-1 gap-0 p-0",
-                    id === topId
-                      ? "border-violet-200 shadow-violet-200"
-                      : "border-blue-200/60 shadow-blue-200/60",
-                  )}
-                >
-                  <CardContent
+                const unitPrice =
+                  duration.discountPrice > 0
+                    ? Number(duration.discountPrice)
+                    : Number(duration.price);
+                var totalBasePrice: number | string;
+                var monthlyPrice: number | string;
+
+                if (duration.durationDays === 30) {
+                  monthlyPrice = unitPrice / 1000;
+                  totalBasePrice = formatNumber(unitPrice);
+                } else if (duration.durationDays === 90) {
+                  monthlyPrice = Math.floor(Math.floor(unitPrice / 3) / 1000);
+                  totalBasePrice = formatNumber(unitPrice);
+                } else if (duration.durationDays === 365) {
+                  monthlyPrice = Math.round(Math.round(unitPrice / 12) / 1000);
+                  totalBasePrice = formatNumber(unitPrice);
+                }
+
+                const topId = 0;
+
+                return (
+                  <Card
+                    key={id}
                     className={cn(
-                      "flex w-full flex-1 flex-col items-center justify-around rounded-t-xl px-4 py-5",
-                      id === topId ? "bg-violet-50/50" : "bg-blue-50/30",
+                      "flex-1 gap-0 p-0",
+                      id === topId
+                        ? "border-violet-200 shadow-violet-200"
+                        : "border-blue-200/60 shadow-blue-200/60",
                     )}
                   >
-                    <h4
+                    <CardContent
                       className={cn(
-                        "mb-3",
-                        id === topId
-                          ? "text-primary font-semibold"
-                          : "text-secondary/70 font-medium",
+                        "flex w-full flex-1 flex-col items-center gap-3 rounded-t-xl px-4 py-5 sm:px-3",
+                        id === topId ? "bg-violet-50/50" : "bg-blue-50/30",
                       )}
                     >
-                      {t("subscription")} {duration.name}
-                    </h4>
-                    <div className="flex w-full items-center justify-center gap-1">
-                      <div className="flex flex-col items-center">
-                        {duration.discountPrice != null && (
-                          <div className="text-gray-400 line-through">
-                            {formatNumber(duration.price)}
-                          </div>
-                        )}
-
-                        <div
+                      <div className="flex items-center gap-1">
+                        <h4
                           className={cn(
-                            "text-xl font-bold",
-                            id === topId
-                              ? "text-green-600"
-                              : "text-secondary/70",
+                            "font-bold sm:text-[15px]",
+                            id === topId ? "text-primary" : "text-secondary/80",
                           )}
                         >
-                          {duration.discountPrice != null
-                            ? duration.discountPrice !== 0 &&
-                              formatNumber(duration.discountPrice)
-                            : formatNumber(duration.price)}
-                        </div>
-                        {duration.discountPrice !== 0 ? (
-                          <div className="text-muted-foreground">
-                            {t("toman")}
-                          </div>
-                        ) : (
-                          <div className="text-xl font-semibold text-green-600">
-                            {t("free")}
-                          </div>
-                        )}
+                          {t("subscription")} {duration.name}
+                        </h4>
                       </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="w-full p-0">
-                    <ButtonLoading
-                      isLoading={
-                        selectedDurationId === duration.id && isPayLoading
-                      }
-                      type="button"
-                      variant="ghost"
-                      className={cn(
-                        "h-9 w-full !rounded-t-none !rounded-b-xl font-semibold",
-                        id === topId
-                          ? "text-primary hover:text-primary bg-violet-100/90 hover:bg-violet-200/70"
-                          : "text-secondary/70 hover:text-secondary bg-blue-100/70 hover:bg-blue-100",
-                      )}
-                      onClick={() => selectPlanHandler(duration.id)}
-                    >
-                      {t("buy")}
-                    </ButtonLoading>
-                  </CardFooter>
-                </Card>
-              );
-            })}
+                      <div
+                        className={cn(
+                          "text-center text-lg",
+                          id === topId
+                            ? "font-semibold text-green-600"
+                            : "font-medium",
+                        )}
+                      >
+                        {monthlyPrice}{" "}
+                        <span className="text-base sm:text-[15px]">
+                          هزار تومان ماهانه
+                        </span>
+                      </div>
+
+                      <div className="flex h-full">
+                        <div className="text-muted-foreground flex items-center gap-1.5 text-[15px] sm:text-sm">
+                          (جمع {totalBasePrice} {t("toman")})
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="w-full p-0">
+                      <ButtonLoading
+                        isLoading={
+                          selectedDurationId === duration.id && isPayLoading
+                        }
+                        type="button"
+                        variant="ghost"
+                        size="lg"
+                        className={cn(
+                          "h-9 w-full rounded-t-none! rounded-b-xl! font-semibold",
+                          id === topId
+                            ? "text-primary hover:text-primary bg-violet-100/90 hover:bg-violet-200/70"
+                            : "text-secondary/70 hover:text-secondary bg-blue-100/70 hover:bg-blue-100",
+                        )}
+                        onClick={() => selectPlanHandler(duration.id)}
+                      >
+                        <ShoppingBagIcon />
+                        {t("buy")}
+                      </ButtonLoading>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
           </div>
         </div>
       )}
 
-      <div className="my-6 flex flex-col items-center justify-between gap-3 md:mb-0 md:flex-row">
+      <div className="flex flex-col items-center justify-between gap-3 sm:pb-6 md:mb-0 md:flex-row">
         {!isIgTokenInvalid && currentPlan && <DiscountCode />}
 
-        {subscriptions?.length > 0 && (
+        {reservedSubscriptions?.length > 0 && (
           <Button
             onClick={() =>
               setActive({ choosePlan: false, subscriptionInfo: true })
@@ -249,7 +347,7 @@ export const ChoosePlan = () => {
             variant="link"
             className="font-normal"
           >
-            اشتراک‌های من
+            اشتراک‌های رزرو شده
             <MoveLeftIcon />
           </Button>
         )}
