@@ -1,26 +1,27 @@
 "use client";
-// UI Components from shadcn and custom theme
-import { Input } from "@/components/ui/input";
-import { FormField, FormLabel } from "@/components/ui/form";
+
+import { cn } from "@/lib/utils";
+import { ProductFieldTypeEnum } from "@/types/product.enum";
+import { useTranslations } from "next-intl";
+import { useFieldArray, useFormContext } from "react-hook-form";
+
 import {
+  Button,
+  Card,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui";
 import {
-  ArrowsVertical,
-  PlusCircle,
-  TrashSimple,
-} from "@phosphor-icons/react/dist/ssr";
-
-import { useFormContext, useFieldArray } from "react-hook-form";
-import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -34,10 +35,12 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useTranslations } from "next-intl";
-import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { FormItem } from "@/components/ui/form";
-import { cn } from "@/lib/utils";
+import {
+  ArrowsVerticalIcon,
+  TrashIcon,
+  TrashSimpleIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { CirclePlusIcon, Trash2Icon } from "lucide-react";
 
 // Sortable item component
 const SortableFieldItem = ({
@@ -50,7 +53,6 @@ const SortableFieldItem = ({
   removeCustomField: (id: string) => void;
 }) => {
   const form = useFormContext();
-
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field._xid });
 
@@ -68,9 +70,9 @@ const SortableFieldItem = ({
       <span
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing touch-none"
+        className="cursor-grab touch-none active:cursor-grabbing"
       >
-        <ArrowsVertical size={16} className="text-gray-500" />
+        <ArrowsVerticalIcon size={16} className="text-gray-500" />
       </span>
 
       <FormField
@@ -78,7 +80,7 @@ const SortableFieldItem = ({
         name={`fields.${index}.type`}
         render={({ field: typeField }) => (
           <Select value={typeField.value} onValueChange={typeField.onChange}>
-            <SelectTrigger>
+            <SelectTrigger className="w-auto gap-1 pr-2 pl-1.5">
               <SelectValue placeholder="نوع فیلد" />
             </SelectTrigger>
             <SelectContent>
@@ -98,13 +100,12 @@ const SortableFieldItem = ({
       <FormField
         control={form.control}
         name={`fields.${index}.label`}
-        render={({ field: labelField, fieldState: {error} }) => (
+        render={({ field: labelField, fieldState: { error } }) => (
           <FormItem>
             <Input
-              
               placeholder="عنوان فیلد"
               {...labelField}
-              className={cn(`w-[160px]`, error && "border-red-600")}
+              className={cn(error && "border-red-600")}
             />
           </FormItem>
         )}
@@ -120,7 +121,7 @@ const SortableFieldItem = ({
               statusField.onChange(value === "true" ? true : false)
             }
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-auto gap-1 pr-2 pl-1.5">
               <SelectValue placeholder="وضعیت" />
             </SelectTrigger>
             <SelectContent>
@@ -135,20 +136,19 @@ const SortableFieldItem = ({
 
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="icon"
         onClick={() => removeCustomField(field._xid)}
       >
-        <TrashSimple size={20} />
+        <Trash2Icon className="text-destructive" />
       </Button>
     </div>
   );
 };
 
-export const ProductFields = () => {
-  const form = useFormContext();
-
+export const FormCustomFields = () => {
   const t = useTranslations("Products.Form");
+  const form = useFormContext();
 
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
@@ -161,7 +161,7 @@ export const ProductFields = () => {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Add a new custom field
@@ -198,7 +198,7 @@ export const ProductFields = () => {
   };
 
   return (
-    <div className="space-y-3 bg-blue-50/50 rounded-xl border border-blue-100 p-3 xl:p-5">
+    <Card className="gap-3 p-3 xl:p-5">
       <FormLabel>{t("customFields")}</FormLabel>
       <p className="text-muted-foreground text-[13px]">
         {t("customFieldsDescription")}
@@ -211,34 +211,34 @@ export const ProductFields = () => {
           onClick={addCustomField}
           disabled={fields.length >= 5}
         >
+          <CirclePlusIcon />
           {t("addCustomField")}
-          <PlusCircle className="ml-2" />
         </Button>
 
-        <div className="_custom-fields space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={fields.map((field) => field._xid)}
-              strategy={verticalListSortingStrategy}
+        {fields.length > 0 && (
+          <div className="_custom-fields space-y-2">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              {fields.map((field, index) => (
-                <SortableFieldItem
-                  key={field._xid}
-                  field={field}
-                  index={index}
-                  removeCustomField={removeCustomField}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        </div>
+              <SortableContext
+                items={fields.map((field) => field._xid)}
+                strategy={verticalListSortingStrategy}
+              >
+                {fields.map((field, index) => (
+                  <SortableFieldItem
+                    key={field._xid}
+                    field={field}
+                    index={index}
+                    removeCustomField={removeCustomField}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        )}
       </div>
-    </div>
+    </Card>
   );
 };
-
-export default ProductFields;

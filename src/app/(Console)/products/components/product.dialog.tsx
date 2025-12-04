@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import ProductForm from "./product.form";
+import ProductForm from "../../../../components/Products/ProductForm";
 
 export interface EditProductProps {
   open: boolean;
@@ -32,7 +32,7 @@ export default function EditProduct({
   setOpen,
   productId,
 }: EditProductProps) {
-  const t = useTranslations('Products.Edit');
+  const t = useTranslations("Products.Edit");
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -47,18 +47,16 @@ export default function EditProduct({
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
           <DrawerHeader className="text-right">
-            <DrawerTitle>{t('editContact')}</DrawerTitle>
-            <DrawerDescription>
-              {t('editContactDescription')}
-            </DrawerDescription>
+            <DrawerTitle>{t("editContact")}</DrawerTitle>
+            <DrawerDescription>{t("editContactDescription")}</DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0">
-            <ProductForm/>
+            <ProductForm />
           </div>
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
-                {t('cancel')}
+                {t("cancel")}
               </Button>
             </DrawerClose>
           </DrawerFooter>
@@ -71,14 +69,11 @@ export default function EditProduct({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent dir="rtl" className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>{t('editContact')}</DialogTitle>
-          <DialogDescription>
-            {t('editContactDescription')}
-          </DialogDescription>
+          <DialogTitle>{t("editContact")}</DialogTitle>
+          <DialogDescription>{t("editContactDescription")}</DialogDescription>
         </DialogHeader>
         <ProductForm />
       </DialogContent>
     </Dialog>
   );
 }
-

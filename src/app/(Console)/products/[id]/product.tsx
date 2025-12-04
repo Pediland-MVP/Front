@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useSWRImmutable from "swr/immutable";
-import ProductForm from "../components/product.form";
+import ProductForm from "../../../../components/Products/ProductForm";
 import ProductFormSkeleton from "../components/product.form.skeleton";
 
 export default function Product({ id }: { id: string }) {

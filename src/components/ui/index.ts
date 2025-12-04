@@ -13,6 +13,7 @@ export * from "./form";
 export * from "./input";
 export * from "./input-otp";
 export * from "./label";
+export * from "./radio-group";
 export * from "./select";
 export * from "./sheet";
 export * from "./sidebar";

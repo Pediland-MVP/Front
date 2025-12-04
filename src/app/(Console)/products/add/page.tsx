@@ -1,16 +1,16 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-
+import { useSearchParams } from "next/navigation";
 import { LayoutPage } from "@/components/Layout/LayoutPage";
-import ProductForm from "../components/product.form";
+import ProductForm from "../../../../components/Products/ProductForm";
 
 export default function Page() {
-  const t = useTranslations("Products");
+  const searchParams = useSearchParams();
+  const type = searchParams.get("t") as "p" | "v";
 
   return (
-    <LayoutPage className="_add-product p-0!">
-      <ProductForm />
+    <LayoutPage>
+      <ProductForm type={type} />
     </LayoutPage>
   );
 }

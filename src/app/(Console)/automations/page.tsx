@@ -79,7 +79,7 @@ export default function Page() {
   ]);
 
   return (
-    <LayoutCard className="_automation overflow-auto">
+    <LayoutCard className="_automation">
       <AutomationsCardList search={effectiveSearch} />
     </LayoutCard>
   );
