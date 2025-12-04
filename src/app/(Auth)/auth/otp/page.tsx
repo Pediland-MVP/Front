@@ -114,14 +114,14 @@ export default function OtpPage() {
 
   return (
     <div className="flex flex-1 flex-col justify-center">
-      <div className="mb-12 flex flex-1 items-end justify-center">
-        <h1 className="flex items-center gap-2 text-lg font-bold">
+      <div className="mb-12 flex flex-1 items-end justify-center px-10 sm:max-w-sm">
+        <h1 className="flex items-center justify-center gap-2 text-lg font-bold">
           <NumpadIcon size={28} weight="duotone" />
           {t("title_login_otp")}
         </h1>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 px-10 sm:max-w-sm">
         <div className="flex flex-col text-center text-[15px] font-medium">
           <div>{t("code_sent_to_mobile")}</div>
           <div className="flex items-center justify-center">

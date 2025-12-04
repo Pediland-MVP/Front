@@ -2,7 +2,7 @@
 
 import api, { setAccessToken } from "@/hooks/swr/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,12 +21,13 @@ import {
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { PasswordIcon } from "@phosphor-icons/react";
-import { MoveLeftIcon } from "lucide-react";
+import { MoveLeftIcon, MoveRightIcon } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function PasswordPage() {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("Auth");
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
@@ -202,7 +203,7 @@ export default function PasswordPage() {
           }}
         >
           {t("back")}
-          <MoveLeftIcon />
+          {locale === "fa" ? <MoveLeftIcon /> : <MoveRightIcon />}
         </Button>
       </div>
     </div>

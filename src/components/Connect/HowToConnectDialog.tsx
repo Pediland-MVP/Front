@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import { InstagramLogoIcon } from "@phosphor-icons/react";
 import { PlugsIcon } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
@@ -28,6 +29,7 @@ export const HowToConnectDialog = ({
   setOpen,
 }: HowToConnectDialogProps) => {
   const t = useTranslations("Connect");
+  const locale = useLocale();
   const router = useRouter();
   const [connecting, setConnecting] = useState(false);
 
@@ -61,13 +63,18 @@ export const HowToConnectDialog = ({
                 weight="duotone"
                 className="text-primary mx-auto"
               />
-              <DialogTitle className="text-primary text-base">
+              <DialogTitle className="text-primary justify-center text-base">
                 {t("how_to_connect_title")}
               </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-2">
-              <ol className="list-decimal space-y-2 pr-4 text-sm text-violet-950">
+              <ol
+                className={cn(
+                  "list-decimal space-y-2 text-sm text-violet-950",
+                  locale === "fa" ? "pr-5" : "pl-6",
+                )}
+              >
                 <li>{t("how_to_connect_list_1")}</li>
                 <li>{t("how_to_connect_list_2")}</li>
                 <li>{t("how_to_connect_list_3")}</li>

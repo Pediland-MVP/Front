@@ -95,7 +95,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center">
+    <div className="flex flex-1 flex-col justify-center px-10 sm:max-w-sm">
       <div className="mb-12 flex flex-1 items-end justify-center">
         <h1 className="flex items-center gap-2 text-lg font-bold">
           <UserCirclePlusIcon size={28} weight="duotone" />
@@ -229,7 +229,7 @@ export default function OnboardingPage() {
           type="button"
           className="text-muted-foreground"
         >
-          انصراف از ثبت‌نام
+          {t("cancel_register")}
         </ButtonLoading>
       </div>
     </div>

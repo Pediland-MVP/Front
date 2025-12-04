@@ -1,7 +1,7 @@
 import { SWRProvider } from "@/hooks/swr/api-client";
 import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { getMessages } from "next-intl/server";
 import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/components/Providers/AuthProvider";
@@ -40,7 +40,7 @@ export default async function AuthLayout({
         <NextIntlClientProvider messages={messages}>
           <SiteProvider>
             <main className="flex min-h-screen flex-col items-center justify-center bg-violet-50">
-              <div className="container px-10 sm:max-w-sm">{children}</div>
+              {children}
             </main>
           </SiteProvider>
 
