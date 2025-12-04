@@ -1,0 +1,54 @@
+{
+  "Console": {
+    "Dashboard": {
+      "automation": "Automation",
+      "sessions": "Sessions",
+      "leads": "Leads",
+      "products": "Products/Services",
+      "orders": "Orders",
+      "sales": "Sales",
+      "million": "M",
+      "details": "Details",
+      "remainingDays": "Your remaining subscription days",
+      "day": "day",
+      "view": "View",
+      "active": "Active",
+      "unknown": "Unknown"
+    },
+
+    "accessDenied": "You must first connect your Instagram account.",
+    "accessNote": "Please connect your Instagram account.",
+    "dashboard": "Dashboard",
+    "productCount": "Number of Products / Services",
+    "leadCount": "Number of Leads",
+    "automations": "Number of Automations",
+    "responseCount": "Number of Responses",
+    "growthFromLastMonth": "{growth}% from last month",
+    "leadsGrowthChart": "Leads Growth Chart",
+    "recentSessions": "Recent Sessions",
+    "noRecentSessions": "Nothing yet :)",
+    "Sidebar": {
+      "accounts": "Instagram Accounts",
+      "automations": "Automations",
+      "cardToCard": "Bank Account Management",
+      "comments": "Comments",
+      "contacts": "Contacts",
+      "dashboard": "Dashboard",
+      "description": "Smart Assistant",
+      "directs": "Direct Messages",
+      "instagramConnections": "Instagram Connections",
+      "logout": "Logout",
+      "name": "Befroosh",
+      "ordersList": "Orders",
+      "products": "Products / Services",
+      "profile": "User Profile",
+      "settings": "Settings",
+      "shop": "Shop",
+      "soon": "Coming Soon",
+      "support": "Support",
+      "upgrade": "Subscription Management",
+      "upgradeAccount": "Subscription",
+      "zarinpal": "Zarinpal Management"
+    }
+  }
+}
