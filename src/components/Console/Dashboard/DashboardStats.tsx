@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import useSWRImmutable from "swr/immutable";
 // TODO: Should Refactor
@@ -23,6 +23,7 @@ interface HomeItems {
 
 export const DashboardStats = () => {
   const t = useTranslations("Console.Dashboard");
+  const locale = useLocale();
 
   const {
     data: stats,
@@ -95,9 +96,9 @@ export const DashboardStats = () => {
               className="text-secondary mx-auto size-6 md:size-8"
             />
             <div className="text-secondary/90 p-1 text-center text-sm leading-relaxed font-semibold">
-              افزودن
+              {t("add")}
               <br />
-              پیام خودکار
+              {t("automation")}
             </div>
           </CardContent>
         </CardSimple>

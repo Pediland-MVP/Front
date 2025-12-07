@@ -3,7 +3,7 @@
 import { useLogout } from "@/hooks/swr/api-client";
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import useUser from "@/hooks/useUser";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -23,12 +23,14 @@ import {
   TvMinimalPlayIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function ConnectPage() {
-  const router = useRouter();
   const t = useTranslations("Connect");
+  const locale = useLocale();
+  const router = useRouter();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
@@ -72,7 +74,7 @@ export default function ConnectPage() {
             <SignOutIcon
               size={26}
               onClick={logoutHandler}
-              className="cursor-pointer"
+              className={cn("cursor-pointer", locale !== "fa" && "rotate-180")}
             />
           )}
 
@@ -87,7 +89,7 @@ export default function ConnectPage() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <LogoSlogan variant="white" />
+          {locale === "fa" && <LogoSlogan variant="white" />}
           <LogoText variant="white" size="sm" />
         </div>
       </header>
@@ -107,14 +109,14 @@ export default function ConnectPage() {
               </p>
               <div className="flex flex-col items-center text-[15px]">
                 <div className="text-muted-foreground">
-                  همراه:{" "}
+                  {t("mobile")}{" "}
                   <span className="text-secondary font-semibold">
                     {user?.mobile}
                   </span>
                 </div>
                 {user?.submittedInstagramUsername && (
                   <div className="text-muted-foreground">
-                    اینستاگرام:{" "}
+                    {t("instagram")}{" "}
                     <span className="text-secondary font-semibold">
                       {user?.submittedInstagramUsername}
                     </span>
@@ -183,11 +185,10 @@ export default function ConnectPage() {
             </div>
 
             <p className="mb-2 text-center">
-              <span className="font-semibold">
-                {t("befroosh_meta_partner")}
-              </span>{" "}
-              <span className="text-sm">({t("instagram_holding")})</span>{" "}
-              {t("description")}
+              {t.rich("befroosh_meta_partner", {
+                bold: (chunks) => <strong>{chunks}</strong>,
+                span: (chunks) => <span className="text-sm">{chunks}</span>,
+              })}
             </p>
 
             <Button
@@ -200,7 +201,7 @@ export default function ConnectPage() {
                 toast.success("لینک اتصال با موفقیت کپی شد!");
               }}
             >
-              کپی لینک اتصال دستی
+              {t("copy_manual")}
               <CopyIcon />
             </Button>
           </div>

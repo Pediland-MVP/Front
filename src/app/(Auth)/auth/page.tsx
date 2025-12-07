@@ -3,7 +3,7 @@
 import api from "@/hooks/swr/api-client";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,6 +28,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function AuthPage() {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("Auth");
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
@@ -87,7 +88,7 @@ export default function AuthPage() {
         <LogoText />
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-5 px-10 sm:max-w-sm">
         <div className="text-center text-[15px] font-medium">
           <div>{t.rich("title", { br: () => <br /> })}</div>
         </div>
@@ -140,7 +141,11 @@ export default function AuthPage() {
           {t.rich("terms_and_conditions_message", {
             a: (chunks) => (
               <a
-                href="https://befroosh.app/terms"
+                href={
+                  locale === "fa"
+                    ? "https://befroosh.app/terms"
+                    : "https://befroosh.app/en/terms"
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:text-secondary"

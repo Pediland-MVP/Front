@@ -5,7 +5,7 @@ import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,6 +33,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function OtpPage() {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("Auth");
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
@@ -114,14 +115,14 @@ export default function OtpPage() {
 
   return (
     <div className="flex flex-1 flex-col justify-center">
-      <div className="mb-12 flex flex-1 items-end justify-center">
-        <h1 className="flex items-center gap-2 text-lg font-bold">
+      <div className="mb-12 flex flex-1 items-end justify-center px-10 sm:max-w-sm">
+        <h1 className="flex items-center justify-center gap-2 text-lg font-bold">
           <NumpadIcon size={28} weight="duotone" />
           {t("title_login_otp")}
         </h1>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 px-10 sm:max-w-sm">
         <div className="flex flex-col text-center text-[15px] font-medium">
           <div>{t("code_sent_to_mobile")}</div>
           <div className="flex items-center justify-center">
@@ -161,12 +162,10 @@ export default function OtpPage() {
                       onInput={onInputP2EHandler}
                       autoFocus
                     >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
+                      <InputOTPGroup dir={locale === "fa" ? "rtl" : "ltr"}>
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <InputOTPSlot key={index} index={index} />
+                        ))}
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>

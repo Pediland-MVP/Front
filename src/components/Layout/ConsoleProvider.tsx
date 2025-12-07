@@ -14,7 +14,10 @@ export const ConsoleProvider = ({
 
   return (
     <SidebarProvider>
-      <ConsoleSidebar side={locale === "fa" ? "right" : "left"} />
+      <ConsoleSidebar
+        side={locale === "fa" ? "right" : "left"}
+        className={locale === "fa" ? "pl-0" : "pr-0"}
+      />
 
       <SidebarInset>
         <ConsoleHeader />

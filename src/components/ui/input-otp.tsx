@@ -29,7 +29,7 @@ const InputOTPGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-row-reverse items-center gap-2", className)}
+    className={cn("flex items-center gap-2", className)}
     {...props}
   />
 ));

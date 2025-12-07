@@ -1,7 +1,7 @@
 import type React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { FC } from "react";
+import { useLocale } from "next-intl";
 
 interface ProgressLineProps {
   percentage: number;
@@ -31,6 +31,7 @@ export const ProgressLine = ({
   const finalWidth = width || size;
   const finalHeight = height || strokeWidth || 20;
   const useFullWidth = !finalWidth;
+  const locale = useLocale();
 
   const actualPercentage =
     type === "days" && totalDays ? (percentage / totalDays) * 100 : percentage;
@@ -41,7 +42,10 @@ export const ProgressLine = ({
   return (
     <div className={cn("flex flex-col", showText ? "gap-2" : "")}>
       {/* نوار پیشرفت */}
-      <div className="relative w-full" style={{ transform: "scaleX(-1)" }}>
+      <div
+        className="relative w-full"
+        style={{ transform: locale === "fa" ? "scaleX(-1)" : "scaleX(1)" }}
+      >
         <svg
           width={useFullWidth ? "100%" : finalWidth}
           height={finalHeight}

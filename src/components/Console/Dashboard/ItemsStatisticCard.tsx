@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import * as PhosphorIcons from "@phosphor-icons/react";
 import { CardSimple } from "@/components/ui-custom/CardSimple";
@@ -16,6 +16,7 @@ interface ItemsStatisticCardProps {
 
 export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
   const t = useTranslations("Console.Dashboard");
+  const locale = useLocale();
   const Icon = (PhosphorIcons as any)[data?.icon];
 
   return (
@@ -35,7 +36,9 @@ export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
           </h2>
           <div className="text-secondary/90 flex items-center gap-1 text-xl leading-none font-bold">
             {typeof data?.total === "number"
-              ? data.total.toLocaleString("fa-IR")
+              ? locale === "fa"
+                ? data.total.toLocaleString("fa-IR")
+                : data.total
               : data?.total || ""}
           </div>
         </div>
