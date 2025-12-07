@@ -1,7 +1,7 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 
 import {
@@ -25,6 +25,7 @@ import {
 import { NavMain } from "./NavMain";
 import { NavUserSkeleton } from "./NavUser.skeleton";
 import { UserDetailsCard } from "./UserDetailsCard";
+import { cn } from "@/lib/utils";
 
 const NavUser = dynamic(() => import("./NavUser"), {
   loading: () => <NavUserSkeleton />,
@@ -120,6 +121,7 @@ export const ConsoleSidebar = ({
   ...props
 }: React.ComponentProps<typeof Sidebar>) => {
   const t = useTranslations("Console.Sidebar");
+  const locale = useLocale();
   const { isMobile, toggleSidebar } = useSidebar();
   const data = generateData(t, isMobile);
 
@@ -132,8 +134,10 @@ export const ConsoleSidebar = ({
   return (
     <Sidebar variant="inset" collapsible="offcanvas" {...props}>
       <SidebarHeader className="flex-row gap-2">
-        <div className="flex items-center gap-1.5">
-          <LogoSlogan />
+        <div
+          className={cn("flex items-center gap-1.5", locale !== "fa" && "pl-2")}
+        >
+          {locale === "fa" && <LogoSlogan />}
           <LogoText size="md" />
         </div>
       </SidebarHeader>

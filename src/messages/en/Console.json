@@ -1,19 +1,26 @@
 {
   "Console": {
     "Dashboard": {
-      "automation": "Automation",
-      "sessions": "Sessions",
-      "leads": "Leads",
-      "products": "Products/Services",
-      "orders": "Orders",
-      "sales": "Sales",
-      "million": "M",
-      "details": "Details",
-      "remainingDays": "Your remaining subscription days",
-      "day": "day",
-      "view": "View",
       "active": "Active",
-      "unknown": "Unknown"
+      "add": "Add",
+      "automation": "Automation",
+      "day": "day",
+      "details": "Details",
+      "instagram": "Instagram",
+      "leads": "Leads",
+      "million": "M",
+      "mobile": "Mobile",
+      "orders": "Orders",
+      "products": "Products/Services",
+      "remain": "Credit",
+      "remainingDays": "Your remaining subscription days",
+      "renewal": "Renewal",
+      "renewal_subsription": "Renewal",
+      "sales": "Sales",
+      "sessions": "Sessions",
+      "unknown": "Unknown",
+      "view": "View",
+      "welcome": "Welcome"
     },
 
     "accessDenied": "You must first connect your Instagram account.",

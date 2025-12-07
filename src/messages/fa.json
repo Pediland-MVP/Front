@@ -3,6 +3,12 @@
     "LogoText": {
       "title": "بفروش"
     },
+    "Progress": {
+      "credit": "اعـتـبـار",
+      "days": "روز",
+      "day": "روز",
+      "message": "پیام"
+    },
     "SearchInput": {
       "search_placeholder": "جستجو ..."
     }

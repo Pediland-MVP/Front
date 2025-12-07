@@ -2,7 +2,7 @@
 
 import useUser from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 // TODO: Should Refactor
@@ -18,8 +18,9 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export const SubscriptionBoard = () => {
-  const router = useRouter();
   const t = useTranslations("Console.Dashboard");
+  const locale = useLocale();
+  const router = useRouter();
   const { user } = useUser();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -83,10 +84,10 @@ export const SubscriptionBoard = () => {
             </div>
             <div className="text-secondary flex-1 text-sm">
               <div className="mb-1.5 font-semibold">
-                {user?.firstname} {user?.lastname}، خوش آمدید!
+                {user?.firstname} {user?.lastname}، {t("welcome")}!
               </div>
               <div className="mb-1 flex items-center gap-1">
-                <span className="text-muted-foreground">همراه:</span>
+                <span className="text-muted-foreground">{t("mobile")}:</span>
                 <span className="font-semibold tracking-wider">
                   {user?.mobile}
                 </span>
@@ -98,7 +99,7 @@ export const SubscriptionBoard = () => {
                     !instagramValid && "text-destructive",
                   )}
                 >
-                  اینستاگرام:
+                  {t("instagram")}
                 </span>
                 <span
                   className={cn(
@@ -173,7 +174,7 @@ export const SubscriptionBoard = () => {
                 className="w-full"
                 onClick={() => router.push("/settings/subscription")}
               >
-                تمدید اشتراک
+                {t("renewal_subsription")}
                 {/* {hasActiveSubscription ? "جـزئـیـات" : "تمدید اشتراک"} */}
               </Button>
             ) : (

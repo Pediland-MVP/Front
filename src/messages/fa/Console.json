@@ -1,19 +1,26 @@
 {
   "Console": {
     "Dashboard": {
-      "automation": "پیام خودکار",
-      "sessions": "پاسخ‌ها",
-      "leads": "مخاطب",
-      "products": "کالا/خدمت",
-      "orders": "سفارش",
-      "sales": "فروش",
-      "million": "م",
-      "details": "جـزئـیـات",
-      "remainingDays": "باقی مانده اشتراک شما",
-      "day": "روز",
-      "view": "مشاهده",
       "active": "فعال",
-      "unknown": "نامشخص"
+      "add": "افزودن",
+      "automation": "پیام خودکار",
+      "day": "روز",
+      "details": "جـزئـیـات",
+      "instagram": "اینستاگرام",
+      "leads": "مخاطب",
+      "million": "م",
+      "mobile": "همراه",
+      "orders": "سفارش",
+      "products": "کالا/خدمت",
+      "remain": "مانده اعتبار",
+      "remainingDays": "باقی مانده اشتراک شما",
+      "renewal": "تمدید",
+      "renewal_subsription": "تمدید اشتراک",
+      "sales": "فروش",
+      "sessions": "پاسخ‌ها",
+      "unknown": "نامشخص",
+      "view": "مشاهده",
+      "welcome": "خوش آمدید"
     },
 
     "accessDenied": "اول باید اینستاگرام خود  را وصل نمایید",

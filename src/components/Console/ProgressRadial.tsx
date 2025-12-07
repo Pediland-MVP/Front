@@ -2,6 +2,7 @@ import type React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { FC } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 interface ProgressRadialProps {
   percentage: number;
@@ -20,8 +21,10 @@ export const ProgressRadial = ({
   type = "percentage",
   totalDays,
 }: ProgressRadialProps) => {
+  const locale = useLocale();
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
+  const t = useTranslations("Components.Progress");
 
   const actualPercentage =
     type === "days" && totalDays ? (percentage / totalDays) * 100 : percentage;
@@ -60,7 +63,11 @@ export const ProgressRadial = ({
         strokeDasharray={circumference}
         strokeDashoffset={strokeDashoffset}
         strokeLinecap="round"
-        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        transform={
+          locale === "fa"
+            ? `rotate(-90 ${size / 2} ${size / 2})`
+            : `rotate(90 ${size / 2} ${size / 2})`
+        }
         initial={{ strokeDashoffset: circumference }}
         animate={{ strokeDashoffset }}
         transition={{ duration: 1, ease: "easeInOut" }}
@@ -74,7 +81,7 @@ export const ProgressRadial = ({
         fontSize="12"
         className={"fill-[theme(colors.gray.400)]"}
       >
-        اعـتـبـار
+        {t("credit")}
       </motion.text>
       <motion.text
         x="50%"
@@ -94,9 +101,9 @@ export const ProgressRadial = ({
         )}
       >
         {type === "days"
-          ? `${percentage} روز`
+          ? `${percentage} ${t("days")}`
           : type === "credit"
-            ? `${percentage} پیام`
+            ? `${percentage} ${t("days")}`
             : `${Math.round(actualPercentage)}%`}
       </motion.text>
     </svg>

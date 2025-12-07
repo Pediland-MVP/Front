@@ -4,7 +4,7 @@ import { useLogout } from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -30,6 +30,7 @@ import { CardSimple } from "../ui-custom/CardSimple";
 
 export const UserDetailsCard = () => {
   const router = useRouter();
+  const locale = useLocale();
   const pathname = usePathname();
   const logout = useLogout();
   const t = useTranslations("Console.Dashboard");
@@ -135,7 +136,7 @@ export const UserDetailsCard = () => {
             {activeSubscription?.type !== "credit" && (
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">مانده اعتبار:</span>
+                  <span className="text-muted-foreground">{t("remain")}:</span>
                   <span
                     className={cn(
                       "text-primary",
@@ -143,8 +144,8 @@ export const UserDetailsCard = () => {
                     )}
                   >
                     {currentSubscription?.type === "credit"
-                      ? `${currentSubscription?.credit} پیام`
-                      : `${totalRemainingDays} روز`}
+                      ? `${currentSubscription?.credit} ${t("message")}`
+                      : `${totalRemainingDays} ${t("day")}`}
                   </span>
                 </div>
                 <Button
@@ -153,14 +154,14 @@ export const UserDetailsCard = () => {
                   className="h-auto gap-0 px-0!"
                   onClick={() => router.push("/settings/subscription")}
                 >
-                  تـمـدیـد
+                  {t("renewal")}
                   {/* {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"} */}
                 </Button>
               </div>
             )}
 
             <div className="mb-1 flex items-center gap-1">
-              <span className="text-muted-foreground">همراه:</span>
+              <span className="text-muted-foreground">{t("mobile")}:</span>
               <span className="tracking-wider">{userData?.mobile}</span>
             </div>
 
@@ -172,7 +173,7 @@ export const UserDetailsCard = () => {
                     !instagramValid && "text-destructive",
                   )}
                 >
-                  اینستاگرام:
+                  {t("instagram")}:
                 </span>
               </div>
               <span
@@ -222,13 +223,16 @@ export const UserDetailsCard = () => {
           <ButtonLoading
             variant="ghost"
             isLoading={isLogoutLoading}
-            className="h-auto !p-0 [&_svg:not([class*='size-'])]:size-5"
+            className="h-auto p-0! [&_svg:not([class*='size-'])]:size-5"
             onClick={logoutHandler}
           >
             {isLogoutLoading ? (
               ""
             ) : (
-              <SignOutIcon className="rotate-180" size={20} />
+              <SignOutIcon
+                className={cn(locale === "fa" && "rotate-180")}
+                size={20}
+              />
             )}
           </ButtonLoading>
         </div>
