@@ -8,9 +8,11 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   Button,
   Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   FormField,
   FormItem,
-  FormLabel,
   Input,
   Select,
   SelectContent,
@@ -37,8 +39,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowsVerticalIcon,
-  TrashIcon,
-  TrashSimpleIcon,
+  TextboxIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { CirclePlusIcon, Trash2Icon } from "lucide-react";
 
@@ -52,6 +53,7 @@ const SortableFieldItem = ({
   index: number;
   removeCustomField: (id: string) => void;
 }) => {
+  const t = useTranslations("Products.Form.Product");
   const form = useFormContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field._xid });
@@ -67,33 +69,35 @@ const SortableFieldItem = ({
       style={style}
       className="_item flex items-center gap-1.5"
     >
-      <span
+      <div
         {...attributes}
         {...listeners}
         className="cursor-grab touch-none active:cursor-grabbing"
       >
         <ArrowsVerticalIcon size={16} className="text-gray-500" />
-      </span>
+      </div>
 
       <FormField
         control={form.control}
         name={`fields.${index}.type`}
         render={({ field: typeField }) => (
-          <Select value={typeField.value} onValueChange={typeField.onChange}>
-            <SelectTrigger className="w-auto gap-1 pr-2 pl-1.5">
-              <SelectValue placeholder="نوع فیلد" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value={ProductFieldTypeEnum.TEXT}>
-                  متن کوتاه
-                </SelectItem>
-                <SelectItem value={ProductFieldTypeEnum.TEXTAREA}>
-                  متن بلند
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormItem className="space-y-0">
+            <Select value={typeField.value} onValueChange={typeField.onChange}>
+              <SelectTrigger className="w-auto gap-1 pr-2 pl-1.5">
+                <SelectValue placeholder={t("field_type")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={ProductFieldTypeEnum.TEXT}>
+                    {t("short_text")}
+                  </SelectItem>
+                  <SelectItem value={ProductFieldTypeEnum.TEXTAREA}>
+                    {t("long_text")}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </FormItem>
         )}
       />
 
@@ -101,9 +105,9 @@ const SortableFieldItem = ({
         control={form.control}
         name={`fields.${index}.label`}
         render={({ field: labelField, fieldState: { error } }) => (
-          <FormItem>
+          <FormItem className="flex-1">
             <Input
-              placeholder="عنوان فیلد"
+              placeholder={t("field_title")}
               {...labelField}
               className={cn(error && "border-red-600")}
             />
@@ -115,22 +119,24 @@ const SortableFieldItem = ({
         control={form.control}
         name={`fields.${index}.isRequired`}
         render={({ field: statusField }) => (
-          <Select
-            value={`${statusField.value}`}
-            onValueChange={(value) =>
-              statusField.onChange(value === "true" ? true : false)
-            }
-          >
-            <SelectTrigger className="w-auto gap-1 pr-2 pl-1.5">
-              <SelectValue placeholder="وضعیت" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="false">اختیاری</SelectItem>
-                <SelectItem value="true">اجباری</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormItem className="space-y-0">
+            <Select
+              value={`${statusField.value}`}
+              onValueChange={(value) =>
+                statusField.onChange(value === "true" ? true : false)
+              }
+            >
+              <SelectTrigger className="w-auto gap-1 pr-2 pl-1.5">
+                <SelectValue placeholder={t("status")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="false">{t("optional")}</SelectItem>
+                  <SelectItem value="true">{t("required")}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </FormItem>
         )}
       />
 
@@ -147,7 +153,7 @@ const SortableFieldItem = ({
 };
 
 export const FormCustomFields = () => {
-  const t = useTranslations("Products.Form");
+  const t = useTranslations("Products.Form.Product");
   const form = useFormContext();
 
   const { fields, append, remove, move } = useFieldArray({
@@ -198,12 +204,17 @@ export const FormCustomFields = () => {
   };
 
   return (
-    <Card className="gap-3 p-3 xl:p-5">
-      <FormLabel>{t("customFields")}</FormLabel>
-      <p className="text-muted-foreground text-[13px]">
-        {t("customFieldsDescription")}
-      </p>
-      <div className="space-y-3">
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <TextboxIcon weight="duotone" /> {t("custom_fields_title")}
+        </CardTitle>
+        <p className="text-muted-foreground text-[13px]">
+          {t("custom_fields_description")}
+        </p>
+      </CardHeader>
+
+      <CardContent className="space-y-3">
         <Button
           type="button"
           size="sm"
@@ -212,7 +223,7 @@ export const FormCustomFields = () => {
           disabled={fields.length >= 5}
         >
           <CirclePlusIcon />
-          {t("addCustomField")}
+          {t("add_custom_field")}
         </Button>
 
         {fields.length > 0 && (
@@ -238,7 +249,7 @@ export const FormCustomFields = () => {
             </DndContext>
           </div>
         )}
-      </div>
+      </CardContent>
     </Card>
   );
 };

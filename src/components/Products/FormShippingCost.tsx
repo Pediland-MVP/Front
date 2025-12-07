@@ -9,16 +9,20 @@ import { useFormContext } from "react-hook-form";
 
 import {
   Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   Input,
 } from "@/components/ui";
+import { TruckIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const FormShippingCost = () => {
   const { control, watch, setValue } = useFormContext();
-  const t = useTranslations("Products.Form");
+  const t = useTranslations("Products.Form.Product");
   const { onFocus } = useSelectOnFocus();
 
   useEffect(() => {
@@ -32,24 +36,31 @@ export const FormShippingCost = () => {
   }
 
   return (
-    <Card className="gap-3 p-3 xl:p-5">
-      <FormField
-        control={control}
-        name="shippingCost"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("shippingCost.label")}</FormLabel>
-            <Input
-              value={formatNumber(field.value)}
-              onChange={(e) => field.onChange(+e.target.value)}
-              placeholder={t("shippingCost.placeholder")}
-              onInput={onInputP2EHandler}
-              onFocus={onFocus}
-            />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <TruckIcon weight="duotone" />
+          {t("shipping_cost_title")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <FormField
+          control={control}
+          name="shippingCost"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("shipping_cost_label")}</FormLabel>
+              <Input
+                value={formatNumber(field.value)}
+                onChange={(e) => field.onChange(+e.target.value)}
+                onInput={onInputP2EHandler}
+                onFocus={onFocus}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </CardContent>
     </Card>
   );
 };

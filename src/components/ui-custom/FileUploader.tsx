@@ -3,11 +3,10 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-import AnimatedCircularProgressBar from "../ui/animated-circular-progress-bar";
-
-import { UploadSimple, UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
-
 import { useTranslations } from "next-intl";
+
+import AnimatedCircularProgressBar from "../ui/animated-circular-progress-bar";
+import { UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 const mainVariant = {
   initial: {

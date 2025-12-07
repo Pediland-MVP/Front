@@ -19,9 +19,19 @@ import * as z from "zod";
 import { FormCustomFields } from "@/components/Products/FormCustomFields";
 import { FormProductDetails } from "@/components/Products/FormProductDetails";
 import { FormShippingCost } from "@/components/Products/FormShippingCost";
-import { Button, Card, Form, FormLabel } from "@/components/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Form,
+  FormLabel,
+} from "@/components/ui";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { FileUploader } from "@/components/ui-custom/FileUploader";
+import { FormVitrinDetails } from "./FormVitrinDetails";
+import { FormVitrinButtons } from "./FormVitrinButtons";
 
 interface ProductFormProps {
   shouldBeEdit?: ProductNamespace.Product;
@@ -411,35 +421,55 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   return (
     <>
       <div className="mb-4 space-y-1">
-        <h2 className="text-foreground font-semibold">{t("title")}</h2>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
+        <h2 className="text-foreground font-semibold">
+          {t("add")} {formType === "Product" ? t("product") : t("vitrin")}
+        </h2>
+        <p className="text-muted-foreground text-sm">
+          {t.rich("description", {
+            product: formType === "Product" ? t("product") : t("vitrin"),
+          })}
+        </p>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-5">
             <div className="_right-column space-y-4">
-              <FormProductDetails
-                variations={variations}
-                attributeValues={attributeValues}
-              />
+              {formType === "Product" ? (
+                <>
+                  <FormProductDetails
+                    variations={variations}
+                    attributeValues={attributeValues}
+                  />
 
-              <FormCustomFields />
+                  <FormCustomFields />
 
-              <FormShippingCost />
+                  <FormShippingCost />
+                </>
+              ) : (
+                <>
+                  <FormVitrinDetails />
+
+                  <FormVitrinButtons />
+                </>
+              )}
             </div>
 
             <div className="_left-column space-y-4 xl:space-y-5">
               {/* Item Images */}
-              <Card className="gap-3 p-3 xl:p-5">
-                <FormLabel>{t("uploadImage")}</FormLabel>
-                <FileUploader
-                  images={images}
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  progress={uploadProgress}
-                  isUploading={isUploading}
-                />
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("upload_image")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FileUploader
+                    images={images}
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    progress={uploadProgress}
+                    isUploading={isUploading}
+                  />
+                </CardContent>
               </Card>
             </div>
           </div>
@@ -450,7 +480,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               type="submit"
               className="flex-1 sm:flex-none"
             >
-              {t("submitProduct")}
+              {t.rich("submit", {
+                product: formType === "Product" ? t("product") : t("vitrin"),
+              })}
             </ButtonLoading>
             <Button
               variant="outline"
