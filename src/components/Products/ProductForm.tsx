@@ -2,6 +2,7 @@
 
 import api from "@/hooks/swr/api-client";
 import { AttributeValue, ProductNamespace } from "@/types/product";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { UploadNamespace } from "@/types/upload";
 import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
@@ -126,6 +127,16 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         )
         .nullable()
         .optional(),
+      buttons: z
+        .array(
+          z.object({
+            _xid: z.string().optional(),
+            type: z.nativeEnum(ButtonTypeEnum),
+            text: z.string().min(1),
+            value: z.string().optional().nullable(),
+          }),
+        )
+        .optional(),
       orderButtonText: z.string().nullable().optional(),
       orderProcessText: z.string().max(1000).nullable().optional(),
     })
@@ -206,6 +217,12 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             : undefined
           : undefined,
       ...(shouldBeEdit || {}),
+      buttons:
+        shouldBeEdit?.buttons?.map((b) => ({
+          ...b,
+          type: b.type as ButtonTypeEnum,
+          _xid: b.id,
+        })) ?? [],
       orderButtonText: shouldBeEdit?.orderButtonText || "سفارش",
       orderProcessText:
         shouldBeEdit?.orderProcessText ||

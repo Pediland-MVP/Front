@@ -1,3 +1,4 @@
+import { ButtonTypeEnum } from "./buttons.enum";
 import { ProductFieldTypeEnum } from "./product.enum";
 
 export namespace ProductNamespace {
@@ -35,6 +36,12 @@ export interface ProductItem {
     isRequired: boolean;
     options?: any[];
     [key: string]: string | boolean | number | (any[] | undefined) | null;
+  }[];
+  buttons?: {
+    id: string;
+    type: ButtonTypeEnum;
+    text: string;
+    value?: string;
   }[];
 }
 

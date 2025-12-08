@@ -821,7 +821,15 @@
       "Vitrin": {
         "vitrin_details": "جزئیات ویترین",
         "title_label": "عنوان",
-        "description_label": "توضیحات"
+        "description_label": "توضیحات",
+        "buttons_description": "می‌توانید تا 3 دکمه برای این ویترین ایجاد کنید.",
+        "add_button": "افزودن دکمه",
+        "button_type": "نوع دکمه",
+        "button_text": "متن دکمه",
+        "text": "متن",
+        "url": "لینک",
+        "automation": "پیام خودکار",
+        "search_automation": "جستجوی پیام خودکار"
       },
       "Product": {
         "product_details": "جزئیات کالا",
@@ -856,7 +864,7 @@
           "placeholder": "'{{name}}' عزیز سفارش شما با موفقیت انجام شد. کد سفارش شما: '{{order_id}}'"
         },
         "custom_fields_title": "فیلدهای سفارشی",
-        "custom_fields_description": "در صورت نیاز می‌توانید تا 5 فیلد سفارشی را به فرم سفارش این کالا یا خدمات اضافه کنید.",
+        "custom_fields_description": "می‌توانید تا 5 فیلد سفارشی را به فرم سفارش این کالا یا خدمت اضافه کنید.",
         "add_custom_field": "افزودن فیلد سفارشی",
         "short_text": "متن کوتاه",
         "long_text": "متن بلند",
@@ -874,7 +882,6 @@
       "productAddedSuccess": "محصول با موفقیت اضافه شد",
       "checkConnection": "اتصال خود را چک کنید",
       "productTitle": "عنوان کالا یا خدمت خود را بنویسید",
-      
 
       "shippingCost": {
         "label": "هزینه ارسال(تومان)",
