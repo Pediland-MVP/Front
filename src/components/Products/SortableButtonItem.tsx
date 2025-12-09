@@ -133,7 +133,7 @@ export const SortableButtonItem = ({
         {selectedType === ButtonTypeEnum.AUTOMATION && (
           <FormField
             control={form.control}
-            name={`buttons.${index}.contentCycleId`}
+            name={`buttons.${index}.destinationContentCycleId`}
             render={({ field: valueField, fieldState: { error } }) => (
               <FormItem className="flex-1 space-y-0">
                 <AutomationSearchSelect

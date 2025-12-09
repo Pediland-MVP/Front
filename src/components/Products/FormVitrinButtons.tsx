@@ -64,7 +64,7 @@ export const FormVitrinButtons = () => {
         type: ButtonTypeEnum.TEXT,
         title: "",
         url: "",
-        contentCycleId: undefined,
+        destinationContentCycleId: undefined,
       });
     }
   };
@@ -75,12 +75,6 @@ export const FormVitrinButtons = () => {
       remove(index);
     }
   };
-
-  useEffect(() => {
-    if (form.formState.errors) {
-      console.log("FormVitrinButtons errors:", form.formState.errors);
-    }
-  }, [form.formState.errors]);
 
   // Check if there are any button errors (root or nested)
   const hasButtonErrors = () => {

@@ -31,7 +31,7 @@ interface AutomationSearchSelectProps {
 interface ConditionItem {
   id: string;
   value: string;
-  contentCycleId: string;
+  destinationContentCycleId: string;
 }
 
 interface ConditionsResponse {
@@ -78,8 +78,9 @@ export function AutomationSearchSelect({
           )}
         >
           {value
-            ? data?.items?.find((item) => item.contentCycleId === value)
-                ?.value || value
+            ? data?.items?.find(
+                (item) => item.destinationContentCycleId === value,
+              )?.value || value
             : t("search_automation")}
           <ChevronsUpDown className="-ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -107,7 +108,7 @@ export function AutomationSearchSelect({
                     value={item.value}
                     className="justify-between text-[13px]"
                     onSelect={() => {
-                      onSelect(item.contentCycleId);
+                      onSelect(item.destinationContentCycleId);
                       setOpen(false);
                     }}
                   >
@@ -115,7 +116,7 @@ export function AutomationSearchSelect({
                     <Check
                       className={cn(
                         "size-4",
-                        value === item.contentCycleId
+                        value === item.destinationContentCycleId
                           ? "opacity-100"
                           : "opacity-0",
                       )}

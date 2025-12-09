@@ -174,7 +174,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                       .string()
                       .min(1, { message: t("Alerts.button_title_required") }),
                     url: z.string().optional().nullable(),
-                    contentCycleId: z.string().optional().nullable(),
+                    destinationContentCycleId: z.string().optional().nullable(),
                   }),
                   z.object({
                     _xid: z.string().optional(),
@@ -187,7 +187,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                         required_error: t("Alerts.button_url_required"),
                       })
                       .min(1, { message: t("Alerts.button_url_required") }),
-                    contentCycleId: z.string().optional().nullable(),
+                    destinationContentCycleId: z.string().optional().nullable(),
                   }),
                   z.object({
                     _xid: z.string().optional(),
@@ -196,7 +196,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                       .string()
                       .min(1, { message: t("Alerts.button_title_required") }),
                     url: z.string().optional().nullable(),
-                    contentCycleId: z
+                    destinationContentCycleId: z
                       .string({
                         required_error: t("Alerts.button_automation_required"),
                       })
@@ -260,7 +260,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   const inferButtonType = (button: any): ButtonTypeEnum => {
     // Check for contentCycleId/cycleId first (AUTOMATION)
     if (
-      button.contentCycleId ||
+      button.destinationContentCycleId ||
       button.cycleId ||
       button.contentCycle?.id ||
       button.cycle?.id
@@ -312,9 +312,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               ...b,
               type: b.type || inferButtonType(b),
               _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
-              contentCycleId:
+              destinationContentCycleId:
                 b.cycleId ||
-                b.contentCycleId ||
+                b.destinationContentCycleId ||
                 b.contentCycle?.id ||
                 b.cycle?.id ||
                 "",
@@ -338,7 +338,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                       type: ButtonTypeEnum.TEXT,
                       title: "",
                       url: "",
-                      contentCycleId: undefined,
+                      destinationContentCycleId: undefined,
                     },
                   ]
                 : [],
@@ -379,9 +379,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         ...b,
         type: b.type || inferButtonType(b),
         _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
-        contentCycleId:
+        destinationContentCycleId:
           b.cycleId ||
-          b.contentCycleId ||
+          b.destinationContentCycleId ||
           b.contentCycle?.id ||
           b.cycle?.id ||
           "",
@@ -504,7 +504,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             button.type === ButtonTypeEnum.TEXT ||
             button.type === ButtonTypeEnum.URL
           ) {
-            delete button.contentCycleId;
+            delete button.destinationContentCycleId;
           }
         });
       }
@@ -611,12 +611,6 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       fields.filter((field) => field.label !== label),
     );
   };
-
-  useEffect(() => {
-    if (form.formState.errors) {
-      console.log("Errors", form.formState.errors);
-    }
-  }, [form.formState.errors]);
 
   return (
     <>

@@ -22,6 +22,7 @@ const ProductCardComponent = ({
 }: ProductCardComponentProps) => {
   const router = useRouter();
   const t = useTranslations("Products.Card");
+  const isVitrin = product.type === "vitrin";
 
   return (
     <Card className="gap-0 border-violet-200 p-0 shadow-violet-200">
@@ -34,55 +35,69 @@ const ProductCardComponent = ({
             />
           </div>
           <div className="flex flex-1 flex-col space-y-1.5 p-1">
-            <div className="text-secondary text-sm font-semibold">
+            <div className="text-secondary text-[15px] font-semibold">
               {product.title}
             </div>
-            <div className="flex flex-1 items-center justify-center gap-2">
+            <div className="flex flex-1 gap-2">
               <div className="text-secondary space-y-1.5 text-[13px]">
                 <div className="flex items-center gap-1">
-                  <div>
+                  {/* <div>
                     {product.status ? (
                       <CheckCircleIcon size={16} className="text-green-600" />
                     ) : (
                       <CheckCircleIcon size={16} className="text-gray-400" />
                     )}
-                  </div>
-                  <div className="text-muted-foreground">
-                    {product.isDigital ? t("digital") : t("physical")}
+                  </div> */}
+                  <div className="text-primary font-semibold">
+                    {isVitrin
+                      ? t("vitrin")
+                      : product.isDigital
+                        ? t("digital")
+                        : t("physical")}
                   </div>
                 </div>
-                <div className="font-medium">
-                  {product.quantity === 0 ? (
-                    t("unlimited")
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <span className="text-[15px]">{product.quantity}</span>
-                      <span>{t("number")}</span>
-                    </div>
-                  )}
-                </div>
+
+                {isVitrin && (
+                  <div className="text-muted-foreground line-clamp-2">
+                    {product.description}
+                  </div>
+                )}
+                {!isVitrin && (
+                  <div className="font-medium">
+                    {product.quantity === 0 ? (
+                      t("unlimited")
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[15px]">{product.quantity}</span>
+                        <span>{t("number")}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="flex flex-1 items-center justify-end gap-2">
-                <div className="flex flex-col items-end justify-center">
-                  <span
-                    className={cn(
-                      "",
-                      typeof product?.discountPrice === "number"
-                        ? "text-muted-foreground text-sm line-through"
-                        : "text-primary font-semibold",
-                    )}
-                  >
-                    {product?.price?.toLocaleString()}
-                  </span>
-                  {typeof product.discountPrice === "number" && (
-                    <span className="text-primary font-semibold">
-                      {product.discountPrice?.toLocaleString()}
+              {!isVitrin && (
+                <div className="flex flex-1 items-center justify-end gap-2">
+                  <div className="flex flex-col items-end justify-center">
+                    <span
+                      className={cn(
+                        "",
+                        typeof product?.discountPrice === "number"
+                          ? "text-muted-foreground text-sm line-through"
+                          : "text-primary font-semibold",
+                      )}
+                    >
+                      {product?.price?.toLocaleString()}
                     </span>
-                  )}
+                    {typeof product.discountPrice === "number" && (
+                      <span className="text-primary font-semibold">
+                        {product.discountPrice?.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[13px] text-gray-400">{t("tooman")}</div>
                 </div>
-                <div className="text-[13px] text-gray-400">{t("tooman")}</div>
-              </div>
+              )}
             </div>
           </div>
         </div>
