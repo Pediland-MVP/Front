@@ -73,7 +73,7 @@ const ProductCardComponent = ({
                         : "text-primary font-semibold",
                     )}
                   >
-                    {product?.price.toLocaleString()}
+                    {product?.price?.toLocaleString()}
                   </span>
                   {typeof product.discountPrice === "number" && (
                     <span className="text-primary font-semibold">

@@ -7,8 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui";
 import { DresserIcon } from "@phosphor-icons/react/dist/ssr";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 import { CirclePlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { SortableButtonItem } from "./SortableButtonItem";
 import {
@@ -59,8 +61,10 @@ export const FormVitrinButtons = () => {
   const addButton = () => {
     if (fields.length < 3) {
       append({
-        type: "",
-        text: "",
+        type: ButtonTypeEnum.TEXT,
+        title: "",
+        url: "",
+        contentCycleId: undefined,
       });
     }
   };
@@ -70,6 +74,28 @@ export const FormVitrinButtons = () => {
     if (index !== -1) {
       remove(index);
     }
+  };
+
+  useEffect(() => {
+    if (form.formState.errors) {
+      console.log("FormVitrinButtons errors:", form.formState.errors);
+    }
+  }, [form.formState.errors]);
+
+  // Check if there are any button errors (root or nested)
+  const hasButtonErrors = () => {
+    const buttonErrors = form.formState.errors["buttons"];
+    if (!buttonErrors) return false;
+
+    // Check for root-level error (e.g., min length)
+    if (buttonErrors.message) return true;
+
+    // Check for nested errors (e.g., buttons[0].title)
+    if (Array.isArray(buttonErrors)) {
+      return buttonErrors.some((btn) => btn && Object.keys(btn).length > 0);
+    }
+
+    return false;
   };
 
   return (
@@ -93,7 +119,7 @@ export const FormVitrinButtons = () => {
         </Button>
 
         {fields.length > 0 && (
-          <div className="_buttons space-y-2">
+          <div className="_buttons space-y-6 sm:space-y-3">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -114,6 +140,14 @@ export const FormVitrinButtons = () => {
               </SortableContext>
             </DndContext>
           </div>
+        )}
+
+        {hasButtonErrors() && (
+          <p className="text-destructive text-[13px] font-medium">
+            {typeof form.formState.errors["buttons"]?.message === "string"
+              ? form.formState.errors["buttons"].message
+              : t("buttons_error")}
+          </p>
         )}
       </CardContent>
     </Card>

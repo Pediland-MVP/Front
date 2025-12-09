@@ -817,6 +817,7 @@
       "upload_image_description": "تصویر {product} را آپلود کنید.",
       "submit": "ثبت {product}",
       "cancel": "انصراف",
+      "uploadProductImage": "تصویر {product} را آپلود کنید.",
 
       "Vitrin": {
         "vitrin_details": "جزئیات ویترین",
@@ -829,7 +830,10 @@
         "text": "متن",
         "url": "لینک",
         "automation": "پیام خودکار",
-        "search_automation": "جستجوی پیام خودکار"
+        "search_automation": "انتخاب",
+        "loading": "در حال جستجو...",
+        "no_results_found": "نتیجه‌ای پیدا نشد.",
+        "buttons_error": "لطفا اطلاعات دکمه‌ها را کامل کنید."
       },
       "Product": {
         "product_details": "جزئیات کالا",
@@ -872,6 +876,8 @@
         "field_type": "نوع فیلد",
         "optional": "اختیاری",
         "required": "اجباری",
+        "field_error": "فیلد {index}",
+        "fields_error": "لطفا عنوان فیلد را وارد کنید.",
         "shipping_cost_title": "ارسال کالا",
         "shipping_cost_label": "هزینه ارسال"
       },
@@ -879,7 +885,8 @@
       "titleNull": "عنوان",
       "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
       "errorOccurred": "خطایی رخ داد",
-      "productAddedSuccess": "محصول با موفقیت اضافه شد",
+      "productAddedSuccess": "محصول با موفقیت ایجاد شد.",
+      "vitrinAddedSuccess": "ویترین با موفقیت ایجاد شد.",
       "checkConnection": "اتصال خود را چک کنید",
       "productTitle": "عنوان کالا یا خدمت خود را بنویسید",
 
@@ -891,16 +898,21 @@
         }
       },
       "Alerts": {
-        "title": "لطفا عنوان کالا یا خدمات خود را وارد کنید.",
-        "titleLenght": "کوتاهه",
+        "title": "عنوان {product} خود را وارد کنید.",
+        "title_length": "عنوان {product} باید حداقل ۳ حرف باشد.",
+
+        "quantity": "تعداد موجودی کالا یا خدمات خود را وارد کنید.",
+        "description": "توضیحات {product} خود را وارد کنید.",
+        "descrption_length": "توضیحات {product} باید حداقل 5 حرف باشد.",
+        "buttons": "حداقل یک دکمه برای ویترین ایجاد کنید.",
+        "button_title_required": "لطفا متن دکمه را وارد کنید.",
+        "button_url_required": "لطفا آدرس لینک را وارد کنید.",
+        "button_automation_required": "لطفا پیام خودکار را انتخاب کنید.",
+        "image": "لطفا تصویر {product} خود را انتخاب کنید.",
         "price": "لطفا قیمت کالا یا خدمات خود را وارد کنید.",
         "priceMinus": "قیمت نمی‌تواند کمتر از 1000تومان باشد.",
         "discountPrice": "تخفیف نمیتواند کمتر از 1000تومان باشد",
-        "discountPriceMinus": "لطفا قیمت با تخفیف را وارد کنید",
-        "quantity": "لطفا تعداد موجودی کالا یا خدمات خود را وارد کنید.",
-        "description": "لطفا توضیحات کالا یا خدمات خود را وارد کنید.",
-        "descrptionLength": "طول توضیحات کالا یا خدمات باید بیشتر از 5 کاراکتر باشد.",
-        "image": "لطفا تصویر کالا یا خدمات خود را انتخاب کنید."
+        "discountPriceMinus": "لطفا قیمت با تخفیف را وارد کنید"
       }
     },
     "Edit": {

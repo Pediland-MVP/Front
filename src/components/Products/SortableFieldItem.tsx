@@ -7,8 +7,10 @@ import { useFormContext } from "react-hook-form";
 
 import {
   Button,
+  FormControl,
   FormField,
   FormItem,
+  FormMessage,
   Input,
   Select,
   SelectContent,
@@ -82,13 +84,11 @@ export const SortableFieldItem = ({
       <FormField
         control={form.control}
         name={`fields.${index}.label`}
-        render={({ field: labelField, fieldState: { error } }) => (
-          <FormItem className="flex-1">
-            <Input
-              placeholder={t("field_title")}
-              {...labelField}
-              className={cn(error && "border-red-600")}
-            />
+        render={({ field: labelField }) => (
+          <FormItem className="flex-1 space-y-0">
+            <FormControl>
+              <Input placeholder={t("field_title")} {...labelField} />
+            </FormControl>
           </FormItem>
         )}
       />

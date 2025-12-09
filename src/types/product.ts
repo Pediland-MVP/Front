@@ -17,7 +17,7 @@ export interface ProductItem {
   createDate: string;
   updateDate: string;
   title: string;
-  price: number;
+  price: number | null;
   status: boolean;
   discountPrice: number | null;
   description: string;

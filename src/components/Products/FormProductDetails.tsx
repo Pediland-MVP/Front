@@ -141,10 +141,12 @@ export const FormProductDetails = ({
               <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                 {isDigital ? t("title_service") : t("title_product")}
               </FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
+              <div className="w-full space-y-1.5">
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage className="w-full" />
+              </div>
             </FormItem>
           )}
         />
@@ -384,7 +386,7 @@ export const FormProductDetails = ({
             <FormItem>
               <FormLabel>{t("description")}</FormLabel>
               <FormControl>
-                <Textarea rows={6} {...field} />
+                <Textarea rows={5} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

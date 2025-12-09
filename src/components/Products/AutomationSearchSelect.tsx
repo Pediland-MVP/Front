@@ -31,7 +31,7 @@ interface AutomationSearchSelectProps {
 interface ConditionItem {
   id: string;
   value: string;
-  // contentCycleId: string;
+  contentCycleId: string;
 }
 
 interface ConditionsResponse {
@@ -48,6 +48,12 @@ export function AutomationSearchSelect({
   const [search, setSearch] = React.useState("");
   const debouncedSearch = useDebounce(search, 300);
 
+  React.useEffect(() => {
+    if (!open) {
+      setSearch("");
+    }
+  }, [open]);
+
   // Fetch conditions when search changes
   // Note: user requested /contentCycle/conditions
   const { data, isLoading } = useSWR<ConditionsResponse>(
@@ -55,6 +61,8 @@ export function AutomationSearchSelect({
       ? `/contentCycle/conditions?page=1&limit=20&search=${debouncedSearch}`
       : null,
   );
+
+  const showLoading = isLoading || search !== debouncedSearch;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -64,54 +72,54 @@ export function AutomationSearchSelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-full justify-between font-normal",
+            "w-full justify-between border bg-white font-normal hover:bg-white",
             !value && "text-muted-foreground",
-            error && "border-red-600",
+            error && "border-destructive",
           )}
         >
           {value
-            ? value // Just show the value/id for now, or we might need to fetch the label separately if it's an ID
-            : t("automation")}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            ? data?.items?.find((item) => item.contentCycleId === value)
+                ?.value || value
+            : t("search_automation")}
+          <ChevronsUpDown className="-ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
-          <CommandInput
-            placeholder={t("search_automation")}
-            value={search}
-            onValueChange={setSearch}
-          />
+          <CommandInput value={search} onValueChange={setSearch} />
           <CommandList>
-            {isLoading && (
-              <div className="text-muted-foreground py-6 text-center text-sm">
-                Loading...
+            {showLoading && (
+              <div className="text-muted-foreground py-3 text-center text-[13px]">
+                {t("loading")}
               </div>
             )}
-            {!isLoading && data?.items.length === 0 && (
-              <CommandEmpty>No results found.</CommandEmpty>
+            {!showLoading && search && data?.items?.length === 0 && (
+              <CommandEmpty>{t("no_results_found")}</CommandEmpty>
             )}
             <CommandGroup>
-              {!isLoading &&
-                data?.items?.map((item) => (
+              {!showLoading &&
+                search &&
+                data?.items?.length > 0 &&
+                data?.items?.map((item, index) => (
                   <CommandItem
-                    key={item.id}
+                    key={`${item.id}-${index}`}
                     value={item.value}
-                    onSelect={(currentValue) => {
-                      // We probably want to select the value (text) to show in the button
-                      // But the prompt implies "Automation Type".
-                      // If the goal is to trigger an automation by a condition keyword:
-                      onSelect(item.value);
+                    className="justify-between text-[13px]"
+                    onSelect={() => {
+                      onSelect(item.contentCycleId);
                       setOpen(false);
                     }}
                   >
+                    {item.value}
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        value === item.value ? "opacity-100" : "opacity-0",
+                        "size-4",
+                        value === item.contentCycleId
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
-                    {item.value}
                   </CommandItem>
                 ))}
             </CommandGroup>

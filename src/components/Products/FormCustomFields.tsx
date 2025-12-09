@@ -123,6 +123,13 @@ export const FormCustomFields = () => {
                 ))}
               </SortableContext>
             </DndContext>
+
+            {/* Consolidated error message for all fields */}
+            {form.formState.errors["fields"] && (
+              <p className="text-destructive text-[13px] font-medium">
+                {t("fields_error")}
+              </p>
+            )}
           </div>
         )}
       </CardContent>

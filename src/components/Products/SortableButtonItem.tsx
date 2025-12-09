@@ -7,8 +7,10 @@ import { useFormContext } from "react-hook-form";
 
 import {
   Button,
+  FormControl,
   FormField,
   FormItem,
+  FormMessage,
   Input,
   Select,
   SelectContent,
@@ -59,12 +61,12 @@ export const SortableButtonItem = ({
         <ArrowsVerticalIcon size={16} className="text-gray-500" />
       </div>
 
-      <div className="flex flex-1 gap-2">
+      <div className="flex flex-1 flex-wrap gap-2 sm:flex-nowrap">
         <FormField
           control={form.control}
           name={`buttons.${index}.type`}
           render={({ field: typeField }) => (
-            <FormItem className="space-y-0">
+            <FormItem className="w-full space-y-0 sm:w-auto">
               <Select
                 value={typeField.value}
                 onValueChange={typeField.onChange}
@@ -90,17 +92,19 @@ export const SortableButtonItem = ({
           )}
         />
 
-        {selectedType && selectedType !== ButtonTypeEnum.AUTOMATION && (
+        {selectedType && (
           <FormField
             control={form.control}
-            name={`buttons.${index}.text`}
-            render={({ field: labelField, fieldState: { error } }) => (
-              <FormItem className="flex-1">
-                <Input
-                  placeholder={t("button_text")}
-                  {...labelField}
-                  className={cn(error && "border-red-600")}
-                />
+            name={`buttons.${index}.title`}
+            render={({ field: labelField }) => (
+              <FormItem className="w-full space-y-0 sm:w-auto sm:flex-1">
+                <FormControl>
+                  <Input
+                    placeholder={t("button_text")}
+                    {...labelField}
+                    value={labelField.value ?? ""}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
@@ -109,14 +113,18 @@ export const SortableButtonItem = ({
         {selectedType === ButtonTypeEnum.URL && (
           <FormField
             control={form.control}
-            name={`buttons.${index}.value`}
-            render={({ field: valueField, fieldState: { error } }) => (
-              <FormItem className="flex-1">
-                <Input
-                  placeholder={t("url")}
-                  {...valueField}
-                  className={cn(error && "border-red-600")}
-                />
+            name={`buttons.${index}.url`}
+            render={({ field: valueField }) => (
+              <FormItem className="flex-1 space-y-0">
+                <FormControl>
+                  <Input
+                    type="url"
+                    dir="ltr"
+                    placeholder={t("url")}
+                    {...valueField}
+                    value={valueField.value ?? ""}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
@@ -125,9 +133,9 @@ export const SortableButtonItem = ({
         {selectedType === ButtonTypeEnum.AUTOMATION && (
           <FormField
             control={form.control}
-            name={`buttons.${index}.value`}
+            name={`buttons.${index}.contentCycleId`}
             render={({ field: valueField, fieldState: { error } }) => (
-              <FormItem className="flex-1">
+              <FormItem className="flex-1 space-y-0">
                 <AutomationSearchSelect
                   value={valueField.value}
                   onSelect={valueField.onChange}
