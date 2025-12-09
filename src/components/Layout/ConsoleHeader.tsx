@@ -10,10 +10,12 @@ import { LogoSlogan } from "../Global/LogoSlogan";
 import { LogoText } from "../Global/LogoText";
 import { SidebarTrigger, useSidebar } from "../ui";
 import { HeaderBreadcrumb } from "./HeaderBreadcrumb";
+import { useLocale } from "next-intl";
 
 export const ConsoleHeader = () => {
   const { buttons, tools } = useHeaderFeatures();
   const pathname = usePathname();
+  const locale = useLocale();
   const { toggleSidebar } = useSidebar();
 
   if (pathname === "/") {
@@ -32,7 +34,7 @@ export const ConsoleHeader = () => {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <LogoSlogan variant="white" />
+          {locale === "fa" && <LogoSlogan variant="white" />}
           <LogoText variant="white" size="sm" />
         </div>
       </header>

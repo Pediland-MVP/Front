@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://my.befroosh.com"),
@@ -37,7 +44,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default async function RootLayout({
   children,
 }: {
@@ -50,7 +56,9 @@ export default async function RootLayout({
       lang={locale}
       dir={locale === "fa" ? "rtl" : "ltr"}
       className={
-        locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
+        locale === "fa"
+          ? "font-Yekan antialiased"
+          : `${inter.className} antialiased`
       }
     >
       <body>{children}</body>

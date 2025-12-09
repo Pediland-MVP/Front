@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
 interface SessionTableProps {
   contentCycleId?: string;
