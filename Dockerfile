@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:24.11.1-alpine
 
 WORKDIR /app
 
@@ -10,8 +10,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 RUN npm run build
-# || echo "Build failed" && exit 1 
+# || echo "Build failed" && exit 1
 
 EXPOSE 3000
 CMD ["npm", "start"]
-

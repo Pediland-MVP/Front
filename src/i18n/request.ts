@@ -7,7 +7,6 @@ export default getRequestConfig(async () => {
   // const header = await headers()
 
   const locale = cookiesStore.get("NEXT_LOCALE")?.value;
-  logger.debug("Locale of token", locale);
 
   // const acceptLanguageHeader = header.get('Accept-Language')
   //   let acceptLanguage: parser.Language[] = []
