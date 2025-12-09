@@ -29,6 +29,7 @@ export interface ProductItem {
   orderButtonText: string;
   orderProcessText: string;
   shippingCost: number;
+  type: "product" | "vitrin";
   fields: {
     id: string;
     label: string;

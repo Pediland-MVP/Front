@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, { useRef, useState } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
@@ -76,19 +76,8 @@ export const FileUploader = ({
 
   return (
     <div className={cn(className, "relative duration-300")} {...getRootProps()}>
-      {isUploading && (
-        <AnimatedCircularProgressBar
-          className="absolute top-5 right-5 h-10 w-10 font-sans text-xs"
-          gaugeSecondaryColor="#bababa"
-          gaugePrimaryColor="black"
-          max={100}
-          min={0}
-          value={progress}
-        />
-      )}
-      <motion.div
+      <div
         onClick={handleClick}
-        whileHover="animate"
         className="group/file relative block w-full cursor-pointer overflow-hidden"
       >
         <input
@@ -107,88 +96,72 @@ export const FileUploader = ({
           <p className="text-muted-foreground relative w-full text-[13px]">
             {t("description")}
           </p>
-          <div className="relative m-10 mx-auto w-full max-w-xl">
-            <ImageGrid images={images} />
 
-            {files.length > 0 &&
-              files.map((file, idx) => (
-                <motion.div
-                  key={"file" + idx}
-                  layoutId={idx === 0 ? "file-upload" : "file-upload-" + idx}
-                  className={cn(
-                    "relative z-40 mx-auto flex w-full flex-col items-start justify-start overflow-hidden rounded-md bg-white p-4 md:h-24",
-                    "shadow-sm",
+          <div className="relative mx-auto grid w-full max-w-xl grid-cols-10 pt-5">
+            {/* Show when there are uploaded files OR existing images */}
+            {(files.length > 0 || images.length > 0) && (
+              <Fragment key={files.length > 0 ? "file-0" : "existing-image"}>
+                <div className="relative col-span-6 flex w-full items-center justify-center sm:col-span-5">
+                  <ImageGrid images={images} />
+
+                  {isUploading && (
+                    <div className="absolute top-0 right-1/2 flex aspect-square h-full w-auto translate-x-1/2 items-center justify-center rounded-md bg-black/40">
+                      <AnimatedCircularProgressBar
+                        className="size-12 font-sans text-sm text-white"
+                        gaugeSecondaryColor="#ccc"
+                        gaugePrimaryColor="#fff"
+                        max={100}
+                        min={0}
+                        value={progress}
+                      />
+                    </div>
                   )}
-                >
-                  <div className="flex w-full items-center justify-between gap-4">
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="max-w-xs truncate text-base text-neutral-700"
-                    >
-                      {file.name}
-                    </motion.p>
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="shadow-input w-fit shrink-0 rounded-lg px-2 py-1 text-sm text-neutral-600"
-                    >
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
-                    </motion.p>
-                  </div>
+                </div>
 
-                  <div className="mt-2 flex w-full flex-col items-start justify-between text-sm text-neutral-600 md:flex-row md:items-center">
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="rounded-md bg-gray-100 px-1 py-0.5"
-                    >
-                      {file.type}
-                    </motion.p>
+                {files.length > 0 && (
+                  <div className="col-span-4 flex flex-col items-center justify-center gap-2 sm:col-span-5">
+                    <p className="text-sm text-neutral-600">
+                      {(files[0].size / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                    <p className="max-w-xs truncate text-base text-neutral-700">
+                      {files[0].name}
+                    </p>
+                    <p className="rounded-md bg-gray-100 px-1 py-0.5">
+                      {files[0].type}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            {!files.length && (
-              <motion.div
-                layoutId="file-upload"
-                variants={mainVariant}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 10,
-                }}
+                )}
+              </Fragment>
+            )}
+
+            {!(files.length > 0) && (
+              <div
                 className={cn(
-                  "relative z-40 mx-auto flex h-32 w-full max-w-32 items-center justify-center rounded-md bg-white group-hover/file:shadow-2xl",
-                  "shadow-[0px_10px_50px_rgba(0,0,0,0.1)]",
+                  "flex min-h-32 items-center justify-center",
+                  images.length > 0
+                    ? "col-span-4 sm:col-span-5"
+                    : "col-span-10",
                 )}
               >
                 {isDragActive ? (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex flex-col items-center text-neutral-600"
-                  >
+                  <div className="text-muted-foreground flex flex-col items-center gap-1 text-sm font-medium">
+                    <UploadSimpleIcon
+                      size={28}
+                      className="text-muted-foreground"
+                    />
                     {t("dropIt")}
-                    <UploadSimpleIcon size={28} className="text-neutral-600" />
-                  </motion.p>
+                  </div>
                 ) : (
-                  <UploadSimpleIcon size={28} className="text-neutral-600" />
+                  <UploadSimpleIcon
+                    size={28}
+                    className="text-muted-foreground"
+                  />
                 )}
-              </motion.div>
-            )}
-
-            {!files.length && (
-              <motion.div
-                variants={secondaryVariant}
-                className="absolute inset-0 z-30 mx-auto mt-4 flex w-full max-w-32 items-center justify-center rounded-md border border-gray-200 bg-transparent opacity-0"
-              ></motion.div>
+              </div>
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -229,7 +202,7 @@ const ImageGrid = ({ images }: { images: string[] }) => {
 
   return (
     <div
-      className={`grid ${gridColsClass} mb-4 place-items-center justify-center gap-4`}
+      className={`grid ${gridColsClass} place-items-center justify-center gap-4`}
     >
       {images.map((image, index) => (
         <div

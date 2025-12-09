@@ -97,7 +97,7 @@ export const SortableButtonItem = ({
             control={form.control}
             name={`buttons.${index}.title`}
             render={({ field: labelField }) => (
-              <FormItem className="w-full space-y-0 sm:w-auto sm:flex-1">
+              <FormItem className="w-full space-y-0 sm:flex-1">
                 <FormControl>
                   <Input
                     placeholder={t("button_text")}
@@ -115,7 +115,7 @@ export const SortableButtonItem = ({
             control={form.control}
             name={`buttons.${index}.url`}
             render={({ field: valueField }) => (
-              <FormItem className="flex-1 space-y-0">
+              <FormItem className="flex-1 space-y-0 sm:flex-2">
                 <FormControl>
                   <Input
                     type="url"

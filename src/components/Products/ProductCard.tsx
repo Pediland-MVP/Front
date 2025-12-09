@@ -93,7 +93,13 @@ const ProductCardComponent = ({
           variant="ghost"
           type="button"
           size="sm"
-          onClick={() => router.push(`/products/${product.id}`)}
+          onClick={() =>
+            router.push(
+              product.type === "product"
+                ? `/products/${product.id}?t=p`
+                : `/products/${product.id}?t=v`,
+            )
+          }
         >
           <PencilIcon className="text-green-600" />
           {t("edit")}

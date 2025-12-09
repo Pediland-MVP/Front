@@ -142,6 +142,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                 }),
               )
               .optional(),
+            orderButtonText: z.string().nullable().optional(),
+            orderProcessText: z.string().max(1000).nullable().optional(),
             // Just used in submit
             attributeValueIds: z.array(z.number()),
             fields: z
@@ -205,8 +207,6 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                 ]),
               )
               .min(1, { message: t("Alerts.buttons") }),
-            orderButtonText: z.string().nullable().optional(),
-            orderProcessText: z.string().max(1000).nullable().optional(),
           }
         : {}),
     })
@@ -217,15 +217,14 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "وقتی کالا تخفیف دارد، قیمت تخفیف نمی‌تواند خالی باشد.",
+          message: "قیمت با تخفیف را وارد کنید.",
           path: ["discountPrice"],
         });
       }
       if (data.price < 1000 && data.price !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message:
-            "قیمت کالا نمی‌تواند کمتر از ۱۰۰۰ تومان باشد. باید یا ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد",
+          message: "قیمت کالا می‌تواند ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد.",
           path: ["price"],
         });
       }
@@ -257,6 +256,25 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     });
 
   // مقداردهی اولیه فرم با در نظر گرفتن حالت ایجاد یا ویرایش
+  // Helper function to infer button type from API data
+  const inferButtonType = (button: any): ButtonTypeEnum => {
+    // Check for contentCycleId/cycleId first (AUTOMATION)
+    if (
+      button.contentCycleId ||
+      button.cycleId ||
+      button.contentCycle?.id ||
+      button.cycle?.id
+    ) {
+      return ButtonTypeEnum.AUTOMATION;
+    }
+    // Check for URL
+    if (button.url && button.url !== null && button.url !== "") {
+      return ButtonTypeEnum.URL;
+    }
+    // Default to TEXT
+    return ButtonTypeEnum.TEXT;
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -267,46 +285,66 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       price: 0,
       shippingCost: 0,
       description: "",
-      imageId: shouldBeEdit?.images?.[0]?.id || undefined,
       isDigital: false,
       haveColor: false,
       haveSize: false,
       colors: [],
       sizes: [],
       attributeValueIds: [],
-      isDiscount:
-        typeof shouldBeEdit?.discountPrice === "number"
-          ? shouldBeEdit.discountPrice >= 0
-            ? true
-            : false
-          : false,
-      discountPrice:
-        typeof shouldBeEdit?.discountPrice === "number"
-          ? shouldBeEdit.discountPrice >= 0
-            ? shouldBeEdit?.discountPrice
-            : undefined
-          : undefined,
-      ...(shouldBeEdit || {}),
-      buttons:
-        shouldBeEdit?.buttons?.map((b) => ({
-          ...b,
-          type: b.type as ButtonTypeEnum,
-          _xid: b.id,
-        })) ??
-        (formType === "Vitrin"
-          ? [
-              {
-                type: ButtonTypeEnum.TEXT,
-                title: "",
-                url: "",
-                contentCycleId: undefined,
-              },
-            ]
-          : []),
-      orderButtonText: shouldBeEdit?.orderButtonText || "سفارش",
-      orderProcessText:
-        shouldBeEdit?.orderProcessText ||
-        `#نام پرداخت شما باموفقیت انجام شد. \nمبلغ: #قیمت\nکد تراکنش: #شناسه`,
+      ...(shouldBeEdit
+        ? {
+            ...shouldBeEdit,
+            imageId: shouldBeEdit?.images?.[0]?.id || undefined,
+            isDiscount:
+              typeof shouldBeEdit?.discountPrice === "number"
+                ? shouldBeEdit.discountPrice >= 0
+                  ? true
+                  : false
+                : false,
+            discountPrice:
+              typeof shouldBeEdit?.discountPrice === "number"
+                ? shouldBeEdit.discountPrice >= 0
+                  ? shouldBeEdit?.discountPrice
+                  : undefined
+                : undefined,
+            // Override buttons with properly mapped version
+            buttons: shouldBeEdit?.buttons?.map((b: any) => ({
+              ...b,
+              type: b.type || inferButtonType(b),
+              _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
+              contentCycleId:
+                b.cycleId ||
+                b.contentCycleId ||
+                b.contentCycle?.id ||
+                b.cycle?.id ||
+                "",
+              url: b.url || "",
+              title: b.title || "",
+            })),
+            shippingCost: shouldBeEdit?.shippingCost ?? 0,
+            orderButtonText: shouldBeEdit?.orderButtonText || "سفارش",
+            orderProcessText:
+              shouldBeEdit?.orderProcessText ||
+              `#نام پرداخت شما باموفقیت انجام شد. \\nمبلغ: #قیمت\\nکد تراکنش: #شناسه`,
+          }
+        : {
+            imageId: undefined,
+            isDiscount: false,
+            discountPrice: undefined,
+            buttons:
+              formType === "Vitrin"
+                ? [
+                    {
+                      type: ButtonTypeEnum.TEXT,
+                      title: "",
+                      url: "",
+                      contentCycleId: undefined,
+                    },
+                  ]
+                : [],
+            orderButtonText: "سفارش",
+            orderProcessText: `#نام پرداخت شما باموفقیت انجام شد. \\nمبلغ: #قیمت\\nکد تراکنش: #شناسه`,
+          }),
     },
   });
 
@@ -327,8 +365,37 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     variations?.items?.find((vari) => vari.title === "اندازه") ?? null;
 
   useEffect(() => {
+    if (shouldBeEdit?.images?.[0]?.url) {
+      const imageUrl = shouldBeEdit.images[0].url;
+      setImages([imageUrl]);
+    }
+  }, [shouldBeEdit]);
+
+  useEffect(() => {
+    if (!shouldBeEdit || formType !== "Vitrin") return;
+
+    if (shouldBeEdit.buttons?.length) {
+      const mappedButtons = shouldBeEdit.buttons.map((b: any) => ({
+        ...b,
+        type: b.type || inferButtonType(b),
+        _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
+        contentCycleId:
+          b.cycleId ||
+          b.contentCycleId ||
+          b.contentCycle?.id ||
+          b.cycle?.id ||
+          "",
+        url: b.url || "",
+        title: b.title || "",
+      }));
+      form.setValue("buttons", mappedButtons);
+    }
+  }, [shouldBeEdit, formType]);
+
+  useEffect(() => {
     if (
       !shouldBeEdit ||
+      formType !== "Product" ||
       colorAttribute === null ||
       sizeAttribute === null ||
       isInitilized
@@ -380,7 +447,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     }
 
     setIsInitilized(true);
-  }, [shouldBeEdit, colorAttribute, sizeAttribute]);
+  }, [shouldBeEdit, colorAttribute, sizeAttribute, formType, isInitilized]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (formType === "Product") {
@@ -415,7 +482,11 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       }
     }
 
-    if (formType !== "Product") {
+    if (formType === "Product") {
+      delete (values as any).buttons;
+    }
+
+    if (formType === "Vitrin") {
       delete (values as any).orderButtonText;
       delete (values as any).orderProcessText;
       delete (values as any).status;
@@ -448,7 +519,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
           data: values,
         });
-        toast.success(t("productAddedSuccess"));
+        toast.success(
+          shouldBeEdit ? t("productEditedSuccess") : t("productAddedSuccess"),
+        );
         await mutate(
           (key) => typeof key === "string" && key.includes("products"),
         );
@@ -460,7 +533,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           url: `/vitrin${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
           data: values,
         });
-        toast.success(t("vitrinAddedSuccess"));
+        toast.success(
+          shouldBeEdit ? t("vitrinEditedSuccess") : t("vitrinAddedSuccess"),
+        );
         await mutate(
           (key) => typeof key === "string" && key.includes("vitrin"),
         );
@@ -610,12 +685,12 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               type="submit"
               className="flex-1 sm:flex-none"
             >
-              {t.rich("submit", {
-                product: formType === "Product" ? t("product") : t("vitrin"),
-              })}
+              {shouldBeEdit ? t("edit") : t("submit")}{" "}
+              {formType === "Product" ? t("product") : t("vitrin")}
             </ButtonLoading>
             <Button
               variant="outline"
+              type="button"
               onClick={() => router.push("/products")}
               className="flex-1 sm:flex-none"
             >

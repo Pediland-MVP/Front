@@ -216,16 +216,18 @@ export const FormProductDetails = ({
               <FormLabel className="min-w-[88px] xl:min-w-[80px]">
                 {t("price")}
               </FormLabel>
-              <FormControl>
-                <Input
-                  onInput={onInputP2EHandler}
-                  placeholder="۰"
-                  value={formatNumber(field.value)}
-                  onFocus={onFocus}
-                  onChange={(e) => field.onChange(+e.target.value)}
-                />
-              </FormControl>
-              <FormMessage />
+              <div className="w-full space-y-1.5">
+                <FormControl>
+                  <Input
+                    onInput={onInputP2EHandler}
+                    placeholder="۰"
+                    value={formatNumber(field.value)}
+                    onFocus={onFocus}
+                    onChange={(e) => field.onChange(+e.target.value)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </div>
             </FormItem>
           )}
         />
@@ -257,23 +259,25 @@ export const FormProductDetails = ({
                       <FormLabel className="min-w-[88px] xl:min-w-fit">
                         {t("discount_price")}
                       </FormLabel>
-                      <FormControl>
-                        <Input
-                          onInput={onInputP2EHandler}
-                          placeholder="۰"
-                          {...field}
-                          value={
-                            field.value == null || field.value === 0
-                              ? ""
-                              : formatNumber(field.value)
-                          }
-                          onChange={(e) => {
-                            const newValue = e.target.value;
-                            field.onChange(newValue === "" ? 0 : +newValue);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <div className="w-full space-y-1.5">
+                        <FormControl>
+                          <Input
+                            onInput={onInputP2EHandler}
+                            placeholder="۰"
+                            {...field}
+                            value={
+                              field.value == null || field.value === 0
+                                ? ""
+                                : formatNumber(field.value)
+                            }
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              field.onChange(newValue === "" ? 0 : +newValue);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -316,7 +320,7 @@ export const FormProductDetails = ({
                           )}
                           placeholder={t("select_color")}
                           emptyIndicator={
-                            <p className="text-center text-gray-600 dark:text-gray-400">
+                            <p className="text-muted-foreground">
                               موردی یافت نشد
                             </p>
                           }

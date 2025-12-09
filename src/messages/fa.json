@@ -815,7 +815,8 @@
       "vitrin": "ویترین",
       "upload_image": "بارگزاری تصویر",
       "upload_image_description": "تصویر {product} را آپلود کنید.",
-      "submit": "ثبت {product}",
+      "submit": "ثبت",
+      "edit": "ویرایش",
       "cancel": "انصراف",
       "uploadProductImage": "تصویر {product} را آپلود کنید.",
 
@@ -881,20 +882,20 @@
         "shipping_cost_title": "ارسال کالا",
         "shipping_cost_label": "هزینه ارسال"
       },
-
       "titleNull": "عنوان",
       "quantityError": "تعداد نمیتواند کمتر از صفر باشد",
       "errorOccurred": "خطایی رخ داد",
-      "productAddedSuccess": "محصول با موفقیت ایجاد شد.",
+      "productAddedSuccess": "کالا با موفقیت ایجاد شد.",
+      "productEditedSuccess": "کالا با موفقیت ویرایش شد.",
       "vitrinAddedSuccess": "ویترین با موفقیت ایجاد شد.",
+      "vitrinEditedSuccess": "ویترین با موفقیت ویرایش شد.",
       "checkConnection": "اتصال خود را چک کنید",
       "productTitle": "عنوان کالا یا خدمت خود را بنویسید",
-
       "shippingCost": {
         "label": "هزینه ارسال(تومان)",
         "placeholder": "0",
         "errors": {
-          "under1000": "هزینه ارسال باید یا معادل ۰ و یا بیشتر از ۱۰۰۰ تومان باشد"
+          "under1000": "هزینه ارسال باید ۰ یا بیشتر از ۱۰۰۰ تومان باشد."
         }
       },
       "Alerts": {
@@ -1463,7 +1464,7 @@
   "FileUpload": {
     "title": "آپلود تصویر",
     "description": "روی این قسمت کلیک کنید یا فایل خود را به اینجا بکشید.",
-    "dropIt": "رها کنید"
+    "dropIt": "اینجا رها کنید"
   },
   "Subscription": {
     "title": "مدیریت اشتراک کاربری",
