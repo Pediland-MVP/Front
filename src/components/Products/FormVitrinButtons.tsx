@@ -64,7 +64,7 @@ export const FormVitrinButtons = () => {
         type: ButtonTypeEnum.TEXT,
         title: "",
         url: "",
-        destinationContentCycleId: undefined,
+        destinationContentCycleId: null, // explicit null to avoid undefined/ID issues
       });
     }
   };

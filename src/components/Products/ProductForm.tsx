@@ -318,6 +318,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                 b.contentCycle?.id ||
                 b.cycle?.id ||
                 "",
+              // Preserve the destinationContentCycle object for display
+              destinationContentCycle:
+                b.destinationContentCycle || b.contentCycle || b.cycle,
               url: b.url || "",
               title: b.title || "",
             })),
@@ -338,7 +341,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                       type: ButtonTypeEnum.TEXT,
                       title: "",
                       url: "",
-                      destinationContentCycleId: undefined,
+                      destinationContentCycleId: null,
                     },
                   ]
                 : [],
@@ -385,6 +388,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           b.contentCycle?.id ||
           b.cycle?.id ||
           "",
+        // Preserve the destinationContentCycle object for display
+        destinationContentCycle:
+          b.destinationContentCycle || b.contentCycle || b.cycle,
         url: b.url || "",
         title: b.title || "",
       }));
@@ -543,7 +549,11 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
 
       router.push("/products");
     } catch (e: any) {
-      toast.error(t_ec(e.response?.data.code));
+      if (e.code === "ERR_BAD_REQUEST") {
+        toast.error(t_ec("ERR_BAD_REQUEST"));
+      } else {
+        toast.error(t_ec(e.response?.data.code));
+      }
     } finally {
       setLoading(false);
     }
@@ -588,8 +598,6 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   };
 
   const addCustomField = () => {
-    // console.log("Fields", fields);
-
     if (fields?.length === undefined || fields.length === null) return;
     if (fields!.length < 5) {
       form.setValue("fields", [

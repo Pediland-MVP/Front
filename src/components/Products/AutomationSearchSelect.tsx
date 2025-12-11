@@ -22,16 +22,26 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
+interface ContentCycleCondition {
+  id: string;
+  value: string;
+}
+
+interface DestinationContentCycle {
+  id: string;
+  conditions: ContentCycleCondition[];
+}
+
 interface AutomationSearchSelectProps {
   value?: string;
   onSelect: (value: string) => void;
   error?: boolean;
+  initialData?: DestinationContentCycle;
 }
 
 interface ConditionItem {
-  id: string;
   value: string;
-  destinationContentCycleId: string;
+  contentCycleId: string;
 }
 
 interface ConditionsResponse {
@@ -42,11 +52,18 @@ export function AutomationSearchSelect({
   value,
   onSelect,
   error,
+  initialData,
 }: AutomationSearchSelectProps) {
   const t = useTranslations("Products.Form.Vitrin");
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const debouncedSearch = useDebounce(search, 300);
+
+  // Store the selected item info (label) for display
+  const [selectedItem, setSelectedItem] = React.useState<{
+    id: string;
+    label: string;
+  } | null>(null);
 
   React.useEffect(() => {
     if (!open) {
@@ -54,15 +71,84 @@ export function AutomationSearchSelect({
     }
   }, [open]);
 
-  // Fetch conditions when search changes
-  // Note: user requested /contentCycle/conditions
+  // Fetch conditions when dropdown is open
   const { data, isLoading } = useSWR<ConditionsResponse>(
-    debouncedSearch
-      ? `/contentCycle/conditions?page=1&limit=20&search=${debouncedSearch}`
+    open
+      ? `/contentCycle/conditions?page=1&limit=30${debouncedSearch ? `&search=${debouncedSearch}` : ""}`
       : null,
   );
 
   const showLoading = isLoading || search !== debouncedSearch;
+
+  // Group items by contentCycleId
+  const groupedItems = React.useMemo(() => {
+    if (!data?.items) return [];
+
+    const groups = new Map<string, { id: string; values: string[] }>();
+
+    data.items.forEach((item) => {
+      // Use contentCycleId for grouping
+      const id = item.contentCycleId;
+      const existing = groups.get(id);
+      if (existing) {
+        existing.values.push(item.value);
+      } else {
+        groups.set(id, {
+          id: id,
+          values: [item.value],
+        });
+      }
+    });
+
+    return Array.from(groups.values()).map((group) => ({
+      destinationContentCycleId: group.id,
+      value: group.values.join(", "),
+    }));
+  }, [data?.items]);
+
+  // Synchronization Effect: Keeps selectedItem in sync with value/data
+  React.useEffect(() => {
+    // 1. If value is empty, clear selection
+    if (!value) {
+      setSelectedItem(null);
+      return;
+    }
+
+    // 2. If we already have the correct item, do nothing
+    if (selectedItem?.id === value) {
+      return;
+    }
+
+    // 3. Try finding in Initial Data (Edit Mode)
+    if (initialData?.id === value) {
+      setSelectedItem({
+        id: value,
+        label: initialData.conditions.map((c) => c.value).join(", "),
+      });
+      return;
+    }
+
+    // 4. Try finding in grouped API Data
+    if (groupedItems.length > 0) {
+      const found = groupedItems.find(
+        (item) => item.destinationContentCycleId === value,
+      );
+      if (found) {
+        setSelectedItem({ id: value, label: found.value });
+        return;
+      }
+    }
+  }, [value, initialData, groupedItems, selectedItem?.id]);
+
+  // Helper for selection
+  const handleSelect = (id: string, label: string) => {
+    setSelectedItem({
+      id,
+      label,
+    });
+    onSelect(id);
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -77,11 +163,9 @@ export function AutomationSearchSelect({
             error && "border-destructive",
           )}
         >
-          {value
-            ? data?.items?.find(
-                (item) => item.destinationContentCycleId === value,
-              )?.value || value
-            : t("search_automation")}
+          {selectedItem && selectedItem.id === value
+            ? selectedItem.label
+            : value || t("search_automation")}
           <ChevronsUpDown className="-ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -95,22 +179,19 @@ export function AutomationSearchSelect({
                 {t("loading")}
               </div>
             )}
-            {!showLoading && search && data?.items?.length === 0 && (
+            {!showLoading && groupedItems.length === 0 && (
               <CommandEmpty>{t("no_results_found")}</CommandEmpty>
             )}
             <CommandGroup>
               {!showLoading &&
-                search &&
-                data?.items?.length > 0 &&
-                data?.items?.map((item, index) => (
+                groupedItems.map((item, index) => (
                   <CommandItem
-                    key={`${item.id}-${index}`}
+                    key={`${item.destinationContentCycleId}-${index}`}
                     value={item.value}
                     className="justify-between text-[13px]"
-                    onSelect={() => {
-                      onSelect(item.destinationContentCycleId);
-                      setOpen(false);
-                    }}
+                    onSelect={() =>
+                      handleSelect(item.destinationContentCycleId, item.value)
+                    }
                   >
                     {item.value}
                     <Check

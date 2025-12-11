@@ -140,6 +140,7 @@ export const SortableButtonItem = ({
                   value={valueField.value}
                   onSelect={valueField.onChange}
                   error={!!error}
+                  initialData={field.destinationContentCycle}
                 />
               </FormItem>
             )}
