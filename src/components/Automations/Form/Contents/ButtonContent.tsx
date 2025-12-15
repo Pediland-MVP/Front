@@ -4,6 +4,7 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { AutomationFormType } from "@/schemas/automationForm";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 import {
   closestCenter,
   DndContext,
@@ -79,8 +80,8 @@ export const ButtonContent = ({ contentIndex, mode }: ButtonContentProps) => {
   const addButton = () => {
     if (fields.length <= 10) {
       append({
+        type: ButtonTypeEnum.TEXT,
         title: "",
-        url: "",
       });
     }
   };

@@ -25,10 +25,10 @@ import { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
 
 import { Button, Form } from "@/components/ui";
-import { ButtonLoading } from "../ui-custom/ButtonLoading";
-import { ErrorMessage } from "../ui-custom/ErrorMessage";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { SeperateLine } from "../ui-custom/SeperateLine";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 import { ConnectInstagramAlert } from "./ConnectInstagramAlert";
 import {
   CommentReplies,

@@ -1,6 +1,7 @@
 // src/schemas/automationForm.ts
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 import { REGEX_URL } from "@/utils/regex";
 import z from "zod";
 
@@ -43,13 +44,25 @@ const ProductSchema = z
   .nullable()
   .optional();
 
-const ButtonSchema = z.object({
-  title: z.string().min(1),
-  url: z
-    .string()
-    .regex(REGEX_URL),
-  _xid: z.string().optional().nullable(),
-});
+const ButtonSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal(ButtonTypeEnum.TEXT),
+    title: z.string().min(1),
+    _xid: z.string().optional().nullable(),
+  }),
+  z.object({
+    type: z.literal(ButtonTypeEnum.URL),
+    title: z.string().min(1),
+    url: z.string().regex(REGEX_URL),
+    _xid: z.string().optional().nullable(),
+  }),
+  z.object({
+    type: z.literal(ButtonTypeEnum.AUTOMATION),
+    title: z.string().min(1),
+    destinationContentCycleId: z.string().min(1),
+    _xid: z.string().optional().nullable(),
+  }),
+]);
 
 const ButtonTemplateSchema = z
   .object({

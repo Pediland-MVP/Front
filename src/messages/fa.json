@@ -380,6 +380,19 @@
         }
       },
       "Button": {
+        "vitrin_details": "جزئیات ویترین",
+        "title_label": "عنوان",
+        "description_label": "توضیحات",
+        "buttons_description": "می‌توانید تا 3 دکمه برای این ویترین ایجاد کنید.",
+        "add_button": "افزودن دکمه",
+        "button_type": "نوع دکمه",
+        "button_text": "متن دکمه",
+        "automation": "پیام خودکار",
+        "search_automation": "انتخاب",
+        "loading": "در حال جستجو...",
+        "no_results_found": "نتیجه‌ای پیدا نشد.",
+        "buttons_error": "لطفا اطلاعات دکمه‌ها را کامل کنید.",
+
         "add": "افزودن دکمه",
         "text": {
           "label": "متن",
