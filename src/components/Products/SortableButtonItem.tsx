@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { ProductFieldTypeEnum } from "@/types/product.enum";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
@@ -10,7 +8,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
   Input,
   Select,
   SelectContent,
@@ -37,7 +34,7 @@ export const SortableButtonItem = ({
 }) => {
   const t = useTranslations("Products.Form.Vitrin");
   const form = useFormContext();
-  const selectedType = form.watch(`buttons.${index}.type`);
+  const selectedType = form.watch(`buttons.${index}.postbackPayloadType`);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field._xid });
@@ -61,10 +58,10 @@ export const SortableButtonItem = ({
         <ArrowsVerticalIcon size={16} className="text-gray-500" />
       </div>
 
-      <div className="flex flex-1 flex-wrap gap-2 sm:flex-nowrap">
+      <div className="flex flex-1 flex-wrap gap-2">
         <FormField
           control={form.control}
-          name={`buttons.${index}.type`}
+          name={`buttons.${index}.postbackPayloadType`}
           render={({ field: typeField }) => (
             <FormItem className="w-full space-y-0 sm:w-auto">
               <Select
@@ -82,7 +79,7 @@ export const SortableButtonItem = ({
                     <SelectItem value={ButtonTypeEnum.URL}>
                       {t("url")}
                     </SelectItem>
-                    <SelectItem value={ButtonTypeEnum.AUTOMATION}>
+                    <SelectItem value={ButtonTypeEnum.START_AUTOMATION}>
                       {t("automation")}
                     </SelectItem>
                   </SelectGroup>
@@ -115,7 +112,7 @@ export const SortableButtonItem = ({
             control={form.control}
             name={`buttons.${index}.url`}
             render={({ field: valueField }) => (
-              <FormItem className="flex-1 space-y-0 sm:flex-2">
+              <FormItem className="w-full space-y-0">
                 <FormControl>
                   <Input
                     type="url"
@@ -130,12 +127,12 @@ export const SortableButtonItem = ({
           />
         )}
 
-        {selectedType === ButtonTypeEnum.AUTOMATION && (
+        {selectedType === ButtonTypeEnum.START_AUTOMATION && (
           <FormField
             control={form.control}
             name={`buttons.${index}.destinationContentCycleId`}
             render={({ field: valueField, fieldState: { error } }) => (
-              <FormItem className="flex-1 space-y-0">
+              <FormItem className="w-full space-y-0">
                 <AutomationSearchSelect
                   value={valueField.value}
                   onSelect={valueField.onChange}

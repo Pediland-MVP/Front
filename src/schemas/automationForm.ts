@@ -44,22 +44,26 @@ const ProductSchema = z
   .nullable()
   .optional();
 
-const ButtonSchema = z.discriminatedUnion("type", [
+const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
   z.object({
-    type: z.literal(ButtonTypeEnum.TEXT),
+    postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
     title: z.string().min(1),
+    priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
   z.object({
-    type: z.literal(ButtonTypeEnum.URL),
+    postbackPayloadType: z.literal(ButtonTypeEnum.URL),
     title: z.string().min(1),
     url: z.string().regex(REGEX_URL),
+    priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
   z.object({
-    type: z.literal(ButtonTypeEnum.AUTOMATION),
+    postbackPayloadType: z.literal(ButtonTypeEnum.START_AUTOMATION),
     title: z.string().min(1),
     destinationContentCycleId: z.string().min(1),
+    destinationContentCycle: z.custom<any>().optional().nullable(),
+    priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
 ]);

@@ -54,7 +54,6 @@ export const ButtonContent = ({ contentIndex, mode }: ButtonContentProps) => {
   const { fields, move, remove, append } = useFieldArray({
     control: control,
     name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons`,
-    keyName: "_xid",
   });
 
   const sensors = useSensors(
@@ -71,8 +70,8 @@ export const ButtonContent = ({ contentIndex, mode }: ButtonContentProps) => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
-      const oldIndex = fields.findIndex((item) => item._xid === active.id);
-      const newIndex = fields.findIndex((item) => item._xid === over?.id);
+      const oldIndex = fields.findIndex((item) => item.id === active.id);
+      const newIndex = fields.findIndex((item) => item.id === over?.id);
       move(oldIndex, newIndex);
     }
   };
@@ -80,7 +79,7 @@ export const ButtonContent = ({ contentIndex, mode }: ButtonContentProps) => {
   const addButton = () => {
     if (fields.length <= 10) {
       append({
-        type: ButtonTypeEnum.TEXT,
+        postbackPayloadType: ButtonTypeEnum.TEXT,
         title: "",
       });
     }
@@ -112,14 +111,14 @@ export const ButtonContent = ({ contentIndex, mode }: ButtonContentProps) => {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={fields.map((item) => item._xid)}
+          items={fields.map((item) => item.id)}
           strategy={rectSortingStrategy}
         >
           <div className="flex w-full flex-col items-center justify-center gap-y-3">
             {fields.map((buttonTemplate, index) => (
               <ButtonContentItem
-                key={buttonTemplate._xid}
-                id={buttonTemplate._xid}
+                key={buttonTemplate.id}
+                id={buttonTemplate.id}
                 index={index}
                 contentIndex={contentIndex}
                 remove={remove}

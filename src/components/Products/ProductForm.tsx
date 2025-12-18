@@ -166,10 +166,10 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         ? {
             buttons: z
               .array(
-                z.discriminatedUnion("type", [
+                z.discriminatedUnion("postbackPayloadType", [
                   z.object({
                     _xid: z.string().optional(),
-                    type: z.literal(ButtonTypeEnum.TEXT),
+                    postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
                     title: z
                       .string()
                       .min(1, { message: t("Alerts.button_title_required") }),
@@ -178,7 +178,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                   }),
                   z.object({
                     _xid: z.string().optional(),
-                    type: z.literal(ButtonTypeEnum.URL),
+                    postbackPayloadType: z.literal(ButtonTypeEnum.URL),
                     title: z
                       .string()
                       .min(1, { message: t("Alerts.button_title_required") }),
@@ -191,7 +191,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                   }),
                   z.object({
                     _xid: z.string().optional(),
-                    type: z.literal(ButtonTypeEnum.AUTOMATION),
+                    postbackPayloadType: z.literal(
+                      ButtonTypeEnum.START_AUTOMATION,
+                    ),
                     title: z
                       .string()
                       .min(1, { message: t("Alerts.button_title_required") }),
@@ -265,7 +267,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       button.contentCycle?.id ||
       button.cycle?.id
     ) {
-      return ButtonTypeEnum.AUTOMATION;
+      return ButtonTypeEnum.START_AUTOMATION;
     }
     // Check for URL
     if (button.url && button.url !== null && button.url !== "") {
@@ -310,7 +312,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             // Override buttons with properly mapped version
             buttons: shouldBeEdit?.buttons?.map((b: any) => ({
               ...b,
-              type: b.type || inferButtonType(b),
+              postbackPayloadType:
+                b.postbackPayloadType || b.type || inferButtonType(b),
               _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
               destinationContentCycleId:
                 b.cycleId ||
@@ -338,7 +341,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               formType === "Vitrin"
                 ? [
                     {
-                      type: ButtonTypeEnum.TEXT,
+                      postbackPayloadType: ButtonTypeEnum.TEXT,
                       title: "",
                       url: "",
                       destinationContentCycleId: null,
@@ -380,7 +383,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     if (shouldBeEdit.buttons?.length) {
       const mappedButtons = shouldBeEdit.buttons.map((b: any) => ({
         ...b,
-        type: b.type || inferButtonType(b),
+        postbackPayloadType:
+          b.postbackPayloadType || b.type || inferButtonType(b),
         _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
         destinationContentCycleId:
           b.cycleId ||
@@ -500,15 +504,15 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       if ((values as any).buttons?.length) {
         (values as any).buttons.forEach((button: any) => {
           if (
-            button.type === ButtonTypeEnum.TEXT ||
-            button.type === ButtonTypeEnum.AUTOMATION
+            button.postbackPayloadType === ButtonTypeEnum.TEXT ||
+            button.postbackPayloadType === ButtonTypeEnum.START_AUTOMATION
           ) {
             delete button.url;
           }
 
           if (
-            button.type === ButtonTypeEnum.TEXT ||
-            button.type === ButtonTypeEnum.URL
+            button.postbackPayloadType === ButtonTypeEnum.TEXT ||
+            button.postbackPayloadType === ButtonTypeEnum.URL
           ) {
             delete button.destinationContentCycleId;
           }

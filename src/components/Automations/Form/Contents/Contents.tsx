@@ -182,7 +182,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                         text: "",
                         buttons: [
                           {
-                            type: ButtonTypeEnum.TEXT,
+                            postbackPayloadType: ButtonTypeEnum.TEXT,
                             title: "",
                           },
                         ],
