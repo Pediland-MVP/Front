@@ -162,7 +162,9 @@ export default function OtpPage() {
                       onInput={onInputP2EHandler}
                       autoFocus
                     >
-                      <InputOTPGroup dir={locale === "fa" ? "rtl" : "ltr"}>
+                      <InputOTPGroup
+                        className={locale === "fa" && "flex-row-reverse"}
+                      >
                         {Array.from({ length: 5 }).map((_, index) => (
                           <InputOTPSlot key={index} index={index} />
                         ))}

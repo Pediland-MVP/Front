@@ -148,20 +148,20 @@ export const ChoosePlan = () => {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                {/* <div className="flex items-center gap-1.5">
                   <span className={labelClass}>تاریخ شروع:</span>
                   <span className="text-primary font-semibold">
                     {toJalaliDate(activeSubscription.planDuration.createDate)}
                   </span>
-                </div>
+                </div> */}
 
-                <div className="flex items-center gap-1.5">
+                {/* <div className="flex items-center gap-1.5">
                   <span className={labelClass}>قیمت بسته:</span>
                   <span className="text-primary font-semibold">
                     {formatNumber(activeSubscription.planDuration.price)}{" "}
                     تـومـان
                   </span>
-                </div>
+                </div> */}
               </div>
               <ProgressRadial
                 percentage={
@@ -171,8 +171,8 @@ export const ChoosePlan = () => {
                       ? activeSubscription?.credit
                       : totalRemainingDays
                 }
-                size={100}
-                strokeWidth={10}
+                size={90}
+                strokeWidth={8}
                 type={activeSubscription?.type === "credit" ? "credit" : "days"}
                 totalDays={totalPurchasedDays}
               />

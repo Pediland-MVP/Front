@@ -204,14 +204,7 @@ export default function OnboardingPage() {
 
             <ButtonLoading
               className="w-full"
-              disabled={
-                isSubmitting ||
-                !form.watch("firstname") ||
-                !form.watch("lastname") ||
-                !form.watch("submittedInstagramUsername") ||
-                (showReferralCode && !form.watch("referralCode")) ||
-                !form.formState.isValid
-              }
+              disabled={isSubmitting}
               isLoading={isSubmitting}
             >
               {t("confirm_and_continue")}
