@@ -1,12 +1,15 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { ProductFieldTypeEnum } from "@/types/product.enum";
+import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import useOrder from "../hooks/useOrder";
 import useUpdateContact from "../hooks/useUpdateContact";
+import { useCheckout } from "../useCheckout";
 
 import { orderFormSchema } from "@/components/Shop/CheckoutPage";
 import {
@@ -14,19 +17,20 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
   Input,
   Textarea,
 } from "@/components/ui";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { UserRectangleIcon } from "@phosphor-icons/react/dist/ssr";
-import { useCheckout } from "../useCheckout";
 
 export default function CustomerDetails() {
   const t = useTranslations("Checkout");
 
   const { pendingOrder, product } = useCheckout();
+  const { createOrder, loading: isCreateOrderLoading } = useOrder();
+  const { updateContact, loading: isUpdateContactLoading } = useUpdateContact();
 
   const {
     register,
@@ -34,41 +38,40 @@ export default function CustomerDetails() {
     formState: { errors },
     trigger,
     clearErrors,
-    getValues,
     watch,
   } = useFormContext<z.infer<typeof orderFormSchema>>();
-
-  const { createOrder, loading: isCreateOrderLoading } = useOrder();
-
-  const { updateContact, loading: isUpdateContactLoading } = useUpdateContact();
 
   const [isProductFieldsError, setIsProductFieldsError] = useState<{
     [key: number]: boolean;
   }>({});
 
   const createOrderHandler = async () => {
-    await trigger("firstname");
-    await trigger("lastname");
-    await trigger("mobile");
+    // Validate required fields
+    const isFirstNameValid = await trigger("firstname");
+    const isLastNameValid = await trigger("lastname");
+    const isMobileValid = await trigger("mobile");
 
-    if (errors.firstname || errors.lastname || errors.mobile) {
-      return;
-    }
-
+    let isProductFieldsValid = true;
     const productFieldValues = watch("productFieldValues");
     if ((product?.fields?.length || 0) > 0) {
-      let haveError = false;
       productFieldValues?.forEach((pf, index) => {
         if (pf.isRequired && !pf.value) {
           setIsProductFieldsError((prevState: any) => ({
             ...prevState,
             [index]: true,
           }));
-          haveError = true;
+          isProductFieldsValid = false;
         }
       });
+    }
 
-      if (haveError) return;
+    if (
+      !isFirstNameValid ||
+      !isLastNameValid ||
+      !isMobileValid ||
+      !isProductFieldsValid
+    ) {
+      return;
     }
 
     if (pendingOrder) {
@@ -92,7 +95,7 @@ export default function CustomerDetails() {
         {t("customerDetails")}
       </h2>
 
-      <div className="grid gap-2 md:grid-cols-3 md:gap-3">
+      <div className="grid gap-3 md:grid-cols-3">
         <FormField
           control={control}
           name="firstname"
@@ -102,12 +105,14 @@ export default function CustomerDetails() {
               <FormControl>
                 <Input
                   id="firstname"
-                  {...register("firstname", { required: true })}
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    trigger("firstname");
+                  }}
                 />
               </FormControl>
-              {errors.firstname && (
-                <span className="text-sm text-red-500">{t("required")}</span>
-              )}
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -121,12 +126,14 @@ export default function CustomerDetails() {
               <FormControl>
                 <Input
                   id="lastname"
-                  {...register("lastname", { required: true })}
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    trigger("lastname");
+                  }}
                 />
               </FormControl>
-              {errors.lastname && (
-                <span className="text-sm text-red-500">{t("required")}</span>
-              )}
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -143,12 +150,14 @@ export default function CustomerDetails() {
                   type="tel"
                   maxLength={11}
                   onInput={onInputP2EHandler}
-                  {...register("mobile", { required: true })}
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    trigger("mobile");
+                  }}
                 />
               </FormControl>
-              {errors.mobile && (
-                <span className="text-sm text-red-500">{t("required")}</span>
-              )}
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -160,12 +169,46 @@ export default function CustomerDetails() {
             name={`productFieldValues.${index}.value`}
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel>{f.label}</FormLabel>
+                <FormLabel
+                  className={cn(
+                    isProductFieldsError[index] && "text-destructive",
+                  )}
+                >
+                  {f.label}
+                </FormLabel>
                 <FormControl>
                   {f.type === ProductFieldTypeEnum.TEXTAREA ? (
-                    <Textarea {...field} />
+                    <Textarea
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (e.target.value) {
+                          setIsProductFieldsError((prev) => {
+                            const newErrors = { ...prev };
+                            delete newErrors[index];
+                            return newErrors;
+                          });
+                        }
+                      }}
+                      aria-invalid={isProductFieldsError[index]}
+                    />
                   ) : (
-                    f.type === ProductFieldTypeEnum.TEXT && <Input {...field} />
+                    f.type === ProductFieldTypeEnum.TEXT && (
+                      <Input
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          if (e.target.value) {
+                            setIsProductFieldsError((prev) => {
+                              const newErrors = { ...prev };
+                              delete newErrors[index];
+                              return newErrors;
+                            });
+                          }
+                        }}
+                        aria-invalid={isProductFieldsError[index]}
+                      />
+                    )
                   )}
                 </FormControl>
                 {isProductFieldsError[index] && (
@@ -176,6 +219,7 @@ export default function CustomerDetails() {
           />
         ))}
       </div>
+
       <div className="mt-6 flex w-full items-center justify-center gap-x-2">
         <ButtonLoading
           onClick={createOrderHandler}

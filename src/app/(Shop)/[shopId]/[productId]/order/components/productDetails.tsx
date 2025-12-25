@@ -8,8 +8,9 @@ import { useState, useMemo } from "react";
 import { useCheckout } from "../useCheckout";
 import { useFormContext } from "react-hook-form";
 import type { z } from "zod";
-import type { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
+
 import { AttributeSelector } from "./attributesSelector";
+import type { orderFormSchema } from "@/components/Shop/CheckoutPage";
 
 export default function ProductDetails() {
   const { product, pendingOrder, orderQuantity } = useCheckout();
@@ -86,12 +87,12 @@ export default function ProductDetails() {
   if (!product) return <ProductDetailsSkeleton />;
 
   return (
-    <div className="_product-details flex flex-col md:flex-row items-center md:gap-5">
+    <div className="_product-details flex flex-col items-center md:flex-row md:gap-5">
       <div className="_image relative aspect-square h-full w-full">
         <Image
           src={product.images?.[0].url || "/placeholder.svg"}
           sizes="(max-width: 768px) 96px, (max-width: 1024px) 192px, 256px"
-          className="rounded-tl-xl rounded-tr-xl object-cover"
+          className="rounded-t-xl object-cover sm:rounded-xl sm:rounded-tr-xl"
           alt={product?.title}
           fill
         />
@@ -122,7 +123,7 @@ export default function ProductDetails() {
 
         {attributes.length > 0 && <AttributeSelector attributes={attributes} />}
 
-        <div className="_price-info flex items-end justify-between">
+        <div className="_price-info flex items-end justify-between sm:items-center">
           <div className="_price-wrapper">
             {discountPercentage && (
               <p className="flex items-center justify-end gap-2 text-gray-700">

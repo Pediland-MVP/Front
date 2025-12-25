@@ -965,7 +965,7 @@
     "paymentMethod": "روش پرداخت",
     "paynow": "پرداخت و ثبت خرید",
     "uploadSuccess": "رسید شما آپلود شد",
-    "required": "این فیلد الزامی است",
+    "required": "این فیلد الزامی است.",
     "orderCardToCardNotUploaded": "لطفا اول رسید کارت به کارت خود را آپلود نمایید",
     "orderProcessing": "سفارش شما با موفقیت ثبت شد",
     "orderProcessingDescription": "اطلاعات شما با موفقیت دریافت شد. به‌زودی با شما در ارتباط خواهیم بود.",
@@ -1730,7 +1730,10 @@
       "void": "void",
       "never": "never",
       "map": "نقشه",
-      "set": "مجموعه"
+      "set": "مجموعه",
+      "male": "مرد",
+      "female": "زن",
+      "other": "سایر"
     }
   }
 }
