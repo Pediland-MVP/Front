@@ -78,18 +78,21 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             product: formType === "Product" ? t("product") : t("vitrin"),
           }),
         }),
-      description: z
-        .string()
-        .min(1, {
-          message: t("Alerts.description", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
-          }),
-        })
-        .min(5, {
-          message: t("Alerts.descrption_length", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
-          }),
-        }),
+      description:
+        formType === "Vitrin"
+          ? z.string().optional()
+          : z
+              .string()
+              .min(1, {
+                message: t("Alerts.description", {
+                  product: t("product"),
+                }),
+              })
+              .min(5, {
+                message: t("Alerts.descrption_length", {
+                  product: t("product"),
+                }),
+              }),
       imageId: z
         .number({
           message: t("Alerts.image", {
