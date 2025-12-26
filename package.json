@@ -41,6 +41,7 @@
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-hook/media-query": "^1.1.1",
+    "@sentry/nextjs": "^10.32.1",
     "@tanstack/react-table": "^8.21.3",
     "@types/moment-jalaali": "^0.7.9",
     "@vidstack/react": "^1.12.13",
