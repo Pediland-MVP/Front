@@ -61,7 +61,7 @@ export const FormVitrinButtons = () => {
   const addButton = () => {
     if (fields.length < 3) {
       append({
-        type: ButtonTypeEnum.TEXT,
+        postbackPayloadType: ButtonTypeEnum.TEXT,
         title: "",
         url: "",
         destinationContentCycleId: null, // explicit null to avoid undefined/ID issues

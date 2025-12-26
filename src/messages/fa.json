@@ -246,6 +246,7 @@
     "add_title": "جزئیات پیام",
     "add": "افزودن",
     "cancel": "انصراف",
+    "form_errors": "لطفا ورودی‌های فرم را بررسی کنید",
     "follow_check_message": "فالو کردم ✅",
     "comment_start_text": "برای اینکه بتونیم پیام رو براتون بفرستیم، لازمه دکمه دریافت پیام رو بزنید🌟",
     "comment_start_title": "دریافت پیام ✅",
@@ -380,6 +381,19 @@
         }
       },
       "Button": {
+        "vitrin_details": "جزئیات ویترین",
+        "title_label": "عنوان",
+        "description_label": "توضیحات",
+        "buttons_description": "می‌توانید تا 3 دکمه برای این ویترین ایجاد کنید.",
+        "add_button": "افزودن دکمه",
+        "button_type": "نوع دکمه",
+        "button_text": "متن دکمه",
+        "automation": "پیام خودکار",
+        "search_automation": "انتخاب",
+        "loading": "در حال جستجو...",
+        "no_results_found": "نتیجه‌ای پیدا نشد.",
+        "buttons_error": "لطفا اطلاعات دکمه‌ها را کامل کنید.",
+
         "add": "افزودن دکمه",
         "text": {
           "label": "متن",
@@ -391,7 +405,7 @@
           "placeholder": "مثال: لینک سایت ما"
         },
         "url": {
-          "label": "لینک دکمه",
+          "label": "لینک",
           "description": "کاربر با کلیک بر روی این دکمه به این لینک منتقل میشود.",
           "placeholder": "مثال: https://befroosh.app"
         },
@@ -951,7 +965,7 @@
     "paymentMethod": "روش پرداخت",
     "paynow": "پرداخت و ثبت خرید",
     "uploadSuccess": "رسید شما آپلود شد",
-    "required": "این فیلد الزامی است",
+    "required": "این فیلد الزامی است.",
     "orderCardToCardNotUploaded": "لطفا اول رسید کارت به کارت خود را آپلود نمایید",
     "orderProcessing": "سفارش شما با موفقیت ثبت شد",
     "orderProcessingDescription": "اطلاعات شما با موفقیت دریافت شد. به‌زودی با شما در ارتباط خواهیم بود.",
@@ -1716,7 +1730,10 @@
       "void": "void",
       "never": "never",
       "map": "نقشه",
-      "set": "مجموعه"
+      "set": "مجموعه",
+      "male": "مرد",
+      "female": "زن",
+      "other": "سایر"
     }
   }
 }

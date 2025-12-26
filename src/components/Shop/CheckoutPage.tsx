@@ -46,9 +46,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 const CustomerDetails = dynamic(
   () =>
-    import(
-      "../../app/(Shop)/[shopId]/[productId]/order/components/customerDetails"
-    ),
+    import("../../app/(Shop)/[shopId]/[productId]/order/components/customerDetails"),
   {
     loading: () => <CustomerDetailsSkeleton />,
     ssr: false,
@@ -57,9 +55,7 @@ const CustomerDetails = dynamic(
 
 const Address = dynamic(
   () =>
-    import(
-      "../../app/(Shop)/[shopId]/[productId]/order/components/customerAddress"
-    ),
+    import("../../app/(Shop)/[shopId]/[productId]/order/components/customerAddress"),
   {
     loading: () => <CustomerAddressSkeleton />,
     ssr: false,
@@ -77,9 +73,7 @@ const PaymentDetails = dynamic(
 
 const FloatingTimeCircle = dynamic(
   () =>
-    import(
-      "../../app/(Shop)/[shopId]/[productId]/order/components/floatingTimeCircle"
-    ),
+    import("../../app/(Shop)/[shopId]/[productId]/order/components/floatingTimeCircle"),
   {
     loading: () => <FloatingTimeCircleSkeleton />,
     ssr: false,
@@ -88,9 +82,7 @@ const FloatingTimeCircle = dynamic(
 
 const UploadTransaction = dynamic(
   () =>
-    import(
-      "../../app/(Shop)/[shopId]/[productId]/order/components/uploadTransaction"
-    ),
+    import("../../app/(Shop)/[shopId]/[productId]/order/components/uploadTransaction"),
   {
     loading: () => <UploadTransactionSkeleton />,
     ssr: false,
@@ -99,13 +91,13 @@ const UploadTransaction = dynamic(
 
 export const orderFormSchema = z.object({
   gender: z.nativeEnum(GENDERS_ENUM),
-  firstname: z.string().min(1),
-  lastname: z.string().min(1),
-  email: z.string().email(),
-  mobile: z.string().regex(REGEX_MOBILE, "Invalid mobile number"),
+  firstname: z.string().min(1, "نام خود را وارد کنید."),
+  lastname: z.string().min(1, "نام خانوادگی خود را وارد کنید."),
+  email: z.string().email("ایمیل خود را وارد کنید."),
+  mobile: z.string().regex(REGEX_MOBILE, "شماره موبایل خود را وارد کنید."),
   state: z.string(),
   cityId: z.string(),
-  address: z.string().min(1, "Address is required"),
+  address: z.string().min(1, "آدرس خود را وارد کنید."),
   postalcode: z.string().min(10, "کد پستی باید ۱۰ رقمی باشد").max(10),
   productFieldValues: z
     .array(
@@ -436,7 +428,7 @@ export const CheckoutPage = ({ token, shopId, productId }: CheckoutProps) => {
                 </Suspense>
               </FormStep>
             </FormStepperProvider>
-            
+
             <Suspense fallback={<FloatingTimeCircleSkeleton />}>
               {pendingOrder?.status === ORDER_STATUS.PAYMENT &&
                 pendingOrder.startPaymentDate && (

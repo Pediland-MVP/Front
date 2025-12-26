@@ -4,6 +4,7 @@ import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 import api from "@/hooks/swr/api-client";
 import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
 import useUser from "@/hooks/useUser";
@@ -25,10 +26,10 @@ import { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
 
 import { Button, Form } from "@/components/ui";
-import { ButtonLoading } from "../ui-custom/ButtonLoading";
-import { ErrorMessage } from "../ui-custom/ErrorMessage";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { SeperateLine } from "../ui-custom/SeperateLine";
+import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 import { ConnectInstagramAlert } from "./ConnectInstagramAlert";
 import {
   CommentReplies,
@@ -101,9 +102,78 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       return;
     }
 
-    form.reset({
+    const transformButtons = (buttons: any[]) => {
+      return buttons?.map((b: any) => {
+        const btn = { ...b };
+
+        // Normalize type
+        const typeToNormalize = btn.type || btn.postbackPayloadType;
+
+        if (typeToNormalize) {
+          const lowerType = typeToNormalize.toLowerCase();
+          if (lowerType === "text" || lowerType === ButtonTypeEnum.TEXT) {
+            btn.type = ButtonTypeEnum.TEXT;
+            btn.postbackPayloadType = ButtonTypeEnum.TEXT;
+          } else if (lowerType === "url" || lowerType === ButtonTypeEnum.URL) {
+            btn.type = ButtonTypeEnum.URL;
+            btn.postbackPayloadType = ButtonTypeEnum.URL;
+          } else if (
+            lowerType === "contentcycle" ||
+            lowerType === "automation" ||
+            typeToNormalize === "AUTOMATION" ||
+            lowerType === ButtonTypeEnum.START_AUTOMATION.toLowerCase()
+          ) {
+            btn.type = ButtonTypeEnum.START_AUTOMATION;
+            btn.postbackPayloadType = ButtonTypeEnum.START_AUTOMATION;
+          }
+        }
+
+        if (
+          btn.type === ButtonTypeEnum.START_AUTOMATION &&
+          btn.destinationContentCycle
+        ) {
+          return {
+            ...btn,
+            destinationContentCycleId: btn.destinationContentCycle.id,
+          };
+        }
+        return btn;
+      });
+    };
+
+    const transformContent = (c: any) => {
+      const content = { ...c };
+      if (content.buttonTemplate?.buttons) {
+        content.buttonTemplate = {
+          ...content.buttonTemplate,
+        };
+        const buttons = transformButtons(content.buttonTemplate.buttons);
+
+        // Sort buttons: if priority exists, use it. Otherwise maintain order (or use ID).
+        // Assuming lighter priority value means earlier in the list (1, 2, 3...)
+        buttons?.sort((a: any, b: any) => {
+          const pA = a.priority ?? 9999;
+          const pB = b.priority ?? 9999;
+          if (pA !== pB) return pA - pB;
+          return 0;
+        });
+
+        content.buttonTemplate.buttons = buttons;
+      }
+      return content;
+    };
+
+    const transformedAutomation = {
       ...automation,
-      ...(automation.reminders?.length > 0 && { isRemindersEnabled: true }),
+      contents: automation.contents?.map(transformContent),
+      reminders: automation.reminders?.map(transformContent),
+    };
+
+    form.reset({
+      ...transformedAutomation,
+      ...(transformedAutomation.reminders?.length > 0 && {
+        isRemindersEnabled: true,
+      }),
       reminderTime: automation.reminderTime
         ? `${automation.reminderTime}`
         : undefined,
@@ -174,6 +244,22 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       }
     }
 
+    // Set Priority for buttons
+    const setButtonPriorities = (contentsList: typeof values.contents) => {
+      contentsList.forEach((content) => {
+        if (content.buttonTemplate?.buttons) {
+          content.buttonTemplate.buttons.forEach((btn, idx) => {
+            btn.priority = idx + 1;
+          });
+        }
+      });
+    };
+
+    setButtonPriorities(values.contents);
+    if (values.reminders) {
+      setButtonPriorities(values.reminders);
+    }
+
     if (haveError) {
       setIsSubmitting(false);
       return;
@@ -191,6 +277,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       values.followCheckMessage = t("follow_check_message");
     }
 
+    console.log("We are here.....", values);
     setIsSubmitting(true);
 
     await api({
@@ -249,7 +336,10 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit, (e) => {
+                  console.log(e);
+                  toast.error(t("form_errors"));
+                })}
                 className="grid gap-3.5"
               >
                 <Triggers control={form.control} getValues={form.getValues} />

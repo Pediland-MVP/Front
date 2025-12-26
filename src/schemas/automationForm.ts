@@ -1,6 +1,7 @@
 // src/schemas/automationForm.ts
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 import { REGEX_URL } from "@/utils/regex";
 import z from "zod";
 
@@ -43,13 +44,29 @@ const ProductSchema = z
   .nullable()
   .optional();
 
-const ButtonSchema = z.object({
-  title: z.string().min(1),
-  url: z
-    .string()
-    .regex(REGEX_URL),
-  _xid: z.string().optional().nullable(),
-});
+const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
+  z.object({
+    postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
+    title: z.string().min(1),
+    priority: z.number().optional().nullable(),
+    _xid: z.string().optional().nullable(),
+  }),
+  z.object({
+    postbackPayloadType: z.literal(ButtonTypeEnum.URL),
+    title: z.string().min(1),
+    url: z.string().regex(REGEX_URL),
+    priority: z.number().optional().nullable(),
+    _xid: z.string().optional().nullable(),
+  }),
+  z.object({
+    postbackPayloadType: z.literal(ButtonTypeEnum.START_AUTOMATION),
+    title: z.string().min(1),
+    destinationContentCycleId: z.string().min(1),
+    destinationContentCycle: z.custom<any>().optional().nullable(),
+    priority: z.number().optional().nullable(),
+    _xid: z.string().optional().nullable(),
+  }),
+]);
 
 const ButtonTemplateSchema = z
   .object({

@@ -13,6 +13,7 @@ import { contentTypeOptions } from "./ContentTypeOptions";
 // TODO: Refactor Types & Schemas
 import type { AutomationFormType } from "@/schemas/automationForm";
 import type { UploadedFile } from "@/types/fileUploader";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
 
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { Alert, AlertDescription, AlertTitle, Button } from "@/components/ui";
@@ -43,10 +44,11 @@ type ContentsProps = {
 };
 
 export const Contents = ({ mode, automationId }: ContentsProps) => {
-  const { user } = useUser();
   const t = useTranslations("Automations.Contents");
   const t_contentTypes = useTranslations("Automations.Contents.Types");
   const t_err = useTranslations("Automations.Contents.Errors");
+  const { user } = useUser();
+
   const isPromotion = user?.instagrams?.[0]?.isPromotion;
 
   const {
@@ -180,7 +182,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                         text: "",
                         buttons: [
                           {
-                            url: "",
+                            postbackPayloadType: ButtonTypeEnum.TEXT,
                             title: "",
                           },
                         ],
