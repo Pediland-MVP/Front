@@ -126,16 +126,19 @@ export default function ConnectPage() {
             </div>
             <Button
               className="w-full"
-              onClick={() => setDialogOpen(true)}
+              // onClick={() => setDialogOpen(true)}
               disabled={isCallbackIGLoading}
+              asChild
             >
-              {isCallbackIGLoading ? (
-                <>
-                  <Spinner className="size-5" /> {t("connecting_account")}
-                </>
-              ) : (
-                t("connect_account")
-              )}
+              <Link href="https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments">
+                {isCallbackIGLoading ? (
+                  <>
+                    <Spinner className="size-5" /> {t("connecting_account")}
+                  </>
+                ) : (
+                  t("connect_account")
+                )}
+              </Link>
             </Button>
           </div>
 

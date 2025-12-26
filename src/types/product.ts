@@ -1,3 +1,4 @@
+import { ButtonTypeEnum } from "./buttons.enum";
 import { ProductFieldTypeEnum } from "./product.enum";
 
 export namespace ProductNamespace {
@@ -16,7 +17,7 @@ export interface ProductItem {
   createDate: string;
   updateDate: string;
   title: string;
-  price: number;
+  price: number | null;
   status: boolean;
   discountPrice: number | null;
   description: string;
@@ -28,6 +29,7 @@ export interface ProductItem {
   orderButtonText: string;
   orderProcessText: string;
   shippingCost: number;
+  type: "product" | "vitrin";
   fields: {
     id: string;
     label: string;
@@ -35,6 +37,12 @@ export interface ProductItem {
     isRequired: boolean;
     options?: any[];
     [key: string]: string | boolean | number | (any[] | undefined) | null;
+  }[];
+  buttons?: {
+    id: string;
+    type: ButtonTypeEnum;
+    text: string;
+    value?: string;
   }[];
 }
 

@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ProductFormSkeleton = () => {
   return (
-    <div className="flex flex-col md:flex-row gap-8">
+    <div className="flex flex-col gap-8 md:flex-row">
       <div className="flex-1 p-6">
-        <Skeleton className="h-8 w-48 mb-4" />
+        <Skeleton className="mb-4 h-8 w-48" />
         <div className="space-y-6">
           {[...Array(3)].map((_, index) => (
             <div key={index} className="space-y-2">
@@ -14,11 +14,11 @@ const ProductFormSkeleton = () => {
               <Skeleton className="h-4 w-3/4" />
             </div>
           ))}
-          <Skeleton className="h-10 w-24 mt-4" />
+          <Skeleton className="mt-4 h-10 w-24" />
         </div>
       </div>
       <div className="flex-1 p-6">
-        <Skeleton className="w-full h-96 rounded-lg" />
+        <Skeleton className="h-96 w-full rounded-lg" />
       </div>
     </div>
   );

@@ -1,11 +1,16 @@
+import { LayoutPage } from "@/components/Layout/LayoutPage";
 import Product from "./product";
 
-export default async function Page({
-  params,
-}: {
+interface PageProps {
   params: Promise<{ id: string }>;
-}) {
+}
+
+export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
-  return <Product id={id} />;
+  return (
+    <LayoutPage>
+      <Product id={id} />
+    </LayoutPage>
+  );
 }

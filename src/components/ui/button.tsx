@@ -1,4 +1,4 @@
-// Do not override this file
+// DO NOT override this file
 import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -21,7 +21,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3",
-        sm: "text-[13px] h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
+        sm: "text-[13px] h-9 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         md: "h-9 px-3",
         lg: "h-11 rounded-md text-[15px] px-6 has-[>svg]:px-4",
         icon: "size-9",

@@ -6,6 +6,7 @@
     "FETCH_DATA": "خطا در دریافت اطلاعات",
     "PRODUCT_IS_IN_CONTENT_CYCLE": "این محصول در یک پیام خودکار استفاده شده است.",
     "INSTAGRAM_ALREADY_LINKED": "این صفحه به یک حساب کاربری دیگر متصل شده است.",
+    "ERR_BAD_REQUEST": "درخواست نامعتبر است.",
 
     "ATTRIBUTE_ALREADY_SELECTED": "ویژگی از قبل انتخاب شده است",
     "ATTRIBUTE_CANT_BE_UPDATED_NOW": "ویژگی در حال حاضر قابل به‌روزرسانی نیست",

@@ -6,6 +6,7 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -51,15 +52,16 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale();
 
+  const className =
+    locale === "fa"
+      ? "font-Yekan antialiased"
+      : `${inter.className} antialiased`;
+
   return (
     <html
       lang={locale}
       dir={locale === "fa" ? "rtl" : "ltr"}
-      className={
-        locale === "fa"
-          ? "font-Yekan antialiased"
-          : `${inter.className} antialiased`
-      }
+      className={className}
     >
       <body>{children}</body>
     </html>

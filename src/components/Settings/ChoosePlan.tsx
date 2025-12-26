@@ -240,9 +240,6 @@ export const ChoosePlan = () => {
             {currentPlan.durations
               .sort((a, b) => b.id - a.id)
               .map((duration, id) => {
-                console.log("discountPrice", duration.discountPrice);
-                console.log("price", duration.price);
-
                 const unitPrice =
                   duration.discountPrice > 0
                     ? Number(duration.discountPrice)

@@ -4,6 +4,7 @@ import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import useSWRImmutable from "swr/immutable";
 
 import { LayoutCard } from "@/components/Layout/LayoutCard";
 import { ProducstCardList } from "@/components/Products/ProducstCardList";
@@ -11,7 +12,14 @@ import { Button } from "@/components/ui";
 import { SearchInput } from "@/components/ui-custom/SearchInput";
 import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { CircleFadingPlusIcon } from "lucide-react";
-import useSWRImmutable from "swr/immutable";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Page() {
   const router = useRouter();
@@ -42,18 +50,32 @@ export default function Page() {
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
         />
-        <Button
-          type="button"
-          size="md"
-          onClick={() => router.push("/products/add")}
-          disabled={error || !allowAdd}
-        >
-          {t("add")}
-          <CircleFadingPlusIcon />
-        </Button>
+
+        <DropdownMenu dir="rtl">
+          <DropdownMenuTrigger asChild>
+            <Button type="button" size="md" disabled={error || !allowAdd}>
+              {t("add")}
+              <CircleFadingPlusIcon />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => router.push("/products/add?t=p")}
+              >
+                افزودن کالا
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => router.push("/products/add?t=v")}
+              >
+                افزودن ویترین
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </>
     );
-  }, [isSearchVisible, setIsSearchVisible, error, router]);
+  }, [isSearchVisible, setIsSearchVisible, error, router, allowAdd]);
 
   const HeaderTools = useMemo(
     () => (

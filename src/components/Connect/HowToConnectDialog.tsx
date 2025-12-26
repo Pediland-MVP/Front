@@ -33,16 +33,16 @@ export const HowToConnectDialog = ({
   const router = useRouter();
   const [connecting, setConnecting] = useState(false);
 
-  useEffect(() => {
-    if (connecting) {
-      const timer = setTimeout(() => {
-        router.push(
-          `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
-        );
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [connecting, router]);
+  // useEffect(() => {
+  //   if (connecting) {
+  //     const timer = setTimeout(() => {
+  //       router.push(
+  //         `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+  //       );
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [connecting, router]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
