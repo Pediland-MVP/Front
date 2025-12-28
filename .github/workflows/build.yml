@@ -21,7 +21,7 @@ jobs:
         run: |
           ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
           cd /home/cicd/Front/
-          sudo chown -R $(whoami) .git || true
+          chown -R $(whoami) .git || true
           git fetch origin
           git reset --hard origin/main
           git pull
@@ -37,7 +37,7 @@ jobs:
         run: |
           ssh -T -o StrictHostKeyChecking=no -i ssh_key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 54321 << 'EOF'
           cd /home/cicd/Front/
-          sudo chown -R $(whoami) .git || true
+          chown -R $(whoami) .git || true
           git fetch origin
           git reset --hard origin/main
           git pull
