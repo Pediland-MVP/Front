@@ -26,6 +26,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export default function ConnectPage() {
   const t = useTranslations("Connect");
@@ -130,7 +132,9 @@ export default function ConnectPage() {
               disabled={isCallbackIGLoading}
               asChild
             >
-              <Link href="https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments">
+              <Link
+                href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
+              >
                 {isCallbackIGLoading ? (
                   <>
                     <Spinner className="size-5" /> {t("connecting_account")}
