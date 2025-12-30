@@ -1,28 +1,27 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import React, { useState, useEffect } from "react";
-import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
 import { SessionNamespace } from "@/types/session";
-import QuestionAnswerDialog from "./questionAnswer.dialog";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
-// Just UI Imports Below
-import { Card } from "@/components/ui/card";
-import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import useSWR from "swr";
+import QuestionAnswerDialog from "./questionAnswer.dialog";
+
 import {
+  Avatar,
+  Badge,
+  Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import useSWR from "swr";
+} from "@/components/ui";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import { ChatCircleTextIcon } from "@phosphor-icons/react";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -79,7 +78,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                   <TableHead className="text-right">
                     {t("updateDate")}
                   </TableHead>
-                  <TableHead className="text-right">{t("actions")}</TableHead>
+                  {/* <TableHead className="text-right">{t("actions")}</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -115,20 +114,20 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                     <TableCell className="text-right">
                       {formatDate(item.updateDate)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    {/* <TableCell className="text-right">
                       <div className="flex items-center space-x-2">
                         <QuestionAnswerDialog
                           questionId={item.id}
                           leadInstagram={item.leadInstagram}
                         />
-                        <Link href={`/directs/${item.leadInstagram.lead.id}`}>
+                        <Link href={`/directs/${item.leadInstagram?.lead?.id}`}>
                           <Button variant="ghost" size="sm">
-                            <ChatCircleText className="ml-2 h-4 w-4" />
+                            <ChatCircleTextIcon className="ml-2 h-4 w-4" />
                             {t("viewChat")}
                           </Button>
                         </Link>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
