@@ -52,6 +52,12 @@ const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
     _xid: z.string().optional().nullable(),
   }),
   z.object({
+    postbackPayloadType: z.literal(ButtonTypeEnum.CONSENT),
+    title: z.string().min(1),
+    priority: z.number().optional().nullable(),
+    _xid: z.string().optional().nullable(),
+  }),
+  z.object({
     postbackPayloadType: z.literal(ButtonTypeEnum.URL),
     title: z.string().min(1),
     url: z.string().regex(REGEX_URL),
@@ -94,6 +100,7 @@ export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
   text: optionalStringToUndef,
+  quickReplies: z.array(ButtonSchema).optional().nullable(),
   consentText: optionalStringToUndef,
   haveConsent: optionalBoolDefault(false),
   type: z.nativeEnum(AutomationContentTypesEnum),
@@ -122,6 +129,7 @@ export const AutomationFormSchema = z
   .object({
     isDirect: z.boolean(),
     isComment: z.boolean(),
+    isNoCondition: z.boolean(),
 
     conditions: z.array(ContentItemConditionSchema).min(1),
 
@@ -147,6 +155,7 @@ export const AutomationFormSchema = z
       z.object({
         type: z.nativeEnum(AutomationContentTypesEnum),
         text: optionalStringToUndef,
+        quickReplies: z.array(ButtonSchema).optional().nullable(),
         instagramPost: InstagramPostSchema,
         file: FileSchema,
         products: z.array(ProductSchema).optional().nullable(),

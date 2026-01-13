@@ -393,11 +393,22 @@
         "loading": "در حال جستجو...",
         "no_results_found": "نتیجه‌ای پیدا نشد.",
         "buttons_error": "لطفا اطلاعات دکمه‌ها را کامل کنید.",
-
         "add": "افزودن دکمه",
         "text": {
           "label": "متن",
           "placeholder": "مثلا: این لیستی از شبکه‌های اجتماعی ماست"
+        },
+        "startAutomation": {
+          "label": "پیام خودکار",
+          "placeholder": "مشاوره، درباره‌ما و..."
+        },
+        "CONSENT": {
+          "label": "کسب اجازه",
+          "placeholder": "مثلا: بریم بعدی؟"
+        },
+        "consent": {
+          "label": "کسب اجازه",
+          "placeholder": "مثلا: بریم بعدی؟"
         },
         "title": {
           "label": "متن دکمه",
@@ -834,7 +845,6 @@
       "edit": "ویرایش",
       "cancel": "انصراف",
       "uploadProductImage": "تصویر {product} را آپلود کنید.",
-
       "Vitrin": {
         "vitrin_details": "جزئیات ویترین",
         "title_label": "عنوان",
@@ -916,7 +926,6 @@
       "Alerts": {
         "title": "عنوان {product} خود را وارد کنید.",
         "title_length": "عنوان {product} باید حداقل ۳ حرف باشد.",
-
         "quantity": "تعداد موجودی کالا یا خدمات خود را وارد کنید.",
         "description": "توضیحات {product} خود را وارد کنید.",
         "descrption_length": "توضیحات {product} باید حداقل 5 حرف باشد.",

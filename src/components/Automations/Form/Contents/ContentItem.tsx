@@ -42,12 +42,8 @@ interface ReturnContentProps {
 }
 
 export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
-  const t = useTranslations("Automations.Contents");
-
   const {
     control,
-    setValue,
-    getValues,
     formState: { errors },
   } = useFormContext<AutomationFormType>();
 
@@ -73,8 +69,6 @@ export const ContentItem = ({
   id,
   index,
   mode,
-  isPromotion,
-  defaultUploaderValue,
 }: {
   id: string;
   index: number;
@@ -131,10 +125,13 @@ export const ContentItem = ({
       ...contents[index],
       type,
       // Reset content-specific fields when changing type
-      ...((type === AutomationContentTypesEnum.TEXT ||
-        type === AutomationContentTypesEnum.INSTAGRAM_POST) && {
+      ...(type === AutomationContentTypesEnum.TEXT && {
         file: null,
+        quickReplies: []
       }),
+      ...(type === AutomationContentTypesEnum.INSTAGRAM_POST) && {
+        file: null
+      },
       ...(type === AutomationContentTypesEnum.PRODUCT && {
         products: [{}],
       }),

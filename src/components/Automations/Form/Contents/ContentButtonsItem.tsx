@@ -28,6 +28,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { MoveVerticalIcon, TrashIcon } from "lucide-react";
+import { AutomationButtonsContentTypes } from "./AutomationButtons";
 
 type ButtonContentItemProps = {
   id: string;
@@ -35,6 +36,7 @@ type ButtonContentItemProps = {
   contentIndex: number;
   remove: (index: number) => void;
   mode: AutomationContentModeEnum;
+  contentType: AutomationButtonsContentTypes;
 };
 
 export const ButtonContentItem = ({
@@ -43,10 +45,11 @@ export const ButtonContentItem = ({
   contentIndex,
   remove,
   mode,
+  contentType,
 }: ButtonContentItemProps) => {
   const form = useFormContext<AutomationFormType>();
   const selectedType = form.watch(
-    `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.postbackPayloadType`,
+    `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.postbackPayloadType`,
   );
 
   const {
@@ -108,7 +111,7 @@ export const ButtonContentItem = ({
         <CardContent className="flex flex-wrap gap-2 p-0">
           <FormField
             control={form.control}
-            name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.postbackPayloadType`}
+            name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.postbackPayloadType`}
             render={({ field: typeField }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
                 <Select
@@ -123,9 +126,16 @@ export const ButtonContentItem = ({
                       <SelectItem value={ButtonTypeEnum.TEXT}>
                         {t("text.label")}
                       </SelectItem>
-                      <SelectItem value={ButtonTypeEnum.URL}>
-                        {t("url.label")}
-                      </SelectItem>
+                      {contentType === "buttonTemplate" && (
+                        <SelectItem value={ButtonTypeEnum.URL}>
+                          {t("url.label")}
+                        </SelectItem>
+                      )}
+                      {contentType === "text" && (
+                        <SelectItem value={ButtonTypeEnum.CONSENT}>
+                          {t("consent.label")}
+                        </SelectItem>
+                      )}
                       <SelectItem value={ButtonTypeEnum.START_AUTOMATION}>
                         {t("automation")}
                       </SelectItem>
@@ -138,14 +148,14 @@ export const ButtonContentItem = ({
           {selectedType && (
             <FormField
               control={form.control}
-              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.title`}
+              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.title`}
               render={({ field, fieldState: { error } }) => (
                 <FormItem className="flex w-full flex-1">
                   <div className="w-full space-y-1">
                     <Input
                       {...field}
                       aria-invalid={!!error}
-                      placeholder={t("title.label")}
+                      placeholder={t(`${selectedType}.placeholder`)}
                     />
                     {error && <ErrorMessage>{error.message}</ErrorMessage>}
                   </div>
@@ -167,7 +177,7 @@ export const ButtonContentItem = ({
                     {...field}
                     value={field.value ?? ""}
                     aria-invalid={!!error}
-                    placeholder={t("url.label")}
+                    placeholder={t("url.placeholder")}
                   />
                   {error && <ErrorMessage>{error.message}</ErrorMessage>}
                 </FormItem>
@@ -178,7 +188,7 @@ export const ButtonContentItem = ({
           {selectedType === ButtonTypeEnum.START_AUTOMATION && (
             <FormField
               control={form.control}
-              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.destinationContentCycleId`}
+              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.destinationContentCycleId`}
               render={({ field: valueField, fieldState: { error } }) => (
                 <FormItem className="w-full space-y-0">
                   <AutomationSearchSelect
@@ -186,7 +196,7 @@ export const ButtonContentItem = ({
                     onSelect={valueField.onChange}
                     error={!!error}
                     initialData={form.getValues(
-                      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.destinationContentCycle`,
+                      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.destinationContentCycle`,
                     )}
                   />
                 </FormItem>

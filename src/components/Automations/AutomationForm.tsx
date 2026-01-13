@@ -82,6 +82,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     mode: "onSubmit",
     reValidateMode: "onChange",
     defaultValues: {
+      isNoCondition: false,
       commentStartText: t("comment_start_text"),
       commentStartTitle: t("comment_start_title"),
       conditions: [{ type: "EQUAL", value: "", id: "" }],

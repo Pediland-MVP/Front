@@ -9,6 +9,8 @@ import {
 } from "@/components/ui";
 import { InputCounter } from "@/components/ui-custom/InputCounter";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { FormVitrinButtons } from "@/components/Products/FormVitrinButtons";
+import { AutomationButtons } from "./AutomationButtons";
 
 export type TextContentProps = {
   index: number;
@@ -38,6 +40,7 @@ export const TextContent = ({ index, mode, control }: TextContentProps) => {
             aria-invalid={!!error}
           />
           <InputCounter text={field.value} maxLength={1000} />
+          <AutomationButtons contentIndex={index} mode={mode} contentType="text" />
           {error && <ErrorMessage>{t_err("required")}</ErrorMessage>}
         </FormItem>
       )}
