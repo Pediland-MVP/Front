@@ -34,6 +34,7 @@ import { IGPostContent } from "./IGPostContent";
 import { MediaContent } from "./MediaContent";
 import { ProductContentComp } from "./ProductContent";
 import { TextContent } from "./TextContent";
+import { QuestionContent } from "./QuestionContent";
 
 interface ReturnContentProps {
   index: number;
@@ -59,6 +60,9 @@ export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
 
     case AutomationContentTypesEnum.BUTTON_TEMPLATE:
       return <ButtonContent mode={mode} contentIndex={index} />;
+
+    case AutomationContentTypesEnum.QUESTION:
+      return <QuestionContent control={control} mode={mode} index={index} />;
 
     default:
       return <MediaContent index={index} mode={mode} type={type} />;
@@ -171,6 +175,7 @@ export const ContentItem = ({
     image: t_contentTypes("media"),
     product: t_contentTypes("product_or_service"),
     text: t_contentTypes("text"),
+    question: t_contentTypes("question"),
   };
 
   const typeLabel = typeKey

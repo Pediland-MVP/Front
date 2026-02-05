@@ -24,7 +24,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 import { ButtonContentItem } from "./ContentButtonsItem";
-import { useEffect } from "react";
 
 export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate';
 
@@ -45,12 +44,6 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
   const maximumButtonLength: number = MaximumButtonLength[contentType]
 
   const { control, watch, formState: {errors} } = useFormContext<AutomationFormType>();
-
-  useEffect(() => {
-    console.log(watch());
-    console.log('Errors', errors);
-    
-  }, [watch()])
 
   // NOTE: I dindt changed default name of fields becuase it was not working :)
   const { fields, move, remove, append } = useFieldArray({

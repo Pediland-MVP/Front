@@ -2,6 +2,7 @@
 
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
+import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { REGEX_URL } from "@/utils/regex";
 import z from "zod";
 
@@ -108,6 +109,8 @@ export const ContentItemSchema = z.object({
   instagramPost: InstagramPostSchema,
   buttonTemplate: ButtonTemplateSchema,
   products: z.array(ProductSchema).optional().nullable(),
+  validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
+  validationErrorMessage: z.string().optional().nullable(),
 
   productIds: z.array(z.string()).optional().nullable(),
   haveInstagramPost: z
@@ -168,6 +171,8 @@ export const AutomationFormSchema = z
           .transform(() => undefined),
         _xid: z.string().optional().nullable(),
         buttonTemplate: ButtonTemplateSchema, // شامل normalize URL مانند contents
+        validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
+        validationErrorMessage: z.string().optional().nullable(),
       }),
     ),
 

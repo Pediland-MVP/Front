@@ -49,7 +49,7 @@ export const ButtonContentItem = ({
 }: ButtonContentItemProps) => {
   const form = useFormContext<AutomationFormType>();
   const selectedType = form.watch(
-    `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.postbackPayloadType`,
+    `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`,
   );
 
   const {
@@ -82,9 +82,9 @@ export const ButtonContentItem = ({
           isDragging && "ring-primary ring-1",
         )}
       >
-        {index !== 0 && (
-          <CardHeader className="-mt-2 p-0">
-            <div className="flex items-center justify-between">
+        <CardHeader className="-mt-2 p-0">
+          <div className="flex items-center justify-between">
+            {index !== 0 ? (
               <Button
                 variant="link"
                 size="icon"
@@ -95,23 +95,25 @@ export const ButtonContentItem = ({
               >
                 <MoveVerticalIcon className="text-gray-400" />
               </Button>
-
-              <Button
-                variant="link"
-                size="icon"
-                className="text-destructive size-5! p-0"
-                type="button"
-                onClick={() => remove(index)}
-              >
-                <TrashIcon />
-              </Button>
-            </div>
-          </CardHeader>
-        )}
+            ) : (
+              // To use justify-between
+              <div></div>
+            )}
+            <Button
+              variant="link"
+              size="icon"
+              className="text-destructive size-5! p-0"
+              type="button"
+              onClick={() => remove(index)}
+            >
+              <TrashIcon />
+            </Button>
+          </div>
+        </CardHeader>
         <CardContent className="flex flex-wrap gap-2 p-0">
           <FormField
             control={form.control}
-            name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.postbackPayloadType`}
+            name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`}
             render={({ field: typeField }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
                 <Select
@@ -148,7 +150,7 @@ export const ButtonContentItem = ({
           {selectedType && (
             <FormField
               control={form.control}
-              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.title`}
+              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.title`}
               render={({ field, fieldState: { error } }) => (
                 <FormItem className="flex w-full flex-1">
                   <div className="w-full space-y-1">
@@ -188,7 +190,7 @@ export const ButtonContentItem = ({
           {selectedType === ButtonTypeEnum.START_AUTOMATION && (
             <FormField
               control={form.control}
-              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.destinationContentCycleId`}
+              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.destinationContentCycleId`}
               render={({ field: valueField, fieldState: { error } }) => (
                 <FormItem className="w-full space-y-0">
                   <AutomationSearchSelect
@@ -196,7 +198,7 @@ export const ButtonContentItem = ({
                     onSelect={valueField.onChange}
                     error={!!error}
                     initialData={form.getValues(
-                      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'buttonTemplate' ? 'buttonTemplate.buttons' : 'quickReplies'}.${index}.destinationContentCycle`,
+                      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.destinationContentCycle`,
                     )}
                   />
                 </FormItem>

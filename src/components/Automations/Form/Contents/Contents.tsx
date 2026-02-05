@@ -188,6 +188,11 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                         ],
                       },
                     }),
+                    ...(option.value ===
+                      AutomationContentTypesEnum.QUESTION && {
+                      validationType: undefined,
+                      validationErrorMessage: "",
+                    }),
                   });
                   setIsChoosingType(false);
                   clearErrors(arrayName);

@@ -339,7 +339,8 @@
         "product_or_service": "کالا یا خدمت",
         "select_your_type": "نوع محتوای مورد نظر خود را انتخاب کنید.",
         "text": "متن",
-        "video": "ویدیو"
+        "video": "ویدیو",
+        "question": "سوال"
       },
       "Text": {
         "you_can_use_vars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",
