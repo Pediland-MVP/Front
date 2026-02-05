@@ -25,7 +25,7 @@ import { Button } from "@/components/ui";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 import { ButtonContentItem } from "./ContentButtonsItem";
 
-export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate';
+export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate' | 'question';
 
 type ButtonContentProps = {
   contentType: AutomationButtonsContentTypes;
@@ -36,7 +36,8 @@ type ButtonContentProps = {
 
 const MaximumButtonLength = {
     text: 13,
-    buttonTemplate: 3
+    buttonTemplate: 3,
+    question: 1
 }
 
 export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonContentProps) => {
@@ -48,7 +49,7 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
   // NOTE: I dindt changed default name of fields becuase it was not working :)
   const { fields, move, remove, append } = useFieldArray({
     control: control,
-    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'text' ? 'quickReplies' : 'buttonTemplate.buttons'}`,
+    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : 'buttonTemplate.buttons'}`,
   });
 
   const sensors = useSensors(
@@ -74,7 +75,7 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
   const addButton = () => {
     if (fields.length <= maximumButtonLength) {
       append({
-        postbackPayloadType: ButtonTypeEnum.TEXT,
+        postbackPayloadType: contentType === 'question' ? ButtonTypeEnum.QUICK_RESPONSE : ButtonTypeEnum.TEXT,
         title: "",
       });
     }

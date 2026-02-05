@@ -1,6 +1,9 @@
 "use client";
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
+import {
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from "@/constants/automationContent.enum";
 import { cn } from "@/lib/utils";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
@@ -37,6 +40,27 @@ type ButtonContentItemProps = {
   remove: (index: number) => void;
   mode: AutomationContentModeEnum;
   contentType: AutomationButtonsContentTypes;
+};
+
+const contentTypePayloadType: Record<
+  | 'buttonTemplate'
+  | AutomationContentTypesEnum.QUESTION
+  | AutomationContentTypesEnum.TEXT,
+  Partial<Record<ButtonTypeEnum, boolean>>
+> = {
+  text: {
+    text: true,
+    CONSENT: true,
+    startAutomation: true,
+  },
+  buttonTemplate: {
+    text: true,
+    url: true,
+    startAutomation: true,
+  },
+  question: {
+    quickResponse: true,
+  },
 };
 
 export const ButtonContentItem = ({
@@ -125,7 +149,12 @@ export const ButtonContentItem = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value={ButtonTypeEnum.TEXT}>
+                      {Object.values(ButtonTypeEnum).map((buttonType) => {
+                        return (
+                          contentTypePayloadType[contentType][buttonType] ? <SelectItem key={buttonType} value={buttonType}>{t(`${buttonType}.label`)}</SelectItem> : null
+                        );
+                      })}
+                      {/* <SelectItem value={ButtonTypeEnum.TEXT}>
                         {t("text.label")}
                       </SelectItem>
                       {contentType === "buttonTemplate" && (
@@ -138,9 +167,14 @@ export const ButtonContentItem = ({
                           {t("consent.label")}
                         </SelectItem>
                       )}
+                      {contentType === "question" && (
+                        <SelectItem value={ButtonTypeEnum.QUICK_RESPONSE}>
+                          {t("quickResponse.label")}
+                        </SelectItem>
+                      )}
                       <SelectItem value={ButtonTypeEnum.START_AUTOMATION}>
                         {t("automation")}
-                      </SelectItem>
+                      </SelectItem> */}
                     </SelectGroup>
                   </SelectContent>
                 </Select>

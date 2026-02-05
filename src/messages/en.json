@@ -519,6 +519,10 @@
           "label": "Text",
           "placeholder": "Example: Here are our social media links"
         },
+        "quickResponse": {
+          "label": "Quick Response",
+          "placeholder": "Example: Yes"
+        },
         "title": {
           "label": "Button Text",
           "description": "Text displayed on the button.",

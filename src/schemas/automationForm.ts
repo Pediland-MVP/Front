@@ -73,6 +73,12 @@ const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
     priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
+  z.object({
+    postbackPayloadType: z.literal(ButtonTypeEnum.QUICK_RESPONSE),
+    title: z.string().min(1),
+    priority: z.number().optional().nullable(),
+    _xid: z.string().optional().nullable(),
+  }),
 ]);
 
 const ButtonTemplateSchema = z

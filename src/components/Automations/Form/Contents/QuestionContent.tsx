@@ -141,7 +141,7 @@ export const QuestionContent = ({
         />
       </div>
 
-      <AutomationButtons contentIndex={index} mode={mode} contentType="text" />
+      <AutomationButtons contentIndex={index} mode={mode} contentType="question" />
     </>
   );
 };
