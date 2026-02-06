@@ -1,7 +1,7 @@
 // src/components/Automations/Form/Contents/ButtonContent.tsx
 "use client";
 
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
@@ -24,13 +24,15 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 import { ButtonContentItem } from "./ContentButtonsItem";
+import React, { SetStateAction, useEffect } from "react";
+import { AppendQuestionButtonType } from "./QuestionContent";
 
 export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate' | 'question';
 
 type ButtonContentProps = {
   contentType: AutomationButtonsContentTypes;
   mode: AutomationContentModeEnum;
-  contentIndex: number;
+  contentIndex: number,
 };
 
 
@@ -44,7 +46,7 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
   const t = useTranslations("Automations.Contents.Button");
   const maximumButtonLength: number = MaximumButtonLength[contentType]
 
-  const { control, watch, formState: {errors} } = useFormContext<AutomationFormType>();
+  const { control } = useFormContext<AutomationFormType>();
 
   // NOTE: I dindt changed default name of fields becuase it was not working :)
   const { fields, move, remove, append } = useFieldArray({

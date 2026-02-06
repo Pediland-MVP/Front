@@ -41,6 +41,7 @@ import {
   TargetPostComment,
   Triggers,
 } from "./Form";
+import { ValidationTypeEnum } from "@/types/validationType.enum";
 
 type AutomationFormProps = {
   id?: string;
@@ -149,6 +150,10 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
           ...content.buttonTemplate,
         };
         const buttons = transformButtons(content.buttonTemplate.buttons);
+
+        if (content.validationType === ValidationTypeEnum.Selectbox) {
+          content.valdationType = ValidationTypeEnum.Text;
+        }
 
         // Sort buttons: if priority exists, use it. Otherwise maintain order (or use ID).
         // Assuming lighter priority value means earlier in the list (1, 2, 3...)

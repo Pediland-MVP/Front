@@ -3,5 +3,6 @@ export enum ValidationTypeEnum {
     Email = 'email',
     NationalCode = 'nationalCode',
     Text = 'text',
-    Number = 'number'
+    Number = 'number',
+    Selectbox =  'selectbox'
 }

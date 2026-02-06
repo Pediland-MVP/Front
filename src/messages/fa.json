@@ -349,6 +349,25 @@
           "required": "متن پیام را وارد کنید."
         }
       },
+      "Question": {
+        "you_can_use_vars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",
+        "enter_your_message": "متن پیام را وارد کنید",
+        "validationType": {
+          "label": "نوع اعتبارسنجی",
+          "selectboxDefault": "نوع انتخاب سنجی را انتخاب کنید",
+          "items": {
+            "mobile": "موبایل",
+            "email": "ایمیل",
+            "nationalCode": "کدملی",
+            "text": "متن",
+            "number": "عدد",
+            "selectbox": "گذینه‌ای"
+          }
+        },
+        "Errors": {
+          "required": "متن پیام را وارد کنید."
+        }
+      },
       "InstagramPost": {
         "change": "تـعـویـض",
         "select": "انتخاب",
@@ -394,7 +413,7 @@
         "loading": "در حال جستجو...",
         "no_results_found": "نتیجه‌ای پیدا نشد.",
         "buttons_error": "لطفا اطلاعات دکمه‌ها را کامل کنید.",
-        "add": "افزودن دکمه",
+        "add": "افزودن گذینه",
         "text": {
           "label": "متن",
           "placeholder": "مثلا: این لیستی از شبکه‌های اجتماعی ماست"

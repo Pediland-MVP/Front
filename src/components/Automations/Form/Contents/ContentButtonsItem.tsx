@@ -43,7 +43,7 @@ type ButtonContentItemProps = {
 };
 
 const contentTypePayloadType: Record<
-  | 'buttonTemplate'
+  | "buttonTemplate"
   | AutomationContentTypesEnum.QUESTION
   | AutomationContentTypesEnum.TEXT,
   Partial<Record<ButtonTypeEnum, boolean>>
@@ -59,7 +59,7 @@ const contentTypePayloadType: Record<
     startAutomation: true,
   },
   question: {
-    text: true
+    text: true,
   },
 };
 
@@ -123,15 +123,18 @@ export const ButtonContentItem = ({
               // To use justify-between
               <div></div>
             )}
-            <Button
-              variant="link"
-              size="icon"
-              className="text-destructive size-5! p-0"
-              type="button"
-              onClick={() => remove(index)}
-            >
-              <TrashIcon />
-            </Button>
+
+            {!(contentType === 'question' && index === 0) && (
+              <Button
+                variant="link"
+                size="icon"
+                className="text-destructive size-5! p-0"
+                type="button"
+                onClick={() => remove(index)}
+              >
+                <TrashIcon />
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2 p-0">
@@ -140,23 +143,30 @@ export const ButtonContentItem = ({
             name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`}
             render={({ field: typeField }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
-                <Select
-                  value={typeField.value ?? ""}
-                  onValueChange={typeField.onChange}
-                >
-                  <SelectTrigger className="gap-1 pr-2 pl-1.5">
-                    <SelectValue placeholder={t("button_type")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.values(ButtonTypeEnum).map((buttonType) => {
-                        return (
-                          contentTypePayloadType[contentType][buttonType] ? <SelectItem key={buttonType} value={buttonType}>{t(`${buttonType}.label`)}</SelectItem> : null
-                        );
-                      })}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                {Object.keys(contentTypePayloadType[contentType]).length >
+                  1 && (
+                  <Select
+                    value={typeField.value ?? ""}
+                    onValueChange={typeField.onChange}
+                  >
+                    <SelectTrigger className="gap-1 pr-2 pl-1.5">
+                      <SelectValue placeholder={t("button_type")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {Object.values(ButtonTypeEnum).map((buttonType) => {
+                          return contentTypePayloadType[contentType][
+                            buttonType
+                          ] ? (
+                            <SelectItem key={buttonType} value={buttonType}>
+                              {t(`${buttonType}.label`)}
+                            </SelectItem>
+                          ) : null;
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
               </FormItem>
             )}
           />

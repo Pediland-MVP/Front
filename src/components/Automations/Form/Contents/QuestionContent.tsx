@@ -1,7 +1,7 @@
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import {
   FormField,
@@ -17,6 +17,8 @@ import {
 import { InputCounter } from "@/components/ui-custom/InputCounter";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { AutomationButtons } from "./AutomationButtons";
+import { ButtonTypeEnum } from "@/types/buttons.enum";
+import { useState } from "react";
 
 export type QuestionContentProps = {
   index: number;
@@ -24,14 +26,21 @@ export type QuestionContentProps = {
   control: any;
 };
 
+export type AppendQuestionButtonType = (a: {title: string, postbackPayloadType: ButtonTypeEnum}) => void
+
 export const QuestionContent = ({
   index,
   mode,
   control,
 }: QuestionContentProps) => {
-  const t = useTranslations("Automations.Contents.Text");
+  const t = useTranslations("Automations.Contents.Question");
   const t_err = useTranslations("Automations.Contents.Text.Errors");
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue, getValues } = useFormContext();
+
+  const { fields, update, append } = useFieldArray({
+    control: control,
+    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}.quickReplies`,
+  });
 
   const fieldName =
     mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders";
@@ -56,6 +65,17 @@ export const QuestionContent = ({
 
   // Update error message when validation type changes
   const handleValidationTypeChange = (value: ValidationTypeEnum) => {
+    console.log('value', value, fields)
+    if (value === ValidationTypeEnum.Selectbox) {
+      if (!fields.length) {
+        append({
+          postbackPayloadType: ButtonTypeEnum.TEXT,
+          title: "",
+        });
+      }
+    } else {
+      setValue(`${fieldName}.${index}.quickReplies`, [])
+    }
     setValue(`${fieldName}.${index}.validationType`, value);
     setValue(
       `${fieldName}.${index}.validationErrorMessage`,
@@ -96,7 +116,7 @@ export const QuestionContent = ({
           control={control}
           render={({ field }) => (
             <FormItem className="w-full">
-              <Label>نوع اعتبارسنجی</Label>
+              <Label>{t("validationType.label")}</Label>
               <Select
                 value={field.value || ""}
                 onValueChange={(value) =>
@@ -104,20 +124,16 @@ export const QuestionContent = ({
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="نوع اعتبارسنجی را انتخاب کنید" />
+                  <SelectValue
+                    placeholder={t("validationType.selectboxDefault")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={ValidationTypeEnum.Mobile}>
-                    موبایل
-                  </SelectItem>
-                  <SelectItem value={ValidationTypeEnum.Email}>
-                    ایمیل
-                  </SelectItem>
-                  <SelectItem value={ValidationTypeEnum.NationalCode}>
-                    کد ملی
-                  </SelectItem>
-                  <SelectItem value={ValidationTypeEnum.Text}>متن</SelectItem>
-                  <SelectItem value={ValidationTypeEnum.Number}>عدد</SelectItem>
+                  {Object.values(ValidationTypeEnum).map((el) => (
+                    <SelectItem value={el}>
+                      {t(`validationType.items.${el}`)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -127,7 +143,7 @@ export const QuestionContent = ({
         <FormField
           name={`${fieldName}.${index}.validationErrorMessage`}
           control={control}
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem className="w-full">
               <Label>پیام خطای اعتبارسنجی</Label>
               <Textarea
@@ -136,12 +152,21 @@ export const QuestionContent = ({
                 rows={3}
                 className="w-full"
               />
+              {}
             </FormItem>
           )}
         />
       </div>
 
-      <AutomationButtons contentIndex={index} mode={mode} contentType="question" />
+      {watch(`${fieldName}.${index}.validationType`) ===
+      ValidationTypeEnum.Selectbox ? (
+        <AutomationButtons
+          contentIndex={index}
+          mode={mode}
+          contentType="question"
+        />
+      ) : null}
     </>
   );
 };
+

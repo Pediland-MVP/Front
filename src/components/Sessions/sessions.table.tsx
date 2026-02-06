@@ -121,7 +121,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                           questionId={item.id}
                           leadInstagram={item.leadInstagram}
                         />
-                        <Link href={`/directs/${item.leadInstagram.lead.id}`}>
+                        <Link href={`/directs/${item.leadInstagram?.lead?.id}`}>
                           <Button variant="ghost" size="sm">
                             <ChatCircleText className="ml-2 h-4 w-4" />
                             {t("viewChat")}
