@@ -94,7 +94,7 @@ export default function QuestionAndAnswerDialog({
                     "bg-muted",
                   )}
                 >
-                  {answer.question?.text}
+                  {answer.questionContent?.text}
                 </div>
                 <div
                   className={cn(

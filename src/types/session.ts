@@ -58,7 +58,7 @@ export interface Meta {
 interface Answer {
   id: string;
   text: string;
-  question: {
+  questionContent: {
     id: string;
     text: string;
   };
