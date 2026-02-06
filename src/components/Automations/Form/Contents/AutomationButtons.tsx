@@ -37,7 +37,7 @@ type ButtonContentProps = {
 const MaximumButtonLength = {
     text: 13,
     buttonTemplate: 3,
-    question: 1
+    question: 13
 }
 
 export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonContentProps) => {
@@ -75,7 +75,7 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
   const addButton = () => {
     if (fields.length <= maximumButtonLength) {
       append({
-        postbackPayloadType: contentType === 'question' ? ButtonTypeEnum.QUICK_RESPONSE : ButtonTypeEnum.TEXT,
+        postbackPayloadType: ButtonTypeEnum.TEXT,
         title: "",
       });
     }

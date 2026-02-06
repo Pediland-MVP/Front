@@ -3,5 +3,4 @@ export enum ButtonTypeEnum {
   TEXT = "text",
   URL = "url",
   CONSENT="CONSENT",
-  QUICK_RESPONSE="quickResponse"
 }

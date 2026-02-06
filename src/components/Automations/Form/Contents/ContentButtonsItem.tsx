@@ -59,7 +59,7 @@ const contentTypePayloadType: Record<
     startAutomation: true,
   },
   question: {
-    quickResponse: true,
+    text: true
   },
 };
 
@@ -154,27 +154,6 @@ export const ButtonContentItem = ({
                           contentTypePayloadType[contentType][buttonType] ? <SelectItem key={buttonType} value={buttonType}>{t(`${buttonType}.label`)}</SelectItem> : null
                         );
                       })}
-                      {/* <SelectItem value={ButtonTypeEnum.TEXT}>
-                        {t("text.label")}
-                      </SelectItem>
-                      {contentType === "buttonTemplate" && (
-                        <SelectItem value={ButtonTypeEnum.URL}>
-                          {t("url.label")}
-                        </SelectItem>
-                      )}
-                      {contentType === "text" && (
-                        <SelectItem value={ButtonTypeEnum.CONSENT}>
-                          {t("consent.label")}
-                        </SelectItem>
-                      )}
-                      {contentType === "question" && (
-                        <SelectItem value={ButtonTypeEnum.QUICK_RESPONSE}>
-                          {t("quickResponse.label")}
-                        </SelectItem>
-                      )}
-                      <SelectItem value={ButtonTypeEnum.START_AUTOMATION}>
-                        {t("automation")}
-                      </SelectItem> */}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
