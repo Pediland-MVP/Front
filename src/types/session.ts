@@ -35,7 +35,10 @@ export interface LeadInstagram {
     url?: string;
   };
   lead: {
-    id: string
+    id: string;
+    contact: {
+      mobile: string
+    }
   }
 }
 
