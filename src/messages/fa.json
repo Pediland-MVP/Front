@@ -180,6 +180,11 @@
       "error": "تعداد باید 10,000 یا کمتر باشد"
     }
   },
+  "AudioRecorderWithVisualizer": {
+    "save": "ذخیره",
+    "recording": "ضبط",
+    "resetRecording": "ریست"
+  },
   "Directs": {
     "ExcelExport": {
       "title": "خروجی اکسل",
