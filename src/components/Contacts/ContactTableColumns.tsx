@@ -92,6 +92,16 @@ export function ContactTableColumns(
         className: "w-14",
       },
     },
+        {
+      id: "mobile",
+      accessorFn: (row) => row.mobile,
+      header: "موبایل",
+      size: 35,
+      meta: {
+        title: "موبایل",
+        skeletonClass: "mx-auto",
+      },
+    },
     {
       id: "fullName",
       size: 70,
@@ -139,7 +149,7 @@ export function ContactTableColumns(
         title: "پیام ها",
         skeletonClass: "mx-auto",
       },
-    },
+    }
   );
 
   return cols;

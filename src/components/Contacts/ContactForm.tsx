@@ -1,43 +1,28 @@
 // src/components/Contacts/contactForm.tsx
 "use client";
 
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import api from "@/hooks/swr/api-client";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import DateObject from "react-date-object";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { Controller, useForm } from "react-hook-form";
-import DatePicker from "react-multi-date-picker";
-import { mutate } from "swr";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
 
 import {
   Button,
-  Input,
-  Label,
-  Select,
+  Input, Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui";
 
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { toast } from "sonner";
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
+  FormControl, FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../ui/form";
 
 export type ContactFormProps = {
@@ -74,39 +59,36 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
     mutate: mutateContact,
   } = useSWRImmutable(`/contacts/${contactId}`);
 
-  const form = useForm<ContactFormData>();
+  const form = useForm<ContactFormData>({
+    defaultValues: {
+      firstname: contact?.firstname || "",
+      lastname: contact?.lastname || "",
+      mobile: contact?.mobile || "",
+      email: contact?.email || "",
+      country: contact?.country || "",
+      city: contact?.city || "",
+      state: contact?.state || "",
+      gender: contact?.gender || "",
+      birthDate: contact?.birthDate || "",
+      postalcode: contact?.postalcode || "",
+      address: contact?.address || "",
+    },
+  });
 
-  // useEffect(() => {
-  //   return () => {
-  //     form.reset();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!contact || open === false) return;
-  //   form.reset({
-  //     ...contact,
-  //     ...(contact.birthDate && {
-  //       birthDate: new Date(contact.birthDate).getTime().toString(),
-  //     }),
-  //   });
-  // }, [contact]);
-
-  // const onSubmit = async (values: ContactFormData) => {
-  //   setIsSubmitLoading(true);
-  //   await api
-  //     .put(`/contacts/${contactId}`, values)
-  //     .then(async (res) => {
-  //       toast.success(t("updated"));
-  //       await mutate(mutateIncludeStringKey("contacts"));
-  //     })
-  //     .catch((e: AxiosError<ExceptionMessage>) => {
-  //       toast.error(t_ec(e.response?.data?.code));
-  //     })
-  //     .finally(() => {
-  //       setIsSubmitLoading(false);
-  //     });
-  // };
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitLoading(true);
+    try {
+      // TODO: Implement API call to update contact
+      console.log("Form data:", data);
+      // await updateContact(contactId, data);
+      // mutateContact();
+      // setOpen(false);
+    } catch (error) {
+      console.error("Error updating contact:", error);
+    } finally {
+      setIsSubmitLoading(false);
+    }
+  };
 
   if (isContactLoading || !contact) {
     return <p>Loading...</p>;
@@ -115,17 +97,21 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
   return (
     <Form {...form}>
       <form
-        // onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-12 gap-x-2 gap-y-4"
       >
         <FormField
           control={form.control}
           name="gender"
           render={({ field }) => (
-            <FormItem className="col-span-4 md:col-span-3">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-3">
               <FormLabel> {t("gender")}</FormLabel>
               <FormControl>
-                <Select dir="rtl">
+                <Select
+                  dir="rtl"
+                  value={field.value || ""}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t("genderPlaceholder")} />
                   </SelectTrigger>
@@ -145,7 +131,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="firstname"
           render={({ field }) => (
-            <FormItem className="col-span-4 md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("firstname")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -159,7 +145,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="lastname"
           render={({ field }) => (
-            <FormItem className="col-span-4 md:col-span-5">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-5">
               <FormLabel>{t("lastname")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -173,7 +159,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="birthDate"
           render={({ field }) => (
-            <FormItem className="md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("birthDate")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -187,7 +173,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="mobile"
           render={({ field }) => (
-            <FormItem className="md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("mobile")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -201,7 +187,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem className="md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -215,7 +201,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="state"
           render={({ field }) => (
-            <FormItem className="md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("state")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -229,7 +215,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="city"
           render={({ field }) => (
-            <FormItem className="md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("city")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -243,7 +229,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="postalcode"
           render={({ field }) => (
-            <FormItem className="md:col-span-4">
+            <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
               <FormLabel>{t("postalcode")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -257,7 +243,7 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           control={form.control}
           name="address"
           render={({ field }) => (
-            <FormItem className="md:col-span-12">
+            <FormItem className="col-span-12">
               <FormLabel>{t("address")}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value || ""} />
@@ -267,10 +253,10 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           )}
         />
 
-        <div className="col-span-12 mt-3 flex justify-center gap-2">
+        <div className="col-span-12 mt-6 flex flex-col sm:flex-row justify-center gap-2">
           <Button type="submit">
             {t("saveChanges")}
-            {isSubmitLoading && <LoaderSpin size={20} />}
+            {isSubmitLoading && <LoaderSpin/>}
           </Button>
           <Button
             type="button"
