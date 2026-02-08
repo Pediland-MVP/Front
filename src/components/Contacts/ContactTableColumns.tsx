@@ -2,12 +2,13 @@
 "use client";
 
 import { Contact } from "@/types/contact";
-import { UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { TelegramLogoIcon, UserCircleIcon, WhatsappLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { ColumnDef } from "@/types/tables";
 
 // UI Imports
 import Image from "next/image";
 import { memo, useState } from "react";
+import Link from "next/link";
 
 const AvatarCell = memo(function AvatarCell({
   src,
@@ -94,7 +95,27 @@ export function ContactTableColumns(
     },
         {
       id: "mobile",
-      accessorFn: (row) => row.mobile,
+      accessorFn: row => row.mobile,
+      cell: (row) => {
+        const mobile = row.getValue<string>()
+
+        if(!mobile) {
+          return '---'
+        }
+        return (
+          <div className="flex justify-center items-center flex-row gap-x-1">
+            <div className="flex flex-row gap-x-1">
+              <Link href={`https://wa.me/${mobile}`} target="_blank">
+                <WhatsappLogoIcon size={20}/>
+              </Link>
+              <Link href={`https://t.me/+98${mobile}`} target="_blank">
+                <TelegramLogoIcon size={20}/>
+              </Link>
+            </div>
+            {mobile}
+          </div>
+        )
+      },
       header: "موبایل",
       size: 35,
       meta: {
