@@ -59,6 +59,10 @@ const knownSegmentKey = (seg: string): string | null => {
       return "profile";
     case "verify":
       return "verify";
+    case "learn":
+      return "learn";
+    case "help":
+      return "help";
     default:
       return null;
   }

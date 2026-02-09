@@ -30,6 +30,7 @@ import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { CircleNotchIcon, LockIcon, LockOpenIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
+import { REGEX_PASSWORD } from "@/utils/regex";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -37,12 +38,12 @@ const formSchema = z
   .object({
     password: z
       .string()
+      .regex(REGEX_PASSWORD, { message: "رمز عبور باید ۸ تا ۶۴ کاراکتر بوده و حداقل شامل یک حرف و یک عدد باشد." })
       .min(1, "رمز عبور الزامی است")
       .min(6, "رمز عبور باید حداقل ۶ کاراکتر باشد"),
     confirmPassword: z
       .string()
-      .min(1, "تأیید رمز عبور الزامی است")
-      .min(6, "تأیید رمز عبور باید حداقل ۶ کاراکتر باشد"),
+      .min(1, "تأیید رمز عبور الزامی است"),
     otp: z
       .string()
       .min(1, "کد فعالسازی الزامی است")
@@ -243,8 +244,9 @@ export default function PasswordPage() {
                           {...field}
                           pattern={REGEXP_ONLY_DIGITS}
                           onBlur={handleOtpBlur}
+                          dir="rtl"
                         >
-                          <InputOTPGroup className="flex w-full justify-between gap-2.5">
+                          <InputOTPGroup className="flex flex-row-reverse w-full justify-between gap-2.5">
                             {[0, 1, 2, 3, 4].map((i) => (
                               <InputOTPSlot
                                 className="w-full"

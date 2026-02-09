@@ -80,7 +80,6 @@
   "customErrors": {
     "notFound": "Page not found."
   },
-
   "Components": {
     "LogoText": {
       "title": "Befroosh"
@@ -222,7 +221,6 @@
   "Contacts": {
     "dashboard": "Dashboard",
     "list": "Contacts List",
-
     "List": {
       "image": "Image",
       "userName": "User Name",
@@ -230,17 +228,14 @@
       "messageCount": "Message Count",
       "actions": "Actions"
     },
-
     "Pagination": {
       "itemsCount": "Items Count",
       "show": "Show",
       "page": "Page {page} of {pages}"
     },
-
     "Dialog": {
       "detailsInfo": "Contact Details"
     },
-
     "Form": {
       "gender": "Gender",
       "genderPlaceholder": "...",
@@ -259,7 +254,6 @@
       "saveChanges": "Save Changes",
       "cancel": "Cancel",
       "updated": "Information updated successfully",
-
       "errors": {
         "firstname": "Please enter the first name",
         "lastname": "Please enter the last name",
@@ -275,11 +269,9 @@
         "update": "An error occurred"
       }
     },
-
     "ExcelExport": {
       "title": "Excel Export",
       "description": "Fill in the details to export contacts to Excel",
-
       "form": {
         "startDate": {
           "label": "Start Date",
@@ -307,15 +299,12 @@
           "description": "Export only contacts that have a phone number"
         }
       },
-
       "success": "Request sent",
       "excelWillSentToYourEmail": "The Excel file will be emailed to you in a few minutes.",
-
       "buttons": {
         "export": "Send Request",
         "cancel": "Cancel"
       },
-
       "toast": {
         "title": "Export Request",
         "description": "Exporting contacts from {startDate} to {endDate} to {email}"
@@ -380,7 +369,6 @@
     "success": "Created successfully",
     "update_automation": "Update Automation",
     "update": "Update",
-
     "Errors": {
       "cta": {
         "custom": "Please specify the ending text"
@@ -388,14 +376,12 @@
       "required": "This field is required",
       "goToInstagram": "Connect"
     },
-
     "Toast": {
       "created": "Automation created successfully.",
       "updated": "Automation updated successfully.",
       "create_error": "Failed to create automation.",
       "update_error": "Failed to update automation."
     },
-
     "Triggers": {
       "comment_post": "Comment & Post",
       "direct_story": "Direct & Story",
@@ -408,13 +394,13 @@
         "title": "Enable Smart Direct in DMs & Comments"
       }
     },
-
     "Conditions": {
       "add_new_condition": "Add New Condition",
       "below_conditions": "If the user sends any of the following:",
       "delete_condition": "Delete Condition",
       "equal": "Equals",
       "include": "Includes",
+      "noCondition": "No Condition",
       "note": "Befroosh automatically detects Persian/English digits and converts variations of «ا» and «آ» to a standard form.",
       "send_message_below": "the following content(s) will be sent in order.",
       "value": "Condition Value",
@@ -428,7 +414,6 @@
         "description": "Specify which word or number the user must send in DM or comment for the automation to trigger."
       }
     },
-
     "Contents": {
       "add_content": "Add Content",
       "consent": "Ask Permission for Next Message",
@@ -440,19 +425,16 @@
       "promotion_text": "Auto-replies to comments and DMs of this page are powered by “Befroosh”\n@befroosh.app",
       "remove_content": "Remove Content",
       "promotion_announcement": "This text will be shown at the end of all your automated messages.",
-
       "Errors": {
         "INSUFFICIENT_PATH": "Insufficient path",
         "MISSING_MESSAGE": "Message text is required",
         "too_small": "Add at least one content item to create an automation.",
         "custom": "Add at least one content item for reminder workflows."
       },
-
       "Help": {
         "title": "Define Smart DM Content",
         "description": "Here you can create different types of content to be sent automatically via Smart DM."
       },
-
       "Types": {
         "audio": "Audio",
         "button_template": "Button",
@@ -469,7 +451,6 @@
         "text": "Text",
         "video": "Video"
       },
-
       "Text": {
         "you_can_use_vars": "Use <name>#Name</name> to insert the user’s name.",
         "enter_your_message": "Enter message text",
@@ -477,7 +458,6 @@
           "required": "Message text is required."
         }
       },
-
       "InstagramPost": {
         "change": "Replace",
         "select": "Select",
@@ -491,7 +471,6 @@
           "close": "Close"
         }
       },
-
       "Product": {
         "add": "Add Product or Service",
         "label": "Send Product Catalog",
@@ -500,7 +479,6 @@
         "change": "Change",
         "cover_image_alt": "Cover Image",
         "selection_required": "Select at least one product or service.",
-
         "Dialog": {
           "add": "Select",
           "close": "Close",
@@ -512,12 +490,15 @@
           "select_product_description": "Choose your desired product or service."
         }
       },
-
       "Button": {
         "add": "Add Button",
         "text": {
           "label": "Text",
           "placeholder": "Example: Here are our social media links"
+        },
+        "quickResponse": {
+          "label": "Quick Response",
+          "placeholder": "Example: Yes"
         },
         "title": {
           "label": "Button Text",
@@ -533,19 +514,16 @@
           "required": "Enter the initial text."
         }
       },
-
       "Media": {
         "Errors": {
           "required": "You haven't selected any file to upload."
         },
-
         "FileUploader": {
           "drag_drop_hint": "Drag your file here, or click to select.",
           "uploaded_file": "Your selected file:",
           "uploaded": "Uploaded.",
           "upload_button": "Upload File",
           "MB": "MB",
-
           "Errors": {
             "invalid_type": "Unsupported file type.",
             "select_another": "Select another file.",
@@ -554,7 +532,6 @@
             "too_many_files": "Too many files selected.",
             "upload_failed": "File upload failed."
           },
-
           "Limits": {
             "image": {
               "text": "Image: Max size 8 MB",
@@ -572,7 +549,6 @@
         }
       }
     },
-
     "TargetPostComment": {
       "title": "Limit Comments to a Specific Post",
       "note": "According to Instagram rules, up to 750 DM comment replies are allowed per hour; extras will be queued.",
@@ -580,7 +556,6 @@
         "selection_required": "Select a post."
       }
     },
-
     "InstagramPostSelectDialog": {
       "select_post": "Select Post",
       "change_post": "Replace Post",
@@ -589,7 +564,6 @@
       "see_your_last_posts": "See your latest Instagram posts",
       "there_is_no_more": "No more posts available"
     },
-
     "CommentReplies": {
       "add_comment": "Add Phrase",
       "is_enabled": {
@@ -603,7 +577,6 @@
       },
       "note": "According to Instagram rules, up to 100 comment replies per hour are allowed; extras will be queued."
     },
-
     "Reminder": {
       "hour": "Hour",
       "isEnabled": {
@@ -638,7 +611,6 @@
         "description": "You have up to 24 hours to send a follow-up or reminder message."
       }
     },
-
     "CommentConsent": {
       "add_comment": "Add Comment",
       "comment_placeholder": "Example: Please tap Start to begin",
@@ -651,7 +623,6 @@
         "description": "This section activates when your automation works on comments and includes at least two messages."
       }
     },
-
     "JustFollowers": {
       "title": "Send Only If User Follows the Page",
       "message_text": "Message Text",
@@ -674,7 +645,6 @@
         "description": "With this enabled, the user must follow your page to receive the automated message."
       }
     },
-
     "List": {
       "title": "Title",
       "conditionValue": "Condition Value",
@@ -699,7 +669,6 @@
         "delete_error": "Failed to delete automation."
       }
     },
-
     "Card": {
       "conditions": "Conditions:",
       "active_in": "Active In",
@@ -710,7 +679,6 @@
       "comment": "Comment",
       "specified_post": "Specific Post"
     },
-
     "ContentPromotionDialog": {
       "title": "Upgrade Account",
       "description": "Free Befroosh plans display random ads at the bottom of your automated messages. To remove them, upgrade your subscription.",
@@ -719,27 +687,22 @@
         "upgrade": "Upgrade Subscription"
       }
     },
-
     "SetupWarning": {
       "subscriptionWarningText": "You are using the automation demo. Please purchase a subscription first.",
       "instagramWarningText": "You are using the automation demo. Please connect your Instagram first."
     },
-
     "Title": {
       "title": "Title",
       "placeholder": "Choose a title for this automation"
     },
-
     "Questions": {
       "placeholder": "Question",
       "add": "Add Question"
     },
-
     "Cta": {
       "label": "Ending Text",
       "placeholder": "This text will appear at the end"
     },
-
     "GetUserData": {
       "getUserData": "Collect User Info",
       "description": "Enable this option to ask for the user’s mobile number or email at the end of the automation. The answer will be validated and saved in their profile.",
@@ -750,7 +713,6 @@
       "questionText": "Question Text",
       "enterMobileNumber": "Example: Please enter your mobile number"
     },
-
     "TableWizard": {
       "title": "Time to create a new automation!",
       "description": "Start now and build your first automation.",
@@ -783,14 +745,12 @@
     "cancelled": "Cancelled",
     "daysRemaining": "Days remaining",
     "lastDay": "Last day!",
-
     "Verify": {
       "error": "Payment failed",
       "sucessFull": "Operation completed successfully",
       "sucessFullDescription": "Your payment was successful and the service has been activated",
       "refId": "Tracking Number: {refId}"
     },
-
     "PlanSelection": {
       "description": "To use Befroosh’s premium features, you need to activate a subscription. Please select one of the 1-month, 3-month, or 12-month plans based on your follower count.",
       "selectPlan": "Select your plan",
@@ -819,10 +779,8 @@
   "DeleteConfirmationDialog": {
     "title": "Are you sure you want to delete this item?",
     "description": "Please note that this action is irreversible. Once confirmed, the selected data will be permanently removed from our servers.",
-
     "title_instagram": "Are you sure you want to delete your Instagram account?",
     "description_instagram": "Please note that this action is irreversible. Once confirmed, all data related to this Instagram account — including automations, received replies, direct messages, and comments — will be permanently deleted from Befroosh servers.",
-
     "delete": "Yes, delete",
     "cancel": "Cancel"
   },
@@ -865,7 +823,6 @@
     "dashboard": "Dashboard",
     "list": "Orders List",
     "searchPlaceholder": "Search",
-
     "ExcelExport": {
       "title": "Excel Export",
       "description": "Fill in the details to export orders to Excel",
@@ -903,7 +860,6 @@
         "description": "Exporting orders from {startDate} to {endDate} to {email}"
       }
     },
-
     "List": {
       "no_orders": "No orders found.",
       "date": "Date",
@@ -916,7 +872,6 @@
       "status": "Status",
       "paymentMethod": "Payment Method",
       "cardToCardImage": "Card-to-Card Image",
-
       "orderStatus": {
         "pending": "Purchasing",
         "payment": "Paying",
@@ -927,7 +882,6 @@
         "cancelled": "Cancelled"
       }
     },
-
     "Card": {
       "delete": "Delete",
       "digital": "Digital",
@@ -946,7 +900,6 @@
       "invalid_data": "Invalid Data",
       "cancelled": "Cancelled"
     },
-
     "OrderDetails": {
       "shippingCost": "Shipping Cost",
       "productDeleted": "Product Deleted",
@@ -972,7 +925,6 @@
       "paidPrice": "Paid Amount",
       "statusUpdated": "Status updated successfully",
       "updating": "Updating...",
-
       "orderStatus": {
         "pending": "Purchasing",
         "payment": "Paying",
@@ -982,10 +934,8 @@
         "invalid_data": "Invalid Data",
         "cancelled": "Cancelled"
       },
-
       "productFieldValues": "Custom Fields"
     },
-
     "EditDialog": {
       "editOrder": "Edit Order"
     }
@@ -996,7 +946,6 @@
     "add": "Add",
     "addTitle": "Add New Product / Service",
     "editTitle": "Edit Product / Service",
-
     "Card": {
       "delete": "Delete",
       "digital": "Digital",
@@ -1006,7 +955,6 @@
       "tooman": "Toman",
       "unlimited": "Unlimited"
     },
-
     "List": {
       "no_products": "No products or services found.",
       "Toast": {
@@ -1037,7 +985,6 @@
       "regularProduct": "Physical Product",
       "digitalProduct": "Digital Product"
     },
-
     "Form": {
       "title": "Add Product or Service",
       "description": "Fill in the required fields carefully to create your product or service.",
@@ -1073,19 +1020,16 @@
       "inactive": "Inactive",
       "submitProduct": "Submit Product / Service",
       "uploadImage": "Upload Images",
-
       "orderButtonText": {
         "label": "Order Button Text",
         "description": "When a product is sent in DM, this text replaces the default 'Order' button.",
         "placeholder": "Examples: Buy with discount, Buy now..."
       },
-
       "orderProcessText": {
         "label": "Successful Payment Message",
         "description": "After completing the purchase, this message will be sent to the user in DM. Use #name, #price, and #order_id for personalization.",
         "placeholder": "'{{name}}' dear, your order was completed successfully. Your order ID: '{{order_id}}'"
       },
-
       "shippingCost": {
         "label": "Shipping Cost (Toman)",
         "placeholder": "0",
@@ -1093,7 +1037,6 @@
           "under1000": "Shipping cost must either be 0 or at least 1,000 Toman."
         }
       },
-
       "Alerts": {
         "title": "Please enter the title of your product or service.",
         "titleLenght": "The title is too short.",
@@ -1107,20 +1050,17 @@
         "image": "Please select an image for your product or service."
       }
     },
-
     "Edit": {
       "editContact": "Edit Contact",
       "editContactDescription": "Here you can edit the contact",
       "cancel": "Cancel"
     },
-
     "Delete": {
       "areYouSure": "Are you sure?",
       "deleteConfirmation": "This action is irreversible. Your product or service will be deleted.",
       "cancel": "Cancel",
       "delete": "Delete"
     },
-
     "free": "Free"
   },
   "Checkout": {
@@ -1184,7 +1124,6 @@
     "dashboard": "Dashboard",
     "title": "Settings",
     "choose_one_option": "Please select an option.",
-
     "Navigation": {
       "accounts": "IG Account Management",
       "bank_accounts": "Bank Card Management",
@@ -1193,12 +1132,10 @@
       "zarinpal": "Zarinpal Management",
       "profile": "User Account Management"
     },
-
     "Profile": {
       "title": "User Account Management",
       "description": "Here you can edit your account details."
     },
-
     "Password": {
       "title": "Password Management",
       "description": "Password login is",
@@ -1209,7 +1146,6 @@
       "resend_code": "Resend Code",
       "cancel": "Cancel"
     },
-
     "Accounts": {
       "title": "Instagram Account Management",
       "description": "Here you can manage or delete your Instagram pages.",
@@ -1229,20 +1165,17 @@
       "deleteErrorDescription": "There was a problem deleting the account. Please try again.",
       "connectAccount": "Connect Account",
       "noAccountsFound": "No accounts found.",
-
       "Error": {
         "errorOccurred": "Unfortunately, an error occurred!",
         "goTo": "Go to",
         "accounts": "Instagram Account Management",
         "goToEnd": ""
       },
-
       "SelectInstagram": {
         "selectAccount": "Select an Account",
         "accountsDescription": "These Instagram pages are connected to your Facebook account. You can choose one.",
         "cancel": "Cancel"
       },
-
       "SelectPagesForm": {
         "serverConnectionError": "Unable to connect to the server",
         "accountAlreadySelected": "This account has already been selected",
@@ -1250,15 +1183,12 @@
         "accountSelectedSuccess": "Account selected successfully",
         "select": "Select"
       },
-
       "ConnectInstagram": {
         "connecting": "Connecting to Instagram..."
       },
-
       "instagramConnected": "Your Instagram account was successfully added.",
       "instagramConnectionError": "Failed to connect to Instagram."
     },
-
     "BankDetails": {
       "description": "Fill in the information below to enable the Card-to-Card payment method.",
       "title": "Bank Card Management",
@@ -1282,7 +1212,6 @@
       "cardToCardUpdated": "Information updated successfully",
       "cardToCardUpdateFailed": "An error occurred while saving the information"
     },
-
     "Zarinpal": {
       "title": "Zarinpal Management",
       "description": "Fill in the information below to enable Zarinpal online payments.",
@@ -1855,5 +1784,20 @@
       "map": "map",
       "set": "set"
     }
+  },
+  "Learn": {
+    "title": "Learning Center",
+    "subtitle": "Watch these videos to learn how to use the platform effectively."
+  },
+  "Support": {
+    "title": "Support",
+    "description": "Get in touch with us",
+    "telegram_main_button": "Telegram Support",
+    "telegram_channel": "Telegram Channel",
+    "whatsapp": "WhatsApp",
+    "phone": "Phone",
+    "email": "Email",
+    "telegram": "Telegram",
+    "enter_panel": "Enter Panel"
   }
 }

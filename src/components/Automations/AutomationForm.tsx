@@ -35,12 +35,15 @@ import {
   CommentReplies,
   CommentTriggerInputs,
   Conditions,
+  ConditionTypesEnum,
   Contents,
   JustFollowers,
   Reminder,
   TargetPostComment,
   Triggers,
 } from "./Form";
+import { ValidationTypeEnum } from "@/types/validationType.enum";
+import { CommentLimitAlert } from "./Form/CommentLimitAlert";
 
 type AutomationFormProps = {
   id?: string;
@@ -82,6 +85,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     mode: "onSubmit",
     reValidateMode: "onChange",
     defaultValues: {
+      conditionType: ConditionTypesEnum.EQUAL,
+      isNoCondition: false,
       commentStartText: t("comment_start_text"),
       commentStartTitle: t("comment_start_title"),
       conditions: [{ type: "EQUAL", value: "", id: "" }],
@@ -148,6 +153,10 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
           ...content.buttonTemplate,
         };
         const buttons = transformButtons(content.buttonTemplate.buttons);
+
+        if (content.validationType === ValidationTypeEnum.Selectbox) {
+          content.valdationType = ValidationTypeEnum.Text;
+        }
 
         // Sort buttons: if priority exists, use it. Otherwise maintain order (or use ID).
         // Assuming lighter priority value means earlier in the list (1, 2, 3...)
@@ -344,18 +353,16 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
               >
                 <Triggers control={form.control} getValues={form.getValues} />
 
+                <TargetPostComment />
+
                 <SeperateLine />
 
                 <Conditions control={form.control} getValues={form.getValues} />
-
-                <SeperateLine />
 
                 <Contents
                   automationId={id}
                   mode={AutomationContentModeEnum.AUTOMATION}
                 />
-
-                <TargetPostComment />
 
                 <CommentReplies />
 
@@ -369,6 +376,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   control={form.control}
                   getValues={form.getValues}
                 />
+
+                <CommentLimitAlert />
 
                 <div className="mt-4 flex items-center gap-2">
                   <ButtonLoading isLoading={isSubmitting} className="flex-1">

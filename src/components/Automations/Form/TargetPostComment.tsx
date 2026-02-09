@@ -7,20 +7,15 @@ import { useFormContext } from "react-hook-form";
 import { InstagramPostSelectDialog } from "./InstagramPostSelectDialog";
 
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  Switch,
+  Switch
 } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import {
-  MessageCircleWarningIcon,
-  MessageSquareWarningIcon,
-} from "lucide-react";
+import { toast } from "sonner";
+import { ConditionTypesEnum } from "./Conditions";
 
 export const TargetPostComment = () => {
   const {
@@ -32,8 +27,14 @@ export const TargetPostComment = () => {
   const t = useTranslations("Automations.TargetPostComment");
   const t_err = useTranslations("Automations.TargetPostComment.Errors");
 
+  const { getValues } = useFormContext<AutomationFormType>()
+
   const toggleHandler = (value: boolean) => {
     if (value === false) {
+      if (getValues('conditionType') === ConditionTypesEnum.NO_CONDITION) {
+        toast.error(t_err('targetpost_required_for_noconition'))
+        return
+      }
       setValue("instagramPost", null);
     } else {
       setValue("isDirect", false);
@@ -48,7 +49,6 @@ export const TargetPostComment = () => {
   return (
     <>
       <hr className="border-gray-100" />
-
       <FormField
         control={control}
         name="isCommentContentTargetEnabled"
@@ -82,12 +82,11 @@ export const TargetPostComment = () => {
           </FormItem>
         )}
       />
-
-      <Alert variant="note">
-        <AlertDescription icon>
-          {t("note")}
-        </AlertDescription>
-      </Alert>
+      {
+        watch('isCommentContentTargetEnabled') && (
+          <p className="text-muted-foreground text-[13px]">{t("helper")}</p>
+        )
+      }
     </>
   );
 };

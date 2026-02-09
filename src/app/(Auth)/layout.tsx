@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/components/Providers/AuthProvider";
 import { SiteProvider } from "@/components/Providers/SiteProvider";
 import { Metadata } from "next";
+import SupportButton from "./auth/supportButton";
 
 // TODO: Refactor Intl metadata with this code
 // export async function generateMetadata() {

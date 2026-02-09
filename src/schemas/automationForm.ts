@@ -1,7 +1,9 @@
 // src/schemas/automationForm.ts
 
+import { ConditionTypesEnum } from "@/components/Automations/Form";
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
+import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { REGEX_URL } from "@/utils/regex";
 import z from "zod";
 
@@ -52,6 +54,12 @@ const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
     _xid: z.string().optional().nullable(),
   }),
   z.object({
+    postbackPayloadType: z.literal(ButtonTypeEnum.CONSENT),
+    title: z.string().min(1),
+    priority: z.number().optional().nullable(),
+    _xid: z.string().optional().nullable(),
+  }),
+  z.object({
     postbackPayloadType: z.literal(ButtonTypeEnum.URL),
     title: z.string().min(1),
     url: z.string().regex(REGEX_URL),
@@ -94,6 +102,7 @@ export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
   text: optionalStringToUndef,
+  quickReplies: z.array(ButtonSchema).optional().nullable(),
   consentText: optionalStringToUndef,
   haveConsent: optionalBoolDefault(false),
   type: z.nativeEnum(AutomationContentTypesEnum),
@@ -101,6 +110,8 @@ export const ContentItemSchema = z.object({
   instagramPost: InstagramPostSchema,
   buttonTemplate: ButtonTemplateSchema,
   products: z.array(ProductSchema).optional().nullable(),
+  validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
+  validationErrorMessage: z.string().optional().nullable(),
 
   productIds: z.array(z.string()).optional().nullable(),
   haveInstagramPost: z
@@ -120,8 +131,10 @@ export const ContentItemConditionSchema = z.object({
 
 export const AutomationFormSchema = z
   .object({
+    conditionType: z.enum(Object.values(ConditionTypesEnum)),
     isDirect: z.boolean(),
     isComment: z.boolean(),
+    isNoCondition: z.boolean(),
 
     conditions: z.array(ContentItemConditionSchema).min(1),
 
@@ -147,6 +160,7 @@ export const AutomationFormSchema = z
       z.object({
         type: z.nativeEnum(AutomationContentTypesEnum),
         text: optionalStringToUndef,
+        quickReplies: z.array(ButtonSchema).optional().nullable(),
         instagramPost: InstagramPostSchema,
         file: FileSchema,
         products: z.array(ProductSchema).optional().nullable(),
@@ -159,6 +173,8 @@ export const AutomationFormSchema = z
           .transform(() => undefined),
         _xid: z.string().optional().nullable(),
         buttonTemplate: ButtonTemplateSchema, // شامل normalize URL مانند contents
+        validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
+        validationErrorMessage: z.string().optional().nullable(),
       }),
     ),
 
@@ -247,6 +263,35 @@ export const AutomationFormSchema = z
           });
         }
       }
+
+      // اگر نوع محتوا QUESTION باشد، validationType و validationErrorMessage الزامی است
+      if (t === AutomationContentTypesEnum.QUESTION) {
+        if (!content.validationType) {
+          ctx.addIssue({
+            path: ["contents", index, "validationType"],
+            code: "custom",
+            message: "required",
+          });
+        }
+        if (!content.validationErrorMessage) {
+          ctx.addIssue({
+            path: ["contents", index, "validationErrorMessage"],
+            code: "custom",
+            message: "required",
+          });
+        }
+      }
+
+      // اگر validationType برابر selectbox باشد، quickReplies باید حداقل یک عنصر داشته باشد
+      if (content.validationType === ValidationTypeEnum.Selectbox) {
+        if (!content.quickReplies || content.quickReplies.length === 0) {
+          ctx.addIssue({
+            path: ["contents", index, "quickReplies"],
+            code: "custom",
+            message: "required",
+          });
+        }
+      }
     });
 
     // اگر isCommentContentTargetEnabled فعال باشد، instagramPost الزامی است
@@ -330,6 +375,35 @@ export const AutomationFormSchema = z
         if (selectedProducts.length === 0) {
           ctx.addIssue({
             path: ["reminders", index, "products"],
+            code: "custom",
+            message: "required",
+          });
+        }
+      }
+
+      // اگر نوع محتوا QUESTION باشد، validationType و validationErrorMessage الزامی است
+      if (t === AutomationContentTypesEnum.QUESTION) {
+        if (!content.validationType) {
+          ctx.addIssue({
+            path: ["reminders", index, "validationType"],
+            code: "custom",
+            message: "required",
+          });
+        }
+        if (!content.validationErrorMessage) {
+          ctx.addIssue({
+            path: ["reminders", index, "validationErrorMessage"],
+            code: "custom",
+            message: "required",
+          });
+        }
+      }
+
+      // اگر validationType برابر selectbox باشد، quickReplies باید حداقل یک عنصر داشته باشد
+      if (content.validationType === ValidationTypeEnum.Selectbox) {
+        if (!content.quickReplies || content.quickReplies.length === 0) {
+          ctx.addIssue({
+            path: ["reminders", index, "quickReplies"],
             code: "custom",
             message: "required",
           });

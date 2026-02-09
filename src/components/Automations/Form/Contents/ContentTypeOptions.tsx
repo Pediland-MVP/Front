@@ -37,6 +37,11 @@ export const contentTypeOptions: ContentTypeOption[] = [
     label: "Button",
     icon: <RadioButtonIcon />,
   },
+  {
+    value: AutomationContentTypesEnum.QUESTION,
+    label: "Question",
+    icon: <ChatTextIcon />,
+  },
   //BUG: Dont change my order!
   {
     value: "media",

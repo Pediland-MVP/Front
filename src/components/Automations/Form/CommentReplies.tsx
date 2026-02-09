@@ -8,6 +8,7 @@ import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import {
   Alert,
   AlertDescription,
+  AlertTitle,
   Button,
   FormControl,
   FormDescription,
@@ -19,7 +20,7 @@ import {
   Switch,
 } from "@/components/ui";
 import { SeperateLine } from "@/components/ui-custom/SeperateLine";
-import { TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusCircleIcon, TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();
@@ -61,7 +62,6 @@ export const CommentReplies = () => {
   return (
     <>
       <SeperateLine />
-
       <FormField
         control={control}
         name="isReplyCommentEnabled"
@@ -127,21 +127,22 @@ export const CommentReplies = () => {
                   ),
                 )}
 
-                <Alert variant="note">
-                  <AlertDescription icon>{t("note")}</AlertDescription>
-                </Alert>
-
-                <div className="flex flex-col">
+                <div className="flex flex-col items-start">
                   <Button
-                    onClick={onAddComment}
+                    variant="ghost"
                     type="button"
-                    variant="secondary"
+                    className="text-blue-600"
+                    onClick={onAddComment}
                     disabled={watch("commentTexts").length >= 10}
                   >
-                    <TextboxIcon />
+                    <PlusCircleIcon />
                     {t("add_comment")}
                   </Button>
                 </div>
+
+                <Alert variant="note">
+                  <AlertDescription icon>{t("note")}</AlertDescription>
+                </Alert>
               </div>
             )}
           </FormItem>

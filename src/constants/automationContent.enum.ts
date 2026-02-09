@@ -6,6 +6,7 @@ export enum AutomationContentTypesEnum {
   PRODUCT = "product",
   TEXT = "text",
   VIDEO = "video",
+  QUESTION = 'question'
 }
 
 export enum AutomationContentModeEnum {

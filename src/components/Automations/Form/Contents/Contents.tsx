@@ -37,6 +37,8 @@ import { ContentItem } from "./ContentItem";
 import { ContentPromotion } from "./ContentPromotion";
 import { ContentsContext } from "./ContentsContext";
 import { ContentsUploaderContextProvider } from "./ContentsUploaderContext";
+import { ValidationTypeEnum } from "@/types/validationType.enum";
+import { QuestionTextErrorMessage } from "./QuestionContent";
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;
@@ -129,6 +131,9 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       value={{ contents, updateContents, removeContents }}
     >
       <div className="_content-item flex flex-col gap-3">
+        <Alert variant="note" className="col-span-5">
+          <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
+        </Alert>
         {contents.length > 0 && (
           <DndContext
             sensors={sensors}
@@ -188,6 +193,11 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                         ],
                       },
                     }),
+                    ...(option.value ===
+                      AutomationContentTypesEnum.QUESTION && {
+                      validationType: ValidationTypeEnum.Text,
+                      validationErrorMessage: QuestionTextErrorMessage,
+                    }),
                   });
                   setIsChoosingType(false);
                   clearErrors(arrayName);
@@ -198,10 +208,6 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                 {t_contentTypes(option.value)}
               </Button>
             ))}
-
-            <Alert variant="note" className="col-span-5">
-              <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
-            </Alert>
           </div>
         )}
 

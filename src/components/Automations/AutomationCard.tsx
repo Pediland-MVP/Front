@@ -94,7 +94,7 @@ const AutomationCardComponent = ({
           variant="ghost"
           type="button"
           size="sm"
-          onClick={() => router.push(`/automations/sessions`)}
+          onClick={() => router.push(`/automations/sessions?contentCycleId=${item.id}`)}
         >
           <MessageSquareMoreIcon className="text-secondary" />
           {t("answers")} ({item.sessionsCount?.toLocaleString() || 0})

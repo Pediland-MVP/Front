@@ -1,6 +1,9 @@
 "use client";
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
+import {
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from "@/constants/automationContent.enum";
 import { cn } from "@/lib/utils";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
@@ -28,6 +31,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { MoveVerticalIcon, TrashIcon } from "lucide-react";
+import { AutomationButtonsContentTypes } from "./AutomationButtons";
 
 type ButtonContentItemProps = {
   id: string;
@@ -35,6 +39,28 @@ type ButtonContentItemProps = {
   contentIndex: number;
   remove: (index: number) => void;
   mode: AutomationContentModeEnum;
+  contentType: AutomationButtonsContentTypes;
+};
+
+const contentTypePayloadType: Record<
+  | "buttonTemplate"
+  | AutomationContentTypesEnum.QUESTION
+  | AutomationContentTypesEnum.TEXT,
+  Partial<Record<ButtonTypeEnum, boolean>>
+> = {
+  text: {
+    text: true,
+    CONSENT: true,
+    startAutomation: true,
+  },
+  buttonTemplate: {
+    text: true,
+    url: true,
+    startAutomation: true,
+  },
+  question: {
+    text: true,
+  },
 };
 
 export const ButtonContentItem = ({
@@ -43,10 +69,11 @@ export const ButtonContentItem = ({
   contentIndex,
   remove,
   mode,
+  contentType,
 }: ButtonContentItemProps) => {
   const form = useFormContext<AutomationFormType>();
   const selectedType = form.watch(
-    `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.postbackPayloadType`,
+    `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`,
   );
 
   const {
@@ -79,9 +106,9 @@ export const ButtonContentItem = ({
           isDragging && "ring-primary ring-1",
         )}
       >
-        {index !== 0 && (
-          <CardHeader className="-mt-2 p-0">
-            <div className="flex items-center justify-between">
+        <CardHeader className="-mt-2 p-0">
+          <div className="flex items-center justify-between">
+            {index !== 0 ? (
               <Button
                 variant="link"
                 size="icon"
@@ -92,7 +119,12 @@ export const ButtonContentItem = ({
               >
                 <MoveVerticalIcon className="text-gray-400" />
               </Button>
+            ) : (
+              // To use justify-between
+              <div></div>
+            )}
 
+            {!(contentType === 'question' && index === 0) && (
               <Button
                 variant="link"
                 size="icon"
@@ -102,50 +134,53 @@ export const ButtonContentItem = ({
               >
                 <TrashIcon />
               </Button>
-            </div>
-          </CardHeader>
-        )}
+            )}
+          </div>
+        </CardHeader>
         <CardContent className="flex flex-wrap gap-2 p-0">
           <FormField
             control={form.control}
-            name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.postbackPayloadType`}
+            name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`}
             render={({ field: typeField }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
-                <Select
-                  value={typeField.value ?? ""}
-                  onValueChange={typeField.onChange}
-                >
-                  <SelectTrigger className="gap-1 pr-2 pl-1.5">
-                    <SelectValue placeholder={t("button_type")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value={ButtonTypeEnum.TEXT}>
-                        {t("text.label")}
-                      </SelectItem>
-                      <SelectItem value={ButtonTypeEnum.URL}>
-                        {t("url.label")}
-                      </SelectItem>
-                      <SelectItem value={ButtonTypeEnum.START_AUTOMATION}>
-                        {t("automation")}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                {Object.keys(contentTypePayloadType[contentType]).length >
+                  1 && (
+                  <Select
+                    value={typeField.value ?? ""}
+                    onValueChange={typeField.onChange}
+                  >
+                    <SelectTrigger className="gap-1 pr-2 pl-1.5">
+                      <SelectValue placeholder={t("button_type")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {Object.values(ButtonTypeEnum).map((buttonType) => {
+                          return contentTypePayloadType[contentType][
+                            buttonType
+                          ] ? (
+                            <SelectItem key={buttonType} value={buttonType}>
+                              {t(`${buttonType}.label`)}
+                            </SelectItem>
+                          ) : null;
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
               </FormItem>
             )}
           />
           {selectedType && (
             <FormField
               control={form.control}
-              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.title`}
+              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.title`}
               render={({ field, fieldState: { error } }) => (
                 <FormItem className="flex w-full flex-1">
                   <div className="w-full space-y-1">
                     <Input
                       {...field}
                       aria-invalid={!!error}
-                      placeholder={t("title.label")}
+                      placeholder={t(`${selectedType}.placeholder`)}
                     />
                     {error && <ErrorMessage>{error.message}</ErrorMessage>}
                   </div>
@@ -167,7 +202,7 @@ export const ButtonContentItem = ({
                     {...field}
                     value={field.value ?? ""}
                     aria-invalid={!!error}
-                    placeholder={t("url.label")}
+                    placeholder={t("url.placeholder")}
                   />
                   {error && <ErrorMessage>{error.message}</ErrorMessage>}
                 </FormItem>
@@ -178,7 +213,7 @@ export const ButtonContentItem = ({
           {selectedType === ButtonTypeEnum.START_AUTOMATION && (
             <FormField
               control={form.control}
-              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.destinationContentCycleId`}
+              name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.destinationContentCycleId`}
               render={({ field: valueField, fieldState: { error } }) => (
                 <FormItem className="w-full space-y-0">
                   <AutomationSearchSelect
@@ -186,7 +221,7 @@ export const ButtonContentItem = ({
                     onSelect={valueField.onChange}
                     error={!!error}
                     initialData={form.getValues(
-                      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.buttonTemplate.buttons.${index}.destinationContentCycle`,
+                      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.destinationContentCycle`,
                     )}
                   />
                 </FormItem>

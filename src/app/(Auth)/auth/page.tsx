@@ -22,6 +22,7 @@ import {
 } from "@/components/ui";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { MoveLeftIcon } from "lucide-react";
+import SupportButton from "./supportButton";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
@@ -156,6 +157,7 @@ export default function AuthPage() {
           })}
         </p>
       </div>
+      <SupportButton/>
 
       <div className="flex flex-1 flex-col items-center justify-center">
         {/* <Button

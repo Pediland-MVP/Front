@@ -28,6 +28,7 @@ import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { CounterDown } from "@/components/ui-custom/CounterDown";
 import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
+import SupportButton from "../supportButton";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -213,6 +214,7 @@ export default function OtpPage() {
           </form>
         </Form>
       </div>
+      <SupportButton/>
       <div className="flex flex-1 flex-col items-center justify-center"></div>
     </div>
   );

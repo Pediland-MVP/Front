@@ -8,23 +8,20 @@ import type {
 } from "@/types/fileUploader";
 import { Button } from "@/components/ui/button";
 import {
+  Upload,
   FileIcon,
-  MusicNoteIcon,
-  PauseIcon,
-  PlayIcon,
-  TrashIcon,
-  TrashSimpleIcon,
-  UploadSimpleIcon,
-  XIcon,
-} from "@phosphor-icons/react/dist/ssr";
+  Music,
+  Play,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
+import { AudioRecorderWithVisualizer } from "./AudioRecorder";
 
 export const MediaUploader = ({
-  multiple = false,
   files,
   setFiles,
   accept,
@@ -54,7 +51,7 @@ export const MediaUploader = ({
     if (isNewFile(file)) {
       if (file.process !== undefined) return file.process < 100;
       if (file.isUploading) return !!file.isUploading;
-      return true; // new file without process yet
+      return true;
     }
     return false;
   };
@@ -70,25 +67,26 @@ export const MediaUploader = ({
   };
 
   const getProgressText = (file: UploadedFile): string | null => {
-    if (isExistingFile(file)) return null; // Don't show progress for existing files
+    if (isExistingFile(file)) return null;
     if (isNewFile(file) && file.process !== undefined) {
       return `${Math.round(file.process)}%`;
     }
     return t("uploaded");
   };
 
+  // Single file only: replace any existing file
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: any[]) => {
-      const newFiles = acceptedFiles.map((file) => ({
-        file,
+      if (acceptedFiles.length === 0) return;
+      const newFile: FileWithPreview = {
+        file: acceptedFiles[0],
         id: Math.floor(Math.random() * 1000000),
-      }));
-
-      const updatedFiles = multiple ? [...files, ...newFiles] : newFiles;
+      };
+      const updatedFiles = [newFile];
       setFiles(updatedFiles);
       onChange(updatedFiles, rejectedFiles);
     },
-    [files, multiple, onChange, setFiles],
+    [onChange, setFiles],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -102,7 +100,7 @@ export const MediaUploader = ({
           {} as Record<string, string[]>,
         )
       : undefined,
-    multiple,
+    multiple: false,
     onDragEnter: () => setIsDragActive(true),
     onDragLeave: () => setIsDragActive(false),
     onDropAccepted: () => setIsDragActive(false),
@@ -117,6 +115,20 @@ export const MediaUploader = ({
     onChange(updatedFiles);
   };
 
+  const handleRecordingComplete = useCallback(
+    (file: File) => {
+      const newFile: FileWithPreview = {
+        file,
+        id: Math.floor(Math.random() * 1000000),
+        process: 100,
+      };
+      const updatedFiles = [newFile];
+      setFiles(updatedFiles);
+      onChange(updatedFiles);
+    },
+    [onChange, setFiles],
+  );
+
   const renderPreview = (file: UploadedFile) => {
     const isUploaded = "url" in file;
     const { file: uploadedFile } = file as FileWithPreview;
@@ -124,59 +136,52 @@ export const MediaUploader = ({
       ? file.mimeType?.split("/")[0]
       : uploadedFile.type.split("/")[0];
 
-    const content = (() => {
-      switch (fileType) {
-        case "image":
-          return (
-            <Image
-              src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)}
-              alt="Preview"
-              width={64}
-              height={64}
-              className="h-full w-full object-cover"
-            />
-          );
-        case "video":
-          return (
-            <div className="flex h-full w-full items-center justify-center bg-gray-600">
-              <PlayIcon size={24} className="text-gray-300" weight="thin" />
-            </div>
-          );
-        case "audio":
-          return (
-            <div className="flex h-full w-full items-center justify-center bg-gray-600">
-              <MusicNoteIcon
-                size={24}
-                className="text-gray-300"
-                weight="thin"
-              />
-            </div>
-          );
-        default:
-          return (
-            <div className="flex h-full w-full items-center justify-center">
-              <FileIcon size={24} weight="thin" className="text-gray-400" />
-            </div>
-          );
-      }
-    })();
-
-    return content;
+    switch (fileType) {
+      case "image":
+        return (
+          <Image
+            src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)}
+            alt="Preview"
+            width={64}
+            height={64}
+            className="h-full w-full object-cover"
+          />
+        );
+      case "video":
+        return (
+          <div className="flex h-full w-full items-center justify-center bg-muted">
+            <Play size={24} className="text-muted-foreground" />
+          </div>
+        );
+      case "audio":
+        return (
+          <div className="flex h-full w-full items-center justify-center bg-muted">
+            <Music size={24} className="text-muted-foreground" />
+          </div>
+        );
+      default:
+        return (
+          <div className="flex h-full w-full items-center justify-center">
+            <FileIcon size={24} className="text-muted-foreground" />
+          </div>
+        );
+    }
   };
 
   return (
     <div className="w-full space-y-3">
+      {/* Dropzone */}
       <div
         {...getRootProps()}
-        className={`relative min-h-32 cursor-pointer rounded-lg border bg-white transition-colors hover:bg-gray-50`}
+        className={`relative min-h-32 cursor-pointer rounded-lg border bg-background transition-colors hover:bg-muted/50`}
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center justify-center p-6 text-center">
-          <UploadSimpleIcon className="mb-1 size-8 text-gray-400" />
-          <p className="mb-3 text-sm text-gray-600">
+          <Upload className="mb-1 size-8 text-muted-foreground" />
+          <p className="mb-3 text-sm text-muted-foreground">
             {isDragActive ? t("dropzone") : t("upload_button")}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {t("drag_drop_hint", {
               defaultValue: "Drag and drop files here or click to browse",
             })}
@@ -184,23 +189,31 @@ export const MediaUploader = ({
         </div>
       </div>
 
+      {/* Audio Recorder */}
+      <div className="relative pt-6">
+        <AudioRecorderWithVisualizer
+          onRecordingComplete={handleRecordingComplete}
+        />
+      </div>
+
+      {/* File list */}
       {files.length > 0 &&
         files.map((file) => (
           <div
             key={file.id}
-            className="flex items-center gap-3 rounded-lg border bg-white/90 p-3"
+            className="flex items-center gap-3 rounded-lg border bg-background p-3"
           >
-            <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+            <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
               {renderPreview(file)}
             </div>
             {/* File info */}
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {t("uploaded_file")}
                 </span>
                 {isUploading(file) ? (
-                  <span className="h-6 w-1/3 truncate text-left text-[13px] text-gray-500">
+                  <span className="h-6 w-1/3 truncate text-left text-[13px] text-muted-foreground">
                     {getDisplayName(file)}
                   </span>
                 ) : (
@@ -208,20 +221,20 @@ export const MediaUploader = ({
                     type="button"
                     variant="link"
                     size="sm"
-                    className="h-6 w-6 p-0 text-gray-400 hover:text-red-500"
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeFile(file.id);
                     }}
                   >
-                    <TrashSimpleIcon className="h-3 w-3" />
+                    <Trash2 className="h-3 w-3" />
                   </Button>
                 )}
               </div>
-              {/* Progress bar - always visible */}
-              <div className="h-2 w-full rounded-full bg-gray-200">
+              {/* Progress bar */}
+              <div className="h-2 w-full rounded-full bg-muted">
                 <div
-                  className="h-2 rounded-full bg-blue-500 transition-all duration-300 ease-out"
+                  className="h-2 rounded-full bg-primary transition-all duration-300 ease-out"
                   style={{
                     width: `${
                       "process" in file && file.process !== undefined
@@ -232,7 +245,7 @@ export const MediaUploader = ({
                 />
               </div>
 
-              <div className="mt-1.5 flex items-center gap-1 text-xs text-gray-500">
+              <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <span className="ltr">{getDisplaySize(file)}</span>
                 {getProgressText(file) && <span>{getProgressText(file)}</span>}
               </div>
@@ -240,31 +253,32 @@ export const MediaUploader = ({
           </div>
         ))}
 
+      {/* Limits info */}
       <div className="flex flex-col items-start justify-center text-sm uppercase">
         <div className="inline-block">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {t("Limits.image.text")}
           </span>
           <span className="mx-1">.</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {t("Limits.image.formats")}
           </span>
         </div>
         <div className="inline-block">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {t("Limits.video.text")}
           </span>
           <span className="mx-1">.</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {t("Limits.video.formats")}
           </span>
         </div>
         <div className="inline-block">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {t("Limits.audio.text")}
           </span>
           <span className="mx-1">.</span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             {t("Limits.audio.formats")}
           </span>
         </div>

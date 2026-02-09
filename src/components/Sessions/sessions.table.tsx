@@ -1,14 +1,17 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { SessionNamespace } from "@/types/session";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useState } from "react";
-import useSWR from "swr";
-import QuestionAnswerDialog from "./questionAnswer.dialog";
-
+// Just UI Imports Below
+import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
+import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Avatar,
   Badge,
@@ -21,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { ChatCircleTextIcon } from "@phosphor-icons/react";
+import { ExcelExportSessionsDrawer } from "./excelExportSessions";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -68,8 +71,10 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">{t("id")}</TableHead>
                   <TableHead className="text-right">{t("profile")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("mobile")}
+                  </TableHead>
                   <TableHead className="text-right">
                     {t("instagramUsername")}
                   </TableHead>
@@ -84,7 +89,6 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
               <TableBody>
                 {sessions?.items.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell className="text-right">{item.id}</TableCell>
                     <TableCell className="text-right">
                       <Avatar>
                         <AvatarImage
@@ -95,6 +99,9 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                           {item.leadInstagram.username[0]}
                         </AvatarFallback>
                       </Avatar>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.leadInstagram.lead?.contact?.mobile}
                     </TableCell>
                     <TableCell className="text-right">
                       {item.leadInstagram.username}
@@ -120,12 +127,6 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                           questionId={item.id}
                           leadInstagram={item.leadInstagram}
                         />
-                        <Link href={`/directs/${item.leadInstagram?.lead?.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <ChatCircleTextIcon className="ml-2 h-4 w-4" />
-                            {t("viewChat")}
-                          </Button>
-                        </Link>
                       </div>
                     </TableCell> */}
                   </TableRow>

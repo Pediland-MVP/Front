@@ -35,7 +35,10 @@ export interface LeadInstagram {
     url?: string;
   };
   lead: {
-    id: string
+    id: string;
+    contact: {
+      mobile: string
+    }
   }
 }
 
@@ -58,7 +61,7 @@ export interface Meta {
 interface Answer {
   id: string;
   text: string;
-  question: {
+  questionContent: {
     id: string;
     text: string;
   };
