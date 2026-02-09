@@ -2,13 +2,15 @@
 
 import { AutomationFormType } from "@/schemas/automationForm";
 import { useTranslations } from "next-intl";
-import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
+import { Control, Form, useFormContext, UseFormGetValues } from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { FormField, FormLabel, Switch } from "@/components/ui";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { toast } from "sonner";
+import { ConditionTypesEnum } from "./Conditions";
+import { useEffect } from "react";
 
 type TriggersProps = {
   control: Control<AutomationFormType>;
@@ -22,6 +24,8 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
   const {
     formState: { errors },
     trigger,
+    setValue,
+    watch
   } = useFormContext<AutomationFormType>();
 
   const hasTriggerError = !!(errors.isDirect || errors.isComment);
@@ -29,8 +33,37 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
   const triggerErrorMessage =
     errors.isDirect?.message ?? errors.isComment?.message;
 
+
+  const onIsDirect = (val: boolean) => {
+    const isCommentContentTargetEnabled = getValues(
+      "isCommentContentTargetEnabled",
+    );
+
+    if (isCommentContentTargetEnabled && val === true) {
+      toast.error(
+        "زمانی که گزینه محدود کردن به پست خاص فعال است نمی‌توانید دایرکت را فعال کنید.",
+      );
+      return;
+    }
+
+    setValue("isDirect", val);
+    trigger(["isDirect", "isComment"]);
+  }
+
+  const onIsComment = (val: boolean) => {
+    if (val === false) {
+      if (getValues('conditionType') === ConditionTypesEnum.NO_CONDITION) {
+        toast.error(t_err('cant_disable_comment_when_nocondition'));
+        return;
+      }
+    }
+    setValue('isCommentContentTargetEnabled', false)
+    setValue('isComment', val)
+    trigger(["isDirect", "isComment"]);
+  }
+
   return (
-    <div className="_trigger relative flex flex-col gap-2">
+    <div className="_trigger relative flex flex-col">
       <div className="flex flex-1 flex-col gap-2.5 md:flex-row md:items-center">
         <span className="text-sm font-medium">{t("user_in")}</span>
 
@@ -44,21 +77,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
                   type="button"
                   id="direct"
                   checked={field.value}
-                  onCheckedChange={(val) => {
-                    const isCommentContentTargetEnabled = getValues(
-                      "isCommentContentTargetEnabled",
-                    );
-
-                    if (isCommentContentTargetEnabled && val === true) {
-                      toast.error(
-                        "زمانی که گزینه محدود کردن به پست خاص فعال است نمی‌توانید دایرکت را فعال کنید.",
-                      );
-                      return;
-                    }
-
-                    field.onChange(val);
-                    trigger(["isDirect", "isComment"]);
-                  }}
+                  onCheckedChange={onIsDirect}
                 />
                 <FormLabel htmlFor="direct">{t("direct_story")}</FormLabel>
               </div>
@@ -73,10 +92,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
                   type="button"
                   id="comment"
                   checked={field.value}
-                  onCheckedChange={(val) => {
-                    field.onChange(val);
-                    trigger(["isDirect", "isComment"]);
-                  }}
+                  onCheckedChange={onIsComment}
                 />
                 <FormLabel htmlFor="comment">{t("comment_post")}</FormLabel>
               </div>

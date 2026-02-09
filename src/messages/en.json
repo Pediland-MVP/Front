@@ -415,6 +415,7 @@
       "delete_condition": "Delete Condition",
       "equal": "Equals",
       "include": "Includes",
+      "noCondition": "No Condition",
       "note": "Befroosh automatically detects Persian/English digits and converts variations of «ا» and «آ» to a standard form.",
       "send_message_below": "the following content(s) will be sent in order.",
       "value": "Condition Value",

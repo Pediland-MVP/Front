@@ -1,5 +1,6 @@
 // src/schemas/automationForm.ts
 
+import { ConditionTypesEnum } from "@/components/Automations/Form";
 import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
 import { ValidationTypeEnum } from "@/types/validationType.enum";
@@ -130,6 +131,7 @@ export const ContentItemConditionSchema = z.object({
 
 export const AutomationFormSchema = z
   .object({
+    conditionType: z.enum(Object.values(ConditionTypesEnum)),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     isNoCondition: z.boolean(),

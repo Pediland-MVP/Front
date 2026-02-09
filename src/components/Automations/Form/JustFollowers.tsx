@@ -87,7 +87,6 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
 
       {getValues().justFollowers && (
         <>
-          <p className="text-muted-foreground text-[13px]">{t("helper")}</p>
           <FormField
             control={control}
             name="followMessage"
@@ -133,6 +132,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
           />
         </>
       )}
+      <p className="text-muted-foreground text-[13px]">{t("helper")}</p>
     </div>
   );
 };

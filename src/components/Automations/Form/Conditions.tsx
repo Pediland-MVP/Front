@@ -4,24 +4,47 @@ import { AutomationFormType } from "@/schemas/automationForm";
 import { ContentCycleConditionTypes } from "@/types/contentCycles/conditions";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { Control, useFieldArray, UseFormGetValues } from "react-hook-form";
+import {
+  Control,
+  useFieldArray,
+  useFormContext,
+  UseFormGetValues,
+} from "react-hook-form";
 import { WizardVideoLinks } from "../wizardVideoLinks.conf";
 
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
-import { Button, FormField, FormItem, Input } from "@/components/ui";
+import {
+  Button,
+  FormField,
+  FormItem,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { XCircleIcon } from "@phosphor-icons/react";
+import { SeperateLine } from "@/components/ui-custom/SeperateLine";
 
 type ConditionsProps = {
   control: Control<AutomationFormType>;
   getValues: UseFormGetValues<AutomationFormType>;
 };
 
+export enum ConditionTypesEnum {
+  EQUAL = "EQUAL",
+  INCLUDE = "INCLUDE",
+  NO_CONDITION = "noCondition",
+}
+
 export const Conditions = ({ control, getValues }: ConditionsProps) => {
   const t = useTranslations("Automations.Conditions");
   const t_err = useTranslations("Automations.Conditions.Errors");
-  const [currentType, setCurrentType] = useState<ContentCycleConditionTypes>();
   const [isRendered, setIsRendered] = useState<boolean>(false);
+
+  const { setValue, watch } = useFormContext<AutomationFormType>();
 
   const {
     fields: conditionsField,
@@ -38,26 +61,20 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
     if (isRendered || !conditionsField) return;
 
     if (conditionsField?.[0]?.type) {
-      setCurrentType(conditionsField[0].type as ContentCycleConditionTypes);
+      setValue('conditionType', conditionsField[0].type as ContentCycleConditionTypes);
     }
   }, [conditionsField]);
 
-  const toggleConditionType = () => {
-    setCurrentType((old) => {
-      let newType: "INCLUDE" | "EQUAL";
-
-      if (old === "INCLUDE") {
-        newType = "EQUAL";
-      } else {
-        newType = "INCLUDE";
-      }
-
-      replaceConditions(
-        conditionsField.map((condition) => ({ ...condition, type: newType })),
-      );
-
-      return newType;
-    });
+  const handleConditionTypeChange = (newType: ContentCycleConditionTypes) => {
+    if (newType === ConditionTypesEnum.NO_CONDITION) {
+      setValue("isComment", true);
+      setValue("isDirect", false);
+      setValue("isCommentContentTargetEnabled", true);
+    }
+    setValue('conditionType', newType);
+    replaceConditions(
+      conditionsField.map((condition) => ({ ...condition, type: newType })),
+    );
   };
 
   return (
@@ -65,10 +82,35 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
       <div className="relative">
         <p className="flex items-center gap-1 text-sm font-medium">
           <span>{t("word_or_phrase")}</span>
-          <span onClick={toggleConditionType}>
-            {currentType === "INCLUDE" ? t("include") : t("equal")}
-          </span>
-          <span>{t("below_conditions")}</span>
+          <FormField
+            control={control}
+            name="conditionType"
+            render={({ field }) => {
+              return (
+                <Select
+                  {...field}
+                  defaultValue={ConditionTypesEnum.EQUAL}
+                  value={field.value}
+                  onValueChange={handleConditionTypeChange}
+                >
+                  <SelectTrigger className="h-auto w-auto border-0 bg-transparent p-1 text-purple-700 shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ConditionTypesEnum.EQUAL}>
+                      {t("equal")}
+                    </SelectItem>
+                    <SelectItem value={ConditionTypesEnum.INCLUDE}>
+                      {t("include")}
+                    </SelectItem>
+                    <SelectItem value={ConditionTypesEnum.NO_CONDITION}>
+                      {t("noCondition")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              );
+            }}
+          />
         </p>
 
         <HelpMeDialog
@@ -115,7 +157,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
             {index === conditionsField?.length - 1 && (
               <Button
                 onClick={() =>
-                  appendConditions({ type: currentType!, value: "", id: "" })
+                  appendConditions({ type: watch('conditionType')!, value: "", id: "" })
                 }
                 variant="ghost"
                 type="button"
@@ -127,10 +169,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
         ))}
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-medium">{t("send_message_below")}</p>
-        <p className="text-[13px] text-gray-600">{t("note")}</p>
-      </div>
+      <SeperateLine />
     </div>
   );
 };

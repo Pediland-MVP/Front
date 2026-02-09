@@ -26,7 +26,9 @@ export type QuestionContentProps = {
   control: any;
 };
 
-export type AppendQuestionButtonType = (a: {title: string, postbackPayloadType: ButtonTypeEnum}) => void
+export type AppendQuestionButtonType = (a: { title: string, postbackPayloadType: ButtonTypeEnum }) => void
+
+export const QuestionTextErrorMessage = "متن وارد شده صحیح نیست"
 
 export const QuestionContent = ({
   index,
@@ -44,7 +46,8 @@ export const QuestionContent = ({
 
   const fieldName =
     mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders";
-  const validationType = watch(`${fieldName}.${index}.validationType`);
+
+
 
   // Default error messages based on validation type
   const getDefaultErrorMessage = (type: ValidationTypeEnum) => {
@@ -59,7 +62,7 @@ export const QuestionContent = ({
         return "عدد وارد شده صحیح نیست";
       case ValidationTypeEnum.Text:
       default:
-        return "متن وارد شده صحیح نیست";
+        return QuestionTextErrorMessage;
     }
   };
 
@@ -98,7 +101,7 @@ export const QuestionContent = ({
               })}
             </Label>
             <Textarea
-              rows={4}
+              rows={1}
               maxLength={1000}
               {...field}
               aria-invalid={!!error}
@@ -119,6 +122,7 @@ export const QuestionContent = ({
               <Label>{t("validationType.label")}</Label>
               <Select
                 value={field.value || ""}
+                defaultValue={ValidationTypeEnum.Text}
                 onValueChange={(value) =>
                   handleValidationTypeChange(value as ValidationTypeEnum)
                 }
@@ -152,14 +156,14 @@ export const QuestionContent = ({
                 rows={3}
                 className="w-full"
               />
-              {}
+              { }
             </FormItem>
           )}
         />
       </div>
 
       {watch(`${fieldName}.${index}.validationType`) ===
-      ValidationTypeEnum.Selectbox ? (
+        ValidationTypeEnum.Selectbox ? (
         <AutomationButtons
           contentIndex={index}
           mode={mode}
