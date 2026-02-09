@@ -1788,5 +1788,16 @@
   "Learn": {
     "title": "Learning Center",
     "subtitle": "Watch these videos to learn how to use the platform effectively."
+  },
+  "Support": {
+    "title": "Support",
+    "description": "Get in touch with us",
+    "telegram_main_button": "Telegram Support",
+    "telegram_channel": "Telegram Channel",
+    "whatsapp": "WhatsApp",
+    "phone": "Phone",
+    "email": "Email",
+    "telegram": "Telegram",
+    "enter_panel": "Enter Panel"
   }
 }

@@ -42,6 +42,11 @@ export default async function middleware(request: NextRequest) {
 async function consoleMiddleware(request: NextRequest) {
   const token = request.cookies.get("token");
 
+  // Allow access to /support path without authentication
+  if (request.nextUrl.pathname === "/support") {
+    return CustomResponse.next(request);
+  }
+
   if (!token) {
     return CustomResponse.redirect(new URL("/auth", request.url), request);
   }
