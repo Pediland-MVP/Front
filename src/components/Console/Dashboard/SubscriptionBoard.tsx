@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
-import { Button, CardContent } from "@/components/ui";
+import { Alert, AlertTitle, Button, CardContent } from "@/components/ui";
 import { CardSimple } from "@/components/ui-custom/CardSimple";
 import { PlugsConnectedIcon, PlugsIcon } from "@phosphor-icons/react/dist/ssr";
 import { ProgressRadial } from "../ProgressRadial";
@@ -168,6 +168,16 @@ export const SubscriptionBoard = () => {
             </div>
           </div>
           <div>
+
+
+            {
+              !hasActiveSubscription && (
+                <Alert variant="destructive" className="col-span-5 mb-3">
+                  <AlertTitle className="text-[0.8rem]">{t("promotion_is_active")}</AlertTitle>
+                </Alert>
+              )
+            }
+
             {instagramValid ? (
               <Button
                 size="md"

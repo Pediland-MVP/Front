@@ -149,9 +149,8 @@ export const UserDetailsCard = () => {
                   </span>
                 </div>
                 <Button
-                  variant="link"
                   size="sm"
-                  className="h-auto gap-0 px-0!"
+                  className="h-auto gap-"
                   onClick={() => router.push("/settings/subscription")}
                 >
                   {t("renewal")}
