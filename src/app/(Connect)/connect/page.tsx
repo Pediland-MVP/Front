@@ -81,7 +81,7 @@ export default function ConnectPage() {
           )}
 
           <Link
-            href="https://t.me/+989360226688"
+            href="/support"
             target="_blank"
             className="flex items-center gap-2 md:justify-center"
           >
@@ -100,7 +100,7 @@ export default function ConnectPage() {
         <HowToConnectDialog open={isDialogOpen} setOpen={setDialogOpen} />
 
         <div className="container mx-auto flex h-full flex-col justify-around px-5 md:max-w-sm">
-          <div className="flex flex-col items-center space-y-6">
+          <div className="flex flex-col items-center space-y-4">
             <PlugsIcon size={60} weight="duotone" className="text-secondary" />
 
             <div className="space-y-3">
@@ -126,24 +126,40 @@ export default function ConnectPage() {
                 )}
               </div>
             </div>
-            <Button
-              className="w-full"
-              // onClick={() => setDialogOpen(true)}
-              disabled={isCallbackIGLoading}
-              asChild
-            >
-              <Link
-                href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
+
+            <div className="w-full flex flex-col  justify-center items-center">
+              <Button
+                className="w-full"
+                // onClick={() => setDialogOpen(true)}
+                disabled={isCallbackIGLoading}
+                asChild
               >
-                {isCallbackIGLoading ? (
-                  <>
-                    <Spinner className="size-5" /> {t("connecting_account")}
-                  </>
-                ) : (
-                  t("connect_account")
-                )}
-              </Link>
-            </Button>
+                <Link
+                  href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
+                >
+                  {isCallbackIGLoading ? (
+                    <>
+                      <Spinner className="size-5" /> {t("connecting_account")}
+                    </>
+                  ) : (
+                    t("connect_account")
+                  )}
+                </Link>
+              </Button>
+              <Button
+                variant="link"
+                className="text-muted-foreground mt-4 text-sm font-normal"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
+                  );
+                  toast.success("لینک اتصال با موفقیت کپی شد!");
+                }}
+              >
+                {t("copy_manual")}
+                <CopyIcon />
+              </Button>
+            </div>
           </div>
 
           <HelpMeDialog
@@ -194,20 +210,6 @@ export default function ConnectPage() {
                 span: (chunks) => <span className="text-sm">{chunks}</span>,
               })}
             </p>
-
-            <Button
-              variant="link"
-              className="text-muted-foreground mt-4 text-sm font-normal"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
-                );
-                toast.success("لینک اتصال با موفقیت کپی شد!");
-              }}
-            >
-              {t("copy_manual")}
-              <CopyIcon />
-            </Button>
           </div>
         </div>
       </div>

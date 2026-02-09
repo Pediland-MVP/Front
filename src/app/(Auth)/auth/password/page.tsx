@@ -22,6 +22,7 @@ import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { InputPassword } from "@/components/ui-custom/InputPassword";
 import { PasswordIcon } from "@phosphor-icons/react";
 import { MoveLeftIcon, MoveRightIcon } from "lucide-react";
+import SupportButton from "../supportButton";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -191,6 +192,7 @@ export default function PasswordPage() {
           </form>
         </Form>
       </div>
+      <SupportButton/>
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <Button

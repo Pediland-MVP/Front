@@ -20,6 +20,7 @@ import {
 } from "@/components/ui";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { UserCirclePlusIcon } from "@phosphor-icons/react";
+import SupportButton from "../supportButton";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
@@ -212,6 +213,7 @@ export default function OnboardingPage() {
           </form>
         </Form>
       </div>
+      <SupportButton/>
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <ButtonLoading

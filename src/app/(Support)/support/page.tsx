@@ -7,6 +7,7 @@ import {
   PhoneCallIcon,
   EnvelopeIcon,
   InstagramLogoIcon,
+  GraduationCap,
 } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -88,18 +89,34 @@ export default function SupportPage() {
         {/* Header */}
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>
+        </div>
+
+        <div className="mt-1">
+          <Button
+            asChild
+            size="lg"
+            className="h-24 w-full cursor-pointer gap-3 rounded-xl bg-[#e6deff] text-purple-500 border-[1px]  border-[#845afd] text-lg shadow-lg shadow-purple-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-300 hover:shadow-purple-300"
+          >
+            <Link href="/learn" target="_blank" className="flex flex-col">
+              <p className="text-xs">{t("learn_center1")}<br/>{t("learn_center2")}</p>
+              <p className="text-xs items-start justify-start">رفتن به بخش آموزش »</p>
+            </Link>
+          </Button>
+        </div>
+
+        <div className="flex justify-center items-center">
           <p className="text-sm text-gray-500">{t("description")}</p>
         </div>
 
         {/* Big Telegram Support Button */}
-        <div className="mt-4">
+        <div className="mt-1">
           <Button
             asChild
             size="lg"
             className="h-16 w-full cursor-pointer gap-3 rounded-xl bg-blue-500 text-lg text-white shadow-lg shadow-blue-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-blue-300"
           >
             <Link href="https://t.me/befroosh_support" target="_blank">
-              <TelegramLogoIcon size={32} weight="fill" />
+              <TelegramLogoIcon size={50} weight="fill" />
               <span>{t("telegram_main_button")}</span>
             </Link>
           </Button>
