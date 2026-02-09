@@ -5,26 +5,20 @@ import { useState } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { SessionNamespace } from "@/types/session";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
 // Just UI Imports Below
-import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
-  Avatar,
-  Badge,
   Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { ExcelExportSessionsDrawer } from "./excelExportSessions";
+import useSWR from "swr";
 
 interface SessionTableProps {
   contentCycleId?: string;
