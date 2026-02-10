@@ -77,7 +77,6 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
   const addButton = () => {
     if (fields.length <= maximumButtonLength) {
       append({
-        postbackPayloadType: ButtonTypeEnum.TEXT,
         title: "",
       });
     }

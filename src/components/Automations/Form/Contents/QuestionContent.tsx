@@ -106,6 +106,7 @@ export const QuestionContent = ({
               {...field}
               aria-invalid={!!error}
               className="w-full"
+              placeholder={t('enter_question_title')}
             />
             <InputCounter text={field.value} maxLength={1000} />
             {error && <ErrorMessage>{t_err("required")}</ErrorMessage>}
@@ -153,7 +154,7 @@ export const QuestionContent = ({
               <Textarea
                 {...field}
                 placeholder="پیام خطا برای اعتبارسنجی"
-                rows={3}
+                rows={1}
                 className="w-full"
               />
               { }

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui";
 import { InfoIcon, MonitorPlayIcon } from "@phosphor-icons/react";
 import { VideoComp } from "./VideoComp";
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr";
 
 type Position =
   | "left"
@@ -96,7 +97,7 @@ export const HelpMeDialog = ({
               "cursor-pointer duration-100 hover:scale-110",
             )}
           >
-            <InfoIcon size={20} weight="duotone" className="text-gray-500" />
+            <QuestionIcon size={20} weight="duotone" className="text-gray-500" />
             <span className="sr-only">{t("help")}</span>
           </div>
         )}

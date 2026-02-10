@@ -38,7 +38,7 @@ export default function SupportPage() {
       labelKey: "whatsapp",
       description: "whatsapp_des",
       description2: "whatsapp_des2",
-      href: "https://wa.me/09360226688",
+      href: "https://wa.me/+989360226688",
       colorClass: "text-green-600",
       bgClass: "bg-green-50 hover:bg-green-100",
     },
@@ -65,7 +65,7 @@ export default function SupportPage() {
       id: "telegram_channel",
       icon: TelegramLogoIcon,
       labelKey: "telegram_channel",
-      value: "@befroosh_support", // Replace with actual channel
+      value: "@befroosh_app", // Replace with actual channel
       href: "https://t.me/befroosh_app",
       colorClass: "text-blue-500",
       bgClass: "bg-blue-50 hover:bg-blue-100",

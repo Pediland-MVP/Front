@@ -61,7 +61,10 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
     if (isRendered || !conditionsField) return;
 
     if (conditionsField?.[0]?.type) {
-      setValue('conditionType', conditionsField[0].type as ContentCycleConditionTypes);
+      setValue(
+        "conditionType",
+        conditionsField[0].type as ContentCycleConditionTypes,
+      );
     }
   }, [conditionsField]);
 
@@ -71,7 +74,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
       setValue("isDirect", false);
       setValue("isCommentContentTargetEnabled", true);
     }
-    setValue('conditionType', newType);
+    setValue("conditionType", newType);
     replaceConditions(
       conditionsField.map((condition) => ({ ...condition, type: newType })),
     );
@@ -121,53 +124,63 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
         />
       </div>
 
-      <div className="space-y-2">
-        {conditionsField.map((condition, index) => (
-          <div
-            key={condition._xid}
-            className="flex flex-col items-start gap-2 xl:flex-row"
-          >
-            <div className="flex w-full items-start gap-2">
-              <FormField
-                name={`conditions.${index}.value`}
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem className="w-full">
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder={t("value")}
-                      aria-invalid={!!error}
-                    />
-                    {error && <ErrorMessage>{t_err("required")}</ErrorMessage>}
-                  </FormItem>
-                )}
-              />
-
-              {getValues().conditions?.length > 1 && (
-                <XCircleIcon
-                  size={20}
-                  className="h-9 cursor-pointer text-red-600"
-                  onClick={() => removeConditions(index)}
-                  aria-label={t("delete_condition")}
+      {getValues("conditionType") !== ConditionTypesEnum.NO_CONDITION && (
+        <div className="space-y-2">
+          {conditionsField.map((condition, index) => (
+            <div
+              key={condition._xid}
+              className="flex flex-col items-start gap-2 xl:flex-row"
+            >
+              <div className="flex w-full items-start gap-2">
+                <FormField
+                  name={`conditions.${index}.value`}
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormItem className="w-full">
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder={t("value")}
+                        aria-invalid={!!error}
+                      />
+                      {error && (
+                        <ErrorMessage>{t_err("required")}</ErrorMessage>
+                      )}
+                    </FormItem>
+                  )}
                 />
+
+                {getValues().conditions?.length > 1 && (
+                  <XCircleIcon
+                    size={20}
+                    className="h-9 cursor-pointer text-red-600"
+                    onClick={() => removeConditions(index)}
+                    aria-label={t("delete_condition")}
+                  />
+                )}
+              </div>
+
+              {index === conditionsField?.length - 1 && (
+                <Button
+                  onClick={() =>
+                    appendConditions({
+                      type: watch("conditionType")!,
+                      value: "",
+                      id: "",
+                    })
+                  }
+                  variant="ghost"
+                  type="button"
+                >
+                  <span className="text-blue-600">
+                    {t("add_new_condition")}
+                  </span>
+                </Button>
               )}
             </div>
-
-            {index === conditionsField?.length - 1 && (
-              <Button
-                onClick={() =>
-                  appendConditions({ type: watch('conditionType')!, value: "", id: "" })
-                }
-                variant="ghost"
-                type="button"
-              >
-                <span className="text-blue-600">{t("add_new_condition")}</span>
-              </Button>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <SeperateLine />
     </div>

@@ -16,7 +16,10 @@ import {
 import { ButtonLoading } from "../ui-custom/ButtonLoading";
 import { PlugsIcon } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { CopyIcon, PlugIcon } from "lucide-react";
+import { CopyIcon, PlugIcon, TvMinimalPlayIcon } from "lucide-react";
+import SupportButton from "@/app/(Auth)/auth/supportButton";
+import { HowToConnectDialog } from "../Connect/HowToConnectDialog";
+import { HelpMeDialog } from "../Global/HelpMeDialog";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
@@ -29,6 +32,8 @@ export const InstagramInvalidDialog = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
   const [isNavigationLoading, setIsNavigationLoading] = useState(false);
+
+  const [open, setOpen] = useState<boolean>(false);
 
   const { user } = useUser();
 
@@ -133,6 +138,7 @@ export const InstagramInvalidDialog = () => {
             کپی لینک اتصال
           </Button>
         </DialogFooter>
+        <SupportButton />
       </DialogContent>
     </Dialog>
   );

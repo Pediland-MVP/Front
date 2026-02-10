@@ -131,9 +131,6 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       value={{ contents, updateContents, removeContents }}
     >
       <div className="_content-item flex flex-col gap-3">
-        <Alert variant="note" className="col-span-5">
-          <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
-        </Alert>
         {contents.length > 0 && (
           <DndContext
             sensors={sensors}
@@ -167,48 +164,52 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
         </SortableContext>
 
         {isChoosingType && (
-          <div className="grid w-full grid-cols-5 justify-start gap-x-1.5 gap-y-2.5">
-            {contentTypeOptions.map((option) => (
-              <Button
-                key={option.value}
-                type="button"
-                onClick={() => {
-                  appendContents({
-                    type:
-                      option.value === "media"
-                        ? AutomationContentTypesEnum.IMAGE
-                        : option.value,
-                    ...(mode === AutomationContentModeEnum.AUTOMATION && {
-                      haveConsent: false,
-                    }),
-                    ...(option.value ===
-                      AutomationContentTypesEnum.BUTTON_TEMPLATE && {
-                      buttonTemplate: {
-                        text: "",
-                        buttons: [
-                          {
-                            postbackPayloadType: ButtonTypeEnum.TEXT,
-                            title: "",
-                          },
-                        ],
-                      },
-                    }),
-                    ...(option.value ===
-                      AutomationContentTypesEnum.QUESTION && {
-                      validationType: ValidationTypeEnum.Text,
-                      validationErrorMessage: QuestionTextErrorMessage,
-                    }),
-                  });
-                  setIsChoosingType(false);
-                  clearErrors(arrayName);
-                }}
-                className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-md bg-blue-100 text-[13px] text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:!px-2 [&_svg:not([class*='size-'])]:size-4.5"
-              >
-                {option.icon}
-                {t_contentTypes(option.value)}
-              </Button>
-            ))}
-          </div>
+          <>
+            <Alert variant="note" className="col-span-5">
+              <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
+            </Alert>
+            <div className="grid w-full grid-cols-5 justify-start gap-x-1.5 gap-y-2.5">
+              {contentTypeOptions.map((option) => (
+                <Button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    appendContents({
+                      type:
+                        option.value === "media"
+                          ? AutomationContentTypesEnum.IMAGE
+                          : option.value,
+                      ...(mode === AutomationContentModeEnum.AUTOMATION && {
+                        haveConsent: false,
+                      }),
+                      ...(option.value ===
+                        AutomationContentTypesEnum.BUTTON_TEMPLATE && {
+                        buttonTemplate: {
+                          text: "",
+                          buttons: [
+                            {
+                              title: "",
+                            },
+                          ],
+                        },
+                      }),
+                      ...(option.value ===
+                        AutomationContentTypesEnum.QUESTION && {
+                        validationType: ValidationTypeEnum.Text,
+                        validationErrorMessage: QuestionTextErrorMessage,
+                      }),
+                    });
+                    setIsChoosingType(false);
+                    clearErrors(arrayName);
+                  }}
+                  className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-md bg-blue-100 text-[13px] text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:!px-2 [&_svg:not([class*='size-'])]:size-4.5"
+                >
+                  {option.icon}
+                  {t_contentTypes(`buttons.titles.${option.value}`)}
+                </Button>
+              ))}
+            </div>
+          </>
         )}
 
         {arrayErrorMsg && (

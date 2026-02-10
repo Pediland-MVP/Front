@@ -49,14 +49,14 @@ const contentTypePayloadType: Record<
   Partial<Record<ButtonTypeEnum, boolean>>
 > = {
   text: {
+    startAutomation: true,
     text: true,
     CONSENT: true,
-    startAutomation: true,
   },
   buttonTemplate: {
+    startAutomation: true,
     text: true,
     url: true,
-    startAutomation: true,
   },
   question: {
     text: true,
