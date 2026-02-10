@@ -82,6 +82,10 @@ export const InstagramAccounts = () => {
     return <LoaderSpin />;
   }
 
+  if (instagramPages.filter(i => !i.isIgTokenValid)) {
+    return null
+  }
+
   return (
     <>
       <DeleteConfirmationDialog
@@ -91,12 +95,12 @@ export const InstagramAccounts = () => {
         instagram
       />
 
-      <div className="grid gap-2 md:grid-cols-2">
+      
         {instagramPages?.map((instagram) => {
           return (
             <Card
               className={cn(
-                "gap-0 border-violet-200 p-0 shadow-violet-200",
+                "w-full max-w-md gap-0 border-violet-200 p-0 shadow-violet-200",
                 !instagram.isIgTokenValid &&
                   "border-destructive/30 shadow-destructive/10 bg-red-50/50",
               )}
@@ -186,7 +190,6 @@ export const InstagramAccounts = () => {
             </Card>
           );
         })}
-      </div>
     </>
   );
 };

@@ -11,6 +11,7 @@ import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
 import { AuthProvider } from "@/components/Providers/AuthProvider";
 import { SiteProvider } from "@/components/Providers/SiteProvider";
 import { Metadata } from "next";
+import InstagramInvalidRedirector from "@/components/Console/InstagramInvalidRedirector";
 
 export const metadata: Metadata = {
   title: {
@@ -34,7 +35,7 @@ export default async function ConsoleLayout({
             {/* All third party configuration goes inside SiteProvider */}
             <SiteProvider>
               <ConsoleProvider>
-                <InstagramInvalidDialog />
+                <InstagramInvalidRedirector />
 
                 {children}
 
