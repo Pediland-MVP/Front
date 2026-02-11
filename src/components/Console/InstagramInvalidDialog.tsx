@@ -105,13 +105,13 @@ export const InstagramInvalidDialog = () => {
             instagram
           />
 
-          <div className="gap-2">
+          <div>
             <PlugsIcon
               size={46}
               weight="duotone"
               className="text-destructive mx-auto"
             />
-            <p className="text-destructive mt-4 text-base sm:justify-center">
+            <p className="my-4 text-base sm:justify-center">
               {t.rich("title", {
                 username: instagramPages?.[0]?.username,
               })}
@@ -119,8 +119,8 @@ export const InstagramInvalidDialog = () => {
           </div>
 
           <div className="space-y-3">
-            <div className="rounded-lg border border-dashed border-rose-300/70 bg-rose-50/80 p-2">
-              <p className="text-destructive text-[13px]">{t("description")}</p>
+            <div className="rounded-lg border border-dashed border-blue-200/75 bg-blue-50/60 p-2">
+              <p className="text-secondary text-[13px]">{t("description")}</p>
             </div>
           </div>
 
@@ -144,10 +144,10 @@ export const InstagramInvalidDialog = () => {
           <div className="mt-4 flex w-full items-center justify-center gap-x-1">
             <Button
               onClick={() => handleDelete(instagramPages?.[0].id)}
-              className="w-1/2 sm:flex-1"
+              className="w-1/2 sm:flex-1 text-red-500 hover:text-500"
               variant="outline"
             >
-              <TrashIcon/>
+              <TrashIcon className="text-red-500" />
               {t("delete")}
             </Button>
 
@@ -169,7 +169,7 @@ export const InstagramInvalidDialog = () => {
           <ButtonLoading
             isLoading={isNavigationLoading}
             onClick={handleReLogin}
-            className="mt-2 bg-destructive/90 hover:bg-destructive w-full text-white sm:flex-1"
+            className="mt-2 bg-primary hover:bg-purple-500 w-full text-white sm:flex-1"
           >
             <PlugIcon />
             {t("relogin")}

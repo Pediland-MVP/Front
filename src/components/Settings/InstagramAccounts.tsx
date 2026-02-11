@@ -82,7 +82,7 @@ export const InstagramAccounts = () => {
     return <LoaderSpin />;
   }
 
-  if (instagramPages.filter(i => !i.isIgTokenValid)) {
+  if (!instagramPages[0]?.isIgTokenValid) {
     return null
   }
 
