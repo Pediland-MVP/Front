@@ -418,7 +418,7 @@ export const FormProductDetails = ({
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="orderProcessText"
           render={({ field }) => (
@@ -434,6 +434,28 @@ export const FormProductDetails = ({
               </FormControl>
               <FormDescription>
                 {t("orderProcessText.description")}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+
+        <FormField
+          control={form.control}
+          name="orderCardToCardProcessText"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("orderCardToCardProcessText.label")}</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder={t("orderCardToCardProcessText.placeholder")}
+                  {...field}
+                  value={field.value || ""}
+                  rows={4}
+                />
+              </FormControl>
+              <FormDescription>
+                {t("orderCardToCardProcessText.description")}
               </FormDescription>
               <FormMessage />
             </FormItem>
