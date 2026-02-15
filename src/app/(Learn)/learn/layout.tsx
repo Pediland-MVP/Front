@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     },
 };
 
-export default async function SupportLayout({
+export default async function LearnLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;

@@ -91,20 +91,26 @@ export default function SupportPage() {
           <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>
         </div>
 
-        <div className="mt-1">
-          <Button
-            asChild
-            size="lg"
-            className="h-24 w-full cursor-pointer gap-3 rounded-xl bg-[#e6deff] text-purple-500 border-[1px]  border-[#845afd] text-lg shadow-lg shadow-purple-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-300 hover:shadow-purple-300"
-          >
-            <Link href="/learn" target="_blank" className="flex flex-col">
-              <p className="text-xs">{t("learn_center1")}<br/>{t("learn_center2")}</p>
-              <p className="text-xs items-start justify-start">رفتن به بخش آموزش »</p>
-            </Link>
-          </Button>
+        <div className="mt-1 flex w-full flex-col items-center justify-center gap-y-3 text-center">
+          <p className="text-sm text-gray-500">
+            {t("learn_center1")}
+            <br />
+            {t("learn_center2")}
+          </p>
+          <div className="mt-1 w-full">
+            <Button
+              asChild
+              size="lg"
+              className="h-16 w-full cursor-pointer gap-3 rounded-xl bg-blue-500 text-lg text-white shadow-lg shadow-blue-200 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-blue-300"
+            >
+              <Link href="/learn" target="_blank" className="flex flex-col">
+                <p className="items-start justify-start">رفتن به بخش آموزش</p>
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        <div className="flex justify-center items-center">
+        <div className="flex items-center justify-center">
           <p className="text-sm text-gray-500">{t("description")}</p>
         </div>
 

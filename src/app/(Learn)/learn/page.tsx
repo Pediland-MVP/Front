@@ -4,6 +4,9 @@ import { useTranslations } from "next-intl";
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { MonitorPlayIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui";
+import Link from "next/link";
 
 // Dummy data for learning videos
 // const learnVideos = Array.from({ length: 10 }).map((_, i) => ({
@@ -31,8 +34,21 @@ const learnVideos = [
 export default function LearnPage() {
   const t = useTranslations("Learn");
 
+  const pathname = usePathname()
+
   return (
     <div className="_settings-page flex h-full flex-col overflow-y-auto rounded-t-3xl bg-linear-to-t from-white/85 to-white p-5 md:h-[calc(100vh-88px)] md:rounded-t-none md:p-8">
+            {pathname === "/learn" && (
+              <div className="mb-4 flex w-full justify-end md:mb-8">
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="gap-2 text-gray-500 hover:text-gray-900"
+                >
+                  <Link href="/">{t("enter_panel")}</Link>
+                </Button>
+              </div>
+            )}
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
         <div className="mb-4">
           <h1 className="text-2xl font-bold text-gray-800">{t("title")}</h1>

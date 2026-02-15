@@ -47,6 +47,11 @@ async function consoleMiddleware(request: NextRequest) {
     return CustomResponse.next(request);
   }
 
+    // Allow access to /learn path without authentication
+  if (request.nextUrl.pathname === "/learn") {
+    return CustomResponse.next(request);
+  }
+
   if (!token) {
     return CustomResponse.redirect(new URL("/auth", request.url), request);
   }

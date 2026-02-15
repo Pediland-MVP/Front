@@ -110,13 +110,13 @@ const generateData = (t: any, isMobile: boolean) => ({
     },
     {
       title: t("learn"),
-      url: "/learn",
+      url: "/help/learn",
       icon: GraduationCap,
       isActive: true
     },
     {
       title: t("support"),
-      url: "/help",
+      url: "/help/support",
       icon: LifebuoyIcon,
       isActive: true,
     },
