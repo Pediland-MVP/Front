@@ -172,12 +172,13 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       return content;
     };
 
+    console.log('Automation', automation)
     const transformedAutomation = {
       ...automation,
       contents: automation.contents?.map(transformContent),
       reminders: automation.reminders?.map(transformContent),
+      conditionType: automation.isNoCondition ? ConditionTypesEnum.NO_CONDITION : automation.conditions[0].type
     };
-
     form.reset({
       ...transformedAutomation,
       ...(transformedAutomation.reminders?.length > 0 && {
@@ -351,13 +352,11 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 })}
                 className="grid gap-3.5"
               >
-                <Triggers control={form.control} getValues={form.getValues} />
-
-                <TargetPostComment />
-
+                <Conditions control={form.control} getValues={form.getValues} />
                 <SeperateLine />
 
-                <Conditions control={form.control} getValues={form.getValues} />
+                <Triggers control={form.control} getValues={form.getValues} />
+                <TargetPostComment />
 
                 <Contents
                   automationId={id}
