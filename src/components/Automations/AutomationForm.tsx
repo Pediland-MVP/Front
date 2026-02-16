@@ -177,7 +177,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       ...automation,
       contents: automation.contents?.map(transformContent),
       reminders: automation.reminders?.map(transformContent),
-      conditionType: automation.isNoCondition ? ConditionTypesEnum.NO_CONDITION : automation.conditions[0].type
+      conditionType: automation.isNoCondition ? ConditionTypesEnum.NO_CONDITION : automation.conditions?.[0]?.type
     };
     form.reset({
       ...transformedAutomation,
