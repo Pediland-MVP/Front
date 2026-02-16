@@ -124,19 +124,19 @@ export const ContentItemSchema = z.object({
 export const ContentItemConditionSchema = z.object({
   type: z.string().min(1),
   value: z.string().min(1),
-  id: z.string(),
+  id: z.string().optional(),
   conditionId: z.string().optional().nullable(),
 });
 /* ------------------------------- Main Schema -------------------------------- */
 
 export const AutomationFormSchema = z
   .object({
-    conditionType: z.enum(Object.values(ConditionTypesEnum)),
+    conditionType: z.enum(["EQUAL", "INCLUDE", "noCondition"]),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     isNoCondition: z.boolean(),
 
-    conditions: z.array(ContentItemConditionSchema).min(1),
+    conditions: z.array(ContentItemConditionSchema).optional(),
 
     contents: z.array(ContentItemSchema).min(1),
 
@@ -184,6 +184,15 @@ export const AutomationFormSchema = z
     isCommentContentTargetEnabled: z.boolean(),
   })
   .superRefine((data, ctx) => {
+
+    if (data.conditionType !== "noCondition" && (data.conditions?.length ?? 0) === 0) {
+      ctx.addIssue({
+        path: ["conditions"],
+        code: "custom",
+        message: "required",
+      });
+    }
+
     if (data.isDirect && data.isCommentContentTargetEnabled) {
       ctx.addIssue({
         path: ["isDirect"],

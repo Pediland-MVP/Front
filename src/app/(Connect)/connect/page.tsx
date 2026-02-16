@@ -164,7 +164,7 @@ export default function ConnectPage() {
 
           <HelpMeDialog
             title={t("how_to_connect")}
-            videoSrc="https://befroosh.storage.iran.liara.space/IMG_2330.MOV"
+            videoSrc="https://befroosh.s3.ir-thr-at1.arvanstorage.ir/learn%2Ff54e8c002432b82b23a046865a9e9f1067430006-720p.mp4?versionId="
             videoPoster="/images/photo_2025-02-26_22-00-50.jpg"
             noAbsolute
           >

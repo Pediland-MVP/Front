@@ -4,25 +4,22 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { SessionNamespace } from "@/types/session";
-import QuestionAnswerDialog from "./questionAnswer.dialog";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import Link from "next/link";
 // Just UI Imports Below
-import { ChatCircleText } from "@phosphor-icons/react/dist/ssr";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import useSWR from "swr";
+  TableRow
+} from "@/components/ui";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { ExcelExportSessionsDrawer } from "./excelExportSessions";
+import useSWR from "swr";
+import QuestionAndAnswerDialog from "./questionAnswer.dialog";
 
 interface SessionTableProps {
   contentCycleId?: string;
@@ -81,7 +78,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                   <TableHead className="text-right">
                     {t("updateDate")}
                   </TableHead>
-                  <TableHead className="text-right">{t("actions")}</TableHead>
+                   <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -119,9 +116,9 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
                     <TableCell className="text-right">
                       {formatDate(item.updateDate)}
                     </TableCell>
-                    <TableCell className="text-right">
+                     <TableCell className="text-right">
                       <div className="flex items-center space-x-2">
-                        <QuestionAnswerDialog
+                        <QuestionAndAnswerDialog
                           questionId={item.id}
                           leadInstagram={item.leadInstagram}
                         />

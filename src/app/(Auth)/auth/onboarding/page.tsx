@@ -213,7 +213,7 @@ export default function OnboardingPage() {
           </form>
         </Form>
       </div>
-      <SupportButton/>
+      <SupportButton type="external"/>
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <ButtonLoading

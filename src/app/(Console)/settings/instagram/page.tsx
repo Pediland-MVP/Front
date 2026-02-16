@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 
 import { InstagramAccounts } from "@/components/Settings/InstagramAccounts";
+import { InstagramInvalidDialog } from "@/components/Console/InstagramInvalidDialog";
 
 export default function Page() {
   const t = useTranslations("Settings.Accounts");
@@ -16,7 +17,10 @@ export default function Page() {
         </div>
 
         <Suspense>
-          <InstagramAccounts />
+          <div className="flex w-full flex-col items-start justify-center">
+            <InstagramAccounts />
+            <InstagramInvalidDialog />
+          </div>
         </Suspense>
       </div>
     </div>

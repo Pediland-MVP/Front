@@ -41,7 +41,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
 
     if (isCommentContentTargetEnabled && val === true) {
       toast.error(
-        "زمانی که گزینه محدود کردن به پست خاص فعال است نمی‌توانید دایرکت را فعال کنید.",
+        "وقتی گزینه “اجرا فقط برای یک پست خاص” فعال باشد، نمیتوانید دایرکت را فعال کنید",
       );
       return;
     }
@@ -64,9 +64,8 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
 
   return (
     <div className="_trigger relative flex flex-col">
-      <div className="flex flex-1 flex-col gap-2.5 md:flex-row md:items-center">
+      <div className="flex flex-1 flex-col gap-2.5 md:items-start">
         <span className="text-sm font-medium">{t("user_in")}</span>
-
         <div className="flex flex-1 items-center gap-5">
           <FormField
             control={control}

@@ -84,6 +84,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
           </FormItem>
         )}
       />
+      <p className="text-muted-foreground text-[13px]">{t("helper")}</p>
 
       {getValues().justFollowers && (
         <>
@@ -98,6 +99,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
                     placeholder={t("placeholder")}
                     {...field}
                     value={field.value ?? ""}
+                    rows={3}
                   />
                 </FormControl>
                 {error && (
@@ -132,7 +134,6 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
           />
         </>
       )}
-      <p className="text-muted-foreground text-[13px]">{t("helper")}</p>
     </div>
   );
 };

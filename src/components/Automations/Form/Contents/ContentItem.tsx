@@ -169,18 +169,6 @@ export const ContentItem = ({
   };
 
   const typeKey = contents?.[index]?.type as string | undefined;
-  const typeLabelMap: Record<string, string> = {
-    button_template: t_contentTypes("button_template"),
-    instagram_post: t_contentTypes("ig_post"),
-    image: t_contentTypes("media"),
-    product: t_contentTypes("product_or_service"),
-    text: t_contentTypes("text"),
-    question: t_contentTypes("question"),
-  };
-
-  const typeLabel = typeKey
-    ? typeLabelMap[typeKey]
-    : t_contentTypes("fallback_key");
 
   return (
     <div
@@ -204,7 +192,7 @@ export const ContentItem = ({
             <div className="bg-secondary flex size-5.5 items-center justify-center rounded-full p-0 text-xs leading-px font-medium text-white">
               {index + 1}
             </div>
-            {`${t_contentTypes("create_title")} ${typeLabel}`}
+            {t_contentTypes(`buttons.descriptions.${typeKey}`)}
           </div>
         </div>
         <div>
@@ -223,77 +211,6 @@ export const ContentItem = ({
           index={index}
           type={contents?.[index]?.type || AutomationContentTypesEnum.TEXT}
         />
-
-        {contents?.[index]?.type === AutomationContentTypesEnum.TEXT &&
-          mode === AutomationContentModeEnum.AUTOMATION &&
-          (contents.length > 1 || index > 0) &&
-          index !== contents.length - 1 && (
-            <FormField
-              name={`contents.${index}.haveConsent`}
-              control={control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col justify-start space-y-0 gap-y-2">
-                  <div className="flex items-center gap-x-2">
-                    <FormControl>
-                      <TooltipProvider>
-                        <Tooltip
-                          {...(contents.length > 1 &&
-                            contents?.[index]?.type ===
-                              AutomationContentTypesEnum.TEXT && {
-                              open: false,
-                            })}
-                        >
-                          <TooltipTrigger
-                            asChild
-                            disabled={
-                              contents.length > 1 ||
-                              contents?.[index]?.type !==
-                                AutomationContentTypesEnum.TEXT
-                            }
-                          >
-                            <Checkbox
-                              disabled={
-                                contents.length <= 1 ||
-                                contents?.[index]?.type !==
-                                  AutomationContentTypesEnum.TEXT
-                              }
-                              checked={field.value || false}
-                              onCheckedChange={field.onChange}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {contents.length <= 1
-                              ? t("consentTooltip")
-                              : contents?.[index]?.type !==
-                                  AutomationContentTypesEnum.TEXT &&
-                                t("consentTooltipType")}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </FormControl>
-                    <FormLabel className="m-0">{t("consent")}</FormLabel>
-                  </div>
-
-                  {!!field.value && (
-                    <Controller
-                      name={`contents.${index}.consentText`}
-                      control={control}
-                      render={({ field, fieldState: { error } }) => (
-                        <FormItem>
-                          <Input
-                            placeholder={t("consent_message")}
-                            {...field}
-                          />
-                          {error && <FormMessage>{error.message}</FormMessage>}
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
       </div>
     </div>
   );
