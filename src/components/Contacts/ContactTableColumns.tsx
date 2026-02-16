@@ -105,7 +105,7 @@ export function ContactTableColumns(
         return (
           <div className="flex justify-center items-center flex-row gap-x-1">
             <div className="flex flex-row gap-x-1">
-              <Link href={`https://wa.me/${mobile}`} target="_blank">
+              <Link href={`https://wa.me/+98${mobile}`} target="_blank">
                 <WhatsappLogoIcon size={20}/>
               </Link>
               <Link href={`https://t.me/+98${mobile}`} target="_blank">
