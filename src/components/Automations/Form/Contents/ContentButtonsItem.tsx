@@ -143,8 +143,7 @@ export const ButtonContentItem = ({
             name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`}
             render={({ field: typeField }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
-                {Object.keys(contentTypePayloadType[contentType]).length >
-                  1 && (
+                {Object.keys(contentTypePayloadType[contentType]).length > 1 && (
                   <Select
                     value={typeField.value ?? ""}
                     onValueChange={typeField.onChange}
