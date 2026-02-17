@@ -190,7 +190,6 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
                     appendConditions({
                       type: watch("conditionType")!,
                       value: "",
-                      id: "",
                     })
                   }
                   variant="ghost"

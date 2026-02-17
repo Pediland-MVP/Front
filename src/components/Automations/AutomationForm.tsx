@@ -89,7 +89,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       isNoCondition: false,
       commentStartText: t("comment_start_text"),
       commentStartTitle: t("comment_start_title"),
-      conditions: [{ type: "EQUAL", value: "", id: "" }],
+      conditions: [{ type: "EQUAL", value: ""}],
       contents: [],
       followCheckMessage: t("follow_check_message"),
       isComment: false,
