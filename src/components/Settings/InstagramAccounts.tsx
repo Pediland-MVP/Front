@@ -13,13 +13,8 @@ import useSWRImmutable from "swr/immutable";
 // TODO: Refactor Types & Schemas
 import { InstagramNamespace } from "@/types/instagram";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-} from "@/components/ui";
-import { InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
+import { Button, Card, CardContent, CardFooter } from "@/components/ui";
+import { CopyIcon, InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { EyeIcon, Plug2Icon, Trash2Icon } from "lucide-react";
 import { LoaderSpin } from "../ui-custom/LoaderSpin";
 import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
@@ -83,7 +78,7 @@ export const InstagramAccounts = () => {
   }
 
   if (!instagramPages[0]?.isIgTokenValid) {
-    return null
+    return null;
   }
 
   return (
@@ -95,101 +90,100 @@ export const InstagramAccounts = () => {
         instagram
       />
 
-      
-        {instagramPages?.map((instagram) => {
-          return (
-            <Card
-              className={cn(
-                "w-full max-w-md gap-0 border-violet-200 p-0 shadow-violet-200",
-                !instagram.isIgTokenValid &&
-                  "border-destructive/30 shadow-destructive/10 bg-red-50/50",
-              )}
-              key={instagram.id}
-            >
-              <CardContent className="flex-1 p-4">
-                <div className="flex gap-3">
-                  <div className="_avatar">
-                    {instagram.profilePictureUrl ? (
-                      <Image
-                        className="aspect-square rounded-full"
-                        src={
-                          !imgError && instagram.profilePictureUrl
-                            ? instagram.profilePictureUrl
-                            : "/images/placeholder.webp"
-                        }
-                        width={60}
-                        height={60}
-                        alt={instagram.name}
-                        onError={() => setImgError(true)}
-                      />
-                    ) : (
-                      <InstagramLogoIcon size={60} />
-                    )}
-                  </div>
-
-                  <div className="_info flex flex-col justify-center">
-                    <span>{instagram.name}</span>
-                    <span className="text-sm text-gray-500">
-                      {instagram.username}@
-                    </span>
-                  </div>
+      {instagramPages?.map((instagram) => {
+        return (
+          <Card
+            className={cn(
+              "w-full max-w-md gap-0 border-violet-200 p-0 shadow-violet-200",
+              !instagram.isIgTokenValid &&
+                "border-destructive/30 shadow-destructive/10 bg-red-50/50",
+            )}
+            key={instagram.id}
+          >
+            <CardContent onClick={() => window.open(`https://instagram.com/${instagram.username}`)} className="flex-1 p-4">
+              <div className="flex gap-3">
+                <div className="_avatar">
+                  {instagram.profilePictureUrl ? (
+                    <Image
+                      className="aspect-square rounded-full"
+                      src={
+                        !imgError && instagram.profilePictureUrl
+                          ? instagram.profilePictureUrl
+                          : "/images/placeholder.webp"
+                      }
+                      width={60}
+                      height={60}
+                      alt={instagram.name}
+                      onError={() => setImgError(true)}
+                    />
+                  ) : (
+                    <InstagramLogoIcon size={60} />
+                  )}
                 </div>
-              </CardContent>
-              <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
-                <Button
+
+                <div className="_info flex flex-col justify-center">
+                  <span>{instagram.name}</span>
+                  <span className="text-sm text-gray-500">
+                    {instagram.username}@
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
+              <Button
+                className={cn(
+                  "text-muted-foreground hover:text-primary h-9 w-full flex-1 rounded-none rounded-br-xl hover:bg-violet-100",
+                )}
+                variant="ghost"
+                type="button"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
+                  );
+                  toast.success("لینک اتصال با موفقیت کپی شد!");
+                }}
+                >
+                <CopyIcon />
+                {t("copy_manual")}
+              </Button>
+              <Button
+                className={cn(
+                  "text-muted-foreground hover:text-secondary h-9 w-full flex-1 rounded-none hover:bg-blue-100",
+                  !instagram.isIgTokenValid &&
+                    "bg-destructive hover:bg-destructive text-white hover:text-white",
+                )}
+                variant="ghost"
+                type="button"
+                size="sm"
+                onClick={() => {
+                  router.push(
+                    `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+                  );
+                }}
+              >
+                <Plug2Icon
                   className={cn(
-                    "text-muted-foreground hover:text-primary h-9 w-full flex-1 rounded-none rounded-br-xl hover:bg-violet-100",
+                    "text-secondary",
+                    !instagram.isIgTokenValid && "text-white",
                   )}
-                  variant="ghost"
-                  type="button"
-                  size="sm"
-                  asChild
-                >
-                  <Link
-                    href={`https://instagram.com/${instagram.username}`}
-                    target="_blank"
-                  >
-                    <EyeIcon className="text-primary" />
-                    {t("view")}
-                  </Link>
-                </Button>
-                <Button
-                  className={cn(
-                    "text-muted-foreground hover:text-secondary h-9 w-full flex-1 rounded-none hover:bg-blue-100",
-                    !instagram.isIgTokenValid &&
-                      "bg-destructive hover:bg-destructive text-white hover:text-white",
-                  )}
-                  variant="ghost"
-                  type="button"
-                  size="sm"
-                  onClick={() => {
-                    router.push(
-                      `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
-                    );
-                  }}
-                >
-                  <Plug2Icon
-                    className={cn(
-                      "text-secondary",
-                      !instagram.isIgTokenValid && "text-white",
-                    )}
-                  />
-                  {t("relogin")}
-                </Button>
-                <Button
-                  className="text-muted-foreground hover:text-destructive h-9 w-full flex-1 rounded-none rounded-bl-xl hover:bg-rose-100"
-                  variant="ghost"
-                  type="button"
-                  size="sm"
-                  onClick={() => handleDelete(instagram.id)}
-                >
-                  <Trash2Icon className="text-destructive" />
-                  {t("delete")}
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
+                />
+                {t("relogin")}
+              </Button>
+              <Button
+                className="text-muted-foreground hover:text-destructive h-9 w-full flex-1 rounded-none rounded-bl-xl hover:bg-rose-100"
+                variant="ghost"
+                type="button"
+                size="sm"
+                onClick={() => handleDelete(instagram.id)}
+              >
+                <Trash2Icon className="text-destructive" />
+                {t("delete")}
+              </Button>
+            </CardFooter>
+          </Card>
+        );
+      })}
     </>
   );
 };

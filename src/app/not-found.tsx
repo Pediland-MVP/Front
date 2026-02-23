@@ -32,11 +32,11 @@ function NotFoundContent() {
         {status === "network" ? (
           <p>
             <span className="text-lg font-semibold">
-              ارتـبـاط بـا سـرور بـرقـرار نـشـد.
+              ارتباط موقتا برقرار نیست
             </span>
             <br />
             <span className="text-[15px] font-medium">
-              اتصال اینترنت خود را بررسی کنید.
+              این مشکل میتواند به دلیل اینترنت شما یا اختلال کوتاه مدت سرور باشد. چند دقیقه دیگر دوباره تلاش کنید.
             </span>
           </p>
         ) : status === "server" ? (
@@ -62,14 +62,14 @@ function NotFoundContent() {
               <Link href="/">تلاش مجدد</Link>
             </Button>
             <Button asChild size="md">
-              <Link href="https://t.me/befroosh_support" target="_blank">
+              <Link href="/" target="_blank">
                 پشتیبانی
               </Link>
             </Button>
           </>
         ) : (
           <Button asChild size="md">
-            <Link href="/" target="_blank">
+            <Link href="/support" target="_blank">
               صفحه اصلی
             </Link>
           </Button>

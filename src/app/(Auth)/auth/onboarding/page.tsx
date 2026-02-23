@@ -21,6 +21,7 @@ import {
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { UserCirclePlusIcon } from "@phosphor-icons/react";
 import SupportButton from "../supportButton";
+import { CustomersSlider } from "./customersSlider";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
@@ -96,103 +97,69 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center px-10 sm:max-w-sm">
-      <div className="mb-12 flex flex-1 items-end justify-center">
-        <h1 className="flex items-center gap-2 text-lg font-bold">
-          <UserCirclePlusIcon size={28} weight="duotone" />
-          {t("title_register")}
-        </h1>
-      </div>
-
-      <div className="space-y-5">
-        <div className="flex flex-col text-center text-[15px] font-medium">
-          <div>{t("complete_registration_form")}</div>
+    <div className="w-full h-lvh pt-24 flex flex-col justify-start items-center overflow-x-hidden">
+      <div className="max-h-min flex flex-1 flex-col justify-center px-10 sm:max-w-sm">
+        <div className="max-h-min mb-2 flex flex-1 items-end justify-center">
+          <h1 className="flex items-center gap-2 text-lg font-bold">
+            <UserCirclePlusIcon size={28} weight="duotone" />
+            {t("title_register")}
+          </h1>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="firstname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("first_name")}
-                      className="text-center"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("last_name")}
-                      className="text-center"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="submittedInstagramUsername"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      onChange={(e) => {
-                        const filteredValue = e.target.value
-                          .replace(/[^a-zA-Z0-9_.]/g, "")
-                          .toLowerCase();
-                        field.onChange(filteredValue);
-                      }}
-                      placeholder={t("instagram_id")}
-                      dir="ltr"
-                      className="text-center"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <div className="space-y-5">
+          <div className="flex flex-col text-center text-[15px] font-medium">
+            <div>{t("complete_registration_form")}</div>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={showReferralCode}
-                onCheckedChange={setShowReferralCode}
-              />
-              <span className="text-primary text-sm">
-                {t("have_referral_code")}
-              </span>
-            </div>
-            {showReferralCode && (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="referralCode"
+                name="firstname"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={t("referral_code")}
+                        placeholder={t("first_name")}
+                        className="text-center"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("last_name")}
+                        className="text-center"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="submittedInstagramUsername"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        {...field}
                         onChange={(e) => {
-                          const filteredValue = e.target.value.replace(
-                            /[^a-zA-Z0-9_.]/g,
-                            "",
-                          );
+                          const filteredValue = e.target.value
+                            .replace(/[^a-zA-Z0-9_.]/g, "")
+                            .toLowerCase();
                           field.onChange(filteredValue);
                         }}
+                        placeholder={t("instagram_id")}
                         dir="ltr"
                         className="text-center"
                       />
@@ -201,21 +168,59 @@ export default function OnboardingPage() {
                   </FormItem>
                 )}
               />
-            )}
 
-            <ButtonLoading
-              className="w-full"
-              disabled={isSubmitting}
-              isLoading={isSubmitting}
-            >
-              {t("confirm_and_continue")}
-            </ButtonLoading>
-          </form>
-        </Form>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={showReferralCode}
+                  onCheckedChange={setShowReferralCode}
+                />
+                <span className="text-primary text-sm">
+                  {t("have_referral_code")}
+                </span>
+              </div>
+              {showReferralCode && (
+                <FormField
+                  control={form.control}
+                  name="referralCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t("referral_code")}
+                          onChange={(e) => {
+                            const filteredValue = e.target.value.replace(
+                              /[^a-zA-Z0-9_.]/g,
+                              "",
+                            );
+                            field.onChange(filteredValue);
+                          }}
+                          dir="ltr"
+                          className="text-center"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              <ButtonLoading
+                className="w-full"
+                disabled={isSubmitting}
+                isLoading={isSubmitting}
+              >
+                {t("confirm_and_continue")}
+              </ButtonLoading>
+            </form>
+          </Form>
+        </div>
+
+        <SupportButton type="external" />
       </div>
-      <SupportButton type="external"/>
 
-      <div className="flex flex-1 flex-col items-center justify-center">
+      <div className="flex flex-1 flex-col items-center justify-center sm:max-w-sm max-h-min">
+        <CustomersSlider />
         <ButtonLoading
           isLoading={isCanceling}
           disabled={isSubmitting}
