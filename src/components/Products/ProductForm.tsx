@@ -146,8 +146,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               )
               .optional(),
             orderButtonText: z.string().nullable().optional(),
-            orderProcessText: z.string().max(1000).nullable().optional(),
-            cardToCardorderProcessText: z.string().max(1000).nullable().optional(),
+          orderProcessText: z.string().max(1000).nullable().optional(),
+          orderCardToCardProcessText: z.string().max(1000).nullable().optional(),
             // Just used in submit
             attributeValueIds: z.array(z.number()),
             fields: z
