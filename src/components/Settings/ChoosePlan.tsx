@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { InstagramInvalid } from "../Console/InstagramInvalid";
-import { Alert, Button, Card, CardContent, CardFooter } from "../ui";
+import { Alert, AlertDescription, Button, Card, CardContent, CardFooter } from "../ui";
 import { ButtonLoading } from "../ui-custom/ButtonLoading";
 import { DiscountAlert } from "./DiscountAlert";
 import { DiscountCode } from "./DiscountCode";
@@ -236,8 +236,12 @@ export const ChoosePlan = () => {
             {t("package_title")}:
           </h3>
 
+          <Alert variant="destructive">
+            <AlertDescription icon>{t("vpnAlert")}</AlertDescription>
+          </Alert>
+
           <div className="flex flex-col gap-4 md:flex-row">
-            {currentPlan.durations
+            {currentPlan?.durations
               .sort((a, b) => b.id - a.id)
               .map((duration, id) => {
                 const unitPrice =
