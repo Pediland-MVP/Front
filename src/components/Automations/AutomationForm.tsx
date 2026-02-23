@@ -363,18 +363,20 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   mode={AutomationContentModeEnum.AUTOMATION}
                 />
 
-                <CommentReplies />
-
                 <Reminder />
 
                 <SeperateLine />
-
-                <CommentTriggerInputs />
 
                 <JustFollowers
                   control={form.control}
                   getValues={form.getValues}
                 />
+
+                <CommentReplies />
+
+                <SeperateLine />
+
+                <CommentTriggerInputs />
 
                 <CommentLimitAlert />
 

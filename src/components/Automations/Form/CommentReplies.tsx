@@ -85,65 +85,69 @@ export const CommentReplies = () => {
               </FormControl>
               <FormLabel>{t("is_enabled.label")}</FormLabel>
             </div>
-
-            <FormDescription className="text-[13px]">
-              {t("is_enabled.description")}
-            </FormDescription>
             <FormMessage />
 
             {field.value && (
-              <div className="mt-1 space-y-2.5">
-                {watch("commentTexts").map(
-                  (commentText: string, index: number) => (
-                    <FormField
-                      key={index}
-                      control={control}
-                      name={`commentTexts.${index}`}
-                      render={({ field, fieldState: { error } }) => (
-                        <FormItem>
-                          <div className="flex items-center justify-center gap-1.5">
-                            <FormControl>
-                              <Input
-                                {...field}
-                                value={field.value ?? ""}
-                              ></Input>
-                            </FormControl>
+              <>
 
-                            {index > 2 && (
-                              <Button
-                                onClick={() => onDelete(index)}
-                                variant="link"
-                                size="icon"
-                                type="button"
-                              >
-                                <TrashSimpleIcon className="text-destructive" />
-                              </Button>
-                            )}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ),
-                )}
+                <FormDescription className="text-[13px]">
+                  {t("is_enabled.description")}
+                </FormDescription>
 
-                <div className="flex flex-col items-start">
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    className="text-blue-600"
-                    onClick={onAddComment}
-                    disabled={watch("commentTexts").length >= 10}
-                  >
-                    <PlusCircleIcon />
-                    {t("add_comment")}
-                  </Button>
+                <div className="mt-1 space-y-2.5">
+                  {watch("commentTexts").map(
+                    (commentText: string, index: number) => (
+                      <FormField
+                        key={index}
+                        control={control}
+                        name={`commentTexts.${index}`}
+                        render={({ field, fieldState: { error } }) => (
+                          <FormItem>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  value={field.value ?? ""}
+                                ></Input>
+                              </FormControl>
+
+                              {index > 2 && (
+                                <Button
+                                  onClick={() => onDelete(index)}
+                                  variant="link"
+                                  size="icon"
+                                  type="button"
+                                >
+                                  <TrashSimpleIcon className="text-destructive" />
+                                </Button>
+                              )}
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ),
+                  )}
+
+                  <div className="flex flex-col items-start">
+                    <Button
+                      variant="ghost"
+                      type="button"
+                      className="text-blue-600"
+                      onClick={onAddComment}
+                      disabled={watch("commentTexts").length >= 10}
+                    >
+                      <PlusCircleIcon />
+                      {t("add_comment")}
+                    </Button>
+                  </div>
+
+                  <Alert variant="note">
+                    <AlertDescription icon>{t("note")}</AlertDescription>
+                  </Alert>
                 </div>
+              </>
 
-                <Alert variant="note">
-                  <AlertDescription icon>{t("note")}</AlertDescription>
-                </Alert>
-              </div>
             )}
           </FormItem>
         )}
