@@ -31,15 +31,18 @@ export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
           ) : (
             <div className="text-xs text-gray-400">...</div>
           )}
-          <h2 className="text-muted-foreground text-[13px] font-medium md:text-sm">
-            {data?.title}
-          </h2>
-          <div className="text-secondary/90 flex items-center gap-1 text-xl leading-none font-bold">
-            {typeof data?.total === "number"
-              ? locale === "fa"
-                ? data.total.toLocaleString("fa-IR")
-                : data.total
-              : data?.total || ""}
+
+          <div className="flex flex-col justify-center items-center mt-1">
+            <div className="text-secondary/90 flex items-center gap-1 text-xl leading-none font-bold">
+              {typeof data?.total === "number"
+                ? locale === "fa"
+                  ? data.total.toLocaleString("fa-IR")
+                  : data.total
+                : data?.total || ""}
+            </div>
+            <h2 className="text-muted-foreground text-[13px] font-medium md:text-sm">
+              {data?.title}
+            </h2>
           </div>
         </div>
       </CardContent>
