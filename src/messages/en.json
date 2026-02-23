@@ -1,4 +1,11 @@
 {
+  "NavBottom": {
+    "home": "Home",
+    "list": "List",
+    "add": "Add",
+    "orders": "Orders",
+    "profile": "Profile"
+  },
   "Breadcrumbs": {
     "automations": "Automations List",
     "card": "Bank Card Management",

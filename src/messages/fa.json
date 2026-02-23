@@ -1,4 +1,11 @@
 {
+  "NavBottom": {
+    "home": "خانه",
+    "list": "لیست",
+    "add": "افزودن",
+    "orders": "سفارشات",
+    "profile": "پروفایل"
+  },
   "support": "مرکز پشتیبانی",
   "Components": {
     "LogoText": {
