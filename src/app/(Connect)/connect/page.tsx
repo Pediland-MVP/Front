@@ -12,13 +12,14 @@ import { useEffect, useState } from "react";
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { LogoSlogan } from "@/components/Global/LogoSlogan";
 import { LogoText } from "@/components/Global/LogoText";
-import { Button, Spinner } from "@/components/ui";
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Spinner } from "@/components/ui";
 import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
 import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
 import {
   ClipboardCopyIcon,
   CopyIcon,
   PlayIcon,
+  Pencil,
   SquarePlayIcon,
   TvMinimalPlayIcon,
 } from "lucide-react";
@@ -35,6 +36,8 @@ export default function ConnectPage() {
   const router = useRouter();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+  const [editedUsername, setEditedUsername] = useState("");
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
@@ -98,6 +101,40 @@ export default function ConnectPage() {
 
       <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
         <HowToConnectDialog open={isDialogOpen} setOpen={setDialogOpen} />
+        
+        <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{t("edit_instagram_username")}</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <Input
+                value={editedUsername}
+                onChange={(e) => setEditedUsername(e.target.value)}
+                placeholder={t("instagram_username_placeholder")}
+                className="w-full"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                {t("cancel")}
+              </Button>
+              <Button
+                onClick={() => {
+                  // This is a fake change as requested - no API call needed
+                  // Just update the local state for display purposes
+                  if (user) {
+                    user.submittedInstagramUsername = editedUsername;
+                  }
+                  setEditDialogOpen(false);
+                  toast.success(t("username_updated"));
+                }}
+              >
+                {t("save")}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div className="container mx-auto flex h-full flex-col justify-around px-5 md:max-w-sm">
           <div className="flex flex-col items-center space-y-4">
@@ -117,11 +154,19 @@ export default function ConnectPage() {
                   </span>
                 </div>
                 {user?.submittedInstagramUsername && (
-                  <div className="text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center gap-2">
                     {t("instagram")}{" "}
                     <span className="text-secondary font-semibold">
                       {user?.submittedInstagramUsername}
                     </span>
+                    <Pencil
+                      size={16}
+                      className="cursor-pointer text-muted-foreground hover:text-secondary"
+                      onClick={() => {
+                        setEditedUsername(user?.submittedInstagramUsername || "");
+                        setEditDialogOpen(true);
+                      }}
+                    />
                   </div>
                 )}
               </div>
