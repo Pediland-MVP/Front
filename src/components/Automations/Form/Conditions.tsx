@@ -184,7 +184,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
                 )}
               </div>
 
-              {index === conditionsField?.length - 1 && (
+              {index === conditionsField?.length - 1 && conditionsField.length < 10 && (
                 <Button
                   onClick={() =>
                     appendConditions({
