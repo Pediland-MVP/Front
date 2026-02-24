@@ -6,6 +6,33 @@
     "orders": "سفارشات",
     "profile": "پروفایل"
   },
+  "Onboarding": {
+    "customersSlider": {
+      "trustedByTitle": "مورد اعتماد ۵۰۰۰+ پیج اینستاگرام",
+      "trustedByDesc":"برخی از مشتریانی که به بفروش اعتماد کرده‌اند",
+      "customers": {
+        "baziyato": "بازیاتو",
+        "fitnesskiyani": "فیتنس کیانی",
+        "filmak": "فیلمک",
+        "kababiq": "کبابیک",
+        "iranteb": "ایران طب",
+        "emperatorialikhani": "امپراتور علیخانی",
+        "khanemojalal": "خانه مجلل",
+        "fekrbaziya": "فکر بازی‌ها",
+        "aghilesoltanpor": "عقیل سلطان‌پور",
+        "khanombeauty": "خانم بیوتی",
+        "javidkhodro": "جاوید خودرو",
+        "hesetazegi": "حس تازگی",
+        "roshaacessory": "رُشا اکسسوری",
+        "maryshop": "مری شاپ",
+        "ronakfarhadi": "روناک فرهادی",
+        "shopishop": "شاپی‌شاپ",
+        "persianemarati": "پرشین اماراتی",
+        "pasatejarat": "پاسا تجارت",
+        "parchealmas": "پارچه الماس"
+      }
+    }
+  },
   "support": "مرکز پشتیبانی",
   "Components": {
     "LogoText": {
@@ -1142,7 +1169,7 @@
       "cancel": "انصراف"
     },
     "Accounts": {
-      "copy_manual":"کپی لینک اتصال",
+      "copy_manual": "کپی لینک اتصال",
       "title": "مدیریت اکانت اینستاگرام",
       "description": "در این بخش می‌توانید صفحه اینستاگرام خود را حذف نمایید.",
       "view": "مشاهده",

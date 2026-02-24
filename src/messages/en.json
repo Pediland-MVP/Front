@@ -6,6 +6,32 @@
     "orders": "Orders",
     "profile": "Profile"
   },
+  "Onboarding": {
+    "customersSlider": {
+      "trustedByTitle": "Trusted by +5000 pages",
+      "customers": {
+        "baziyato": "Baziyato",
+        "fitnesskiyani": "Fitness Kiyani",
+        "filmak": "Filmak",
+        "kababiq": "Kababiq",
+        "iranteb": "Iran Teb",
+        "emperatorialikhani": "Emperor Alikhani",
+        "khanemojalal": "Khane Mojallal",
+        "fekrbaziya": "Fekr Baziya",
+        "aghilesoltanpor": "Aghil Soltanpour",
+        "khanombeauty": "Khanom Beauty",
+        "javidkhodro": "Javid Khodro",
+        "hesetazegi": "Fresh Feeling",
+        "roshaacessory": "Rosha Accessory",
+        "maryshop": "Mary Shop",
+        "ronakfarhadi": "Ronak Farhadi",
+        "shopishop": "Shopi Shop",
+        "persianemarati": "Persian Emirati",
+        "pasatejarat": "Pasa Tejarat",
+        "parchealmas": "Almas Fabric"
+      }
+    }
+  },
   "Breadcrumbs": {
     "automations": "Automations List",
     "card": "Bank Card Management",

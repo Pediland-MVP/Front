@@ -97,17 +97,21 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="w-full h-lvh pt-24 flex flex-col justify-start items-center overflow-x-hidden">
-      <div className="max-h-min flex flex-1 flex-col justify-center px-10 sm:max-w-sm">
-        <div className="max-h-min mb-2 flex flex-1 items-end justify-center">
+    <div className="flex h-lvh w-full flex-col items-center justify-start overflow-x-hidden pt-12">
+      <div className="flex max-h-min flex-1 flex-col items-center justify-center sm:max-w-sm">
+        <CustomersSlider />
+      </div>
+
+      <div className="flex max-h-min flex-1 flex-col justify-center px-10 sm:max-w-sm">
+        {/* <div className="mb-2 flex max-h-min flex-1 items-end justify-center">
           <h1 className="flex items-center gap-2 text-lg font-bold">
             <UserCirclePlusIcon size={28} weight="duotone" />
             {t("title_register")}
           </h1>
-        </div>
+        </div> */}
 
         <div className="space-y-5">
-          <div className="flex flex-col text-center text-[15px] font-medium">
+          <div className="flex flex-col text-center text-[15px] font-medium mt-3">
             <div>{t("complete_registration_form")}</div>
           </div>
 
@@ -219,8 +223,7 @@ export default function OnboardingPage() {
         <SupportButton type="external" />
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center sm:max-w-sm max-h-min">
-        <CustomersSlider />
+      <div className="flex max-h-min flex-1 flex-col items-center justify-center sm:max-w-sm">
         <ButtonLoading
           isLoading={isCanceling}
           disabled={isSubmitting}
