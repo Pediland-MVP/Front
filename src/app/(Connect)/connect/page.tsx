@@ -12,7 +12,15 @@ import { useEffect, useState } from "react";
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { LogoSlogan } from "@/components/Global/LogoSlogan";
 import { LogoText } from "@/components/Global/LogoText";
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Spinner } from "@/components/ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Spinner,
+} from "@/components/ui";
 import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
 import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
 import {
@@ -101,7 +109,7 @@ export default function ConnectPage() {
 
       <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
         <HowToConnectDialog open={isDialogOpen} setOpen={setDialogOpen} />
-        
+
         <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -116,7 +124,10 @@ export default function ConnectPage() {
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+              >
                 {t("cancel")}
               </Button>
               <Button
@@ -161,9 +172,11 @@ export default function ConnectPage() {
                     </span>
                     <Pencil
                       size={16}
-                      className="cursor-pointer text-muted-foreground hover:text-secondary"
+                      className="text-muted-foreground hover:text-secondary cursor-pointer"
                       onClick={() => {
-                        setEditedUsername(user?.submittedInstagramUsername || "");
+                        setEditedUsername(
+                          user?.submittedInstagramUsername || "",
+                        );
                         setEditDialogOpen(true);
                       }}
                     />
@@ -172,7 +185,7 @@ export default function ConnectPage() {
               </div>
             </div>
 
-            <div className="w-full flex flex-col  justify-center items-center">
+            <div className="flex w-full flex-col items-center justify-center">
               <Button
                 className="w-full"
                 // onClick={() => setDialogOpen(true)}
@@ -204,27 +217,27 @@ export default function ConnectPage() {
                 {t("copy_manual")}
                 <CopyIcon />
               </Button>
+
+              <HelpMeDialog
+                title={t("how_to_connect")}
+                videoSrc="https://befroosh.s3.ir-thr-at1.arvanstorage.ir/learn%2Ff54e8c002432b82b23a046865a9e9f1067430006-720p.mp4?versionId="
+                videoPoster="/images/photo_2025-02-26_22-00-50.jpg"
+                noAbsolute
+              >
+                <Button
+                  type="button"
+                  variant="link"
+                  size="lg"
+                  className="text-muted-foreground mt-4"
+                >
+                  <TvMinimalPlayIcon className="size-6" />
+                  {t("how_to_connect")}
+                </Button>
+              </HelpMeDialog>
             </div>
           </div>
 
-          <HelpMeDialog
-            title={t("how_to_connect")}
-            videoSrc="https://befroosh.s3.ir-thr-at1.arvanstorage.ir/learn%2Ff54e8c002432b82b23a046865a9e9f1067430006-720p.mp4?versionId="
-            videoPoster="/images/photo_2025-02-26_22-00-50.jpg"
-            noAbsolute
-          >
-            <Button
-              type="button"
-              variant="link"
-              size="lg"
-              className="text-muted-foreground"
-            >
-              <TvMinimalPlayIcon className="size-6" />
-              {t("how_to_connect")}
-            </Button>
-          </HelpMeDialog>
-
-          <div className="mx-auto flex flex-col items-center">
+          <div className="mx-auto flex flex-col items-center mb-24">
             <div className="mx-auto mb-4 flex items-center justify-center gap-4">
               <Image
                 src="/images/logo-threads.svg"
