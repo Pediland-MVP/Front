@@ -505,7 +505,8 @@
           "placeholder": "مثال: https://befroosh.app"
         },
         "Errors": {
-          "required": "متن ابتدایی را وارد کنید."
+          "required": "متن ابتدایی را وارد کنید.",
+          "buttonTypeRequired": "نوع دکمه‌را مشخص کنید"
         }
       },
       "Media": {

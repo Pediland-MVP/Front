@@ -18,6 +18,7 @@ import {
   CardHeader,
   FormField,
   FormItem,
+  FormMessage,
   Input,
   Select,
   SelectContent,
@@ -85,6 +86,7 @@ export const ButtonContentItem = ({
     isDragging,
   } = useSortable({ id });
   const t = useTranslations("Automations.Contents.Button");
+  const t_ec = useTranslations("Automations.Contents.Button.Errors")
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -141,7 +143,7 @@ export const ButtonContentItem = ({
           <FormField
             control={form.control}
             name={`${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "buttonTemplate" ? "buttonTemplate.buttons" : "quickReplies"}.${index}.postbackPayloadType`}
-            render={({ field: typeField }) => (
+            render={({ field: typeField, fieldState: {error} }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
                 {Object.keys(contentTypePayloadType[contentType]).length > 1 && (
                   <Select
@@ -166,6 +168,11 @@ export const ButtonContentItem = ({
                     </SelectContent>
                   </Select>
                 )}
+                {
+                  error && (
+                    <ErrorMessage className="mt-1">{t_ec('buttonTypeRequired')}</ErrorMessage>
+                  )
+                }
               </FormItem>
             )}
           />
