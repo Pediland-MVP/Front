@@ -160,7 +160,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           items={contents.map((field) => field._xid)}
           strategy={rectSortingStrategy}
         >
-          {isPromotion && <ContentPromotion />}
+          {isPromotion && mode === AutomationContentModeEnum.AUTOMATION && <ContentPromotion />}
         </SortableContext>
 
         {isChoosingType && (

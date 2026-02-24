@@ -141,10 +141,6 @@ export const CommentReplies = () => {
                       {t("add_comment")}
                     </Button>
                   </div>
-
-                  <Alert variant="note">
-                    <AlertDescription icon>{t("note")}</AlertDescription>
-                  </Alert>
                 </div>
               </>
 

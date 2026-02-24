@@ -61,77 +61,73 @@ export const Reminder = () => {
   }
 
   return (
-    <>
-      <hr className="border-gray-100" />
-
-      <FormField
-        control={control}
-        name="isRemindersEnabled"
-        render={({ field }) => (
-          <FormItem className="flex flex-col justify-start gap-y-3">
-            <div className="relative flex items-center gap-x-2">
-              <HelpMeDialog
-                title={t("Help.title")}
-                description={t("Help.description")}
-                videoSrc={WizardVideoLinks.Automations.Hints.Reminders.video}
-                position="left"
+    <FormField
+      control={control}
+      name="isRemindersEnabled"
+      render={({ field }) => (
+        <FormItem className="flex flex-col justify-start gap-y-3 rounded-xl border bg-white p-4 shadow-sm">
+          <div className="relative flex items-center gap-x-2">
+            <HelpMeDialog
+              title={t("Help.title")}
+              description={t("Help.description")}
+              videoSrc={WizardVideoLinks.Automations.Hints.Reminders.video}
+              position="left"
+            />
+            <FormControl>
+              <Switch
+                id="reminder"
+                checked={field.value}
+                onCheckedChange={(e) => toggleReminders(e)}
               />
-              <FormControl>
-                <Switch
-                  id="reminder"
-                  checked={field.value}
-                  onCheckedChange={(e) => toggleReminders(e)}
-                />
-              </FormControl>
-              <FormLabel className="">{t("isEnabled.label")}</FormLabel>
-            </div>
+            </FormControl>
+            <FormLabel className="">{t("isEnabled.label")}</FormLabel>
+          </div>
 
-            {field.value && (
-              <>
-                <FormField
-                  control={control}
-                  name="reminderTime"
-                  render={({ field: selectField, fieldState: { error } }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Select
-                          value={selectField.value || ""}
-                          onValueChange={selectField.onChange}
+          {field.value && (
+            <>
+              <FormField
+                control={control}
+                name="reminderTime"
+                render={({ field: selectField, fieldState: { error } }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Select
+                        value={selectField.value || ""}
+                        onValueChange={selectField.onChange}
+                      >
+                        <SelectTrigger
+                          className="w-full"
+                          aria-invalid={!!error}
                         >
-                          <SelectTrigger
-                            className="w-full"
-                            aria-invalid={!!error}
-                          >
-                            <SelectValue placeholder={t("time.placeholder")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              {Array.from({ length: 23 }, (_, i) => i + 1).map(
-                                (hour) => (
-                                  <SelectItem key={hour} value={`${hour}`}>
-                                    {hour} {t("hour")}
-                                  </SelectItem>
-                                ),
-                              )}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      {error && (
-                        <ErrorMessage>
-                          {t(`time.Errors.${error.message}`)}
-                        </ErrorMessage>
-                      )}
-                    </FormItem>
-                  )}
-                ></FormField>
+                          <SelectValue placeholder={t("time.placeholder")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {Array.from({ length: 23 }, (_, i) => i + 1).map(
+                              (hour) => (
+                                <SelectItem key={hour} value={`${hour}`}>
+                                  {hour} {t("hour")}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {error && (
+                      <ErrorMessage>
+                        {t(`time.Errors.${error.message}`)}
+                      </ErrorMessage>
+                    )}
+                  </FormItem>
+                )}
+              ></FormField>
 
-                <Contents mode={AutomationContentModeEnum.REMINDER} />
-              </>
-            )}
-          </FormItem>
-        )}
-      />
-    </>
+              <Contents mode={AutomationContentModeEnum.REMINDER} />
+            </>
+          )}
+        </FormItem>
+      )}
+    />
   );
 };

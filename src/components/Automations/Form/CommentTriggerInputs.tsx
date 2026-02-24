@@ -100,8 +100,6 @@ export const CommentTriggerInputs = () => {
           )}
         />
       </div>
-
-      <SeperateLine />
     </>
   );
 };

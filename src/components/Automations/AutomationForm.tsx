@@ -89,7 +89,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       isNoCondition: false,
       commentStartText: t("comment_start_text"),
       commentStartTitle: t("comment_start_title"),
-      conditions: [{ type: "EQUAL", value: ""}],
+      conditions: [{ type: "EQUAL", value: "" }],
       contents: [],
       followCheckMessage: t("follow_check_message"),
       isComment: false,
@@ -172,12 +172,14 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       return content;
     };
 
-    console.log('Automation', automation)
+    console.log("Automation", automation);
     const transformedAutomation = {
       ...automation,
       contents: automation.contents?.map(transformContent),
       reminders: automation.reminders?.map(transformContent),
-      conditionType: automation.isNoCondition ? ConditionTypesEnum.NO_CONDITION : automation.conditions?.[0]?.type
+      conditionType: automation.isNoCondition
+        ? ConditionTypesEnum.NO_CONDITION
+        : automation.conditions?.[0]?.type,
     };
     form.reset({
       ...transformedAutomation,
@@ -352,46 +354,55 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 })}
                 className="grid gap-3.5"
               >
-                <Conditions control={form.control} getValues={form.getValues} />
-                <SeperateLine />
+                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+                  <Conditions
+                    control={form.control}
+                    getValues={form.getValues}
+                  />
+                  <SeperateLine />
 
-                <Triggers control={form.control} getValues={form.getValues} />
-                <TargetPostComment />
+                  <Triggers control={form.control} getValues={form.getValues} />
+                  <TargetPostComment />
+                </div>
 
-                <Contents
-                  automationId={id}
-                  mode={AutomationContentModeEnum.AUTOMATION}
-                />
+                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+                  <Contents
+                    automationId={id}
+                    mode={AutomationContentModeEnum.AUTOMATION}
+                  />
+                </div>
 
                 <Reminder />
 
-                <SeperateLine />
+                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+                  <JustFollowers
+                    control={form.control}
+                    getValues={form.getValues}
+                  />
 
-                <JustFollowers
-                  control={form.control}
-                  getValues={form.getValues}
-                />
+                  <CommentReplies />
 
-                <CommentReplies />
+                  <SeperateLine />
 
-                <SeperateLine />
+                  <CommentTriggerInputs />
 
-                <CommentTriggerInputs />
+                  <CommentLimitAlert />
+                </div>
 
-                <CommentLimitAlert />
-
-                <div className="mt-4 flex items-center gap-2">
-                  <ButtonLoading isLoading={isSubmitting} className="flex-1">
-                    {id ? t("save_changes") : t("add_automation")}
-                  </ButtonLoading>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="flex-1"
-                    onClick={() => router.back()}
-                  >
-                    {t("cancel")}
-                  </Button>
+                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <ButtonLoading isLoading={isSubmitting} className="flex-1">
+                      {id ? t("save_changes") : t("add_automation")}
+                    </ButtonLoading>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      className="flex-1"
+                      onClick={() => router.back()}
+                    >
+                      {t("cancel")}
+                    </Button>
+                  </div>
                 </div>
               </form>
             </Form>
