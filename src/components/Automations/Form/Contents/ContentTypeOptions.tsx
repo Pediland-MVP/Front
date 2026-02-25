@@ -20,32 +20,32 @@ export const contentTypeOptions: ContentTypeOption[] = [
   {
     value: AutomationContentTypesEnum.TEXT,
     label: "Text",
-    icon: <ChatTextIcon />,
+    icon: <ChatTextIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.INSTAGRAM_POST,
     label: "Instagram Post",
-    icon: <InstagramLogoIcon />,
+    icon: <InstagramLogoIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.PRODUCT,
     label: "Product",
-    icon: <ShoppingBagIcon />,
+    icon: <ShoppingBagIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.BUTTON_TEMPLATE,
     label: "Button",
-    icon: <RadioButtonIcon />,
+    icon: <RadioButtonIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.QUESTION,
     label: "Question",
-    icon: <ChatTextIcon />,
+    icon: <ChatTextIcon size={30} />,
   },
   //BUG: Dont change my order!
   {
     value: "media",
     label: "Media",
-    icon: <PaperclipIcon />,
+    icon: <PaperclipIcon size={30} />,
   },
 ];

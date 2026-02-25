@@ -6,6 +6,7 @@ import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
 
 export const DashboardHelpBanner = () => {
   const { user } = useUser();
@@ -22,11 +23,14 @@ export const DashboardHelpBanner = () => {
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
 
-  if (isSubscriptionsLoading || activeSubscription?.type !== "credit")
-    return null;
+  const helpButtonRef = useRef<HTMLDivElement>(null)
+
+  // if (isSubscriptionsLoading || activeSubscription?.type !== "credit")
+  //   return null;
+
 
   return (
-    <div className="mb-5">
+    <div onClick={() => helpButtonRef.current?.click()} className="mb-5">
       <CardSimple className="my-2 border-[#9ed5b5] bg-[#eaf7f0] bg-linear-to-bl">
         <CardContent className="flex items-center justify-between gap-3.5 p-3.5 md:gap-6 md:p-6">
           <div>
@@ -47,7 +51,7 @@ export const DashboardHelpBanner = () => {
               videoPoster="/images/photo_2025-02-26_22-00-50.jpg"
               noAbsolute
             >
-              <div className="flex flex-col items-center justify-center">
+              <div ref={helpButtonRef} className="flex flex-col items-center justify-center">
                 <QuestionIcon
                   weight="duotone"
                   className="h-16 w-16 text-[#1f6f43] md:h-10 md:w-10"

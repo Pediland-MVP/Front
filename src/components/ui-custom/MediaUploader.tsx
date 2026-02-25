@@ -69,7 +69,8 @@ export const MediaUploader = ({
   const getProgressText = (file: UploadedFile): string | null => {
     if (isExistingFile(file)) return null;
     if (isNewFile(file) && file.process !== undefined) {
-      return `${Math.round(file.process)}%`;
+      const processPercentage = Math.round(file.process)
+      return `${processPercentage === 100 ? 98 : processPercentage}%`;
     }
     return t("uploaded");
   };

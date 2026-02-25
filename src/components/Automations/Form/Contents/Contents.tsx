@@ -39,6 +39,7 @@ import { ContentsContext } from "./ContentsContext";
 import { ContentsUploaderContextProvider } from "./ContentsUploaderContext";
 import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { QuestionTextErrorMessage } from "./QuestionContent";
+import { FilePlusIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;
@@ -131,6 +132,15 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       value={{ contents, updateContents, removeContents }}
     >
       <div className="_content-item flex flex-col gap-3">
+        {contents.length === 0 && (
+          <div className="my-4 flex flex-col items-center justify-center">
+            <FilePlusIcon size={100} className="mb-3 opacity-10" />
+            <p className="font-bold text-gray-500">هنوز محتوایی اضافه نشده‌است</p>
+            {/* <p className="text-center text-sm">
+              روی دکمه "افزودن محتوا" کلیک کنید و نوع محتوای خود را انتخاب کنید
+            </p> */}
+          </div>
+        )}
         {contents.length > 0 && (
           <DndContext
             sensors={sensors}
@@ -160,7 +170,11 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           items={contents.map((field) => field._xid)}
           strategy={rectSortingStrategy}
         >
-          {isPromotion && mode === AutomationContentModeEnum.AUTOMATION && <ContentPromotion />}
+          {isPromotion &&
+            contents.length > 0 &&
+            mode === AutomationContentModeEnum.AUTOMATION && (
+              <ContentPromotion />
+            )}
         </SortableContext>
 
         {isChoosingType && (
@@ -202,7 +216,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                     setIsChoosingType(false);
                     clearErrors(arrayName);
                   }}
-                  className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-md bg-blue-100 text-[13px] text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60 md:h-9 md:flex-row md:justify-start md:gap-1 md:!px-2 [&_svg:not([class*='size-'])]:size-4.5"
+                  className="flex flex-col items-center justify-center rounded-md bg-blue-100 p-7 text-[13px] text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60"
                 >
                   {option.icon}
                   {t_contentTypes(`buttons.titles.${option.value}`)}
@@ -216,25 +230,28 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>
         )}
 
-        <div className="relative">
-          <Button
-            variant="ghost"
-            type="button"
-            className="text-blue-600"
-            disabled={isChoosingType}
-            onClick={() => setIsChoosingType(true)}
-          >
-            <PlusCircleIcon />
-            {t("add_content")}
-          </Button>
-
-          <HelpMeDialog
-            position="left"
-            title={t("Help.title")}
-            description={t("Help.description")}
-            videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
-          />
-        </div>
+        {(contents.length > 0 && !isChoosingType) && (
+          <div className="flex items-center justify-center">
+            <Button
+              variant="default"
+              type="button"
+              className="bg-primary w-11/12 text-white"
+              disabled={isChoosingType}
+              onClick={() => setIsChoosingType(true)}
+            >
+              <PlusCircleIcon />
+              {t("add_content")}
+            </Button>
+            <div className="relative w-1/12">
+              <HelpMeDialog
+                position="center"
+                title={t("Help.title")}
+                description={t("Help.description")}
+                videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </ContentsContext.Provider>
   );
