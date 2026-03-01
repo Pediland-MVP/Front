@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { contentTypeOptions } from "./ContentTypeOptions";
+import { ContentTypeOption, contentTypeOptions } from "./ContentTypeOptions";
 // TODO: Refactor Types & Schemas
 import type { AutomationFormType } from "@/schemas/automationForm";
 import type { UploadedFile } from "@/types/fileUploader";
@@ -40,6 +40,7 @@ import { ContentsUploaderContextProvider } from "./ContentsUploaderContext";
 import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { QuestionTextErrorMessage } from "./QuestionContent";
 import { FilePlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { ChooseAutomationType } from "./ChooseAutomationType";
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;
@@ -123,9 +124,39 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const arrayErrorMsg = arrayErrors?.root?.message ?? arrayErrors?.message;
   const arrayErrorType = arrayErrors?.root?.type ?? arrayErrors?.type;
 
-  // useEffect(() => {
-  //   console.log("Watching contents...", contents);
-  // }, [contents]);
+  const selectAutomationTypeHandler = (option: ContentTypeOption) => {
+    appendContents({
+      type:
+        option.value === "media"
+          ? AutomationContentTypesEnum.IMAGE
+          : option.value,
+      ...(mode === AutomationContentModeEnum.AUTOMATION && {
+        haveConsent: false,
+      }),
+      ...(option.value === AutomationContentTypesEnum.BUTTON_TEMPLATE && {
+        buttonTemplate: {
+          text: "",
+          buttons: [
+            {
+              title: "",
+            },
+          ],
+        },
+      }),
+      ...(option.value === AutomationContentTypesEnum.QUESTION && {
+        validationType: ValidationTypeEnum.Text,
+        validationErrorMessage: QuestionTextErrorMessage,
+      }),
+    });
+    setIsChoosingType(false);
+    clearErrors(arrayName);
+  };
+
+  const onContentDeleted = (index: any) => {
+    if (index === 0)  {
+      setIsChoosingType(true)
+    }
+  }
 
   return (
     <ContentsContext.Provider
@@ -135,7 +166,9 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
-            <p className="font-bold text-gray-500">هنوز محتوایی اضافه نشده‌است</p>
+            <p className="font-bold text-gray-500">
+              هنوز محتوایی اضافه نشده‌است
+            </p>
             {/* <p className="text-center text-sm">
               روی دکمه "افزودن محتوا" کلیک کنید و نوع محتوای خود را انتخاب کنید
             </p> */}
@@ -158,7 +191,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                     defaultValue={content.file as UploadedFile}
                     key={content._xid}
                   >
-                    <ContentItem mode={mode} id={content._xid} index={index} />
+                    <ContentItem onContentDeleted={onContentDeleted} mode={mode} id={content._xid} index={index} />
                   </ContentsUploaderContextProvider>
                 ))}
             </SortableContext>
@@ -178,59 +211,14 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
         </SortableContext>
 
         {isChoosingType && (
-          <>
-            <Alert variant="note" className="col-span-5">
-              <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
-            </Alert>
-            <div className="grid w-full grid-cols-5 justify-start gap-x-1.5 gap-y-2.5">
-              {contentTypeOptions.map((option) => (
-                <Button
-                  key={option.value}
-                  type="button"
-                  onClick={() => {
-                    appendContents({
-                      type:
-                        option.value === "media"
-                          ? AutomationContentTypesEnum.IMAGE
-                          : option.value,
-                      ...(mode === AutomationContentModeEnum.AUTOMATION && {
-                        haveConsent: false,
-                      }),
-                      ...(option.value ===
-                        AutomationContentTypesEnum.BUTTON_TEMPLATE && {
-                        buttonTemplate: {
-                          text: "",
-                          buttons: [
-                            {
-                              title: "",
-                            },
-                          ],
-                        },
-                      }),
-                      ...(option.value ===
-                        AutomationContentTypesEnum.QUESTION && {
-                        validationType: ValidationTypeEnum.Text,
-                        validationErrorMessage: QuestionTextErrorMessage,
-                      }),
-                    });
-                    setIsChoosingType(false);
-                    clearErrors(arrayName);
-                  }}
-                  className="flex flex-col items-center justify-center rounded-md bg-blue-100 p-7 text-[13px] text-blue-900 shadow-blue-200 hover:bg-blue-200/50 hover:shadow-blue-400/60"
-                >
-                  {option.icon}
-                  {t_contentTypes(`buttons.titles.${option.value}`)}
-                </Button>
-              ))}
-            </div>
-          </>
+          <ChooseAutomationType onSelect={selectAutomationTypeHandler} />
         )}
 
         {arrayErrorMsg && (
           <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>
         )}
 
-        {(contents.length > 0 && !isChoosingType) && (
+        {contents.length > 0 && !isChoosingType && (
           <div className="flex items-center justify-center">
             <Button
               variant="default"

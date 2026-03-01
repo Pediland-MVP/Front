@@ -73,12 +73,14 @@ export const ContentItem = ({
   id,
   index,
   mode,
+  onContentDeleted
 }: {
   id: string;
   index: number;
   mode: AutomationContentModeEnum;
   isPromotion?: boolean;
   defaultUploaderValue?: UploadedFile | null;
+  onContentDeleted: (index: number) => any
 }) => {
   const {
     control,
@@ -102,19 +104,16 @@ export const ContentItem = ({
   };
 
   const deleteContent = () => {
+    onContentDeleted(index)
     removeContents(index);
-
-    // وضعیت جدید بعد از حذف
     const newList =
       mode === AutomationContentModeEnum.AUTOMATION
         ? getValues().contents
         : getValues().reminders;
 
-    // اگر فقط ۱ آیتم یا کمتر باقی مونده => haveConsent رو خاموش کن
     if (newList && newList.length === 1) {
       updateContents(0, {
-        ...newList[0],
-        haveConsent: false,
+        ...newList[0]
       });
     }
   };
