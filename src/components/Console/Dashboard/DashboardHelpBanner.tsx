@@ -25,8 +25,8 @@ export const DashboardHelpBanner = () => {
 
   const helpButtonRef = useRef<HTMLDivElement>(null)
 
-  // if (isSubscriptionsLoading || activeSubscription?.type !== "credit")
-  //   return null;
+  if (isSubscriptionsLoading || activeSubscription?.type !== "credit")
+    return null;
 
 
   return (
