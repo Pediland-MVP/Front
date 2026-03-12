@@ -22,9 +22,9 @@ export const LayoutPage = ({
       <div
         className={cn(
           "_layout-page flex flex-1 flex-col px-4 py-5 md:p-5",
-          col === "small" && "bg-white xl:w-1/3",
+          col === "small" && "bg-white xl:w-1/3 xl:max-w-1/3",
           col === "half" &&
-            "md:rounded-xl xl:w-1/2 2xl:w-1/3",
+            "md:rounded-xl xl:w-1/2 xl:max-w-1/2 2xl:w-1/3 2xl:max-w-1/3",
           col === "full" && "w-full md:pt-0",
           className,
         )}

@@ -2,15 +2,16 @@
 "use client";
 
 import {
+  AutomationContentFileType,
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
 } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
-import { AutomationFormType } from "@/schemas/automationForm";
+import { AutomationFormType, ContentItemSchema } from "@/schemas/automationForm";
 import { FileNamespace } from "@/types/file";
 import { UploadedFile } from "@/types/fileUploader";
 import React, { useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { UseFieldArrayAppend, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { AxiosResponse, AxiosError } from "axios";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui";
 import { useContentsUploaderContext } from "./ContentsUploaderContext";
 import { MediaUploader } from "@/components/ui-custom/MediaUploader";
+import z from "zod";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -27,15 +29,18 @@ interface MediaContentProps {
   index: number;
   mode: AutomationContentModeEnum;
   type: AutomationContentTypesEnum;
+  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>
+  content: z.infer<typeof ContentItemSchema>,
 }
 
-export const MediaContent = ({ index, mode, type }: MediaContentProps) => {
+export const MediaContent = ({ index, mode, type, appendContents, content }: MediaContentProps) => {
   const { files, setFiles } = useContentsUploaderContext();
 
   const {
     setValue,
     getValues,
     trigger,
+    watch,
     formState: { errors },
   } = useFormContext<AutomationFormType>();
 
@@ -162,7 +167,10 @@ export const MediaContent = ({ index, mode, type }: MediaContentProps) => {
         files={files}
         setFiles={setFiles}
         onChange={onChange}
-        accept="audio/*,video/*,image/*,audio/m4a,audio/x-m4a"
+        fileType={watch('contents')[index].type as AutomationContentFileType}
+        mode={mode}
+        appendContents={appendContents}
+        content={content}
       />
 
       {uploadError && (

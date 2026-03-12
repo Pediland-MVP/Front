@@ -7,11 +7,11 @@ import {
 import useUser from "@/hooks/useUser";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { FieldArrayWithId, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { ContentTypeOption, contentTypeOptions } from "./ContentTypeOptions";
 // TODO: Refactor Types & Schemas
-import type { AutomationFormType } from "@/schemas/automationForm";
+import type { AutomationFormType, ContentItemSchema } from "@/schemas/automationForm";
 import type { UploadedFile } from "@/types/fileUploader";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
 
@@ -41,6 +41,7 @@ import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { QuestionTextErrorMessage } from "./QuestionContent";
 import { FilePlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { ChooseAutomationType } from "./ChooseAutomationType";
+import z from "zod";
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;
@@ -82,7 +83,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
     insert: insertContents,
   } = useFieldArray({
     control: control,
-    name: arrayName,
+    name: arrayName as "reminders" | "contents",
     keyName: "_xid",
   });
 
@@ -153,10 +154,10 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   };
 
   const onContentDeleted = (index: any) => {
-    if (index === 0)  {
-      setIsChoosingType(true)
+    if (index === 0) {
+      setIsChoosingType(true);
     }
-  }
+  };
 
   return (
     <ContentsContext.Provider
@@ -191,7 +192,14 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                     defaultValue={content.file as UploadedFile}
                     key={content._xid}
                   >
-                    <ContentItem onContentDeleted={onContentDeleted} mode={mode} id={content._xid} index={index} />
+                    <ContentItem
+                      onContentDeleted={onContentDeleted}
+                      mode={mode}
+                      id={content._xid}
+                      index={index}
+                      appendContents={appendContents}
+                      content={content as FieldArrayWithId<z.infer<typeof ContentItemSchema>>}
+                    />
                   </ContentsUploaderContextProvider>
                 ))}
             </SortableContext>

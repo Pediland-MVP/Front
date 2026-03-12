@@ -381,9 +381,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   />
 
                   <CommentReplies />
-
-                  <SeperateLine />
-
+                  
                   <CommentTriggerInputs />
 
                   <CommentLimitAlert />

@@ -56,13 +56,6 @@ export const InstagramPostSelectDialog = ({
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { fields: contents, update: updateContents } = useFieldArray({
-    control: control,
-    name:
-      mode === AutomationContentModeEnum.REMINDER ? "reminders" : "contents",
-    keyName: "_xid",
-  });
-
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
     await api
@@ -93,8 +86,8 @@ export const InstagramPostSelectDialog = ({
   }, [isOpen]);
 
   const selectPost = async (e: MouseEvent<HTMLDivElement>) => {
-    const mediaUrl = e.currentTarget.dataset.mediaurl;
-    const mediaId = e.currentTarget.dataset.postid!;
+    const mediaUrl = e.currentTarget.dataset['mediaurl'];
+    const mediaId = e.currentTarget.dataset['postid']!;
     setValue("instagramPost", { picture: { url: mediaUrl }, mediaId });
     await trigger("instagramPost");
     setIsOpen(false);

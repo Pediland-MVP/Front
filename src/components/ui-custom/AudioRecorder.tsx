@@ -2,15 +2,14 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Save, Mic, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import {
+  ArrowsCounterClockwiseIcon,
+  CheckIcon,
+  MicrophoneIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 type Props = {
   className?: string;
@@ -38,7 +37,7 @@ export const AudioRecorderWithVisualizer = ({
   onRecordingComplete,
 }: Props) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
-  const t = useTranslations("AudioRecorderWithVisualizer")
+  const t = useTranslations("AudioRecorderWithVisualizer");
   const [isRecordingFinished, setIsRecordingFinished] =
     useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
@@ -79,7 +78,10 @@ export const AudioRecorderWithVisualizer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<any>(null);
 
-  function startRecording() {
+  function startRecording(
+    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
+  ) {
+    e.stopPropagation();
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
         .getUserMedia({
@@ -126,7 +128,10 @@ export const AudioRecorderWithVisualizer = ({
     }
   }
 
-  function stopRecording() {
+  function stopRecording(
+    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
+  ) {
+    e.stopPropagation();
     recorder.onstop = () => {
       const recordBlob = new Blob(recordingChunks, {
         type: "audio/wav",
@@ -154,7 +159,10 @@ export const AudioRecorderWithVisualizer = ({
     clearTimeout(timerTimeout);
   }
 
-  function resetRecording() {
+  function resetRecording(
+    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
+  ) {
+    e.stopPropagation();
     const { mediaRecorder, stream, analyser, audioContext } =
       mediaRecorderRef.current;
 
@@ -193,8 +201,10 @@ export const AudioRecorderWithVisualizer = ({
     }
   }
 
-  const handleSubmit = () => {
-    stopRecording();
+  const handleSubmit = (
+    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
+  ) => {
+    stopRecording(e);
   };
 
   useEffect(() => {
@@ -274,72 +284,61 @@ export const AudioRecorderWithVisualizer = ({
     <TooltipProvider>
       <div
         className={cn(
-          "relative flex h-16 w-full max-w-5xl items-center justify-center gap-2 rounded-md",
-          {
-            "border p-1": isRecording,
-            "border-none p-0": !isRecording,
-          },
+          "bg-background text-muted-foreground hover:bg-muted/50 relative flex min-h-20 cursor-pointer items-center justify-center rounded-lg border py-2 transition-colors",
           className,
         )}
+        onClick={(e) => startRecording(e)}
       >
         {isRecording ? (
-          <Timer
-            hourLeft={hourLeft}
-            hourRight={hourRight}
-            minuteLeft={minuteLeft}
-            minuteRight={minuteRight}
-            secondLeft={secondLeft}
-            secondRight={secondRight}
-            timerClassName={timerClassName}
-          />
-        ) : null}
-        <canvas
-          ref={canvasRef}
-          className={`bg-background h-full w-full ${
-            !isRecording ? "hidden" : "flex"
-          }`}
-        />
-        <div className="flex gap-2">
-          {/* Delete recording button */}
-          {isRecording ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
+          <div className="lex h-full w-full flex-col items-center justify-center">
+            <div className="flex w-full flex-col items-center justify-center gap-x-1 px-10">
+              <div className="flex w-6/12 flex-col items-center justify-center">
+                <canvas
+                  ref={canvasRef}
+                  className={`bg-background flex h-12 w-full`}
+                />
+
+                <Timer
+                  hourLeft={hourLeft}
+                  hourRight={hourRight}
+                  minuteLeft={minuteLeft}
+                  minuteRight={minuteRight}
+                  secondLeft={secondLeft}
+                  secondRight={secondRight}
+                  timerClassName={timerClassName}
+                />
+              </div>
+              <div className="flex w-6/12 items-center justify-center gap-x-2">
                 <Button
+                  className="text-primary h-7 text-xs"
+                  type="button"
+                  onClick={handleSubmit}
+                  variant="ghost"
+                >
+                  <CheckIcon weight="bold" size={15} />
+                  {t("saveRecord")}
+                </Button>
+                
+                <Button
+                  className="h-7 text-xs hover:text-red-500"
                   type="button"
                   onClick={resetRecording}
-                  size={"icon"}
-                  variant={"destructive"}
+                  variant={"ghost"}
                 >
-                  <Trash size={15} />
+                  <ArrowsCounterClockwiseIcon size={15} />
+                  {t("recordAgain")}
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent className="m-2">
-                <span>{t('resetRecording')}</span>
-              </TooltipContent>
-            </Tooltip>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        <div className="flex gap-2">
+          {!isRecording ? (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-y-2 p-3">
+              <MicrophoneIcon size={40} />
+              <p>{t("title")}</p>
+            </div>
           ) : null}
-
-          {/* Start and save recording button */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {!isRecording ? (
-                <Button
-                  type="button"
-                  onClick={() => startRecording()}
-                  size={"icon"}
-                >
-                  <Mic size={15} />
-                </Button>
-              ) : (
-                <Button type="button" onClick={handleSubmit} size={"icon"}>
-                  <Save size={15} />
-                </Button>
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="m-2">
-              <span> {!isRecording ? t("recording") : t("save")} </span>
-            </TooltipContent>
-          </Tooltip>
         </div>
       </div>
     </TooltipProvider>
@@ -367,7 +366,7 @@ const Timer = React.memo(
     return (
       <div
         className={cn(
-          "text-foreground absolute -top-12 left-0 flex items-center justify-center gap-0.5 rounded-md border p-1.5 font-mono font-medium rtl:flex-row-reverse",
+          "text-foreground flex items-center justify-center gap-0.5 rounded-md font-mono font-medium rtl:flex-row-reverse",
           timerClassName,
         )}
       >

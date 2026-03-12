@@ -98,6 +98,13 @@ const InstagramPostSchema = z
 
 /* ------------------------------ Content Schema ------------------------------ */
 
+const VitrinItemSchema = z.object({
+  imageId: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  title: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+});
+
 export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
@@ -107,6 +114,7 @@ export const ContentItemSchema = z.object({
   haveConsent: optionalBoolDefault(false),
   type: z.nativeEnum(AutomationContentTypesEnum),
   file: FileSchema,
+  fileTemp: z.any(),
   instagramPost: InstagramPostSchema,
   buttonTemplate: ButtonTemplateSchema,
   products: z.array(ProductSchema).optional().nullable(),
@@ -119,6 +127,7 @@ export const ContentItemSchema = z.object({
     .optional()
     .nullable()
     .transform(() => undefined),
+  vitrins: z.array(VitrinItemSchema).optional().nullable(),
 });
 
 export const ContentItemConditionSchema = z.object({
@@ -166,6 +175,12 @@ export const AutomationFormSchema = z
         products: z.array(ProductSchema).optional().nullable(),
         productIds: z.array(z.string()).optional().nullable(),
         id: z.string().optional().nullable(),
+        fileTemp: z.object({
+          file: z.any(),
+          id: z.number(),
+          process: z.number(),
+          isUploading: z.boolean()
+        }).optional().nullable(),
         haveInstagramPost: z
           .boolean()
           .optional()
@@ -175,6 +190,7 @@ export const AutomationFormSchema = z
         buttonTemplate: ButtonTemplateSchema, // شامل normalize URL مانند contents
         validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
         validationErrorMessage: z.string().optional().nullable(),
+        vitrins: z.array(VitrinItemSchema).optional().nullable(),
       }),
     ),
 
