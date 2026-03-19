@@ -7,11 +7,19 @@ import {
 import useUser from "@/hooks/useUser";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { FieldArrayWithId, useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import {
+  FieldArrayWithId,
+  useFieldArray,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
 import { ContentTypeOption, contentTypeOptions } from "./ContentTypeOptions";
 // TODO: Refactor Types & Schemas
-import type { AutomationFormType, ContentItemSchema } from "@/schemas/automationForm";
+import type {
+  AutomationFormType,
+  ContentItemSchema,
+} from "@/schemas/automationForm";
 import type { UploadedFile } from "@/types/fileUploader";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
 
@@ -126,6 +134,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const arrayErrorType = arrayErrors?.root?.type ?? arrayErrors?.type;
 
   const selectAutomationTypeHandler = (option: ContentTypeOption) => {
+    console.log(`Selected Type: ${option.value} previous array: `, contents)
     appendContents({
       type:
         option.value === "media"
@@ -148,7 +157,19 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
         validationType: ValidationTypeEnum.Text,
         validationErrorMessage: QuestionTextErrorMessage,
       }),
+      ...(option.value === AutomationContentTypesEnum.VITRIN && {
+        vitrins: [
+          {
+            imageId: "",
+            imageUrl: "",
+            title: "",
+            description: "",
+            buttons: [],
+          },
+        ],
+      }),
     });
+    console.log("After array: ", contents)
     setIsChoosingType(false);
     clearErrors(arrayName);
   };
@@ -198,7 +219,11 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                       id={content._xid}
                       index={index}
                       appendContents={appendContents}
-                      content={content as FieldArrayWithId<z.infer<typeof ContentItemSchema>>}
+                      content={
+                        content as FieldArrayWithId<
+                          z.infer<typeof ContentItemSchema>
+                        >
+                      }
                     />
                   </ContentsUploaderContextProvider>
                 ))}

@@ -71,6 +71,7 @@ const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
     title: z.string().min(1),
     destinationContentCycleId: z.string().min(1),
     destinationContentCycle: z.custom<any>().optional().nullable(),
+    destinationContentCycleTitle: z.string().optional().nullable(),
     priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
@@ -98,12 +99,15 @@ const InstagramPostSchema = z
 
 /* ------------------------------ Content Schema ------------------------------ */
 
-const VitrinItemSchema = z.object({
-  imageId: z.string().optional().nullable(),
+export const VitrinItemSchema = z.object({
+  imageId: z.union([z.string().nonempty(), z.number()]).optional().nullable(),
   imageUrl: z.string().optional().nullable(),
-  title: z.string().optional().nullable(),
-  description: z.string().optional().nullable(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  buttons: z.array(ButtonSchema).optional().nullable(),
+  destinationContentCycleTitle: z.string().optional().nullable(),
 });
+export type VitrinItemType = z.infer<typeof VitrinItemSchema>
 
 export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),

@@ -102,6 +102,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     },
   });
 
+
   useEffect(() => {
     if (!automation) {
       return;
@@ -169,10 +170,21 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
         content.buttonTemplate.buttons = buttons;
       }
+
+      if (content.vitrins?.length) {
+        content.vitrins = content.vitrins.map(v => ({
+          ...v,
+          imageId: v.images[0]?.id,
+          imageUrl: v.images[0]?.url,
+          ...content.vitrins.buttons?.length && {
+            buttons: transformButtons(content.vitrins.buttons)
+          }
+        }))
+      }
+
       return content;
     };
 
-    console.log("Automation", automation);
     const transformedAutomation = {
       ...automation,
       contents: automation.contents?.map(transformContent),
@@ -289,7 +301,6 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       values.followCheckMessage = t("follow_check_message");
     }
 
-    console.log("We are here.....", values);
     setIsSubmitting(true);
 
     await api({
@@ -381,7 +392,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   />
 
                   <CommentReplies />
-                  
+
                   <CommentTriggerInputs />
 
                   <CommentLimitAlert />

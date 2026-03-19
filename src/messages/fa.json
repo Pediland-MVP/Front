@@ -400,7 +400,8 @@
             "instagram_post": "پست IG",
             "product": "کالا",
             "text": "متن",
-            "question": "سوال"
+            "question": "سوال",
+            "vitrin": "ویترین"
           }
         },
         "fallback_key": "عنوان محتوا",
@@ -418,7 +419,33 @@
         }
       },
       "Vitrin": {
-        "title": "ویترین"
+        "noItems": "همه رو پاک کردی :)",
+        "title": "ارسال ویترین",
+        "totalCount": "کل آیتم‌ها",
+        "fields": {
+          "title": {
+            "placeholder": "تایتل"
+          },
+          "description": {
+            "placeholder": "توضیحات"
+          }
+        },
+        "imageUploader": {
+          "errors": {
+            "too_small": "عکس الزامی است"
+          }
+        },
+        "buttons": {
+          "uploader": {
+            "title": "برای آپلود عکس کلیک کنید"
+          },
+          "remove": {
+            "title": "حذف"
+          },
+          "addFirst": {
+            "title": "اضافه کردن"
+          }
+        }
       },
       "Question": {
         "you_can_use_vars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",

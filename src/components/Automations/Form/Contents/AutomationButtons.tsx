@@ -1,7 +1,7 @@
 // src/components/Automations/Form/Contents/ButtonContent.tsx
 "use client";
 
-import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import { AutomationFormType } from "@/schemas/automationForm";
 import { ButtonTypeEnum } from "@/types/buttons.enum";
@@ -24,88 +24,98 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui";
 import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
 import { ButtonContentItem } from "./ContentButtonsItem";
-import React, { SetStateAction, useEffect } from "react";
-import { AppendQuestionButtonType } from "./QuestionContent";
+import React, { useEffect } from "react";
 
-export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate' | 'question';
+export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate' | 'question' | "vitrin";
 
 type ButtonContentProps = {
   contentType: AutomationButtonsContentTypes;
   mode: AutomationContentModeEnum;
-  contentIndex: number,
+  contentIndex: number;
+  /** وقتی داخل Vitrin یا ساختارهای nested هستیم از این override استفاده می‌شود */
+  fieldNameOverride?: string;
 };
 
-
 const MaximumButtonLength = {
-    text: 13,
-    buttonTemplate: 3,
-    question: 13
-}
+  text: 13,
+  buttonTemplate: 3,
+  question: 13,
+  vitrin: 3
+};
 
-export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonContentProps) => {
+export const AutomationButtons = ({
+  contentIndex,
+  contentType,
+  mode,
+  fieldNameOverride,
+}: ButtonContentProps) => {
   const t = useTranslations("Automations.Contents.Button");
-  const maximumButtonLength: number = MaximumButtonLength[contentType]
+  const maximumButtonLength: number = MaximumButtonLength[contentType];
 
   const { control } = useFormContext<AutomationFormType>();
 
-  // NOTE: I dindt changed default name of fields becuase it was not working :)
+  type DefaultFieldNameType = `${'contents' | 'reminders'}.${number}.${'buttonTemplate.buttons' | 'quickReplies' | 'buttons'}`
+  const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${(contentType === 'text' || contentType === 'question') ? 'quickReplies' : contentType ===  'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
+
   const { fields, move, remove, append } = useFieldArray({
-    control: control,
-    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : 'buttonTemplate.buttons'}`,
+    control,
+    name: (fieldNameOverride ?? defaultFieldName) as any,
+    keyName: "_xid",                    // ← هماهنگ با VitrinContent
   });
 
+
+
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
-      const oldIndex = fields.findIndex((item) => item.id === active.id);
-      const newIndex = fields.findIndex((item) => item.id === over?.id);
+      const oldIndex = fields.findIndex((item: any) => item._xid === active.id);
+      const newIndex = fields.findIndex((item: any) => item._xid === over?.id);
       move(oldIndex, newIndex);
     }
   };
 
   const addButton = () => {
-    if (fields.length <= maximumButtonLength) {
+    if (fields.length < maximumButtonLength) {
       append({
         title: "",
-        ...contentType === 'question' && {postbackPayloadType: ButtonTypeEnum.TEXT}
+        ...(contentType === 'question' && { postbackPayloadType: ButtonTypeEnum.TEXT }),
       });
     }
   };
 
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="_AutomationButtons flex flex-col gap-y-3">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={fields.map((item) => item.id)}
+          items={fields.map((item: any) => item._xid)}
           strategy={rectSortingStrategy}
         >
           <div className="flex w-full flex-col items-center justify-center gap-y-3">
-            {fields.map((buttonTemplate, index) => (
+            {fields.map((button, index) => {
+              console.log("Buttons inside sortable", button);
+
+              // return JSON.stringify(button)
+              return  (
               <ButtonContentItem
-                key={buttonTemplate.id}
-                id={buttonTemplate.id}
+                key={button._xid}
+                id={button._xid}
                 index={index}
                 contentIndex={contentIndex}
                 remove={remove}
                 mode={mode}
                 contentType={contentType}
+                fieldNameOverride={fieldNameOverride}
               />
-            ))}
+            )})}
           </div>
         </SortableContext>
       </DndContext>
@@ -114,7 +124,7 @@ export const AutomationButtons = ({ contentIndex, contentType, mode }: ButtonCon
         <Button
           type="button"
           variant="outline"
-          size={"sm"}
+          size="sm"
           onClick={addButton}
           disabled={fields.length >= maximumButtonLength}
         >

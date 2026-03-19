@@ -4,7 +4,7 @@ import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import { cn } from "@/lib/utils";
 import { useCallback, useState, useRef, useEffect } from "react";
-import { useFieldArray, useFormContext, Control } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -34,24 +34,15 @@ import {
   DialogFooter,
 } from "@/components/ui";
 import { Progress } from "@/components/ui/progress";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 import { AutomationButtons } from "./AutomationButtons";
+import { AnimatePresence, motion } from "framer-motion";
+import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { AutomationFormSchema, VitrinItemType } from "@/schemas/automationForm";
+import { z } from "zod";
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 /* ----------------------------- Types ----------------------------- */
-
-export type VitrinItem = {
-  imageId?: string;
-  imageUrl?: string;
-  title?: string;
-  description?: string;
-};
 
 export type VitrinContentProps = {
   index: number;
@@ -77,9 +68,7 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
-  if (!ctx) {
-    throw new Error("Could not get canvas context");
-  }
+  if (!ctx) throw new Error("Could not get canvas context");
 
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
@@ -98,11 +87,8 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject(new Error("Canvas is empty"));
-      }
+      if (blob) resolve(blob);
+      else reject(new Error("Canvas is empty"));
     }, "image/jpeg");
   });
 }
@@ -110,11 +96,9 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
 async function uploadCroppedImage(
   formData: FormData,
   onProgress: (progress: number) => void,
-): Promise<string> {
+): Promise<{id: number, url: string}> {
   const response = await api.post(`${API_URL}/contentCycle/upload`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    headers: { "Content-Type": "multipart/form-data" },
     withCredentials: true,
     onUploadProgress: (progressEvent) => {
       if (progressEvent.total) {
@@ -125,7 +109,7 @@ async function uploadCroppedImage(
       }
     },
   });
-  return response.data.id;
+  return response.data;
 }
 
 /* ----------------------------- Image Cropper Dialog ----------------------------- */
@@ -159,47 +143,25 @@ function ImageCropperDialog({
       const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       onConfirm(croppedBlob);
     } catch (error) {
-      console.error("Error cropping image:", error);
       toast.error("Error cropping image");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleConfirm();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        onCancel();
-      }
-    },
-    [handleConfirm, onCancel],
-  );
-
   useEffect(() => {
     if (open) {
       setCrop({ x: 0, y: 0 });
       setZoom(1);
-      setCroppedAreaPixels(null);
     }
   }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-      <DialogContent
-        className="max-w-lg"
-        onKeyDown={handleKeyDown}
-        aria-describedby="crop-dialog-description"
-      >
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Crop Image</DialogTitle>
         </DialogHeader>
-        <p id="crop-dialog-description" className="sr-only">
-          Adjust the crop area for your image. Use the slider to zoom in or out.
-        </p>
         <div className="relative h-80 w-full bg-gray-100">
           {imageSrc && (
             <Cropper
@@ -207,8 +169,6 @@ function ImageCropperDialog({
               crop={crop}
               zoom={zoom}
               aspect={1}
-              cropShape="rect"
-              showGrid={true}
               onCropChange={setCrop}
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
@@ -216,11 +176,8 @@ function ImageCropperDialog({
           )}
         </div>
         <div className="flex items-center gap-4">
-          <Label htmlFor="zoom-slider" className="shrink-0 text-sm">
-            Zoom
-          </Label>
+          <Label className="shrink-0 text-sm">Zoom</Label>
           <input
-            id="zoom-slider"
             type="range"
             min={1}
             max={3}
@@ -228,26 +185,14 @@ function ImageCropperDialog({
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
             className="w-full"
-            aria-label="Zoom level"
           />
         </div>
         <DialogFooter className="gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            className="flex items-center gap-2"
-          >
-            <Cross1Icon className="h-4 w-4" />
-            Cancel
+          <Button type="button" variant="outline" onClick={onCancel}>
+            <Cross1Icon className="mr-2 h-4 w-4" /> Cancel
           </Button>
-          <Button
-            type="button"
-            onClick={handleConfirm}
-            disabled={isProcessing}
-            className="flex items-center gap-2"
-          >
-            <CheckIcon className="h-4 w-4" />
+          <Button type="button" onClick={handleConfirm} disabled={isProcessing}>
+            <CheckIcon className="mr-2 h-4 w-4" />{" "}
             {isProcessing ? "Processing..." : "Confirm"}
           </Button>
         </DialogFooter>
@@ -260,23 +205,21 @@ function ImageCropperDialog({
 
 type VitrinItemCardProps = {
   vitrinIndex: number;
-  vitrin: VitrinItem;
-  onUpdate: (index: number, data: VitrinItem) => void;
+  onUpdate: (index: number, data: VitrinItemType) => void;
   onRemove: (index: number) => void;
   control: any;
-  baseFieldName: string;
-  contentIndex: number;
+  baseFieldName: 'contents' | 'reminders';
+  parentContentIndex: number;
   mode: AutomationContentModeEnum;
 };
 
 function VitrinItemCard({
   vitrinIndex,
-  vitrin,
   onUpdate,
   onRemove,
   control,
   baseFieldName,
-  contentIndex,
+  parentContentIndex,
   mode,
 }: VitrinItemCardProps) {
   const t = useTranslations("Automations.Contents.Vitrin");
@@ -288,6 +231,18 @@ function VitrinItemCard({
   });
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
+
+  // **Form context (we'll use setValue to update ONLY nested fields)**
+  const { setValue, watch } = useFormContext<z.infer<typeof AutomationFormSchema>>();
+  const itemBasePath: `${'contents' | 'reminders'}.${number}.vitrins.${number}` = `${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}`;
+
+  const vitrin = useWatch({
+    control,
+    name: itemBasePath
+  })
+
+  // keep a ref to previous object URL so we can revoke it and avoid leaks
+  const prevObjectUrlRef = useRef<string | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -307,74 +262,69 @@ function VitrinItemCard({
       setCropDialogOpen(true);
     };
     reader.readAsDataURL(file);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    e.target.value = "";
   };
+
+  const imagePreviewRef = useRef<HTMLImageElement>(null)
 
   const handleCropConfirm = async (croppedBlob: Blob) => {
     setCropDialogOpen(false);
-    setSelectedImageSrc(null);
     setUploadState({ isUploading: true, progress: 0, error: null });
 
     try {
       const formData = new FormData();
-      formData.append("file", croppedBlob, "cropped-image.jpg");
+      formData.append("file", croppedBlob, "image.jpg");
 
-      const imageId = await uploadCroppedImage(formData, (progress) => {
+      const { id: imageId, url: imageUrl} = await uploadCroppedImage(formData, (progress) => {
         setUploadState((prev) => ({ ...prev, progress }));
       });
 
-      const imageUrl = URL.createObjectURL(croppedBlob);
+      // Revoke previous object URL if it was created locally by preview
+      if (prevObjectUrlRef.current) {
+        try {
+          URL.revokeObjectURL(prevObjectUrlRef.current);
+        } catch (err) {
+          // ignore
+        }
+      }
+      prevObjectUrlRef.current = imageUrl;
 
-      onUpdate(vitrinIndex, {
-        ...vitrin,
-        imageId,
-        imageUrl,
-      });
+      console.log("Image uploaded", JSON.stringify({itemBasePath, imageId, imageUrl, vitrin}, undefined, " "))
+
+      // IMPORTANT: update only the nested fields — do NOT replace the entire item
+      onUpdate(vitrinIndex, { ...vitrin, imageUrl, imageId});
 
       setUploadState({ isUploading: false, progress: 100, error: null });
     } catch (error) {
-      const axiosError = error as AxiosError;
-      console.error("Upload error:", axiosError);
       setUploadState({
         isUploading: false,
         progress: 0,
-        error: "Upload failed. Please try again.",
+        error: "Upload failed",
       });
-      toast.error("Upload failed. Please try again.");
+      toast.error("Upload failed");
     }
   };
-
-  const handleCropCancel = () => {
-    setCropDialogOpen(false);
-    setSelectedImageSrc(null);
-  };
-
-  const handleRetry = () => {
-    fileInputRef.current?.click();
-  };
+  // cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (prevObjectUrlRef.current) {
+        try {
+          URL.revokeObjectURL(prevObjectUrlRef.current);
+        } catch (err) {
+          // ignore
+        }
+      }
+    };
+  }, []);
 
   return (
-    <div className="flex w-full flex-col gap-y-3 rounded-lg pl-0">
-      {/* Image Upload Area */}
+    <div className="flex w-full flex-col gap-y-3">
       <div
         className={cn(
-          "relative h-[150px] w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-colors sm:h-[180px]",
-          "hover:border-primary/50 hover:bg-muted/50",
+          "hover:bg-muted/50 relative h-[180px] w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-all",
           uploadState.error && "border-destructive",
         )}
         onClick={() => fileInputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        aria-label={vitrin.imageUrl ? "Replace image" : "Upload image"}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            fileInputRef.current?.click();
-          }
-        }}
       >
         <input
           ref={fileInputRef}
@@ -382,92 +332,80 @@ function VitrinItemCard({
           accept="image/*"
           className="hidden"
           onChange={handleFileSelect}
-          aria-hidden="true"
         />
 
-        {vitrin.imageUrl ? (
+        {vitrin?.imageUrl ? (
           <Image
+            ref={imagePreviewRef}
             src={vitrin.imageUrl}
-            alt={vitrin.title || "Vitrin image"}
+            alt="vitrin"
             fill
             className="object-cover"
           />
         ) : (
-          <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-2">
-            <UploadIcon className="h-8 w-8" />
-            <span className="text-sm font-medium">Uploader</span>
-          </div>
+          <FormField
+            name={`${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}.title`}
+            control={control}
+            render={({ fieldState: { error } }) => (
+              <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-2">
+                <UploadIcon className="h-8 w-8" />
+                <span className="text-sm font-medium">
+                  {t("buttons.uploader.title")}
+                </span>
+                {error && <ErrorMessage>{t(`imageUploader.errors.${error.type}`)}</ErrorMessage>}
+              </div>
+            )}
+          />
         )}
 
-        {/* Upload Progress Overlay */}
         {uploadState.isUploading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
             <Progress value={uploadState.progress} className="w-2/3" />
-            <span className="text-sm text-white">{uploadState.progress}%</span>
-          </div>
-        )}
-
-        {/* Error Overlay */}
-        {uploadState.error && (
-          <div className="bg-destructive/80 absolute inset-0 flex flex-col items-center justify-center gap-2 p-2 text-center">
-            <span className="text-sm text-white">{uploadState.error}</span>
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRetry();
-              }}
-            >
-              Retry
-            </Button>
+            <span className="mt-2 text-xs text-white">
+              {uploadState.progress}%
+            </span>
           </div>
         )}
       </div>
 
-      {/* Title Input */}
       <FormField
-        name={`${baseFieldName}.${contentIndex}.vitrins.${vitrinIndex}.title`}
+        name={`${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}.title`}
         control={control}
-        render={({ field }) => (
+        render={({ field, fieldState: { error } }) => (
           <FormItem>
-            <Label className="sr-only">Title</Label>
             <Input
               {...field}
-              placeholder="Title"
-              className="w-full"
+              placeholder={t("fields.title.placeholder")}
               value={field.value || ""}
             />
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </FormItem>
         )}
       />
 
-      {/* Description Input */}
       <FormField
-        name={`${baseFieldName}.${contentIndex}.vitrins.${vitrinIndex}.description`}
+        name={`${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}.description`}
         control={control}
-        render={({ field }) => (
+        render={({ field, fieldState: { error } }) => (
           <FormItem>
-            <Label className="sr-only">Description</Label>
             <Textarea
               {...field}
-              placeholder="Description"
-              className="w-full resize-none"
+              placeholder={t("fields.description.placeholder")}
               rows={2}
               value={field.value || ""}
             />
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </FormItem>
         )}
       />
 
       <AutomationButtons
-        contentIndex={vitrinIndex}
+        contentIndex={parentContentIndex}
         mode={mode}
-        contentType="text"
+        contentType="vitrin"
+        fieldNameOverride={`${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}.buttons`}
       />
 
-      {/* Remove Button */}
       <Button
         type="button"
         variant="ghost"
@@ -476,21 +414,20 @@ function VitrinItemCard({
         className="text-destructive hover:bg-destructive/10 flex items-center gap-2"
       >
         <TrashIcon className="h-4 w-4" />
-        Remove
+        {t("buttons.remove.title")}
       </Button>
 
-      {/* Image Cropper Dialog */}
       <ImageCropperDialog
         open={cropDialogOpen}
         imageSrc={selectedImageSrc}
         onConfirm={handleCropConfirm}
-        onCancel={handleCropCancel}
+        onCancel={() => setCropDialogOpen(false)}
       />
     </div>
   );
 }
 
-/* ----------------------------- Main VitrinContent Component ----------------------------- */
+/* ----------------------------- Main VitrinContent ----------------------------- */
 
 export default function VitrinContent({
   index,
@@ -498,149 +435,177 @@ export default function VitrinContent({
   control,
 }: VitrinContentProps) {
   const t = useTranslations("Automations.Contents.Vitrin");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const baseFieldName =
     mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders";
 
-  const { fields, update, append, remove } = useFieldArray({
-    control: control,
+  const { fields, update } = useFieldArray({
+    control,
     name: `${baseFieldName}.${index}.vitrins`,
+    keyName: "_xid",
   });
 
-  // Sync carousel navigation state
+  const vitrins = useWatch({
+    control,
+    name: `${baseFieldName}.${index}.vitrins`,
+  })
+
   useEffect(() => {
-    if (!carouselApi) return;
+    console.log(JSON.stringify(vitrins, undefined, " "))
+  }, [vitrins])
 
-    const onSelect = () => {
-      setCanScrollPrev(carouselApi.canScrollPrev());
-      setCanScrollNext(carouselApi.canScrollNext());
-    };
+  // در بالای کامپوننت VitrinContent اضافه کن
+  const { getValues, setValue } =
+    useFormContext<z.infer<typeof AutomationFormSchema>>();
 
-    carouselApi.on("select", onSelect);
-    onSelect();
+  const {
+    formState: { errors },
+  } = useFormContext();
 
-    return () => {
-      carouselApi.off("select", onSelect);
-    };
-  }, [carouselApi]);
+  // انتقال به ایندکس دارای خطا
+  useEffect(() => {
+    const vitrinErrors = (errors as any)?.[baseFieldName]?.[index]?.vitrins;
+    if (Array.isArray(vitrinErrors)) {
+      const firstErrorIdx = vitrinErrors.findIndex((e: any) => e);
+      if (firstErrorIdx !== -1) setCurrentIndex(firstErrorIdx);
+    }
+  }, [errors, baseFieldName, index]);
 
   const handleAppend = () => {
-    const targetIndex = fields.length;
-    append({
-      imageId: undefined,
-      imageUrl: undefined,
+    console.log("=== handleAppend START ===", {
+      currentLength: fields.length,
+      currentIndex,
+    });
+
+    const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` = `${baseFieldName}.${index}.vitrins`;
+
+    const currentVitrins = getValues(fieldPath) || [];
+
+    const newItem: VitrinItemType = {
+      imageId: "",
+      imageUrl: "",
       title: "",
       description: "",
+      buttons: [],
+    };
+
+    const newVitrins = [...currentVitrins, newItem];
+
+    // مستقیماً آرایه را ست می‌کنیم (بهترین راه برای جلوگیری از ghost)
+    setValue(fieldPath, newVitrins, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
     });
-    if (carouselApi) {
-      const handleReInit = () => {
-        carouselApi.scrollTo(targetIndex);
-        carouselApi.off("reInit", handleReInit);
-      };
-      carouselApi.on("reInit", handleReInit);
+
+    // به آخرین آیتم برو
+    setCurrentIndex(newVitrins.length - 1);
+
+    console.log("=== handleAppend END - new length:", newVitrins.length);
+  };
+  useEffect(() => {
+    if (fields.length > 0) {
+      setCurrentIndex(fields.length - 1);
     }
-  };
+  }, [fields.length]);
 
-  const handleUpdate = (vitrinIndex: number, data: VitrinItem) => {
-    update(vitrinIndex, data);
-  };
+  const handleRemove = (vIndex: number) => {
+    const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` = `${baseFieldName}.${index}.vitrins`;
+    const currentVitrins = getValues(fieldPath) || [];
 
-  const handleRemove = (vitrinIndex: number) => {
-    remove(vitrinIndex);
-  };
+    const newVitrins = currentVitrins.filter((_, i) => i !== vIndex);
 
-  const handlePrev = () => {
-    carouselApi?.scrollPrev();
-  };
+    setValue(fieldPath, newVitrins, { shouldValidate: true });
 
-  const handleNext = () => {
-    carouselApi?.scrollNext();
+    setCurrentIndex((prev) => {
+      if (newVitrins.length === 0) return 0;
+      return Math.max(0, prev > vIndex ? prev - 1 : prev);
+    });
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-4 overflow-hidden">
-      <div className="flex items-center gap-2">
-        <Label className="text-sm font-medium">
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex items-center justify-between px-1">
+        <Label className="text-sm font-semibold">
           {t("title", { defaultValue: "Vitrin Items" })}
         </Label>
-        <span className="text-muted-foreground text-xs">
-          ({fields.length} items)
-        </span>
+        {fields.length > 0 && (
+          <div className="bg-muted rounded-full px-2 py-1 text-xs font-medium">
+            {currentIndex + 1} / {fields.length}
+          </div>
+        )}
       </div>
 
-      <div className="flex w-full min-w-0 items-center gap-2">
-        {/* Left Navigation */}
+      <div className="relative flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
           size="icon"
-          onClick={handlePrev}
-          disabled={!canScrollPrev}
-          aria-label="Previous item"
-          className="shrink-0"
+          onClick={() => setCurrentIndex((p) => Math.max(0, p - 1))}
+          disabled={currentIndex === 0}
+          className="h-9 w-9 shrink-0 rounded-full"
         >
-          <ArrowLeftIcon className="h-4 w-4" />
+          <ArrowRightIcon className="h-5 w-5" />
         </Button>
 
-        {/* Carousel */}
-        <div
-          ref={containerRef}
-          className="relative min-w-0 flex-1"
-          style={{
-            contain: "inline-size",
-          }}
-        >
-          <Carousel
-            setApi={setCarouselApi}
-            opts={{
-              align: "center",
-              containScroll: "trimSnaps",
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {fields.map((field, vitrinIndex) => (
-                <CarouselItem key={field.id} className="basis-full px-2">
-                  <VitrinItemCard
-                    vitrinIndex={vitrinIndex}
-                    vitrin={field as unknown as VitrinItem}
-                    onUpdate={handleUpdate}
-                    onRemove={handleRemove}
-                    control={control}
-                    baseFieldName={baseFieldName}
-                    contentIndex={index}
-                    mode={mode}
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+        <div className="border-muted-foreground/30 bg-muted/5 relative min-h-[400px] flex-1 overflow-hidden rounded-xl border border-dashed p-4">
+          <AnimatePresence mode="wait">
+            {fields.length > 0 && fields[currentIndex] ? (
+              <motion.div
+                key={fields[currentIndex]._xid} // استفاده از ID منحصر به فرد فیلد
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="w-full"
+              >
+                <VitrinItemCard
+                  vitrinIndex={currentIndex}
+                  vitrin={fields[currentIndex] as any}
+                  onUpdate={update}
+                  onRemove={handleRemove}
+                  control={control}
+                  baseFieldName={baseFieldName}
+                  parentContentIndex={index}
+                  mode={mode}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty-state"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-muted-foreground flex h-full flex-col items-center justify-center py-20"
+              >
+                <p className="text-sm italic">{t("noItems")}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Right Navigation / Add Button */}
-        <div className="flex shrink-0 flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <Button
             type="button"
             variant="outline"
             size="icon"
-            onClick={handleNext}
-            disabled={!canScrollNext}
-            aria-label="Next item"
+            onClick={() =>
+              setCurrentIndex((p) => Math.min(fields.length - 1, p + 1))
+            }
+            disabled={currentIndex >= fields.length - 1 || fields.length === 0}
+            className="h-9 w-9 shrink-0 rounded-full"
           >
-            <ArrowRightIcon className="h-4 w-4" />
+            <ArrowLeftIcon className="h-5 w-5" />
           </Button>
+
           <Button
             type="button"
-            variant="outline"
+            variant="default"
             size="icon"
             onClick={handleAppend}
-            aria-label="Add new vitrin item"
+            className="bg-primary h-9 w-9 rounded-full shadow-md"
           >
-            <PlusIcon className="h-4 w-4" />
+            <PlusIcon className="text-primary-foreground h-5 w-5" />
           </Button>
         </div>
       </div>

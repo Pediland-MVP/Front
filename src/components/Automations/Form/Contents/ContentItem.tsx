@@ -25,6 +25,7 @@ import { QuestionContent } from "./QuestionContent";
 import { ContentItemSchema } from '../../../../schemas/automationForm';
 import { z } from 'zod';
 import VitrinContent from "./VitrinContent";
+import { useEffect } from "react";
 
 interface ReturnContentProps {
   index: number;
@@ -58,7 +59,7 @@ export const ReturnContent = ({ index, type, mode, appendContents, content }: Re
 
     case AutomationContentTypesEnum.VITRIN:
       return <VitrinContent index={index} mode={mode} control={control} />
-    
+
     default:
       return <MediaContent content={content} appendContents={appendContents} index={index} mode={mode} type={type} />;
   }
@@ -89,6 +90,11 @@ export const ContentItem = ({
     clearErrors,
     trigger,
   } = useFormContext<AutomationFormType>();
+
+  useEffect(() => {
+    console.log("Errors of AutomationForm", JSON.stringify(errors, undefined, " "));
+  }, [errors])
+
   const t = useTranslations("Automations.Contents");
   const t_contentTypes = useTranslations("Automations.Contents.Types");
 
@@ -215,4 +221,3 @@ export const ContentItem = ({
     </div>
   );
 };
-
