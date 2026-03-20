@@ -114,7 +114,7 @@ const OrderCardComponent = ({
             <div className="relative h-20 w-20">
               <CardImage
                 src={
-                  order.orderProducts[0]?.product?.images[0].url ||
+                  order.orderProducts[0]?.product?.images[0]?.url ||
                   "/images/placeholder.webp"
                 }
                 alt={order.orderProducts[0]?.product?.title || ""}
