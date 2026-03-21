@@ -3,13 +3,11 @@
 import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
 import api from "@/hooks/swr/api-client";
 import { cn } from "@/lib/utils";
-import { useCallback, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { AxiosError } from "axios";
 import { toast } from "sonner";
 import Image from "next/image";
-import Cropper, { Area } from "react-easy-crop";
 import {
   PlusIcon,
   ArrowLeftIcon,
@@ -27,11 +25,6 @@ import {
   Label,
   FormField,
   FormItem,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
 } from "@/components/ui";
 import { Progress } from "@/components/ui/progress";
 import { AutomationButtons } from "./AutomationButtons";
@@ -56,42 +49,7 @@ type UploadState = {
   error: string | null;
 };
 
-/* ----------------------------- Helper Functions ----------------------------- */
-
-async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<Blob> {
-  const image = new window.Image();
-  image.src = imageSrc;
-  await new Promise((resolve) => {
-    image.onload = resolve;
-  });
-
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) throw new Error("Could not get canvas context");
-
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
-
-  ctx.drawImage(
-    image,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    pixelCrop.width,
-    pixelCrop.height,
-  );
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new Error("Canvas is empty"));
-    }, "image/jpeg");
-  });
-}
+/* ----------------------------- Single Vitrin Item ----------------------------- */
 
 async function uploadCroppedImage(
   formData: FormData,
@@ -111,97 +69,6 @@ async function uploadCroppedImage(
   });
   return response.data;
 }
-
-/* ----------------------------- Image Cropper Dialog ----------------------------- */
-
-type ImageCropperDialogProps = {
-  open: boolean;
-  imageSrc: string | null;
-  onConfirm: (croppedBlob: Blob) => void;
-  onCancel: () => void;
-};
-
-function ImageCropperDialog({
-  open,
-  imageSrc,
-  onConfirm,
-  onCancel,
-}: ImageCropperDialogProps) {
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const onCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-
-  const handleConfirm = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
-    setIsProcessing(true);
-    try {
-      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-      onConfirm(croppedBlob);
-    } catch (error) {
-      toast.error("Error cropping image");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  useEffect(() => {
-    if (open) {
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
-    }
-  }, [open]);
-
-  return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Crop Image</DialogTitle>
-        </DialogHeader>
-        <div className="relative h-80 w-full bg-gray-100">
-          {imageSrc && (
-            <Cropper
-              image={imageSrc}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-            />
-          )}
-        </div>
-        <div className="flex items-center gap-4">
-          <Label className="shrink-0 text-sm">Zoom</Label>
-          <input
-            type="range"
-            min={1}
-            max={3}
-            step={0.1}
-            value={zoom}
-            onChange={(e) => setZoom(Number(e.target.value))}
-            className="w-full"
-          />
-        </div>
-        <DialogFooter className="gap-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            <Cross1Icon className="mr-2 h-4 w-4" /> Cancel
-          </Button>
-          <Button type="button" onClick={handleConfirm} disabled={isProcessing}>
-            <CheckIcon className="mr-2 h-4 w-4" />{" "}
-            {isProcessing ? "Processing..." : "Confirm"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-/* ----------------------------- Single Vitrin Item ----------------------------- */
 
 type VitrinItemCardProps = {
   vitrinIndex: number;
@@ -224,27 +91,24 @@ function VitrinItemCard({
 }: VitrinItemCardProps) {
   const t = useTranslations("Automations.Contents.Vitrin");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [uploadState, setUploadState] = useState<UploadState>({
     isUploading: false,
     progress: 0,
     error: null,
   });
-  const [cropDialogOpen, setCropDialogOpen] = useState(false);
-  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
 
-  // **Form context (we'll use setValue to update ONLY nested fields)**
   const { setValue, watch } = useFormContext<z.infer<typeof AutomationFormSchema>>();
-  const itemBasePath: `${'contents' | 'reminders'}.${number}.vitrins.${number}` = `${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}`;
+
+  const itemBasePath: `${"contents" | "reminders"}.${number}.vitrins.${number}` =
+   `${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}`;
 
   const vitrin = useWatch({
     control,
-    name: itemBasePath
-  })
+    name: itemBasePath,
+  });
 
-  // keep a ref to previous object URL so we can revoke it and avoid leaks
-  const prevObjectUrlRef = useRef<string | null>(null);
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -253,48 +117,46 @@ function VitrinItemCard({
         ...prev,
         error: "Please select an image file",
       }));
+      e.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setSelectedImageSrc(reader.result as string);
-      setCropDialogOpen(true);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  };
-
-  const imagePreviewRef = useRef<HTMLImageElement>(null)
-
-  const handleCropConfirm = async (croppedBlob: Blob) => {
-    setCropDialogOpen(false);
-    setUploadState({ isUploading: true, progress: 0, error: null });
+    setUploadState({
+      isUploading: true,
+      progress: 0,
+      error: null,
+    });
 
     try {
       const formData = new FormData();
-      formData.append("file", croppedBlob, "image.jpg");
+      formData.append("file", file, file.name);
 
-      const { id: imageId, url: imageUrl} = await uploadCroppedImage(formData, (progress) => {
-        setUploadState((prev) => ({ ...prev, progress }));
+      const { id: imageId, url: imageUrl } = await uploadCroppedImage(
+        formData,
+        (progress) => {
+          setUploadState((prev) => ({
+            ...prev,
+            progress,
+          }));
+        },
+      );
+
+      console.log(
+        "Image uploaded",
+        JSON.stringify({ itemBasePath, imageId, imageUrl, vitrin }, undefined, " "),
+      );
+
+      onUpdate(vitrinIndex, {
+        ...(vitrin ?? {}),
+        imageUrl,
+        imageId,
       });
 
-      // Revoke previous object URL if it was created locally by preview
-      if (prevObjectUrlRef.current) {
-        try {
-          URL.revokeObjectURL(prevObjectUrlRef.current);
-        } catch (err) {
-          // ignore
-        }
-      }
-      prevObjectUrlRef.current = imageUrl;
-
-      console.log("Image uploaded", JSON.stringify({itemBasePath, imageId, imageUrl, vitrin}, undefined, " "))
-
-      // IMPORTANT: update only the nested fields — do NOT replace the entire item
-      onUpdate(vitrinIndex, { ...vitrin, imageUrl, imageId});
-
-      setUploadState({ isUploading: false, progress: 100, error: null });
+      setUploadState({
+        isUploading: false,
+        progress: 100,
+        error: null,
+      });
     } catch (error) {
       setUploadState({
         isUploading: false,
@@ -302,20 +164,10 @@ function VitrinItemCard({
         error: "Upload failed",
       });
       toast.error("Upload failed");
+    } finally {
+      e.target.value = "";
     }
   };
-  // cleanup object URLs on unmount
-  useEffect(() => {
-    return () => {
-      if (prevObjectUrlRef.current) {
-        try {
-          URL.revokeObjectURL(prevObjectUrlRef.current);
-        } catch (err) {
-          // ignore
-        }
-      }
-    };
-  }, []);
 
   return (
     <div className="flex w-full flex-col gap-y-3">
@@ -336,7 +188,6 @@ function VitrinItemCard({
 
         {vitrin?.imageUrl ? (
           <Image
-            ref={imagePreviewRef}
             src={vitrin.imageUrl}
             alt="vitrin"
             fill
@@ -352,7 +203,11 @@ function VitrinItemCard({
                 <span className="text-sm font-medium">
                   {t("buttons.uploader.title")}
                 </span>
-                {error && <ErrorMessage>{t(`imageUploader.errors.${error.type}`)}</ErrorMessage>}
+                {error && (
+                  <ErrorMessage>
+                    {t(`imageUploader.errors.${error.type}`)}
+                  </ErrorMessage>
+                )}
               </div>
             )}
           />
@@ -416,13 +271,6 @@ function VitrinItemCard({
         <TrashIcon className="h-4 w-4" />
         {t("buttons.remove.title")}
       </Button>
-
-      <ImageCropperDialog
-        open={cropDialogOpen}
-        imageSrc={selectedImageSrc}
-        onConfirm={handleCropConfirm}
-        onCancel={() => setCropDialogOpen(false)}
-      />
     </div>
   );
 }
