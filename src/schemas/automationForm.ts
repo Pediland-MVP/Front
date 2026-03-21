@@ -124,7 +124,6 @@ export const ContentItemSchema = z.object({
   products: z.array(ProductSchema).optional().nullable(),
   validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
   validationErrorMessage: z.string().optional().nullable(),
-
   productIds: z.array(z.string()).optional().nullable(),
   haveInstagramPost: z
     .boolean()
@@ -132,6 +131,8 @@ export const ContentItemSchema = z.object({
     .nullable()
     .transform(() => undefined),
   vitrins: z.array(VitrinItemSchema).optional().nullable(),
+  delayMs: z.number().min(1000).optional().nullable(),
+  delayUnit: z.string().optional().nullable()
 });
 
 export const ContentItemConditionSchema = z.object({

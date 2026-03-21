@@ -6,13 +6,10 @@ import {
   InstagramLogoIcon,
   ShoppingBagIcon,
   RadioButtonIcon,
-  PaperclipIcon,
-  Image,
   ImageIcon,
   VideoIcon,
   MusicNoteSimpleIcon,
   CardsIcon,
-  CardsThreeIcon,
   TimerIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import React from "react";
@@ -68,5 +65,10 @@ export const contentTypeOptions: ContentTypeOption[] = [
     value: AutomationContentTypesEnum.VITRIN,
     label: "Vitrin",
     icon: <CardsIcon size={30} />
+  },
+  {
+    value: AutomationContentTypesEnum.DELAY,
+    label: "Delay",
+    icon: <TimerIcon size={30} />
   }
 ];

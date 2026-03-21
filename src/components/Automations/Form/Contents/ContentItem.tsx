@@ -26,6 +26,7 @@ import { ContentItemSchema } from '../../../../schemas/automationForm';
 import { z } from 'zod';
 import VitrinContent from "./VitrinContent";
 import { useEffect } from "react";
+import { DelayContent } from "./DelayContent";
 
 interface ReturnContentProps {
   index: number;
@@ -59,6 +60,9 @@ export const ReturnContent = ({ index, type, mode, appendContents, content }: Re
 
     case AutomationContentTypesEnum.VITRIN:
       return <VitrinContent index={index} mode={mode} control={control} />
+
+    case AutomationContentTypesEnum.DELAY:
+      return <DelayContent index={index} />
 
     default:
       return <MediaContent content={content} appendContents={appendContents} index={index} mode={mode} type={type} />;

@@ -168,6 +168,10 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           },
         ],
       }),
+      ...(option.value === AutomationContentTypesEnum.DELAY && {
+        delayMs: 1000 * 60 * 60,
+        delayUnit: "hour"
+      })
     });
     console.log("After array: ", contents)
     setIsChoosingType(false);

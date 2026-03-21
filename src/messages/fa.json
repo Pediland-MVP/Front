@@ -309,6 +309,7 @@
       "cta": {
         "custom": "متن پایانی را مشخص کنید"
       },
+      "totalDelayMsShouldBeUnder23Hour": "جمع کل وقفه‌ها باید کمتر از ۲۳ ساعت باشد",
       "required": "این فیلد الزامی است",
       "goToInstagram": "اتصال",
       "commentStartTextRequired": "در حالت کامنت، پیام درخواست شروع ضروری است",
@@ -389,7 +390,8 @@
             "product": "فروش کالا و خدمات در دایرکت",
             "text": "ارسال محتوای متنی",
             "question": "افزودن فرم سوال",
-            "vitrin": "ارسال ویترین"
+            "vitrin": "ارسال ویترین",
+            "delay": "ایجاد وقفه در اجرای محتوای بعدی"
           },
           "titles": {
             "button_template": "دکمه",
@@ -401,7 +403,8 @@
             "product": "کالا",
             "text": "متن",
             "question": "سوال",
-            "vitrin": "ویترین"
+            "vitrin": "ویترین",
+            "delay": "وقفه"
           }
         },
         "fallback_key": "عنوان محتوا",
@@ -445,6 +448,15 @@
           "addFirst": {
             "title": "اضافه کردن"
           }
+        }
+      },
+      "Delay": {
+        "at_least_1_second": "حداقل ۱ ثانیه",
+        "selectTimeUnit": "انتخاب کنید",
+        "timeUnits": {
+          "sec": "ثانیه",
+          "min": "دقیقه",
+          "hour": "ساعت"
         }
       },
       "Question": {

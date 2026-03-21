@@ -182,6 +182,16 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
         }))
       }
 
+      if (content.type === AutomationContentTypesEnum.DELAY) {
+        if (content.delayMs >= 1000 * 60 * 60) {
+          content.delayUnit = "hour"
+        } else if (content.delayMs >= 1000 * 60) {
+          content.delayUnit = "min"
+        } else {
+          content.delayUnit = 'sec'
+        }
+      }
+
       return content;
     };
 
@@ -210,6 +220,21 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     let haveError: boolean = false;
 
     const firstType = values.contents[0]?.type;
+
+    // TotalDelays should be under 23 hours
+    let totalDelaysMs: number = 0;
+    let lastDelayContentIndex: number = null
+    values.contents.forEach((c, index) => {
+      if (c.type === AutomationContentTypesEnum.DELAY) {
+        totalDelaysMs += c.delayMs
+        lastDelayContentIndex = index
+      }
+    })
+
+    if (totalDelaysMs > ((1000 * 60 * 60) * 23)) {
+      toast.error(t("Errors.totalDelayMsShouldBeUnder23Hour"))
+      haveError = true
+    }
 
     if (
       values.isComment &&
@@ -302,6 +327,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     }
 
     setIsSubmitting(true);
+
+    console.log("Submited values", JSON.stringify(values, undefined, " "))
 
     await api({
       method: id ? "PATCH" : "POST",
