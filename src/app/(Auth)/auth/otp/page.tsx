@@ -26,6 +26,7 @@ import {
 } from "@/components/ui";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { CounterDown } from "@/components/ui-custom/CounterDown";
+import { TelegramOtpInlineLink } from "@/components/ui-custom/TelegramOtpInlineLink";
 import { CircleNotchIcon, NumpadIcon } from "@phosphor-icons/react";
 import { RefreshCwIcon } from "lucide-react";
 import SupportButton from "../supportButton";
@@ -211,6 +212,8 @@ export default function OtpPage() {
             >
               {t("confirm_and_continue")}
             </ButtonLoading>
+
+            <TelegramOtpInlineLink phone={mobile || undefined} />
           </form>
         </Form>
       </div>
