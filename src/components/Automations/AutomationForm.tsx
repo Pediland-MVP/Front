@@ -410,8 +410,6 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   />
                 </div>
 
-                <Reminder />
-
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
                   <JustFollowers
                     control={form.control}
