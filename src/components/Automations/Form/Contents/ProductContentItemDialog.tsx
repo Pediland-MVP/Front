@@ -120,12 +120,12 @@ export const ProductContentItemDialog = ({
                   <div
                     className="relative col-span-1 h-56 w-full overflow-hidden rounded-sm bg-black"
                     key={product.id}
-                    data-url={product?.images[0].url}
+                    data-url={product?.images[0]?.url}
                     data-productid={product.id}
                     onClick={selectPost}
                   >
                     <Image
-                      src={product?.images[0].url}
+                      src={product?.images[0]?.url}
                       alt={product?.title || t("instagram_post_alt")}
                       layout="fill"
                       objectFit="cover"

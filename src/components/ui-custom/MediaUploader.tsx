@@ -7,26 +7,37 @@ import type {
   UploadedFile,
 } from "@/types/fileUploader";
 import { Button } from "@/components/ui/button";
-import {
-  Upload,
-  FileIcon,
-  Music,
-  Play,
-  Trash2,
-} from "lucide-react";
+import { Upload, FileIcon, Music, Play, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type React from "react";
-import { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { AudioRecorderWithVisualizer } from "./AudioRecorder";
+import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
+import { CheckCircleIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 
 export const MediaUploader = ({
   files,
   setFiles,
   accept,
   onChange,
+  fileType,
+  mode,
+  content,
+  appendContents,
 }: FileUploaderProps) => {
+  const [isInitialized, setIsInitialize] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isInitialized) return;
+    if (!content) return;
+    setIsInitialize(true);
+    if (content.fileTemp) {
+      setFiles([content.fileTemp]);
+      onChange([content.fileTemp], []);
+    }
+  }, [content]);
+
   const [isDragActive, setIsDragActive] = useState(false);
   const t = useTranslations("Automations.Contents.Media.FileUploader");
 
@@ -56,23 +67,38 @@ export const MediaUploader = ({
     return false;
   };
 
-  const getDisplaySize = (file: UploadedFile): string => {
+  const getDisplaySize = (file: UploadedFile): React.ReactNode => {
     if (isNewFile(file)) {
       return `${(file.file.size / 1024 / 1024).toFixed(2)} ${t("MB")}`;
     }
     if (isExistingFile(file)) {
-      return t("uploaded");
+      return (
+        <p className="flex gap-x-1">
+          <CheckCircleIcon weight="fill" size={14} className="text-green-500" />
+          {t("uploaded")}{" "}
+        </p>
+      );
     }
-    return t("uploaded");
+    return (
+      <p className="flex gap-x-1">
+        <CheckCircleIcon weight="fill" size={14} className="text-green-500" />
+        {t("uploaded")}{" "}
+      </p>
+    );
   };
 
-  const getProgressText = (file: UploadedFile): string | null => {
+  const getProgressText = (file: UploadedFile): React.ReactNode | null => {
     if (isExistingFile(file)) return null;
     if (isNewFile(file) && file.process !== undefined) {
-      const processPercentage = Math.round(file.process)
+      const processPercentage = Math.round(file.process);
       return `${processPercentage === 100 ? 98 : processPercentage}%`;
     }
-    return t("uploaded");
+    return (
+      <p className="flex gap-x-1">
+        <CheckCircleIcon weight="fill" size={14} className="text-green-500" />
+        {t("uploaded")}{" "}
+      </p>
+    );
   };
 
   // Single file only: replace any existing file
@@ -86,6 +112,18 @@ export const MediaUploader = ({
       const updatedFiles = [newFile];
       setFiles(updatedFiles);
       onChange(updatedFiles, rejectedFiles);
+      if (acceptedFiles.length > 1) {
+        for (let i = 1; i < acceptedFiles.length; i++) {
+          const newFile: FileWithPreview = {
+            file: acceptedFiles[i],
+            id: Math.floor(Math.random() * 1000000),
+          };
+          appendContents({
+            type: fileType,
+            fileTemp: newFile,
+          });
+        }
+      }
     },
     [onChange, setFiles],
   );
@@ -101,7 +139,7 @@ export const MediaUploader = ({
           {} as Record<string, string[]>,
         )
       : undefined,
-    multiple: false,
+    multiple: true,
     onDragEnter: () => setIsDragActive(true),
     onDragLeave: () => setIsDragActive(false),
     onDropAccepted: () => setIsDragActive(false),
@@ -150,13 +188,13 @@ export const MediaUploader = ({
         );
       case "video":
         return (
-          <div className="flex h-full w-full items-center justify-center bg-muted">
+          <div className="bg-muted flex h-full w-full items-center justify-center">
             <Play size={24} className="text-muted-foreground" />
           </div>
         );
       case "audio":
         return (
-          <div className="flex h-full w-full items-center justify-center bg-muted">
+          <div className="bg-muted flex h-full w-full items-center justify-center">
             <Music size={24} className="text-muted-foreground" />
           </div>
         );
@@ -169,52 +207,32 @@ export const MediaUploader = ({
     }
   };
 
+  const acceptedFormats = {
+    image: "image/png, image/jpeg, image/gif",
+    video: "video/mp4, video/ogg, video/avi, video/quicktime, video/webm",
+    audio: "audio/aac, audio/m4a, audio/wav, audio/mp4",
+  };
+
   return (
     <div className="w-full space-y-3">
-      {/* Dropzone */}
-      <div
-        {...getRootProps()}
-        className={`relative min-h-32 cursor-pointer rounded-lg border bg-background transition-colors hover:bg-muted/50`}
-      >
-        <input {...getInputProps()} />
-        <div className="flex flex-col items-center justify-center p-6 text-center">
-          <Upload className="mb-1 size-8 text-muted-foreground" />
-          <p className="mb-3 text-sm text-muted-foreground">
-            {isDragActive ? t("dropzone") : t("upload_button")}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {t("drag_drop_hint", {
-              defaultValue: "Drag and drop files here or click to browse",
-            })}
-          </p>
-        </div>
-      </div>
-
-      {/* Audio Recorder */}
-      <div className="relative pt-6">
-        <AudioRecorderWithVisualizer
-          onRecordingComplete={handleRecordingComplete}
-        />
-      </div>
-
       {/* File list */}
       {files.length > 0 &&
         files.map((file) => (
           <div
             key={file.id}
-            className="flex items-center gap-3 rounded-lg border bg-background p-3"
+            className="bg-background flex items-center gap-3 rounded-lg border p-3"
           >
-            <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
+            <div className="bg-muted h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg">
               {renderPreview(file)}
             </div>
             {/* File info */}
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   {t("uploaded_file")}
                 </span>
                 {isUploading(file) ? (
-                  <span className="h-6 w-1/3 truncate text-left text-[13px] text-muted-foreground">
+                  <span className="text-muted-foreground h-6 w-1/3 truncate text-left text-[13px]">
                     {getDisplayName(file)}
                   </span>
                 ) : (
@@ -222,7 +240,7 @@ export const MediaUploader = ({
                     type="button"
                     variant="link"
                     size="sm"
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                    className="text-muted-foreground hover:text-destructive h-6 w-6 p-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeFile(file.id);
@@ -233,9 +251,9 @@ export const MediaUploader = ({
                 )}
               </div>
               {/* Progress bar */}
-              <div className="h-2 w-full rounded-full bg-muted">
+              <div className="bg-muted h-2 w-full rounded-full">
                 <div
-                  className="h-2 rounded-full bg-primary transition-all duration-300 ease-out"
+                  className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
                   style={{
                     width: `${
                       "process" in file && file.process !== undefined
@@ -246,7 +264,7 @@ export const MediaUploader = ({
                 />
               </div>
 
-              <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+              <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-xs">
                 <span className="ltr">{getDisplaySize(file)}</span>
                 {getProgressText(file) && <span>{getProgressText(file)}</span>}
               </div>
@@ -254,34 +272,36 @@ export const MediaUploader = ({
           </div>
         ))}
 
-      {/* Limits info */}
-      <div className="flex flex-col items-start justify-center text-sm uppercase">
-        <div className="inline-block">
-          <span className="text-xs text-muted-foreground">
-            {t("Limits.image.text")}
-          </span>
-          <span className="mx-1">.</span>
-          <span className="text-xs text-muted-foreground">
-            {t("Limits.image.formats")}
-          </span>
-        </div>
-        <div className="inline-block">
-          <span className="text-xs text-muted-foreground">
-            {t("Limits.video.text")}
-          </span>
-          <span className="mx-1">.</span>
-          <span className="text-xs text-muted-foreground">
-            {t("Limits.video.formats")}
-          </span>
-        </div>
-        <div className="inline-block">
-          <span className="text-xs text-muted-foreground">
-            {t("Limits.audio.text")}
-          </span>
-          <span className="mx-1">.</span>
-          <span className="text-xs text-muted-foreground">
-            {t("Limits.audio.formats")}
-          </span>
+      {/* Audio Recorder */}
+      {fileType === AutomationContentTypesEnum.AUDIO && (
+        <AudioRecorderWithVisualizer
+          onRecordingComplete={handleRecordingComplete}
+        />
+      )}
+
+      {/* Dropzone */}
+      <div
+        {...getRootProps()}
+        className={`bg-background hover:bg-muted/50 relative min-h-32 cursor-pointer rounded-lg border transition-colors`}
+      >
+        <input
+          {...getInputProps()}
+          multiple
+          accept={acceptedFormats[fileType]}
+        />
+        <div className="flex flex-col items-center justify-center p-6 text-center">
+          <Upload className="text-muted-foreground mb-1 size-8" />
+          <p className="text-muted-foreground mb-3 text-sm">
+            {isDragActive ? t("dropzone") : t(`FileTypes.${fileType}.title`)}
+          </p>
+          <p className="text-muted-foreground text-xs">
+            {t('upload_description')}
+          </p>
+          <p className="text-muted-foreground text-xs">
+            {t(`FileTypes.${fileType}.formats`, {
+              defaultValue: "Drag and drop files here or click to browse",
+            })}
+          </p>
         </div>
       </div>
     </div>

@@ -13,14 +13,6 @@ import { SearchInput } from "@/components/ui-custom/SearchInput";
 import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { CircleFadingPlusIcon } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 export default function Page() {
   const router = useRouter();
   const t = useTranslations("Products");
@@ -51,28 +43,15 @@ export default function Page() {
           setIsSearchVisible={setIsSearchVisible}
         />
 
-        <DropdownMenu dir="rtl">
-          <DropdownMenuTrigger asChild>
-            <Button type="button" size="md" disabled={error || !allowAdd}>
-              {t("add")}
-              <CircleFadingPlusIcon />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => router.push("/products/add?t=p")}
-              >
-                افزودن کالا
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => router.push("/products/add?t=v")}
-              >
-                افزودن ویترین
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          type="button"
+          size="md"
+          disabled={error || !allowAdd}
+          onClick={() => router.push("/products/add?t=p")}
+        >
+          {t("add")}
+          <CircleFadingPlusIcon />
+        </Button>
       </>
     );
   }, [isSearchVisible, setIsSearchVisible, error, router, allowAdd]);

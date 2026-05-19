@@ -34,11 +34,11 @@ interface DestinationContentCycle {
 
 interface AutomationSearchSelectProps {
   value?: string;
-  onSelect: (value: string) => void;
+  onSelect: (value: string, label: string) => void;  // ← label اضافه شد
   error?: boolean;
   initialData?: DestinationContentCycle;
+  title?: string;  // ← فیلد جدید
 }
-
 interface ConditionItem {
   value: string;
   contentCycleId: string;
@@ -53,11 +53,25 @@ export function AutomationSearchSelect({
   onSelect,
   error,
   initialData,
+  title
 }: AutomationSearchSelectProps) {
   const t = useTranslations("Products.Form.Vitrin");
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const debouncedSearch = useDebounce(search, 300);
+
+  React.useEffect(() => {
+    console.log('AutomationSearchSelect Props', JSON.stringify({value, initialData}, undefined, " "));
+
+  }, [])
+
+  const displayLabel = React.useMemo(() => {
+    if (title) return title;
+    if (value && initialData?.id === value) {
+      return initialData.conditions.map((c) => c.value).join(", ");
+    }
+    return value || "";
+  }, [title, value, initialData]);
 
   // Store the selected item info (label) for display
   const [selectedItem, setSelectedItem] = React.useState<{
@@ -140,13 +154,8 @@ export function AutomationSearchSelect({
     }
   }, [value, initialData, groupedItems, selectedItem?.id]);
 
-  // Helper for selection
   const handleSelect = (id: string, label: string) => {
-    setSelectedItem({
-      id,
-      label,
-    });
-    onSelect(id);
+    onSelect(id, label);  // ← label رو هم پاس بده
     setOpen(false);
   };
 
@@ -165,7 +174,7 @@ export function AutomationSearchSelect({
         >
           {selectedItem && selectedItem.id === value
             ? selectedItem.label
-            : value || t("search_automation")}
+            : displayLabel || t("search_automation")}
           <ChevronsUpDown className="-ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

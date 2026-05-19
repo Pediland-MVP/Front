@@ -6,8 +6,12 @@ export enum AutomationContentTypesEnum {
   PRODUCT = "product",
   TEXT = "text",
   VIDEO = "video",
-  QUESTION = 'question'
+  QUESTION = 'question',
+  VITRIN = "vitrin",
+  DELAY = 'delay'
 }
+
+export type AutomationContentFileType = AutomationContentTypesEnum.AUDIO | AutomationContentTypesEnum.IMAGE | AutomationContentTypesEnum.VIDEO
 
 export enum AutomationContentModeEnum {
   AUTOMATION = "automation",

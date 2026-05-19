@@ -102,6 +102,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     },
   });
 
+
   useEffect(() => {
     if (!automation) {
       return;
@@ -169,10 +170,31 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
         content.buttonTemplate.buttons = buttons;
       }
+
+      if (content.vitrins?.length) {
+        content.vitrins = content.vitrins.map(v => ({
+          ...v,
+          imageId: v.images[0]?.id,
+          imageUrl: v.images[0]?.url,
+          ...content.vitrins.buttons?.length && {
+            buttons: transformButtons(content.vitrins.buttons)
+          }
+        }))
+      }
+
+      if (content.type === AutomationContentTypesEnum.DELAY) {
+        if (content.delayMs >= 1000 * 60 * 60) {
+          content.delayUnit = "hour"
+        } else if (content.delayMs >= 1000 * 60) {
+          content.delayUnit = "min"
+        } else {
+          content.delayUnit = 'sec'
+        }
+      }
+
       return content;
     };
 
-    console.log("Automation", automation);
     const transformedAutomation = {
       ...automation,
       contents: automation.contents?.map(transformContent),
@@ -198,6 +220,21 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     let haveError: boolean = false;
 
     const firstType = values.contents[0]?.type;
+
+    // TotalDelays should be under 23 hours
+    let totalDelaysMs: number = 0;
+    let lastDelayContentIndex: number = null
+    values.contents.forEach((c, index) => {
+      if (c.type === AutomationContentTypesEnum.DELAY) {
+        totalDelaysMs += c.delayMs
+        lastDelayContentIndex = index
+      }
+    })
+
+    if (totalDelaysMs > ((1000 * 60 * 60) * 23)) {
+      toast.error(t("Errors.totalDelayMsShouldBeUnder23Hour"))
+      haveError = true
+    }
 
     if (
       values.isComment &&
@@ -289,8 +326,9 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       values.followCheckMessage = t("follow_check_message");
     }
 
-    console.log("We are here.....", values);
     setIsSubmitting(true);
+
+    console.log("Submited values", JSON.stringify(values, undefined, " "))
 
     await api({
       method: id ? "PATCH" : "POST",
@@ -372,8 +410,6 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   />
                 </div>
 
-                <Reminder />
-
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
                   <JustFollowers
                     control={form.control}
@@ -381,8 +417,6 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   />
 
                   <CommentReplies />
-
-                  <SeperateLine />
 
                   <CommentTriggerInputs />
 

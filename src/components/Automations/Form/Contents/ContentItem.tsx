@@ -9,21 +9,8 @@ import type { UploadedFile } from "@/types/fileUploader";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useTranslations } from "next-intl";
-import { Controller, useFormContext } from "react-hook-form";
+import { FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayReturn, useFormContext } from "react-hook-form";
 
-import {
-  Checkbox,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui";
 import {
   ArrowsOutCardinalIcon,
   TrashSimpleIcon,
@@ -35,14 +22,21 @@ import { MediaContent } from "./MediaContent";
 import { ProductContentComp } from "./ProductContent";
 import { TextContent } from "./TextContent";
 import { QuestionContent } from "./QuestionContent";
+import { ContentItemSchema } from '../../../../schemas/automationForm';
+import { z } from 'zod';
+import VitrinContent from "./VitrinContent";
+import { useEffect } from "react";
+import { DelayContent } from "./DelayContent";
 
 interface ReturnContentProps {
   index: number;
   type: AutomationContentTypesEnum;
   mode: AutomationContentModeEnum;
+  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>,
+  content: z.infer<typeof ContentItemSchema>,
 }
 
-export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
+export const ReturnContent = ({ index, type, mode, appendContents, content }: ReturnContentProps) => {
   const {
     control,
     formState: { errors },
@@ -64,8 +58,14 @@ export const ReturnContent = ({ index, type, mode }: ReturnContentProps) => {
     case AutomationContentTypesEnum.QUESTION:
       return <QuestionContent control={control} mode={mode} index={index} />;
 
+    case AutomationContentTypesEnum.VITRIN:
+      return <VitrinContent index={index} mode={mode} control={control} />
+
+    case AutomationContentTypesEnum.DELAY:
+      return <DelayContent index={index} />
+
     default:
-      return <MediaContent index={index} mode={mode} type={type} />;
+      return <MediaContent content={content} appendContents={appendContents} index={index} mode={mode} type={type} />;
   }
 };
 
@@ -73,12 +73,18 @@ export const ContentItem = ({
   id,
   index,
   mode,
+  onContentDeleted,
+  appendContents,
+  content
 }: {
   id: string;
   index: number;
   mode: AutomationContentModeEnum;
   isPromotion?: boolean;
   defaultUploaderValue?: UploadedFile | null;
+  onContentDeleted: (index: number) => any;
+  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>;
+  content: z.infer<typeof ContentItemSchema>,
 }) => {
   const {
     control,
@@ -88,6 +94,11 @@ export const ContentItem = ({
     clearErrors,
     trigger,
   } = useFormContext<AutomationFormType>();
+
+  useEffect(() => {
+    console.log("Errors of AutomationForm", JSON.stringify(errors, undefined, " "));
+  }, [errors])
+
   const t = useTranslations("Automations.Contents");
   const t_contentTypes = useTranslations("Automations.Contents.Types");
 
@@ -102,19 +113,16 @@ export const ContentItem = ({
   };
 
   const deleteContent = () => {
+    onContentDeleted(index)
     removeContents(index);
-
-    // وضعیت جدید بعد از حذف
     const newList =
       mode === AutomationContentModeEnum.AUTOMATION
         ? getValues().contents
         : getValues().reminders;
 
-    // اگر فقط ۱ آیتم یا کمتر باقی مونده => haveConsent رو خاموش کن
     if (newList && newList.length === 1) {
       updateContents(0, {
-        ...newList[0],
-        haveConsent: false,
+        ...newList[0]
       });
     }
   };
@@ -210,6 +218,8 @@ export const ContentItem = ({
           mode={mode}
           index={index}
           type={contents?.[index]?.type || AutomationContentTypesEnum.TEXT}
+          appendContents={appendContents}
+          content={content}
         />
       </div>
     </div>

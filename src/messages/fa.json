@@ -9,7 +9,7 @@
   "Onboarding": {
     "customersSlider": {
       "trustedByTitle": "مورد اعتماد ۵۰۰۰+ پیج اینستاگرام",
-      "trustedByDesc":"برخی از مشتریانی که به بفروش اعتماد کرده‌اند",
+      "trustedByDesc": "برخی از مشتریانی که به بفروش اعتماد کرده‌اند",
       "customers": {
         "baziyato": "بازیاتو",
         "fitnesskiyani": "فیتنس کیانی",
@@ -221,9 +221,9 @@
     }
   },
   "AudioRecorderWithVisualizer": {
-    "save": "ذخیره",
-    "recording": "ضبط",
-    "resetRecording": "ریست"
+    "title": "برای ضبط ویس اینجا کلیک کنید",
+    "recordAgain": "ضبط مجدد",
+    "saveRecord": "تایید"
   },
   "Directs": {
     "ExcelExport": {
@@ -309,8 +309,13 @@
       "cta": {
         "custom": "متن پایانی را مشخص کنید"
       },
+      "totalDelayMsShouldBeUnder23Hour": "جمع کل وقفه‌ها باید کمتر از ۲۳ ساعت باشد",
       "required": "این فیلد الزامی است",
-      "goToInstagram": "اتصال"
+      "goToInstagram": "اتصال",
+      "commentStartTextRequired": "در حالت کامنت، پیام درخواست شروع ضروری است",
+      "followMessageRequired": "متن درخواست فالو در این حالت اجباری است",
+      "followCheckMessageRequired": "متن دکمه بررسی مجدد در این حالت اجباری است",
+      "generalError": "خطایی رخ داده است"
     },
     "Toast": {
       "created": "پیام خودکار با موفقیت ایجاد شد.",
@@ -377,21 +382,29 @@
         "buttons": {
           "descriptions": {
             "button_template": "ساخت انواع دکمه",
-            "media": "ارسال عکس و ویدیو و ویس",
-            "image": "ارسال عکس و ویدیو و ویس",
-            "audio": "ارسال عکس و ویدیو و ویس",
+            "media": "ارسال عکس",
+            "image": "ارسال عکس",
+            "audio": "ارسال ویس",
+            "video": "ارسال ویدئو",
             "instagram_post": "ارسال پست اینستاگرام در دایرکت",
             "product": "فروش کالا و خدمات در دایرکت",
             "text": "ارسال محتوای متنی",
-            "question": "افزودن فرم سوال"
+            "question": "افزودن فرم سوال",
+            "vitrin": "ارسال ویترین",
+            "delay": "ایجاد وقفه در اجرای محتوای بعدی"
           },
           "titles": {
             "button_template": "دکمه",
             "media": "رسانه",
+            "image": "تصویر",
+            "video": "ویدئو",
+            "audio": "ویس",
             "instagram_post": "پست IG",
             "product": "کالا",
             "text": "متن",
-            "question": "سوال"
+            "question": "سوال",
+            "vitrin": "ویترین",
+            "delay": "وقفه"
           }
         },
         "fallback_key": "عنوان محتوا",
@@ -406,6 +419,44 @@
         "enter_your_message": "متن پیام را وارد کنید",
         "Errors": {
           "required": "متن پیام را وارد کنید."
+        }
+      },
+      "Vitrin": {
+        "noItems": "همه رو پاک کردی :)",
+        "title": "ارسال ویترین",
+        "totalCount": "کل آیتم‌ها",
+        "fields": {
+          "title": {
+            "placeholder": "تایتل"
+          },
+          "description": {
+            "placeholder": "توضیحات"
+          }
+        },
+        "imageUploader": {
+          "errors": {
+            "too_small": "عکس الزامی است"
+          }
+        },
+        "buttons": {
+          "uploader": {
+            "title": "برای آپلود عکس کلیک کنید"
+          },
+          "remove": {
+            "title": "حذف"
+          },
+          "addFirst": {
+            "title": "اضافه کردن"
+          }
+        }
+      },
+      "Delay": {
+        "at_least_1_second": "حداقل ۱ ثانیه",
+        "selectTimeUnit": "انتخاب کنید",
+        "timeUnits": {
+          "sec": "ثانیه",
+          "min": "دقیقه",
+          "hour": "ساعت"
         }
       },
       "Question": {
@@ -516,8 +567,8 @@
         "FileUploader": {
           "drag_drop_hint": "فایل خود را در اینجا رها کنید، یا برای انتخاب فایل کلیک کنید.",
           "uploaded_file": "فایل انتخاب شده شما:",
-          "uploaded": "بارگذاری شد.",
-          "upload_button": "بارگذاری فایل",
+          "upload_description": "برای انتخاب فایل اینجا کلیک کنید",
+          "uploaded": "آپلود شد.",
           "MB": "مگابایت",
           "Errors": {
             "invalid_type": "نوع فایل انتخابی پشتیبانی نمی‌شود.",
@@ -527,18 +578,21 @@
             "too_many_files": "تعداد فایل‌های انتخابی بیش از حد مجاز است.",
             "upload_failed": "بارگذاری فایل با خطا مواجه شد."
           },
-          "Limits": {
+          "FileTypes": {
             "image": {
+              "title": "آپلود عکس",
               "text": "عکس: حداکثر حجم ۸ مگابایت",
-              "formats": "فرمت‌های پشتیبانی شده: png, jpeg, gif"
+              "formats": "(فرمت‌ gif,png,jpg تا حداکثر 8 مگابایت)"
             },
             "video": {
+              "title": "آپلود ویدئو",
               "text": "ویدیو: حداکثر حجم ۲۵ مگابایت",
-              "formats": "فرمت‌های پشتیبانی شده: mp4, ogg, avi, mov, webm"
+              "formats": "(فرمت‌ mp4,webm,mov,avi,ogg تا حداکثر ۲۵ مگابایت)"
             },
             "audio": {
+              "title": "آپلود ویس",
               "text": "ویس/موزیک: حداکثر حجم ۲۵ مگابایت",
-              "formats": "فرمت‌ها پشتیبانی شده: aac, m4a, wav, mp4"
+              "formats": "(فرمت aac, m4a, wav, mp4 تا حداکثر ۲۵ مگابایت)"
             }
           }
         }

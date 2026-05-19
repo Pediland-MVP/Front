@@ -6,7 +6,11 @@ import {
   InstagramLogoIcon,
   ShoppingBagIcon,
   RadioButtonIcon,
-  PaperclipIcon,
+  ImageIcon,
+  VideoIcon,
+  MusicNoteSimpleIcon,
+  CardsIcon,
+  TimerIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import React from "react";
 
@@ -23,6 +27,26 @@ export const contentTypeOptions: ContentTypeOption[] = [
     icon: <ChatTextIcon size={30} />,
   },
   {
+    value: AutomationContentTypesEnum.IMAGE,
+    label: "Image",
+    icon: <ImageIcon size={30} />,
+  },
+  {
+    value: AutomationContentTypesEnum.VIDEO,
+    label: "Video",
+    icon: <VideoIcon size={30} />,
+  },
+  {
+    value: AutomationContentTypesEnum.AUDIO,
+    label: "Audio",
+    icon: <MusicNoteSimpleIcon size={30} />,
+  },
+  {
+    value: AutomationContentTypesEnum.BUTTON_TEMPLATE,
+    label: "Button",
+    icon: <RadioButtonIcon size={30} />,
+  },
+  {
     value: AutomationContentTypesEnum.INSTAGRAM_POST,
     label: "Instagram Post",
     icon: <InstagramLogoIcon size={30} />,
@@ -33,19 +57,18 @@ export const contentTypeOptions: ContentTypeOption[] = [
     icon: <ShoppingBagIcon size={30} />,
   },
   {
-    value: AutomationContentTypesEnum.BUTTON_TEMPLATE,
-    label: "Button",
-    icon: <RadioButtonIcon size={30} />,
-  },
-  {
     value: AutomationContentTypesEnum.QUESTION,
     label: "Question",
     icon: <ChatTextIcon size={30} />,
   },
-  //BUG: Dont change my order!
   {
-    value: "media",
-    label: "Media",
-    icon: <PaperclipIcon size={30} />,
+    value: AutomationContentTypesEnum.VITRIN,
+    label: "Vitrin",
+    icon: <CardsIcon size={30} />
   },
+  {
+    value: AutomationContentTypesEnum.DELAY,
+    label: "Delay",
+    icon: <TimerIcon size={30} />
+  }
 ];

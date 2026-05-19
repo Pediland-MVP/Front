@@ -20,7 +20,11 @@ import {
   Switch,
 } from "@/components/ui";
 import { SeperateLine } from "@/components/ui-custom/SeperateLine";
-import { PlusCircleIcon, TextboxIcon, TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  PlusCircleIcon,
+  TextboxIcon,
+  TrashSimpleIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();
@@ -89,7 +93,6 @@ export const CommentReplies = () => {
 
             {field.value && (
               <>
-
                 <FormDescription className="text-[13px]">
                   {t("is_enabled.description")}
                 </FormDescription>
@@ -143,11 +146,11 @@ export const CommentReplies = () => {
                   </div>
                 </div>
               </>
-
             )}
           </FormItem>
         )}
       />
+      <SeperateLine />
     </>
   );
 };

@@ -412,7 +412,11 @@
         "custom": "Please specify the ending text"
       },
       "required": "This field is required",
-      "goToInstagram": "Connect"
+      "goToInstagram": "Connect",
+      "commentStartTextRequired": "In comment mode, the start request message is required",
+      "followMessageRequired": "Follow message is required in this mode",
+      "followCheckMessageRequired": "Retry button text is required in this mode",
+      "generalError": "An error occurred"
     },
     "Toast": {
       "created": "Automation created successfully.",
@@ -991,7 +995,8 @@
       "number": "Quantity",
       "physical": "Physical",
       "tooman": "Toman",
-      "unlimited": "Unlimited"
+      "unlimited": "Unlimited",
+      "vitrin": "Vitrin"
     },
     "List": {
       "no_products": "No products or services found.",
