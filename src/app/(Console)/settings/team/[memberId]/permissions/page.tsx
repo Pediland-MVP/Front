@@ -8,9 +8,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ChevronRightIcon } from "lucide-react";
+import { useWorkspaces } from "@/hooks/useWorkspaces";
 
 interface Permission {
   id: string;
@@ -28,11 +31,25 @@ interface MemberPermission {
   isGranted: boolean;
 }
 
+interface WorkspaceMember {
+  id: string;
+  status?: string;
+  user: {
+    id: string;
+    firstname?: string;
+    lastname?: string;
+    email?: string;
+    mobile?: string;
+  };
+}
+
 export default function MemberPermissionsPage() {
   const params = useParams();
   const router = useRouter();
   const memberId = params["memberId"] as string;
   const tPerms = useTranslations("Permissions");
+  const tTeam = useTranslations("Settings.Team");
+  const { workspaces } = useWorkspaces();
 
   const getPermissionLabel = (slug: string) => {
     const [module, action] = slug.split(":");
@@ -61,6 +78,26 @@ export default function MemberPermissionsPage() {
   };
 
   const { workspaceId, isLoading: isLoadingPermissions } = usePermissions();
+
+  const { data: membersRes, isLoading: isLoadingMembers } = useSWR<any>(
+    workspaceId ? `/workspaces/${workspaceId}/members` : null,
+    fetcher
+  );
+  const members: WorkspaceMember[] = membersRes?.data || membersRes || [];
+  const member = members.find((m) => m.id === memberId);
+  const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
+  const ownerId = activeWorkspace?.ownerId;
+  const isMemberOwner = !!member && member.user?.id === ownerId;
+
+  const memberFullName = member
+    ? (member.user?.firstname || member.user?.lastname
+        ? `${member.user?.firstname || ""} ${member.user?.lastname || ""}`.trim()
+        : tTeam("member"))
+    : "";
+  const memberInitials = member
+    ? ((member.user?.firstname?.[0] || "") + (member.user?.lastname?.[0] || "")).toUpperCase() || "؟"
+    : "؟";
+  const memberContact = member?.user?.mobile || member?.user?.email || "";
 
   const { data: availablePermissionsRes, isLoading: isLoadingAvailable } = useSWR<any>(
     workspaceId ? `/workspaces/${workspaceId}/permissions/available` : null,
@@ -114,7 +151,7 @@ export default function MemberPermissionsPage() {
     {}
   );
 
-  if (isLoadingPermissions || isLoadingAvailable || isLoadingMember) {
+  if (isLoadingPermissions || isLoadingAvailable || isLoadingMember || isLoadingMembers) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -125,17 +162,43 @@ export default function MemberPermissionsPage() {
   return (
     <div className="_permissions-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl overflow-y-auto">
       <div className="flex h-full flex-col px-4 py-5">
-      <div className="flex items-center gap-4 mb-5">
+      <div className="flex items-center gap-3 mb-5">
         <Button variant="outline" size="icon" onClick={() => router.back()}>
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
-        <div>
-          <h2 className="text-primary font-semibold">مدیریت دسترسی‌های کاربر</h2>
-          <p className="text-muted-foreground text-sm mt-0.5">
+        <h2 className="text-primary font-semibold">مدیریت دسترسی‌های کاربر</h2>
+      </div>
+
+      {member && (
+        <div className="mb-5 flex flex-col items-center gap-3 rounded-2xl border bg-gradient-to-b from-primary/5 to-white px-4 py-6 text-center">
+          <Avatar className="h-20 w-20 shrink-0 ring-4 ring-white shadow-sm">
+            <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
+              {memberInitials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="space-y-1">
+            <div className="flex items-center justify-center gap-2">
+              <p className="font-semibold text-base text-gray-900">{memberFullName}</p>
+              <Badge variant={isMemberOwner ? "default" : "secondary"} className="text-[10px]">
+                {isMemberOwner ? tTeam("owner") : tTeam("member")}
+              </Badge>
+            </div>
+            {memberContact && (
+              <p className="text-muted-foreground text-xs" dir="ltr">
+                {memberContact}
+              </p>
+            )}
+            {member.user?.email && member.user?.mobile && (
+              <p className="text-muted-foreground text-xs" dir="ltr">
+                {member.user.email}
+              </p>
+            )}
+          </div>
+          <p className="text-muted-foreground text-xs mt-1 max-w-sm">
             شما می‌توانید دسترسی‌های این کاربر را در فضای کاری فعال و یا غیرفعال کنید
           </p>
         </div>
-      </div>
+      )}
 
       <Card>
         <CardHeader>
