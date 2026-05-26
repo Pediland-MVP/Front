@@ -78,7 +78,7 @@ export default function PasswordPage() {
         mobile,
       });
 
-      if (response.data?.data?.next === "otp") {
+      if (response.data?.data?.result?.next === "otp") {
         if (typeof window !== "undefined" && mobile) {
           sessionStorage.setItem("prelogin_mobile", mobile);
         }
