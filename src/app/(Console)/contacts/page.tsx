@@ -12,6 +12,7 @@ import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { ExcelExportContactsDrawer } from "./components/excelExportContacts.drawer";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function Page() {
   const t = useTranslations("Contacts");
@@ -42,6 +43,8 @@ export default function Page() {
     [isSearchVisible, setIsSearchVisible],
   );
 
+  const { can } = usePermissions();
+
   const HeaderTools = useMemo(
     () => (
       <div className="flex items-center gap-2">
@@ -50,16 +53,18 @@ export default function Page() {
           onChange={setSearch}
           visible={isSearchVisible}
         />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsExportOpen(true)}
-        >
-          <Download className="h-4 w-4" />
-        </Button>
+        {can("lead:export") && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsExportOpen(true)}
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     ),
-    [search, isSearchVisible, setSearch],
+    [search, isSearchVisible, setSearch, can],
   );
 
   useEffect(() => {

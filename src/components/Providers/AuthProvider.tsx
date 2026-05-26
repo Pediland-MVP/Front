@@ -68,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     if (redirect) router.push(redirect);
-  }, [isOnboarding, isUserLoading, pathname, searchParams]);
+  }, [isOnboarding, isUserLoading, pathname, searchParams, hasInstagram, error, router]);
 
   if (!isAllowed) {
     return (

@@ -39,6 +39,7 @@ import useSWRImmutable from "swr/immutable";
 import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { AxiosError } from "axios";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface ContentItem {
   id: number;
@@ -57,6 +58,10 @@ export default function ProductListTable() {
   const t_ec = useTranslations("ERROR_CODES");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  
+  const { can } = usePermissions();
+  const canEdit = can("product:edit");
+  const canDelete = can("product:delete");
   
   
   
@@ -218,20 +223,24 @@ export default function ProductListTable() {
 
                   <TableCell>
                     <div className="flex justify-center gap-2">
-                      <PencilIcon
-                        size={20}
-                        weight="light"
-                        className="cursor-pointer hover:text-green-600"
-                        onClick={() => {
-                          router.push(`/products/${product.id}`);
-                        }}
-                      />
-                      <TrashIcon
-                        size={20}
-                        weight="light"
-                        className="cursor-pointer hover:text-red-600"
-                        onClick={() => handleDeleteClick(product.id)}
-                      />
+                      {canEdit && (
+                        <PencilIcon
+                          size={20}
+                          weight="light"
+                          className="cursor-pointer hover:text-green-600"
+                          onClick={() => {
+                            router.push(`/products/${product.id}`);
+                          }}
+                        />
+                      )}
+                      {canDelete && (
+                        <TrashIcon
+                          size={20}
+                          weight="light"
+                          className="cursor-pointer hover:text-red-600"
+                          onClick={() => handleDeleteClick(product.id)}
+                        />
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

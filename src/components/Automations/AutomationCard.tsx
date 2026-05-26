@@ -9,6 +9,7 @@ import { Badge, Button, Card, CardContent, CardFooter } from "@/components/ui";
 import { CrosshairIcon } from "@phosphor-icons/react/dist/ssr";
 import { CircleXIcon, MessageSquareMoreIcon, PencilIcon } from "lucide-react";
 import { CardImage } from "../Global/CardImage";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface AutomationCardProps {
   item: Automation;
@@ -22,6 +23,7 @@ const AutomationCardComponent = ({
   const router = useRouter();
   const t = useTranslations("Automations.Card");
   const specifiedPost = item.instagramPost?.picture?.url;
+  const { can } = usePermissions();
 
   return (
     <Card className="gap-0 border-violet-200 p-0 shadow-violet-200">
@@ -100,27 +102,31 @@ const AutomationCardComponent = ({
           {t("answers")} ({item.sessionsCount?.toLocaleString() || 0})
         </Button>
 
-        <Button
-          className="text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-green-100 hover:text-green-800"
-          variant="ghost"
-          type="button"
-          size="sm"
-          onClick={() => router.push(`/automations/${item.id}`)}
-        >
-          <PencilIcon className="text-green-600" />
-          {t("edit")}
-        </Button>
+        {can("automation:edit") && (
+          <Button
+            className="text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-green-100 hover:text-green-800"
+            variant="ghost"
+            type="button"
+            size="sm"
+            onClick={() => router.push(`/automations/${item.id}`)}
+          >
+            <PencilIcon className="text-green-600" />
+            {t("edit")}
+          </Button>
+        )}
 
-        <Button
-          className="hover:text-destructive text-muted-foreground h-9 w-full flex-1 rounded-none rounded-bl-xl hover:bg-red-100"
-          variant="ghost"
-          type="button"
-          size="sm"
-          onClick={() => handleDelete(item.id)}
-        >
-          <CircleXIcon className="text-destructive" />
-          {t("delete")}
-        </Button>
+        {can("automation:delete") && (
+          <Button
+            className="hover:text-destructive text-muted-foreground h-9 w-full flex-1 rounded-none rounded-bl-xl hover:bg-red-100"
+            variant="ghost"
+            type="button"
+            size="sm"
+            onClick={() => handleDelete(item.id)}
+          >
+            <CircleXIcon className="text-destructive" />
+            {t("delete")}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

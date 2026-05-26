@@ -1173,11 +1173,66 @@
       "password": "Password Management",
       "upgrade_plan": "Subscription Management",
       "zarinpal": "Zarinpal Management",
-      "profile": "User Account Management"
+      "profile": "User Account Management",
+      "workspace": "Workspace Management",
+      "team": "Team Management"
     },
     "Profile": {
       "title": "User Account Management",
       "description": "Here you can edit your account details."
+    },
+    "Workspace": {
+      "title": "Workspace Management",
+      "description": "Here you can update your workspace details.",
+      "name": "Workspace Name",
+      "save": "Save Changes",
+      "success": "Workspace updated successfully.",
+      "error": "Error updating workspace."
+    },
+    "Invitations": {
+      "title": "My Invitations",
+      "description": "View and manage your workspace invitations.",
+      "workspace": "Workspace",
+      "invited_by": "Invited By",
+      "actions": "Actions",
+      "no_invitations": "No pending invitations.",
+      "accept": "Accept",
+      "deny": "Decline",
+      "accept_success": "Invitation accepted successfully.",
+      "accept_error": "Error accepting invitation.",
+      "deny_success": "Invitation declined successfully.",
+      "deny_error": "Error declining invitation."
+    },
+    "Team": {
+      "title": "Team Management",
+      "description": "View, invite, or remove team members.",
+      "invite": "Invite Member",
+      "members": "Team Members",
+      "no_members": "No members in the team.",
+      "name": "Name",
+      "role": "Role",
+      "email": "Email / Mobile",
+      "actions": "Actions",
+      "remove": "Remove",
+      "invite_member": "Invite via Mobile",
+      "invite_success": "Invitation sent successfully.",
+      "invite_error": "Error sending invitation.",
+      "remove_success": "Member removed successfully.",
+      "remove_error": "Error removing member.",
+      "pending_invitations": "Pending Invitations",
+      "mobile": "Mobile Number",
+      "permissions": "Permissions",
+      "message": "Message (Optional)",
+      "cancel_invite": "Cancel Invite",
+      "cancel_success": "Invitation cancelled successfully.",
+      "cancel_error": "Error cancelling invitation.",
+      "invite_desc": "Enter the mobile number and select initial permissions for the new member.",
+      "select_permissions_error": "At least one permission must be selected.",
+      "invalid_mobile": "Invalid mobile number (e.g., 09123456789)",
+      "manage_permissions": "Manage Permissions",
+      "owner": "Owner",
+      "member": "Member",
+      "mobile_required": "Mobile number is required"
     },
     "Password": {
       "title": "Password Management",
@@ -1842,5 +1897,103 @@
     "email": "Email",
     "telegram": "Telegram",
     "enter_panel": "Enter Panel"
+  },
+  "Permissions": {
+    "_modules": {
+      "product": "Products",
+      "instagram": "Instagram",
+      "automation": "Automations",
+      "lead": "Leads",
+      "order": "Orders",
+      "analytics": "Analytics",
+      "billing": "Billing",
+      "team": "Team",
+      "contentCycle": "Content Cycle",
+      "general": "General"
+    },
+    "product": {
+      "view": "View Products",
+      "view_desc": "View the product list and product details",
+      "create": "Create Product",
+      "create_desc": "Add new products to the store",
+      "edit": "Edit Product",
+      "edit_desc": "Edit existing product information",
+      "delete": "Delete Product",
+      "delete_desc": "Permanently delete products",
+      "price_edit": "Edit Product Price",
+      "price_edit_desc": "Change product prices without editing other details",
+      "publish": "Publish Product",
+      "publish_desc": "Publish or hide products from the store"
+    },
+    "instagram": {
+      "view": "View Instagram",
+      "view_desc": "View connected Instagram accounts",
+      "manage": "Manage Instagram",
+      "manage_desc": "Manage and configure Instagram accounts",
+      "token_manage": "Manage Instagram Token",
+      "token_manage_desc": "Manage access tokens for Instagram accounts"
+    },
+    "automation": {
+      "view": "View Automations",
+      "view_desc": "View the automation list and details",
+      "create": "Create Automation",
+      "create_desc": "Create new automations",
+      "edit": "Edit Automation",
+      "edit_desc": "Edit existing automations",
+      "delete": "Delete Automation",
+      "delete_desc": "Permanently delete automations"
+    },
+    "lead": {
+      "view": "View Leads",
+      "view_desc": "View the lead list and lead information",
+      "create": "Create Lead",
+      "create_desc": "Register new leads",
+      "edit": "Edit Lead",
+      "edit_desc": "Edit existing lead information",
+      "delete": "Delete Lead",
+      "delete_desc": "Permanently delete leads",
+      "export": "Export Leads",
+      "export_desc": "Download an Excel export of the lead list"
+    },
+    "order": {
+      "view": "View Orders",
+      "view_desc": "View the order list and order details",
+      "manage": "Manage Orders",
+      "manage_desc": "Process and update order statuses",
+      "delete": "Delete Order",
+      "delete_desc": "Permanently delete orders"
+    },
+    "analytics": {
+      "view": "View Analytics",
+      "view_desc": "View the analytics dashboard and performance reports",
+      "export": "Export Analytics",
+      "export_desc": "Download exports of analytics reports"
+    },
+    "billing": {
+      "view": "View Billing",
+      "view_desc": "View subscription and billing information",
+      "manage": "Manage Billing",
+      "manage_desc": "Manage subscriptions and make payments"
+    },
+    "team": {
+      "view": "View Team Members",
+      "view_desc": "View the list of workspace members",
+      "invite": "Invite New Member",
+      "invite_desc": "Send invitations to add new members",
+      "manage": "Manage Member Permissions",
+      "manage_desc": "Change access levels for team members",
+      "remove": "Remove Member",
+      "remove_desc": "Remove members from the workspace"
+    },
+    "contentCycle": {
+      "view": "View Content Cycle",
+      "view_desc": "View the content cycle list and details",
+      "create": "Create Content Cycle",
+      "create_desc": "Create new content cycles",
+      "edit": "Edit Content Cycle",
+      "edit_desc": "Edit existing content cycles",
+      "delete": "Delete Content Cycle",
+      "delete_desc": "Permanently delete content cycles"
+    }
   }
 }

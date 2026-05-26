@@ -1,3 +1,1 @@
-import { mutate } from "swr";
-
-export const mutateIncludeStringKey = (value: string) => mutate(key => typeof key === "string" && key.includes(value))
+export const mutateIncludeStringKey = (value: string) => (key: any) => typeof key === "string" && key.includes(value);

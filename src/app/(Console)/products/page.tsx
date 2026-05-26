@@ -12,6 +12,7 @@ import { Button } from "@/components/ui";
 import { SearchInput } from "@/components/ui-custom/SearchInput";
 import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { CircleFadingPlusIcon } from "lucide-react";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function Page() {
   const router = useRouter();
@@ -33,7 +34,8 @@ export default function Page() {
     revalidateOnMount: true,
   });
 
-  const allowAdd = !!cardToCardData;
+  const { can } = usePermissions();
+  const allowAdd = !!cardToCardData && can("product:create");
 
   const HeaderButton = useMemo(() => {
     return (

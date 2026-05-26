@@ -41,3 +41,8 @@ next-env.d.ts
 
 *storybook.log
 .qodo
+
+# Playwright
+/playwright-report/
+/test-results/
+

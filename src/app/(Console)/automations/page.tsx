@@ -11,6 +11,7 @@ import { Button } from "@/components/ui";
 import { SearchInput } from "@/components/ui-custom/SearchInput";
 import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { CircleFadingPlusIcon } from "lucide-react";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function Page() {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function Page() {
       error: s.error,
     }));
 
+  const { can } = usePermissions();
+
   const HeaderButton = useMemo(() => {
     return (
       <>
@@ -35,18 +38,20 @@ export default function Page() {
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
         />
-        <Button
-          type="button"
-          size="md"
-          onClick={() => router.push("/automations/add")}
-          disabled={error}
-        >
-          {t("add")}
-          <CircleFadingPlusIcon />
-        </Button>
+        {can("automation:create") && (
+          <Button
+            type="button"
+            size="md"
+            onClick={() => router.push("/automations/add")}
+            disabled={error}
+          >
+            {t("add")}
+            <CircleFadingPlusIcon />
+          </Button>
+        )}
       </>
     );
-  }, [isSearchVisible, setIsSearchVisible, error, router]);
+  }, [isSearchVisible, setIsSearchVisible, error, router, can]);
 
   const HeaderTools = useMemo(
     () => (

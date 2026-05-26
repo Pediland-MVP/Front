@@ -11,6 +11,8 @@ import {
   InstagramLogoIcon,
   PasswordIcon,
   UserCircleIcon,
+  BriefcaseIcon,
+  UsersIcon,
 } from "@phosphor-icons/react";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
@@ -49,6 +51,16 @@ export const SettingsOptions = () => {
     //   url: "/settings/zarinpal",
     //   icon: PaypalLogoIcon,
     // },
+    {
+      title: t("workspace"),
+      url: "/settings/workspace",
+      icon: BriefcaseIcon,
+    },
+    {
+      title: t("team"),
+      url: "/settings/team",
+      icon: UsersIcon,
+    },
     {
       title: t("profile"),
       url: "/settings/profile",
