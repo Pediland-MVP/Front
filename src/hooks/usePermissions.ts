@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 import { fetcher, getAccessToken } from "@/hooks/swr/api-client";
 import { Permission } from "@/types/workspace";
@@ -32,17 +33,20 @@ export function usePermissions() {
     fetcher
   );
 
-  const permissions = Array.isArray(data) ? data : (data?.data || []);
+  const permissions = useMemo(() => {
+    return Array.isArray(data) ? data : (data?.data || []);
+  }, [data]);
 
-  const can = (slug: string) => {
+  const can = useCallback((slug: string) => {
     return permissions.some((p) => p.slug === slug);
-  };
+  }, [permissions]);
 
-  return {
+  return useMemo(() => ({
     permissions,
     can,
     isLoading,
     error,
     workspaceId,
-  };
+  }), [permissions, can, isLoading, error, workspaceId]);
 }
+

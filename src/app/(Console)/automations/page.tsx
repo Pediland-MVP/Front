@@ -20,14 +20,11 @@ export default function Page() {
   const [search, setSearch] = useState<string>("");
   const [effectiveSearch, setEffectiveSearch] = useState<string>("");
 
-  const { setTools, clearTools, setButtons, clearButtons, error } =
-    useHeaderFeatures((s) => ({
-      setTools: s.setTools,
-      clearTools: s.clearTools,
-      setButtons: s.setButtons,
-      clearButtons: s.clearButtons,
-      error: s.error,
-    }));
+  const setTools = useHeaderFeatures((s) => s.setTools);
+  const clearTools = useHeaderFeatures((s) => s.clearTools);
+  const setButtons = useHeaderFeatures((s) => s.setButtons);
+  const clearButtons = useHeaderFeatures((s) => s.clearButtons);
+  const error = useHeaderFeatures((s) => s.error);
 
   const { can } = usePermissions();
 
@@ -69,19 +66,14 @@ export default function Page() {
   useEffect(() => {
     setButtons(HeaderButton);
     setTools(HeaderTools);
+  }, [HeaderButton, HeaderTools, setButtons, setTools]);
 
+  useEffect(() => {
     return () => {
       clearButtons();
       clearTools();
     };
-  }, [
-    HeaderButton,
-    HeaderTools,
-    setButtons,
-    setTools,
-    clearButtons,
-    clearTools,
-  ]);
+  }, [clearButtons, clearTools]);
 
   return (
     <LayoutCard className="_automation">

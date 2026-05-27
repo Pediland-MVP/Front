@@ -17,14 +17,10 @@ import { usePermissions } from "@/hooks/usePermissions";
 export default function Page() {
   const t = useTranslations("Contacts");
 
-  const { setTools, setButtons, clearTools, clearButtons } = useHeaderFeatures(
-    (s) => ({
-      setTools: s.setTools,
-      clearTools: s.clearTools,
-      setButtons: s.setButtons,
-      clearButtons: s.clearButtons,
-    }),
-  );
+  const setTools = useHeaderFeatures((s) => s.setTools);
+  const setButtons = useHeaderFeatures((s) => s.setButtons);
+  const clearTools = useHeaderFeatures((s) => s.clearTools);
+  const clearButtons = useHeaderFeatures((s) => s.clearButtons);
 
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
@@ -70,19 +66,14 @@ export default function Page() {
   useEffect(() => {
     setButtons(HeaderButton);
     setTools(HeaderTools);
+  }, [HeaderButton, HeaderTools, setButtons, setTools]);
 
+  useEffect(() => {
     return () => {
       clearButtons();
       clearTools();
     };
-  }, [
-    HeaderButton,
-    HeaderTools,
-    setButtons,
-    setTools,
-    clearButtons,
-    clearTools,
-  ]);
+  }, [clearButtons, clearTools]);
 
   return (
     <LayoutTable className="_contacts">

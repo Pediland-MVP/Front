@@ -10,10 +10,8 @@ import { Button } from "@/components/ui";
 
 export default function page() {
   const t = useTranslations("Directs");
-  const { setButtons, clearButtons } = useHeaderFeatures((s) => ({
-    setButtons: s.setButtons,
-    clearButtons: s.clearButtons,
-  }));
+  const setButtons = useHeaderFeatures((s) => s.setButtons);
+  const clearButtons = useHeaderFeatures((s) => s.clearButtons);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -22,11 +20,13 @@ export default function page() {
         {t("ExcelExport.title")}
       </Button>,
     ]);
+  }, [setButtons, t]);
 
+  useEffect(() => {
     return () => {
       clearButtons();
     };
-  }, [setButtons, clearButtons]);
+  }, [clearButtons]);
 
   return (
     <div className="_orders">
