@@ -13,6 +13,7 @@ import EditOrderDialog from "@/app/(Console)/orders/components/editOrderDialog";
 import { NoDataError } from "../Global/NoDataError";
 import { LoaderSpin } from "../ui-custom/LoaderSpin";
 import { ItemsPagination } from "../Console/ItemsPagination";
+import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
 
 interface OrdersCardListProps {
   search: string;
@@ -22,6 +23,7 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   const t = useTranslations("Orders.List");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
+  const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
   const { setError } = useHeaderFeatures();
   const [openOrderDialog, setOpenOrderDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] =
@@ -30,7 +32,13 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   let searchParams = "";
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
-  const apiUrl = `/orders?page=${page}&limit=${limit}${searchParams}`;
+  const instagramIdsParam = selectedInstagramIds
+    .map((id) => `instagramIds[]=${id}`)
+    .join("&");
+  const apiUrl =
+    selectedInstagramIds.length > 0
+      ? `/orders?page=${page}&limit=${limit}${searchParams}&${instagramIdsParam}`
+      : null;
   const {
     data: ordersData,
     error: ordersError,
@@ -82,6 +90,11 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
         open={openOrderDialog}
         setOpen={setOpenOrderDialog}
         order={selectedOrder}
+      />
+
+      <InstagramFilter
+        selectedIds={selectedInstagramIds}
+        onChange={setSelectedInstagramIds}
       />
 
       <div className="flex-1">
