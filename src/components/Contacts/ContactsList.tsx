@@ -1,5 +1,6 @@
 "use client";
 
+import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
 import { toContact } from "@/lib/mappers/contact";
 import type { PageMeta, Paginated } from "@/types/api";
 import type { ContactWire } from "@/types/contact";
@@ -21,6 +22,8 @@ export const ContactsList = ({ search }: { search: string }) => {
   // Table
   const [tableInstance, setTableInstance] = useState<Table<any> | null>(null);
 
+  const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
+
   // Server-side pagination state (1-based page)
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(30);
@@ -40,14 +43,16 @@ export const ContactsList = ({ search }: { search: string }) => {
   }, [search]);
 
   // SWR key as a tuple: [url, { params }]
-  const swrKey = useMemo<
-    [string, { params: { page: number; limit: number; search?: string } }]
-  >(
-    () => [
-      "/contacts",
-      { params: { page, limit, ...(search ? { search } : {}) } },
-    ],
-    [page, limit, search],
+  const instagramIdsParam = selectedInstagramIds
+    .map((id) => `instagramIds[]=${id}`)
+    .join("&");
+
+  const swrKey = useMemo(
+    () =>
+      selectedInstagramIds.length > 0
+        ? `/contacts?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}&${instagramIdsParam}`
+        : null,
+    [page, limit, search, instagramIdsParam, selectedInstagramIds.length],
   );
 
   // Global fetcher from SWRProvider handles this tuple key
@@ -88,6 +93,10 @@ export const ContactsList = ({ search }: { search: string }) => {
 
   return (
     <>
+      <InstagramFilter
+        selectedIds={selectedInstagramIds}
+        onChange={setSelectedInstagramIds}
+      />
       <ContactDetailsDialog
         open={open}
         setOpen={setOpen}
