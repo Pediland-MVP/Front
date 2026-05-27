@@ -44,7 +44,7 @@ export const ContactsList = ({ search }: { search: string }) => {
 
   // SWR key as a tuple: [url, { params }]
   const instagramIdsParam = selectedInstagramIds
-    .map((id) => `instagramIds[]=${id}`)
+    .map((id) => `instagramIds=${id}`)
     .join("&");
 
   const swrKey = useMemo(

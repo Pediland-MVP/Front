@@ -32,7 +32,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
   const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
 
   const instagramIdsParam = selectedInstagramIds
-    .map((id) => `instagramIds[]=${id}`)
+    .map((id) => `instagramIds=${id}`)
     .join("&");
   const {
     data: sessions,

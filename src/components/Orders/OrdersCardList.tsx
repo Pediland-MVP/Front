@@ -33,7 +33,7 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
   const instagramIdsParam = selectedInstagramIds
-    .map((id) => `instagramIds[]=${id}`)
+    .map((id) => `instagramIds=${id}`)
     .join("&");
   const apiUrl =
     selectedInstagramIds.length > 0
