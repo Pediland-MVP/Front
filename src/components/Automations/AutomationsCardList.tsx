@@ -18,6 +18,7 @@ import { ExceptionMessage } from "@/types/exceptionMessage";
 import { ItemsPagination } from "../Console/ItemsPagination";
 import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
 import { NoDataError } from "../Global/NoDataError";
+import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
 import { LoaderSpin } from "../ui-custom/LoaderSpin";
 import { AutomationCard } from "./AutomationCard";
 
@@ -32,13 +33,20 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
   const { setError } = useHeaderFeatures();
 
   // TODO: Better type for AutomationResponse
   let searchParams = "";
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
-  const apiUrl = `/contentCycle?page=${page}&limit=${limit}${searchParams}&isDirect=false&isComment=false&haveInstagramPost=false`;
+  const instagramIdsParam = selectedInstagramIds
+    .map((id) => `instagramIds[]=${id}`)
+    .join("&");
+  const apiUrl =
+    selectedInstagramIds.length > 0
+      ? `/contentCycle?page=${page}&limit=${limit}${searchParams}&isDirect=false&isComment=false&haveInstagramPost=false&${instagramIdsParam}`
+      : null;
   const {
     data: automationsData,
     error: automationsError,
@@ -117,6 +125,10 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
 
   return (
     <>
+      <InstagramFilter
+        selectedIds={selectedInstagramIds}
+        onChange={setSelectedInstagramIds}
+      />
       <DeleteConfirmationDialog
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}

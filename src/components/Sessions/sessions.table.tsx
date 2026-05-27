@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui";
+import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import useSWR from "swr";
 import QuestionAndAnswerDialog from "./questionAnswer.dialog";
@@ -28,14 +29,20 @@ interface SessionTableProps {
 export default function SessionsTable({ contentCycleId }: SessionTableProps) {
   const t = useTranslations("Sessions.List");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
 
+  const instagramIdsParam = selectedInstagramIds
+    .map((id) => `instagramIds[]=${id}`)
+    .join("&");
   const {
     data: sessions,
     error: sessionsError,
     isLoading: isSessionsLoading,
     mutate: mutateSessions,
   } = useSWR<SessionNamespace.Sessions>(
-    `/sessions?page=${currentPage}&limit=10${contentCycleId ? `&contentCycleId=${contentCycleId}` : ""}`,
+    selectedInstagramIds.length > 0
+      ? `/sessions?page=${currentPage}&limit=10${contentCycleId ? `&contentCycleId=${contentCycleId}` : ""}&${instagramIdsParam}`
+      : null,
   );
 
   const nextPage = () => {
@@ -58,6 +65,10 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
 
   return (
     <div>
+      <InstagramFilter
+        selectedIds={selectedInstagramIds}
+        onChange={setSelectedInstagramIds}
+      />
       {sessionsError ? (
         <div className="text-center text-red-500">{sessionsError}</div>
       ) : (
