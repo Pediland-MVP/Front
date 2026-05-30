@@ -27,15 +27,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
   } = useUser();
 
-  // Only fetch pending invitations when the user is in the onboarding state
-  // and hasn't explicitly dismissed the picker in this session.
+  // A user is in the "connect flow" when onboarding is done but no Instagram
+  // is linked yet. We need to show the invitation picker for this state too
+  // (spec State B — already-registered user with a pending invite).
+  const isInConnectFlow = !isOnboarding && !hasInstagram && !!user;
+
   const dismissed =
     typeof window !== "undefined" &&
     sessionStorage.getItem("invitePickerDismissed") === "1";
 
+  // Fetch pending invitations for both onboarding AND connect-flow users.
+  const shouldFetchInvitations = (isOnboarding || isInConnectFlow) && !dismissed;
+
   const { data: pendingRaw, isLoading: isPendingLoading } = useSWR<
     { data?: PendingInvitation[] } | PendingInvitation[]
-  >(isOnboarding && !dismissed ? "/invitations/pending" : null, fetcher);
+  >(shouldFetchInvitations ? "/invitations/pending" : null, fetcher);
 
   const pendingInvitations: PendingInvitation[] = Array.isArray(pendingRaw)
     ? pendingRaw
@@ -44,10 +50,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (isUserLoading) return;
-    // If we're in onboarding and waiting on pending-invitations, hold off on
-    // the redirect decision until that completes — otherwise we'd briefly
-    // route the user to /auth/onboarding then bounce them to the picker.
-    if (isOnboarding && !dismissed && isPendingLoading) return;
+    // Hold routing decision while we're still fetching pending invitations
+    // to avoid a brief redirect before we know whether to show the picker.
+    if (shouldFetchInvitations && isPendingLoading) return;
 
     if (error) {
       if (error.response?.status >= 500) {
@@ -67,21 +72,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const isAuthRoute = pathname.startsWith("/auth");
     const isOnboardingPage = pathname === "/auth/onboarding";
-    const isInvitationsPickerPage =
-      pathname === "/auth/onboarding/invitations";
+    const isInvitationsPickerPage = pathname === "/auth/onboarding/invitations";
     const isConnectPage = pathname === "/connect";
     const isInstagramPage = pathname === "/settings/instagram";
 
-    // Where should the onboarding user be?
+    // Where should the onboarding user land?
     const onboardingDestination =
       hasPendingInvitations && !dismissed
         ? "/auth/onboarding/invitations"
         : "/auth/onboarding";
 
+    // Where should a connect-flow user with pending invitations land?
+    // returnTo=connect ensures the picker's Skip button routes back here.
+    const connectFlowPickerDest =
+      hasPendingInvitations && !dismissed
+        ? "/auth/onboarding/invitations?returnTo=/connect"
+        : null;
+
     if (isAuthRoute) {
       if (isOnboardingPage && !isOnboarding) {
         redirect = "/";
-      } else if (isInvitationsPickerPage && !isOnboarding) {
+      } else if (isInvitationsPickerPage && !isOnboarding && !isInConnectFlow) {
+        // Picker is only accessible to onboarding OR connect-flow users
         redirect = "/";
       } else if (
         isOnboardingPage &&
@@ -89,22 +101,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         hasPendingInvitations &&
         !dismissed
       ) {
-        // User landed on the plain onboarding form but actually has invitations
-        // and hasn't dismissed the picker — bounce them to the picker.
         redirect = "/auth/onboarding/invitations";
       } else if (isInvitationsPickerPage && !hasPendingInvitations) {
-        // Defensive — should not happen, but if it does, fall back.
-        redirect = "/auth/onboarding";
+        redirect = isOnboarding ? "/auth/onboarding" : "/connect";
       } else {
         setIsAllowed(true);
       }
     } else if (isConnectPage) {
-      if (searchParams.get("code")) {
-        setIsAllowed(true);
-      } else if (hasInstagram) {
-        redirect = "/";
-      } else if (isOnboarding) {
+      if (isOnboarding) {
         redirect = onboardingDestination;
+      } else if (isInConnectFlow && connectFlowPickerDest) {
+        // State B: connect-flow user has unreviewed pending invitations
+        redirect = connectFlowPickerDest;
       } else {
         setIsAllowed(true);
       }
@@ -125,8 +133,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (redirect) router.push(redirect);
   }, [
     isOnboarding,
+    isInConnectFlow,
     isUserLoading,
     isPendingLoading,
+    shouldFetchInvitations,
     pathname,
     searchParams,
     hasInstagram,

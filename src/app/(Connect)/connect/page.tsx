@@ -52,7 +52,9 @@ export default function ConnectPage() {
   const code = searchParams.get("code");
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
-  const { user, hasInstagram } = useUser();
+  const { user, hasInstagram, canConnectInstagram } = useUser();
+  const instagramCount = user?.instagrams?.length ?? 0;
+  const atInstagramLimit = instagramCount >= 5;
 
   useEffect(() => {
     const submitCode = async (code: string) => {
@@ -164,7 +166,7 @@ export default function ConnectPage() {
                     {user?.mobile}
                   </span>
                 </div>
-                {user?.submittedInstagramUsername && (
+                {!hasInstagram && user?.submittedInstagramUsername && (
                   <div className="text-muted-foreground flex items-center gap-2">
                     {t("instagram")}{" "}
                     <span className="text-secondary font-semibold">
@@ -186,37 +188,51 @@ export default function ConnectPage() {
             </div>
 
             <div className="flex w-full flex-col items-center justify-center">
-              <Button
-                className="w-full"
-                // onClick={() => setDialogOpen(true)}
-                disabled={isCallbackIGLoading}
-                asChild
-              >
-                <Link
-                  href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
-                >
-                  {isCallbackIGLoading ? (
-                    <>
-                      <Spinner className="size-5" /> {t("connecting_account")}
-                    </>
-                  ) : (
-                    t("connect_account")
-                  )}
-                </Link>
-              </Button>
-              <Button
-                variant="link"
-                className="text-muted-foreground mt-4 text-sm font-normal"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
-                  );
-                  toast.success("لینک اتصال با موفقیت کپی شد!");
-                }}
-              >
-                {t("copy_manual")}
-                <CopyIcon />
-              </Button>
+              {atInstagramLimit ? (
+                <div className="w-full rounded-xl bg-violet-50 px-4 py-3 text-center text-sm text-violet-700">
+                  {t("instagram_limit")}
+                </div>
+              ) : !canConnectInstagram ? (
+                // Sub-scenario B.2 — member lacks instagram:manage permission.
+                // Backend already blocks the connect; this surfaces the reason in the UI.
+                <div className="w-full rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm text-amber-800">
+                  <p className="mb-1 font-medium">{t("no_connect_permission_title")}</p>
+                  <p className="text-xs">{t("no_connect_permission_description")}</p>
+                </div>
+              ) : (
+                <>
+                  <Button
+                    className="w-full"
+                    disabled={isCallbackIGLoading}
+                    asChild
+                  >
+                    <Link
+                      href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
+                    >
+                      {isCallbackIGLoading ? (
+                        <>
+                          <Spinner className="size-5" /> {t("connecting_account")}
+                        </>
+                      ) : (
+                        t("connect_account")
+                      )}
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="link"
+                    className="text-muted-foreground mt-4 text-sm font-normal"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
+                      );
+                      toast.success("لینک اتصال با موفقیت کپی شد!");
+                    }}
+                  >
+                    {t("copy_manual")}
+                    <CopyIcon />
+                  </Button>
+                </>
+              )}
 
               <HelpMeDialog
                 title={t("how_to_connect")}
@@ -234,6 +250,16 @@ export default function ConnectPage() {
                   {t("how_to_connect")}
                 </Button>
               </HelpMeDialog>
+
+              {hasInstagram && (
+                <Button
+                  variant="outline"
+                  className="mt-4 w-full"
+                  asChild
+                >
+                  <Link href="/">{t("back_to_home")}</Link>
+                </Button>
+              )}
             </div>
           </div>
 

@@ -5,7 +5,7 @@ import { setAccessToken } from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,9 +33,13 @@ type Invitation = {
 
 export default function OnboardingInvitationsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations("Auth.Invitations");
   const t_ec = useTranslations("ERROR_CODES");
-  const { mutate: mutateUser } = useUser();
+  const { mutate: mutateUser, isOnboarding } = useUser();
+  // returnTo is set by AuthProvider when it routes a connect-flow user here
+  // so that Skip sends them back to /connect rather than /auth/onboarding
+  const returnTo = searchParams.get("returnTo") ?? (isOnboarding ? "/auth/onboarding" : "/connect");
 
   const { data, isLoading } = useSWR<{ data?: Invitation[] } | Invitation[]>(
     "/invitations/pending",
@@ -64,6 +68,7 @@ export default function OnboardingInvitationsPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSkipping, setIsSkipping] = useState(false);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -80,9 +85,19 @@ export default function OnboardingInvitationsPage() {
     }
   };
 
-  const handleSkip = () => {
-    sessionStorage.setItem("invitePickerDismissed", "1");
-    router.push("/auth/onboarding");
+  // Deny all pending invitations so the backend status reflects the skip.
+  // Failures are silently swallowed — the user experience should not be blocked
+  // by a failed deny call (they are just dismissing, not actively rejecting).
+  const handleSkip = async () => {
+    setIsSkipping(true);
+    try {
+      await Promise.allSettled(
+        invitations.map((inv) => api.post(`/invitations/${inv.id}/deny`)),
+      );
+    } finally {
+      sessionStorage.setItem("invitePickerDismissed", "1");
+      router.push(returnTo);
+    }
   };
 
   if (isLoading) {
@@ -100,7 +115,7 @@ export default function OnboardingInvitationsPage() {
         <p className="text-muted-foreground mb-4 text-sm">
           {t("no_invitations")}
         </p>
-        <ButtonLoading onClick={handleSkip} isLoading={false}>
+        <ButtonLoading onClick={handleSkip} isLoading={isSkipping}>
           {t("continue_without_joining")}
         </ButtonLoading>
       </div>
@@ -223,8 +238,8 @@ export default function OnboardingInvitationsPage() {
               type="button"
               variant="link"
               onClick={handleSkip}
-              isLoading={false}
-              disabled={isSubmitting}
+              isLoading={isSkipping}
+              disabled={isSubmitting || isSkipping}
               className="text-muted-foreground w-full"
             >
               {t("continue_without_joining")}
