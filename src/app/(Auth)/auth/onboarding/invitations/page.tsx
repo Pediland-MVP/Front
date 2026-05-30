@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { z } from "zod";
 
 import {
@@ -37,8 +37,10 @@ export default function OnboardingInvitationsPage() {
   const t = useTranslations("Auth.Invitations");
   const t_ec = useTranslations("ERROR_CODES");
   const { mutate: mutateUser, isOnboarding } = useUser();
-  // returnTo is set by AuthProvider when it routes a connect-flow user here
-  // so that Skip sends them back to /connect rather than /auth/onboarding
+  const { mutate: globalMutate } = useSWRConfig();
+
+  // returnTo is set by AuthProvider when routing a connect-flow (State B) user here
+  // so that Skip sends them back to /connect rather than /auth/onboarding.
   const returnTo = searchParams.get("returnTo") ?? (isOnboarding ? "/auth/onboarding" : "/connect");
 
   const { data, isLoading } = useSWR<{ data?: Invitation[] } | Invitation[]>(
@@ -51,14 +53,21 @@ export default function OnboardingInvitationsPage() {
     return Array.isArray(data) ? data : (data.data ?? []);
   }, [data]);
 
+  // Schema adapts to the user's lifecycle state:
+  // - ONBOARDING users haven't provided their name yet → required name fields
+  // - CONNECT-FLOW (State B) users already completed onboarding → names optional
   const formSchema = useMemo(
     () =>
       z.object({
         invitationId: z.string().uuid({ message: t("must_pick_one") }),
-        firstname: z.string().min(3, t("first_name_too_short")),
-        lastname: z.string().min(3, t("last_name_too_short")),
+        firstname: isOnboarding
+          ? z.string().min(3, t("first_name_too_short"))
+          : z.string().optional(),
+        lastname: isOnboarding
+          ? z.string().min(3, t("last_name_too_short"))
+          : z.string().optional(),
       }),
-    [t],
+    [t, isOnboarding],
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,27 +82,55 @@ export default function OnboardingInvitationsPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      const res = await api.post("/auth/onboarding/acceptInvitation", values);
-      const accessToken = res.data?.data?.accessToken ?? res.data?.accessToken;
-      if (accessToken) setAccessToken(accessToken);
-      await mutateUser();
-      router.push("/");
+      if (isOnboarding) {
+        // ONBOARDING path: single endpoint that atomically sets name + creates membership
+        // and returns a token already scoped to the invited workspace.
+        const res = await api.post("/auth/onboarding/acceptInvitation", values);
+        const accessToken = res.data?.data?.accessToken ?? res.data?.accessToken;
+        if (accessToken) setAccessToken(accessToken);
+        await globalMutate("/invitations/pending");
+        await mutateUser();
+        router.push("/");
+      } else {
+        // STATE B (connect-flow) path: user already completed onboarding.
+        // Use the regular accept endpoint (no status check), then switch workspace.
+        const selectedInv = invitations.find((inv) => inv.id === values.invitationId);
+        if (!selectedInv) throw new Error("Invitation not found");
+
+        await api.post(`/invitations/${values.invitationId}/accept`);
+
+        // Switch active workspace to the one we just joined. The new access token
+        // is scoped to the invited workspace so /users/me returns that workspace's data.
+        const switchRes = await api.post("/auth/changeWorkspace", {
+          workspaceId: selectedInv.workspace.id,
+        });
+        const newToken =
+          switchRes.data?.data?.accessToken ?? switchRes.data?.accessToken;
+        if (newToken) setAccessToken(newToken);
+
+        // Clear the pending invitations cache so AuthProvider doesn't see stale
+        // data and immediately redirect back to this picker on the next render.
+        await globalMutate("/invitations/pending");
+        await mutateUser();
+        router.push("/");
+      }
     } catch (err: any) {
-      console.error("acceptInvitationDuringOnboarding error", err);
+      console.error("acceptInvitation error", err);
       toast.error(t_ec(err.response?.data?.code) || t("accept_error"));
       setIsSubmitting(false);
     }
   };
 
-  // Deny all pending invitations so the backend status reflects the skip.
-  // Failures are silently swallowed — the user experience should not be blocked
-  // by a failed deny call (they are just dismissing, not actively rejecting).
+  // Deny all pending invitations so the backend status reflects the skip (spec:
+  // "whenever an invitation is skipped, its status changes to rejected").
+  // Failures are silently swallowed — the skip itself must not be blocked.
   const handleSkip = async () => {
     setIsSkipping(true);
     try {
       await Promise.allSettled(
         invitations.map((inv) => api.post(`/invitations/${inv.id}/deny`)),
       );
+      await globalMutate("/invitations/pending");
     } finally {
       sessionStorage.setItem("invitePickerDismissed", "1");
       router.push(returnTo);
@@ -109,7 +146,7 @@ export default function OnboardingInvitationsPage() {
   }
 
   if (invitations.length === 0) {
-    // Defensive — the AuthProvider gate normally prevents this.
+    // Defensive — AuthProvider normally prevents landing here with no invitations.
     return (
       <div className="flex h-lvh w-full flex-col items-center justify-center px-10">
         <p className="text-muted-foreground mb-4 text-sm">
@@ -192,44 +229,50 @@ export default function OnboardingInvitationsPage() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="firstname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("first_name_placeholder")}
-                      className="text-center"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Name fields are only required during initial onboarding.
+                State B (connect-flow) users already provided their name. */}
+            {isOnboarding && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="firstname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t("first_name_placeholder")}
+                          className="text-center"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="lastname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("last_name_placeholder")}
-                      className="text-center"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="lastname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t("last_name_placeholder")}
+                          className="text-center"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <ButtonLoading
               className="w-full"
               isLoading={isSubmitting}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isSkipping}
             >
               {t("join_button")}
             </ButtonLoading>

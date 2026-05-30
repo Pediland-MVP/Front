@@ -3,7 +3,7 @@
 import useUser from "@/hooks/useUser";
 import { fetcher } from "@/hooks/swr/api-client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 import { LoaderSpin } from "../ui-custom/LoaderSpin";
@@ -19,6 +19,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Track which pathname we last computed routing for. If the pathname changed
+  // but we haven't yet re-run the routing effect, isAllowed should be false so
+  // we don't flash the previous page's content during the transition.
+  const lastRoutedPath = useRef<string | null>(null);
+
   const {
     error,
     isOnboarding,
@@ -32,6 +38,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // (spec State B — already-registered user with a pending invite).
   const isInConnectFlow = !isOnboarding && !hasInstagram && !!user;
 
+  // Read once per render. A navigation (pathname change) triggers a re-render,
+  // so this correctly reflects the sessionStorage value after skip/dismiss.
   const dismissed =
     typeof window !== "undefined" &&
     sessionStorage.getItem("invitePickerDismissed") === "1";
@@ -47,6 +55,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     ? pendingRaw
     : (pendingRaw?.data ?? []);
   const hasPendingInvitations = pendingInvitations.length > 0;
+
+  // When the pathname changes, immediately drop the isAllowed flag so we never
+  // render a previous page's content while the new route's redirect decision is
+  // being computed.
+  useEffect(() => {
+    setIsAllowed(false);
+    lastRoutedPath.current = null;
+  }, [pathname]);
 
   useEffect(() => {
     if (isUserLoading) return;
@@ -76,24 +92,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isConnectPage = pathname === "/connect";
     const isInstagramPage = pathname === "/settings/instagram";
 
-    // Where should the onboarding user land?
+    // Where should an onboarding user land?
     const onboardingDestination =
       hasPendingInvitations && !dismissed
         ? "/auth/onboarding/invitations"
         : "/auth/onboarding";
 
     // Where should a connect-flow user with pending invitations land?
-    // returnTo=connect ensures the picker's Skip button routes back here.
+    // `returnTo=/connect` ensures the picker's Skip button routes back here.
     const connectFlowPickerDest =
-      hasPendingInvitations && !dismissed
+      isInConnectFlow && hasPendingInvitations && !dismissed
         ? "/auth/onboarding/invitations?returnTo=/connect"
         : null;
 
     if (isAuthRoute) {
       if (isOnboardingPage && !isOnboarding) {
+        // A non-onboarding user has no business on the plain onboarding form.
         redirect = "/";
       } else if (isInvitationsPickerPage && !isOnboarding && !isInConnectFlow) {
-        // Picker is only accessible to onboarding OR connect-flow users
+        // Picker is only reachable during onboarding OR the connect-flow State B.
+        // Any other authenticated user who lands here gets sent home.
         redirect = "/";
       } else if (
         isOnboardingPage &&
@@ -101,8 +119,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         hasPendingInvitations &&
         !dismissed
       ) {
+        // Onboarding user landed on the plain form but has pending invitations
+        // and hasn't dismissed the picker yet — bounce them to the picker.
         redirect = "/auth/onboarding/invitations";
       } else if (isInvitationsPickerPage && !hasPendingInvitations) {
+        // Picker with no invitations to show — send user to the right next step.
         redirect = isOnboarding ? "/auth/onboarding" : "/connect";
       } else {
         setIsAllowed(true);
@@ -110,8 +131,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } else if (isConnectPage) {
       if (isOnboarding) {
         redirect = onboardingDestination;
-      } else if (isInConnectFlow && connectFlowPickerDest) {
-        // State B: connect-flow user has unreviewed pending invitations
+      } else if (connectFlowPickerDest) {
+        // State B: connect-flow user has unreviewed pending invitations.
         redirect = connectFlowPickerDest;
       } else {
         setIsAllowed(true);
@@ -130,7 +151,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
 
-    if (redirect) router.push(redirect);
+    if (redirect) {
+      router.push(redirect);
+    } else {
+      lastRoutedPath.current = pathname;
+    }
   }, [
     isOnboarding,
     isInConnectFlow,
@@ -146,7 +171,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     router,
   ]);
 
-  if (!isAllowed) {
+  // Show spinner until routing is resolved for the current path.
+  if (!isAllowed || lastRoutedPath.current !== pathname) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
         <LoaderSpin />
