@@ -88,8 +88,13 @@ export default function OnboardingInvitationsPage() {
         const res = await api.post("/auth/onboarding/acceptInvitation", values);
         const accessToken = res.data?.data?.accessToken ?? res.data?.accessToken;
         if (accessToken) setAccessToken(accessToken);
-        await globalMutate("/invitations/pending");
-        await mutateUser();
+        // Set dismissed BEFORE invalidating SWR caches so AuthProvider doesn't
+        // see the empty-pending state with dismissed=false and redirect to /connect
+        // while we're still in this handler. Remaining invitations from other
+        // workspaces must not re-trigger the picker after the user has already chosen.
+        sessionStorage.setItem("invitePickerDismissed", "1");
+        globalMutate("/invitations/pending");
+        mutateUser();
         router.push("/");
       } else {
         // STATE B (connect-flow) path: user already completed onboarding.
@@ -107,11 +112,10 @@ export default function OnboardingInvitationsPage() {
         const newToken =
           switchRes.data?.data?.accessToken ?? switchRes.data?.accessToken;
         if (newToken) setAccessToken(newToken);
-
-        // Clear the pending invitations cache so AuthProvider doesn't see stale
-        // data and immediately redirect back to this picker on the next render.
-        await globalMutate("/invitations/pending");
-        await mutateUser();
+        // Set dismissed BEFORE invalidating SWR caches — same reason as onboarding path.
+        sessionStorage.setItem("invitePickerDismissed", "1");
+        globalMutate("/invitations/pending");
+        mutateUser();
         router.push("/");
       }
     } catch (err: any) {
