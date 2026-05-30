@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 
 import {
   AddressBookIcon,
+  BriefcaseIcon,
   CubeIcon,
   GraduationCap,
   HouseIcon,
@@ -63,6 +64,12 @@ const generateData = (t: any, isMobile: boolean) => ({
       title: t("ordersList"),
       url: "/orders",
       icon: ShoppingBagIcon,
+      isActive: true,
+    },
+    {
+      title: t("workspace"),
+      url: "/workspace",
+      icon: BriefcaseIcon,
       isActive: true,
     },
 

@@ -85,7 +85,9 @@
     "support": "Support",
     "title1": "To use Befroosh services,",
     "title2": "please connect your Instagram account first.",
-    "username_updated": "Username updated successfully"
+    "username_updated": "Username updated successfully",
+    "back_to_home": "Back to Home",
+    "instagram_limit": "You have reached the maximum limit of 5 Instagram accounts"
   },
   "Helpme": {
     "close": "Close",
@@ -390,6 +392,7 @@
     }
   },
   "Automations": {
+    "instagram_account": "Instagram Account",
     "add_automation": "Create Automation",
     "add_title": "Message Details",
     "add": "Add",
@@ -1285,7 +1288,8 @@
         "connecting": "Connecting to Instagram..."
       },
       "instagramConnected": "Your Instagram account was successfully added.",
-      "instagramConnectionError": "Failed to connect to Instagram."
+      "instagramConnectionError": "Failed to connect to Instagram.",
+      "limitReached": "Maximum of 5 Instagram accounts can be connected"
     },
     "BankDetails": {
       "description": "Fill in the information below to enable the Card-to-Card payment method.",

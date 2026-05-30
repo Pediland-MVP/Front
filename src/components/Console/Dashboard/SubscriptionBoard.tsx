@@ -1,10 +1,12 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useWorkspaces } from "@/hooks/useWorkspaces";
 import { cn } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // TODO: Should Refactor
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
@@ -51,11 +53,23 @@ export const SubscriptionBoard = () => {
   );
 
   const currentSubscription = activeSubscription || expiredSubscription;
-  const instagramValid = user?.instagrams?.[0]?.isIgTokenValid;
   const hasActiveSubscription =
     currentSubscription?.status === SubscriptionStatusEnum.ACTIVE
       ? true
       : false;
+
+  const { workspaceId } = usePermissions();
+  const { workspaces } = useWorkspaces();
+  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
+
+  const sortedInstagrams = useMemo(() => {
+    if (!user?.instagrams?.length) return [];
+    return [...user.instagrams]
+      .sort((a, b) => Number(a.isIgTokenValid) - Number(b.isIgTokenValid))
+      .slice(0, 3);
+  }, [user?.instagrams]);
+
+  const instagramValid = user?.instagrams?.[0]?.isIgTokenValid;
 
   if (isSubscriptionsLoading || activeSubscription?.type === "credit")
     return null;
@@ -92,36 +106,49 @@ export const SubscriptionBoard = () => {
                   {user?.mobile}
                 </span>
               </div>
-              <div className="flex items-center gap-1">
-                <span
-                  className={cn(
-                    "text-muted-foreground",
-                    !instagramValid && "text-destructive",
-                  )}
-                >
-                  {t("instagram")}
-                </span>
-                <span
-                  className={cn(
-                    "line-clamp-1 flex-1 font-semibold tracking-wider md:ml-1 md:flex-initial",
-                    !instagramValid && "text-destructive",
-                  )}
-                >
-                  {user?.instagrams?.[0]?.username}
-                </span>
-                {instagramValid ? (
-                  <PlugsConnectedIcon
-                    size={22}
-                    weight="duotone"
-                    className="text-green-600"
-                  />
-                ) : (
-                  <PlugsIcon
-                    size={22}
-                    weight="duotone"
-                    className="text-destructive"
-                  />
-                )}
+              {currentWorkspace && (
+                <div className="mb-1 flex items-center gap-1">
+                  <span className="text-muted-foreground">{t("workspace")}:</span>
+                  <span className="line-clamp-1 flex-1 font-semibold">
+                    {currentWorkspace.name}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1">
+                {sortedInstagrams.map((ig) => (
+                  <div key={ig.id} className="flex items-center gap-1">
+                    <span
+                      className={cn(
+                        "text-muted-foreground",
+                        !ig.isIgTokenValid && "text-destructive",
+                      )}
+                    >
+                      {t("instagram")}
+                    </span>
+                    <span
+                      className={cn(
+                        "line-clamp-1 flex-1 font-semibold tracking-wider md:ml-1 md:flex-initial",
+                        !ig.isIgTokenValid && "text-destructive",
+                      )}
+                    >
+                      {ig.username}
+                    </span>
+                    {ig.isIgTokenValid ? (
+                      <PlugsConnectedIcon
+                        size={22}
+                        weight="duotone"
+                        className="text-green-600"
+                      />
+                    ) : (
+                      <PlugsIcon
+                        size={22}
+                        weight="duotone"
+                        className="text-destructive"
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
 
               {/* <div className="flex items-center gap-1">

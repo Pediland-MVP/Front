@@ -20,7 +20,8 @@
       "sessions": "Sessions",
       "unknown": "Unknown",
       "view": "View",
-      "welcome": "Welcome"
+      "welcome": "Welcome",
+      "workspace": "Workspace"
     },
 
     "accessDenied": "You must first connect your Instagram account.",
@@ -47,6 +48,7 @@
       "logout": "Logout",
       "name": "Befroosh",
       "ordersList": "Orders",
+      "workspace": "Workspace",
       "products": "Products / Services",
       "profile": "User Profile",
       "settings": "Settings",
@@ -56,6 +58,11 @@
       "upgrade": "Subscription Management",
       "upgradeAccount": "Subscription",
       "zarinpal": "Zarinpal Management"
-    }
+    },
+    "switchWorkspace": "Switch Workspace",
+    "loading": "Loading...",
+    "noData": "No workspaces found",
+    "yourWorkspaces": "Your Workspaces",
+    "accountSettings": "Account Settings"
   }
 }

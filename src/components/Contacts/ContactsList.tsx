@@ -92,7 +92,7 @@ export const ContactsList = ({ search }: { search: string }) => {
   const blockControls = isLoading || !!error;
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <InstagramFilter
         selectedIds={selectedInstagramIds}
         onChange={setSelectedInstagramIds}
@@ -126,6 +126,6 @@ export const ContactsList = ({ search }: { search: string }) => {
         serverItemCount={itemCount}
         serverTotalPages={totalPages}
       />
-    </>
+    </div>
   );
 };

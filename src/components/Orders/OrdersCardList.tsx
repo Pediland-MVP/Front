@@ -85,7 +85,7 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <EditOrderDialog
         open={openOrderDialog}
         setOpen={setOpenOrderDialog}
@@ -105,7 +105,7 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
             </div>
           </div>
         ) : (
-          <div className="grid gap-3 md:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {orders.map((order) => (
               <OrderCard
                 key={order.id}
@@ -127,6 +127,6 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
         serverItemCount={meta.itemCount}
         serverTotalPages={meta.totalPages}
       />
-    </>
+    </div>
   );
 };

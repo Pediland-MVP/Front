@@ -62,15 +62,16 @@ async function consoleMiddleware(request: NextRequest) {
 // Auth Middleware
 async function authMiddleware(request: NextRequest) {
   const token = request.cookies.get("token");
+  const isOnboardingRoute = request.nextUrl.pathname.startsWith("/auth/onboarding");
 
   if (!token) {
-    if (request.nextUrl.pathname === "/auth/onboarding") {
+    if (isOnboardingRoute) {
       return CustomResponse.redirect(new URL("/auth", request.url), request);
     }
     return CustomResponse.next(request);
   }
 
-  if (request.nextUrl.pathname === "/auth/onboarding") {
+  if (isOnboardingRoute) {
     return CustomResponse.next(request);
   }
 

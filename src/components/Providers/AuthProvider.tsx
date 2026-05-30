@@ -24,6 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // but we haven't yet re-run the routing effect, isAllowed should be false so
   // we don't flash the previous page's content during the transition.
   const lastRoutedPath = useRef<string | null>(null);
+  const lastRedirect = useRef<string | null>(null);
 
   const {
     error,
@@ -60,8 +61,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // render a previous page's content while the new route's redirect decision is
   // being computed.
   useEffect(() => {
-    setIsAllowed(false);
-    lastRoutedPath.current = null;
+    // Intentionally left empty: we no longer drop isAllowed on pathname change.
+    // Unmounting children during a soft navigation breaks the Next.js App Router.
   }, [pathname]);
 
   useEffect(() => {
@@ -106,8 +107,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         : null;
 
     if (isAuthRoute) {
-      if (isOnboardingPage && !isOnboarding) {
-        // A non-onboarding user has no business on the plain onboarding form.
+      if (isOnboardingPage && !isOnboarding && !isInConnectFlow) {
+        // A non-onboarding, non-connect-flow user has no business on the plain
+        // onboarding form. Connect-flow users may arrive here via invitations skip.
         redirect = "/";
       } else if (isInvitationsPickerPage && !isOnboarding && !isInConnectFlow) {
         // Picker is only reachable during onboarding OR the connect-flow State B.
@@ -152,8 +154,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     if (redirect) {
-      router.push(redirect);
+      // Prevent infinite loops: if we're about to redirect to the same URL
+      // that we already redirected to last time, break the cycle.
+      if (lastRedirect.current === redirect) {
+        setIsAllowed(true);
+        lastRoutedPath.current = pathname;
+        lastRedirect.current = null;
+      } else {
+        lastRedirect.current = redirect;
+        router.replace(redirect);
+      }
     } else {
+      lastRedirect.current = null;
       lastRoutedPath.current = pathname;
     }
   }, [
@@ -172,7 +184,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   ]);
 
   // Show spinner until routing is resolved for the current path.
-  if (!isAllowed || lastRoutedPath.current !== pathname) {
+  if (!isAllowed) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
         <LoaderSpin />

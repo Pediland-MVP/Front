@@ -4,7 +4,7 @@ import { Workspace } from "@/types/workspace";
 import { IResponseMessage } from "@/types/responseMessage";
 
 export function useWorkspaces() {
-  const { data, error, isLoading, mutate } = useSWR<IResponseMessage<Workspace[]>>(
+  const { data, error, isLoading, mutate } = useSWR<Workspace[] | IResponseMessage<Workspace[]>>(
     "/workspaces",
     fetcher
   );
@@ -14,8 +14,12 @@ export function useWorkspaces() {
     window.location.reload();
   };
 
+  const workspaces: Workspace[] = Array.isArray(data)
+    ? data
+    : (data?.data ?? []);
+
   return {
-    workspaces: data?.data || [],
+    workspaces,
     isLoading,
     error,
     changeWorkspace,

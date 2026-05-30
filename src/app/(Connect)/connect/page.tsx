@@ -3,6 +3,8 @@
 import { useLogout } from "@/hooks/swr/api-client";
 import useConnectInstagram from "@/hooks/useConnectInstagram";
 import useUser from "@/hooks/useUser";
+import { useWorkspaces } from "@/hooks/useWorkspaces";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +14,7 @@ import { useEffect, useState } from "react";
 import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
 import { LogoSlogan } from "@/components/Global/LogoSlogan";
 import { LogoText } from "@/components/Global/LogoText";
+import { WorkspaceSwitcherDialog } from "@/components/Console/WorkspaceSwitcherDialog";
 import {
   Button,
   Dialog,
@@ -22,7 +25,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
-import { HeadsetIcon, PlugsIcon, SignOutIcon } from "@phosphor-icons/react";
+import { HeadsetIcon, PlugsIcon, SignOutIcon, ArrowsLeftRight } from "@phosphor-icons/react";
 import {
   ClipboardCopyIcon,
   CopyIcon,
@@ -53,6 +56,9 @@ export default function ConnectPage() {
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
+  const { workspaces } = useWorkspaces();
+  const { workspaceId } = usePermissions();
+  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
   const atInstagramLimit = instagramCount >= 5;
 
@@ -166,6 +172,20 @@ export default function ConnectPage() {
                     {user?.mobile}
                   </span>
                 </div>
+                {currentWorkspace && (
+                  <div className="text-muted-foreground flex items-center gap-1.5 mt-1">
+                    <span>{locale === "fa" ? "فضای کاری:" : "Workspace:"}</span>
+                    <span className="text-secondary font-semibold">
+                      {currentWorkspace.name}
+                    </span>
+                    <WorkspaceSwitcherDialog trigger={
+                      <button className="text-xs text-primary font-bold hover:underline cursor-pointer bg-transparent border-0 p-0 flex items-center gap-0.5">
+                        <ArrowsLeftRight size={14} className="inline" />
+                        <span>{locale === "fa" ? "تغییر" : "Change"}</span>
+                      </button>
+                    } />
+                  </div>
+                )}
                 {!hasInstagram && user?.submittedInstagramUsername && (
                   <div className="text-muted-foreground flex items-center gap-2">
                     {t("instagram")}{" "}

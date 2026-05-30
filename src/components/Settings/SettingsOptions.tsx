@@ -52,16 +52,6 @@ export const SettingsOptions = () => {
     //   icon: PaypalLogoIcon,
     // },
     {
-      title: t("workspace"),
-      url: "/settings/workspace",
-      icon: BriefcaseIcon,
-    },
-    {
-      title: t("team"),
-      url: "/settings/team",
-      icon: UsersIcon,
-    },
-    {
       title: t("profile"),
       url: "/settings/profile",
       icon: UserCircleIcon,

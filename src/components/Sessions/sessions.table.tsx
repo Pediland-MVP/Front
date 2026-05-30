@@ -64,7 +64,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <InstagramFilter
         selectedIds={selectedInstagramIds}
         onChange={setSelectedInstagramIds}

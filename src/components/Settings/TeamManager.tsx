@@ -346,7 +346,7 @@ export function TeamManager() {
                     {isMemberOwner ? t("owner") : t("member")}
                   </Badge>
                   {!isMemberOwner && canManage && (
-                    <Link href={`/settings/team/${member.id}/permissions`}>
+                    <Link href={`/workspace/${member.id}/permissions`}>
                       <Button
                         variant="ghost"
                         size="icon"

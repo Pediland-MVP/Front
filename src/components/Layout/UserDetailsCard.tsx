@@ -2,6 +2,8 @@
 
 import { useLogout } from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useWorkspaces } from "@/hooks/useWorkspaces";
 import { cn } from "@/lib/utils";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { useLocale, useTranslations } from "next-intl";
@@ -49,6 +51,17 @@ export const UserDetailsCard = () => {
     totalPurchasedDays,
   } = useSubscriptionStore();
 
+  const { workspaceId } = usePermissions();
+  const { workspaces } = useWorkspaces();
+  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
+
+  const sortedInstagrams = useMemo(() => {
+    if (!userData?.instagrams?.length) return [];
+    return [...userData.instagrams]
+      .sort((a, b) => Number(a.isIgTokenValid) - Number(b.isIgTokenValid))
+      .slice(0, 3);
+  }, [userData?.instagrams]);
+
   const activeSubscription = useMemo(() => {
     if (!subscriptions?.length) return undefined;
 
@@ -66,7 +79,6 @@ export const UserDetailsCard = () => {
   }, [subscriptions]);
 
   const currentSubscription = activeSubscription || expiredSubscription;
-  const instagramValid = userData?.instagrams?.[0]?.isIgTokenValid;
   const hasActiveSubscription =
     currentSubscription?.status === SubscriptionStatusEnum.ACTIVE
       ? true
@@ -164,38 +176,49 @@ export const UserDetailsCard = () => {
               <span className="tracking-wider">{userData?.mobile}</span>
             </div>
 
-            <div className="mb-2 flex items-center gap-1">
-              <div className="flex items-center gap-1">
-                <span
-                  className={cn(
-                    "text-muted-foreground",
-                    !instagramValid && "text-destructive",
-                  )}
-                >
-                  {t("instagram")}:
+            {currentWorkspace && (
+              <div className="mb-1 flex items-center gap-1">
+                <span className="text-muted-foreground">{t("workspace")}:</span>
+                <span className="line-clamp-1 flex-1 font-semibold">
+                  {currentWorkspace.name}
                 </span>
               </div>
-              <span
-                className={cn(
-                  "line-clamp-1 flex-1 font-semibold tracking-wider",
-                  !instagramValid && "text-destructive",
-                )}
-              >
-                {userData?.instagrams?.[0]?.username}
-              </span>
-              {instagramValid ? (
-                <PlugsConnectedIcon
-                  size={20}
-                  weight="duotone"
-                  className="text-green-600"
-                />
-              ) : (
-                <PlugsIcon
-                  size={20}
-                  weight="duotone"
-                  className="text-destructive"
-                />
-              )}
+            )}
+
+            <div className="mb-2 flex flex-col gap-1">
+              {sortedInstagrams.map((ig) => (
+                <div key={ig.id} className="flex items-center gap-1">
+                  <span
+                    className={cn(
+                      "text-muted-foreground",
+                      !ig.isIgTokenValid && "text-destructive",
+                    )}
+                  >
+                    {t("instagram")}:
+                  </span>
+                  <span
+                    className={cn(
+                      "line-clamp-1 flex-1 font-semibold tracking-wider",
+                      !ig.isIgTokenValid && "text-destructive",
+                    )}
+                  >
+                    {ig.username}
+                  </span>
+                  {ig.isIgTokenValid ? (
+                    <PlugsConnectedIcon
+                      size={20}
+                      weight="duotone"
+                      className="text-green-600"
+                    />
+                  ) : (
+                    <PlugsIcon
+                      size={20}
+                      weight="duotone"
+                      className="text-destructive"
+                    />
+                  )}
+                </div>
+              ))}
             </div>
 
             <ProgressLine

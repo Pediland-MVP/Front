@@ -26,7 +26,8 @@ export default function InstagramInvalidRedirector() {
         router.push('/settings/instagram')
       }
     }
-  }, [user, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   return null;
 }

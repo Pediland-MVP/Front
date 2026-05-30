@@ -13,7 +13,11 @@ import {
 import { ArrowsLeftRight } from "@phosphor-icons/react";
 import { useWorkspaces } from "@/hooks/useWorkspaces";
 
-export function WorkspaceSwitcherDialog() {
+interface WorkspaceSwitcherDialogProps {
+  trigger?: React.ReactNode;
+}
+
+export function WorkspaceSwitcherDialog({ trigger }: WorkspaceSwitcherDialogProps) {
   const t = useTranslations("Console");
   const { workspaces, isLoading, changeWorkspace } = useWorkspaces();
   const [open, setOpen] = useState(false);
@@ -21,9 +25,11 @@ export function WorkspaceSwitcherDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-secondary hover:text-primary bg-transparent shrink-0">
-          <ArrowsLeftRight size={20} />
-        </Button>
+        {trigger || (
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-secondary hover:text-primary bg-transparent shrink-0">
+            <ArrowsLeftRight size={20} />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
+import useSWR from "swr";
 // TODO: Refactor
 import type { AutomationResponse } from "@/schemas/automation";
 import type { PageMeta } from "@/schemas/pageMeta";
@@ -21,6 +21,7 @@ import { NoDataError } from "../Global/NoDataError";
 import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
 import { LoaderSpin } from "../ui-custom/LoaderSpin";
 import { AutomationCard } from "./AutomationCard";
+import { useInstagramFilterStore } from "@/lib/stores/useInstagramFilterStore";
 
 interface AutomationsListCardProps {
   search: string;
@@ -33,7 +34,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-  const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
+  const { selectedIds: selectedInstagramIds, setSelectedIds: setSelectedInstagramIds } = useInstagramFilterStore();
   const { setError } = useHeaderFeatures();
 
   // TODO: Better type for AutomationResponse
@@ -52,7 +53,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
     error: automationsError,
     isLoading: isAutomationsLoading,
     mutate: fetchAutomations,
-  } = useSWRImmutable<AutomationResponse>(apiUrl, {
+  } = useSWR<AutomationResponse>(apiUrl, {
     revalidateOnMount: true,
   });
   const automations = automationsData?.items ?? [];
@@ -124,7 +125,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <InstagramFilter
         selectedIds={selectedInstagramIds}
         onChange={setSelectedInstagramIds}
@@ -143,7 +144,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
             </div>
           </div>
         ) : (
-          <div className="grid gap-3 md:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {automations.map((item) => (
               <AutomationCard
                 key={item.id}
@@ -165,6 +166,6 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
         serverItemCount={meta.itemCount}
         serverTotalPages={meta.totalPages}
       />
-    </>
+    </div>
   );
 };

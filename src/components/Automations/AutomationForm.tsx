@@ -37,6 +37,7 @@ import {
   Conditions,
   ConditionTypesEnum,
   Contents,
+  InstagramSelectField,
   JustFollowers,
   Reminder,
   TargetPostComment,
@@ -44,6 +45,7 @@ import {
 } from "./Form";
 import { ValidationTypeEnum } from "@/types/validationType.enum";
 import { CommentLimitAlert } from "./Form/CommentLimitAlert";
+import { useInstagramFilterStore } from "@/lib/stores/useInstagramFilterStore";
 
 type AutomationFormProps = {
   id?: string;
@@ -62,6 +64,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
   const t = useTranslations("Automations");
   const t_ec = useTranslations("ERROR_CODES");
   const t_err = useTranslations("Automations.Errors");
+  const { selectedIds: filterSelectedIds } = useInstagramFilterStore();
 
   const isUUID = (s?: string) =>
     !!s &&
@@ -85,6 +88,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     mode: "onSubmit",
     reValidateMode: "onChange",
     defaultValues: {
+      instagramId: filterSelectedIds[0] ?? "",
       conditionType: ConditionTypesEnum.EQUAL,
       isNoCondition: false,
       commentStartText: t("comment_start_text"),
@@ -330,10 +334,14 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
     console.log("Submited values", JSON.stringify(values, undefined, " "))
 
+    const { instagramId, ...payload } = values;
+
     await api({
       method: id ? "PATCH" : "POST",
-      url: `/contentCycle${id ? `/${id}` : ""}`,
-      data: values,
+      url: id
+        ? `/contentCycle/${instagramId}/${id}`
+        : `/contentCycle?instagramId=${instagramId}`,
+      data: payload,
     })
       .then((res) => {
         toast.success(id ? t("Toast.updated") : t("Toast.created"));
@@ -393,6 +401,9 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 className="grid gap-3.5"
               >
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+                  <InstagramSelectField disabled={!!id} />
+                  <SeperateLine />
+
                   <Conditions
                     control={form.control}
                     getValues={form.getValues}

@@ -14,7 +14,9 @@ import {
   ShoppingBagIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
-import { UserDropdownMenu } from "../Console/UserDropdownMenu";
+import { WorkspaceDrawer } from "../Console/WorkspaceDrawer";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useWorkspaces } from "@/hooks/useWorkspaces";
 
 // Interface kept for reference or external use if needed, but internal logic uses a specific shape
 export interface NavItem {
@@ -30,6 +32,10 @@ export interface NavItem {
 export const NavBottom = () => {
   const pathname = usePathname();
   const t = useTranslations("NavBottom");
+
+  const { workspaceId } = usePermissions();
+  const { workspaces } = useWorkspaces();
+  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
 
   // Defined navigation items array
   const navItems = [
@@ -70,21 +76,21 @@ export const NavBottom = () => {
     <nav className="fixed right-0 bottom-0 left-0 z-50 h-14 border-t border-gray-200/50 bg-white shadow-lg shadow-black md:hidden">
       <div className="flex h-full items-center justify-around">
         {navItems.map((item) => {
-          // Render Profile Dropdown
+          // Render Profile Drawer / Switcher
           if (item.isProfile) {
             return (
-              <UserDropdownMenu key={item.labelKey} size="sm">
-                <div className="flex flex-col items-center justify-center">
+              <WorkspaceDrawer key={item.labelKey}>
+                <button className="flex flex-col items-center justify-center bg-transparent border-0 p-0 text-secondary cursor-pointer">
                   <item.icon
                     size={item.size || 28}
                     weight="duotone"
                     className="text-secondary"
                   />
-                  <span className="text-[10px] text-secondary">
-                    {t(item.labelKey)}
+                  <span className="text-[10px] text-secondary truncate max-w-[75px] mt-0.5">
+                    {currentWorkspace?.name || t(item.labelKey)}
                   </span>
-                </div>
-              </UserDropdownMenu>
+                </button>
+              </WorkspaceDrawer>
             );
           }
 

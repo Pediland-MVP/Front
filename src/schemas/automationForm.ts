@@ -145,6 +145,7 @@ export const ContentItemConditionSchema = z.object({
 
 export const AutomationFormSchema = z
   .object({
+    instagramId: z.string().uuid(),
     conditionType: z.enum(["EQUAL", "INCLUDE", "noCondition"]),
     isDirect: z.boolean(),
     isComment: z.boolean(),
