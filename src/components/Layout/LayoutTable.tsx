@@ -10,7 +10,7 @@ export const LayoutTable = ({ children, className }: LayoutTableProps) => {
   return (
     <div
       className={cn(
-        "_layout-table flex h-full flex-col overflow-hidden rounded-t-3xl bg-white md:rounded-t-none",
+        "_layout-table flex h-full flex-col overflow-y-auto rounded-t-3xl bg-white md:rounded-t-none",
         className,
       )}
     >
