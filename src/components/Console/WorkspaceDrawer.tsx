@@ -7,6 +7,7 @@ import api, { useLogout } from "@/hooks/swr/api-client";
 import useUser from "@/hooks/useUser";
 import { useWorkspaces } from "@/hooks/useWorkspaces";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useInvitations } from "@/hooks/useInvitations";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   CrownIcon,
   LogOutIcon,
+  MailIcon,
   UserRoundPenIcon,
   CheckIcon,
   UserCircleIcon,
@@ -49,6 +51,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
   const { user: userData, isLoading: isUserLoading } = useUser();
   const { workspaces, isLoading: isWorkspacesLoading, changeWorkspace, mutate } = useWorkspaces();
   const { workspaceId } = usePermissions();
+  const { pendingCount } = useInvitations();
   const { subscriptions } = useSubscriptionStore();
 
   const activeSubscription = subscriptions?.find(
@@ -270,6 +273,19 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
           <h3 className="text-xs font-semibold text-gray-500 pr-1 text-right mb-1">
             {tConsole("accountSettings") || "تنظیمات حساب کاربری"}
           </h3>
+
+          <button
+            onClick={() => routeHandler("/invitations")}
+            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+          >
+            <MailIcon className="text-primary size-5 stroke-[1.8]" />
+            <span className="font-medium flex-1">دعوتنامه‌ها</span>
+            {pendingCount > 0 && (
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
+                {pendingCount}
+              </span>
+            )}
+          </button>
 
           {activeSubscription?.type !== "credit" && (
             <button
