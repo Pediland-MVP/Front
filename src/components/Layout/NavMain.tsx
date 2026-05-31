@@ -29,6 +29,7 @@ interface NavMainProps {
     icon: Icon;
     isActive?: boolean;
     external?: boolean;
+    badge?: number;
     items?: {
       title: string;
       url: string;
@@ -105,7 +106,12 @@ export const NavMain = ({ items }: NavMainProps) => {
                       href={item.url}
                       target={item.external ? "_blank" : "_self"}
                     >
-                      <item.icon size={24} weight="duotone" />
+                      <div className="relative">
+                        <item.icon size={24} weight="duotone" />
+                        {item.badge && item.badge > 0 ? (
+                          <span className="absolute -top-0.5 -left-0.5 h-2 w-2 rounded-full bg-blue-500" />
+                        ) : null}
+                      </div>
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
