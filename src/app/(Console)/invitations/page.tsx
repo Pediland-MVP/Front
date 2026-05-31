@@ -66,18 +66,23 @@ export default function InvitationsPage() {
                       <TableCell>
                         {inv.inviter?.firstname} {inv.inviter?.lastname}
                       </TableCell>
-                      <TableCell className="text-right space-x-2 space-x-reverse">
-                        <Button
-                          variant="outline"
-                          onClick={() => handleAction(inv.id, "deny")}
-                        >
-                          {t("deny")}
-                        </Button>
-                        <Button
-                          onClick={() => handleAction(inv.id, "accept")}
-                        >
-                          {t("accept")}
-                        </Button>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground"
+                            onClick={() => handleAction(inv.id, "deny")}
+                          >
+                            {t("deny")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleAction(inv.id, "accept")}
+                          >
+                            {t("accept")}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
