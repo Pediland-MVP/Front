@@ -282,7 +282,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
             <span className="font-medium flex-1">دعوتنامه‌ها</span>
             {pendingCount > 0 && (
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
-                {pendingCount}
+                {pendingCount > 9 ? "9+" : pendingCount}
               </span>
             )}
           </button>

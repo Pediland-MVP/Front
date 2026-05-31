@@ -1,10 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
 import { toast } from "sonner";
-import api, { fetcher } from "@/hooks/swr/api-client";
+import api from "@/hooks/swr/api-client";
+import { useInvitations, Invitation } from "@/hooks/useInvitations";
 import {
   Table,
   TableBody,
@@ -16,27 +15,10 @@ import {
 } from "@/components/ui";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
-type Invitation = {
-  id: string;
-  workspace: {
-    name: string;
-  };
-  inviter: {
-    firstname: string;
-    lastname: string;
-  };
-  status: string;
-};
-
 export default function InvitationsPage() {
   const t = useTranslations("Settings.Invitations");
 
-  const { data, isLoading, mutate } = useSWR<any>(
-    "/invitations/pending",
-    fetcher
-  );
-
-  const invitations: Invitation[] = data?.data || data || [];
+  const { invitations, isLoading, mutate } = useInvitations();
 
   const handleAction = async (id: string, action: "accept" | "deny") => {
     try {

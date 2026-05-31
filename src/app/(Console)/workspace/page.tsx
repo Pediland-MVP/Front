@@ -27,7 +27,7 @@ export default function WorkspacePage() {
             <span className="flex-1 text-sm font-medium text-blue-800">
               شما {pendingCount} دعوتنامه دارید
             </span>
-            <span className="text-xs font-semibold text-blue-600">مشاهده ←</span>
+            <span className="text-xs font-semibold text-blue-600">مشاهده →</span>
           </Link>
         )}
 

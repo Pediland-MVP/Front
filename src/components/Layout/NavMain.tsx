@@ -109,7 +109,7 @@ export const NavMain = ({ items }: NavMainProps) => {
                       <div className="relative">
                         <item.icon size={24} weight="duotone" />
                         {item.badge && item.badge > 0 ? (
-                          <span className="absolute -top-0.5 -left-0.5 h-2 w-2 rounded-full bg-blue-500" />
+                          <span className="absolute -top-0.5 -start-0.5 h-2 w-2 rounded-full bg-blue-500" />
                         ) : null}
                       </div>
                       <span>{item.title}</span>

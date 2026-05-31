@@ -90,7 +90,7 @@ export const NavBottom = () => {
                       className="text-secondary"
                     />
                     {pendingCount > 0 && (
-                      <span className="absolute top-0 left-0 h-2 w-2 rounded-full bg-blue-500" />
+                      <span className="absolute top-0 start-0 h-2 w-2 rounded-full bg-blue-500" />
                     )}
                   </div>
                   <span className="text-[10px] text-secondary truncate max-w-[75px] mt-0.5">
