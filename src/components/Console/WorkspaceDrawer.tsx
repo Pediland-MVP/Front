@@ -274,25 +274,12 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
             {tConsole("accountSettings") || "تنظیمات حساب کاربری"}
           </h3>
 
-          <button
-            onClick={() => routeHandler("/invitations")}
-            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
-          >
-            <MailIcon className="text-primary size-5 stroke-[1.8]" />
-            <span className="font-medium flex-1">دعوتنامه‌ها</span>
-            {pendingCount > 0 && (
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
-                {pendingCount > 9 ? "9+" : pendingCount}
-              </span>
-            )}
-          </button>
-
           {activeSubscription?.type !== "credit" && (
             <button
               onClick={() => routeHandler("/settings/subscription")}
               className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
             >
-              <CrownIcon className="text-primary size-5 stroke-[1.8]" />
+              <CrownIcon className="text-gray-500 size-5 stroke-[1.8]" />
               <span className="font-medium">{tSidebar("upgradeAccount")}</span>
             </button>
           )}
@@ -301,7 +288,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
             onClick={() => routeHandler("/settings/instagram")}
             className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
           >
-            <Instagram className="text-primary size-5 stroke-[1.8]" />
+            <Instagram className="text-gray-500 size-5 stroke-[1.8]" />
             <span className="font-medium">{tSidebar("accounts")}</span>
           </button>
 
@@ -319,6 +306,19 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
           >
             <UserRoundPenIcon className="text-gray-500 size-5 stroke-[1.8]" />
             <span className="font-medium">{tSidebar("profile")}</span>
+          </button>
+
+          <button
+            onClick={() => routeHandler("/invitations")}
+            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+          >
+            <MailIcon className="text-gray-500 size-5 stroke-[1.8]" />
+            <span className="font-medium flex-1">دعوتنامه‌ها</span>
+            {pendingCount > 0 && (
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
+                {pendingCount > 9 ? "9+" : pendingCount}
+              </span>
+            )}
           </button>
 
           <button

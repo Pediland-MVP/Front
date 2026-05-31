@@ -14,6 +14,8 @@ import { useMemo, useState } from "react";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
 
 import {
+  ArrowsClockwiseIcon,
+  CheckIcon,
   PlugsConnectedIcon,
   PlugsIcon,
   SignOutIcon,
@@ -27,6 +29,12 @@ import {
   Button,
   CardContent,
 } from "../ui";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../ui/popover";
+import { Spinner } from "../ui/spinner";
 import { ButtonLoading } from "../ui-custom/ButtonLoading";
 import { CardSimple } from "../ui-custom/CardSimple";
 
@@ -51,9 +59,28 @@ export const UserDetailsCard = () => {
     totalPurchasedDays,
   } = useSubscriptionStore();
 
+  const [workspacePopoverOpen, setWorkspacePopoverOpen] = useState(false);
+  const [isSwitchingWorkspace, setIsSwitchingWorkspace] = useState(false);
+
   const { workspaceId } = usePermissions();
-  const { workspaces } = useWorkspaces();
+  const { workspaces, isLoading: isWorkspacesLoading, changeWorkspace } = useWorkspaces();
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
+
+  const handleSwitchWorkspace = async (wsId: string) => {
+    if (wsId === workspaceId) {
+      setWorkspacePopoverOpen(false);
+      return;
+    }
+    setIsSwitchingWorkspace(true);
+    try {
+      await changeWorkspace(wsId);
+    } catch (error) {
+      console.error("Switch workspace error:", error);
+    } finally {
+      setIsSwitchingWorkspace(false);
+      setWorkspacePopoverOpen(false);
+    }
+  };
 
   const sortedInstagrams = useMemo(() => {
     if (!userData?.instagrams?.length) return [];
@@ -182,6 +209,71 @@ export const UserDetailsCard = () => {
                 <span className="line-clamp-1 flex-1 font-semibold">
                   {currentWorkspace.name}
                 </span>
+                <Popover open={workspacePopoverOpen} onOpenChange={setWorkspacePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="shrink-0 rounded-md p-0.5 text-muted-foreground transition-colors hover:bg-gray-100 hover:text-primary cursor-pointer border-0 bg-transparent"
+                      title="تغییر فضای کاری"
+                    >
+                      {isSwitchingWorkspace ? (
+                        <Spinner className="size-3.5 animate-spin" />
+                      ) : (
+                        <ArrowsClockwiseIcon size={14} weight="bold" />
+                      )}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    sideOffset={6}
+                    className="w-56 p-2 font-Yekan"
+                    dir="rtl"
+                  >
+                    <p className="mb-1.5 px-1 text-[11px] font-semibold text-muted-foreground">
+                      فضاهای کاری
+                    </p>
+                    {isWorkspacesLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Spinner className="size-4" />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-0.5">
+                        {workspaces.map((ws) => {
+                          const isActive = ws.id === workspaceId;
+                          return (
+                            <button
+                              key={ws.id}
+                              onClick={() => handleSwitchWorkspace(ws.id)}
+                              disabled={isSwitchingWorkspace}
+                              className={cn(
+                                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-right text-sm transition-colors cursor-pointer border-0",
+                                isActive
+                                  ? "bg-primary/8 font-semibold text-primary"
+                                  : "text-secondary hover:bg-gray-50",
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold uppercase",
+                                  isActive
+                                    ? "bg-primary text-white"
+                                    : "bg-gray-100 text-gray-600",
+                                )}
+                              >
+                                {ws.name.charAt(0)}
+                              </div>
+                              <span className="flex-1 truncate text-right">
+                                {ws.name}
+                              </span>
+                              {isActive && (
+                                <CheckIcon size={14} weight="bold" className="shrink-0 text-primary" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
               </div>
             )}
 
