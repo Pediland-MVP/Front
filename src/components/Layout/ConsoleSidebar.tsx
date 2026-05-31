@@ -1,6 +1,7 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
+import { useInvitations } from "@/hooks/useInvitations";
 import { useLocale, useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 
@@ -34,7 +35,7 @@ const NavUser = dynamic(() => import("./NavUser"), {
   ssr: false,
 });
 
-const generateData = (t: any, isMobile: boolean) => ({
+const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => ({
   navMain: [
     {
       title: t("dashboard"),
@@ -71,6 +72,7 @@ const generateData = (t: any, isMobile: boolean) => ({
       url: "/workspace",
       icon: BriefcaseIcon,
       isActive: true,
+      badge: pendingInvitations || undefined,
     },
 
     // {
@@ -136,7 +138,8 @@ export const ConsoleSidebar = ({
   const t = useTranslations("Console.Sidebar");
   const locale = useLocale();
   const { isMobile, toggleSidebar } = useSidebar();
-  const data = generateData(t, isMobile);
+  const { pendingCount } = useInvitations();
+  const data = generateData(t, isMobile, pendingCount);
 
   const {
     user: userData,
