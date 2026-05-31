@@ -17,6 +17,7 @@ import {
 import { WorkspaceDrawer } from "../Console/WorkspaceDrawer";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useWorkspaces } from "@/hooks/useWorkspaces";
+import { useInvitations } from "@/hooks/useInvitations";
 
 // Interface kept for reference or external use if needed, but internal logic uses a specific shape
 export interface NavItem {
@@ -35,6 +36,7 @@ export const NavBottom = () => {
 
   const { workspaceId } = usePermissions();
   const { workspaces } = useWorkspaces();
+  const { pendingCount } = useInvitations();
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
 
   // Defined navigation items array
@@ -81,11 +83,16 @@ export const NavBottom = () => {
             return (
               <WorkspaceDrawer key={item.labelKey}>
                 <button className="flex flex-col items-center justify-center bg-transparent border-0 p-0 text-secondary cursor-pointer">
-                  <item.icon
-                    size={item.size || 28}
-                    weight="duotone"
-                    className="text-secondary"
-                  />
+                  <div className="relative">
+                    <item.icon
+                      size={item.size || 28}
+                      weight="duotone"
+                      className="text-secondary"
+                    />
+                    {pendingCount > 0 && (
+                      <span className="absolute top-0 left-0 h-2 w-2 rounded-full bg-blue-500" />
+                    )}
+                  </div>
                   <span className="text-[10px] text-secondary truncate max-w-[75px] mt-0.5">
                     {currentWorkspace?.name || t(item.labelKey)}
                   </span>
