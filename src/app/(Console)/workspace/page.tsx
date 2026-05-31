@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { EnvelopeSimpleIcon } from "@phosphor-icons/react";
 import { WorkspaceForm } from "@/components/Settings/WorkspaceForm";
 import { TeamManager } from "@/components/Settings/TeamManager";
@@ -11,7 +11,6 @@ import { useInvitations } from "@/hooks/useInvitations";
 export default function WorkspacePage() {
   const tWorkspace = useTranslations("Settings.Workspace");
   const tTeam = useTranslations("Settings.Team");
-  const router = useRouter();
   const { pendingCount, isLoading: isInvitationsLoading } = useInvitations();
 
   return (
@@ -20,8 +19,8 @@ export default function WorkspacePage() {
 
         {/* Invitation Banner */}
         {!isInvitationsLoading && pendingCount > 0 && (
-          <button
-            onClick={() => router.push("/invitations")}
+          <Link
+            href="/invitations"
             className="flex w-full items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-right transition-all hover:bg-blue-100"
           >
             <EnvelopeSimpleIcon size={20} weight="duotone" className="shrink-0 text-blue-600" />
@@ -29,7 +28,7 @@ export default function WorkspacePage() {
               شما {pendingCount} دعوتنامه دارید
             </span>
             <span className="text-xs font-semibold text-blue-600">مشاهده ←</span>
-          </button>
+          </Link>
         )}
 
         {/* Workspace Form Section */}
