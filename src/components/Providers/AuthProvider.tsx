@@ -107,9 +107,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         : null;
 
     if (isAuthRoute) {
-      if (isOnboardingPage && !isOnboarding && !isInConnectFlow) {
-        // A non-onboarding, non-connect-flow user has no business on the plain
-        // onboarding form. Connect-flow users may arrive here via invitations skip.
+      if (isOnboardingPage && !isOnboarding && isInConnectFlow) {
+        // User just completed onboarding but hasn't connected Instagram yet.
+        // Redirect them to the connect page instead of letting them stay on
+        // the onboarding form they already submitted.
+        redirect = connectFlowPickerDest ?? "/connect";
+      } else if (isOnboardingPage && !isOnboarding && !isInConnectFlow) {
+        // A fully set-up user (has Instagram) has no business on the onboarding form.
         redirect = "/";
       } else if (isInvitationsPickerPage && !isOnboarding && !isInConnectFlow) {
         // Picker is only reachable during onboarding OR the connect-flow State B.
