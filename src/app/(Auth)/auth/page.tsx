@@ -64,7 +64,7 @@ export default function AuthPage() {
         },
       });
 
-      const next = response.data?.data?.result?.next;
+      const next = response.data?.data?.next;
 
       if (next === "password") {
         router.push(`/auth/password`);
