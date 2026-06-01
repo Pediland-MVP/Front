@@ -21,7 +21,7 @@ import {
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
-export function WorkspaceForm() {
+export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
   const t = useTranslations("Settings.Workspace");
   const { workspaceId } = usePermissions();
   const { workspaces, isLoading: workspacesIsLoading, mutate } = useWorkspaces();
@@ -55,6 +55,7 @@ export function WorkspaceForm() {
       await api.patch(`/workspaces/${workspaceId}`, { name: data.name });
       toast.success(t("success"));
       mutate(); // Refresh workspaces
+      onSuccess?.();
     } catch (e) {
       toast.error(t("error"));
     } finally {
@@ -66,7 +67,7 @@ export function WorkspaceForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-2/3">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <div className="grid gap-2">
           <FormField
             control={form.control}

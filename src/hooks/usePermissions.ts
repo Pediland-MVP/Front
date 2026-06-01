@@ -34,7 +34,7 @@ export function usePermissions() {
   );
 
   const permissions = useMemo(() => {
-    return Array.isArray(data) ? data : (data?.data || []);
+    return (data as any)?.items ?? (Array.isArray(data) ? data : (data?.data || []));
   }, [data]);
 
   const can = useCallback((slug: string) => {

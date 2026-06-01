@@ -88,6 +88,34 @@
     "VERIFY_TRANSACTION_NOT_FOUND": "تراکنش تأیید پیدا نشد",
     "ZARINPAL_ERROR": "خطا در زرین پال",
     "ZARINPAL_USER_HAVE_NOT": "کاربر زرین پال ندارد",
-    "ZARINPAL_VERIFY_ERROR": "خطا در تأیید زرین پال"
+    "ZARINPAL_VERIFY_ERROR": "خطا در تأیید زرین پال",
+
+    "WORKSPACE_NOT_FOUND": "فضای کاری پیدا نشد",
+    "CANNOT_DELETE_PERSONAL_WORKSPACE": "فضای کاری شخصی قابل حذف نیست",
+    "WORKSPACE_DELETE_NOT_OWNER": "فقط مالک فضای کاری می‌تواند آن را حذف کند",
+    "MEMBER_NOT_FOUND": "عضو پیدا نشد",
+    "CANNOT_REMOVE_OWNER": "حذف مالک فضای کاری امکان‌پذیر نیست",
+
+    "UNKNOWN_PERMISSION_SLUG": "دسترسی نامعتبر است",
+    "CANNOT_GRANT_PERMISSIONS_YOU_DO_NOT_HAVE": "دسترسی‌هایی که خودتان ندارید را نمی‌توانید اعطا کنید",
+    "CANNOT_GRANT_WITHOUT_TEAM_MANAGE": "برای اعطای دسترسی باید مدیریت تیم داشته باشید",
+    "CANNOT_REVOKE_WITHOUT_TEAM_MANAGE": "برای گرفتن دسترسی باید مدیریت تیم داشته باشید",
+    "PERMISSION_NOT_FOUND": "دسترسی پیدا نشد",
+    "BULK_ASSIGN_PERMISSION_NOT_FOUND": "دسترسی ناشناخته در عملیات دسته‌ای",
+    "BULK_ASSIGN_FAILED": "عملیات اعطای دسته‌ای دسترسی ناموفق بود",
+    "BULK_REVOKE_FAILED": "عملیات گرفتن دسته‌ای دسترسی ناموفق بود",
+
+    "USER_ALREADY_WORKSPACE_MEMBER": "کاربر قبلاً عضو این فضای کاری است",
+    "CANNOT_INVITE_YOURSELF": "نمی‌توانید خودتان را دعوت کنید",
+    "PENDING_INVITATION_EXISTS": "دعوت‌نامه در انتظار برای این شماره موبایل وجود دارد",
+    "INVITE_DAILY_LIMIT_REACHED": "به حداکثر دعوت روزانه رسیده‌اید (۲۰ دعوت)",
+    "INVITE_MONTHLY_LIMIT_REACHED": "به حداکثر دعوت ماهانه رسیده‌اید (۳۰ دعوت)",
+    "INVITE_BLOCKED_BY_REJECTION": "امروز نمی‌توانید دعوت بیشتری برای این شخص ارسال کنید",
+    "INVITATION_NOT_FOUND": "دعوت‌نامه پیدا نشد",
+    "INVITATION_NOT_PENDING": "فقط دعوت‌نامه‌های در انتظار قابل لغو هستند",
+    "INVITATION_CANCEL_FORBIDDEN": "فقط دعوت‌دهنده یا مالک فضای کاری می‌تواند دعوت‌نامه را لغو کند",
+    "INVITATION_NOT_FOR_YOU": "این دعوت‌نامه برای شما نیست",
+    "INVITATION_EXPIRED": "دعوت‌نامه منقضی شده است",
+    "ALREADY_WORKSPACE_MEMBER": "شما قبلاً عضو این فضای کاری هستید"
   }
 }

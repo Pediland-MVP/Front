@@ -49,6 +49,7 @@ export default function MemberPermissionsPage() {
   const memberId = params["memberId"] as string;
   const tPerms = useTranslations("Permissions");
   const tTeam = useTranslations("Settings.Team");
+  const t_ec = useTranslations("ERROR_CODES");
   const { workspaces } = useWorkspaces();
 
   const getPermissionLabel = (slug: string) => {
@@ -83,7 +84,7 @@ export default function MemberPermissionsPage() {
     workspaceId ? `/workspaces/${workspaceId}/members` : null,
     fetcher
   );
-  const members: WorkspaceMember[] = membersRes?.data || membersRes || [];
+  const members: WorkspaceMember[] = membersRes?.items || membersRes?.data || membersRes || [];
   const member = members.find((m) => m.id === memberId);
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
   const ownerId = activeWorkspace?.ownerId;
@@ -109,13 +110,11 @@ export default function MemberPermissionsPage() {
     fetcher
   );
 
-  const availablePermissions: Permission[] = Array.isArray(availablePermissionsRes)
-    ? availablePermissionsRes
-    : (availablePermissionsRes?.data || []);
+  const availablePermissions: Permission[] = availablePermissionsRes?.items
+    || (Array.isArray(availablePermissionsRes) ? availablePermissionsRes : (availablePermissionsRes?.data || []));
 
-  const memberPermissions = Array.isArray(memberPermissionsRes)
-    ? memberPermissionsRes
-    : (memberPermissionsRes?.data || []);
+  const memberPermissions = memberPermissionsRes?.items
+    || (Array.isArray(memberPermissionsRes) ? memberPermissionsRes : (memberPermissionsRes?.data || []));
 
   const isPermissionGranted = (permissionSlug: string) => {
     return memberPermissions.some(
@@ -130,20 +129,21 @@ export default function MemberPermissionsPage() {
         await api.post(`/workspaces/${workspaceId}/permissions/members/${memberId}/assign`, {
           permissions: [permissionSlug],
         });
-        toast.success("دسترسی با موفقیت داده شد");
+        toast.success(tPerms("grant_success"));
       } else {
         await api.delete(`/workspaces/${workspaceId}/permissions/members/${memberId}/${permissionSlug}`);
-        toast.success("دسترسی با موفقیت گرفته شد");
+        toast.success(tPerms("revoke_success"));
       }
       mutateMemberPermissions();
-    } catch (error) {
-      toast.error("خطا در بروزرسانی دسترسی");
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      toast.error(t_ec(code) || tPerms("update_error"));
     }
   };
 
   const groupedPermissions = availablePermissions.reduce(
     (acc: Record<string, Permission[]>, perm) => {
-      const mod = perm.module || "عمومی";
+      const mod = perm.module || "general";
       if (!acc[mod]) acc[mod] = [];
       acc[mod].push(perm);
       return acc;
@@ -166,7 +166,7 @@ export default function MemberPermissionsPage() {
         <Button variant="outline" size="icon" onClick={() => router.back()}>
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
-        <h2 className="text-primary font-semibold">مدیریت دسترسی‌های کاربر</h2>
+        <h2 className="text-primary font-semibold">{tPerms("page_title")}</h2>
       </div>
 
       {member && (
@@ -195,20 +195,20 @@ export default function MemberPermissionsPage() {
             )}
           </div>
           <p className="text-muted-foreground text-xs mt-1 max-w-sm">
-            شما می‌توانید دسترسی‌های این کاربر را در فضای کاری فعال و یا غیرفعال کنید
+            {tPerms("user_description")}
           </p>
         </div>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>لیست دسترسی‌ها</CardTitle>
-          <CardDescription>دسترسی‌های مورد نیاز کاربر را از لیست زیر انتخاب کنید</CardDescription>
+          <CardTitle>{tPerms("card_title")}</CardTitle>
+          <CardDescription>{tPerms("card_description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           {availablePermissions.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground text-sm rounded-xl border">
-              هیچ دسترسی یافت نشد
+              {tPerms("empty")}
             </div>
           ) : (
             Object.entries(groupedPermissions).map(([moduleName, perms]) => (

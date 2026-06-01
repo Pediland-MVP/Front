@@ -50,6 +50,8 @@
     "subscription": "Subscription Management",
     "upgrade": "Subscription Upgrade",
     "verify": "Subscription Verification",
+    "workspace": "Workspace Settings",
+    "permissions": "Member Permissions",
     "zarinpal": "Zarinpal Management"
   },
   "instagramTokenError": {

@@ -63,6 +63,10 @@ const knownSegmentKey = (seg: string): string | null => {
       return "learn";
     case "help":
       return "help";
+    case "workspace":
+      return "workspace";
+    case "permissions":
+      return "permissions";
     default:
       return null;
   }

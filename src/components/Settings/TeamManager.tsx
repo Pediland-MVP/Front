@@ -49,6 +49,7 @@ type WorkspaceMember = {
 export function TeamManager() {
   const t = useTranslations("Settings.Team");
   const tPerms = useTranslations("Permissions");
+  const t_ec = useTranslations("ERROR_CODES");
   const { workspaceId, can } = usePermissions();
   const { workspaces } = useWorkspaces();
   const canManage = can("team:manage");
@@ -62,23 +63,21 @@ export function TeamManager() {
     workspaceId ? `/workspaces/${workspaceId}/members` : null,
     fetcher
   );
-  const members: WorkspaceMember[] = membersRes?.data || membersRes || [];
+  const members: WorkspaceMember[] = membersRes?.items || membersRes?.data || membersRes || [];
 
   const { data: availablePermissionsRes } = useSWR<any>(
     workspaceId && canInvite ? `/workspaces/${workspaceId}/permissions/available` : null,
     fetcher
   );
-  const availablePermissions = Array.isArray(availablePermissionsRes)
-    ? availablePermissionsRes
-    : (availablePermissionsRes?.data || []);
+  const availablePermissions = availablePermissionsRes?.items
+    || (Array.isArray(availablePermissionsRes) ? availablePermissionsRes : (availablePermissionsRes?.data || []));
 
   const { data: invitationsRes, mutate: mutateInvitations } = useSWR<any>(
     workspaceId ? `/workspaces/${workspaceId}/invitations` : null,
     fetcher
   );
-  const invitations = Array.isArray(invitationsRes)
-    ? invitationsRes
-    : (invitationsRes?.data || []);
+  const invitations = invitationsRes?.items
+    || (Array.isArray(invitationsRes) ? invitationsRes : (invitationsRes?.data || []));
   const pendingInvitations = invitations.filter((inv: any) => inv.status === "pending");
 
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -132,8 +131,9 @@ export function TeamManager() {
       setInviteOpen(false);
       inviteForm.reset({ mobile: "", permissions: availablePermissions.map((p: any) => p.slug), message: "" });
       mutateInvitations();
-    } catch (e) {
-      toast.error(t("invite_error"));
+    } catch (e: any) {
+      const code = e?.response?.data?.code;
+      toast.error(t_ec(code) || t("invite_error"));
     } finally {
       setIsInviting(false);
     }
@@ -144,8 +144,9 @@ export function TeamManager() {
       await api.delete(`/workspaces/${workspaceId}/members/${memberId}`);
       toast.success(t("remove_success"));
       mutateMembers();
-    } catch (e) {
-      toast.error(t("remove_error"));
+    } catch (e: any) {
+      const code = e?.response?.data?.code;
+      toast.error(t_ec(code) || t("remove_error"));
     }
   };
 
@@ -154,8 +155,9 @@ export function TeamManager() {
       await api.patch(`/workspaces/${workspaceId}/invitations/${invitationId}/cancel`);
       toast.success(t("cancel_success"));
       mutateInvitations();
-    } catch (e) {
-      toast.error(t("cancel_error"));
+    } catch (e: any) {
+      const code = e?.response?.data?.code;
+      toast.error(t_ec(code) || t("cancel_error"));
     }
   };
 

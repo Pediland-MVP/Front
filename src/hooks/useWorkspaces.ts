@@ -14,9 +14,8 @@ export function useWorkspaces() {
     window.location.reload();
   };
 
-  const workspaces: Workspace[] = Array.isArray(data)
-    ? data
-    : (data?.data ?? []);
+  const workspaces: Workspace[] = (data as any)?.items
+    ?? (Array.isArray(data) ? data : (data?.data ?? []));
 
   return {
     workspaces,

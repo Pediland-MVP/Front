@@ -17,6 +17,7 @@ import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 
 export default function InvitationsPage() {
   const t = useTranslations("Settings.Invitations");
+  const t_ec = useTranslations("ERROR_CODES");
 
   const { invitations, isLoading, mutate } = useInvitations();
 
@@ -28,8 +29,9 @@ export default function InvitationsPage() {
       if (action === "accept") {
         window.location.href = "/";
       }
-    } catch (e) {
-      toast.error(t(`${action}_error`));
+    } catch (e: any) {
+      const code = e?.response?.data?.code;
+      toast.error(t_ec(code) || t(`${action}_error`));
     }
   };
 

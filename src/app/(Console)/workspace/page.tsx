@@ -1,21 +1,88 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { EnvelopeSimpleIcon } from "@phosphor-icons/react";
+import { EnvelopeSimpleIcon, ArrowsLeftRight } from "@phosphor-icons/react";
+import { Pencil, Plus } from "lucide-react";
 import { WorkspaceForm } from "@/components/Settings/WorkspaceForm";
 import { TeamManager } from "@/components/Settings/TeamManager";
-import { Separator } from "@/components/ui/separator";
+import { WorkspaceSwitcherDialog } from "@/components/Console/WorkspaceSwitcherDialog";
 import { useInvitations } from "@/hooks/useInvitations";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useWorkspaces } from "@/hooks/useWorkspaces";
+import api from "@/hooks/swr/api-client";
+import { toast } from "sonner";
+import {
+  Avatar,
+  AvatarFallback,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui";
 
 export default function WorkspacePage() {
   const tWorkspace = useTranslations("Settings.Workspace");
   const tTeam = useTranslations("Settings.Team");
+  const t_ec = useTranslations("ERROR_CODES");
   const { pendingCount, isLoading: isInvitationsLoading } = useInvitations();
+  const { workspaceId, isLoading: isLoadingPermissions } = usePermissions();
+  const { workspaces, isLoading: workspacesIsLoading, changeWorkspace, mutate } = useWorkspaces();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createWorkspaceName, setCreateWorkspaceName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+
+  const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
+
+  if (workspacesIsLoading || isLoadingPermissions) {
+    return (
+      <div className="flex h-full min-h-[400px] items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  const workspaceName = activeWorkspace?.name || tWorkspace("title");
+  const workspaceInitials = activeWorkspace?.name
+    ? activeWorkspace.name.substring(0, 2).toUpperCase()
+    : tWorkspace("title").substring(0, 2).toUpperCase();
+
+  const handleCreateWorkspace = async () => {
+    if (!createWorkspaceName.trim()) return;
+    setIsCreating(true);
+    try {
+      const response = await api.post("/workspaces", { name: createWorkspaceName.trim() });
+      const newWs = response?.data?.data || response?.data || response;
+      toast.success(tWorkspace("create_success"));
+
+      setIsCreateOpen(false);
+      setCreateWorkspaceName("");
+
+      if (newWs && newWs.id) {
+        await changeWorkspace(newWs.id);
+      } else {
+        mutate();
+      }
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      toast.error(t_ec(code) || tWorkspace("create_error"));
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   return (
     <div className="_workspace-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl overflow-y-auto">
-      <div className="flex min-h-full flex-col border-gray-100 px-4 py-6 md:py-8 md:px-8 space-y-8 animate-in fade-in duration-300">
+      <div className="flex h-full flex-col px-4 py-5 space-y-6 animate-in fade-in duration-300">
 
         {/* Invitation Banner */}
         {!isInvitationsLoading && pendingCount > 0 && (
@@ -25,34 +92,126 @@ export default function WorkspacePage() {
           >
             <EnvelopeSimpleIcon size={20} weight="duotone" className="shrink-0 text-blue-600" />
             <span className="flex-1 text-sm font-medium text-blue-800">
-              شما {pendingCount} دعوتنامه دارید
+              {tWorkspace("invitation_banner", { count: pendingCount })}
             </span>
-            <span className="text-xs font-semibold text-blue-600">مشاهده →</span>
+            <span className="text-xs font-semibold text-blue-600">{tWorkspace("view")}</span>
           </Link>
         )}
 
-        {/* Workspace Form Section */}
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-primary text-lg font-bold mb-1">{tWorkspace("title")}</h2>
-            <p className="text-muted-foreground text-sm">{tWorkspace("description")}</p>
-          </div>
-          <div className="bg-gray-50/50 rounded-xl p-4 md:p-6 border border-gray-100">
-            <WorkspaceForm />
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-primary font-semibold text-lg shrink-0">{tWorkspace("title")}</h2>
+          
+          <div className="flex items-center gap-2 shrink-0">
+            <WorkspaceSwitcherDialog
+              trigger={
+                <Button variant="outline" className="flex items-center gap-2 text-xs font-semibold py-2 px-3 rounded-xl transition-all cursor-pointer select-none">
+                  <ArrowsLeftRight className="w-4 h-4 shrink-0" />
+                  <span className="hidden sm:inline">{tWorkspace("switch_workspace")}</span>
+                </Button>
+              }
+            />
+
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button className="flex items-center gap-2 text-xs font-semibold py-2 px-3 rounded-xl transition-all cursor-pointer select-none">
+                  <Plus className="w-4 h-4 shrink-0" />
+                  <span className="hidden sm:inline">{tWorkspace("new_workspace")}</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{tWorkspace("create_dialog_title")}</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-4 pt-3">
+                  <div className="space-y-2 text-right">
+                    <label className="text-sm font-medium text-gray-700 block pr-1">
+                      {tWorkspace("name")}
+                    </label>
+                    <input
+                      type="text"
+                      value={createWorkspaceName}
+                      onChange={(e) => setCreateWorkspaceName(e.target.value)}
+                      placeholder={tWorkspace("name_placeholder")}
+                      className="w-full p-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary text-right bg-white text-gray-800"
+                      disabled={isCreating}
+                      autoFocus
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setIsCreateOpen(false);
+                        setCreateWorkspaceName("");
+                      }}
+                      disabled={isCreating}
+                      className="rounded-xl"
+                    >
+                      {tWorkspace("cancel")}
+                    </Button>
+                    <Button
+                      onClick={handleCreateWorkspace}
+                      disabled={isCreating || !createWorkspaceName.trim()}
+                      className="min-w-[80px] rounded-xl"
+                    >
+                      {isCreating ? tWorkspace("creating") : tWorkspace("create")}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
-        <Separator className="bg-gray-100" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          {activeWorkspace && (
+            <div className="flex flex-col items-center gap-3 rounded-2xl border bg-gradient-to-b from-primary/5 to-white px-4 py-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative group">
+              
+              {/* Edit Workspace Dialog in Top-Left Corner */}
+              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-4 left-4 h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all inline-flex items-center justify-center cursor-pointer"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>{tWorkspace("title")}</DialogTitle>
+                  </DialogHeader>
+                  <div className="pt-2">
+                    <WorkspaceForm onSuccess={() => setIsEditDialogOpen(false)} />
+                  </div>
+                </DialogContent>
+              </Dialog>
 
-        {/* Team Manager Section */}
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-primary text-lg font-bold mb-1">{tTeam("title")}</h2>
-            <p className="text-muted-foreground text-sm">{tTeam("description")}</p>
-          </div>
-          <div className="bg-white rounded-xl">
-            <TeamManager />
-          </div>
+              <Avatar className="h-20 w-20 shrink-0 ring-4 ring-white shadow-sm transition-transform duration-300 group-hover:scale-105">
+                <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
+                  {workspaceInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <p className="font-semibold text-base text-gray-900 leading-none">{workspaceName}</p>
+              </div>
+              <p className="text-muted-foreground text-xs mt-1 max-w-sm">
+                {tWorkspace("card_description")}
+              </p>
+            </div>
+          )}
+
+          {/* Team Manager Section */}
+          <Card className="border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden md:col-span-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold text-gray-900">{tTeam("title")}</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">{tTeam("description")}</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-4 border-t border-gray-50">
+              <TeamManager />
+            </CardContent>
+          </Card>
         </div>
 
       </div>

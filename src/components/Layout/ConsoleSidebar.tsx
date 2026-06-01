@@ -11,6 +11,7 @@ import {
   CubeIcon,
   GraduationCap,
   HouseIcon,
+  InstagramLogoIcon,
   LifebuoyIcon,
   LightningIcon,
   ShoppingBagIcon,
@@ -73,6 +74,12 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       icon: BriefcaseIcon,
       isActive: true,
       badge: pendingInvitations || undefined,
+    },
+    {
+      title: t("accounts"),
+      url: "/settings/instagram",
+      icon: InstagramLogoIcon,
+      isActive: true,
     },
 
     // {

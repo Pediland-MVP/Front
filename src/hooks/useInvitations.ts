@@ -15,9 +15,8 @@ export function useInvitations() {
     fetcher,
   );
 
-  const invitations: Invitation[] = Array.isArray(data)
-    ? data
-    : (data?.data ?? []);
+  const invitations: Invitation[] = (data as any)?.items
+    ?? (Array.isArray(data) ? data : (data?.data ?? []));
 
   return {
     invitations,
