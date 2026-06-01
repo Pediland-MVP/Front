@@ -1,6 +1,7 @@
 "use client";
 
 import api, { useLogout } from "@/hooks/swr/api-client";
+import useUser from "@/hooks/useUser";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -36,6 +37,7 @@ export default function OnboardingPage() {
   const [isCanceling, setIsCanceling] = useState(false);
   const [showReferralCode, setShowReferralCode] = useState(false);
   const logout = useLogout();
+  const { mutate: mutateUser } = useUser();
 
   const formSchema = useMemo(
     () =>
@@ -75,6 +77,7 @@ export default function OnboardingPage() {
 
     try {
       await api.post(`${API_URL}/auth/completeOnboarding`, values);
+      await mutateUser();
       router.push("/connect");
     } catch (error) {
       console.error("❌ Onboarding error:", error);
