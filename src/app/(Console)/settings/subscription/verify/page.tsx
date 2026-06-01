@@ -3,15 +3,13 @@
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
 
+import api from "@/hooks/swr/api-client";
 import { ExceptionMessage } from "@/types/exceptionMessage";
 
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 function buildVerifyUrl(searchParams: URLSearchParams): string | null {
   const trackId = searchParams.get("trackId");
@@ -20,12 +18,12 @@ function buildVerifyUrl(searchParams: URLSearchParams): string | null {
   if (trackId) {
     const success = searchParams.get("success") ?? "";
     const status = searchParams.get("status") ?? "";
-    return `${API_URL}/payments/subscription/zibal/verify?trackId=${trackId}&success=${success}&status=${status}`;
+    return `/payments/subscription/zibal/verify?trackId=${trackId}&success=${success}&status=${status}`;
   }
 
   if (Authority) {
     const Status = searchParams.get("Status") ?? "";
-    return `${API_URL}/payments/subscription/zarinpal/verify?Authority=${Authority}&Status=${Status}`;
+    return `/payments/subscription/zarinpal/verify?Authority=${Authority}&Status=${Status}`;
   }
 
   return null;
@@ -37,27 +35,36 @@ export default function VerifyPage() {
   const t = useTranslations("Subscription.Verify");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const verifyUrl = buildVerifyUrl(searchParams);
+  const [refId, setRefId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
 
-  const {
-    data: refId,
-    isLoading,
-    error,
-  } = useSWRImmutable(verifyUrl);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    mutate(mutateIncludeStringKey("plans"));
-  }, []);
+    const verify = async () => {
+      const verifyUrl = buildVerifyUrl(searchParams);
+      if (!verifyUrl || hasFetched.current) return;
+      hasFetched.current = true;
 
-  useEffect(() => {
-    const run = async () => {
-      if (refId) {
+      try {
+        setIsLoading(true);
+        const res = await api.get(verifyUrl);
+        
+        mutate(mutateIncludeStringKey("plans"));
+        setRefId(res.data?.data?.ref_id || "");
+        
         await mutate(mutateIncludeStringKey("subscription"));
         router.push(`/settings/instagram?isAfterPurchasingPlan`);
+      } catch (err: any) {
+        setError(err.response?.data || err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    run();
-  }, [refId, router]);
+
+    verify();
+  }, [searchParams, router]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-y-2">
@@ -67,8 +74,8 @@ export default function VerifyPage() {
         <>
           <p className="text-4xl font-bold text-red-600">{t("error")}</p>
           <p>
-            {error.data
-              ? t_ec((error.data as ExceptionMessage)?.code)
+            {error.code
+              ? t_ec(error.code as ExceptionMessage)
               : t_ec("SERVER_CONNECTION_ERROR")}
           </p>
         </>
@@ -76,7 +83,7 @@ export default function VerifyPage() {
         <>
           <p className="text-4xl font-bold text-green-600">{t("sucessFull")}</p>
           <p>{t("sucessFullDescription")}</p>
-          <p>{t("refId", { refId: refId?.data?.ref_id })}</p>
+          <p>{t("refId", { refId })}</p>
         </>
       )}
     </div>
