@@ -1,8 +1,9 @@
 "use client";
 
-import api from "@/hooks/swr/api-client";
+import api, { setAccessToken } from "@/hooks/swr/api-client";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { GoogleLogin } from "@react-oauth/google";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -49,6 +50,24 @@ export default function AuthPage() {
       mobile: "",
     },
   });
+
+  const handleGoogleSignIn = async (credential: string | undefined) => {
+    if (!credential) return;
+    setIsLoading(true);
+    try {
+      const res = await api.post(`${API_URL}/auth/google/verify`, { idToken: credential });
+      setAccessToken(res?.data?.data?.accessToken);
+      const me = await api.get("/users/me");
+      if (me?.data?.status === "onboarding") {
+        router.push("/auth/onboarding");
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      toast.error(t_ec(error?.response?.data?.code) || t_ec("INVALID_GOOGLE_TOKEN"));
+      setIsLoading(false);
+    }
+  };
 
   const onSubmit = async (data: { mobile: string }) => {
     setIsLoading(true);
@@ -141,6 +160,25 @@ export default function AuthPage() {
         </Form>
 
         <TelegramOtpAlert phone={form.watch("mobile") || undefined} />
+
+        <div className="flex items-center gap-3">
+          <hr className="flex-1 border-muted" />
+          <span className="text-muted-foreground text-[13px]">{t("or_divider")}</span>
+          <hr className="flex-1 border-muted" />
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={(credentialResponse) =>
+              handleGoogleSignIn(credentialResponse.credential)
+            }
+            onError={() => toast.error(t_ec("INVALID_GOOGLE_TOKEN"))}
+            locale={locale}
+            size="large"
+            shape="rectangular"
+            text="signin_with"
+          />
+        </div>
 
         <p className="text-muted-foreground text-center text-[13px]">
           {t.rich("terms_and_conditions_message", {

@@ -116,6 +116,7 @@
     "INVITATION_CANCEL_FORBIDDEN": "فقط دعوت‌دهنده یا مالک فضای کاری می‌تواند دعوت‌نامه را لغو کند",
     "INVITATION_NOT_FOR_YOU": "این دعوت‌نامه برای شما نیست",
     "INVITATION_EXPIRED": "دعوت‌نامه منقضی شده است",
-    "ALREADY_WORKSPACE_MEMBER": "شما قبلاً عضو این فضای کاری هستید"
+    "ALREADY_WORKSPACE_MEMBER": "شما قبلاً عضو این فضای کاری هستید",
+    "INVALID_GOOGLE_TOKEN": "توکن گوگل نامعتبر است"
   }
 }

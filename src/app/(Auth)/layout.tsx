@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/components/Providers/AuthProvider";
+import { GoogleAuthProvider } from "@/components/Providers/GoogleAuthProvider";
 import { SiteProvider } from "@/components/Providers/SiteProvider";
 import { Metadata } from "next";
 import SupportButton from "./auth/supportButton";
@@ -39,11 +40,13 @@ export default async function AuthLayout({
     <SWRProvider>
       <AuthProvider>
         <NextIntlClientProvider messages={messages}>
+          <GoogleAuthProvider>
           <SiteProvider>
             <main className="flex min-h-screen flex-col items-center justify-center bg-violet-50">
               {children}
             </main>
           </SiteProvider>
+          </GoogleAuthProvider>
 
           <Toaster
             richColors

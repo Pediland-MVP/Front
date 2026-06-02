@@ -25,7 +25,7 @@ export interface IUser {
     instagrams: Instagram[];
     isDeleteFlages: boolean;
     lastname: string;
-    mobile: string;
+    mobile?: string;
     paymentDetailId: string;
     referralUserId: string;
     status: string;
