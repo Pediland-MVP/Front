@@ -83,26 +83,36 @@ export function TeamManager() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
-  const inviteSchema = z.object({
-    mobile: z.string().regex(/^09\d{9}$/, {
-      message: t("invalid_mobile"),
+  const inviteSchema = z.discriminatedUnion("inviteType", [
+    z.object({
+      inviteType: z.literal("mobile"),
+      mobile: z.string().regex(/^09\d{9}$/, { message: t("invalid_mobile") }),
+      email: z.string().optional(),
+      permissions: z.array(z.string()).min(1, { message: t("select_permissions_error") }),
+      message: z.string().max(500).optional(),
     }),
-    permissions: z.array(z.string()).min(1, {
-      message: t("select_permissions_error"),
+    z.object({
+      inviteType: z.literal("email"),
+      mobile: z.string().optional(),
+      email: z.string().email({ message: t("invalid_email") }),
+      permissions: z.array(z.string()).min(1, { message: t("select_permissions_error") }),
+      message: z.string().max(500).optional(),
     }),
-    message: z.string().max(500).optional(),
-  });
+  ]);
 
   const inviteForm = useForm<z.infer<typeof inviteSchema>>({
     resolver: zodResolver(inviteSchema),
     defaultValues: {
+      inviteType: "mobile",
       mobile: "",
+      email: "",
       permissions: [],
       message: "",
     },
   });
 
   const selectedPermissions = inviteForm.watch("permissions") || [];
+  const inviteType = inviteForm.watch("inviteType");
 
   const handleTogglePermission = (slug: string) => {
     const current = inviteForm.getValues("permissions") || [];
@@ -122,14 +132,20 @@ export function TeamManager() {
   const onInvite = async (values: z.infer<typeof inviteSchema>) => {
     setIsInviting(true);
     try {
-      await api.post(`/workspaces/${workspaceId}/invitations`, {
-        mobile: values.mobile,
-        permissions: values.permissions,
-        message: values.message || undefined,
-      });
+      const payload =
+        values.inviteType === "mobile"
+          ? { mobile: values.mobile, permissions: values.permissions, message: values.message || undefined }
+          : { email: values.email, permissions: values.permissions, message: values.message || undefined };
+      await api.post(`/workspaces/${workspaceId}/invitations`, payload);
       toast.success(t("invite_success"));
       setInviteOpen(false);
-      inviteForm.reset({ mobile: "", permissions: availablePermissions.map((p: any) => p.slug), message: "" });
+      inviteForm.reset({
+        inviteType: "mobile",
+        mobile: "",
+        email: "",
+        permissions: availablePermissions.map((p: any) => p.slug),
+        message: "",
+      });
       mutateInvitations();
     } catch (e: any) {
       const code = e?.response?.data?.code;
@@ -194,6 +210,15 @@ export function TeamManager() {
         inviteForm.setValue("permissions", availablePermissions.map((p: any) => p.slug));
       }
     }
+    if (!inviteOpen) {
+      inviteForm.reset({
+        inviteType: "mobile",
+        mobile: "",
+        email: "",
+        permissions: [],
+        message: "",
+      });
+    }
   }, [inviteOpen, availablePermissions.length]);
 
   const groupedPermissions = availablePermissions.reduce((acc: any, item: any) => {
@@ -230,19 +255,71 @@ export function TeamManager() {
               </DialogHeader>
               <Form {...inviteForm}>
                 <form onSubmit={inviteForm.handleSubmit(onInvite)} className="space-y-6 pt-4">
-                  <FormField
-                    control={inviteForm.control}
-                    name="mobile"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("mobile")}</FormLabel>
-                        <FormControl>
-                          <Input placeholder="09123456789" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Invite type toggle */}
+                  <div className="flex rounded-lg border border-gray-200 p-1 gap-1 bg-gray-50">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        inviteForm.setValue("inviteType", "mobile", { shouldValidate: false });
+                        inviteForm.setValue("email", "", { shouldValidate: false });
+                      }}
+                      className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all ${
+                        inviteType === "mobile"
+                          ? "bg-white text-primary shadow-sm"
+                          : "text-muted-foreground hover:text-gray-700"
+                      }`}
+                    >
+                      {t("invite_by_mobile")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        inviteForm.setValue("inviteType", "email", { shouldValidate: false });
+                        inviteForm.setValue("mobile", "", { shouldValidate: false });
+                      }}
+                      className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all ${
+                        inviteType === "email"
+                          ? "bg-white text-primary shadow-sm"
+                          : "text-muted-foreground hover:text-gray-700"
+                      }`}
+                    >
+                      {t("invite_by_email")}
+                    </button>
+                  </div>
+
+                  {/* Mobile input */}
+                  {inviteType === "mobile" && (
+                    <FormField
+                      control={inviteForm.control}
+                      name="mobile"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("mobile")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder="09123456789" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {/* Email input */}
+                  {inviteType === "email" && (
+                    <FormField
+                      control={inviteForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("email_label")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder="user@example.com" type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <div className="space-y-3">
                     <FormLabel className="block text-sm font-medium">
@@ -386,7 +463,7 @@ export function TeamManager() {
                   <UserCircle className="w-6 h-6 text-amber-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm">{inv.invitedMobile}</p>
+                  <p className="font-medium text-sm">{inv.invitedMobile || inv.invitedEmail}</p>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {inv.permissions.map((permSlug: string) => (
                       <Badge key={permSlug} variant="outline" className="text-[10px] py-0 px-1.5">
