@@ -139,13 +139,6 @@ export function TeamManager() {
       await api.post(`/workspaces/${workspaceId}/invitations`, payload);
       toast.success(t("invite_success"));
       setInviteOpen(false);
-      inviteForm.reset({
-        inviteType: "mobile",
-        mobile: "",
-        email: "",
-        permissions: availablePermissions.map((p: any) => p.slug),
-        message: "",
-      });
       mutateInvitations();
     } catch (e: any) {
       const code = e?.response?.data?.code;
@@ -219,7 +212,7 @@ export function TeamManager() {
         message: "",
       });
     }
-  }, [inviteOpen, availablePermissions.length]);
+  }, [inviteOpen, availablePermissions.length, inviteForm]);
 
   const groupedPermissions = availablePermissions.reduce((acc: any, item: any) => {
     const mod = item.module || "general";
