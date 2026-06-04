@@ -88,7 +88,7 @@ export default function OtpPage() {
       await mutate(mutateIncludeStringKey("/users/me"));
       sessionStorage.removeItem("prelogin_mobile");
 
-      if (me?.data?.status === "onboarding") router.push("/auth/onboarding");
+      if (me?.data?.data?.status === "onboarding") router.push("/auth/onboarding");
       else router.push("/");
     } catch (error) {
       console.error("❌ API Error:", error.response?.data);

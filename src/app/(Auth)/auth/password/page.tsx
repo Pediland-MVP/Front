@@ -53,7 +53,7 @@ export default function PasswordPage() {
   }, [router]);
 
   const formSchema = z.object({
-    emailOrMobile: z.string(),
+    mobile: z.string(),
     password: z.string().min(6, t_err("password_min_length")),
   });
 
@@ -61,13 +61,13 @@ export default function PasswordPage() {
     resolver: zodResolver(formSchema),
     mode: "onChange",
     defaultValues: {
-      emailOrMobile: "",
+      mobile: "",
       password: "",
     },
   });
 
   useEffect(() => {
-    if (mobile) form.setValue("emailOrMobile", mobile);
+    if (mobile) form.setValue("mobile", mobile);
   }, [mobile, form]);
 
   const forgetPasswordHandler = async () => {

@@ -65,8 +65,6 @@ export default function PasswordPage() {
   const { user, isLoading, mutate: mutateUser } = useUser();
   const havePassword = user?.havePassword;
 
-  console.log(user);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onBlur",
@@ -127,13 +125,13 @@ export default function PasswordPage() {
           mobile: user?.mobile,
         },
       );
-      toast.success("کد فعالسازی برای شما ارسال شد.");
+      toast.success(t("otp_sent"));
       setShowResend(false);
       setShowForm(true);
     } catch (error) {
       if (error?.response?.data?.statusCode === 429)
         toast.error(t_ec("TOO_MANY_REQUESTS"));
-      else toast.error(error.response?.data?.message || "Error");
+      else toast.error(t_ec(error?.response?.data?.code) || error.response?.data?.message);
     } finally {
       setIsRequesting(false);
     }
@@ -153,13 +151,11 @@ export default function PasswordPage() {
         `${API_URL}/auth/mobile/resetPassword`,
         submitData,
       );
-      toast.success("رمز عبور با موفقیت تغییر یافت.");
+      toast.success(t("success"));
       setShowForm(false);
       await mutateUser();
     } catch (error) {
-      if (error.response?.data?.message === "Invalid code")
-        toast.error("کد فعالسازی صحیح نیست.");
-      else toast.error(error.response?.data?.message || "Error");
+      toast.error(t_ec(error.response?.data?.code) || error.response?.data?.message);
     } finally {
       setIsSubmitting(false);
     }

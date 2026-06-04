@@ -1,6 +1,7 @@
 "use client";
 
 import api, { setAccessToken } from "@/hooks/swr/api-client";
+import { useSWRConfig } from "swr";
 import { onInputP2EHandler } from "@/utils/p2eNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoogleLogin } from "@react-oauth/google";
@@ -36,6 +37,7 @@ export default function AuthPage() {
   const t_err = useTranslations("Auth.Errors");
   const t_ec = useTranslations("ERROR_CODES");
   const [isLoading, setIsLoading] = useState(false);
+  const { mutate: globalMutate } = useSWRConfig();
 
   const formSchema = z.object({
     mobile: z.string().regex(/^(?:|0|09|09\d{1,9})$/, {
@@ -57,8 +59,10 @@ export default function AuthPage() {
     try {
       const res = await api.post(`${API_URL}/auth/google/verify`, { idToken: credential });
       setAccessToken(res?.data?.data?.accessToken);
+      // Clear stale SWR cache (pre-auth 401 errors) so all subsequent fetches use the new token
+      await globalMutate(() => true, undefined, { revalidate: false });
       const me = await api.get("/users/me");
-      if (me?.data?.status === "onboarding") {
+      if (me?.data?.data?.status === "onboarding") {
         router.push("/auth/onboarding");
       } else {
         router.push("/");
