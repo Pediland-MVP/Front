@@ -262,6 +262,7 @@ export function TeamManager() {
                       onClick={() => {
                         inviteForm.setValue("inviteType", "mobile", { shouldValidate: false });
                         inviteForm.setValue("email", "", { shouldValidate: false });
+                        inviteForm.clearErrors("email");
                       }}
                       className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all ${
                         inviteType === "mobile"
@@ -276,6 +277,7 @@ export function TeamManager() {
                       onClick={() => {
                         inviteForm.setValue("inviteType", "email", { shouldValidate: false });
                         inviteForm.setValue("mobile", "", { shouldValidate: false });
+                        inviteForm.clearErrors("mobile");
                       }}
                       className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-all ${
                         inviteType === "email"
@@ -296,7 +298,7 @@ export function TeamManager() {
                         <FormItem>
                           <FormLabel>{t("mobile")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="09123456789" {...field} />
+                            <Input placeholder="09123456789" dir="ltr" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -313,7 +315,7 @@ export function TeamManager() {
                         <FormItem>
                           <FormLabel>{t("email_label")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="user@example.com" type="email" {...field} />
+                            <Input placeholder="user@example.com" type="email" dir="ltr" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
