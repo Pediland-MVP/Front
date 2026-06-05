@@ -7,7 +7,7 @@ import {
   ChevronRightIcon,
   DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
-import { useLocale } from "next-intl";
+import { useDirection } from "@radix-ui/react-direction";
 
 const Breadcrumb = React.forwardRef<
   HTMLElement,
@@ -91,7 +91,7 @@ const BreadcrumbSeparator = ({
   className,
   ...props
 }: React.ComponentProps<"li">) => {
-  const locale = useLocale();
+  const dir = useDirection();
 
   return (
     <li
@@ -104,7 +104,7 @@ const BreadcrumbSeparator = ({
       {...props}
     >
       {children ??
-        (locale === "fa" ? <ChevronLeftIcon /> : <ChevronRightIcon />)}
+        (dir === "rtl" ? <ChevronLeftIcon /> : <ChevronRightIcon />)}
     </li>
   );
 };

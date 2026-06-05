@@ -107,16 +107,15 @@ export function columns(
       },
     },
     {
-      accessorKey: "mobile",
-      header: "همراه",
+      id: "contact",
+      header: "تماس",
       cell: ({ row }) => {
-        const mobile = row.getValue("mobile") as string;
-
         return (
           <ContactOptions
             leadId={row.original.id}
-            mobile={mobile}
-            fullName={row.getValue("fullName")}
+            mobile={row.original.mobile}
+            email={row.original.email}
+            fullName={`${row.original.firstname ?? ""} ${row.original.lastname ?? ""}`.trim()}
             openSmsDialog={openSmsDialog}
           />
         );

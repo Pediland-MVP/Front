@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import api from "@/hooks/swr/api-client";
 import { toast } from "sonner";
 import { Trash2, PlusCircle, BookOpen, Link2, Video, AlignLeft, Pencil, Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface GuideType {
   id: string;
@@ -25,13 +36,11 @@ export default function GuidesPage() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const limit = 10;
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  // Edit state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editType, setEditType] = useState<GuideFormType>("text");
   const [editDescription, setEditDescription] = useState("");
@@ -45,11 +54,7 @@ export default function GuidesPage() {
       const payload = data?.data || data || {};
       const items: GuideType[] = payload.items || [];
       const meta = payload.meta || {};
-      // If a delete emptied the last page, step back one page
-      if (items.length === 0 && pageNum > 1) {
-        setPage(pageNum - 1);
-        return;
-      }
+      if (items.length === 0 && pageNum > 1) { setPage(pageNum - 1); return; }
       setGuides(items);
       setTotalPages(meta.totalPages || 1);
       setTotalItems(meta.totalItems ?? items.length);
@@ -61,30 +66,18 @@ export default function GuidesPage() {
     }
   };
 
-  useEffect(() => {
-    fetchGuides(page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  useEffect(() => { fetchGuides(page); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [page]);
 
   const handleAddGuide = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description.trim() || !target.trim()) {
-      toast.error("لطفاً تمامی فیلدهای فرم را پر کنید");
-      return;
-    }
+    if (!description.trim() || !target.trim()) { toast.error("لطفاً تمامی فیلدهای فرم را پر کنید"); return; }
     setSaving(true);
     try {
       const { data } = await api.post("/telegram-automation/guides", { type, target, description });
       const created = data?.data || data;
       if (created) {
-        setDescription("");
-        setTarget("");
-        // Newest items appear first on page 1
-        if (page === 1) {
-          fetchGuides(1);
-        } else {
-          setPage(1);
-        }
+        setDescription(""); setTarget("");
+        page === 1 ? fetchGuides(1) : setPage(1);
         toast.success("راهنما با موفقیت ایجاد شد");
       }
     } catch {
@@ -108,31 +101,15 @@ export default function GuidesPage() {
   };
 
   const startEdit = (g: GuideType) => {
-    setEditingId(g.id);
-    setEditType(g.type);
-    setEditDescription(g.description);
-    setEditTarget(g.target);
+    setEditingId(g.id); setEditType(g.type); setEditDescription(g.description); setEditTarget(g.target);
   };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditType("text");
-    setEditDescription("");
-    setEditTarget("");
-  };
+  const cancelEdit = () => { setEditingId(null); setEditType("text"); setEditDescription(""); setEditTarget(""); };
 
   const handleUpdateGuide = async (id: string) => {
-    if (!editDescription.trim() || !editTarget.trim()) {
-      toast.error("تمام فیلدها الزامی هستند");
-      return;
-    }
+    if (!editDescription.trim() || !editTarget.trim()) { toast.error("تمام فیلدها الزامی هستند"); return; }
     setUpdatingId(id);
     try {
-      const { data } = await api.put(`/telegram-automation/guides/${id}`, {
-        type: editType,
-        description: editDescription,
-        target: editTarget,
-      });
+      const { data } = await api.put(`/telegram-automation/guides/${id}`, { type: editType, description: editDescription, target: editTarget });
       const updated = data?.data || data;
       setGuides((prev) => prev.map((g) => (g.id === id ? { ...g, ...updated } : g)));
       cancelEdit();
@@ -144,19 +121,11 @@ export default function GuidesPage() {
     }
   };
 
-  const inputClasses =
-    "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100";
-  const textareaClasses =
-    "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 h-28";
-  const labelClasses = "text-sm font-medium text-gray-700 dark:text-gray-300";
-  const buttonPrimary =
-    "inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer";
-
   const getIcon = (t: string) => {
     switch (t) {
-      case "link": return <Link2 className="h-5 w-5 text-indigo-500" />;
-      case "video_forward": return <Video className="h-5 w-5 text-rose-500" />;
-      default: return <AlignLeft className="h-5 w-5 text-emerald-500" />;
+      case "link": return <Link2 className="h-4 w-4 text-indigo-500" />;
+      case "video_forward": return <Video className="h-4 w-4 text-rose-500" />;
+      default: return <AlignLeft className="h-4 w-4 text-emerald-500" />;
     }
   };
 
@@ -170,162 +139,141 @@ export default function GuidesPage() {
 
   const TargetInput = ({ value, onChange, type: t }: { value: string; onChange: (v: string) => void; type: GuideFormType }) =>
     t === "text" ? (
-      <textarea
-        className={textareaClasses}
+      <Textarea
+        className="min-h-[112px]"
         placeholder="متن راهنمای خود را بنویسید..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
     ) : (
-      <input
-        type="text"
-        className={inputClasses}
+      <Input
+        dir="ltr"
         placeholder={t === "video_forward" ? "شناسه (ID) پیام تلگرام..." : "https://example.com/post"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        dir="ltr"
       />
     );
 
   return (
-    <div className="p-6">
-      <div className="mx-auto max-w-5xl space-y-8">
+    <div className="p-4 lg:p-6 lg:h-full lg:flex lg:flex-col">
+      <div className="mx-auto w-full max-w-5xl space-y-8 lg:space-y-0 lg:gap-8 lg:flex-1 lg:flex lg:flex-col lg:min-h-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">پست‌های راهنما</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            مستندات آماده، پیوندها یا ویدیوهایی که هوش مصنوعی می‌تواند به طور هوشمند و در قالب ابزار به کاربران ارسال کند.
+          <h1 className="text-xl font-bold text-slate-800">پست‌های راهنما</h1>
+          <p className="mt-1 text-xs text-slate-400">
+            مستندات آماده، پیوندها یا ویدیوهایی که هوش مصنوعی می‌تواند به طور هوشمند به کاربران ارسال کند.
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-8 lg:grid-cols-3 lg:flex-1 lg:min-h-0">
           {/* Form */}
           <div className="lg:col-span-1">
-            <div className="sticky top-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <h2 className="mb-4 text-base font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <div className="sticky top-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-xs">
+              <h2 className="mb-4 text-base font-bold text-slate-800 flex items-center gap-2">
                 <PlusCircle className="h-5 w-5 text-blue-500" />
                 تعریف پست راهنمای جدید
               </h2>
               <form onSubmit={handleAddGuide} className="space-y-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>نوع راهنما</label>
-                  <select className={inputClasses} value={type} onChange={(e) => setType(e.target.value as GuideFormType)}>
-                    <option value="text">متن ساده</option>
-                    <option value="video_forward">فوروارد ویدیو / پیام</option>
-                    <option value="link">لینک پست / آدرس اینترنتی</option>
-                  </select>
+                  <Label>نوع راهنما</Label>
+                  <Select value={type} onValueChange={(v) => setType(v as GuideFormType)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text">متن ساده</SelectItem>
+                      <SelectItem value="video_forward">فوروارد ویدیو / پیام</SelectItem>
+                      <SelectItem value="link">لینک پست / آدرس اینترنتی</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>توضیحات کوتاه برای هوش مصنوعی</label>
-                  <input
-                    type="text"
-                    className={inputClasses}
+                  <Label>توضیحات کوتاه برای هوش مصنوعی</Label>
+                  <Input
                     placeholder="مثال: نحوه نصب نرم‌افزار روی ویندوز"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-normal">
+                  <p className="text-[11px] text-slate-400 leading-normal">
                     این فیلد به هوش مصنوعی توضیح می‌دهد این راهنما چیست.
                   </p>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>محتوا / ID پیام تلگرام / لینک</label>
+                  <Label>محتوا / ID پیام تلگرام / لینک</Label>
                   <TargetInput value={target} onChange={setTarget} type={type} />
                 </div>
-                <button type="submit" className={buttonPrimary + " w-full"} disabled={saving}>
+                <Button type="submit" className="w-full" disabled={saving}>
                   {saving ? "در حال ثبت..." : "افزودن پست راهنما"}
-                </button>
+                </Button>
               </form>
             </div>
           </div>
 
-          {/* List display */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
-              لیست پست‌های راهنما ({totalItems})
-            </h2>
+          {/* List */}
+          <div className="lg:col-span-2 space-y-4 lg:space-y-0 lg:gap-4 lg:flex lg:flex-col lg:min-h-0">
+            <h2 className="text-base font-bold text-slate-800 shrink-0">لیست پست‌های راهنما ({totalItems})</h2>
 
+            <div className="lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent lg:pl-1">
             {loading ? (
-              <div className="flex h-48 items-center justify-center rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
-                <span className="text-sm text-gray-500">در حال بارگذاری...</span>
+              <div className="flex h-48 items-center justify-center rounded-2xl border border-slate-100 bg-white">
+                <span className="text-sm text-slate-400">در حال بارگذاری...</span>
               </div>
             ) : guides.length === 0 ? (
-              <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-900">
-                <BookOpen className="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600 mb-2" />
-                <p className="text-sm font-medium text-gray-500">هنوز هیچ راهنمایی تعریف نشده است</p>
-                <p className="text-xs text-gray-400 mt-1">از فرم سمت راست برای ایجاد اولین راهنما استفاده کنید</p>
+              <div className="flex h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
+                <BookOpen className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+                <p className="text-sm font-medium text-slate-500">هنوز هیچ راهنمایی تعریف نشده است</p>
+                <p className="text-xs text-slate-400 mt-1">از فرم سمت راست برای ایجاد اولین راهنما استفاده کنید</p>
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {guides.map((item) =>
                   editingId === item.id ? (
-                    // Edit mode
-                    <div
-                      key={item.id}
-                      className="col-span-full rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-800 dark:bg-blue-950/20"
-                    >
+                    <div key={item.id} className="col-span-full rounded-2xl border border-blue-200 bg-blue-50/50 p-5 shadow-xs">
                       <div className="space-y-3">
                         <div className="flex flex-col gap-1.5">
-                          <label className={labelClasses}>نوع راهنما</label>
-                          <select
-                            className={inputClasses}
-                            value={editType}
-                            onChange={(e) => setEditType(e.target.value as GuideFormType)}
-                          >
-                            <option value="text">متن ساده</option>
-                            <option value="video_forward">فوروارد ویدیو / پیام</option>
-                            <option value="link">لینک پست / آدرس اینترنتی</option>
-                          </select>
+                          <Label>نوع راهنما</Label>
+                          <Select value={editType} onValueChange={(v) => setEditType(v as GuideFormType)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="text">متن ساده</SelectItem>
+                              <SelectItem value="video_forward">فوروارد ویدیو / پیام</SelectItem>
+                              <SelectItem value="link">لینک پست / آدرس اینترنتی</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className={labelClasses}>توضیحات</label>
-                          <input
-                            type="text"
-                            className={inputClasses}
-                            value={editDescription}
-                            onChange={(e) => setEditDescription(e.target.value)}
-                          />
+                          <Label>توضیحات</Label>
+                          <Input value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                          <label className={labelClasses}>محتوا / لینک / ID</label>
+                          <Label>محتوا / لینک / ID</Label>
                           <TargetInput value={editTarget} onChange={setEditTarget} type={editType} />
                         </div>
                         <div className="flex gap-2">
-                          <button
-                            onClick={() => handleUpdateGuide(item.id)}
-                            disabled={updatingId === item.id}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
-                            type="button"
-                          >
+                          <Button size="sm" onClick={() => handleUpdateGuide(item.id)} disabled={updatingId === item.id} type="button">
                             <Check className="h-3.5 w-3.5" />
                             {updatingId === item.id ? "در حال ذخیره..." : "ذخیره"}
-                          </button>
-                          <button
-                            onClick={cancelEdit}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
-                            type="button"
-                          >
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={cancelEdit} type="button">
                             <X className="h-3.5 w-3.5" />
                             انصراف
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    // View mode
-                    <div
-                      key={item.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
-                    >
+                    <div key={item.id} className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-xs transition-shadow hover:shadow-sm">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-semibold bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-100 dark:border-gray-700">
+                          <span className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-semibold bg-slate-50 text-slate-600 border border-slate-100">
                             {getIcon(item.type)}
                             {getTypeTitle(item.type)}
                           </span>
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => startEdit(item)}
-                              className="rounded-lg p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-500 dark:hover:bg-blue-950/20 dark:hover:text-blue-400 transition-all cursor-pointer"
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
                               title="ویرایش"
                               type="button"
                             >
@@ -334,7 +282,7 @@ export default function GuidesPage() {
                             <button
                               onClick={() => handleDeleteGuide(item.id)}
                               disabled={deletingId === item.id}
-                              className="rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:text-gray-500 dark:hover:bg-red-950/20 dark:hover:text-red-400 transition-all cursor-pointer disabled:opacity-50"
+                              className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer disabled:opacity-50"
                               title="حذف"
                               type="button"
                             >
@@ -342,10 +290,8 @@ export default function GuidesPage() {
                             </button>
                           </div>
                         </div>
-                        <div className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                          {item.description}
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 font-mono break-all line-clamp-3 bg-gray-50 dark:bg-gray-950 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div className="text-sm font-bold text-slate-800">{item.description}</div>
+                        <p className="text-xs text-slate-500 font-mono break-all line-clamp-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                           {item.target}
                         </p>
                       </div>
@@ -354,29 +300,17 @@ export default function GuidesPage() {
                 )}
               </div>
             )}
+            </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white px-5 py-3 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <button
-                  onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                  disabled={page === 1 || loading}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 disabled:opacity-50 dark:border-gray-700 cursor-pointer"
-                  type="button"
-                >
+              <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white px-5 py-3 shadow-xs shrink-0">
+                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1 || loading} type="button">
                   قبلی
-                </button>
-                <span className="text-xs text-gray-500">
-                  صفحه {page} از {totalPages}
-                </span>
-                <button
-                  onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                  disabled={page === totalPages || loading}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 disabled:opacity-50 dark:border-gray-700 cursor-pointer"
-                  type="button"
-                >
+                </Button>
+                <span className="text-xs text-slate-500">صفحه {page} از {totalPages}</span>
+                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page === totalPages || loading} type="button">
                   بعدی
-                </button>
+                </Button>
               </div>
             )}
           </div>

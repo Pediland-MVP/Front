@@ -8,7 +8,8 @@ export type Customer = {
   gender: string | null;
   firstname: string;
   lastname: string;
-  mobile: string;
+  mobile?: string | null;
+  email?: string | null;
   status: string;
   createDate: string;
   updateDate: string;

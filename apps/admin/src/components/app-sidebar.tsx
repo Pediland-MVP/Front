@@ -23,11 +23,14 @@ import {
   TagIcon,
   RobotIcon,
   ChatDotsIcon,
+  UserGearIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
+import { useAuth } from "@/hooks/use-auth";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("Sidebar");
+  const { user } = useAuth();
 
   const items = React.useMemo(() => [
     {
@@ -71,7 +74,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         { title: t("chats"), url: "/telegram-automation/chats" },
       ],
     },
-  ], [t]);
+    ...(user?.role === "admin"
+      ? [{ title: t("admins"), url: "/admins", icon: UserGearIcon }]
+      : []),
+  ], [t, user?.role]);
 
   return (
     <Sidebar {...props} side="right" variant="inset" collapsible="offcanvas">

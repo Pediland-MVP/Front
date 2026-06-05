@@ -48,6 +48,7 @@ import { FormField } from "@/components/ui/form";
 import {
   ChatCenteredTextIcon,
   CrosshairSimpleIcon,
+  EnvelopeSimpleIcon,
   HeartIcon,
   InstagramLogoIcon,
   TelegramLogoIcon,
@@ -289,11 +290,11 @@ export default function CustomerDetailsPage({
   };
 
   const handleOpenSmsDialog = () => {
-    if (!customer) return;
+    if (!customer?.mobile) return;
 
     setSmsData({
       id,
-      mobile: customer?.mobile,
+      mobile: customer.mobile,
       name: `${customer?.firstname} ${customer?.lastname}`,
     });
     setSmsDialogOpen(true);
@@ -319,10 +320,10 @@ export default function CustomerDetailsPage({
   const subsMeta = subsData?.meta;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-4 h-[calc(100vh-40px)] overflow-hidden bg-slate-50/20" dir="rtl">
+    <div className="flex flex-col lg:flex-row gap-6 p-0 lg:p-4 lg:h-[calc(100vh-40px)] lg:overflow-hidden bg-slate-50/20" dir="rtl">
       {/* Right Column: Profile Sidebar */}
-      <div className="w-full lg:w-96 shrink-0 flex flex-col gap-5 overflow-y-auto pr-1 bg-white border border-slate-100 rounded-2xl p-5 shadow-xs scrollbar-thin scrollbar-thumb-slate-200">
-        
+      <div className="w-full lg:w-96 shrink-0 flex flex-col gap-5 lg:overflow-y-auto pr-1 bg-white border border-slate-100 rounded-2xl p-5 shadow-xs scrollbar-thin scrollbar-thumb-slate-200">
+
         {/* Profile Card Header */}
         <div className="flex flex-col items-center text-center space-y-3 pb-4 border-b border-slate-100">
           <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-md border-4 border-white">
@@ -333,87 +334,74 @@ export default function CustomerDetailsPage({
               {customer?.firstname} {customer?.lastname}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5" dir="ltr">
-              {customer?.mobile}
+              {customer?.mobile || customer?.email || "—"}
             </p>
           </div>
 
           {/* Quick Action Circle Buttons */}
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <a
-              href={`tel:${customer?.mobile}`}
-              className="w-9 h-9 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 flex items-center justify-center border border-slate-200/60 shadow-3xs transition-all duration-150"
-              title="تماس تلفنی"
-            >
-              <PhoneCallIcon className="w-4 h-4" />
-            </a>
-            <button
-              onClick={handleOpenSmsDialog}
-              className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center border border-blue-100 shadow-3xs transition-all duration-150"
-              title="ارسال پیامک"
-            >
-              <ChatCenteredTextIcon size={18} />
-            </button>
-            <a
-              href={`https://t.me/+98${customer?.mobile.replace(/^0/, "")}`}
-              className="w-9 h-9 rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center border border-sky-100 shadow-3xs transition-all duration-150"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="تلگرام"
-            >
-              <TelegramLogoIcon size={18} />
-            </a>
-            <a
-              href={`https://wa.me/98${customer?.mobile.replace(/^0/, "")}`}
-              className="w-9 h-9 rounded-full bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center border border-green-100 shadow-3xs transition-all duration-150"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="واتسپ"
-            >
-              <WhatsappLogoIcon size={18} />
-            </a>
-          </div>
-        </div>
-
-        {/* Social Accounts links */}
-        {hasInstagram && (
-          <div className="space-y-2">
-            <h4 className="text-xs text-slate-400 font-semibold">حساب‌های اینستاگرام:</h4>
-            <div className="space-y-1.5">
+          <div className="flex items-center justify-center gap-2 pt-1">
+            {customer?.mobile && (
               <a
-                className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
-                href={`https://instagram.com/${customer?.instagrams[0]?.username}`}
-                target="_blank"
-                dir="ltr"
+                href={`tel:${customer.mobile}`}
+                className="w-9 h-9 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 flex items-center justify-center border border-slate-200/60 shadow-3xs transition-all duration-150"
+                title="تماس تلفنی"
               >
-                <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
-                <span>@{customer?.instagrams[0]?.username}</span>
+                <PhoneCallIcon className="w-4 h-4" />
               </a>
-              {submittedInstagram && (
-                <a
-                  className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
-                  href={`https://instagram.com/${submittedInstagram}`}
-                  target="_blank"
-                  dir="ltr"
-                >
-                  <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
-                  <span>@{submittedInstagram}</span>
-                </a>
-              )}
-            </div>
+            )}
+            {customer?.mobile && (
+              <button
+                onClick={handleOpenSmsDialog}
+                className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center border border-blue-100 shadow-3xs transition-all duration-150"
+                title="ارسال پیامک"
+              >
+                <ChatCenteredTextIcon size={18} />
+              </button>
+            )}
+            {customer?.mobile && (
+              <a
+                href={`https://t.me/+98${customer.mobile.replace(/^0/, "")}`}
+                className="w-9 h-9 rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center border border-sky-100 shadow-3xs transition-all duration-150"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="تلگرام"
+              >
+                <TelegramLogoIcon size={18} />
+              </a>
+            )}
+            {customer?.mobile && (
+              <a
+                href={`https://wa.me/98${customer.mobile.replace(/^0/, "")}`}
+                className="w-9 h-9 rounded-full bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center border border-green-100 shadow-3xs transition-all duration-150"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="واتسپ"
+              >
+                <WhatsappLogoIcon size={18} />
+              </a>
+            )}
+            {customer?.email && (
+              <a
+                href={`mailto:${customer.email}`}
+                className="w-9 h-9 rounded-full bg-amber-50 text-amber-600 hover:bg-amber-100 flex items-center justify-center border border-amber-100 shadow-3xs transition-all duration-150"
+                title={customer.email}
+              >
+                <EnvelopeSimpleIcon size={18} />
+              </a>
+            )}
           </div>
-        )}
 
-        {/* Form elements for assignments and status */}
-        <div className="space-y-4">
+          {/* Status + operator pinned to opposite corners */}
           <Form {...form}>
-            <form className="space-y-4">
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem className="space-y-1.5">
-                    <FormLabel className="text-xs text-slate-500 font-semibold">وضعیت مشتری</FormLabel>
-                    <div className="flex gap-2 items-center">
+            <form className="w-full">
+              <div className="flex items-center justify-between w-full pt-1 gap-2">
+
+                {/* Status — right corner */}
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <div className="flex items-center gap-1.5">
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
@@ -426,57 +414,55 @@ export default function CustomerDetailsPage({
                         }
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full bg-white h-9 rounded-xl border border-slate-200 px-3 text-sm focus-visible:ring-indigo-500 shadow-2xs">
-                            <SelectValue placeholder="انتخاب وضعیت">
-                              <StatusBadge status={field.value} />
-                            </SelectValue>
+                          <SelectTrigger className="!h-auto border-0 p-0 shadow-none focus:ring-0 focus-visible:ring-0 [&>svg]:hidden cursor-pointer">
+                            <StatusBadge status={field.value} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="needed">
-                            <StatusBadge status="needed" />
-                          </SelectItem>
-                          <SelectItem value="inactive">
-                            <StatusBadge status="inactive" />
-                          </SelectItem>
-                          <SelectItem value="active">
-                            <StatusBadge status="active" />
-                          </SelectItem>
-                          <SelectItem value="lost">
-                            <StatusBadge status="lost" />
-                          </SelectItem>
+                          <SelectItem value="needed"><StatusBadge status="needed" /></SelectItem>
+                          <SelectItem value="inactive"><StatusBadge status="inactive" /></SelectItem>
+                          <SelectItem value="active"><StatusBadge status="active" /></SelectItem>
+                          <SelectItem value="lost"><StatusBadge status="lost" /></SelectItem>
                         </SelectContent>
                       </Select>
                       {isStatusChanged && (
                         <Button
                           type="button"
                           variant="outline"
-                          className="h-9 w-9 p-0 shrink-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50 rounded-xl"
+                          className="h-6 w-6 p-0 shrink-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50 rounded-md"
                           onClick={handleUpdateStatus}
                         >
-                          <CheckIcon className="w-4 h-4" />
+                          <CheckIcon className="w-3 h-3" />
                         </Button>
                       )}
                     </div>
-                  </FormItem>
-                )}
-              />
+                  )}
+                />
 
-              {user?.role !== "kam" && (
-                <FormField
-                  control={form.control}
-                  name="admin"
-                  render={({ field }) => {
-                    const selectedKam = kams.find((kam: User) => kam.id === field.value);
-                    const adminKam = customer?.usersAdmins.find((a) => a.isActive);
-                    const adminFullName = adminKam
-                      ? `${adminKam.admin.firstname} ${adminKam.admin.lastname}`
-                      : "بدون مسئول";
+                {/* Operator — left corner */}
+                {user?.role !== "kam" && (
+                  <FormField
+                    control={form.control}
+                    name="admin"
+                    render={({ field }) => {
+                      const selectedKam = kams.find((kam: User) => kam.id === field.value);
+                      const adminKam = customer?.usersAdmins.find((a) => a.isActive);
+                      const adminFullName = adminKam
+                        ? `${adminKam.admin.firstname} ${adminKam.admin.lastname}`
+                        : "بدون مسئول";
 
-                    return (
-                      <FormItem className="space-y-1.5">
-                        <FormLabel className="text-xs text-slate-500 font-semibold">مسئول پیگیری (اپراتور)</FormLabel>
-                        <div className="flex gap-2 items-center">
+                      return (
+                        <div className="flex items-center gap-1.5">
+                          {isAdminChanged && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="h-6 w-6 p-0 shrink-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50 rounded-md"
+                              onClick={handleUpdateAdmin}
+                            >
+                              <CheckIcon className="w-3 h-3" />
+                            </Button>
+                          )}
                           <Select
                             onValueChange={(value) => {
                               field.onChange(value);
@@ -485,12 +471,15 @@ export default function CustomerDetailsPage({
                             value={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="w-full bg-white h-9 rounded-xl border border-slate-200 px-3 text-sm focus-visible:ring-indigo-500 shadow-2xs">
-                                <SelectValue placeholder="انتخاب مسئول">
-                                  {selectedKam
-                                    ? `${selectedKam.firstname} ${selectedKam.lastname}`
-                                    : adminFullName}
-                                </SelectValue>
+                              <SelectTrigger className="!h-auto border-0 p-0 shadow-none focus:ring-0 focus-visible:ring-0 [&>svg]:hidden cursor-pointer">
+                                <div className="flex items-center gap-1 rounded-full px-2 py-1 bg-slate-100 text-slate-600">
+                                  <CrosshairSimpleIcon className="w-3 h-3 shrink-0" />
+                                  <span className="text-[11px] font-medium max-w-[90px] truncate">
+                                    {selectedKam
+                                      ? `${selectedKam.firstname} ${selectedKam.lastname}`
+                                      : adminFullName}
+                                  </span>
+                                </div>
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -501,94 +490,15 @@ export default function CustomerDetailsPage({
                               ))}
                             </SelectContent>
                           </Select>
-                          {isAdminChanged && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="h-9 w-9 p-0 shrink-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50 rounded-xl"
-                              onClick={handleUpdateAdmin}
-                            >
-                              <CheckIcon className="w-4 h-4" />
-                            </Button>
-                          )}
                         </div>
-                      </FormItem>
-                    );
-                  }}
-                />
-              )}
+                      );
+                    }}
+                  />
+                )}
 
-              {user?.role !== "kam" && (
-                <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100/50 p-3 rounded-xl mt-2">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="deleteFlag"
-                      className="cursor-pointer border-rose-300 data-[state=checked]:bg-rose-500 data-[state=checked]:border-rose-500"
-                      checked={isFlaged}
-                      onCheckedChange={(value) => setIsFlaged(!!value)}
-                    />
-                    <Label htmlFor="deleteFlag" className="text-xs font-semibold text-rose-700 cursor-pointer">
-                      علامت‌گذاری برای حذف
-                    </Label>
-                  </div>
-
-                  {isFlaged && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      className="h-7 px-3 text-[10px] shrink-0 rounded-lg bg-rose-600 hover:bg-rose-700 font-semibold"
-                      onClick={() => setIsDeleteUserDialogOpen(true)}
-                    >
-                      تایید حذف
-                    </Button>
-                  )}
-                </div>
-              )}
+              </div>
             </form>
           </Form>
-        </div>
-
-        {/* User Stats Card */}
-        <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100/50 space-y-3">
-          <h3 className="font-semibold text-slate-700 text-xs flex items-center gap-1.5 border-b pb-2">
-            <Coins className="w-4 h-4 text-blue-500" />
-            <span>آمارهای فعالیت و فروش</span>
-          </h3>
-          
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            {hasInstagram && (
-              <>
-                <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
-                  <span className="text-slate-400 block text-[10px]">فالوور</span>
-                  <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.instagrams[0]?.followersCount)}</span>
-                </div>
-                <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
-                  <span className="text-slate-400 block text-[10px]">تعداد پست</span>
-                  <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.instagrams[0]?.mediaCount)}</span>
-                </div>
-              </>
-            )}
-            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
-              <span className="text-slate-400 block text-[10px]">مخاطبین</span>
-              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.leadCount)}</span>
-            </div>
-            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
-              <span className="text-slate-400 block text-[10px]">پاسخ‌ها</span>
-              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.sessionCount)}</span>
-            </div>
-            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
-              <span className="text-slate-400 block text-[10px]">محصولات</span>
-              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.productCount)}</span>
-            </div>
-            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
-              <span className="text-slate-400 block text-[10px]">تعداد فروش</span>
-              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.salesCount)}</span>
-            </div>
-            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5 col-span-2 flex justify-between items-center px-3 py-2 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
-              <span className="text-slate-600 text-xs font-semibold">جمع کل فروش:</span>
-              <span className="font-bold text-indigo-700 text-sm">{formatNumber(customer?.stats.totalSale)} ریال</span>
-            </div>
-          </div>
         </div>
 
         {/* Subscription Plan Card */}
@@ -597,7 +507,7 @@ export default function CustomerDetailsPage({
             <Wallet className="w-4 h-4 text-indigo-500" />
             <span>بسته‌های اشتراک</span>
           </h3>
-          
+
           <div className="space-y-2 text-xs">
             <div className="flex justify-between items-center">
               <span className="text-slate-500">بسته فعال:</span>
@@ -662,6 +572,78 @@ export default function CustomerDetailsPage({
           )}
         </div>
 
+        {/* Social Accounts links */}
+        {hasInstagram && (
+          <div className="space-y-2">
+            <h4 className="text-xs text-slate-400 font-semibold">حساب‌های اینستاگرام:</h4>
+            <div className="space-y-1.5">
+              <a
+                className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
+                href={`https://instagram.com/${customer?.instagrams[0]?.username}`}
+                target="_blank"
+                dir="ltr"
+              >
+                <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
+                <span>@{customer?.instagrams[0]?.username}</span>
+              </a>
+              {submittedInstagram && (
+                <a
+                  className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
+                  href={`https://instagram.com/${submittedInstagram}`}
+                  target="_blank"
+                  dir="ltr"
+                >
+                  <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
+                  <span>@{submittedInstagram}</span>
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* User Stats Card */}
+        <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100/50 space-y-3">
+          <h3 className="font-semibold text-slate-700 text-xs flex items-center gap-1.5 border-b pb-2">
+            <Coins className="w-4 h-4 text-blue-500" />
+            <span>آمارهای فعالیت و فروش</span>
+          </h3>
+
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            {hasInstagram && (
+              <>
+                <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
+                  <span className="text-slate-400 block text-[10px]">فالوور</span>
+                  <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.instagrams[0]?.followersCount)}</span>
+                </div>
+                <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
+                  <span className="text-slate-400 block text-[10px]">تعداد پست</span>
+                  <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.instagrams[0]?.mediaCount)}</span>
+                </div>
+              </>
+            )}
+            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
+              <span className="text-slate-400 block text-[10px]">مخاطبین</span>
+              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.leadCount)}</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
+              <span className="text-slate-400 block text-[10px]">پاسخ‌ها</span>
+              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.sessionCount)}</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
+              <span className="text-slate-400 block text-[10px]">محصولات</span>
+              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.productCount)}</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5">
+              <span className="text-slate-400 block text-[10px]">تعداد فروش</span>
+              <span className="font-bold text-slate-800 block text-sm">{formatNumber(customer?.stats.salesCount)}</span>
+            </div>
+            <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-3xs space-y-0.5 col-span-2 flex justify-between items-center px-3 py-2 bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+              <span className="text-slate-600 text-xs font-semibold">جمع کل فروش:</span>
+              <span className="font-bold text-indigo-700 text-sm">{formatNumber(customer?.stats.totalSale)} ریال</span>
+            </div>
+          </div>
+        </div>
+
         {/* Registration and Referrals */}
         <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100/50 space-y-2.5 text-xs text-slate-600">
           <div className="flex justify-between items-center">
@@ -683,6 +665,33 @@ export default function CustomerDetailsPage({
             </div>
           )}
         </div>
+
+        {/* Delete flag */}
+        {user?.role !== "kam" && (
+          <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100/50 p-3 rounded-xl">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="deleteFlag"
+                className="cursor-pointer border-rose-300 data-[state=checked]:bg-rose-500 data-[state=checked]:border-rose-500"
+                checked={isFlaged}
+                onCheckedChange={(value) => setIsFlaged(!!value)}
+              />
+              <Label htmlFor="deleteFlag" className="text-xs font-semibold text-rose-700 cursor-pointer">
+                علامت‌گذاری برای حذف
+              </Label>
+            </div>
+            {isFlaged && (
+              <Button
+                type="button"
+                variant="destructive"
+                className="h-7 px-3 text-[10px] shrink-0 rounded-lg bg-rose-600 hover:bg-rose-700 font-semibold"
+                onClick={() => setIsDeleteUserDialogOpen(true)}
+              >
+                تایید حذف
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Customer Note Box */}
         <div className="space-y-2 mt-auto">
@@ -716,7 +725,7 @@ export default function CustomerDetailsPage({
       </div>
 
       {/* Left Column: Interactive Chat-style Panel & Tabs */}
-      <div className="flex-1 flex flex-col h-full bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-xs">
+      <div className="lg:flex-1 flex flex-col lg:h-full bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-xs">
         
         {/* Panel Header & Tab Switcher */}
         <div className="bg-slate-50/40 border-b border-slate-100 p-4 shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -767,13 +776,13 @@ export default function CustomerDetailsPage({
         </div>
 
         {/* Panel Content Body */}
-        <div className="flex-1 min-h-0 flex flex-col bg-slate-50/20">
+        <div className="lg:flex-1 lg:min-h-0 flex flex-col bg-slate-50/20">
           
           {activeTab === "timeline" && (
-            <div className="flex-1 flex flex-col h-full overflow-hidden">
-              
+            <div className="lg:flex-1 flex flex-col lg:h-full lg:overflow-hidden">
+
               {/* Timeline Messages container */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-4 min-h-0 flex flex-col scrollbar-thin scrollbar-thumb-slate-200">
+              <div className="min-h-[360px] lg:flex-1 overflow-y-auto p-5 space-y-4 lg:min-h-0 flex flex-col scrollbar-thin scrollbar-thumb-slate-200">
                 {actions?.items?.length > 0 ? (
                   <div className="space-y-4 flex flex-col">
                     {[...actions.items]
@@ -906,7 +915,7 @@ export default function CustomerDetailsPage({
                   </div>
 
                   {/* Textarea note & submit button */}
-                  <div className="flex-1 flex gap-2.5 min-w-[260px]">
+                  <div className="flex-1 flex gap-2.5 min-w-0 w-full sm:w-auto">
                     <Textarea
                       className="min-h-9 max-h-16 flex-1 resize-none rounded-xl border border-slate-200 px-3 py-1.5 text-xs focus-visible:ring-blue-500 shadow-3xs leading-relaxed"
                       placeholder="شرح پیگیری را اینجا بنویسید..."
@@ -931,7 +940,7 @@ export default function CustomerDetailsPage({
           )}
 
           {activeTab === "workspaces" && (
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-slate-200">
+            <div className="min-h-[360px] lg:flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-slate-200">
               {isWorkspacesLoading ? (
                 <div className="flex justify-center py-10"><Loading /></div>
               ) : workspaces.length > 0 ? (
@@ -979,7 +988,7 @@ export default function CustomerDetailsPage({
           )}
 
           {activeTab === "subscriptions" && (
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-slate-200">
+            <div className="min-h-[360px] lg:flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin scrollbar-thumb-slate-200">
               {isSubsLoading ? (
                 <div className="flex justify-center py-10"><Loading /></div>
               ) : subs.length > 0 ? (

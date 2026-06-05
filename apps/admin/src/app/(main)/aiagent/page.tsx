@@ -290,15 +290,15 @@ export default function AIAgentPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 lg:p-6">
       <div className="mx-auto max-w-3xl space-y-8">
 
         {/* AI Providers Section */}
-        <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
+        <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xs">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-foreground">پروفایل‌های هوش مصنوعی</h1>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <h1 className="text-xl font-bold text-slate-800">پروفایل‌های هوش مصنوعی</h1>
+              <p className="mt-1 text-xs text-slate-400">
                 چند ارائه‌دهنده تعریف کنید و در هر لحظه فقط یکی را فعال نگه دارید.
               </p>
             </div>
@@ -404,7 +404,7 @@ export default function AIAgentPage() {
                       {loadingModels ? "..." : "مدل‌ها"}
                     </Button>
                   </div>
-                  <label className="mt-1 flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                  <label className="mt-1 flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
                     <Checkbox
                       checked={form.useCustomModel}
                       onCheckedChange={(checked) => setForm((f) => ({ ...f, useCustomModel: !!checked }))}
@@ -429,28 +429,28 @@ export default function AIAgentPage() {
 
           {/* Providers List */}
           {loadingProviders ? (
-            <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+            <div className="flex h-32 items-center justify-center text-sm text-slate-400">
               در حال بارگذاری...
             </div>
           ) : providers.length === 0 ? (
-            <div className="flex h-32 flex-col items-center justify-center rounded-xl border border-dashed border-border text-center">
-              <p className="text-sm text-muted-foreground">هنوز هیچ پروفایلی تعریف نشده</p>
-              <p className="mt-1 text-xs text-muted-foreground">از دکمه «افزودن پروفایل» شروع کنید</p>
+            <div className="flex h-32 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 text-center">
+              <p className="text-sm text-slate-500">هنوز هیچ پروفایلی تعریف نشده</p>
+              <p className="mt-1 text-xs text-slate-400">از دکمه «افزودن پروفایل» شروع کنید</p>
             </div>
           ) : (
             <div className="space-y-3">
               {providers.map((p) => (
                 <div
                   key={p.id}
-                  className={`flex items-start gap-3 rounded-xl border p-4 transition-all ${
+                  className={`flex items-start gap-3 rounded-2xl border p-4 transition-all ${
                     p.isActive
                       ? "border-emerald-300 bg-emerald-50"
-                      : "border-border bg-muted"
+                      : "border-slate-100 bg-slate-50"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-foreground text-sm">
+                      <span className="font-semibold text-slate-800 text-sm">
                         {p.name}
                       </span>
                       {p.isActive && (
@@ -459,15 +459,15 @@ export default function AIAgentPage() {
                           فعال
                         </span>
                       )}
-                      <span className="rounded-full border border-border bg-white px-2 py-0.5 text-[11px] text-muted-foreground">
+                      <span className="rounded-full border border-slate-100 bg-white px-2 py-0.5 text-[11px] text-slate-400">
                         {p.providerType === "openai" ? "OpenAI" : "Custom"}
                       </span>
                     </div>
                     {p.model && (
-                      <p className="mt-1 text-xs text-muted-foreground font-mono">{p.model}</p>
+                      <p className="mt-1 text-xs text-slate-400 font-mono">{p.model}</p>
                     )}
                     {p.baseURL && (
-                      <p className="mt-0.5 text-xs text-muted-foreground font-mono truncate">{p.baseURL}</p>
+                      <p className="mt-0.5 text-xs text-slate-400 font-mono truncate">{p.baseURL}</p>
                     )}
                   </div>
 
@@ -484,7 +484,7 @@ export default function AIAgentPage() {
                     )}
                     <button
                       onClick={() => openEditForm(p)}
-                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-blue-600 transition-colors"
+                      className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors"
                       title="ویرایش"
                       type="button"
                     >
@@ -493,7 +493,7 @@ export default function AIAgentPage() {
                     <button
                       onClick={() => handleDelete(p.id)}
                       disabled={deletingId === p.id}
-                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
+                      className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors disabled:opacity-50"
                       title="حذف"
                       type="button"
                     >
@@ -507,33 +507,23 @@ export default function AIAgentPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1 || loadingProviders}
-                className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground disabled:opacity-50"
-                type="button"
-              >
+            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1 || loadingProviders} type="button">
                 قبلی
-              </button>
-              <span className="text-xs text-muted-foreground">
+              </Button>
+              <span className="text-xs text-slate-500">
                 صفحه {page} از {totalPages}
               </span>
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages || loadingProviders}
-                className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground disabled:opacity-50"
-                type="button"
-              >
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page === totalPages || loadingProviders} type="button">
                 بعدی
-              </button>
+              </Button>
             </div>
           )}
         </section>
 
         {/* Telegram Login Section */}
-        <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
-          <h2 className="mb-6 text-xl font-bold text-foreground">
+        <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xs">
+          <h2 className="mb-6 text-xl font-bold text-slate-800">
             ورود به تلگرام (UserBot)
           </h2>
 
