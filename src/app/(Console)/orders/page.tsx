@@ -12,6 +12,7 @@ import { SearchInput } from "@/components/ui-custom/SearchInput";
 import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
 import { DownloadIcon } from "lucide-react";
 import { ExcelExportOrdersDrawer } from "./components/excelExportOrders.drawer";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export default function Page() {
   const router = useRouter();
@@ -27,6 +28,8 @@ export default function Page() {
   const clearButtons = useHeaderFeatures((s) => s.clearButtons);
   const error = useHeaderFeatures((s) => s.error);
 
+  const { can } = usePermissions();
+
   const HeaderButton = useMemo(() => {
     return (
       <>
@@ -34,18 +37,20 @@ export default function Page() {
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
         />
-        <Button
-          type="button"
-          size="md"
-          onClick={() => setExportDialogOpen(true)}
-          disabled={error}
-        >
-          {t("ExcelExport.title")}
-          <DownloadIcon />
-        </Button>
+        {can("order:manage") && (
+          <Button
+            type="button"
+            size="md"
+            onClick={() => setExportDialogOpen(true)}
+            disabled={error}
+          >
+            {t("ExcelExport.title")}
+            <DownloadIcon />
+          </Button>
+        )}
       </>
     );
-  }, [isSearchVisible, setIsSearchVisible, error, router]);
+  }, [isSearchVisible, setIsSearchVisible, error, router, can]);
 
   const HeaderTools = useMemo(
     () => (

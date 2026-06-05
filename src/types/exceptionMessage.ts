@@ -52,6 +52,7 @@ export type ERROR_CODES =
 | 'PLAN_ALREADY_SUBSCRIBED'
 | 'SUBSCRIPTION_ALREADY_PAID'
 | 'REFERRALCODE_NOT_FOUND'
+| 'PERMISSION_DENIED'
 
 export interface ExceptionMessage {
   message: string;

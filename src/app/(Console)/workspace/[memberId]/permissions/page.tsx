@@ -78,10 +78,10 @@ export default function MemberPermissionsPage() {
     }
   };
 
-  const { workspaceId, isLoading: isLoadingPermissions } = usePermissions();
+  const { workspaceId, isLoading: isLoadingPermissions, can } = usePermissions();
 
   const { data: membersRes, isLoading: isLoadingMembers } = useSWR<any>(
-    workspaceId ? `/workspaces/${workspaceId}/members` : null,
+    workspaceId && can("team:view") ? `/workspaces/${workspaceId}/members` : null,
     fetcher
   );
   const members: WorkspaceMember[] = membersRes?.items || membersRes?.data || membersRes || [];
@@ -101,12 +101,12 @@ export default function MemberPermissionsPage() {
   const memberContact = member?.user?.mobile || member?.user?.email || "";
 
   const { data: availablePermissionsRes, isLoading: isLoadingAvailable } = useSWR<any>(
-    workspaceId ? `/workspaces/${workspaceId}/permissions/available` : null,
+    workspaceId && can("team:view") ? `/workspaces/${workspaceId}/permissions/available` : null,
     fetcher
   );
 
   const { data: memberPermissionsRes, isLoading: isLoadingMember, mutate: mutateMemberPermissions } = useSWR<any>(
-    workspaceId && memberId ? `/workspaces/${workspaceId}/permissions/members/${memberId}` : null,
+    workspaceId && memberId && can("team:view") ? `/workspaces/${workspaceId}/permissions/members/${memberId}` : null,
     fetcher
   );
 
@@ -151,10 +151,28 @@ export default function MemberPermissionsPage() {
     {}
   );
 
-  if (isLoadingPermissions || isLoadingAvailable || isLoadingMember || isLoadingMembers) {
+  if (isLoadingPermissions || (can("team:view") && (isLoadingAvailable || isLoadingMember || isLoadingMembers))) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (!can("team:view")) {
+    return (
+      <div className="_permissions-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl overflow-y-auto">
+        <div className="flex h-full flex-col px-4 py-5">
+          <div className="flex items-center gap-3 mb-5">
+            <Button variant="outline" size="icon" onClick={() => router.back()}>
+              <ChevronRightIcon className="h-4 w-4" />
+            </Button>
+            <h2 className="text-primary font-semibold">{tPerms("page_title")}</h2>
+          </div>
+          <div className="py-12 text-center text-muted-foreground text-sm border rounded-xl bg-white shadow-xs">
+            {t_ec("PERMISSION_DENIED")}
+          </div>
+        </div>
       </div>
     );
   }
@@ -232,6 +250,7 @@ export default function MemberPermissionsPage() {
                         onCheckedChange={(checked) =>
                           handleTogglePermission(permission.slug, checked)
                         }
+                        disabled={!can("team:manage") || isMemberOwner}
                       />
                     </div>
                   ))}

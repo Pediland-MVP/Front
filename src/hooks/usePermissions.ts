@@ -30,7 +30,10 @@ export function usePermissions() {
 
   const { data, error, isLoading } = useSWR<IResponseMessage<Permission[]>>(
     workspaceId ? `/workspaces/${workspaceId}/permissions/members/me/effective` : null,
-    fetcher
+    fetcher,
+    {
+      refreshInterval: 15000,
+    }
   );
 
   const permissions = useMemo(() => {
@@ -38,7 +41,16 @@ export function usePermissions() {
   }, [data]);
 
   const can = useCallback((slug: string) => {
-    return permissions.some((p) => p.slug === slug);
+    return permissions.some((p) => {
+      if (p.slug === slug) return true;
+      if (slug.startsWith("automation:")) {
+        return p.slug === slug.replace("automation:", "contentCycle:");
+      }
+      if (slug.startsWith("contentCycle:")) {
+        return p.slug === slug.replace("contentCycle:", "automation:");
+      }
+      return false;
+    });
   }, [permissions]);
 
   return useMemo(() => ({

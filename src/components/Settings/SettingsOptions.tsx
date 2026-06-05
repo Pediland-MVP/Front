@@ -11,14 +11,14 @@ import {
   InstagramLogoIcon,
   PasswordIcon,
   UserCircleIcon,
-  BriefcaseIcon,
-  UsersIcon,
 } from "@phosphor-icons/react";
 import { useSubscriptionStore } from "@/store/subscriptionStore";
 import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export const SettingsOptions = () => {
   const t = useTranslations("Settings.Navigation");
+  const { can } = usePermissions();
 
   const { subscriptions } = useSubscriptionStore();
 
@@ -26,13 +26,15 @@ export const SettingsOptions = () => {
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
 
+  const canViewBilling = can("billing:view");
+
   const items = [
     {
       title: t("accounts"),
       url: "/settings/instagram",
       icon: InstagramLogoIcon,
     },
-    ...(activeSubscription?.type !== "credit"
+    ...(activeSubscription?.type !== "credit" && canViewBilling
       ? [
           {
             title: t("upgrade_plan"),
@@ -41,16 +43,15 @@ export const SettingsOptions = () => {
           },
         ]
       : []),
-    {
-      title: t("bank_accounts"),
-      url: "/settings/card",
-      icon: CreditCardIcon,
-    },
-    // {
-    //   title: t("zarinpal"),
-    //   url: "/settings/zarinpal",
-    //   icon: PaypalLogoIcon,
-    // },
+    ...(canViewBilling
+      ? [
+          {
+            title: t("bank_accounts"),
+            url: "/settings/card",
+            icon: CreditCardIcon,
+          },
+        ]
+      : []),
     {
       title: t("profile"),
       url: "/settings/profile",

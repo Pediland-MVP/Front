@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import useSWRImmutable from "swr/immutable";
+import { mutate } from "swr";
 import { InstagramNamespace } from "@/types/instagram";
 
 import { Badge, Button, Card, CardContent, CardFooter } from "@/components/ui";
@@ -16,6 +17,8 @@ import { CopyIcon, InstagramLogoIcon } from "@phosphor-icons/react/dist/ssr";
 import { Plug2Icon, Trash2Icon } from "lucide-react";
 import { LoaderSpin } from "../ui-custom/LoaderSpin";
 import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
+
+import { usePermissions } from "@/hooks/usePermissions";
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
@@ -28,19 +31,23 @@ interface InstagramAccountsProps {
 export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => {
   const router = useRouter();
   const t = useTranslations("Settings.Accounts");
+  const { can } = usePermissions();
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
-  const apiUrl = `${API_URL}/instagram/accounts`;
+  const canView = can("instagram:view");
+  const canManage = can("instagram:manage");
+
+  const apiUrl = canView ? `${API_URL}/instagram/accounts` : null;
   const {
     data: instagramPages,
     isLoading: isInstagramPagesLoading,
-    mutate,
+    mutate: mutateLocal,
   } = useSWRImmutable<InstagramNamespace.GET["Accounts"]>(apiUrl, {
     revalidateOnMount: true,
-    onSuccess: (data) => onCountChange?.(data?.length ?? 0),
+    onSuccess: (data) => onCountChange?.(data?.data?.length ?? 0),
   });
 
   const handleDelete = useCallback((id: string) => {
@@ -80,7 +87,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
     return <LoaderSpin />;
   }
 
-  if (!instagramPages?.[0]?.isIgTokenValid) {
+  if (!instagramPages?.data?.[0]?.isIgTokenValid) {
     return null;
   }
 
@@ -94,7 +101,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
       />
 
       <div className="grid w-full gap-3 md:grid-cols-3 2xl:grid-cols-4">
-        {instagramPages.map((instagram) => (
+        {instagramPages?.data?.map((instagram) => (
           <Card
             className={cn(
               "gap-0 border-violet-200 p-0 shadow-violet-200",
@@ -153,6 +160,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
                 variant="ghost"
                 type="button"
                 size="sm"
+                disabled={!canManage}
                 onClick={() => {
                   navigator.clipboard.writeText(
                     "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
@@ -173,6 +181,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
                 variant="ghost"
                 type="button"
                 size="sm"
+                disabled={!canManage}
                 onClick={() => {
                   router.push(
                     `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
@@ -193,6 +202,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
                 variant="ghost"
                 type="button"
                 size="sm"
+                disabled={!canManage}
                 onClick={() => handleDelete(instagram.id)}
               >
                 <Trash2Icon className="text-destructive" />

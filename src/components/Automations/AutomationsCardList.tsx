@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import useSWR from "swr";
-// TODO: Refactor
+import { usePermissions } from "@/hooks/usePermissions";
 import type { AutomationResponse } from "@/schemas/automation";
 import type { PageMeta } from "@/schemas/pageMeta";
 import { ExceptionMessage } from "@/types/exceptionMessage";
@@ -30,6 +30,8 @@ interface AutomationsListCardProps {
 export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
   const t = useTranslations("Automations.List");
   const t_ec = useTranslations("ERROR_CODES");
+  const { can } = usePermissions();
+  const hasViewPermission = can("automation:view");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -45,7 +47,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
     .map((id) => `instagramIds=${id}`)
     .join("&");
   const apiUrl =
-    selectedInstagramIds.length > 0
+    hasViewPermission && selectedInstagramIds.length > 0
       ? `/contentCycle?page=${page}&limit=${limit}${searchParams}&isDirect=false&isComment=false&haveInstagramPost=false&${instagramIdsParam}`
       : null;
   const {

@@ -4,6 +4,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
+import { usePermissions } from "@/hooks/usePermissions";
 
 import { PageMeta } from "@/schemas/pageMeta";
 import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
@@ -21,6 +22,8 @@ interface OrdersCardListProps {
 
 export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   const t = useTranslations("Orders.List");
+  const { can } = usePermissions();
+  const hasViewPermission = can("order:view");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
   const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
@@ -36,7 +39,7 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
     .map((id) => `instagramIds=${id}`)
     .join("&");
   const apiUrl =
-    selectedInstagramIds.length > 0
+    hasViewPermission && selectedInstagramIds.length > 0
       ? `/orders?page=${page}&limit=${limit}${searchParams}&${instagramIdsParam}`
       : null;
   const {

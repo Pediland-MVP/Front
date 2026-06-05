@@ -33,7 +33,7 @@ export namespace InstagramNamespace {
   }
 
   export interface GET {
-    Accounts: Account[];
+    Accounts: IResponseMessage<Account[]>;
     Pages: Page[];
     Conversations: Conversations;
     Conversation: IOneConversation;

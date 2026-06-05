@@ -45,6 +45,7 @@ export const InstagramInvalidDialog = () => {
   } = useSWRImmutable<InstagramNamespace.GET["Accounts"]>(apiUrl, {
     revalidateOnMount: true,
   });
+  const accounts = instagramPages?.data;
 
   const handleReLogin = () => {
     // router.push(`${API_URL}/instagram/connectIG`);
@@ -113,7 +114,7 @@ export const InstagramInvalidDialog = () => {
             />
             <p className="my-4 text-base sm:justify-center">
               {t.rich("title", {
-                username: instagramPages?.[0]?.username,
+                username: accounts?.[0]?.username,
               })}
             </p>
           </div>
@@ -143,7 +144,7 @@ export const InstagramInvalidDialog = () => {
 
           <div className="mt-4 flex w-full items-center justify-center gap-x-1">
             <Button
-              onClick={() => handleDelete(instagramPages?.[0].id)}
+              onClick={() => handleDelete(accounts?.[0]?.id ?? "")}
               className="w-1/2 sm:flex-1 text-red-500 hover:text-500"
               variant="outline"
             >
@@ -177,7 +178,7 @@ export const InstagramInvalidDialog = () => {
 
           <SupportButton type='internal' className="text-sm" />
           <p
-            onClick={() => handleDelete(instagramPages?.[0].id)}
+            onClick={() => handleDelete(accounts?.[0]?.id ?? "")}
             className="mt-20 text-xs text-gray-500"
           ></p>
         </div>

@@ -13,6 +13,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { IResponseMessage } from "@/types/responseMessage";
+
 interface InstagramFilterProps {
   selectedIds: string[];
   onChange: (ids: string[]) => void;
@@ -23,9 +25,11 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 export function InstagramFilter({ selectedIds, onChange }: InstagramFilterProps) {
   const [open, setOpen] = useState(false);
 
-  const { data: accounts, isLoading } = useSWRImmutable<
-    InstagramNamespace.Account[]
+  const { data: response, isLoading } = useSWRImmutable<
+    IResponseMessage<InstagramNamespace.Account[]>
   >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
+
+  const accounts = response?.data;
 
   useEffect(() => {
     if (accounts && accounts.length > 0 && selectedIds.length === 0) {

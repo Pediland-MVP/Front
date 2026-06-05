@@ -140,7 +140,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
                 {userData.firstname} {userData.lastname}
               </span>
               <span className="text-xs text-muted-foreground mt-1 tracking-wider">
-                {userData.mobile}
+                {userData.mobile || userData.email}
               </span>
             </div>
           </div>
@@ -277,7 +277,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
           {activeSubscription?.type !== "credit" && (
             <button
               onClick={() => routeHandler("/settings/subscription")}
-              className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+              className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-gray-600 transition-all active:bg-gray-100 cursor-pointer"
             >
               <CrownIcon className="text-gray-500 size-5 stroke-[1.8]" />
               <span className="font-medium">{tSidebar("upgradeAccount")}</span>
@@ -286,7 +286,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
 
           <button
             onClick={() => routeHandler("/settings/instagram")}
-            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-gray-600 transition-all active:bg-gray-100 cursor-pointer"
           >
             <Instagram className="text-gray-500 size-5 stroke-[1.8]" />
             <span className="font-medium">{tSidebar("accounts")}</span>
@@ -294,7 +294,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
 
           <button
             onClick={() => routeHandler("/settings")}
-            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-gray-600 transition-all active:bg-gray-100 cursor-pointer"
           >
             <Settings className="text-gray-500 size-5 stroke-[1.8]" />
             <span className="font-medium">{tSidebar("settings")}</span>
@@ -302,7 +302,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
 
           <button
             onClick={() => routeHandler("/settings/profile")}
-            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-gray-600 transition-all active:bg-gray-100 cursor-pointer"
           >
             <UserRoundPenIcon className="text-gray-500 size-5 stroke-[1.8]" />
             <span className="font-medium">{tSidebar("profile")}</span>
@@ -310,7 +310,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
 
           <button
             onClick={() => routeHandler("/invitations")}
-            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-secondary transition-all active:bg-gray-100 cursor-pointer"
+            className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-gray-50 text-right text-sm text-gray-600 transition-all active:bg-gray-100 cursor-pointer"
           >
             <MailIcon className="text-gray-500 size-5 stroke-[1.8]" />
             <span className="font-medium flex-1">دعوتنامه‌ها</span>

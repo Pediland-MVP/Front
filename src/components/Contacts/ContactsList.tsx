@@ -7,7 +7,7 @@ import type { ContactWire } from "@/types/contact";
 import { Table } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-
+import { usePermissions } from "@/hooks/usePermissions";
 
 import { ContactTableColumns } from "./ContactTableColumns";
 import { ContactDetailsDialog } from "./ContactDetailsDialog";
@@ -15,6 +15,8 @@ import { DataTable } from "../Table/TableData";
 import { TablePagination } from "../Table/TablePagination";
 
 export const ContactsList = ({ search }: { search: string }) => {
+  const { can } = usePermissions();
+  const hasViewPermission = can("lead:view");
   // Dialog
   const [open, setOpen] = useState<boolean>(false);
   const [contactId, setContactId] = useState<string>("");
@@ -49,10 +51,10 @@ export const ContactsList = ({ search }: { search: string }) => {
 
   const swrKey = useMemo(
     () =>
-      selectedInstagramIds.length > 0
+      hasViewPermission && selectedInstagramIds.length > 0
         ? `/contacts?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}&${instagramIdsParam}`
         : null,
-    [page, limit, search, instagramIdsParam, selectedInstagramIds.length],
+    [page, limit, search, instagramIdsParam, selectedInstagramIds.length, hasViewPermission],
   );
 
   // Global fetcher from SWRProvider handles this tuple key

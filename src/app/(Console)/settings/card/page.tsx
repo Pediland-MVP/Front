@@ -22,6 +22,7 @@ import {
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
 import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import { usePermissions } from "@/hooks/usePermissions";
 
 export const bankDetailsSchema = z.object({
   bankName: z.string().min(1).max(255),
@@ -44,6 +45,8 @@ export const bankDetailsSchema = z.object({
 
 export default function BankCardPage() {
   const t = useTranslations("Settings.BankDetails");
+  const t_ec = useTranslations("ERROR_CODES");
+  const { can, isLoading: permissionsLoading } = usePermissions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof bankDetailsSchema>>({
@@ -56,11 +59,14 @@ export default function BankCardPage() {
     resolver: zodResolver(bankDetailsSchema),
   });
 
+  const canView = can("billing:view");
+  const canManage = can("billing:manage");
+
   const {
     data: cardToCardData,
     isLoading: cardToCardLoading,
     error: cardToCardError,
-  } = useSWRImmutable(`/payments/cardToCard`, {
+  } = useSWRImmutable(canView ? `/payments/cardToCard` : null, {
     revalidateOnMount: true,
   });
 
@@ -98,6 +104,30 @@ export default function BankCardPage() {
     formState: { errors },
   } = form;
 
+  if (permissionsLoading || (canView && cardToCardLoading)) {
+    return (
+      <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl flex h-[300px] items-center justify-center">
+        <LoaderSpin />
+      </div>
+    );
+  }
+
+  if (!canView) {
+    return (
+      <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
+        <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
+          <div className="mb-5">
+            <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
+            <p className="text-muted-foreground text-sm">{t("description")}</p>
+          </div>
+          <div className="py-12 text-center text-muted-foreground text-sm border rounded-xl bg-white shadow-xs">
+            {t_ec("PERMISSION_DENIED")}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
       <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
@@ -124,7 +154,7 @@ export default function BankCardPage() {
                           <FormItem>
                             <FormLabel>{t("bankName.label")}</FormLabel>
                             <FormControl>
-                              <Input id="bankname" {...field} />
+                              <Input id="bankname" disabled={!canManage} {...field} />
                             </FormControl>
                             {error && (
                               <ErrorMessage>
@@ -141,7 +171,7 @@ export default function BankCardPage() {
                           <FormItem>
                             <FormLabel>{t("accountHolder.label")}</FormLabel>
                             <FormControl>
-                              <Input id="accountholder" {...field} />
+                              <Input id="accountholder" disabled={!canManage} {...field} />
                             </FormControl>
                             {error && (
                               <ErrorMessage>
@@ -162,6 +192,7 @@ export default function BankCardPage() {
                                 id="cardnumber"
                                 dir="ltr"
                                 maxLength={16}
+                                disabled={!canManage}
                                 {...field}
                                 onChange={(e) => {
                                   onInputP2EHandler(e);
@@ -191,6 +222,7 @@ export default function BankCardPage() {
                                   className="pl-10 text-left"
                                   dir="ltr"
                                   maxLength={24}
+                                  disabled={!canManage}
                                   onChange={(e) => {
                                     onInputP2EHandler(e);
                                     field.onChange(e);
@@ -215,6 +247,7 @@ export default function BankCardPage() {
                       <ButtonLoading
                         isLoading={isSubmitting}
                         className="w-full"
+                        disabled={!canManage}
                       >
                         {t("save")}
                       </ButtonLoading>

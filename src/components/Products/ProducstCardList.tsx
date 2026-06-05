@@ -5,6 +5,7 @@ import { ProductNamespace } from "@/types/product";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
+import { usePermissions } from "@/hooks/usePermissions";
 
 import api from "@/hooks/swr/api-client";
 import { toast } from "sonner";
@@ -34,6 +35,8 @@ export const ProducstCardList = ({
 }: ProducstCardListProps) => {
   const t = useTranslations("Products.List");
   const t_ec = useTranslations("ERROR_CODES");
+  const { can } = usePermissions();
+  const hasViewPermission = can("product:view");
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -43,7 +46,9 @@ export const ProducstCardList = ({
   let searchParams = "";
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
-  const apiUrl = `/products?page=${page}&limit=${limit}${searchParams}`;
+  const apiUrl = hasViewPermission
+    ? `/products?page=${page}&limit=${limit}${searchParams}`
+    : null;
   const {
     data: productsData,
     error: productsError,

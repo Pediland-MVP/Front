@@ -199,8 +199,12 @@ export const UserDetailsCard = () => {
             )}
 
             <div className="mb-1 flex items-center gap-1">
-              <span className="text-muted-foreground">{t("mobile")}:</span>
-              <span className="tracking-wider">{userData?.mobile}</span>
+              <span className="text-muted-foreground">
+                {userData?.mobile ? t("mobile") : t("email")}:
+              </span>
+              <span className="tracking-wider">
+                {userData?.mobile || userData?.email}
+              </span>
             </div>
 
             {currentWorkspace && (

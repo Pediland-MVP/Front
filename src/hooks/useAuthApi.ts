@@ -21,7 +21,7 @@ export function useAuthApi() {
   const fetchProfile = async () => {
     try {
       const res = await fetch("/api/me", { credentials: "include" });
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401) {
         const ok = await refreshToken();
         if (!ok) return;
         return fetchProfile();

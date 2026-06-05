@@ -57,7 +57,8 @@ export default function ConnectPage() {
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
   const { workspaces } = useWorkspaces();
-  const { workspaceId } = usePermissions();
+  const { workspaceId, can } = usePermissions();
+  const canConnect = canConnectInstagram && (workspaceId ? can("instagram:manage") : true);
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
   const atInstagramLimit = instagramCount >= 5;
@@ -212,7 +213,7 @@ export default function ConnectPage() {
                 <div className="w-full rounded-xl bg-violet-50 px-4 py-3 text-center text-sm text-violet-700">
                   {t("instagram_limit")}
                 </div>
-              ) : !canConnectInstagram ? (
+              ) : !canConnect ? (
                 // Sub-scenario B.2 — member lacks instagram:manage permission.
                 // Backend already blocks the connect; this surfaces the reason in the UI.
                 <div className="w-full rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm text-amber-800">

@@ -60,20 +60,20 @@ export function TeamManager() {
   const ownerId = activeWorkspace?.ownerId;
 
   const { data: membersRes, isLoading: isLoadingMembers, mutate: mutateMembers } = useSWR<any>(
-    workspaceId ? `/workspaces/${workspaceId}/members` : null,
+    workspaceId && can("team:view") ? `/workspaces/${workspaceId}/members` : null,
     fetcher
   );
   const members: WorkspaceMember[] = membersRes?.items || membersRes?.data || membersRes || [];
 
   const { data: availablePermissionsRes } = useSWR<any>(
-    workspaceId && canInvite ? `/workspaces/${workspaceId}/permissions/available` : null,
+    workspaceId && can("team:view") && canInvite ? `/workspaces/${workspaceId}/permissions/available` : null,
     fetcher
   );
   const availablePermissions = availablePermissionsRes?.items
     || (Array.isArray(availablePermissionsRes) ? availablePermissionsRes : (availablePermissionsRes?.data || []));
 
   const { data: invitationsRes, mutate: mutateInvitations } = useSWR<any>(
-    workspaceId ? `/workspaces/${workspaceId}/invitations` : null,
+    workspaceId && can("team:view") ? `/workspaces/${workspaceId}/invitations` : null,
     fetcher
   );
   const invitations = invitationsRes?.items

@@ -58,7 +58,7 @@ export const SubscriptionBoard = () => {
       ? true
       : false;
 
-  const { workspaceId } = usePermissions();
+  const { workspaceId, can } = usePermissions();
   const { workspaces } = useWorkspaces();
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
 
@@ -206,26 +206,29 @@ export const SubscriptionBoard = () => {
             }
 
             {instagramValid ? (
-              <Button
-                size="md"
-                className="w-full"
-                onClick={() => router.push("/settings/subscription")}
-              >
-                {t("renewal_subsription")}
-                {/* {hasActiveSubscription ? "جـزئـیـات" : "تمدید اشتراک"} */}
-              </Button>
+              can("billing:view") && (
+                <Button
+                  size="md"
+                  className="w-full"
+                  onClick={() => router.push("/settings/subscription")}
+                >
+                  {t("renewal_subsription")}
+                </Button>
+              )
             ) : (
-              <Button
-                size="md"
-                className="bg-destructive/90 hover:bg-destructive w-full text-white"
-                onClick={() =>
-                  router.push(
-                    `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
-                  )
-                }
-              >
-                ورود مجدد
-              </Button>
+              can("instagram:manage") && (
+                <Button
+                  size="md"
+                  className="bg-destructive/90 hover:bg-destructive w-full text-white"
+                  onClick={() =>
+                    router.push(
+                      `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
+                    )
+                  }
+                >
+                  ورود مجدد
+                </Button>
+              )
             )}
           </div>
         </div>

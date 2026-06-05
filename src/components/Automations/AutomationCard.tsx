@@ -21,6 +21,8 @@ interface AutomationCardProps {
   handleDelete: (id: string) => void;
 }
 
+import { IResponseMessage } from "@/types/responseMessage";
+
 const AutomationCardComponent = ({
   item,
   handleDelete,
@@ -30,10 +32,11 @@ const AutomationCardComponent = ({
   const specifiedPost = item.instagramPost?.picture?.url;
   const { can } = usePermissions();
 
-  const { data: accounts } = useSWRImmutable<InstagramNamespace.Account[]>(
+  const { data: response } = useSWRImmutable<IResponseMessage<InstagramNamespace.Account[]>>(
     `${API_URL}/instagram/accounts`,
     fetcher,
   );
+  const accounts = response?.data;
   const instagramUsername = accounts?.find((a) => a.id === item.instagramId)?.username;
 
   return (

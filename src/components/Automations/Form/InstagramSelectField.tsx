@@ -24,14 +24,18 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
+import { IResponseMessage } from "@/types/responseMessage";
+
 export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("Automations");
   const { control } = useFormContext();
 
-  const { data: accounts, isLoading } = useSWRImmutable<
-    InstagramNamespace.Account[]
+  const { data: response, isLoading } = useSWRImmutable<
+    IResponseMessage<InstagramNamespace.Account[]>
   >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
+
+  const accounts = response?.data;
 
   if (isLoading || !accounts || accounts.length === 0) return null;
 

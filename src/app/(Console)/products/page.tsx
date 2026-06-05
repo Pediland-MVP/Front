@@ -42,18 +42,20 @@ export default function Page() {
           setIsSearchVisible={setIsSearchVisible}
         />
 
-        <Button
-          type="button"
-          size="md"
-          disabled={error || !allowAdd}
-          onClick={() => router.push("/products/add?t=p")}
-        >
-          {t("add")}
-          <CircleFadingPlusIcon />
-        </Button>
+        {can("product:create") && (
+          <Button
+            type="button"
+            size="md"
+            disabled={error || !cardToCardData}
+            onClick={() => router.push("/products/add?t=p")}
+          >
+            {t("add")}
+            <CircleFadingPlusIcon />
+          </Button>
+        )}
       </>
     );
-  }, [isSearchVisible, setIsSearchVisible, error, router, allowAdd]);
+  }, [isSearchVisible, setIsSearchVisible, error, router, cardToCardData, can]);
 
   const HeaderTools = useMemo(
     () => (

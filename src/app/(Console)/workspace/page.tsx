@@ -34,7 +34,7 @@ export default function WorkspacePage() {
   const tTeam = useTranslations("Settings.Team");
   const t_ec = useTranslations("ERROR_CODES");
   const { pendingCount, isLoading: isInvitationsLoading } = useInvitations();
-  const { workspaceId, isLoading: isLoadingPermissions } = usePermissions();
+  const { workspaceId, isLoading: isLoadingPermissions, can } = usePermissions();
   const { workspaces, isLoading: workspacesIsLoading, changeWorkspace, mutate } = useWorkspaces();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -168,25 +168,27 @@ export default function WorkspacePage() {
             <div className="flex flex-col items-center gap-3 rounded-2xl border bg-gradient-to-b from-primary/5 to-white px-4 py-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative group">
               
               {/* Edit Workspace Dialog in Top-Left Corner */}
-              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-4 left-4 h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all inline-flex items-center justify-center cursor-pointer"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>{tWorkspace("title")}</DialogTitle>
-                  </DialogHeader>
-                  <div className="pt-2">
-                    <WorkspaceForm onSuccess={() => setIsEditDialogOpen(false)} />
-                  </div>
-                </DialogContent>
-              </Dialog>
+              {can("team:manage") && (
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-4 left-4 h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-all inline-flex items-center justify-center cursor-pointer"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>{tWorkspace("title")}</DialogTitle>
+                    </DialogHeader>
+                    <div className="pt-2">
+                      <WorkspaceForm onSuccess={() => setIsEditDialogOpen(false)} />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
 
               <Avatar className="h-20 w-20 shrink-0 ring-4 ring-white shadow-sm transition-transform duration-300 group-hover:scale-105">
                 <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
@@ -203,15 +205,17 @@ export default function WorkspacePage() {
           )}
 
           {/* Team Manager Section */}
-          <Card className="border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden md:col-span-2">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-bold text-gray-900">{tTeam("title")}</CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">{tTeam("description")}</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-4 border-t border-gray-50">
-              <TeamManager />
-            </CardContent>
-          </Card>
+          {can("team:view") && (
+            <Card className="border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden md:col-span-2">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold text-gray-900">{tTeam("title")}</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground">{tTeam("description")}</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4 border-t border-gray-50">
+                <TeamManager />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
       </div>
