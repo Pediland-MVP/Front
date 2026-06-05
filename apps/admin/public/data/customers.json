@@ -1,0 +1,704 @@
+[
+  {
+    "id": "37bc68d5-36ea-4ac0-9a14-6044b12783f8",
+    "gender": null,
+    "firstname": "سینا",
+    "lastname": "پیرانی",
+    "mobile": "09994918874",
+    "status": "new",
+    "createDate": "2025-02-16T11:14:41.044272",
+    "updateDate": "2025-03-07T11:14:41.044272",
+    "city": null,
+    "kam": {
+      "id": 3,
+      "name": "سینا پیرانی"
+    },
+    "subscriptions": [
+      {
+        "id": "ddba5429-55b9-46f0-ab8c-2dfd9397a9d1",
+        "status": "active",
+        "expire": "2025-07-28T11:14:41.044272",
+        "createDate": "2025-02-17T11:14:41.044272",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 268,
+            "amount": 89000,
+            "status": "pending",
+            "createDate": "2025-02-17T11:14:41.044272",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "b7dcf901-e522-466f-9779-ea7cecc8f82b",
+        "username": "cvexor",
+        "name": "صفحه هنری من",
+        "category": "نقاشی",
+        "followersCount": 12535,
+        "followsCount": 39,
+        "mediaCount": 32
+      }
+    ],
+    "stats": {
+      "totalFollowers": 127949,
+      "leadsCount": 7,
+      "automationsCount": 6,
+      "sessionsCount": 34,
+      "productsCount": 7,
+      "ordersCount": 164,
+      "salesCount": 143,
+      "totalSales": 1400240,
+      "totalActiveSalesAmount": 86209
+    },
+    "referralUser": {
+      "id": "6708623f-8169-42ab-b5e3-f8cd19029f08",
+      "usage": 10,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "19a18830-536b-4553-b456-b42c09319b68",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "f49aa7bc-36f0-420c-93cc-5b8d79a38858",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "2f8f3d53-4891-4d2d-88df-53e0a797a3e1",
+    "gender": null,
+    "firstname": "مریم",
+    "lastname": "کاظمی",
+    "mobile": "09281750485",
+    "status": "needed",
+    "createDate": "2025-03-28T11:14:41.044908",
+    "updateDate": "2025-04-13T11:14:41.044908",
+    "city": null,
+    "kam": {
+      "id": 3,
+      "name": "سینا پیرانی"
+    },
+    "subscriptions": [
+      {
+        "id": "f363d5fb-acc5-4f9f-9200-f3167a528786",
+        "status": "active",
+        "expire": "2025-07-18T11:14:41.044908",
+        "createDate": "2025-03-29T11:14:41.044908",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 335,
+            "amount": 129000,
+            "status": "pending",
+            "createDate": "2025-03-29T11:14:41.044908",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "d5b3caff-56c7-4da3-861b-03235174c1f8",
+        "username": "art_by_maryam",
+        "name": "عکاسی و طراحی",
+        "category": "عکاسی",
+        "followersCount": 194110,
+        "followsCount": 381,
+        "mediaCount": 128
+      }
+    ],
+    "stats": {
+      "totalFollowers": 51531,
+      "leadsCount": 18,
+      "automationsCount": 0,
+      "sessionsCount": 40,
+      "productsCount": 3,
+      "ordersCount": 121,
+      "salesCount": 114,
+      "totalSales": 240650,
+      "totalActiveSalesAmount": 894772
+    },
+    "referralUser": {
+      "id": "4b3c92b9-05ef-4765-a312-7eca8c19be6a",
+      "usage": 8,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "12c2bab6-1547-4e2c-b41b-635f2ae1703d",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "4c340dfd-0fa6-4040-98c8-ae55ac96a93a",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "9c9beab8-e6cf-4265-a544-9e77450c244e",
+    "gender": null,
+    "firstname": "علی",
+    "lastname": "هاشمی",
+    "mobile": "09454394813",
+    "status": "inactive",
+    "createDate": "2025-06-01T11:14:41.045094",
+    "updateDate": "2025-06-19T11:14:41.045094",
+    "city": null,
+    "kam": {
+      "id": 2,
+      "name": "پدرام قانع"
+    },
+    "subscriptions": [
+      {
+        "id": "e06a27a6-171b-47a6-872b-0376abbe16cd",
+        "status": "active",
+        "expire": "2025-07-22T11:14:41.045094",
+        "createDate": "2025-06-02T11:14:41.045094",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 456,
+            "amount": 99000,
+            "status": "pending",
+            "createDate": "2025-06-02T11:14:41.045094",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "5165efcf-bbb4-4fa0-b744-4d730e780b6a",
+        "username": "ali_design",
+        "name": "کلاس طراحی آنلاین",
+        "category": "طراحی",
+        "followersCount": 171519,
+        "followsCount": 346,
+        "mediaCount": 20
+      }
+    ],
+    "stats": {
+      "totalFollowers": 71095,
+      "leadsCount": 21,
+      "automationsCount": 5,
+      "sessionsCount": 41,
+      "productsCount": 7,
+      "ordersCount": 82,
+      "salesCount": 109,
+      "totalSales": 1452215,
+      "totalActiveSalesAmount": 761698
+    },
+    "referralUser": {
+      "id": "52bfb7a0-7f8a-405e-ae01-c9602b68b71b",
+      "usage": 7,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "82ef624a-6288-4b31-8e18-411ee7a28e28",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "28388ed1-4202-4e0e-ae59-fd7ccc8ecc97",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "e76a6f15-0bf2-4d0d-8144-b1200fecbc03",
+    "gender": null,
+    "firstname": "الهام",
+    "lastname": "موسوی",
+    "mobile": "09671442646",
+    "status": "active",
+    "createDate": "2025-04-20T11:14:41.045164",
+    "updateDate": "2025-04-29T11:14:41.045164",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "c7295c18-5092-4858-9240-a332d0f0e112",
+        "status": "active",
+        "expire": "2025-07-23T11:14:41.045164",
+        "createDate": "2025-04-21T11:14:41.045164",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 213,
+            "amount": 99000,
+            "status": "pending",
+            "createDate": "2025-04-21T11:14:41.045164",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "03c3c45e-ad62-443c-b33f-ecbaf9fa89fb",
+        "username": "elham.paint",
+        "name": "گالری نقاشی",
+        "category": "کلاژ",
+        "followersCount": 54100,
+        "followsCount": 487,
+        "mediaCount": 20
+      }
+    ],
+    "stats": {
+      "totalFollowers": 146978,
+      "leadsCount": 23,
+      "automationsCount": 3,
+      "sessionsCount": 35,
+      "productsCount": 7,
+      "ordersCount": 101,
+      "salesCount": 134,
+      "totalSales": 2816906,
+      "totalActiveSalesAmount": 981991
+    },
+    "referralUser": {
+      "id": "deebe9ab-520a-4384-ad18-30f85d418cb6",
+      "usage": 4,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "3a98833a-5710-4e9c-8fe1-fde0917944c8",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "0b8715f9-b104-43ef-878e-74e7085cb7a7",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "ee3cbde9-30bc-4a36-83e9-6efc1172aecf",
+    "gender": null,
+    "firstname": "رضا",
+    "lastname": "یوسفی",
+    "mobile": "09556861817",
+    "status": "lost",
+    "createDate": "2025-04-05T11:14:41.045264",
+    "updateDate": "2025-04-06T11:14:41.045264",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "14d7064f-91eb-4829-bd4c-36cb1752f248",
+        "status": "active",
+        "expire": "2025-07-25T11:14:41.045264",
+        "createDate": "2025-04-06T11:14:41.045264",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 198,
+            "amount": 129000,
+            "status": "pending",
+            "createDate": "2025-04-06T11:14:41.045264",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "437c91bb-4d5c-4098-bd59-e84754d2c04f",
+        "username": "reza.photo",
+        "name": "اینجا رنگ‌ها زنده می‌شن",
+        "category": "گرافیک",
+        "followersCount": 121472,
+        "followsCount": 454,
+        "mediaCount": 157
+      }
+    ],
+    "stats": {
+      "totalFollowers": 194277,
+      "leadsCount": 0,
+      "automationsCount": 9,
+      "sessionsCount": 15,
+      "productsCount": 3,
+      "ordersCount": 185,
+      "salesCount": 42,
+      "totalSales": 3296254,
+      "totalActiveSalesAmount": 174476
+    },
+    "referralUser": {
+      "id": "be06d350-19ae-446a-96cc-4e9f25751001",
+      "usage": 0,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "b571e82a-7608-4d36-a786-6619a147bb0f",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "130acb6a-dd22-4fe6-aadf-ef2611368192",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "85697a7d-420f-4d35-af95-f3514255140e",
+    "gender": null,
+    "firstname": "نگین",
+    "lastname": "صابری",
+    "mobile": "09173069553",
+    "status": "new",
+    "createDate": "2025-03-15T11:14:41.045331",
+    "updateDate": "2025-04-11T11:14:41.045331",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "92b3a3e4-2225-4c91-9086-4c1176aba239",
+        "status": "active",
+        "expire": "2025-07-06T11:14:41.045331",
+        "createDate": "2025-03-16T11:14:41.045331",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 418,
+            "amount": 99000,
+            "status": "pending",
+            "createDate": "2025-03-16T11:14:41.045331",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "b1ecd125-1a96-41d2-bf0e-e6a5ec299d15",
+        "username": "negin.draws",
+        "name": "خلاقیت بی‌مرز",
+        "category": "نقاشی",
+        "followersCount": 169128,
+        "followsCount": 64,
+        "mediaCount": 292
+      }
+    ],
+    "stats": {
+      "totalFollowers": 41720,
+      "leadsCount": 2,
+      "automationsCount": 1,
+      "sessionsCount": 17,
+      "productsCount": 6,
+      "ordersCount": 155,
+      "salesCount": 129,
+      "totalSales": 4437121,
+      "totalActiveSalesAmount": 224750
+    },
+    "referralUser": {
+      "id": "a54c3301-e755-4665-9024-278ea5b44fef",
+      "usage": 2,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "6bfac3a3-6f7a-4db4-8da8-da0ccc7b2272",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "ba5786e6-6eef-4a26-b150-2ff32e94e3e6",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "fbb3ac38-5dda-43df-a092-5a535f00e8a7",
+    "gender": null,
+    "firstname": "آرین",
+    "lastname": "فرجی",
+    "mobile": "09740500915",
+    "status": "needed",
+    "createDate": "2025-02-14T11:14:41.045422",
+    "updateDate": "2025-03-12T11:14:41.045422",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "af0eccd6-ff89-4e07-b5f4-c77645592e5f",
+        "status": "active",
+        "expire": "2025-08-10T11:14:41.045422",
+        "createDate": "2025-02-15T11:14:41.045422",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 132,
+            "amount": 89000,
+            "status": "pending",
+            "createDate": "2025-02-15T11:14:41.045422",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "0d2f27dd-57b5-4de3-872a-9a9eb6647466",
+        "username": "arian.studio",
+        "name": "سبک زندگی هنری",
+        "category": "عکاسی",
+        "followersCount": 48098,
+        "followsCount": 690,
+        "mediaCount": 145
+      }
+    ],
+    "stats": {
+      "totalFollowers": 31516,
+      "leadsCount": 11,
+      "automationsCount": 1,
+      "sessionsCount": 28,
+      "productsCount": 5,
+      "ordersCount": 97,
+      "salesCount": 61,
+      "totalSales": 3405376,
+      "totalActiveSalesAmount": 883023
+    },
+    "referralUser": {
+      "id": "9fea98d4-aca4-4ac9-8366-b95093e3ff96",
+      "usage": 2,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "a15e44af-bf15-4b40-9d8f-96c331f7370f",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "06dd9d78-a7f4-40f3-a3f3-51ee673d32c5",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "e33c6b96-8c68-4c21-8b50-fb7f35dd22c9",
+    "gender": null,
+    "firstname": "نرگس",
+    "lastname": "زارعی",
+    "mobile": "09971173894",
+    "status": "inactive",
+    "createDate": "2025-06-09T11:14:41.045520",
+    "updateDate": "2025-06-19T11:14:41.045520",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "64f3f058-0947-4e9d-9cb1-b1b069ccf835",
+        "status": "active",
+        "expire": "2025-08-02T11:14:41.045520",
+        "createDate": "2025-06-10T11:14:41.045520",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 313,
+            "amount": 89000,
+            "status": "pending",
+            "createDate": "2025-06-10T11:14:41.045520",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "d894861f-50b6-4cbd-88f9-11a6f2d7e721",
+        "username": "narges.paint",
+        "name": "آموزش نقاشی مبتدی",
+        "category": "طراحی",
+        "followersCount": 55906,
+        "followsCount": 921,
+        "mediaCount": 256
+      }
+    ],
+    "stats": {
+      "totalFollowers": 33408,
+      "leadsCount": 8,
+      "automationsCount": 7,
+      "sessionsCount": 4,
+      "productsCount": 10,
+      "ordersCount": 174,
+      "salesCount": 33,
+      "totalSales": 660157,
+      "totalActiveSalesAmount": 865733
+    },
+    "referralUser": {
+      "id": "3437317d-969d-4e44-8108-bc82bb6473ff",
+      "usage": 10,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "85d355e5-97fa-421b-8286-6207a936e8c0",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "1ec6dd78-260a-49ec-b40e-b0d7c9db61bc",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "27d46c2a-a835-44d7-8fa1-2c0533d41aa6",
+    "gender": null,
+    "firstname": "امین",
+    "lastname": "کریمی",
+    "mobile": "09308351253",
+    "status": "active",
+    "createDate": "2025-05-19T11:14:41.045612",
+    "updateDate": "2025-06-09T11:14:41.045612",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "49b05fb5-22a8-4770-b168-0993c046c42f",
+        "status": "active",
+        "expire": "2025-07-31T11:14:41.045612",
+        "createDate": "2025-05-20T11:14:41.045612",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 315,
+            "amount": 129000,
+            "status": "pending",
+            "createDate": "2025-05-20T11:14:41.045612",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "37d31ba9-0be8-48bc-a7d7-d599f7e3ba2c",
+        "username": "amin.creative",
+        "name": "سفارش طراحی چهره",
+        "category": "کلاژ",
+        "followersCount": 11620,
+        "followsCount": 692,
+        "mediaCount": 253
+      }
+    ],
+    "stats": {
+      "totalFollowers": 25054,
+      "leadsCount": 8,
+      "automationsCount": 5,
+      "sessionsCount": 24,
+      "productsCount": 0,
+      "ordersCount": 3,
+      "salesCount": 17,
+      "totalSales": 4005852,
+      "totalActiveSalesAmount": 669032
+    },
+    "referralUser": {
+      "id": "fb6995f3-c064-4ed1-8875-e877c332b336",
+      "usage": 7,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "e83bae40-2f8c-4a7e-bb9a-9366f1db58f2",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "dc52987d-0a1b-4ec5-bdc6-affae4aca886",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  },
+  {
+    "id": "86923ace-3cfb-4919-bb99-c20dc2dc4249",
+    "gender": null,
+    "firstname": "سحر",
+    "lastname": "احمدی",
+    "mobile": "09406599008",
+    "status": "lost",
+    "createDate": "2025-04-02T11:14:41.045674",
+    "updateDate": "2025-04-10T11:14:41.045674",
+    "city": null,
+    "subscriptions": [
+      {
+        "id": "c8b95707-6254-416d-ae05-6b4ce8fb83ec",
+        "status": "active",
+        "expire": "2025-07-10T11:14:41.045674",
+        "createDate": "2025-04-03T11:14:41.045674",
+        "planDurationId": 1,
+        "invoices": [
+          {
+            "id": 328,
+            "amount": 129000,
+            "status": "pending",
+            "createDate": "2025-04-03T11:14:41.045674",
+            "paymentMethod": "zarinpal"
+          }
+        ]
+      }
+    ],
+    "instagrams": [
+      {
+        "id": "03ce8bfb-6a4a-4ad4-affd-df4d38673e49",
+        "username": "sahar.art",
+        "name": "دنیای رنگ‌ها",
+        "category": "گرافیک",
+        "followersCount": 152430,
+        "followsCount": 583,
+        "mediaCount": 153
+      }
+    ],
+    "stats": {
+      "totalFollowers": 140418,
+      "leadsCount": 5,
+      "automationsCount": 10,
+      "sessionsCount": 37,
+      "productsCount": 2,
+      "ordersCount": 74,
+      "salesCount": 140,
+      "totalSales": 1992668,
+      "totalActiveSalesAmount": 514735
+    },
+    "referralUser": {
+      "id": "9cb0fbbb-ecdd-4f39-b1a6-d91c2a9647b3",
+      "usage": 7,
+      "totalUsage": 0,
+      "codeChanges": 0,
+      "referralCode": {
+        "id": "b60893f2-d651-4fb5-86fb-c3598585f100",
+        "code": "test_code",
+        "discount": 50,
+        "type": "PERCENTAGE",
+        "user": {
+          "id": "6eedb2f9-db96-4ce3-99ef-811bef1843e1",
+          "firstname": "Sinag",
+          "lastname": "Piranix",
+          "mobile": "09219999999"
+        }
+      }
+    }
+  }
+]

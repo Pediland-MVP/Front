@@ -1,0 +1,101 @@
+{
+  "items": [
+    {
+      "id": "e4a2b069-c326-4ef4-8f8d-d0f3d287ee3a",
+      "createDate": "2025-07-17T11:11:43.469Z",
+      "updateDate": "2025-07-17T11:11:43.469Z",
+      "note": "توضیحات سمپل",
+      "status": "incoming",
+      "firstname": "احمد",
+      "lastname": "ممدی",
+      "mobile": "09210249977",
+      "instagram": {
+        "id": "f194ec80-f541-4051-944f-d594684d8400",
+        "createDate": "2025-07-17T11:11:43.469Z",
+        "updateDate": "2025-07-17T11:11:43.469Z",
+        "followersCount": 4000,
+        "followsCount": 240,
+        "mediaCount": 10,
+        "name": "ممدی",
+        "username": "mypage.com"
+      },
+      "marketingLeadsAdmins": [
+        {
+          "id": 4,
+          "createDate": "2025-07-17T11:11:43.469Z",
+          "updateDate": "2025-07-17T11:11:43.469Z",
+          "isActive": true,
+          "admin": {
+            "id": "7ab0039b-a0d5-43a6-8da7-e7716d8581a4",
+            "createDate": "2025-07-11T14:58:13.712Z",
+            "updateDate": "2025-07-11T14:58:13.712Z",
+            "deleteDate": null,
+            "firstname": "Sina",
+            "lastname": "Pirani",
+            "role": "kam",
+            "username": "sinapirani19854334"
+          }
+        }
+      ],
+      "category": {
+        "id": 1,
+        "createDate": "2025-07-13T08:40:36.352Z",
+        "updateDate": "2025-07-13T08:40:36.352Z",
+        "name": "املاک"
+      },
+      "categoryId": 1
+    },
+    {
+      "id": "9a5afe34-1004-489a-a12c-a2cf2df546bc",
+      "createDate": "2025-07-17T11:12:57.967Z",
+      "updateDate": "2025-07-17T11:12:57.967Z",
+      "note": "توضیحات سمپل",
+      "status": "incoming",
+      "firstname": "احمد",
+      "lastname": "ممدی",
+      "mobile": "09210249944",
+      "instagram": {
+        "id": "06e716b4-24d6-4221-8a8e-c1a569a05d3d",
+        "createDate": "2025-07-17T11:12:57.967Z",
+        "updateDate": "2025-07-17T11:12:57.967Z",
+        "followersCount": 4000,
+        "followsCount": 240,
+        "mediaCount": 10,
+        "name": "ممدی",
+        "username": "mypagem.com"
+      },
+      "marketingLeadsAdmins": [
+        {
+          "id": 5,
+          "createDate": "2025-07-17T11:12:57.967Z",
+          "updateDate": "2025-07-17T11:12:57.967Z",
+          "isActive": true,
+          "admin": {
+            "id": "7ab0039b-a0d5-43a6-8da7-e7716d8581a4",
+            "createDate": "2025-07-11T14:58:13.712Z",
+            "updateDate": "2025-07-11T14:58:13.712Z",
+            "deleteDate": null,
+            "firstname": "Sina",
+            "lastname": "Pirani",
+            "role": "kam",
+            "username": "sinapirani19854334"
+          }
+        }
+      ],
+      "category": {
+        "id": 4,
+        "createDate": "2025-07-13T08:41:11.979Z",
+        "updateDate": "2025-07-13T08:41:11.979Z",
+        "name": "کامپیوتر"
+      },
+      "categoryId": 4
+    }
+  ],
+  "meta": {
+    "currentPage": 1,
+    "itemCount": 2,
+    "itemsPerPage": 5,
+    "totalItems": 2,
+    "totalPages": 1
+  }
+}

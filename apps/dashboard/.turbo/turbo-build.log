@@ -1,0 +1,86 @@
+
+
+> front@0.1.0 build /home/cvexor/Documents/MVP/Front/apps/dashboard
+> next build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+   ▲ Next.js 16.0.10 (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · clientTraceMetadata
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ✓ Compiled successfully in 50s
+ ✓ Completed runAfterProductionCompile in 1529ms
+   Skipping validation of types
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+   Collecting page data using 11 workers in 1877.8ms     ✓ Collecting page data using 11 workers in 1877.8ms 
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ✓ Generating static pages using 11 workers (38/38) in 2.0s
+   Finalizing page optimization in 17.6ms     ✓ Finalizing page optimization in 17.6ms 
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /[shopId]/[productId]/order
+├ ƒ /api/logout
+├ ƒ /api/proxy-image
+├ ƒ /api/sentry-example-api
+├ ƒ /auth
+├ ƒ /auth/onboarding
+├ ƒ /auth/onboarding/invitations
+├ ƒ /auth/otp
+├ ƒ /auth/password
+├ ƒ /automations
+├ ƒ /automations/[id]
+├ ƒ /automations/add
+├ ƒ /automations/sessions
+├ ƒ /automations/sessions/[id]
+├ ƒ /comments
+├ ƒ /comments/[id]
+├ ƒ /connect
+├ ƒ /contacts
+├ ƒ /directs
+├ ƒ /directs/[chatId]
+├ ƒ /help/learn
+├ ƒ /help/support
+├ ƒ /invitations
+├ ƒ /learn
+├ ○ /manifest.json
+├ ƒ /orders
+├ ƒ /payments/verify
+├ ƒ /products
+├ ƒ /products/[id]
+├ ƒ /products/add
+├ ƒ /sendAll
+├ ƒ /sentry-example-page
+├ ƒ /settings
+├ ƒ /settings/card
+├ ƒ /settings/instagram
+├ ƒ /settings/password
+├ ƒ /settings/profile
+├ ƒ /settings/subscription
+├ ƒ /settings/subscription/verify
+├ ƒ /settings/zarinpal
+├ ƒ /support
+├ ƒ /workspace
+└ ƒ /workspace/[memberId]/permissions
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
