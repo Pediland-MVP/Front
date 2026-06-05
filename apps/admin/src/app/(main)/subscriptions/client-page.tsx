@@ -57,11 +57,13 @@ export default function SubscriptionsPageClient() {
   const {
     data: subscriptionsData,
     isLoading: isSubscriptionsLoading,
+    isValidating: isSubscriptionsValidating,
     error: subscriptionsError,
     mutate: mutateSubscriptions,
   } = useSWR(
     `/subscriptions?limit=${limit}&page=${page}${searchQuery}${statusQuery}${userIdsQuery}${startDateQuery}${endDateQuery}${sortQuery}${adminQuery}`,
     fetcher,
+    { keepPreviousData: true },
   );
 
   const subscriptions = subscriptionsData?.items || [];
@@ -87,11 +89,12 @@ export default function SubscriptionsPageClient() {
     }
   };
 
-  if (isSubscriptionsLoading || isKamsLoading) return <Loading />;
+  if ((!subscriptionsData && isSubscriptionsLoading) || isKamsLoading) return <Loading />;
   if (subscriptionsError || kamsError) return <FetchError />;
 
   return (
     <SubscriptionTable
+      isRefetching={isSubscriptionsValidating && !!subscriptionsData}
       subscriptionAdmins={subscriptionAdmins}
       onAdminChange={setSubscriptionAdmins}
       user={user}

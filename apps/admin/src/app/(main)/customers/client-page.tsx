@@ -62,11 +62,13 @@ export default function CustomersPageClient() {
   const {
     data: customersData,
     isLoading: isCustomersLoading,
+    isValidating: isCustomersValidating,
     error: customersError,
     mutate: mutateCustomers,
   } = useSWR(
     `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}${igTokenQuery}${sortQuery}&panelMode=${panelMode}`,
     fetcher,
+    { keepPreviousData: true },
   );
 
   useEffect(() => {
@@ -101,12 +103,13 @@ export default function CustomersPageClient() {
     setSmsDialogOpen(true);
   };
 
-  if (isCustomersLoading || isKamsLoading) return <Loading />;
+  if ((!customersData && isCustomersLoading) || isKamsLoading) return <Loading />;
   if (customersError || kamsError) return <FetchError />;
 
   return (
     <>
       <CustomerTable
+        isRefetching={isCustomersValidating && !!customersData}
         user={user}
         customers={customers}
         mutateCustomers={mutateCustomers}

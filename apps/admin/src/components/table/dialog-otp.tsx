@@ -36,6 +36,7 @@ type OtpByMobileValues = z.infer<typeof exportSchema>;
 
 interface OtpByMobileProps {
   trigger?: React.ReactNode;
+  size?: "default" | "sm";
 }
 
 interface OtpResult {
@@ -88,7 +89,7 @@ function CopyableOtp({
   );
 }
 
-export function OtpDialog({ trigger }: OtpByMobileProps) {
+export function OtpDialog({ trigger, size = "default" }: OtpByMobileProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpResult, setOtpResult] = useState<OtpResult | null>(null);
@@ -138,7 +139,7 @@ export function OtpDialog({ trigger }: OtpByMobileProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" color="primary">
+          <Button size={size}>
             <KeyIcon />
             رمز یکبار مصرف
           </Button>

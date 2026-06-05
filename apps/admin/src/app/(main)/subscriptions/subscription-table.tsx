@@ -8,6 +8,7 @@ import { SubscriptionStatusEnum } from "@/types/subscription";
 import { useState } from "react";
 
 // UI Imports
+import { LayoutTable } from "@/components/layout/LayoutTable";
 import { FilterStatus } from "@/components/table/filter-status";
 import { DataTable } from "@/components/table/data-table";
 import { DataTablePagination } from "@/components/table/pagination";
@@ -18,6 +19,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { FilterAdmin } from "@/components/table/filter-admin";
 
 export default function SubscriptionTable({
+  isRefetching,
   subscriptionAdmins,
   onAdminChange,
   user,
@@ -40,6 +42,7 @@ export default function SubscriptionTable({
   endDate,
   onEndDateChange,
 }: {
+  isRefetching?: boolean;
   subscriptionAdmins: string;
   onAdminChange: (admins: string) => void;
   user: User;
@@ -73,8 +76,9 @@ export default function SubscriptionTable({
   const cols = columns(user);
 
   return (
-    <div className="flex flex-1 flex-col gap-3 overflow-hidden">
-      <div className="flex items-center justify-between gap-3">
+    <LayoutTable isRefetching={isRefetching}>
+      <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
+      <div className="flex flex-wrap items-center gap-2 pb-3">
         <div className="grid w-full flex-1 grid-cols-2 flex-wrap items-center gap-1.5 md:flex">
           <Input
             type="search"
@@ -138,5 +142,6 @@ export default function SubscriptionTable({
         />
       )}
     </div>
+    </LayoutTable>
   );
 }

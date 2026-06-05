@@ -41,7 +41,6 @@
     "jalaliday": "^3.1.1",
     "lucide-react": "^0.561.0",
     "motion": "^12.34.3",
-    "next-intl": "^4.5.8",
     "next-themes": "^0.4.6",
     "react-day-picker": "^9.11.1",
     "react-dropzone": "^14.3.8",
@@ -55,6 +54,8 @@
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
-  }
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "next-intl": "^4.5.8"
+  },
+  "devDependencies": {}
 }

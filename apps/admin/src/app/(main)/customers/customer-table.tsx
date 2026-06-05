@@ -10,6 +10,7 @@ import api from "@/hooks/swr/api-client";
 import { toast } from "sonner";
 
 // UI Imports
+import { LayoutTable } from "@/components/layout/LayoutTable";
 import { FilterStatus } from "@/components/table/filter-status";
 import { DataTable } from "@/components/table/data-table";
 import { DataTablePagination } from "@/components/table/pagination";
@@ -27,6 +28,7 @@ import { PanelModeType } from "./client-page";
 import { Button } from "@/components/ui/button";
 
 export default function CustomerTable({
+  isRefetching,
   user,
   customers,
   customersStatus,
@@ -52,6 +54,7 @@ export default function CustomerTable({
   isIgTokenValid,
   onIgTokenValidChange,
 }: {
+  isRefetching?: boolean;
   user: User;
   customers: Customer[];
   customersStatus: string;
@@ -112,22 +115,22 @@ export default function CustomerTable({
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 overflow-hidden">
-      <div className="flex items-center justify-between gap-3">
-        <div className="grid w-full flex-1 grid-cols-2 flex-wrap items-center gap-1.5 md:flex">
-
+    <LayoutTable isRefetching={isRefetching}>
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden p-4">
+        {/* Row 1: action buttons + search */}
+        <div className="flex flex-wrap items-center gap-1.5">
           <Button
             variant={panelMode === "pro" ? "default" : "outline"}
-            color={panelMode === "pro" ? "primary" : "secondary"}
             size="sm"
             onClick={() => setPanelMode(panelMode === "standard" ? "pro" : "standard")}
           >
             {panelMode === "standard" ? "استاندارد" : "پرو"}
           </Button>
 
-          <OtpDialog/>
+          <OtpDialog size="sm" />
 
           <ExportDialog
+            size="sm"
             title="خروجی اکسل کاربران"
             description="اطلاعات کاربران را در بازه زمانی مشخص شده خروجی بگیرید"
             onExport={handleExportCustomers}
@@ -140,10 +143,7 @@ export default function CustomerTable({
             onChange={(e) => {
               const value = e.target.value;
               setTempSearch(value);
-
-              if (value === "") {
-                onSearchChange("");
-              }
+              if (value === "") onSearchChange("");
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -152,38 +152,29 @@ export default function CustomerTable({
               }
             }}
             placeholder="جستجو..."
-            className="max-w-[200px]"
+            className="h-9 flex-1 text-[13px] md:max-w-[200px]"
           />
+        </div>
 
-          <DatePicker
-            date={actionDate ?? undefined}
-            onChange={(date) => onActionDateChange(date ?? null)}
-          />
-
-          <FilterCategory value={categories} onChange={onCategoryChange} />
-
-          <FilterIgToken
-            value={isIgTokenValid}
-            onChange={onIgTokenValidChange}
-          />
-
-          <FilterStatus
-            type="customer"
-            value={customersStatus}
-            onChange={onStatusChange}
-          />
-
-          {user && user.role !== "kam" && (
-            <FilterAdmin
-              data={kams}
-              value={customerAdmins}
-              onChange={onAdminChange}
+        {/* Row 2: filter chips — scrollable on mobile */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex shrink-0 items-center gap-1.5">
+            <DatePicker
+              date={actionDate ?? undefined}
+              onChange={(date) => onActionDateChange(date ?? null)}
             />
-          )}
 
-          {user &&
-            user.role !== "kam" &&
-            Object.keys(rowSelection).length > 0 && (
+            <FilterCategory size="sm" value={categories} onChange={onCategoryChange} />
+
+            <FilterIgToken size="sm" value={isIgTokenValid} onChange={onIgTokenValidChange} />
+
+            <FilterStatus size="sm" type="customer" value={customersStatus} onChange={onStatusChange} />
+
+            {user && user.role !== "kam" && (
+              <FilterAdmin size="sm" data={kams} value={customerAdmins} onChange={onAdminChange} />
+            )}
+
+            {user && user.role !== "kam" && Object.keys(rowSelection).length > 0 && (
               <SelectAdmins
                 type="customer"
                 kams={kams}
@@ -195,8 +186,8 @@ export default function CustomerTable({
                 }}
               />
             )}
+          </div>
         </div>
-      </div>
 
       <DataTable
         columns={cols}
@@ -221,6 +212,7 @@ export default function CustomerTable({
           totalCount={meta.totalItems}
         />
       )}
-    </div>
+      </div>
+    </LayoutTable>
   );
 }

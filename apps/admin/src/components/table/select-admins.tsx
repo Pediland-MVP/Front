@@ -81,7 +81,6 @@ export function SelectAdmins({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
             role="combobox"
             className="flex-1 justify-between md:w-[140px]"
           >
@@ -122,8 +121,6 @@ export function SelectAdmins({
       </Popover>
 
       <Button
-        variant="outline"
-        color="success"
         icon
         onClick={handleAssignAdmin}
       >

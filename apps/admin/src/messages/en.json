@@ -1,0 +1,38 @@
+{
+  "Sidebar": {
+    "myCustomers": "My Customers",
+    "myLeads": "My Leads",
+    "subscriptions": "Subscriptions",
+    "referralCodes": "Referral Codes",
+    "discountCodes": "Discount Codes",
+    "aiAgent": "AI Agent",
+    "telegramAutomation": "Telegram Automation",
+    "docs": "Docs",
+    "qa": "Q&A",
+    "guides": "Guides",
+    "chats": "Chats",
+    "befroosh": "Befroosh",
+    "adminPortal": "[Admin Portal]"
+  },
+  "NavUser": {
+    "loading": "Loading...",
+    "logout": "Logout",
+    "logoutSuccess": "Logged out successfully."
+  },
+  "DialogDelete": {
+    "title": "Delete Warning",
+    "description": "Are you sure you want to delete this item? By deleting this item, all connected information will also be deleted and cannot be recovered.",
+    "confirm": "Yes, I am sure",
+    "cancel": "Cancel"
+  },
+  "FetchError": {
+    "connectionError": "Connection failure with server"
+  },
+  "Pagination": {
+    "pageSize": "Show per page",
+    "pageIndicator": "Page {pageIndex} of {totalPages}",
+    "firstPage": "Go to first page",
+    "prevPage": "Go to previous page",
+    "showingItems": "Showing {from} to {to} of {total} items"
+  }
+}

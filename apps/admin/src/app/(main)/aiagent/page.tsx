@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import api from "@/hooks/swr/api-client";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, Check, X, Zap, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Provider {
   id: string;
@@ -278,48 +289,37 @@ export default function AIAgentPage() {
     }
   };
 
-  const inputClasses =
-    "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100";
-  const labelClasses = "text-sm font-medium text-gray-700 dark:text-gray-300";
-  const btnPrimary =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50";
-  const btnSuccess =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50";
-  const btnSecondary =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600";
-
   return (
     <div className="p-6">
       <div className="mx-auto max-w-3xl space-y-8">
 
         {/* AI Providers Section */}
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">پروفایل‌های هوش مصنوعی</h1>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <h1 className="text-xl font-bold text-foreground">پروفایل‌های هوش مصنوعی</h1>
+              <p className="mt-1 text-xs text-muted-foreground">
                 چند ارائه‌دهنده تعریف کنید و در هر لحظه فقط یکی را فعال نگه دارید.
               </p>
             </div>
             {!showForm && (
-              <button onClick={openAddForm} className={btnPrimary} type="button">
+              <Button onClick={openAddForm} type="button" variant="default">
                 <Plus className="h-4 w-4" />
                 افزودن پروفایل
-              </button>
+              </Button>
             )}
           </div>
 
           {/* Inline Add/Edit Form */}
           {showForm && (
-            <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-5 dark:border-blue-800 dark:bg-blue-950/20">
-              <h2 className="mb-4 text-base font-bold text-blue-800 dark:text-blue-300">
+            <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
+              <h2 className="mb-4 text-base font-bold text-blue-800">
                 {formMode === "add" ? "افزودن پروفایل جدید" : "ویرایش پروفایل"}
               </h2>
               <div className="space-y-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>نام پروفایل</label>
-                  <input
-                    className={inputClasses}
+                  <Label>نام پروفایل</Label>
+                  <Input
                     placeholder="مثال: OpenAI GPT-4o"
                     value={form.name}
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -327,24 +327,27 @@ export default function AIAgentPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>نوع ارائه‌دهنده</label>
-                  <select
-                    className={inputClasses}
+                  <Label>نوع ارائه‌دهنده</Label>
+                  <Select
                     value={form.providerType}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, providerType: e.target.value as any }))
+                    onValueChange={(value) =>
+                      setForm((f) => ({ ...f, providerType: value as "openai" | "openai-compatible" }))
                     }
                   >
-                    <option value="openai">OpenAI</option>
-                    <option value="openai-compatible">سفارشی (OpenAI-compatible)</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="openai">OpenAI</SelectItem>
+                      <SelectItem value="openai-compatible">سفارشی (OpenAI-compatible)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {form.providerType === "openai-compatible" && (
                   <div className="flex flex-col gap-1.5">
-                    <label className={labelClasses}>آدرس سرور</label>
-                    <input
-                      className={inputClasses}
+                    <Label>آدرس سرور</Label>
+                    <Input
                       type="url"
                       dir="ltr"
                       placeholder="https://api.example.com/v1"
@@ -355,9 +358,8 @@ export default function AIAgentPage() {
                 )}
 
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>کلید API</label>
-                  <input
-                    className={inputClasses}
+                  <Label>کلید API</Label>
+                  <Input
                     type="password"
                     dir="ltr"
                     placeholder="sk-..."
@@ -367,11 +369,10 @@ export default function AIAgentPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>مدل</label>
+                  <Label>مدل</Label>
                   <div className="flex items-center gap-2">
                     {form.useCustomModel ? (
-                      <input
-                        className={inputClasses}
+                      <Input
                         type="text"
                         dir="ltr"
                         placeholder="نام مدل سفارشی..."
@@ -379,47 +380,48 @@ export default function AIAgentPage() {
                         onChange={(e) => setForm((f) => ({ ...f, customModel: e.target.value }))}
                       />
                     ) : (
-                      <select
-                        className={inputClasses}
-                        value={form.model}
-                        onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))}
+                      <Select
+                        value={form.model || undefined}
+                        onValueChange={(value) => setForm((f) => ({ ...f, model: value }))}
                       >
-                        {models.length === 0 && <option value="">— انتخاب مدل —</option>}
-                        {models.map((m) => (
-                          <option key={m.id} value={m.id}>{m.id}</option>
-                        ))}
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="— انتخاب مدل —" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {models.map((m) => (
+                            <SelectItem key={m.id} value={m.id}>{m.id}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     )}
-                    <button
-                      className={btnSecondary}
+                    <Button
+                      variant="outline"
                       onClick={fetchModels}
                       disabled={loadingModels}
                       type="button"
                     >
                       <RefreshCw className={`h-4 w-4 ${loadingModels ? "animate-spin" : ""}`} />
                       {loadingModels ? "..." : "مدل‌ها"}
-                    </button>
+                    </Button>
                   </div>
-                  <label className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
-                    <input
-                      type="checkbox"
+                  <label className="mt-1 flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                    <Checkbox
                       checked={form.useCustomModel}
-                      onChange={(e) => setForm((f) => ({ ...f, useCustomModel: e.target.checked }))}
-                      className="rounded"
+                      onCheckedChange={(checked) => setForm((f) => ({ ...f, useCustomModel: !!checked }))}
                     />
                     وارد کردن نام مدل به‌صورت دستی
                   </label>
                 </div>
 
                 <div className="flex gap-2 pt-1">
-                  <button className={btnPrimary} onClick={handleSave} disabled={saving} type="button">
+                  <Button variant="default" onClick={handleSave} disabled={saving} type="button">
                     <Check className="h-4 w-4" />
                     {saving ? "در حال ذخیره..." : "ذخیره"}
-                  </button>
-                  <button className={btnSecondary} onClick={cancelForm} type="button">
+                  </Button>
+                  <Button variant="outline" onClick={cancelForm} type="button">
                     <X className="h-4 w-4" />
                     انصراف
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -427,13 +429,13 @@ export default function AIAgentPage() {
 
           {/* Providers List */}
           {loadingProviders ? (
-            <div className="flex h-32 items-center justify-center text-sm text-gray-500">
+            <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
               در حال بارگذاری...
             </div>
           ) : providers.length === 0 ? (
-            <div className="flex h-32 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 text-center dark:border-gray-700">
-              <p className="text-sm text-gray-500">هنوز هیچ پروفایلی تعریف نشده</p>
-              <p className="mt-1 text-xs text-gray-400">از دکمه «افزودن پروفایل» شروع کنید</p>
+            <div className="flex h-32 flex-col items-center justify-center rounded-xl border border-dashed border-border text-center">
+              <p className="text-sm text-muted-foreground">هنوز هیچ پروفایلی تعریف نشده</p>
+              <p className="mt-1 text-xs text-muted-foreground">از دکمه «افزودن پروفایل» شروع کنید</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -442,30 +444,30 @@ export default function AIAgentPage() {
                   key={p.id}
                   className={`flex items-start gap-3 rounded-xl border p-4 transition-all ${
                     p.isActive
-                      ? "border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/20"
-                      : "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40"
+                      ? "border-emerald-300 bg-emerald-50"
+                      : "border-border bg-muted"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+                      <span className="font-semibold text-foreground text-sm">
                         {p.name}
                       </span>
                       {p.isActive && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
                           <Zap className="h-3 w-3" />
                           فعال
                         </span>
                       )}
-                      <span className="rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[11px] text-gray-500 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                      <span className="rounded-full border border-border bg-white px-2 py-0.5 text-[11px] text-muted-foreground">
                         {p.providerType === "openai" ? "OpenAI" : "Custom"}
                       </span>
                     </div>
                     {p.model && (
-                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 font-mono">{p.model}</p>
+                      <p className="mt-1 text-xs text-muted-foreground font-mono">{p.model}</p>
                     )}
                     {p.baseURL && (
-                      <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500 font-mono truncate">{p.baseURL}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground font-mono truncate">{p.baseURL}</p>
                     )}
                   </div>
 
@@ -474,7 +476,7 @@ export default function AIAgentPage() {
                       <button
                         onClick={() => handleActivate(p.id)}
                         disabled={activatingId === p.id}
-                        className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors disabled:opacity-50 dark:text-emerald-300 dark:bg-emerald-950/20 dark:border-emerald-800"
+                        className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors disabled:opacity-50"
                         type="button"
                       >
                         {activatingId === p.id ? "..." : "فعال‌سازی"}
@@ -482,7 +484,7 @@ export default function AIAgentPage() {
                     )}
                     <button
                       onClick={() => openEditForm(p)}
-                      className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600 transition-colors dark:hover:bg-gray-700 dark:hover:text-blue-400"
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-blue-600 transition-colors"
                       title="ویرایش"
                       type="button"
                     >
@@ -491,7 +493,7 @@ export default function AIAgentPage() {
                     <button
                       onClick={() => handleDelete(p.id)}
                       disabled={deletingId === p.id}
-                      className="rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50 dark:hover:bg-red-950/20 dark:hover:text-red-400"
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
                       title="حذف"
                       type="button"
                     >
@@ -505,22 +507,22 @@ export default function AIAgentPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-800">
+            <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
               <button
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1 || loadingProviders}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 disabled:opacity-50 dark:border-gray-700"
+                className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground disabled:opacity-50"
                 type="button"
               >
                 قبلی
               </button>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 صفحه {page} از {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page === totalPages || loadingProviders}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-500 disabled:opacity-50 dark:border-gray-700"
+                className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground disabled:opacity-50"
                 type="button"
               >
                 بعدی
@@ -530,16 +532,15 @@ export default function AIAgentPage() {
         </section>
 
         {/* Telegram Login Section */}
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
-          <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-gray-100">
+        <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
+          <h2 className="mb-6 text-xl font-bold text-foreground">
             ورود به تلگرام (UserBot)
           </h2>
 
           <div className="space-y-5">
             <div className="flex flex-col gap-1.5">
-              <label className={labelClasses}>شماره تلفن</label>
-              <input
-                className={inputClasses}
+              <Label>شماره تلفن</Label>
+              <Input
                 type="tel"
                 dir="ltr"
                 placeholder="+989..."
@@ -548,16 +549,15 @@ export default function AIAgentPage() {
               />
             </div>
 
-            <button className={btnPrimary + " w-full"} onClick={handleSendCode} disabled={sendingCode} type="button">
+            <Button variant="default" className="w-full" onClick={handleSendCode} disabled={sendingCode} type="button">
               {sendingCode ? "در حال ارسال..." : "درخواست کد تأیید"}
-            </button>
+            </Button>
 
             {codeSent && (
               <>
                 <div className="flex flex-col gap-1.5">
-                  <label className={labelClasses}>کد تأیید</label>
-                  <input
-                    className={inputClasses}
+                  <Label>کد تأیید</Label>
+                  <Input
                     type="text"
                     dir="ltr"
                     placeholder="کد..."
@@ -567,9 +567,8 @@ export default function AIAgentPage() {
                 </div>
                 {showPasswordInput && (
                   <div className="flex flex-col gap-1.5">
-                    <label className={labelClasses}>رمز عبور تایید دو مرحله‌ای (2FA)</label>
-                    <input
-                      className={inputClasses}
+                    <Label>رمز عبور تایید دو مرحله‌ای (2FA)</Label>
+                    <Input
                       type="password"
                       dir="ltr"
                       placeholder="رمز دو مرحله‌ای..."
@@ -578,9 +577,14 @@ export default function AIAgentPage() {
                     />
                   </div>
                 )}
-                <button className={btnSuccess + " w-full"} onClick={handleVerifyCode} disabled={verifying} type="button">
+                <Button
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={handleVerifyCode}
+                  disabled={verifying}
+                  type="button"
+                >
                   {verifying ? "در حال تأیید..." : "تأیید و ذخیره نشست"}
-                </button>
+                </Button>
               </>
             )}
           </div>

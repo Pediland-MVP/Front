@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 
 // UI Imports
 import logo from "@/assets/images/befroosh-logo.svg";
@@ -25,57 +26,53 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 
-// This is sample data.
-export const navMainItems = [
-  // {
-  //   title: "داشبورد",
-  //   url: "/",
-  //   icon: ChartPieSliceIcon,
-  // },
-  {
-    title: "مشتریان من",
-    url: "/customers",
-    icon: UsersIcon,
-  },
-  {
-    title: "سرنخ‌های من",
-    url: "/leads",
-    icon: PlantIcon,
-  },
-  {
-    title: "اشتراک‌ها",
-    url: "/subscriptions",
-    icon: CreditCardIcon,
-  },
-  {
-    title: "کدهای رفرال",
-    url: "/referral-codes",
-    icon: GiftIcon,
-  },
-  {
-    title: "کدهای تخفیف",
-    url: "/discount-codes",
-    icon: TagIcon,
-  },
-  {
-    title: "هوش مصنوعی",
-    url: "/aiagent",
-    icon: RobotIcon,
-  },
-  {
-    title: "اتوماسیون تلگرام",
-    url: "/telegram-automation/chats",
-    icon: ChatDotsIcon,
-    children: [
-      { title: "مستندات", url: "/telegram-automation/docs" },
-      { title: "پرسش و پاسخ", url: "/telegram-automation/qa" },
-      { title: "راهنماها", url: "/telegram-automation/guides" },
-      { title: "چت‌ها", url: "/telegram-automation/chats" },
-    ],
-  },
-];
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const t = useTranslations("Sidebar");
+
+  const items = React.useMemo(() => [
+    {
+      title: t("myCustomers"),
+      url: "/customers",
+      icon: UsersIcon,
+    },
+    {
+      title: t("myLeads"),
+      url: "/leads",
+      icon: PlantIcon,
+    },
+    {
+      title: t("subscriptions"),
+      url: "/subscriptions",
+      icon: CreditCardIcon,
+    },
+    {
+      title: t("referralCodes"),
+      url: "/referral-codes",
+      icon: GiftIcon,
+    },
+    {
+      title: t("discountCodes"),
+      url: "/discount-codes",
+      icon: TagIcon,
+    },
+    {
+      title: t("aiAgent"),
+      url: "/aiagent",
+      icon: RobotIcon,
+    },
+    {
+      title: t("telegramAutomation"),
+      url: "/telegram-automation/chats",
+      icon: ChatDotsIcon,
+      children: [
+        { title: t("docs"), url: "/telegram-automation/docs" },
+        { title: t("qa"), url: "/telegram-automation/qa" },
+        { title: t("guides"), url: "/telegram-automation/guides" },
+        { title: t("chats"), url: "/telegram-automation/chats" },
+      ],
+    },
+  ], [t]);
+
   return (
     <Sidebar {...props} side="right" variant="inset" collapsible="offcanvas">
       <SidebarHeader className="flex-row gap-2">
@@ -88,14 +85,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
         <div className="flex items-center gap-1 truncate leading-tight">
           <h1 className="text-gradient text-[15px] font-bold">
-            بفروش
+            {t("befroosh")}
           </h1>
-          <h2 className="text-[13px] text-muted-foreground font-semibold">[پورتال مدیریت]</h2>
+          <h2 className="text-[13px] text-muted-foreground font-semibold">{t("adminPortal")}</h2>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={navMainItems} />
+        <NavMain items={items} />
       </SidebarContent>
 
       <SidebarFooter>

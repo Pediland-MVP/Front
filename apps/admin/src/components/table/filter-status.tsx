@@ -111,12 +111,14 @@ type FilterStatusProps = {
   type: "lead" | "customer" | "subscription";
   value?: string;
   onChange: (value: string) => void;
+  size?: "default" | "sm";
 };
 
 export function FilterStatus({
   onChange,
   value = "",
   type,
+  size = "default",
 }: FilterStatusProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -131,7 +133,7 @@ export function FilterStatus({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          size={size}
           role="combobox"
           aria-expanded={open}
           className={cn(

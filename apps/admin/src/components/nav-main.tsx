@@ -1,13 +1,16 @@
 // src/components/nav-main.tsx
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  SidebarGroup,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -15,7 +18,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { CaretDownIcon } from "@phosphor-icons/react";
+import { CaretLeftIcon } from "@phosphor-icons/react";
 import { type Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -47,37 +50,41 @@ export function NavMain({ items }: { items: NavItem[] }) {
   };
 
   return (
-    <SidebarMenu>
-      {items.map((item) =>
-        item.children ? (
-          <CollapsibleNavItem
-            key={item.title}
-            item={item}
-            pathname={pathname}
-            navigate={navigate}
-          />
-        ) : (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton
-              variant={"outline"}
-              asChild
-              isActive={pathname === item.url}
-            >
-              <button
-                onClick={() => navigate(item.url)}
-                className="flex w-full cursor-pointer items-center gap-2 text-left"
+    <SidebarGroup>
+      <SidebarMenu>
+        {items.map((item) =>
+          item.children ? (
+            <CollapsibleNavItem
+              key={item.title}
+              item={item}
+              pathname={pathname}
+              navigate={navigate}
+            />
+          ) : (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                className={cn(
+                  "text-secondary border border-dashed border-transparent",
+                  pathname === item.url
+                    ? "text-primary hover:text-primary active:text-primary border-violet-300/70 bg-violet-100 hover:bg-violet-100 active:bg-violet-100"
+                    : "hover:text-primary active:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100",
+                )}
               >
-                <item.icon
-                  weight={pathname === item.url ? "duotone" : "regular"}
-                  size={22}
-                />
-                <span>{item.title}</span>
-              </button>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ),
-      )}
-    </SidebarMenu>
+                <button
+                  onClick={() => navigate(item.url)}
+                  className="flex w-full cursor-pointer items-center gap-2 text-left"
+                >
+                  <item.icon weight="duotone" size={24} />
+                  <span>{item.title}</span>
+                </button>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ),
+        )}
+      </SidebarMenu>
+    </SidebarGroup>
   );
 }
 
@@ -98,28 +105,47 @@ function CollapsibleNavItem({
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
-            variant={"outline"}
-            isActive={isChildActive}
-            className="flex w-full cursor-pointer items-center gap-2 text-left"
+            asChild
+            tooltip={item.title}
+            className={cn(
+              "text-secondary border border-dashed border-transparent",
+              isChildActive
+                ? "text-foreground hover:text-foreground bg-blue-50"
+                : "hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100",
+            )}
+            onClick={() => {
+              if (!open) setOpen(true);
+            }}
           >
-            <item.icon
-              weight={isChildActive ? "duotone" : "regular"}
-              size={22}
-            />
-            <span className="flex-1">{item.title}</span>
-            <CaretDownIcon
-              size={14}
-              className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-            />
+            <button type="button" className="flex w-full cursor-pointer items-center gap-2 text-left">
+              <item.icon weight="duotone" size={24} />
+              <span>{item.title}</span>
+            </button>
           </SidebarMenuButton>
         </CollapsibleTrigger>
+
+        <CollapsibleTrigger asChild>
+          <SidebarMenuAction className="-mt-0.5 data-[state=open]:-rotate-90">
+            <CaretLeftIcon />
+            <span className="sr-only">Toggle</span>
+          </SidebarMenuAction>
+        </CollapsibleTrigger>
+
         <CollapsibleContent>
           <SidebarMenuSub>
             {item.children!.map((child) => (
               <SidebarMenuSubItem key={child.title}>
                 <SidebarMenuSubButton
                   asChild
-                  isActive={pathname === child.url}
+                  className={cn(
+                    "border border-dashed border-transparent",
+                    pathname === child.url
+                      ? "text-primary hover:text-primary active:text-primary active:bg-transparent"
+                      : "hover:text-primary active:text-primary text-secondary active:bg-transparent",
+                  )}
+                  onClick={() => {
+                    setOpen(true);
+                  }}
                 >
                   <button
                     onClick={() => navigate(child.url)}

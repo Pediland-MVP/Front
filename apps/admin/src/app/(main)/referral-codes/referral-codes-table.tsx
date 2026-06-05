@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { LayoutTable } from "@/components/layout/LayoutTable";
 import { DataTable } from "@/components/table/data-table";
 import { DataTablePagination } from "@/components/table/pagination";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,7 @@ const FormSchema = z.object({
 type FormValues = z.infer<typeof FormSchema>;
 
 interface ReferralCodesTableProps {
+  isRefetching?: boolean;
   referralCodes: ReferralCode[];
   totalCount: number;
   page: number;
@@ -58,6 +60,7 @@ interface ReferralCodesTableProps {
 }
 
 export default function ReferralCodesTable({
+  isRefetching,
   referralCodes,
   totalCount,
   page,
@@ -106,8 +109,9 @@ export default function ReferralCodesTable({
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
-      <div className="flex items-center justify-between gap-3">
+    <LayoutTable isRefetching={isRefetching}>
+      <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
+      <div className="flex flex-wrap items-center gap-2 pb-3">
         <Input
           type="search"
           placeholder="جستجو بر اساس کد یا موبایل..."
@@ -239,5 +243,6 @@ export default function ReferralCodesTable({
         </DialogContent>
       </Dialog>
     </div>
+    </LayoutTable>
   );
 }

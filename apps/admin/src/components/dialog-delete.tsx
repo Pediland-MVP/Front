@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function DialogDelete({
   open,
@@ -21,17 +22,18 @@ export default function DialogDelete({
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }) {
+  const t = useTranslations("DialogDelete");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle className="text-red-500">
             <WarningCircleIcon weight="duotone" />
-            هشدار حذف
+            {t("title")}
           </DialogTitle>
           <DialogDescription>
-            آیا از حدف این مورد مطمئن هستید؟ با حدف این آیتم تمامی اطلاعات متصل
-            به آن نیز حذف شده و دیگر قابل بازیابی نخواهد بود.
+            {t("description")}
           </DialogDescription>
           <DialogFooter>
             <Button
@@ -41,10 +43,10 @@ export default function DialogDelete({
                 onConfirm();
               }}
             >
-              بله، مطمئن هستم
+              {t("confirm")}
             </Button>
             <DialogClose asChild>
-              <Button color="cancel">انصراف</Button>
+              <Button color="cancel">{t("cancel")}</Button>
             </DialogClose>
           </DialogFooter>
         </DialogHeader>

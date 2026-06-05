@@ -12,6 +12,7 @@ import api from "@/hooks/swr/api-client";
 import { toast } from "sonner";
 
 // UI Imports
+import { LayoutTable } from "@/components/layout/LayoutTable";
 import { DataTable } from "@/components/table/data-table";
 import { FilterAdmin } from "@/components/table/filter-admin";
 import { FilterCategory } from "@/components/table/filter-category";
@@ -26,6 +27,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { ExportDialog } from "@/components/table/dialog-export";
 
 export default function LeadTable({
+  isRefetching,
   user,
   leads,
   leadsStatus,
@@ -45,6 +47,7 @@ export default function LeadTable({
   actionDate,
   onActionDateChange,
 }: {
+  isRefetching?: boolean;
   user: User;
   leads: MarketingLead[];
   leadsStatus: string;
@@ -103,8 +106,9 @@ export default function LeadTable({
   }, [search]);
 
   return (
-    <div className="flex flex-1 flex-col gap-3 overflow-hidden">
-      <div className="flex items-center justify-between gap-3">
+    <LayoutTable isRefetching={isRefetching}>
+      <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
+      <div className="flex flex-wrap items-center gap-2 pb-3">
         <div className="grid flex-1 grid-cols-2 items-center gap-1.5 md:flex">
           <Button onClick={() => setDialogLeadFormOpen(true)}>
             سرنخ جدید
@@ -204,5 +208,6 @@ export default function LeadTable({
         mutate={mutateLeads}
       />
     </div>
+    </LayoutTable>
   );
 }

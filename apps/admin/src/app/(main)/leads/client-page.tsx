@@ -45,11 +45,13 @@ export default function LeadsPageClient() {
   const {
     data: leadsData,
     isLoading: isLeadsLoading,
+    isValidating: isLeadsValidating,
     error: leadsError,
     mutate: mutateLeads,
   } = useSWR(
     `/marketingLeads?limit=${limit}&page=${page}${search ? `&search=${debouncedSearch}` : ""}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}`,
     fetcher,
+    { keepPreviousData: true },
   );
 
   const leads = leadsData?.items || [];
@@ -78,12 +80,13 @@ export default function LeadsPageClient() {
     setSmsDialogOpen(true);
   };
 
-  if (isLeadsLoading || isKamsLoading) return <Loading />;
+  if ((!leadsData && isLeadsLoading) || isKamsLoading) return <Loading />;
   if (leadsError || kamsError) return <FetchError />;
 
   return (
     <>
       <LeadTable
+        isRefetching={isLeadsValidating && !!leadsData}
         user={user}
         leads={leads}
         mutateLeads={mutateLeads}

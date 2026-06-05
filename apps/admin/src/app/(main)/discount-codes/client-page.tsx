@@ -16,16 +16,18 @@ export default function DiscountCodesPageClient() {
 
   const searchQuery = debouncedSearch ? `&search=${debouncedSearch}` : "";
 
-  const { data, isLoading, error, mutate } = useSWR(
+  const { data, isLoading, isValidating, error, mutate } = useSWR(
     `/discount-codes?limit=${limit}&page=${page}${searchQuery}`,
     fetcher,
+    { keepPreviousData: true },
   );
 
-  if (isLoading) return <Loading />;
+  if (!data && isLoading) return <Loading />;
   if (error) return <FetchError />;
 
   return (
     <DiscountCodesTable
+      isRefetching={isValidating && !!data}
       discountCodes={data?.items ?? []}
       totalCount={data?.meta?.totalItems ?? 0}
       page={page}

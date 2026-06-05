@@ -27,7 +27,7 @@ export function ColVisibility<T>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" variant="outline">
+        <Button size="sm">
           <Settings2Icon />
           نمایش
         </Button>

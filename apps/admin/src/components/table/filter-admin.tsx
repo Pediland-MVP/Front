@@ -25,16 +25,17 @@ type FilterAdminProps = {
   data: User[];
   onChange: (value: string) => void;
   value?: string;
+  size?: "default" | "sm";
 };
 
-export function FilterAdmin({ onChange, value = "", data }: FilterAdminProps) {
+export function FilterAdmin({ onChange, value = "", data, size = "default" }: FilterAdminProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          size={size}
           role="combobox"
           aria-expanded={open}
           className="justify-between md:w-[140px]"

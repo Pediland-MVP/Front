@@ -34,16 +34,17 @@ const igTokenStatuses = [
 type FilterIgTokenProps = {
   value?: string;
   onChange: (value: string) => void;
+  size?: "default" | "sm";
 };
 
-export function FilterIgToken({ onChange, value = "" }: FilterIgTokenProps) {
+export function FilterIgToken({ onChange, value = "", size = "default" }: FilterIgTokenProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          size={size}
           role="combobox"
           aria-expanded={open}
           className="justify-between md:w-[120px]"

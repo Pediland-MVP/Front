@@ -56,6 +56,7 @@ interface ExportDialogProps {
   description: string;
   onExport: (data: ExportFormValues) => Promise<void>;
   trigger?: React.ReactNode;
+  size?: "default" | "sm";
 }
 
 export function ExportDialog({
@@ -63,6 +64,7 @@ export function ExportDialog({
   description,
   onExport,
   trigger,
+  size = "default",
 }: ExportDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,7 +94,7 @@ export function ExportDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" color="primary">
+          <Button size={size}>
             <DownloadIcon />
             خروجی اکسل
           </Button>

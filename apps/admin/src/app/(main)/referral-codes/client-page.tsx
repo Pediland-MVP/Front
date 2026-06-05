@@ -16,16 +16,18 @@ export default function ReferralCodesPageClient() {
 
   const searchQuery = debouncedSearch ? `&search=${debouncedSearch}` : "";
 
-  const { data, isLoading, error, mutate } = useSWR(
+  const { data, isLoading, isValidating, error, mutate } = useSWR(
     `/referral-codes?limit=${limit}&page=${page}${searchQuery}`,
     fetcher,
+    { keepPreviousData: true },
   );
 
-  if (isLoading) return <Loading />;
+  if (!data && isLoading) return <Loading />;
   if (error) return <FetchError />;
 
   return (
     <ReferralCodesTable
+      isRefetching={isValidating && !!data}
       referralCodes={data?.items ?? []}
       totalCount={data?.meta?.totalItems ?? 0}
       page={page}

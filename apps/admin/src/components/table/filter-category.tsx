@@ -25,9 +25,10 @@ import { Category } from "@/types/category";
 type FilterCategoryProps = {
   value?: string[];
   onChange: (value: string[]) => void;
+  size?: "default" | "sm";
 };
 
-export function FilterCategory({ onChange, value = [] }: FilterCategoryProps) {
+export function FilterCategory({ onChange, value = [], size = "default" }: FilterCategoryProps) {
   const [open, setOpen] = React.useState(false);
   const { categories } = useCategories();
 
@@ -48,7 +49,7 @@ export function FilterCategory({ onChange, value = [] }: FilterCategoryProps) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          size={size}
           role="combobox"
           aria-expanded={open}
           className="justify-between truncate md:w-[170px]"

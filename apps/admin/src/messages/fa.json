@@ -1,0 +1,46 @@
+{
+  "Sidebar": {
+    "myCustomers": "مشتریان من",
+    "myLeads": "سرنخ‌های من",
+    "subscriptions": "اشتراک‌ها",
+    "referralCodes": "کدهای رفرال",
+    "discountCodes": "کدهای تخفیف",
+    "aiAgent": "هوش مصنوعی",
+    "telegramAutomation": "اتوماسیون تلگرام",
+    "docs": "مستندات",
+    "qa": "پرسش و پاسخ",
+    "guides": "راهنماها",
+    "chats": "چت‌ها",
+    "befroosh": "بفروش",
+    "adminPortal": "[پورتال مدیریت]"
+  },
+  "NavBottom": {
+    "customers": "مشتریان",
+    "leads": "سرنخ‌ها",
+    "subscriptions": "اشتراک‌ها",
+    "referralCodes": "رفرال",
+    "logout": "خروج",
+    "logoutSuccess": "خروج با موفقیت انجام شد."
+  },
+  "NavUser": {
+    "loading": "در حال بارگزاری",
+    "logout": "خروج",
+    "logoutSuccess": "خروج با موفقیت انجام شد."
+  },
+  "DialogDelete": {
+    "title": "هشدار حذف",
+    "description": "آیا از حدف این مورد مطمئن هستید؟ با حدف این آیتم تمامی اطلاعات متصل به آن نیز حذف شده و دیگر قابل بازیابی نخواهد بود.",
+    "confirm": "بله، مطمئن هستم",
+    "cancel": "انصراف"
+  },
+  "FetchError": {
+    "connectionError": "اختلال در ارتباط با سرور"
+  },
+  "Pagination": {
+    "pageSize": "نمایش در صفحه",
+    "pageIndicator": "صفحه {pageIndex} از {totalPages}",
+    "firstPage": "برو به صفحه اول",
+    "prevPage": "برو به صفحه قبلی",
+    "showingItems": "نمایش {from} تا {to} از {total} آیتم"
+  }
+}

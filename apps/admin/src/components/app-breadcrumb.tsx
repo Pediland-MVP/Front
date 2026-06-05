@@ -1,29 +1,79 @@
 // src/components/app-breadcrumb.tsx
+"use client";
+
+import React, { useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-export function AppBreadcrumb() {
-  return (
-    <div className="flex h-8 w-full flex-1 items-center justify-between">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink href="#">داشبورد</BreadcrumbLink>
-          </BreadcrumbItem>
-          {/* <BreadcrumbSeparator className="hidden md:block" />
-          <BreadcrumbItem>
-            <BreadcrumbPage>...</BreadcrumbPage>
-          </BreadcrumbItem> */}
-        </BreadcrumbList>
-      </Breadcrumb>
+const isUUID = (s: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
-      {/* <SyncButton /> */}
-    </div>
+export function AppBreadcrumb() {
+  const pathname = usePathname();
+  const t = useTranslations("Sidebar");
+
+  const segmentLabel = (seg: string): string => {
+    if (isUUID(seg)) return "جزئیات";
+    const map: Record<string, string> = {
+      customers: t("myCustomers"),
+      leads: t("myLeads"),
+      subscriptions: t("subscriptions"),
+      "referral-codes": t("referralCodes"),
+      "discount-codes": t("discountCodes"),
+      aiagent: t("aiAgent"),
+      "telegram-automation": t("telegramAutomation"),
+      docs: t("docs"),
+      qa: t("qa"),
+      guides: t("guides"),
+      chats: t("chats"),
+    };
+    return map[seg] ?? decodeURIComponent(seg);
+  };
+
+  const segments = useMemo(
+    () =>
+      pathname
+        .split("/")
+        .filter(Boolean)
+        .map((segment, index, arr) => ({
+          segment,
+          path: `/${arr.slice(0, index + 1).join("/")}`,
+          isLast: index === arr.length - 1,
+        })),
+    [pathname],
+  );
+
+  return (
+    <Breadcrumb>
+      <BreadcrumbList className="flex w-full overflow-hidden">
+        {segments.map(({ segment, path, isLast }) => (
+          <React.Fragment key={path}>
+            <BreadcrumbItem className={isLast ? "min-w-0 flex-1" : ""}>
+              {isLast ? (
+                <span
+                  className="text-white md:text-secondary block truncate whitespace-nowrap md:font-medium"
+                  aria-current="page"
+                >
+                  {segmentLabel(segment)}
+                </span>
+              ) : (
+                <BreadcrumbLink asChild>
+                  <Link href={path}>{segmentLabel(segment)}</Link>
+                </BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+            {!isLast && <BreadcrumbSeparator />}
+          </React.Fragment>
+        ))}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }
