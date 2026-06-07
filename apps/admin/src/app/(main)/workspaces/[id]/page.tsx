@@ -8,13 +8,15 @@ import dayjs from "@/lib/dayjs-jalali";
 import { fetcher } from "@/hooks/swr/api-client";
 import { Loading } from "@/components/loading";
 import { FetchError } from "@/components/fetch-error";
-import { LayoutPage } from "@/components/layout/LayoutPage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SubscriptionStatusBadge } from "@/components/table/subscription-status-badge";
 import { formatNumber } from "@/lib/formatNumber";
 import { WorkspaceDetail } from "@/types/workspace";
-import { ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  ArrowSquareOutIcon,
+  InstagramLogoIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export default function WorkspaceDetailPage({
   params,
@@ -29,7 +31,12 @@ export default function WorkspaceDetailPage({
 
   if (isLoading) return <Loading />;
   if (error) return <FetchError />;
-  if (!workspace) return <div className="p-6">{t("notFound")}</div>;
+  if (!workspace)
+    return (
+      <p className="m-4 rounded-xl border border-slate-100 bg-white p-4 text-center text-sm text-slate-400 shadow-3xs">
+        {t("notFound")}
+      </p>
+    );
 
   const { meta, members, subscription, resourceCounts, instagrams } = workspace;
 
@@ -41,67 +48,102 @@ export default function WorkspaceDetailPage({
   ];
 
   return (
-    <LayoutPage>
-      <div className="flex flex-col gap-5">
+    <div
+      className="flex flex-col gap-6 bg-slate-50/20 p-4 lg:h-[calc(100vh-40px)] lg:flex-row lg:overflow-hidden"
+      dir="rtl"
+    >
+      {/* Right Column: Workspace Sidebar */}
+      <div className="scrollbar-thin scrollbar-thumb-slate-200 flex w-full shrink-0 flex-col gap-5 rounded-2xl border border-slate-100 bg-white p-5 pr-1 shadow-xs lg:w-96 lg:overflow-y-auto">
         {/* Header */}
-        <div className="rounded-xl border bg-white p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h1 className="text-lg font-bold">{meta.name}</h1>
-              {meta.description && (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {meta.description}
-                </p>
-              )}
-            </div>
-            <Badge variant={meta.isPersonal ? "secondary" : "default"}>
-              {meta.isPersonal ? t("personal") : t("team")}
-            </Badge>
+        <div className="flex flex-col items-center space-y-3 border-b border-slate-100 pb-4 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-4 border-white bg-gradient-to-tr from-blue-500 to-indigo-600 text-2xl font-bold text-white shadow-md">
+            {meta.name?.[0]?.toUpperCase() || "W"}
           </div>
-          <div className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-            <div>
-              <span className="text-muted-foreground">{t("owner")}: </span>
-              <span>{meta.owner.name || "—"}</span>
-              {meta.owner.mobile && (
-                <span className="text-muted-foreground">
-                  {" "}
-                  ({meta.owner.mobile})
-                </span>
-              )}
-            </div>
-            <div>
-              <span className="text-muted-foreground">{t("createDate")}: </span>
-              <span>
-                {dayjs(meta.createDate).calendar("jalali").format("YYYY/MM/DD")}
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">{meta.name}</h2>
+            {meta.description && (
+              <p className="mt-0.5 text-xs text-slate-400">{meta.description}</p>
+            )}
+          </div>
+          <Badge variant={meta.isPersonal ? "secondary" : "default"}>
+            {meta.isPersonal ? t("personal") : t("team")}
+          </Badge>
+        </div>
+
+        {/* Owner & create date */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-xs">
+            <span className="font-semibold text-slate-400">{t("owner")}</span>
+            <span className="font-medium text-slate-700">
+              {meta.owner.name || "—"}
+            </span>
+          </div>
+          {meta.owner.mobile && (
+            <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-xs">
+              <span className="font-semibold text-slate-400">{t("mobile")}</span>
+              <span className="font-medium text-slate-700" dir="ltr">
+                {meta.owner.mobile}
               </span>
             </div>
+          )}
+          <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-xs">
+            <span className="font-semibold text-slate-400">
+              {t("createDate")}
+            </span>
+            <span className="font-medium text-slate-700">
+              {dayjs(meta.createDate).calendar("jalali").format("YYYY/MM/DD")}
+            </span>
+          </div>
+        </div>
+
+        {/* Resource counts */}
+        <div className="space-y-2">
+          <h4 className="text-xs font-semibold text-slate-400">
+            {t("resources")}
+          </h4>
+          <div className="grid grid-cols-2 gap-2">
+            {counts.map((c) => (
+              <div
+                key={c.key}
+                className="space-y-0.5 rounded-xl border border-slate-100 bg-white p-2.5 text-center shadow-3xs"
+              >
+                <span className="block text-lg font-bold text-slate-800">
+                  {formatNumber(resourceCounts[c.key])}
+                </span>
+                <span className="block text-[10px] text-slate-400">
+                  {c.label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Subscription */}
-        <div className="rounded-xl border bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold">{t("subscription")}</h2>
+        <div className="space-y-2">
+          <h4 className="text-xs font-semibold text-slate-400">
+            {t("subscription")}
+          </h4>
           {subscription ? (
-            <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
-              <div>
-                <span className="text-muted-foreground">{t("plan")}: </span>
-                <span>{subscription.plan?.name ?? "—"}</span>
-              </div>
-              <div>
-                <span className="text-muted-foreground">
-                  {t("planDuration")}:{" "}
+            <div className="space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t("plan")}</span>
+                <span className="font-medium text-slate-700">
+                  {subscription.plan?.name ?? "—"}
                 </span>
-                <span>{subscription.planDuration?.name ?? "—"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">
-                  {t("subscriptionStatus")}:{" "}
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t("planDuration")}</span>
+                <span className="font-medium text-slate-700">
+                  {subscription.planDuration?.name ?? "—"}
                 </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t("subscriptionStatus")}</span>
                 <SubscriptionStatusBadge status={subscription.status} />
               </div>
-              <div>
-                <span className="text-muted-foreground">{t("expire")}: </span>
-                <span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t("expire")}</span>
+                <span className="font-medium text-slate-700">
                   {dayjs(subscription.expire)
                     .calendar("jalali")
                     .format("YYYY/MM/DD")}
@@ -109,59 +151,65 @@ export default function WorkspaceDetailPage({
               </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="rounded-xl border border-slate-100 bg-white p-3 text-center text-[11px] text-slate-400 shadow-3xs">
               {t("noSubscription")}
             </p>
           )}
         </div>
+      </div>
 
-        {/* Resource counts */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {counts.map((c) => (
-            <div
-              key={c.key}
-              className="rounded-xl border bg-white p-4 text-center"
-            >
-              <div className="text-2xl font-bold">
-                {formatNumber(resourceCounts[c.key])}
-              </div>
-              <div className="mt-1 text-xs text-muted-foreground">{c.label}</div>
-            </div>
-          ))}
-        </div>
-
+      {/* Left Column: Main content */}
+      <div className="flex flex-1 flex-col gap-6 lg:overflow-y-auto">
         {/* Instagram accounts */}
-        <div className="rounded-xl border bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold">
+        <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
+          <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-800">
+            <InstagramLogoIcon size={18} className="text-pink-600" />
             {t("instagramAccounts")}
-          </h2>
+          </h3>
           {instagrams.length === 0 ? (
-            <p className="text-sm text-muted-foreground">—</p>
+            <p className="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center text-[11px] text-slate-400">
+              —
+            </p>
           ) : (
             <div className="flex flex-col gap-3">
               {instagrams.map((ig) => (
                 <div
                   key={ig.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-100 bg-white p-3 shadow-3xs"
                 >
-                  <div className="flex flex-col">
-                    <span className="font-medium">@{ig.username}</span>
+                  <div className="flex flex-col" dir="ltr">
+                    <span className="font-semibold text-slate-800">
+                      @{ig.username}
+                    </span>
                     {ig.name && (
-                      <span className="text-xs text-muted-foreground">
-                        {ig.name}
-                      </span>
+                      <span className="text-xs text-slate-400">{ig.name}</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span>
-                      {formatNumber(ig.followersCount)} {t("followers")}
-                    </span>
-                    <span>
-                      {formatNumber(ig.followsCount)} {t("follows")}
-                    </span>
-                    <span>
-                      {formatNumber(ig.mediaCount)} {t("media")}
-                    </span>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="space-y-0.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                      <span className="block text-[10px] text-slate-400">
+                        {t("followers")}
+                      </span>
+                      <span className="block font-bold text-slate-800">
+                        {formatNumber(ig.followersCount)}
+                      </span>
+                    </div>
+                    <div className="space-y-0.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                      <span className="block text-[10px] text-slate-400">
+                        {t("follows")}
+                      </span>
+                      <span className="block font-bold text-slate-800">
+                        {formatNumber(ig.followsCount)}
+                      </span>
+                    </div>
+                    <div className="space-y-0.5 rounded-xl border border-slate-100 bg-slate-50 px-3 py-1.5 text-center">
+                      <span className="block text-[10px] text-slate-400">
+                        {t("media")}
+                      </span>
+                      <span className="block font-bold text-slate-800">
+                        {formatNumber(ig.mediaCount)}
+                      </span>
+                    </div>
                   </div>
                   <Button asChild variant="outline" size="sm">
                     <Link
@@ -180,24 +228,31 @@ export default function WorkspaceDetailPage({
         </div>
 
         {/* Members */}
-        <div className="rounded-xl border bg-white p-5">
-          <h2 className="mb-3 text-sm font-semibold">{t("members")}</h2>
+        <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
+          <h3 className="mb-4 text-sm font-bold text-slate-800">
+            {t("members")}
+          </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-right text-muted-foreground">
-                  <th className="p-2 font-medium">{t("name")}</th>
-                  <th className="p-2 font-medium">{t("mobile")}</th>
-                  <th className="p-2 font-medium">{t("role")}</th>
-                  <th className="p-2 font-medium">{t("joinedAt")}</th>
-                  <th className="p-2 font-medium">{t("permissions")}</th>
+                <tr className="border-b border-slate-100 text-right text-xs text-slate-400">
+                  <th className="p-2 font-semibold">{t("name")}</th>
+                  <th className="p-2 font-semibold">{t("mobile")}</th>
+                  <th className="p-2 font-semibold">{t("role")}</th>
+                  <th className="p-2 font-semibold">{t("joinedAt")}</th>
+                  <th className="p-2 font-semibold">{t("permissions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {members.map((m) => (
-                  <tr key={m.userId} className="border-b align-top">
-                    <td className="p-2">{m.name || "—"}</td>
-                    <td className="p-2">{m.mobile || "—"}</td>
+                  <tr
+                    key={m.userId}
+                    className="border-b border-slate-100 align-top last:border-0"
+                  >
+                    <td className="p-2 text-slate-700">{m.name || "—"}</td>
+                    <td className="p-2 text-slate-700" dir="ltr">
+                      {m.mobile || "—"}
+                    </td>
                     <td className="p-2">
                       <Badge
                         variant={m.role === "owner" ? "default" : "secondary"}
@@ -205,16 +260,16 @@ export default function WorkspaceDetailPage({
                         {m.role === "owner" ? t("role_owner") : t("role_member")}
                       </Badge>
                     </td>
-                    <td className="p-2">
+                    <td className="p-2 text-slate-700">
                       {dayjs(m.joinedAt).calendar("jalali").format("YYYY/MM/DD")}
                     </td>
                     <td className="p-2">
                       {m.role === "owner" ? (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-slate-400">
                           {t("role_owner")}
                         </span>
                       ) : m.permissions.length === 0 ? (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-slate-400">
                           {t("noPermissions")}
                         </span>
                       ) : (
@@ -238,6 +293,6 @@ export default function WorkspaceDetailPage({
           </div>
         </div>
       </div>
-    </LayoutPage>
+    </div>
   );
 }
