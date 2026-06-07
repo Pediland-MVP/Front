@@ -24,6 +24,7 @@ import {
   RobotIcon,
   ChatDotsIcon,
   UserGearIcon,
+  BuildingsIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
@@ -47,6 +48,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("subscriptions"),
       url: "/subscriptions",
       icon: CreditCardIcon,
+    },
+    {
+      title: t("workspaces"),
+      url: "/workspaces",
+      icon: BuildingsIcon,
     },
     {
       title: t("referralCodes"),
