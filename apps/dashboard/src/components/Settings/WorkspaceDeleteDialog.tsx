@@ -28,7 +28,7 @@ export function WorkspaceDeleteDialog({
   const t = useTranslations("Settings.Workspace");
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open && !isDeleting) onClose(); }}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t("delete_dialog_title")}</AlertDialogTitle>
