@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { EnvelopeSimpleIcon, ArrowsLeftRight } from "@phosphor-icons/react";
+import { EnvelopeSimpleIcon, ArrowsLeftRight, Trash } from "@phosphor-icons/react";
 import { Pencil, Plus } from "lucide-react";
 import { WorkspaceForm } from "@/components/Settings/WorkspaceForm";
 import { TeamManager } from "@/components/Settings/TeamManager";
+import { WorkspaceDeleteDialog } from "@/components/Settings/WorkspaceDeleteDialog";
 import { WorkspaceSwitcherDialog } from "@/components/Console/WorkspaceSwitcherDialog";
 import { useInvitations } from "@/hooks/useInvitations";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -34,12 +35,14 @@ export default function WorkspacePage() {
   const tTeam = useTranslations("Settings.Team");
   const t_ec = useTranslations("ERROR_CODES");
   const { pendingCount, isLoading: isInvitationsLoading } = useInvitations();
-  const { workspaceId, isLoading: isLoadingPermissions, can } = usePermissions();
+  const { workspaceId, userId, isLoading: isLoadingPermissions, can } = usePermissions();
   const { workspaces, isLoading: workspacesIsLoading, changeWorkspace, mutate } = useWorkspaces();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createWorkspaceName, setCreateWorkspaceName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
 
@@ -77,6 +80,25 @@ export default function WorkspacePage() {
       toast.error(t_ec(code) || tWorkspace("create_error"));
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleDeleteWorkspace = async () => {
+    if (!workspaceId) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/workspaces/${workspaceId}`);
+      toast.success(tWorkspace("delete_success"));
+      const personalWorkspace = workspaces.find((w: any) => w.isPersonal);
+      if (personalWorkspace) {
+        await changeWorkspace(personalWorkspace.id);
+      }
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      toast.error(t_ec(code) || tWorkspace("error"));
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -190,6 +212,18 @@ export default function WorkspacePage() {
                 </Dialog>
               )}
 
+              {activeWorkspace && !activeWorkspace.isPersonal && activeWorkspace.ownerId === userId && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-4 h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-all inline-flex items-center justify-center cursor-pointer"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  aria-label={tWorkspace("delete_button")}
+                >
+                  <Trash className="w-4 h-4" />
+                </Button>
+              )}
+
               <Avatar className="h-20 w-20 shrink-0 ring-4 ring-white shadow-sm transition-transform duration-300 group-hover:scale-105">
                 <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
                   {workspaceInitials}
@@ -219,6 +253,13 @@ export default function WorkspacePage() {
         </div>
 
       </div>
+
+      <WorkspaceDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteWorkspace}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
