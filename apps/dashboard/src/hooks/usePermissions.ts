@@ -4,9 +4,9 @@ import { fetcher, getAccessToken } from "@/hooks/swr/api-client";
 import { Permission } from "@/types/workspace";
 import { IResponseMessage } from "@/types/responseMessage";
 
-function getActiveWorkspaceId(): string | null {
+function decodeJwtPayload(): { workspaceId: string | null; userId: string | null } {
   let token = getAccessToken();
-  
+
   if (!token && typeof document !== "undefined") {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; token=`);
@@ -15,18 +15,21 @@ function getActiveWorkspaceId(): string | null {
     }
   }
 
-  if (!token) return null;
-  
+  if (!token) return { workspaceId: null, userId: null };
+
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.workspaceId || null;
+    return {
+      workspaceId: payload.workspaceId || null,
+      userId: payload.sub || null,
+    };
   } catch (e) {
-    return null;
+    return { workspaceId: null, userId: null };
   }
 }
 
 export function usePermissions() {
-  const workspaceId = getActiveWorkspaceId();
+  const { workspaceId, userId } = decodeJwtPayload();
 
   const { data, error, isLoading } = useSWR<IResponseMessage<Permission[]>>(
     workspaceId ? `/workspaces/${workspaceId}/permissions/members/me/effective` : null,
@@ -59,6 +62,6 @@ export function usePermissions() {
     isLoading,
     error,
     workspaceId,
-  }), [permissions, can, isLoading, error, workspaceId]);
+    userId,
+  }), [permissions, can, isLoading, error, workspaceId, userId]);
 }
-

@@ -38,6 +38,7 @@ export type Plan = {
   name: string;
   type: string;
   updateDate: Date;
+  durations?: Duration[];
 };
 
 export type DurationResponse = {

@@ -7,7 +7,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
 import { AuthProvider } from "@/components/Providers/AuthProvider";
 import { SiteProvider } from "@/components/Providers/SiteProvider";
-import { Toaster } from "@/components/ui";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: {

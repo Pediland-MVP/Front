@@ -14,7 +14,8 @@
     "befroosh": "بفروش",
     "adminPortal": "[پورتال مدیریت]",
     "admins": "مدیریت ادمین‌ها",
-    "workspaces": "ورک‌اسپیس‌ها"
+    "workspaces": "ورک‌اسپیس‌ها",
+    "plans": "پلن‌ها"
   },
   "Admins": {
     "searchPlaceholder": "جستجو بر اساس نام یا نام کاربری...",
@@ -51,7 +52,9 @@
     "ADMIN_USERNAME_ALREADY_EXISTS": "نام کاربری از قبل وجود دارد",
     "ADMIN_TELEGRAMID_ALREADY_EXISTS": "شناسه تلگرام از قبل ثبت شده است",
     "ADMIN_NOTFOUND": "ادمین یافت نشد",
-    "WORKSPACE_NOT_FOUND": "ورک‌اسپیس یافت نشد"
+    "WORKSPACE_NOT_FOUND": "ورک‌اسپیس یافت نشد",
+    "PLAN_NOT_FOUND": "پلن یافت نشد",
+    "PLAN_DURATION_NOT_FOUND": "مدت پلن یافت نشد"
   },
   "Workspaces": {
     "title": "ورک‌اسپیس‌ها",
@@ -92,6 +95,40 @@
     "mobile": "موبایل",
     "noPermissions": "بدون دسترسی",
     "notFound": "ورک‌اسپیس یافت نشد"
+  },
+  "Plans": {
+    "name": "نام",
+    "description": "توضیحات",
+    "type": "نوع",
+    "type_credit": "اعتباری",
+    "type_time": "زمانی",
+    "followersRange": "بازه دنبال‌کننده",
+    "minFollowers": "حداقل دنبال‌کننده",
+    "maxFollowers": "حداکثر دنبال‌کننده",
+    "features": "امکانات",
+    "featuresPlaceholder": "هر امکان را در یک خط بنویسید",
+    "isActive": "فعال",
+    "isVisible": "قابل نمایش",
+    "yes": "بله",
+    "no": "خیر",
+    "actions": "عملیات",
+    "edit": "ویرایش",
+    "durations": "مدت‌ها",
+    "price": "قیمت",
+    "monthlyDiscount": "تخفیف ماهانه",
+    "durationDays": "تعداد روز",
+    "credit": "اعتبار",
+    "save": "ذخیره",
+    "saving": "در حال ذخیره...",
+    "cancel": "انصراف",
+    "editPlanTitle": "ویرایش پلن",
+    "durationsTitle": "مدت‌های پلن {plan}",
+    "editDurationTitle": "ویرایش مدت پلن",
+    "noDurations": "مدتی برای این پلن ثبت نشده است",
+    "updateSuccess": "پلن با موفقیت ویرایش شد",
+    "updateError": "خطا در ویرایش پلن",
+    "durationUpdateSuccess": "مدت پلن با موفقیت ویرایش شد",
+    "durationUpdateError": "خطا در ویرایش مدت پلن"
   },
   "NavBottom": {
     "customers": "مشتریان",
