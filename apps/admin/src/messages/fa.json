@@ -15,7 +15,8 @@
     "adminPortal": "[پورتال مدیریت]",
     "admins": "مدیریت ادمین‌ها",
     "workspaces": "ورک‌اسپیس‌ها",
-    "plans": "پلن‌ها"
+    "plans": "پلن‌ها",
+    "settings": "تنظیمات"
   },
   "Admins": {
     "searchPlaceholder": "جستجو بر اساس نام یا نام کاربری...",
@@ -54,7 +55,8 @@
     "ADMIN_NOTFOUND": "ادمین یافت نشد",
     "WORKSPACE_NOT_FOUND": "ورک‌اسپیس یافت نشد",
     "PLAN_NOT_FOUND": "پلن یافت نشد",
-    "PLAN_DURATION_NOT_FOUND": "مدت پلن یافت نشد"
+    "PLAN_DURATION_NOT_FOUND": "مدت پلن یافت نشد",
+    "INVALID_SETTING_VALUE": "مقدار وارد شده برای تنظیمات نامعتبر است"
   },
   "Workspaces": {
     "title": "ورک‌اسپیس‌ها",
@@ -129,6 +131,33 @@
     "updateError": "خطا در ویرایش پلن",
     "durationUpdateSuccess": "مدت پلن با موفقیت ویرایش شد",
     "durationUpdateError": "خطا در ویرایش مدت پلن"
+  },
+  "Settings": {
+    "title": "تنظیمات",
+    "subtitle": "مدیریت تنظیمات سراسری سامانه. این مقادیر جایگزین متغیرهای محیطی می‌شوند.",
+    "defaultFreePlanDurations": "مدت‌های پلن رایگان پیش‌فرض",
+    "defaultFreePlanDurationsHint": "هنگام ثبت‌نام کاربر جدید، این مدت‌های پلن به‌صورت رایگان فعال می‌شوند.",
+    "selectDurations": "انتخاب مدت‌های پلن",
+    "noDurations": "مدتی یافت نشد",
+    "smsProvider": "سرویس‌دهنده پیامک",
+    "smsProviderHint": "سرویس‌دهنده‌ای که پیامک‌ها از طریق آن ارسال می‌شوند.",
+    "selectProvider": "انتخاب سرویس‌دهنده",
+    "smsProviderOptions": {
+      "batabjam": "باتاب‌جم",
+      "melipayamak": "ملی‌پیامک",
+      "batabjamAboard": "باتاب‌جم (خارج)",
+      "notrika": "نوتریکا"
+    },
+    "paymentGateway": "درگاه پرداخت پیش‌فرض",
+    "paymentGatewayHint": "درگاه پرداختی که به‌صورت پیش‌فرض استفاده می‌شود.",
+    "selectGateway": "انتخاب درگاه",
+    "paymentGatewayOptions": {
+      "zarinpal": "زرین‌پال"
+    },
+    "save": "ذخیره",
+    "saving": "در حال ذخیره...",
+    "saveSuccess": "تنظیمات با موفقیت ذخیره شد",
+    "saveError": "خطا در ذخیره تنظیمات"
   },
   "NavBottom": {
     "customers": "مشتریان",

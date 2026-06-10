@@ -9,6 +9,8 @@ export type ReferralCode = {
   code: string;
   discount: number;
   type: "PERCENTAGE" | "FIXED" | "PLAN";
+  atLeast: number;
+  max: number | null;
   maxUsage: number;
   createDate: string;
   user: {

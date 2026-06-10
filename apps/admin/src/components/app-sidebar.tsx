@@ -26,6 +26,7 @@ import {
   UserGearIcon,
   BuildingsIcon,
   StackIcon,
+  GearSixIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
@@ -86,6 +87,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     ...(user?.role === "admin"
       ? [{ title: t("admins"), url: "/admins", icon: UserGearIcon }]
+      : []),
+    ...(user?.role !== "kam"
+      ? [{ title: t("settings"), url: "/settings", icon: GearSixIcon }]
       : []),
   ], [t, user?.role]);
 
