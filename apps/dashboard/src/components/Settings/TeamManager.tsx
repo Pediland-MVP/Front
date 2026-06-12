@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import useSWR from "swr";
 import { toast } from "sonner";
 import api, { fetcher } from "@/hooks/swr/api-client";
@@ -29,7 +29,7 @@ import {
 } from "@/components/ui";
 import { Trash, Shield, Plus, XSquare, UserCircle } from "@phosphor-icons/react";
 import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
@@ -83,7 +83,7 @@ export function TeamManager() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
-  const inviteSchema = z.discriminatedUnion("inviteType", [
+  const inviteSchema = useMemo(() => z.discriminatedUnion("inviteType", [
     z.object({
       inviteType: z.literal("mobile"),
       mobile: z.string().regex(/^09\d{9}$/, { message: t("invalid_mobile") }),
@@ -98,10 +98,13 @@ export function TeamManager() {
       permissions: z.array(z.string()).min(1, { message: t("select_permissions_error") }),
       message: z.string().max(500).optional(),
     }),
-  ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ]), []);
+
+  const resolver = useMemo(() => zodResolver(inviteSchema), [inviteSchema]);
 
   const inviteForm = useForm<z.infer<typeof inviteSchema>>({
-    resolver: zodResolver(inviteSchema),
+    resolver,
     defaultValues: {
       inviteType: "mobile",
       mobile: "",
@@ -111,8 +114,8 @@ export function TeamManager() {
     },
   });
 
-  const selectedPermissions = inviteForm.watch("permissions") || [];
-  const inviteType = inviteForm.watch("inviteType");
+  const selectedPermissions = useWatch({ control: inviteForm.control, name: "permissions" }) || [];
+  const inviteType = useWatch({ control: inviteForm.control, name: "inviteType" });
 
   const handleTogglePermission = (slug: string) => {
     const current = inviteForm.getValues("permissions") || [];
@@ -129,6 +132,27 @@ export function TeamManager() {
     }
   };
 
+  const resetInviteForm = useCallback(() => {
+    inviteForm.reset({
+      inviteType: "mobile",
+      mobile: "",
+      email: "",
+      permissions: [],
+      message: "",
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleInviteOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      resetInviteForm();
+    } else {
+      setTimeout(() => resetInviteForm(), 300);
+    }
+    setInviteOpen(open);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetInviteForm]);
+
   const onInvite = async (values: z.infer<typeof inviteSchema>) => {
     setIsInviting(true);
     try {
@@ -139,6 +163,7 @@ export function TeamManager() {
       await api.post(`/workspaces/${workspaceId}/invitations`, payload);
       toast.success(t("invite_success"));
       setInviteOpen(false);
+      setTimeout(() => resetInviteForm(), 300);
       mutateInvitations();
     } catch (e: any) {
       const code = e?.response?.data?.code;
@@ -203,16 +228,8 @@ export function TeamManager() {
         inviteForm.setValue("permissions", availablePermissions.map((p: any) => p.slug));
       }
     }
-    if (!inviteOpen) {
-      inviteForm.reset({
-        inviteType: "mobile",
-        mobile: "",
-        email: "",
-        permissions: [],
-        message: "",
-      });
-    }
-  }, [inviteOpen, availablePermissions.length, inviteForm]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inviteOpen, availablePermissions.length]);
 
   const groupedPermissions = availablePermissions.reduce((acc: any, item: any) => {
     const mod = item.module || "general";
@@ -234,7 +251,7 @@ export function TeamManager() {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">{t("members")}</h3>
         {canInvite && (
-          <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+          <Dialog open={inviteOpen} onOpenChange={handleInviteOpenChange}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />

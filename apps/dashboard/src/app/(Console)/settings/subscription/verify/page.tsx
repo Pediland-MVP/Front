@@ -1,47 +1,51 @@
 "use client";
 
+import api from "@/hooks/swr/api-client";
 import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
+import { ExceptionMessage } from "@/types/exceptionMessage";
+import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
 
-import { ExceptionMessage } from "@/types/exceptionMessage";
-
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
-
-export default function VerifyPage() {
+function VerifyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("Subscription.Verify");
   const t_ec = useTranslations("ERROR_CODES");
 
-  const {
-    data: refId,
-    isLoading,
-    error,
-  } = useSWRImmutable(
-    searchParams.get("Authority") && searchParams.get("Status")
-      ? `${API_URL}/payments/subscription/zarinpal/verify?Authority=${searchParams.get("Authority")}&Status=${searchParams.get("Status")}`
-      : null,
-  );
+  const [refId, setRefId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<ExceptionMessage | null>(null);
 
   useEffect(() => {
     mutate(mutateIncludeStringKey("plans"));
   }, []);
 
   useEffect(() => {
-    const run = async () => {
-      if (refId) {
+    const authority = searchParams.get("Authority");
+    const status = searchParams.get("Status");
+    if (!authority || !status) {
+      setIsLoading(false);
+      return;
+    }
+
+    api
+      .get(
+        `/payments/subscription/zarinpal/verify?Authority=${authority}&Status=${status}`,
+      )
+      .then(async (res) => {
+        setRefId(res.data?.data?.ref_id ?? null);
+        setIsLoading(false);
         await mutate(mutateIncludeStringKey("subscription"));
         router.push(`/settings/instagram?isAfterPurchasingPlan`);
-      }
-    };
-    run();
-  }, [refId, router]);
+      })
+      .catch((e) => {
+        setError(e.response?.data ?? null);
+        setIsLoading(false);
+      });
+  }, [searchParams, router]);
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-y-2">
@@ -51,8 +55,8 @@ export default function VerifyPage() {
         <>
           <p className="text-4xl font-bold text-red-600">{t("error")}</p>
           <p>
-            {error.data
-              ? t_ec((error.data as ExceptionMessage)?.code)
+            {error.code
+              ? t_ec(error.code)
               : t_ec("SERVER_CONNECTION_ERROR")}
           </p>
         </>
@@ -60,9 +64,23 @@ export default function VerifyPage() {
         <>
           <p className="text-4xl font-bold text-green-600">{t("sucessFull")}</p>
           <p>{t("sucessFullDescription")}</p>
-          <p>{t("refId", { refId: refId?.data?.ref_id })}</p>
+          <p>{t("refId", { refId })}</p>
         </>
       )}
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full w-full items-center justify-center">
+          <LoaderSpin />
+        </div>
+      }
+    >
+      <VerifyContent />
+    </Suspense>
   );
 }

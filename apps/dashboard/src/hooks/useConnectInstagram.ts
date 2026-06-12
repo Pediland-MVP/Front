@@ -27,6 +27,7 @@ export default function useConnectInstagram() {
       .get(`/instagram/callbackIG?code=${code}`)
       .then(async (res) => {
         await mutate(mutateIncludeStringKey("me"));
+        mutate(mutateIncludeStringKey("plans"));
         router.push("/");
         toast.success(t("instagramConnected"));
       })
