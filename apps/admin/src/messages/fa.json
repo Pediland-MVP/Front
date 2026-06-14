@@ -120,7 +120,13 @@
     "INVALID_WEBHOOK_URL": "آدرس وب‌هوک نامعتبر است یا در محدوده خصوصی قرار دارد",
     "INVALID_EVENT_PATTERN": "الگوی رویداد ناشناخته است",
     "ANALYTICS_WEBHOOK_NOTFOUND": "وب‌هوک یافت نشد",
-    "ANALYTICS_WEBHOOK_ALREADY_DISABLED": "وب‌هوک از قبل غیرفعال است"
+    "ANALYTICS_WEBHOOK_ALREADY_DISABLED": "وب‌هوک از قبل غیرفعال است",
+    "UNAUTHORIZED_API_KEY": "کلید API نامعتبر یا غیرفعال است",
+    "ANALYTICS_WEBHOOK_EVENT_NOTFOUND": "رویداد آنالیتیکس یافت نشد",
+    "ANALYTICS_WEBHOOK_EVENT_EXPIRED": "رویداد آنالیتیکس از دوره نگهداری ۹۰ روزه گذشته است",
+    "ANALYTICS_WEBHOOK_EVENT_NOT_SUBSCRIBED": "نوع رویداد در اشتراک‌های این وب‌هوک وجود ندارد",
+    "ANALYTICS_WEBHOOK_REPLAY_NOTFOUND": "برنامه‌ریزی ریپلی یافت نشد",
+    "INVALID_REPLAY_SCHEDULE": "زمان‌بندی ریپلی نامعتبر است"
   },
   "Workspaces": {
     "title": "ورک‌اسپیس‌ها",
