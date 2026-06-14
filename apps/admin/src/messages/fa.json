@@ -3,6 +3,7 @@
     "myCustomers": "مشتریان من",
     "myLeads": "سرنخ‌های من",
     "subscriptions": "اشتراک‌ها",
+    "finance": "امور مالی",
     "referralCodes": "کدهای رفرال",
     "discountCodes": "کدهای تخفیف",
     "aiAgent": "هوش مصنوعی",
@@ -17,6 +18,63 @@
     "workspaces": "ورک‌اسپیس‌ها",
     "plans": "پلن‌ها",
     "settings": "تنظیمات"
+  },
+  "Dashboard": {
+    "title": "آمار کلی پلتفرم",
+    "rangeLabel": "بازه زمانی",
+    "rangeDays": "{days} روز",
+    "allTime": "کل",
+    "thisPeriod": "در این بازه",
+    "noData": "داده‌ای برای نمایش وجود ندارد",
+    "sessions": "نشست‌ها",
+    "comments": "کامنت‌ها",
+    "messages": "پیام‌ها",
+    "leads": "سرنخ‌ها",
+    "leadInstagrams": "سرنخ‌های اینستاگرام",
+    "recommended": "نمای پیشنهادی",
+    "customIndicator": "سفارشی",
+    "metricsLabel": "شاخص‌ها",
+    "chartTypeLabel": "نوع نمودار",
+    "layoutLabel": "چیدمان",
+    "customRange": "بازه دلخواه",
+    "combinedTitle": "نمودار ترکیبی",
+    "templates": {
+      "all": "همه شاخص‌ها",
+      "funnel": "قیف",
+      "engagement": "تعامل",
+      "today": "امروز"
+    },
+    "chartType": {
+      "line": "خطی",
+      "bar": "میله‌ای",
+      "area": "ناحیه‌ای"
+    },
+    "layout": {
+      "grid": "شبکه‌ای",
+      "combined": "ترکیبی"
+    }
+  },
+  "Finance": {
+    "title": "امور مالی",
+    "statusLabel": "وضعیت پرداخت",
+    "allStatuses": "همه",
+    "chartTitle": "درآمد بر اساس وضعیت پرداخت",
+    "noData": "داده‌ای برای نمایش وجود ندارد",
+    "toman": "تومان",
+    "searchPlaceholder": "جستجوی مشتری...",
+    "forbidden": "شما به این بخش دسترسی ندارید.",
+    "cards": {
+      "collectedRevenue": "درآمد وصول‌شده",
+      "successCount": "پرداخت‌های موفق",
+      "nonSuccessAmount": "مبلغ ناموفق",
+      "successRate": "نرخ موفقیت"
+    },
+    "cardsHint": {
+      "collectedRevenue": "مجموع پرداخت‌های موفق در این بازه",
+      "successCount": "تعداد پرداخت‌های موفق",
+      "nonSuccessAmount": "مجموع پرداخت‌های ناموفق/در انتظار",
+      "successRate": "نسبت پرداخت‌های موفق به کل"
+    }
   },
   "Admins": {
     "searchPlaceholder": "جستجو بر اساس نام یا نام کاربری...",
@@ -56,7 +114,9 @@
     "WORKSPACE_NOT_FOUND": "ورک‌اسپیس یافت نشد",
     "PLAN_NOT_FOUND": "پلن یافت نشد",
     "PLAN_DURATION_NOT_FOUND": "مدت پلن یافت نشد",
-    "INVALID_SETTING_VALUE": "مقدار وارد شده برای تنظیمات نامعتبر است"
+    "INVALID_SETTING_VALUE": "مقدار وارد شده برای تنظیمات نامعتبر است",
+    "INVALID_METRIC_QUERY": "درخواست آمار نامعتبر است",
+    "INVALID_FINANCE_QUERY": "درخواست امور مالی نامعتبر است"
   },
   "Workspaces": {
     "title": "ورک‌اسپیس‌ها",

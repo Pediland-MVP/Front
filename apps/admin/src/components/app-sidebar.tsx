@@ -19,6 +19,7 @@ import {
   PlantIcon,
   UsersIcon,
   CreditCardIcon,
+  CurrencyCircleDollarIcon,
   GiftIcon,
   TagIcon,
   RobotIcon,
@@ -51,6 +52,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/subscriptions",
       icon: CreditCardIcon,
     },
+    ...(user?.role !== "kam"
+      ? [{ title: t("finance"), url: "/finance", icon: CurrencyCircleDollarIcon }]
+      : []),
     {
       title: t("workspaces"),
       url: "/workspaces",
