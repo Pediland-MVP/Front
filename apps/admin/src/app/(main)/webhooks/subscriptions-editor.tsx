@@ -83,7 +83,9 @@ export function SubscriptionsEditor({ types, value, onChange }: SubscriptionsEdi
           );
         })}
       </div>
-      {!types.length ? <Label className="text-xs text-muted-foreground">…</Label> : null}
+      {!types.length ? (
+        <Label className="text-xs text-muted-foreground">{t("loadingTypes")}</Label>
+      ) : null}
     </div>
   );
 }

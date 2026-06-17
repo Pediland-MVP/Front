@@ -23,10 +23,14 @@ function SecretRow({ label, value }: { label: string; value: string }) {
   const t = useTranslations("Webhooks");
   const [copied, setCopied] = useState(false);
   const copy = async () => {
-    await navigator.clipboard.writeText(value);
-    setCopied(true);
-    toast.success(t("copied"));
-    setTimeout(() => setCopied(false), 1500);
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      toast.success(t("copied"));
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error(t("copyFailed"));
+    }
   };
   return (
     <div className="space-y-1">

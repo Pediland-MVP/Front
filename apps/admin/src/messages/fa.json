@@ -217,6 +217,8 @@
     "signingSecretLabel": "کلید امضا",
     "copy": "کپی",
     "copied": "کپی شد",
+    "copyFailed": "کپی ناموفق بود؛ مقدار را دستی انتخاب و کپی کنید",
+    "loadingTypes": "در حال بارگذاری رویدادها...",
     "done": "انجام شد",
     "validationNameRequired": "نام الزامی است",
     "validationUrlInvalid": "آدرس باید یک URL معتبر با https باشد",

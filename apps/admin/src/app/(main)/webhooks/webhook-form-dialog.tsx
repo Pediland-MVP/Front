@@ -51,6 +51,7 @@ export function WebhookFormDialog({
   onSaved,
 }: WebhookFormDialogProps) {
   const t = useTranslations("Webhooks");
+  const t_ec = useTranslations("ERROR_CODES");
   const isEdit = !!endpoint;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -113,8 +114,9 @@ export function WebhookFormDialog({
           signingSecret: res.data.data.signingSecret,
         });
       }
-    } catch {
-      toast.error(t("toastError"));
+    } catch (err: any) {
+      const code = err?.response?.data?.code;
+      toast.error(t_ec(code) || t("toastError"));
     } finally {
       setIsSubmitting(false);
     }
