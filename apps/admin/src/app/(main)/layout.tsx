@@ -3,6 +3,7 @@ import { NavBottom } from "@/components/nav-bottom";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Header from "@/layout/header";
 import { LayoutPage } from "@/components/layout/LayoutPage";
+import { AuthGuard } from "@/components/auth-guard";
 
 export default function MainLayout({
   children,
@@ -10,7 +11,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <AuthGuard>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -21,6 +22,6 @@ export default function MainLayout({
           <NavBottom />
         </SidebarInset>
       </SidebarProvider>
-    </>
+    </AuthGuard>
   );
 }
