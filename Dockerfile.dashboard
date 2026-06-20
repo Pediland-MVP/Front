@@ -1,0 +1,28 @@
+FROM node:24
+WORKDIR /app
+RUN corepack enable
+
+# Workspace-aware: dashboard depends on @befroosh/ui, so copy the whole monorepo.
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+# NEXT_PUBLIC_* are baked at build time.
+ARG NEXT_PUBLIC_BACK_API_URL
+ARG NEXT_PUBLIC_WS_MESSAGE
+ARG NEXT_PUBLIC_WS_COMMENTS
+ARG NEXT_PUBLIC_LANDING_URL
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ARG NEXT_PUBLIC_INSTAGRAM_CLIENT_ID
+ENV NEXT_PUBLIC_BACK_API_URL=$NEXT_PUBLIC_BACK_API_URL \
+    NEXT_PUBLIC_WS_MESSAGE=$NEXT_PUBLIC_WS_MESSAGE \
+    NEXT_PUBLIC_WS_COMMENTS=$NEXT_PUBLIC_WS_COMMENTS \
+    NEXT_PUBLIC_LANDING_URL=$NEXT_PUBLIC_LANDING_URL \
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID \
+    NEXT_PUBLIC_INSTAGRAM_CLIENT_ID=$NEXT_PUBLIC_INSTAGRAM_CLIENT_ID \
+    NEXT_TELEMETRY_DISABLED=1
+
+# turbo builds the @befroosh/ui dep first (build dependsOn ^build), then the app.
+RUN pnpm exec turbo run build --filter=front
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "front", "start"]

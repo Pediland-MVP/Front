@@ -1,0 +1,15 @@
+FROM node:24
+WORKDIR /app
+RUN corepack enable
+
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+ARG NEXT_PUBLIC_BACK_API_URL
+ENV NEXT_PUBLIC_BACK_API_URL=$NEXT_PUBLIC_BACK_API_URL \
+    NEXT_TELEMETRY_DISABLED=1
+
+RUN pnpm exec turbo run build --filter=admin
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "admin", "start"]
