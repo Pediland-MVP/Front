@@ -7,6 +7,7 @@ import { SmsData } from "@/types/sms";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
+import { useLabelsList } from "../labels/use-labels";
 
 // UI Imports
 import { FetchError } from "@/components/fetch-error";
@@ -31,6 +32,7 @@ export default function CustomersPageClient() {
   const [categories, setCategories] = useState<string[]>([]);
   const [actionDate, setActionDate] = useState<Date | null>(null);
   const [isIgTokenValid, setIsIgTokenValid] = useState("");
+  const [labelId, setLabelId] = useState<string | undefined>(undefined);
   const [smsDialogOpen, setSmsDialogOpen] = useState(false);
   const [smsData, setSmsData] = useState<SmsData | null>(null);
   const [panelMode, setPanelMode] = useState<PanelModeType>('standard')
@@ -58,6 +60,9 @@ export default function CustomersPageClient() {
   const categoryQuery =
     categories.length > 0 ? `&categoryIds=${categories.join(",")}` : "";
   const igTokenQuery = isIgTokenValid ? `&isIgTokenValid=${isIgTokenValid}` : "";
+  const labelIdQuery = labelId ? `&labelId=${labelId}` : "";
+
+  const { data: labelsData } = useLabelsList({ page: 1, limit: 100 });
 
   const {
     data: customersData,
@@ -66,7 +71,7 @@ export default function CustomersPageClient() {
     error: customersError,
     mutate: mutateCustomers,
   } = useSWR(
-    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}${igTokenQuery}${sortQuery}&panelMode=${panelMode}`,
+    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}${igTokenQuery}${labelIdQuery}${sortQuery}&panelMode=${panelMode}`,
     fetcher,
     { keepPreviousData: true },
   );
@@ -138,6 +143,9 @@ export default function CustomersPageClient() {
         onActionDateChange={setActionDate}
         isIgTokenValid={isIgTokenValid}
         onIgTokenValidChange={setIsIgTokenValid}
+        labelId={labelId}
+        onLabelIdChange={setLabelId}
+        labelsItems={labelsData?.items ?? []}
       />
 
       <SendSMSDialog

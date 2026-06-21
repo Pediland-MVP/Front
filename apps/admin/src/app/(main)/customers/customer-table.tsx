@@ -26,6 +26,8 @@ import { FilterIgToken } from "@/components/table/filter-ig-token";
 import { OtpDialog } from "@/components/table/dialog-otp";
 import { PanelModeType } from "./client-page";
 import { Button } from "@/components/ui/button";
+import { LabelListItem } from "../labels/types";
+import { FilterLabel } from "@/components/table/filter-label";
 
 export default function CustomerTable({
   isRefetching,
@@ -53,6 +55,9 @@ export default function CustomerTable({
   onActionDateChange,
   isIgTokenValid,
   onIgTokenValidChange,
+  labelId,
+  onLabelIdChange,
+  labelsItems,
 }: {
   isRefetching?: boolean;
   user: User;
@@ -79,6 +84,9 @@ export default function CustomerTable({
   onActionDateChange: (date: Date | null) => void;
   isIgTokenValid: string;
   onIgTokenValidChange: (value: string) => void;
+  labelId: string | undefined;
+  onLabelIdChange: (labelId: string | undefined) => void;
+  labelsItems: LabelListItem[];
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const [selectedRows, setSelectedRows] = useState<Customer[]>([]);
@@ -167,6 +175,8 @@ export default function CustomerTable({
             <FilterCategory size="sm" value={categories} onChange={onCategoryChange} />
 
             <FilterIgToken size="sm" value={isIgTokenValid} onChange={onIgTokenValidChange} />
+
+            <FilterLabel size="sm" value={labelId} onChange={onLabelIdChange} items={labelsItems} />
 
             <FilterStatus size="sm" type="customer" value={customersStatus} onChange={onStatusChange} />
 

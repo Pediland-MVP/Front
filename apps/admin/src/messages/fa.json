@@ -397,5 +397,10 @@
     "firstPage": "برو به صفحه اول",
     "prevPage": "برو به صفحه قبلی",
     "showingItems": "نمایش {from} تا {to} از {total} آیتم"
+  },
+  "Customers": {
+    "labelFilter": "فیلتر برچسب",
+    "labelFilterAll": "همه برچسب‌ها",
+    "labels": "برچسب‌ها"
   }
 }
