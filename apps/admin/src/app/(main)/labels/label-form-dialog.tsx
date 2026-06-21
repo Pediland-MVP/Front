@@ -56,19 +56,28 @@ export function LabelFormDialog({
 
   useEffect(() => {
     if (!open) return;
-    if (isEdit && detail?.data) {
-      const d = detail.data;
-      setName(d.name);
-      setColor(d.color ?? SWATCHES[0]);
-      setDescription(d.description ?? "");
-      setIsActive(d.isActive);
-      setSchedule({
-        scheduleType: d.scheduleType,
-        intervalMinutes: d.intervalMinutes ?? undefined,
-        dailyAtHour: d.dailyAtHour ?? undefined,
-      });
-      setRule(d.rule ?? emptyGroup());
-    } else if (!isEdit) {
+    if (isEdit) {
+      if (detail?.data) {
+        const d = detail.data;
+        setName(d.name);
+        setColor(d.color ?? SWATCHES[0]);
+        setDescription(d.description ?? "");
+        setIsActive(d.isActive);
+        setSchedule({
+          scheduleType: d.scheduleType,
+          intervalMinutes: d.intervalMinutes ?? undefined,
+          dailyAtHour: d.dailyAtHour ?? undefined,
+        });
+        setRule(d.rule ?? emptyGroup());
+      } else {
+        setName("");
+        setColor(SWATCHES[0]);
+        setDescription("");
+        setIsActive(true);
+        setSchedule({ scheduleType: "interval", intervalMinutes: 1440 });
+        setRule(emptyGroup());
+      }
+    } else {
       setName("");
       setColor(SWATCHES[0]);
       setDescription("");
@@ -76,7 +85,7 @@ export function LabelFormDialog({
       setSchedule({ scheduleType: "interval", intervalMinutes: 1440 });
       setRule(emptyGroup());
     }
-  }, [open, isEdit, detail]);
+  }, [open, isEdit, labelId, detail]);
 
   // Live preview (debounced) — counts matching users for the current draft rule.
   const [debouncedRule] = useDebounce(rule, 800);
