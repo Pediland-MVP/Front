@@ -12,7 +12,7 @@ export function scheduleSummary(
     return `${t("scheduleDaily")} ${h}:00 ${t("tehran")}`;
   }
   const mins = item.intervalMinutes ?? 0;
-  if (mins % 1440 === 0) return `${mins / 1440} ${t("unitDays")}`;
-  if (mins % 60 === 0) return `${mins / 60} ${t("unitHours")}`;
+  if (mins > 0 && mins % 1440 === 0) return `${mins / 1440} ${t("unitDays")}`;
+  if (mins > 0 && mins % 60 === 0) return `${mins / 60} ${t("unitHours")}`;
   return `${mins} ${t("unitMinutes")}`;
 }

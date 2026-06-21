@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 import api from "@/hooks/swr/api-client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusIcon, ArrowsClockwiseIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { scheduleSummary } from "./schedule-summary";
 import type { LabelListItem } from "./types";
 
@@ -37,8 +38,17 @@ interface Props {
 
 export default function LabelsTable(props: Props) {
   const t = useTranslations("Labels");
+  const t_pg = useTranslations("Pagination");
   const t_ec = useTranslations("ERROR_CODES");
+  const locale = useLocale();
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  const totalPages = Math.ceil(props.totalCount / props.limit);
+  const canPrev = props.page > 1;
+  const canNext = props.page < totalPages;
+  const showingFrom = props.totalCount === 0 ? 0 : (props.page - 1) * props.limit + 1;
+  const showingTo = Math.min(props.page * props.limit, props.totalCount);
+  const isRtl = locale === "fa";
 
   const toggleActive = async (item: LabelListItem) => {
     setBusyId(item.id);
@@ -142,6 +152,59 @@ export default function LabelsTable(props: Props) {
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination — mirrors DataTablePagination layout, same "Pagination" i18n namespace */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+        <div className="hidden text-sm md:block">
+          {t_pg("showingItems", { from: showingFrom, to: showingTo, total: props.totalCount })}
+        </div>
+
+        <div className="flex w-full items-center justify-center md:w-auto">
+          <div className="flex items-center gap-1">
+            <Button
+              size="icon"
+              className="size-8"
+              onClick={() => props.onPageChange(props.page + 1)}
+              disabled={!canNext}
+            >
+              <span className="sr-only">{t_pg("pageSize")}</span>
+              {isRtl ? <ChevronLeft /> : <ChevronRight />}
+            </Button>
+            <Button
+              size="icon"
+              className="hidden size-8 lg:flex"
+              onClick={() => props.onPageChange(totalPages)}
+              disabled={!canNext}
+            >
+              <span className="sr-only">{t_pg("pageSize")}</span>
+              {isRtl ? <ChevronsLeft /> : <ChevronsRight />}
+            </Button>
+
+            <div className="flex items-center justify-center px-4 text-sm font-medium">
+              {t_pg("pageIndicator", { pageIndex: props.page, totalPages })}
+            </div>
+
+            <Button
+              size="icon"
+              className="hidden size-8 lg:flex"
+              onClick={() => props.onPageChange(1)}
+              disabled={!canPrev}
+            >
+              <span className="sr-only">{t_pg("firstPage")}</span>
+              {isRtl ? <ChevronsRight /> : <ChevronsLeft />}
+            </Button>
+            <Button
+              size="icon"
+              className="size-8"
+              onClick={() => props.onPageChange(props.page - 1)}
+              disabled={!canPrev}
+            >
+              <span className="sr-only">{t_pg("prevPage")}</span>
+              {isRtl ? <ChevronRight /> : <ChevronLeft />}
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
