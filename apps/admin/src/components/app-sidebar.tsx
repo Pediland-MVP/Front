@@ -29,6 +29,7 @@ import {
   StackIcon,
   GearSixIcon,
   WebhooksLogoIcon,
+  BookmarksSimpleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
@@ -76,6 +77,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     ...(user?.role !== "kam"
       ? [{ title: t("webhooks"), url: "/webhooks", icon: WebhooksLogoIcon }]
+      : []),
+    ...(user?.role !== "kam"
+      ? [{ title: t("labels"), url: "/labels", icon: BookmarksSimpleIcon }]
       : []),
     {
       title: t("aiAgent"),
