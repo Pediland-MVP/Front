@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import * as React from "react";
 
 // UI Imports
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Command,
