@@ -167,7 +167,7 @@ export default function LabelsTable(props: Props) {
               onClick={() => props.onPageChange(props.page + 1)}
               disabled={!canNext}
             >
-              <span className="sr-only">{t_pg("pageSize")}</span>
+              <span className="sr-only">{t_pg("nextPage")}</span>
               {isRtl ? <ChevronLeft /> : <ChevronRight />}
             </Button>
             <Button
@@ -176,7 +176,7 @@ export default function LabelsTable(props: Props) {
               onClick={() => props.onPageChange(totalPages)}
               disabled={!canNext}
             >
-              <span className="sr-only">{t_pg("pageSize")}</span>
+              <span className="sr-only">{t_pg("lastPage")}</span>
               {isRtl ? <ChevronsLeft /> : <ChevronsRight />}
             </Button>
 

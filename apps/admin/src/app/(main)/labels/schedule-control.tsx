@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   Select,
@@ -39,6 +40,9 @@ export function ScheduleControl({
   const t = useTranslations("Labels");
   const { amount, unit } = splitInterval(value.intervalMinutes);
 
+  const [amountStr, setAmountStr] = useState(String(amount));
+  useEffect(() => { setAmountStr(String(amount)); }, [amount]);
+
   const setInterval = (a: number, u: Unit) =>
     onChange({ scheduleType: "interval", intervalMinutes: Math.max(1, a) * UNIT_FACTORS[u] });
 
@@ -63,8 +67,13 @@ export function ScheduleControl({
                 type="number"
                 min={1}
                 className="w-20"
-                value={amount}
-                onChange={(e) => setInterval(Number(e.target.value), unit)}
+                value={amountStr}
+                onChange={(e) => {
+                  setAmountStr(e.target.value);
+                  const n = Number(e.target.value);
+                  if (e.target.value !== "" && Number.isFinite(n) && n >= 1) setInterval(n, unit);
+                }}
+                onBlur={() => { if (amountStr === "" || Number(amountStr) < 1) setAmountStr(String(amount)); }}
               />
               <Select value={unit} onValueChange={(u) => setInterval(amount, u as Unit)}>
                 <SelectTrigger className="w-28">
