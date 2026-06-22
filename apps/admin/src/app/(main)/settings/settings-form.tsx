@@ -15,9 +15,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import MultipleSelector, { Option } from "@/components/ui/multi-selector";
+import { Input } from "@/components/ui/input";
+import { Trash2, Plus } from "lucide-react";
 import api from "@/hooks/swr/api-client";
 import { Plan } from "@/types/subscription";
-import { SettingsData } from "./client-page";
+import { ApifyToken, SettingsData } from "./client-page";
 
 interface SettingsFormProps {
   isRefetching?: boolean;
@@ -43,6 +45,9 @@ export default function SettingsForm({
   );
   const [gateway, setGateway] = useState<string>(
     data.settings.PAYMENT_DEFAULT_GATEWAY,
+  );
+  const [apifyTokens, setApifyTokens] = useState<ApifyToken[]>(
+    data.settings.APIFY_TOKENS ?? [],
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -70,6 +75,15 @@ export default function SettingsForm({
   const smsOptions = data.options.SMS_PROVIDER ?? [];
   const gatewayOptions = data.options.PAYMENT_DEFAULT_GATEWAY ?? [];
 
+  const updateToken = (index: number, patch: Partial<ApifyToken>) =>
+    setApifyTokens((rows) =>
+      rows.map((row, i) => (i === index ? { ...row, ...patch } : row)),
+    );
+  const addToken = () =>
+    setApifyTokens((rows) => [...rows, { name: "", token: "" }]);
+  const removeToken = (index: number) =>
+    setApifyTokens((rows) => rows.filter((_, i) => i !== index));
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -77,6 +91,9 @@ export default function SettingsForm({
         DEFAULT_FREE_PLAN_DURATION_IDS: durationIds,
         SMS_PROVIDER: smsProvider,
         PAYMENT_DEFAULT_GATEWAY: gateway,
+        APIFY_TOKENS: apifyTokens
+          .map((t) => ({ name: t.name.trim(), token: t.token.trim() }))
+          .filter((t) => t.token.length > 0),
       });
       toast.success(t("saveSuccess"));
       mutate();
@@ -157,6 +174,60 @@ export default function SettingsForm({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Apify API tokens (super-admin managed) */}
+          <div className="flex flex-col gap-3 rounded-lg border p-4">
+            <Label>{t("apifyTokens")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("apifyTokensHint")}
+            </p>
+
+            <div className="flex flex-col gap-2">
+              {apifyTokens.length === 0 && (
+                <span className="text-sm text-muted-foreground">
+                  {t("apifyTokensEmpty")}
+                </span>
+              )}
+              {apifyTokens.map((row, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    className="w-1/3"
+                    value={row.name}
+                    placeholder={t("apifyTokenNamePlaceholder")}
+                    onChange={(e) => updateToken(index, { name: e.target.value })}
+                  />
+                  <Input
+                    className="flex-1"
+                    value={row.token}
+                    placeholder={t("apifyTokenValuePlaceholder")}
+                    onChange={(e) =>
+                      updateToken(index, { token: e.target.value })
+                    }
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeToken(index)}
+                    aria-label={t("apifyTokenRemove")}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="self-start"
+              onClick={addToken}
+            >
+              <Plus className="size-4" />
+              {t("apifyTokenAdd")}
+            </Button>
           </div>
 
           <div className="flex justify-end">

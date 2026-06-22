@@ -14,13 +14,20 @@ import ReconcileMetricsCard from "./reconcile-metrics-card";
 export type SettingsKey =
   | "DEFAULT_FREE_PLAN_DURATION_IDS"
   | "SMS_PROVIDER"
-  | "PAYMENT_DEFAULT_GATEWAY";
+  | "PAYMENT_DEFAULT_GATEWAY"
+  | "APIFY_TOKENS";
+
+export interface ApifyToken {
+  name: string;
+  token: string;
+}
 
 export interface SettingsData {
   settings: {
     DEFAULT_FREE_PLAN_DURATION_IDS: number[];
     SMS_PROVIDER: string;
     PAYMENT_DEFAULT_GATEWAY: string;
+    APIFY_TOKENS: ApifyToken[];
   };
   options: Record<SettingsKey, string[] | null>;
 }

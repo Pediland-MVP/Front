@@ -361,6 +361,13 @@
     "paymentGateway": "درگاه پرداخت پیش‌فرض",
     "paymentGatewayHint": "درگاه پرداختی که به‌صورت پیش‌فرض استفاده می‌شود.",
     "selectGateway": "انتخاب درگاه",
+    "apifyTokens": "توکن‌های Apify",
+    "apifyTokensHint": "لیست توکن‌های Apify که برای دریافت اطلاعات اینستاگرام استفاده می‌شوند. وقتی اعتبار یک توکن تمام شود، توکن بعدی استفاده می‌شود.",
+    "apifyTokensEmpty": "هیچ توکنی ثبت نشده است.",
+    "apifyTokenNamePlaceholder": "نام (اختیاری)",
+    "apifyTokenValuePlaceholder": "توکن Apify",
+    "apifyTokenAdd": "افزودن توکن",
+    "apifyTokenRemove": "حذف توکن",
     "paymentGatewayOptions": {
       "zarinpal": "زرین‌پال"
     },
