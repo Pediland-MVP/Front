@@ -9,8 +9,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ColumnHeader } from "@/components/table/column-header";
 import { ContactOptions } from "@/components/table/contact-options";
 import { StatusBadge } from "@/components/table/status-badge";
+import { LabelChips } from "@/components/table/label-chips";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { User } from "@/types/user";
 import { SmsData } from "@/types/sms";
 import { Customer } from "@/types/customer";
@@ -110,26 +110,7 @@ export function columns(
     {
       id: "labels",
       header: "برچسب‌ها",
-      cell: ({ row }) => {
-        const userLabels = (row.original as any).labels ?? [];
-        if (userLabels.length === 0) return null;
-        return (
-          <div className="flex flex-wrap gap-1">
-            {userLabels.map((ul: any) => (
-              <Badge
-                key={ul.label.id}
-                style={
-                  ul.label.color
-                    ? { backgroundColor: ul.label.color, color: "#fff" }
-                    : undefined
-                }
-              >
-                {ul.label.name}
-              </Badge>
-            ))}
-          </div>
-        );
-      },
+      cell: ({ row }) => <LabelChips labels={row.original.labels} />,
     },
     {
       id: "contact",

@@ -2,6 +2,7 @@
 
 import { Category } from "./category";
 import { Instagram } from "./instagram";
+import { AssignedLabel } from "./label";
 
 export type Customer = {
   id: string;
@@ -29,6 +30,8 @@ export type Customer = {
   city: string | null;
 
   category: Category | null;
+
+  labels?: AssignedLabel[];
 
   subscriptions: {
     id: string;

@@ -1,11 +1,17 @@
 // src/components/Contacts/contactForm.tsx
 "use client";
 
+import { isAxiosError } from "axios";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { mutate as globalMutate } from "swr";
 import useSWRImmutable from "swr/immutable";
 import { z } from "zod";
+
+import api from "@/hooks/swr/api-client";
+import type { ExceptionMessage } from "@/types/exceptionMessage";
 
 import {
   Button,
@@ -75,16 +81,65 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
     },
   });
 
+  // `contact` is fetched asynchronously, so `defaultValues` (read once on mount)
+  // are still empty when the data arrives. Re-sync the form once it loads so the
+  // inputs are populated and the submitted payload reflects the real values.
+  useEffect(() => {
+    if (!contact) return;
+    form.reset({
+      firstname: contact.firstname || "",
+      lastname: contact.lastname || "",
+      mobile: contact.mobile || "",
+      email: contact.email || "",
+      country: contact.country || "",
+      city: contact.city || "",
+      state: contact.state || "",
+      gender: contact.gender || "",
+      birthDate: contact.birthDate || "",
+      postalcode: contact.postalcode || "",
+      address: contact.address || "",
+    });
+  }, [contact, form]);
+
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitLoading(true);
     try {
-      // TODO: Implement API call to update contact
-      console.log("Form data:", data);
-      // await updateContact(contactId, data);
-      // mutateContact();
-      // setOpen(false);
+      // The backend `PUT /contacts/:id` only accepts these fields. `city`/`state`
+      // are not part of the DTO and `birthDate` expects a numeric timestamp that
+      // this free-text form can't produce, so both are omitted. We preserve the
+      // existing `cityId`, which the backend requires to resolve a valid city.
+      const editableFields = [
+        "firstname",
+        "lastname",
+        "mobile",
+        "email",
+        "country",
+        "postalcode",
+        "address",
+        "gender",
+      ] as const;
+
+      const payload: Record<string, unknown> = {};
+      for (const key of editableFields) {
+        const value = data[key];
+        if (value != null && value !== "") payload[key] = value;
+      }
+      if (contact["cityId"] != null) payload["cityId"] = contact["cityId"];
+
+      await api.put(`/contacts/${contactId}`, payload);
+
+      toast.success(t("updated"));
+      await mutateContact();
+      // Revalidate the contacts list so the table reflects the edit.
+      await globalMutate(
+        (key) => typeof key === "string" && key.startsWith("/contacts"),
+      );
+      setOpen(false);
     } catch (error) {
-      console.error("Error updating contact:", error);
+      const code = isAxiosError(error)
+        ? (error.response?.data as ExceptionMessage | undefined)?.code
+        : undefined;
+      toast.error(code ? t_ec(code) : t("errors.update"));
     } finally {
       setIsSubmitLoading(false);
     }
