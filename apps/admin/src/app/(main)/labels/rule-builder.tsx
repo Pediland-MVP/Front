@@ -49,6 +49,7 @@ function LeafEditor({
       field,
       operator: (nd?.operators.includes(leaf.operator) ? leaf.operator : nd?.operators[0] ?? "eq") as ComparisonOperator,
       value: nd?.valueType === "status" ? (nd.statusOptions?.[0] ?? "") : 0,
+      ...(nd?.windowable && leaf.windowDays != null ? { windowDays: leaf.windowDays } : {}),
     });
   };
 
@@ -87,6 +88,24 @@ function LeafEditor({
           className="w-28"
           value={Number(leaf.value)}
           onChange={(e) => onChange({ ...leaf, value: Number(e.target.value) })}
+        />
+      )}
+
+      {def?.windowable && (
+        <Input
+          type="number"
+          min={1}
+          max={365}
+          className="w-28"
+          placeholder={t("windowDaysPlaceholder")}
+          title={t("windowDaysLabel")}
+          value={leaf.windowDays ?? ""}
+          onChange={(e) =>
+            onChange({
+              ...leaf,
+              windowDays: e.target.value === "" ? undefined : Number(e.target.value),
+            })
+          }
         />
       )}
 

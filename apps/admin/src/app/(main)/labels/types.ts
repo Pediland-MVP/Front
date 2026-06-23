@@ -5,6 +5,7 @@ export interface ConditionLeaf {
   field: string;
   operator: ComparisonOperator;
   value: number | string;
+  windowDays?: number;
 }
 export interface ConditionGroup {
   op: "and" | "or";
@@ -26,6 +27,7 @@ export interface LabelFieldDef {
   valueType: "number" | "status";
   operators: ComparisonOperator[];
   statusOptions?: string[];
+  windowable?: boolean;
 }
 
 export interface LabelListItem {
