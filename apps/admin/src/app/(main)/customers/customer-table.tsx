@@ -28,6 +28,7 @@ import { PanelModeType } from "./client-page";
 import { Button } from "@/components/ui/button";
 import { LabelListItem } from "../labels/types";
 import { FilterLabel } from "@/components/table/filter-label";
+import { FilterDeleteFlagged } from "@/components/table/filter-delete-flagged";
 
 export default function CustomerTable({
   isRefetching,
@@ -58,6 +59,8 @@ export default function CustomerTable({
   labelId,
   onLabelIdChange,
   labelsItems,
+  showDeleteFlagged,
+  onShowDeleteFlaggedChange,
 }: {
   isRefetching?: boolean;
   user: User;
@@ -87,6 +90,8 @@ export default function CustomerTable({
   labelId: string | undefined;
   onLabelIdChange: (labelId: string | undefined) => void;
   labelsItems: LabelListItem[];
+  showDeleteFlagged: boolean;
+  onShowDeleteFlaggedChange: (value: boolean) => void;
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const [selectedRows, setSelectedRows] = useState<Customer[]>([]);
@@ -96,7 +101,14 @@ export default function CustomerTable({
   const [tempSearch, setTempSearch] = useState(search);
 
   const selectedIds = selectedRows.map((row) => row.id);
-  const cols = columns(user, panelMode, openSmsDialog);
+  const isAdmin = user?.role === "admin";
+  const cols = columns(
+    user,
+    panelMode,
+    openSmsDialog,
+    mutateCustomers,
+    isAdmin && showDeleteFlagged,
+  );
 
   const handleExportCustomers = async (data: {
     startDate: Date;
@@ -182,6 +194,14 @@ export default function CustomerTable({
 
             {user && user.role !== "kam" && (
               <FilterAdmin size="sm" data={kams} value={customerAdmins} onChange={onAdminChange} />
+            )}
+
+            {isAdmin && (
+              <FilterDeleteFlagged
+                size="sm"
+                active={showDeleteFlagged}
+                onChange={onShowDeleteFlaggedChange}
+              />
             )}
 
             {user && user.role !== "kam" && Object.keys(rowSelection).length > 0 && (

@@ -16,11 +16,14 @@ import { SmsData } from "@/types/sms";
 import { Customer } from "@/types/customer";
 import Link from "next/link";
 import { PanelModeType } from "./client-page";
+import { UnflagAction } from "@/components/table/unflag-action";
 
 export function columns(
   user: User,
   panelMode: PanelModeType,
   openSmsDialog?: (data: SmsData) => void,
+  mutateCustomers?: () => void,
+  showDeleteFlagged?: boolean,
 ): ColumnDef<Customer>[] {
   const cols: ColumnDef<Customer>[] = [
     {
@@ -76,7 +79,7 @@ export function columns(
       id: "isIgTokenValid",
       accessorFn: (row) =>
         !!row.instagrams?.[0]?.isIgTokenValid ? "متصل" : "قطع",
-      header: "اتصال",
+      header: "وضعیت اتصال",
     },
     {
       id: "instagramTitle",
@@ -106,6 +109,39 @@ export function columns(
           "-"
         );
       },
+    },
+    {
+      id: "submittedInstagramUsername",
+      accessorFn: (row) => row.submittedInstagramUsername ?? "",
+      header: "یوزرنیم اولیه",
+      cell: ({ row }) => {
+        const submittedInstagramUsername = row.getValue(
+          "submittedInstagramUsername",
+        ) as string;
+
+        return submittedInstagramUsername ? (
+          <Link
+            className="text-primary hover:text-secondary text-sm lowercase underline-offset-4 hover:underline"
+            href={`https://www.instagram.com/${submittedInstagramUsername}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {submittedInstagramUsername}
+          </Link>
+        ) : (
+          "-"
+        );
+      },
+    },
+    {
+      id: "submittedInstagramFollowersCount",
+      accessorFn: (row) => row.submittedInstagramFollowersCount ?? 0,
+      header: "فالوئر اولیه",
+      cell: ({ row }) => {
+        const count = row.original.submittedInstagramFollowersCount;
+        return count != null ? count.toLocaleString("en-US") : "-";
+      },
+      meta: { isNumeric: true },
     },
     {
       id: "labels",
@@ -159,29 +195,6 @@ export function columns(
             >
               {fullName}
             </Link>
-          );
-        },
-      },
-      {
-        id: "submittedInstagramUsername",
-        accessorFn: (row) => row.submittedInstagramUsername ?? "",
-        header: "یوزرنیم ثبت‌شده",
-        cell: ({ row }) => {
-          const submittedInstagramUsername = row.getValue(
-            "submittedInstagramUsername",
-          ) as string;
-
-          return submittedInstagramUsername ? (
-            <Link
-              className="text-primary hover:text-secondary text-sm lowercase underline-offset-4 hover:underline"
-              href={`https://www.instagram.com/${submittedInstagramUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {submittedInstagramUsername}
-            </Link>
-          ) : (
-            "-"
           );
         },
       },
@@ -321,6 +334,22 @@ export function columns(
     ]
     proItems.forEach(i => cols.push(i))
  }
+
+  // In the delete-flagged view (ADMIN only), expose a per-row "restore" action.
+  if (showDeleteFlagged) {
+    cols.push({
+      id: "unflag",
+      header: "عملیات",
+      cell: ({ row }) =>
+        row.original.isDeleteFlaged ? (
+          <UnflagAction
+            userId={row.original.id}
+            userName={`${row.original.firstname ?? ""} ${row.original.lastname ?? ""}`.trim()}
+            onUnflagged={mutateCustomers}
+          />
+        ) : null,
+    });
+  }
 
   if (user?.role !== "kam") {
     cols.unshift(

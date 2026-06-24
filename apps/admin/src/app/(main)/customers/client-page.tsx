@@ -33,9 +33,13 @@ export default function CustomersPageClient() {
   const [actionDate, setActionDate] = useState<Date | null>(null);
   const [isIgTokenValid, setIsIgTokenValid] = useState("");
   const [labelId, setLabelId] = useState<string | undefined>(undefined);
+  const [showDeleteFlagged, setShowDeleteFlagged] = useState(false);
   const [smsDialogOpen, setSmsDialogOpen] = useState(false);
   const [smsData, setSmsData] = useState<SmsData | null>(null);
   const [panelMode, setPanelMode] = useState<PanelModeType>('standard')
+
+  // Only ADMINs may view delete-flagged users.
+  const isAdmin = user?.role === "admin";
 
   const sortQuery = customerSort
     ? `&sort=${customerSort}:${customerSortOrder}`
@@ -61,6 +65,8 @@ export default function CustomersPageClient() {
     categories.length > 0 ? `&categoryIds=${categories.join(",")}` : "";
   const igTokenQuery = isIgTokenValid ? `&isIgTokenValid=${isIgTokenValid}` : "";
   const labelIdQuery = labelId ? `&labelId=${labelId}` : "";
+  const deleteFlaggedQuery =
+    isAdmin && showDeleteFlagged ? `&showDeleteFlagged=true` : "";
 
   const { data: labelsData } = useLabelsList({ page: 1, limit: 100 });
 
@@ -71,7 +77,7 @@ export default function CustomersPageClient() {
     error: customersError,
     mutate: mutateCustomers,
   } = useSWR(
-    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}${igTokenQuery}${labelIdQuery}${sortQuery}&panelMode=${panelMode}`,
+    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}${igTokenQuery}${labelIdQuery}${deleteFlaggedQuery}${sortQuery}&panelMode=${panelMode}`,
     fetcher,
     { keepPreviousData: true },
   );
@@ -146,6 +152,11 @@ export default function CustomersPageClient() {
         labelId={labelId}
         onLabelIdChange={setLabelId}
         labelsItems={labelsData?.items ?? []}
+        showDeleteFlagged={showDeleteFlagged}
+        onShowDeleteFlaggedChange={(v) => {
+          setShowDeleteFlagged(v);
+          setPage(1);
+        }}
       />
 
       <SendSMSDialog

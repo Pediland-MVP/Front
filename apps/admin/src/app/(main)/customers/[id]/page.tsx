@@ -75,6 +75,7 @@ import {
 import { Label } from "@/components/ui/label";
 import DialogDelete from "@/components/dialog-delete";
 import { AddSubscriptionDialog } from "@/components/customer/AddSubscriptionDialog";
+import { UnflagAction } from "@/components/table/unflag-action";
 
 const FormSchema = z.object({
   status: z.string().min(1, { message: "وضعیت را انتخاب کنید." }),
@@ -301,7 +302,6 @@ export default function CustomerDetailsPage({
   };
 
   const hasInstagram = (customer?.instagrams.length ?? 0) > 0;
-  const submittedInstagram = customer?.submittedInstagramUsername;
 
   const referralUser =
     customer?.referralUser?.referralCode?.user?.firstname ||
@@ -577,26 +577,24 @@ export default function CustomerDetailsPage({
           <div className="space-y-2">
             <h4 className="text-xs text-slate-400 font-semibold">حساب‌های اینستاگرام:</h4>
             <div className="space-y-1.5">
-              <a
-                className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
-                href={`https://instagram.com/${customer?.instagrams[0]?.username}`}
-                target="_blank"
-                dir="ltr"
-              >
-                <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
-                <span>@{customer?.instagrams[0]?.username}</span>
-              </a>
-              {submittedInstagram && (
-                <a
-                  className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
-                  href={`https://instagram.com/${submittedInstagram}`}
-                  target="_blank"
-                  dir="ltr"
+              {customer?.instagrams.map((ig) => (
+                <div
+                  key={ig.id}
+                  className="flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100"
                 >
-                  <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
-                  <span>@{submittedInstagram}</span>
-                </a>
-              )}
+                  <a
+                    className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold transition-colors min-w-0"
+                    href={`https://instagram.com/${ig.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                  >
+                    <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
+                    <span className="truncate">@{ig.username}</span>
+                  </a>
+                  <IgTokenBadge isValid={ig.isIgTokenValid} />
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -653,6 +651,30 @@ export default function CustomerDetailsPage({
             </span>
           </div>
           <div className="flex justify-between items-center">
+            <span>نام کاربری اعلامی:</span>
+            {customer?.submittedInstagramUsername ? (
+              <a
+                href={`https://instagram.com/${customer.submittedInstagramUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-indigo-600 hover:text-indigo-700"
+                dir="ltr"
+              >
+                @{customer.submittedInstagramUsername}
+              </a>
+            ) : (
+              <span className="font-semibold text-slate-800">ندارد</span>
+            )}
+          </div>
+          <div className="flex justify-between items-center">
+            <span>فالوور اعلامی:</span>
+            <span className="font-semibold text-slate-800">
+              {customer?.submittedInstagramFollowersCount != null
+                ? formatNumber(customer.submittedInstagramFollowersCount)
+                : "ندارد"}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
             <span>معرف:</span>
             <span className="font-semibold text-slate-800">{referralUser}</span>
           </div>
@@ -666,31 +688,51 @@ export default function CustomerDetailsPage({
           )}
         </div>
 
-        {/* Delete flag */}
-        {user?.role !== "kam" && (
-          <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100/50 p-3 rounded-xl">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="deleteFlag"
-                className="cursor-pointer border-rose-300 data-[state=checked]:bg-rose-500 data-[state=checked]:border-rose-500"
-                checked={isFlaged}
-                onCheckedChange={(value) => setIsFlaged(!!value)}
+        {/* Delete flag / restore */}
+        {customer?.isDeleteFlaged ? (
+          user?.role === "admin" && (
+            <div className="flex items-center justify-between bg-emerald-50/50 border border-emerald-100 p-3 rounded-xl">
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-emerald-700">
+                  این کاربر برای حذف علامت‌گذاری شده است
+                </span>
+                <span className="text-[11px] text-emerald-600/80">
+                  برای نمایش مجدد در لیست اصلی، کاربر را بازگردانی کنید.
+                </span>
+              </div>
+              <UnflagAction
+                userId={id}
+                userName={`${customer?.firstname ?? ""} ${customer?.lastname ?? ""}`.trim()}
+                onUnflagged={() => mutateCustomer()}
               />
-              <Label htmlFor="deleteFlag" className="text-xs font-semibold text-rose-700 cursor-pointer">
-                علامت‌گذاری برای حذف
-              </Label>
             </div>
-            {isFlaged && (
-              <Button
-                type="button"
-                variant="destructive"
-                className="h-7 px-3 text-[10px] shrink-0 rounded-lg bg-rose-600 hover:bg-rose-700 font-semibold"
-                onClick={() => setIsDeleteUserDialogOpen(true)}
-              >
-                تایید حذف
-              </Button>
-            )}
-          </div>
+          )
+        ) : (
+          user?.role !== "kam" && (
+            <div className="flex items-center justify-between bg-rose-50/50 border border-rose-100/50 p-3 rounded-xl">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="deleteFlag"
+                  className="cursor-pointer border-rose-300 data-[state=checked]:bg-rose-500 data-[state=checked]:border-rose-500"
+                  checked={isFlaged}
+                  onCheckedChange={(value) => setIsFlaged(!!value)}
+                />
+                <Label htmlFor="deleteFlag" className="text-xs font-semibold text-rose-700 cursor-pointer">
+                  علامت‌گذاری برای حذف
+                </Label>
+              </div>
+              {isFlaged && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="h-7 px-3 text-[10px] shrink-0 rounded-lg bg-rose-600 hover:bg-rose-700 font-semibold"
+                  onClick={() => setIsDeleteUserDialogOpen(true)}
+                >
+                  تایید حذف
+                </Button>
+              )}
+            </div>
+          )
         )}
 
         {/* Customer Note Box */}
@@ -1075,6 +1117,21 @@ export default function CustomerDetailsPage({
 
 /* Internal Components for Workspaces and Subscriptions list items */
 
+function IgTokenBadge({ isValid }: { isValid?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "text-[10px] px-2 py-0.5 rounded-full font-bold border shrink-0",
+        isValid
+          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+          : "bg-rose-50 text-rose-700 border-rose-100"
+      )}
+    >
+      {isValid ? "متصل" : "قطع"}
+    </span>
+  );
+}
+
 function WorkspaceCard({ workspace }: { workspace: any }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -1176,6 +1233,35 @@ function WorkspaceCard({ workspace }: { workspace: any }) {
             <p className="text-xs text-amber-600 bg-amber-50/50 border border-amber-100/60 px-3 py-2 rounded-xl">
               هیچ دسترسی خاصی برای این عضو تعریف نشده است.
             </p>
+          )}
+
+          {workspace.instagrams?.length > 0 && (
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center gap-1.5 text-slate-700 text-xs font-bold">
+                <InstagramLogoIcon size={16} className="text-pink-600" />
+                <span>اینستاگرام‌ها:</span>
+              </div>
+              <div className="space-y-1.5">
+                {workspace.instagrams.map((ig: any) => (
+                  <div
+                    key={ig.id}
+                    className="flex items-center justify-between gap-2 p-2 bg-white border border-slate-100 rounded-xl shadow-3xs"
+                  >
+                    <a
+                      className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold transition-colors min-w-0"
+                      href={`https://instagram.com/${ig.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      dir="ltr"
+                    >
+                      <InstagramLogoIcon size={16} className="text-pink-600 shrink-0" />
+                      <span className="truncate">@{ig.username}</span>
+                    </a>
+                    <IgTokenBadge isValid={ig.isIgTokenValid} />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}

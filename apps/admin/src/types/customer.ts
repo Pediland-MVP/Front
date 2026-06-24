@@ -17,6 +17,8 @@ export type Customer = {
   lastActivityDate?: string | null;
   note: string | null;
   submittedInstagramUsername?: string
+  submittedInstagramFollowersCount?: number
+  isDeleteFlaged?: boolean
   usersAdmins: {
     admin: {
       id: string;
