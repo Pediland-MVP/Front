@@ -300,7 +300,9 @@
       "remainingDays": "روزهای باقی‌مانده",
       "accountAgeDays": "سن حساب (روز)",
       "daysSinceLastActivity": "روز از آخرین فعالیت",
-      "status": "وضعیت"
+      "status": "وضعیت",
+      "submittedInstagramFollowersCount": "فالوور اعلام‌شده",
+      "followersCount": "فالوور اینستاگرام"
     },
     "operators": {
       "gt": "بزرگ‌تر از",
