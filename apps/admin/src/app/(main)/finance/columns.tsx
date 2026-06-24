@@ -19,7 +19,9 @@ export const paymentColumns: ColumnDef<Payment>[] = [
     header: ({ column }) => <ColumnHeader column={column} title="تاریخ پرداخت" />,
     cell: ({ row }) => {
       const date = row.getValue("createDate") as string;
-      return <span>{dayjs(date).calendar("jalali").format("YYYY/MM/DD")}</span>;
+      return (
+        <span>{dayjs(date).calendar("jalali").format("YYYY/MM/DD HH:mm")}</span>
+      );
     },
   },
   {

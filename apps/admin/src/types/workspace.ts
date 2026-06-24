@@ -36,6 +36,7 @@ export type WorkspaceMember = {
 export type WorkspaceSubscription = {
   status: SubscriptionStatusEnum;
   expire: string;
+  payDate: string | null;
   plan: { name: string } | null;
   planDuration: { name: string; price: number; durationDays: number } | null;
 };

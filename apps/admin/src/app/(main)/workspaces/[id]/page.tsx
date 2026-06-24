@@ -142,6 +142,16 @@ export default function WorkspaceDetailPage({
                 <SubscriptionStatusBadge status={subscription.status} />
               </div>
               <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t("payDate")}</span>
+                <span className="font-medium text-slate-700">
+                  {subscription.payDate
+                    ? dayjs(subscription.payDate)
+                        .calendar("jalali")
+                        .format("YYYY/MM/DD HH:mm")
+                    : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400">{t("expire")}</span>
                 <span className="font-medium text-slate-700">
                   {dayjs(subscription.expire)
