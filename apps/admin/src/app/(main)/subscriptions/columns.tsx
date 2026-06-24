@@ -3,7 +3,7 @@
 
 import dayjs from "@/lib/dayjs-jalali";
 import { ColumnDef } from "@tanstack/react-table";
-import { SubscriptionStatusEnum, SubscriptionUsersAdmin, SubscriptionUsersAdmins } from "@/types/subscription";
+import { SubscriptionStatusEnum } from "@/types/subscription";
 import { Subscription } from "@/types/subscription";
 
 // UI Imports
@@ -21,8 +21,14 @@ export function columns(user: User): ColumnDef<Subscription>[] {
         <ColumnHeader column={column} title="تاریخ ثبت" />
       ),
       cell: ({ row }) => {
-        const date = row.getValue("createDate") as string;
-        const formatted = dayjs(date).calendar("jalali").format("YYYY/MM/DD");
+        // Prefer the (success) invoice's payment timestamp; fall back to the
+        // subscription's own createDate for rows without a success invoice.
+        const payDate =
+          row.original.invoices?.[0]?.createDate ??
+          (row.getValue("createDate") as string);
+        const formatted = dayjs(payDate)
+          .calendar("jalali")
+          .format("YYYY/MM/DD HH:mm");
 
         return <span>{formatted}</span>;
       },
@@ -31,7 +37,7 @@ export function columns(user: User): ColumnDef<Subscription>[] {
       accessorKey: "usersAdmins",
       header: "مسئول",
       cell: ({ row }) => {
-        const admin = row.original.user?.usersAdmins?.find(a => a.isActive)?.admin
+        const admin = row.original.workspace?.owner?.usersAdmins?.find(a => a.isActive)?.admin
         return !!admin ? `${admin?.firstname} ${admin?.lastname}` : '-';
       }
     },
@@ -44,18 +50,41 @@ export function columns(user: User): ColumnDef<Subscription>[] {
       },
     },
     {
-      id: "customerName",
-      accessorFn: (row) => row.user ? `${row.user.firstname} ${row.user.lastname}` : "-",
-      header: "نام مشتری",
+      id: "workspaceName",
+      accessorFn: (row) => row.workspace?.name ?? "-",
+      header: "فضای کاری",
       cell: ({ row }) => {
-        const fullName = row.getValue("customerName") as string;
-        const id = row.original.user?.id;
+        const name = row.getValue("workspaceName") as string;
+        const id = row.original.workspace?.id;
 
-        if (!row.original.user) return <span>-</span>;
+        if (!id) return <span>-</span>;
 
         return (
           <Link
-            href={`/customers/${id}`}
+            href={`/workspaces/${id}`}
+            className="text-primary hover:text-secondary underline-offset-4 hover:underline"
+          >
+            {name}
+          </Link>
+        );
+      },
+    },
+    {
+      id: "customerName",
+      accessorFn: (row) =>
+        row.workspace?.owner
+          ? `${row.workspace.owner.firstname} ${row.workspace.owner.lastname}`
+          : "-",
+      header: "نام مشتری",
+      cell: ({ row }) => {
+        const fullName = row.getValue("customerName") as string;
+        const owner = row.original.workspace?.owner;
+
+        if (!owner) return <span>-</span>;
+
+        return (
+          <Link
+            href={`/customers/${owner.id}`}
             className="text-primary hover:text-secondary underline-offset-4 hover:underline"
           >
             {fullName}
@@ -64,16 +93,17 @@ export function columns(user: User): ColumnDef<Subscription>[] {
       },
     },
     {
-      accessorKey: "user.mobile",
+      id: "mobile",
+      accessorFn: (row) => row.workspace?.owner?.mobile ?? "-",
       header: "همراه",
       cell: ({ row }) => {
-        const mobile = row.original.user?.mobile;
+        const mobile = row.original.workspace?.owner?.mobile;
         return <span>{mobile ?? "-"}</span>;
       },
     },
     {
       id: "instagramUsername",
-      accessorFn: (row) => row.user?.instagrams?.[0]?.username ?? "-",
+      accessorFn: (row) => row.workspace?.instagrams?.[0]?.username ?? "-",
       header: "آیدی اینستاگرام",
       cell: ({ row }) => {
         const instagramId = row.getValue("instagramUsername") as string;
@@ -150,7 +180,7 @@ export function columns(user: User): ColumnDef<Subscription>[] {
     },
     {
       id: "followersCount",
-      accessorFn: (row) => row.user?.instagrams?.[0]?.followersCount ?? 0,
+      accessorFn: (row) => row.workspace?.instagrams?.[0]?.followersCount ?? 0,
       header: ({ column }) => <ColumnHeader column={column} title="تعداد فالوور" />,
       meta: { isNumeric: true },
     },

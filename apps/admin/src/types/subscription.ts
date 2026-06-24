@@ -79,11 +79,18 @@ export type Subscription = {
     plan: Plan;
   };
   invoices: Invoice[];
-  user: {
+  // A subscription belongs to a workspace; the customer is the workspace owner
+  // and the Instagram accounts hang off the workspace (not the user).
+  workspace: {
     id: string;
-    firstname: string;
-    lastname: string;
-    mobile: string;
+    name: string;
+    owner: {
+      id: string;
+      firstname: string;
+      lastname: string;
+      mobile: string;
+      usersAdmins: SubscriptionUsersAdmin[];
+    } | null;
     instagrams: {
       id: string;
       username: string;
@@ -92,8 +99,7 @@ export type Subscription = {
       followsCount: number;
       mediaCount: number;
     }[];
-    usersAdmins: SubscriptionUsersAdmin[]
-  };
+  } | null;
 };
 
 type UUID = string;
