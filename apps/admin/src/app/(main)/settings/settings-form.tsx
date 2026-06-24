@@ -20,12 +20,14 @@ import { Trash2, Plus } from "lucide-react";
 import api from "@/hooks/swr/api-client";
 import { Plan } from "@/types/subscription";
 import { ApifyToken, SettingsData } from "./client-page";
+import ReconcileMetricsCard from "./reconcile-metrics-card";
 
 interface SettingsFormProps {
   isRefetching?: boolean;
   data: SettingsData;
   plans: Plan[];
   mutate: () => void;
+  showReconcile?: boolean;
 }
 
 export default function SettingsForm({
@@ -33,6 +35,7 @@ export default function SettingsForm({
   data,
   plans,
   mutate,
+  showReconcile,
 }: SettingsFormProps) {
   const t = useTranslations("Settings");
   const t_ec = useTranslations("ERROR_CODES");
@@ -237,6 +240,12 @@ export default function SettingsForm({
           </div>
         </div>
       </div>
+
+      {showReconcile && (
+        <div className="px-6 pb-6">
+          <ReconcileMetricsCard />
+        </div>
+      )}
     </LayoutTable>
   );
 }

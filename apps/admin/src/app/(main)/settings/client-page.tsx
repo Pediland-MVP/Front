@@ -9,7 +9,6 @@ import { Loading } from "@/components/loading";
 import { FetchError } from "@/components/fetch-error";
 import { Plan } from "@/types/subscription";
 import SettingsForm from "./settings-form";
-import ReconcileMetricsCard from "./reconcile-metrics-card";
 
 export type SettingsKey =
   | "DEFAULT_FREE_PLAN_DURATION_IDS"
@@ -60,19 +59,13 @@ export default function SettingsPageClient() {
   if (!data) return <FetchError />;
 
   return (
-    <div className="flex flex-col gap-6">
-      <SettingsForm
-        isRefetching={isValidating && !!settingsRes}
-        data={data}
-        plans={plans}
-        mutate={mutate}
-      />
-      {/* Metrics reconcile is a heavy, destructive-overwrite operation — super-admin only. */}
-      {user.role === "admin" && (
-        <div className="px-6 pb-6">
-          <ReconcileMetricsCard />
-        </div>
-      )}
-    </div>
+    <SettingsForm
+      isRefetching={isValidating && !!settingsRes}
+      data={data}
+      plans={plans}
+      mutate={mutate}
+      // Metrics reconcile is a heavy, destructive-overwrite operation — super-admin only.
+      showReconcile={user.role === "admin"}
+    />
   );
 }
