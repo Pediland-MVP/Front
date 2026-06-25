@@ -46,7 +46,7 @@ const RECOMMENDED_DATES = [
   { amount: 1, unit: "month" as const, key: "in1month" },
 ] as const;
 
-// ─── Type icons / labels (static, not i18n – same approach as customer detail) ─
+// ─── Type icons (phosphor, static); text labels live in i18n (Tasks.types) ─────
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   phone: <PhoneCallIcon className="w-3.5 h-3.5 text-sky-500 shrink-0" />,
   whatsapp: <WhatsappLogoIcon size={14} className="text-green-500 shrink-0" />,
@@ -54,12 +54,7 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
   instagram: <InstagramLogoIcon size={14} className="text-pink-500 shrink-0" />,
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  phone: "تلفن",
-  whatsapp: "واتسپ",
-  telegram: "تلگرام",
-  instagram: "اینستاگرم",
-};
+const KNOWN_TYPES = ["phone", "whatsapp", "telegram", "instagram"] as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function TaskManagementPanel(props: {
@@ -72,6 +67,7 @@ export function TaskManagementPanel(props: {
   const t = useTranslations("Tasks.panel");
   const tr = useTranslations("Tasks.recommended");
   const tt = useTranslations("Tasks.toasts");
+  const tType = useTranslations("Tasks.types");
   const t_ec = useTranslations("ERROR_CODES");
 
   // ── SWR: timeline ──────────────────────────────────────────────────────────
@@ -150,7 +146,7 @@ export function TaskManagementPanel(props: {
       await mutate();
       onChanged?.();
     } catch {
-      toast.error(tt("createError"));
+      toast.error(tt("deleteError"));
     }
   };
 
@@ -164,7 +160,7 @@ export function TaskManagementPanel(props: {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 min-h-[200px]">
         {isActionsLoading ? (
           <div className="flex items-center justify-center py-10 text-slate-400 text-xs">
-            در حال بارگذاری...
+            {t("loading")}
           </div>
         ) : actions?.items?.length > 0 ? (
           <div className="space-y-4 flex flex-col">
@@ -192,7 +188,11 @@ export function TaskManagementPanel(props: {
                     <div className="flex items-center justify-between gap-6 text-[10px] font-bold mb-1.5 opacity-75">
                       <span className="flex items-center gap-1">
                         {TYPE_ICONS[action.type]}
-                        <span>{TYPE_LABELS[action.type] ?? "نامشخص"}</span>
+                        <span>
+                          {KNOWN_TYPES.includes(action.type as (typeof KNOWN_TYPES)[number])
+                            ? tType(action.type)
+                            : tType("unknown")}
+                        </span>
                       </span>
                       <span>{`${action.admin.firstname} ${action.admin.lastname}`}</span>
                     </div>
@@ -289,10 +289,10 @@ export function TaskManagementPanel(props: {
                 <SelectValue placeholder={t("type")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="instagram">اینستاگرم</SelectItem>
-                <SelectItem value="telegram">تلگرام</SelectItem>
-                <SelectItem value="whatsapp">واتسپ</SelectItem>
-                <SelectItem value="phone">تلفن</SelectItem>
+                <SelectItem value="instagram">{tType("instagram")}</SelectItem>
+                <SelectItem value="telegram">{tType("telegram")}</SelectItem>
+                <SelectItem value="whatsapp">{tType("whatsapp")}</SelectItem>
+                <SelectItem value="phone">{tType("phone")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
