@@ -30,6 +30,7 @@ import {
   GearSixIcon,
   WebhooksLogoIcon,
   BookmarksSimpleIcon,
+  ClipboardTextIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useAuth } from "@/hooks/use-auth";
@@ -48,6 +49,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("myLeads"),
       url: "/leads",
       icon: PlantIcon,
+    },
+    {
+      title: t("tasks"),
+      url: "/tasks",
+      icon: ClipboardTextIcon,
     },
     {
       title: t("subscriptions"),
