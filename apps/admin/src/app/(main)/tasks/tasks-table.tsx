@@ -1,7 +1,7 @@
 // src/app/(main)/tasks/tasks-table.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Table } from "@tanstack/react-table";
 
@@ -153,6 +153,24 @@ export function TasksTable({
   const [tableInstance, setTableInstance] =
     useState<Table<TaskListItem> | null>(null);
   const [activePreset, setActivePreset] = useState<PresetKey | null>(null);
+
+  // Clear index-based selection whenever the visible dataset can change.
+  // Without this, a selection made on page 1 stays "selected" after a page or
+  // filter change — the same row-index slots now point to different tasks, so
+  // bulk-reassign would act on the wrong tasks.
+  useEffect(() => {
+    setRowSelection({});
+    setSelectedRows([]);
+  }, [
+    meta.currentPage,
+    meta.itemsPerPage,
+    search,
+    taskStatus,
+    adminId,
+    labelId,
+    startDate,
+    endDate,
+  ]);
 
   // Drawer state (owned here)
   const [drawerTask, setDrawerTask] = useState<TaskListItem | null>(null);
