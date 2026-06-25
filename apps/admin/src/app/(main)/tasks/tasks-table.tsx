@@ -39,46 +39,53 @@ import type { PageMeta } from "@/types/meta";
 import type { User } from "@/types/user";
 import type { LabelListItem } from "@/app/(main)/labels/types";
 
-// Dayjs (Tehran timezone preset helper)
-import dayjs from "@/lib/dayjs-jalali";
-
-// ─── Preset range helper ──────────────────────────────────────────────────────
+// ─── Preset range helper (Tehran, fixed +03:30, no DST) ───────────────────────
+//
+// NB: do NOT use the jalali-configured dayjs (`@/lib/dayjs-jalali`) for this math.
+// Its startOf/endOf rebuild the date from the *Jalali* year (e.g. $y = 1405), so
+// `.toISOString()` emits a corrupt year like "1405-..."/"0784-...". We compute
+// Tehran day/week bounds with native Date math and emit real Gregorian UTC ISO.
 
 type PresetKey = "today" | "passed" | "tomorrow" | "thisWeek";
 
-const presetRange = (key: PresetKey) => {
-  const tz = "Asia/Tehran";
-  const startOfToday = dayjs().tz(tz).startOf("day");
-  if (key === "today")
-    return { from: startOfToday, to: startOfToday.endOf("day") };
-  if (key === "tomorrow")
-    return {
-      from: startOfToday.add(1, "day"),
-      to: startOfToday.add(1, "day").endOf("day"),
-    };
-  if (key === "passed")
-    return { from: null, to: startOfToday.subtract(1, "millisecond") };
-  // thisWeek (Sat..Fri, Tehran week)
-  const dow = (startOfToday.day() + 1) % 7; // Sun=0 → 1 … Sat=6 → 0
-  const weekStart = startOfToday.subtract(dow, "day");
-  return {
-    from: weekStart,
-    to: weekStart.add(7, "day").subtract(1, "millisecond"),
-  };
+const TEHRAN_OFFSET_MS = (3 * 60 + 30) * 60 * 1000;
+const DAY_MS = 86_400_000;
+
+// Start of the Tehran calendar day for a UTC instant (default: now), as a UTC Date.
+const tehranDayStart = (d: Date = new Date()): Date => {
+  const wall = new Date(d.getTime() + TEHRAN_OFFSET_MS);
+  const midnightWall = Date.UTC(
+    wall.getUTCFullYear(),
+    wall.getUTCMonth(),
+    wall.getUTCDate(),
+  );
+  return new Date(midnightWall - TEHRAN_OFFSET_MS);
+};
+const dayEnd = (start: Date): Date => new Date(start.getTime() + DAY_MS - 1);
+
+const presetRange = (key: PresetKey): { from: Date | null; to: Date } => {
+  const start = tehranDayStart();
+  if (key === "today") return { from: start, to: dayEnd(start) };
+  if (key === "tomorrow") {
+    const t = new Date(start.getTime() + DAY_MS);
+    return { from: t, to: dayEnd(t) };
+  }
+  if (key === "passed") return { from: null, to: new Date(start.getTime() - 1) };
+  // thisWeek (Sat..Fri, Tehran). Tehran wall day-of-week: Sun=0 … Sat=6.
+  const wall = new Date(Date.now() + TEHRAN_OFFSET_MS);
+  const daysSinceSaturday = (wall.getUTCDay() + 1) % 7;
+  const weekStart = new Date(start.getTime() - daysSinceSaturday * DAY_MS);
+  return { from: weekStart, to: new Date(weekStart.getTime() + 7 * DAY_MS - 1) };
 };
 
 // Anchor a manually-picked calendar day to its Tehran day bound, return UTC ISO.
-// The DatePicker hands back a browser-local Date; we re-interpret only its
-// year/month/day in Asia/Tehran so the range matches the presets.
-const toTehranBound = (d: Date | undefined, edge: "start" | "end") => {
+// The DatePicker hands back a browser-local Date; we use only its local
+// year/month/day as the chosen Gregorian day and anchor it to Asia/Tehran.
+const toTehranBound = (d: Date | undefined, edge: "start" | "end"): string => {
   if (!d) return "";
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const base = dayjs.tz(`${y}-${m}-${day}`, "Asia/Tehran");
-  return (edge === "start" ? base.startOf("day") : base.endOf("day"))
-    .utc()
-    .toISOString();
+  const midnightWall = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  const start = new Date(midnightWall - TEHRAN_OFFSET_MS);
+  return (edge === "start" ? start : dayEnd(start)).toISOString();
 };
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -178,8 +185,8 @@ export function TasksTable({
   // ── Preset click ─────────────────────────────────────────────────────────
   const handlePreset = (key: PresetKey) => {
     const { from, to } = presetRange(key);
-    onStartDateChange(from ? from.utc().toISOString() : "");
-    onEndDateChange(to.utc().toISOString());
+    onStartDateChange(from ? from.toISOString() : "");
+    onEndDateChange(to.toISOString());
     setActivePreset(key);
   };
 
