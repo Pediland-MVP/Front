@@ -13,7 +13,6 @@ import { DataTable } from "@/components/table/data-table";
 import { DataTablePagination } from "@/components/table/pagination";
 import { FilterAdmin } from "@/components/table/filter-admin";
 import { FilterLabel } from "@/components/table/filter-label";
-import { SelectAdmins } from "@/components/table/select-admins";
 import { OtpDialog } from "@/components/table/dialog-otp";
 
 // UI
@@ -65,6 +64,20 @@ const presetRange = (key: PresetKey) => {
     from: weekStart,
     to: weekStart.add(7, "day").subtract(1, "millisecond"),
   };
+};
+
+// Anchor a manually-picked calendar day to its Tehran day bound, return UTC ISO.
+// The DatePicker hands back a browser-local Date; we re-interpret only its
+// year/month/day in Asia/Tehran so the range matches the presets.
+const toTehranBound = (d: Date | undefined, edge: "start" | "end") => {
+  if (!d) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const base = dayjs.tz(`${y}-${m}-${day}`, "Asia/Tehran");
+  return (edge === "start" ? base.startOf("day") : base.endOf("day"))
+    .utc()
+    .toISOString();
 };
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -133,16 +146,15 @@ export function TasksTable({
 
   // ── Local state ───────────────────────────────────────────────────────────
   const [tempSearch, setTempSearch] = useState(search);
+  // Row checkboxes still render (select column stays); selection isn't consumed
+  // by any bulk control yet — proper bulk task reassign needs its own endpoint.
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
-  const [selectedRows, setSelectedRows] = useState<TaskListItem[]>([]);
   const [tableInstance, setTableInstance] =
     useState<Table<TaskListItem> | null>(null);
   const [activePreset, setActivePreset] = useState<PresetKey | null>(null);
 
   // Drawer state (owned here)
   const [drawerTask, setDrawerTask] = useState<TaskListItem | null>(null);
-
-  const selectedIds = selectedRows.map((row) => row.id);
 
   // ── Preset click ─────────────────────────────────────────────────────────
   const handlePreset = (key: PresetKey) => {
@@ -152,14 +164,15 @@ export function TasksTable({
     setActivePreset(key);
   };
 
-  // When the date pickers are used manually, clear preset highlight
+  // When the date pickers are used manually, clear preset highlight and
+  // re-anchor the picked day to its Tehran day bound (same basis as presets).
   const handleStartDateChange = (d?: Date | null) => {
-    onStartDateChange(d ? d.toISOString() : "");
     setActivePreset(null);
+    onStartDateChange(toTehranBound(d ?? undefined, "start"));
   };
   const handleEndDateChange = (d?: Date | null) => {
-    onEndDateChange(d ? d.toISOString() : "");
     setActivePreset(null);
+    onEndDateChange(toTehranBound(d ?? undefined, "end"));
   };
 
   // ── Columns ───────────────────────────────────────────────────────────────
@@ -262,19 +275,13 @@ export function TasksTable({
               items={labelsItems}
             />
 
-            {/* Bulk reassign — super-admins only, when rows are selected */}
-            {role !== "kam" && Object.keys(rowSelection).length > 0 && (
-              <SelectAdmins
-                type="customer"
-                kams={kams}
-                itemIds={selectedIds}
-                mutateData={mutateTasks}
-                onClearSelection={() => {
-                  setSelectedRows([]);
-                  setRowSelection({});
-                }}
-              />
-            )}
+            {/*
+              Bulk reassign intentionally omitted: SelectAdmins posts to
+              /users/assignAdmin (reassigns USER ownership by userIds), which is
+              not the same as reassigning a task's admin. Proper bulk task
+              reassignment needs a dedicated backend endpoint (not built yet).
+              Row checkboxes still render for future use.
+            */}
           </div>
         </div>
 
@@ -284,7 +291,6 @@ export function TasksTable({
           data={tasks}
           rowSelection={rowSelection}
           onRowSelectionChange={setRowSelection}
-          setSelectedRows={setSelectedRows}
           tableInstanceRef={setTableInstance}
           page={meta.currentPage}
           limit={meta.itemsPerPage}
