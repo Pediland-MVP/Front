@@ -9,6 +9,7 @@ export type Action = {
   type: string;
   description: string;
   status: string;
+  doneDate?: string | null;
   admin: {
     id: string;
     createDate: string;
