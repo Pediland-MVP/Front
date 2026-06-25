@@ -43,59 +43,71 @@ export function TaskDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="left"
-        className="w-full sm:max-w-lg flex flex-col overflow-y-auto"
         dir="rtl"
+        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-md"
       >
-        <SheetHeader>
-          <SheetTitle>{t("drawerTitle")}</SheetTitle>
+        {/* ps-12 keeps the title clear of the Sheet close button (top inline-start in RTL). */}
+        <SheetHeader className="shrink-0 border-b px-4 py-3 ps-12">
+          <SheetTitle className="text-start text-base">
+            {t("drawerTitle")}
+          </SheetTitle>
         </SheetHeader>
 
         {task && (
-          <div className="flex flex-col gap-4 px-4 pb-4">
+          <div className="flex min-h-0 flex-1 flex-col">
             {/* Compact user header */}
-            <div className="flex flex-col gap-2 rounded-lg border p-3">
-              {/* Full name → customers detail page */}
-              <Link
-                href={`/customers/${task.user.id}`}
-                className="text-primary font-medium hover:underline underline-offset-4 text-sm"
-              >
-                {fullName}
-              </Link>
-
-              {/* Instagram username */}
-              {task.instagramUsername ? (
-                <a
-                  href={`https://www.instagram.com/${task.instagramUsername}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary text-xs hover:underline underline-offset-4"
-                >
-                  @{task.instagramUsername}
-                </a>
-              ) : (
-                <span className="text-muted-foreground text-xs">-</span>
-              )}
-
-              {/* Contact actions */}
-              <div className="flex flex-wrap items-center gap-2">
-                <ContactOptions
-                  leadId={task.user.id}
-                  mobile={task.user.mobile}
-                  fullName={fullName}
-                />
-                <OtpDialog size="sm" />
+            <div className="flex shrink-0 items-start gap-3 border-b bg-slate-50/60 px-4 py-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-xs font-bold text-white">
+                {`${task.user.firstname?.[0] ?? ""}${
+                  task.user.lastname?.[0] ?? ""
+                }`.trim() || "—"}
               </div>
 
-              {/* Label chips */}
-              <LabelChips labels={toAssignedLabels(task.labels)} />
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <Link
+                  href={`/customers/${task.user.id}`}
+                  className="text-primary truncate text-sm font-semibold underline-offset-4 hover:underline"
+                >
+                  {fullName || "—"}
+                </Link>
+
+                {task.instagramUsername ? (
+                  <a
+                    href={`https://www.instagram.com/${task.instagramUsername}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                    className="text-primary w-fit truncate text-xs underline-offset-4 hover:underline"
+                  >
+                    @{task.instagramUsername}
+                  </a>
+                ) : (
+                  <span className="text-muted-foreground text-xs">-</span>
+                )}
+
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <ContactOptions
+                    leadId={task.user.id}
+                    mobile={task.user.mobile}
+                    fullName={fullName}
+                  />
+                  <OtpDialog size="sm" />
+                </div>
+
+                <div className="mt-1">
+                  <LabelChips labels={toAssignedLabels(task.labels)} />
+                </div>
+              </div>
             </div>
 
-            {/* Task management panel */}
-            <TaskManagementPanel
-              userId={task.user.id}
-              currentUserRole={currentUserRole}
-              onChanged={onChanged}
-            />
+            {/* Task panel — fills remaining height; scrolls internally, sticky form */}
+            <div className="min-h-0 flex-1">
+              <TaskManagementPanel
+                userId={task.user.id}
+                currentUserRole={currentUserRole}
+                onChanged={onChanged}
+              />
+            </div>
           </div>
         )}
       </SheetContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import useSWR from "swr";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -152,6 +152,27 @@ export function TaskManagementPanel(props: {
 
   const isKam = currentUserRole === "kam";
 
+  // Each recommended-date entry builds a jalali dayjs object — compute the dates
+  // and labels once per mount instead of ~3× per button on every render.
+  const recommended = useMemo(
+    () =>
+      RECOMMENDED_DATES.map(({ amount, unit, key }) => ({
+        key,
+        label: recommendedDateLabel(amount, unit),
+        date: addToToday(amount, unit),
+      })),
+    [],
+  );
+
+  // Sort the timeline once per data change, not on every render.
+  const sortedActions = useMemo(() => {
+    const items = (actions?.items as Action[] | undefined) ?? [];
+    return [...items].sort(
+      (a, b) =>
+        new Date(a.actionDate).getTime() - new Date(b.actionDate).getTime(),
+    );
+  }, [actions]);
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-full">
@@ -162,76 +183,79 @@ export function TaskManagementPanel(props: {
           <div className="flex items-center justify-center py-10 text-slate-400 text-xs">
             {t("loading")}
           </div>
-        ) : actions?.items?.length > 0 ? (
-          <div className="space-y-4 flex flex-col">
-            {[...actions.items]
-              .sort(
-                (a: Action, b: Action) =>
-                  new Date(a.actionDate).getTime() -
-                  new Date(b.actionDate).getTime()
-              )
-              .map((action: Action) => {
-                const isDone = action.status === "done";
-                const formattedDate = formatTaskDate(action.actionDate);
+        ) : sortedActions.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {sortedActions.map((action: Action) => {
+              const isDone = action.status === "done";
+              return (
+                <div
+                  key={action.id}
+                  className={cn(
+                    // Full-width cards (no physical auto-margins/corners) read
+                    // cleanly in RTL; status shown via a logical start-border.
+                    "rounded-xl border border-s-2 p-3 transition-colors",
+                    isDone
+                      ? "bg-slate-50 border-slate-200 border-s-slate-300 text-slate-500"
+                      : "bg-white border-slate-200 border-s-blue-500",
+                  )}
+                >
+                  {/* Header: type + responsible admin */}
+                  <div className="flex items-center justify-between gap-3 text-[11px] font-bold mb-1.5 text-slate-500">
+                    <span className="flex items-center gap-1">
+                      {TYPE_ICONS[action.type]}
+                      <span>
+                        {KNOWN_TYPES.includes(
+                          action.type as (typeof KNOWN_TYPES)[number],
+                        )
+                          ? tType(action.type)
+                          : tType("unknown")}
+                      </span>
+                    </span>
+                    <span className="truncate">{`${action.admin.firstname} ${action.admin.lastname}`}</span>
+                  </div>
 
-                return (
-                  <div
-                    key={action.id}
+                  {/* Description */}
+                  <p
                     className={cn(
-                      "flex flex-col max-w-[80%] md:max-w-[70%] rounded-2xl p-3 shadow-3xs border transition-all duration-200",
+                      "text-xs md:text-sm leading-relaxed whitespace-pre-wrap",
                       isDone
-                        ? "bg-slate-100/90 border-slate-200 text-slate-500 mr-auto rounded-tl-none"
-                        : "bg-blue-50/90 border-blue-100 text-blue-900 ml-auto rounded-tr-none"
+                        ? "line-through decoration-slate-300"
+                        : "text-slate-700",
                     )}
                   >
-                    {/* Message Header */}
-                    <div className="flex items-center justify-between gap-6 text-[10px] font-bold mb-1.5 opacity-75">
-                      <span className="flex items-center gap-1">
-                        {TYPE_ICONS[action.type]}
-                        <span>
-                          {KNOWN_TYPES.includes(action.type as (typeof KNOWN_TYPES)[number])
-                            ? tType(action.type)
-                            : tType("unknown")}
-                        </span>
-                      </span>
-                      <span>{`${action.admin.firstname} ${action.admin.lastname}`}</span>
-                    </div>
+                    {action.description}
+                  </p>
 
-                    {/* Message Description */}
-                    <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap font-medium">
-                      {action.description}
-                    </p>
+                  {/* Footer: date + done toggle + delete */}
+                  <div className="flex items-center justify-between gap-3 text-[11px] mt-2.5 pt-1.5 border-t border-slate-100 text-slate-400">
+                    <span>{formatTaskDate(action.actionDate)}</span>
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-1 cursor-pointer select-none font-semibold">
+                        <Checkbox
+                          className="w-3.5 h-3.5 rounded-sm data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 cursor-pointer"
+                          checked={isDone}
+                          onCheckedChange={(checked) =>
+                            handleStatusChange(action.id, checked === true)
+                          }
+                        />
+                        <span>{t("done")}</span>
+                      </label>
 
-                    {/* Message Footer */}
-                    <div className="flex items-center justify-between gap-4 text-[10px] mt-2.5 opacity-60 border-t pt-1.5 border-current/10">
-                      <span>{formattedDate}</span>
-                      <div className="flex items-center gap-2">
-                        <label className="flex items-center gap-1 cursor-pointer select-none font-semibold">
-                          <Checkbox
-                            className="w-3.5 h-3.5 rounded-sm border-current/30 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 cursor-pointer"
-                            checked={isDone}
-                            onCheckedChange={(checked) =>
-                              handleStatusChange(action.id, checked === true)
-                            }
-                          />
-                          <span>{t("done")}</span>
-                        </label>
-
-                        {!isKam && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            className="w-5 h-5 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md"
-                            onClick={() => handleDelete(action.id)}
-                          >
-                            <TrashIcon size={14} />
-                          </Button>
-                        )}
-                      </div>
+                      {!isKam && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="w-6 h-6 p-0 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-md"
+                          onClick={() => handleDelete(action.id)}
+                        >
+                          <TrashIcon size={14} />
+                        </Button>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
@@ -246,23 +270,27 @@ export function TaskManagementPanel(props: {
 
         {/* Recommended-date buttons */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-200">
-          {RECOMMENDED_DATES.map(({ amount, unit, key }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setSelectedDate(addToToday(amount, unit))}
-              className={cn(
-                "shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all duration-150 cursor-pointer whitespace-nowrap",
-                selectedDate &&
-                  addToToday(amount, unit).toDateString() === selectedDate.toDateString()
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600"
-              )}
-            >
-              {tr(key as never)}{" "}
-              <span className="opacity-70">({recommendedDateLabel(amount, unit)})</span>
-            </button>
-          ))}
+          {recommended.map(({ key, label, date }) => {
+            const active =
+              !!selectedDate &&
+              date.toDateString() === selectedDate.toDateString();
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setSelectedDate(date)}
+                className={cn(
+                  "shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-colors duration-150 cursor-pointer whitespace-nowrap",
+                  active
+                    ? "bg-blue-600 border-blue-600 text-white"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600",
+                )}
+              >
+                {tr(key as never)}{" "}
+                <span className="opacity-70">({label})</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Row 1: DatePicker + Time + Type + Assign */}
