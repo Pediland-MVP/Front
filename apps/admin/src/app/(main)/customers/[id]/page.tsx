@@ -8,7 +8,7 @@ import dayjs from "@/lib/dayjs-jalali";
 
 import { formatNumber } from "@/lib/formatNumber";
 import { cn } from "@/lib/utils";
-import { Action } from "@/types/actions";
+import { TaskManagementPanel } from "@/components/tasks/task-management-panel";
 import { Customer } from "@/types/customer";
 import { User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +25,6 @@ import { Loading } from "@/components/loading";
 import { SendSMSDialog } from "@/components/table/dialog-sms";
 import { StatusBadge } from "@/components/table/status-badge";
 import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import {
   Select,
@@ -49,28 +48,24 @@ import {
   ChatCenteredTextIcon,
   CrosshairSimpleIcon,
   EnvelopeSimpleIcon,
-  HeartIcon,
   InstagramLogoIcon,
   TelegramLogoIcon,
-  TrashIcon,
   WhatsappLogoIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { 
-  CheckIcon, 
-  MessageSquare, 
-  Layers, 
-  Receipt, 
-  ChevronDown, 
-  ChevronUp, 
-  ShieldCheck, 
-  Coins, 
-  Wallet, 
-  InfoIcon, 
+  CheckIcon,
+  MessageSquare,
+  Layers,
+  Receipt,
+  ChevronDown,
+  ChevronUp,
+  ShieldCheck,
+  Coins,
+  Wallet,
+  InfoIcon,
   PhoneCallIcon,
-  Clock,
   ArrowRight,
   ArrowLeft,
-  Calendar
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import DialogDelete from "@/components/dialog-delete";
@@ -88,14 +83,8 @@ export default function CustomerDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
-  const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
-  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
-  const [isSavingAction, setIsSavingAction] = useState(false);
   const [isStatusChanged, setIsStatusChanged] = useState(false);
   const [isAdminChanged, setIsAdminChanged] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>();
-  const [actionType, setActionType] = useState<string>("");
-  const [actionNote, setActionNote] = useState<string>("");
   const [customerNote, setCustomerNote] = useState<string>("");
   const [isCustomerNoteChanged, setIsCustomerNoteChanged] = useState(false);
   const [isFlaged, setIsFlaged] = useState(false);
@@ -132,14 +121,6 @@ export default function CustomerDetailsPage({
     roles: "manager,kam",
     enabled: user?.role !== "kam",
   });
-
-  // Action Timeline
-  const {
-    data: actions,
-    isLoading: isActionsLoading,
-    error: actionsError,
-    mutate: mutateActions,
-  } = useSWR(`/actions/user/${id}?limit=30&page=1`, fetcher);
 
   // Paginated Workspaces
   const {
@@ -205,59 +186,6 @@ export default function CustomerDetailsPage({
     }
   };
 
-  const handleAddAction = async () => {
-    if (!selectedDate || !actionType || actionNote.trim() === "") {
-      toast.error("لطفاً همه‌ی فیلدها را پر کنید.");
-      return;
-    }
-
-    setIsSavingAction(true);
-
-    const payload = {
-      leadOrUserId: id,
-      actionDate: selectedDate
-        ? new Date(
-            Date.UTC(
-              selectedDate.getFullYear(),
-              selectedDate.getMonth(),
-              selectedDate.getDate(),
-            ),
-          ).toISOString()
-        : undefined,
-      for: "user",
-      type: actionType,
-      description: actionNote.trim(),
-      status: "todo",
-    };
-
-    try {
-      await api.post("/actions", payload);
-      setSelectedDate(undefined);
-      setActionType("");
-      setActionNote("");
-      await mutateActions();
-      await mutateCustomer();
-      toast.success("عملیات با موفقیت ثبت شد.");
-    } catch (error) {
-      console.error(error);
-      toast.error("خطا در ثبت عملیات.");
-    } finally {
-      setIsSavingAction(false);
-    }
-  };
-
-  const handleDeleteAction = async (actionId: string) => {
-    try {
-      await api.delete(`/actions/${actionId}`);
-      setDialogDeleteOpen(false);
-      await mutateActions();
-      toast.success("عملیات با موفقیت حذف شد.");
-    } catch (error) {
-      console.error(error);
-      toast.error("خطا در حذف عملیات.");
-    }
-  };
-
   useEffect(() => {
     if (customer?.note) {
       setCustomerNote(customer.note);
@@ -309,8 +237,8 @@ export default function CustomerDetailsPage({
       ? `${customer?.referralUser?.referralCode?.user?.firstname} ${customer?.referralUser?.referralCode?.user?.lastname}`
       : "ندارد";
 
-  if (isLoading || isKamsLoading || isActionsLoading) return <Loading />;
-  if (error || kamsError || actionsError) return <FetchError />;
+  if (isLoading || isKamsLoading) return <Loading />;
+  if (error || kamsError) return <FetchError />;
   if (!form.getValues("status")) return <p>خطایی رخ داده است.</p>;
 
   const workspaces = workspacesData?.items || [];
@@ -822,162 +750,11 @@ export default function CustomerDetailsPage({
           
           {activeTab === "timeline" && (
             <div className="lg:flex-1 flex flex-col lg:h-full lg:overflow-hidden">
-
-              {/* Timeline Messages container */}
-              <div className="min-h-[360px] lg:flex-1 overflow-y-auto p-5 space-y-4 lg:min-h-0 flex flex-col scrollbar-thin scrollbar-thumb-slate-200">
-                {actions?.items?.length > 0 ? (
-                  <div className="space-y-4 flex flex-col">
-                    {[...actions.items]
-                      .sort(
-                        (a, b) =>
-                          new Date(a.actionDate).getTime() -
-                          new Date(b.actionDate).getTime()
-                      )
-                      .map((action: Action) => {
-                        const formattedDate = dayjs
-                          .tz(action.actionDate, "Asia/Tehran")
-                          .calendar("jalali")
-                          .format("YYYY/MM/DD HH:mm");
-
-                        const typeLabels: Record<string, string> = {
-                          phone: "تلفن",
-                          whatsapp: "واتسپ",
-                          telegram: "تلگرام",
-                          instagram: "اینستاگرم",
-                        };
-
-                        const typeIcons: Record<string, React.ReactNode> = {
-                          phone: <PhoneCallIcon className="w-3.5 h-3.5 text-sky-500 shrink-0" />,
-                          whatsapp: <WhatsappLogoIcon size={14} className="text-green-500 shrink-0" />,
-                          telegram: <TelegramLogoIcon size={14} className="text-blue-500 shrink-0" />,
-                          instagram: <InstagramLogoIcon size={14} className="text-pink-500 shrink-0" />,
-                        };
-
-                        const isDone = action.status === "done";
-
-                        return (
-                          <div
-                            key={action.id}
-                            className={cn(
-                              "flex flex-col max-w-[80%] md:max-w-[70%] rounded-2xl p-3 shadow-3xs border transition-all duration-200",
-                              isDone
-                                ? "bg-slate-100/90 border-slate-200 text-slate-500 mr-auto rounded-tl-none"
-                                : "bg-blue-50/90 border-blue-100 text-blue-900 ml-auto rounded-tr-none"
-                            )}
-                          >
-                            {/* Message Header */}
-                            <div className="flex items-center justify-between gap-6 text-[10px] font-bold mb-1.5 opacity-75">
-                              <span className="flex items-center gap-1">
-                                {typeIcons[action.type]}
-                                <span>{typeLabels[action.type] ?? "نامشخص"}</span>
-                              </span>
-                              <span>{`${action.admin.firstname} ${action.admin.lastname}`}</span>
-                            </div>
-
-                            {/* Message Description */}
-                            <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap font-medium">
-                              {action.description}
-                            </p>
-
-                            {/* Message Footer */}
-                            <div className="flex items-center justify-between gap-4 text-[10px] mt-2.5 opacity-60 border-t pt-1.5 border-current/10">
-                              <span>{formattedDate}</span>
-                              <div className="flex items-center gap-2">
-                                <label className="flex items-center gap-1 cursor-pointer select-none font-semibold">
-                                  <Checkbox
-                                    className="w-3.5 h-3.5 rounded-sm border-current/30 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 cursor-pointer"
-                                    checked={isDone}
-                                    onCheckedChange={async (checked) => {
-                                      const newStatus = checked ? "done" : "todo";
-                                      try {
-                                        await api.post(`/actions/status/${action.id}`, {
-                                          status: newStatus,
-                                        });
-                                        await mutateActions();
-                                        toast.success("وضعیت عملیات به‌روز شد.");
-                                      } catch {
-                                        toast.error("خطا در به‌روزرسانی وضعیت.");
-                                      }
-                                    }}
-                                  />
-                                  <span>انجام شد</span>
-                                </label>
-                                
-                                {user.role !== "kam" && (
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    className="w-5 h-5 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md"
-                                    onClick={() => {
-                                      setSelectedActionId(action.id);
-                                      setDialogDeleteOpen(true);
-                                    }}
-                                  >
-                                    <TrashIcon size={14} />
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
-                    <MessageSquare className="w-12 h-12 stroke-[1.2] mb-2 opacity-50" />
-                    <p className="text-xs font-semibold">در حال حاضر هیچ عملیاتی وجود ندارد.</p>
-                    <p className="text-[10px] text-slate-400/80 mt-1 max-w-sm text-center">
-                      پس از ثبت اولین عملیات وضعیت این سرنخ بطور خودکار به (پیگیری) تغییر خواهد کرد.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Chat Input Bar */}
-              <div className="border-t bg-white p-3.5 space-y-3 shrink-0 shadow-lg">
-                <div className="flex flex-wrap items-center gap-3">
-                  {/* Date Picker */}
-                  <div className="w-auto">
-                    <DatePicker date={selectedDate} onChange={setSelectedDate} />
-                  </div>
-
-                  {/* Action Type Select */}
-                  <div className="w-36">
-                    <Select value={actionType} onValueChange={setActionType}>
-                      <SelectTrigger className="w-full bg-white h-9 rounded-xl border border-slate-200 px-3 text-xs focus-visible:ring-indigo-500 shadow-3xs cursor-pointer">
-                        <SelectValue placeholder="نوع عملیات" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="instagram">اینستاگرم</SelectItem>
-                        <SelectItem value="telegram">تلگرام</SelectItem>
-                        <SelectItem value="whatsapp">واتسپ</SelectItem>
-                        <SelectItem value="phone">تلفن</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Textarea note & submit button */}
-                  <div className="flex-1 flex gap-2.5 min-w-0 w-full sm:w-auto">
-                    <Textarea
-                      className="min-h-9 max-h-16 flex-1 resize-none rounded-xl border border-slate-200 px-3 py-1.5 text-xs focus-visible:ring-blue-500 shadow-3xs leading-relaxed"
-                      placeholder="شرح پیگیری را اینجا بنویسید..."
-                      value={actionNote}
-                      onChange={(e) => setActionNote(e.target.value)}
-                    />
-
-                    <Button
-                      type="button"
-                      variant="default"
-                      className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 rounded-xl px-4 h-9 text-xs font-bold transition-all duration-150 cursor-pointer shadow-sm"
-                      disabled={isSavingAction}
-                      onClick={handleAddAction}
-                    >
-                      {isSavingAction ? "ارسال..." : "ثبت پیگیری"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
+              <TaskManagementPanel
+                userId={id}
+                currentUserRole={user.role}
+                onChanged={() => { mutateCustomer(); }}
+              />
             </div>
           )}
 
@@ -1082,17 +859,6 @@ export default function CustomerDetailsPage({
       </div>
 
       {/* Dialogs & Overlays */}
-      {selectedActionId && (
-        <DialogDelete
-          open={dialogDeleteOpen}
-          onOpenChange={(open) => {
-            setDialogDeleteOpen(open);
-            if (!open) setSelectedActionId(null);
-          }}
-          onConfirm={() => handleDeleteAction(selectedActionId)}
-        />
-      )}
-
       <DialogDelete
         open={isDeleteUserDialogOpen}
         onOpenChange={setIsDeleteUserDialogOpen}
