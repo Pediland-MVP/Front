@@ -443,6 +443,7 @@
     },
     "types": { "phone": "تلفن", "telegram": "تلگرام", "instagram": "اینستاگرم", "whatsapp": "واتسپ", "unknown": "نامشخص" },
     "recommended": { "tomorrow": "فردا", "in3days": "سه روز دیگر", "in1week": "یک هفته دیگر", "in2weeks": "دو هفته دیگر", "in1month": "یک ماه دیگر" },
-    "toasts": { "created": "تسک با موفقیت ثبت شد", "createError": "خطا در ثبت تسک", "deleteError": "خطا در حذف تسک", "statusUpdated": "وضعیت تسک به‌روز شد", "statusError": "خطا در به‌روزرسانی وضعیت", "fillAll": "لطفاً همه فیلدها را پر کنید" }
+    "toasts": { "created": "تسک با موفقیت ثبت شد", "createError": "خطا در ثبت تسک", "deleteError": "خطا در حذف تسک", "statusUpdated": "وضعیت تسک به‌روز شد", "statusError": "خطا در به‌روزرسانی وضعیت", "fillAll": "لطفاً همه فیلدها را پر کنید", "reassigned": "تسک‌ها با موفقیت واگذار شد", "reassignError": "خطا در واگذاری تسک‌ها" },
+    "bulk": { "select": "انتخاب ادمین", "empty": "نتیجه‌ای یافت نشد", "assign": "واگذاری به ادمین" }
   }
 }

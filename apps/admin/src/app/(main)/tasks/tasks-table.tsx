@@ -31,6 +31,7 @@ import {
 import { taskColumns } from "./columns";
 import { TasksStatsCards } from "./stats-cards";
 import { TaskDrawer } from "./task-drawer";
+import { TasksBulkAssign } from "./tasks-bulk-assign";
 
 // Types
 import type { TaskListItem, TasksStats } from "@/types/task";
@@ -146,9 +147,9 @@ export function TasksTable({
 
   // ── Local state ───────────────────────────────────────────────────────────
   const [tempSearch, setTempSearch] = useState(search);
-  // Row checkboxes still render (select column stays); selection isn't consumed
-  // by any bulk control yet — proper bulk task reassign needs its own endpoint.
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [selectedRows, setSelectedRows] = useState<TaskListItem[]>([]);
+  const selectedIds = selectedRows.map((r) => r.id);
   const [tableInstance, setTableInstance] =
     useState<Table<TaskListItem> | null>(null);
   const [activePreset, setActivePreset] = useState<PresetKey | null>(null);
@@ -275,13 +276,18 @@ export function TasksTable({
               items={labelsItems}
             />
 
-            {/*
-              Bulk reassign intentionally omitted: SelectAdmins posts to
-              /users/assignAdmin (reassigns USER ownership by userIds), which is
-              not the same as reassigning a task's admin. Proper bulk task
-              reassignment needs a dedicated backend endpoint (not built yet).
-              Row checkboxes still render for future use.
-            */}
+            {/* Bulk reassign — super-admins only, shown when rows are selected */}
+            {role !== "kam" && Object.keys(rowSelection).length > 0 && (
+              <TasksBulkAssign
+                kams={kams}
+                actionIds={selectedIds}
+                mutateData={mutateTasks}
+                onClearSelection={() => {
+                  setSelectedRows([]);
+                  setRowSelection({});
+                }}
+              />
+            )}
           </div>
         </div>
 
@@ -291,6 +297,7 @@ export function TasksTable({
           data={tasks}
           rowSelection={rowSelection}
           onRowSelectionChange={setRowSelection}
+          setSelectedRows={setSelectedRows}
           tableInstanceRef={setTableInstance}
           page={meta.currentPage}
           limit={meta.itemsPerPage}
