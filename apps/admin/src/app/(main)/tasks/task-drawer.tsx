@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { TaskListItem } from "@/types/task";
-import { AssignedLabel } from "@/types/label";
 
 import {
   Sheet,
@@ -17,15 +16,7 @@ import { ContactOptions } from "@/components/table/contact-options";
 import { OtpDialog } from "@/components/table/dialog-otp";
 import { LabelChips } from "@/components/table/label-chips";
 import { TaskManagementPanel } from "@/components/tasks/task-management-panel";
-
-// Map TaskLabel[] → AssignedLabel[] so LabelChips receives its expected shape.
-function toAssignedLabels(labels: TaskListItem["labels"]): AssignedLabel[] {
-  return labels.map((l) => ({
-    labelId: l.id,
-    assignedAt: "",
-    label: { id: l.id, name: l.name, color: l.color },
-  }));
-}
+import { toAssignedLabels } from "./to-assigned-labels";
 
 interface TaskDrawerProps {
   task: TaskListItem | null;
