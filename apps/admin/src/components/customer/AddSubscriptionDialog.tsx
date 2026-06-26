@@ -30,6 +30,7 @@ import { DurationResponse, PlanResponse } from "@/types/subscription";
 import api, { fetcher } from "@/hooks/swr/api-client";
 import { useState } from "react";
 import { formatNumber } from "@/lib/formatNumber";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
 import { toast } from "sonner";
 
 const FormSchema = z.object({
@@ -205,6 +206,7 @@ export const AddSubscriptionDialog = ({
                     <Input
                       type="text"
                       inputMode="numeric"
+                      onInput={onInputP2EHandler}
                       value={
                         field.value !== undefined && field.value !== null
                           ? String(formatNumber(field.value))

@@ -27,6 +27,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
+import { formatNumber } from "@/lib/formatNumber";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
+import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 
 // Form schema
 const exportSchema = z.object({
@@ -76,6 +79,8 @@ export function ExportDialog({
       count: 1000,
     },
   });
+
+  const { onFocus } = useSelectOnFocus();
 
   const onSubmit = async (data: ExportFormValues) => {
     setIsSubmitting(true);
@@ -156,13 +161,21 @@ export function ExportDialog({
                   <FormLabel>تعداد رکوردها</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      placeholder="1000"
+                      inputMode="numeric"
+                      placeholder="۱۰۰۰"
                       {...field}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value) || 0;
-                        field.onChange(value);
-                      }}
+                      onInput={onInputP2EHandler}
+                      onFocus={onFocus}
+                      value={
+                        field.value === undefined ||
+                        field.value === null ||
+                        Number.isNaN(field.value)
+                          ? ""
+                          : formatNumber(field.value)
+                      }
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
+                      }
                     />
                   </FormControl>
                   <FormMessage />

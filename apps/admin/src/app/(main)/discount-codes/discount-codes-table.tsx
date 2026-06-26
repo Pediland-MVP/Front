@@ -35,6 +35,9 @@ import {
 import { columns, DiscountCode } from "./columns";
 import { Table } from "@tanstack/react-table";
 import api from "@/hooks/swr/api-client";
+import { formatNumber } from "@/lib/formatNumber";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
+import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 
 const FormSchema = z.object({
   code: z.string().min(1, "کد الزامی است").max(50),
@@ -88,6 +91,8 @@ export default function DiscountCodesTable({
       maxUsagePerUser: 1,
     },
   });
+
+  const { onFocus } = useSelectOnFocus();
 
   const handleSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
@@ -212,11 +217,14 @@ export default function DiscountCodesTable({
                     <FormLabel>مقدار تخفیف</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min={0}
-                        placeholder="20"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                        inputMode="numeric"
+                        onInput={onInputP2EHandler}
+                        onFocus={onFocus}
+                        placeholder="۲۰"
+                        value={field.value ? formatNumber(field.value) : ""}
+                        onChange={(e) =>
+                          field.onChange(e.target.value === "" ? 0 : +e.target.value)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -260,11 +268,16 @@ export default function DiscountCodesTable({
                       <FormLabel>حداکثر استفاده هر کاربر</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          min={1}
-                          placeholder="1"
-                          value={field.value ?? ""}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                          inputMode="numeric"
+                          onInput={onInputP2EHandler}
+                          onFocus={onFocus}
+                          placeholder="۱"
+                          value={field.value ? formatNumber(field.value) : ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === "" ? undefined : +e.target.value
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -279,11 +292,16 @@ export default function DiscountCodesTable({
                       <FormLabel>سقف کل استفاده</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          min={1}
+                          inputMode="numeric"
+                          onInput={onInputP2EHandler}
+                          onFocus={onFocus}
                           placeholder="نامحدود"
-                          value={field.value ?? ""}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                          value={field.value ? formatNumber(field.value) : ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === "" ? undefined : +e.target.value
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
