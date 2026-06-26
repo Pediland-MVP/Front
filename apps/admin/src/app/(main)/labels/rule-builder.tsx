@@ -126,9 +126,12 @@ function LeafEditor({
                 type="number" min={1} max={365} className="w-28"
                 placeholder={t("growthDaysPlaceholder")} title={t("growthDaysLabel")}
                 value={leaf.growth?.period.days ?? 7}
-                onChange={(e) =>
-                  onChange({ ...leaf, growth: { period: { type: "trailingDays", days: Number(e.target.value) } } })
-                }
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  const days =
+                    e.target.value === "" || Number.isNaN(n) ? leaf.growth?.period.days ?? 7 : n;
+                  onChange({ ...leaf, growth: { period: { type: "trailingDays", days } } });
+                }}
               />
             )}
           </>
