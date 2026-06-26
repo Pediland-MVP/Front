@@ -312,7 +312,8 @@
       "daysSinceLastActivity": "روز از آخرین فعالیت",
       "status": "وضعیت",
       "submittedInstagramFollowersCount": "فالوور اعلام‌شده",
-      "followersCount": "فالوور اینستاگرام"
+      "followersCount": "فالوور اینستاگرام",
+      "workspaces": "تعداد فضای کاری"
     },
     "operators": {
       "gt": "بزرگ‌تر از",
