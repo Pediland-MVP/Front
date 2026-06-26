@@ -35,6 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import api from "@/hooks/swr/api-client";
+import { formatNumber } from "@/lib/formatNumber";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
+import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 import { Duration, Plan } from "@/types/subscription";
 import { usePlanColumns } from "./columns";
 
@@ -91,6 +94,8 @@ export default function PlansTable({
   const durationForm = useForm<DurationValues>({
     resolver: zodResolver(DurationSchema),
   });
+
+  const { onFocus } = useSelectOnFocus();
 
   const handleOpenEdit = (plan: Plan) => {
     setEditTarget(plan);
@@ -266,11 +271,20 @@ export default function PlansTable({
                         <FormLabel>{t("minFollowers")}</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            min={0}
-                            value={Number.isNaN(field.value) ? "" : field.value}
+                            inputMode="numeric"
+                            onInput={onInputP2EHandler}
+                            onFocus={onFocus}
+                            value={
+                              field.value === undefined ||
+                              field.value === null ||
+                              Number.isNaN(field.value)
+                                ? ""
+                                : formatNumber(field.value)
+                            }
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
+                              field.onChange(
+                                e.target.value === "" ? NaN : +e.target.value
+                              )
                             }
                           />
                         </FormControl>
@@ -286,11 +300,20 @@ export default function PlansTable({
                         <FormLabel>{t("maxFollowers")}</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            min={0}
-                            value={Number.isNaN(field.value) ? "" : field.value}
+                            inputMode="numeric"
+                            onInput={onInputP2EHandler}
+                            onFocus={onFocus}
+                            value={
+                              field.value === undefined ||
+                              field.value === null ||
+                              Number.isNaN(field.value)
+                                ? ""
+                                : formatNumber(field.value)
+                            }
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
+                              field.onChange(
+                                e.target.value === "" ? NaN : +e.target.value
+                              )
                             }
                           />
                         </FormControl>
@@ -446,11 +469,20 @@ export default function PlansTable({
                       <FormLabel>{t("price")}</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          min={0}
-                          value={Number.isNaN(field.value) ? "" : field.value}
+                          inputMode="numeric"
+                          onInput={onInputP2EHandler}
+                          onFocus={onFocus}
+                          value={
+                            field.value === undefined ||
+                            field.value === null ||
+                            Number.isNaN(field.value)
+                              ? ""
+                              : formatNumber(field.value)
+                          }
                           onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber)
+                            field.onChange(
+                              e.target.value === "" ? NaN : +e.target.value
+                            )
                           }
                         />
                       </FormControl>
@@ -467,14 +499,17 @@ export default function PlansTable({
                       <FormLabel>{t("monthlyDiscount")}</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          min={0}
-                          value={field.value ?? ""}
+                          inputMode="numeric"
+                          onInput={onInputP2EHandler}
+                          onFocus={onFocus}
+                          value={
+                            field.value === undefined || field.value === null
+                              ? ""
+                              : formatNumber(field.value)
+                          }
                           onChange={(e) =>
                             field.onChange(
-                              e.target.value === ""
-                                ? undefined
-                                : e.target.valueAsNumber,
+                              e.target.value === "" ? undefined : +e.target.value,
                             )
                           }
                         />
@@ -493,14 +528,17 @@ export default function PlansTable({
                         <FormLabel>{t("durationDays")}</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            min={0}
-                            value={field.value ?? ""}
+                            inputMode="numeric"
+                            onInput={onInputP2EHandler}
+                            onFocus={onFocus}
+                            value={
+                              field.value === undefined || field.value === null
+                                ? ""
+                                : formatNumber(field.value)
+                            }
                             onChange={(e) =>
                               field.onChange(
-                                e.target.value === ""
-                                  ? null
-                                  : e.target.valueAsNumber,
+                                e.target.value === "" ? null : +e.target.value,
                               )
                             }
                           />
@@ -517,14 +555,17 @@ export default function PlansTable({
                         <FormLabel>{t("credit")}</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            min={0}
-                            value={field.value ?? ""}
+                            inputMode="numeric"
+                            onInput={onInputP2EHandler}
+                            onFocus={onFocus}
+                            value={
+                              field.value === undefined || field.value === null
+                                ? ""
+                                : formatNumber(field.value)
+                            }
                             onChange={(e) =>
                               field.onChange(
-                                e.target.value === ""
-                                  ? null
-                                  : e.target.valueAsNumber,
+                                e.target.value === "" ? null : +e.target.value,
                               )
                             }
                           />

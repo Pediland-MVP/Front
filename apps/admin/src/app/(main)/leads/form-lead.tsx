@@ -25,6 +25,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { formatNumber } from "@/lib/formatNumber";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
+import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
 import {
   Select,
   SelectContent,
@@ -98,6 +101,8 @@ export default function LeadForm({
       note: data?.note ?? "",
     },
   });
+
+  const { onFocus } = useSelectOnFocus();
 
   const isDisabled = form.formState.isSubmitting;
 
@@ -299,10 +304,19 @@ export default function LeadForm({
                   <FormLabel>فالوور</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      min={0}
-                      value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      inputMode="numeric"
+                      onInput={onInputP2EHandler}
+                      onFocus={onFocus}
+                      value={
+                        field.value === undefined ||
+                        field.value === null ||
+                        Number.isNaN(field.value)
+                          ? ""
+                          : formatNumber(field.value)
+                      }
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -317,10 +331,19 @@ export default function LeadForm({
                   <FormLabel>فالووینگ</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      min={0}
-                      value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      inputMode="numeric"
+                      onInput={onInputP2EHandler}
+                      onFocus={onFocus}
+                      value={
+                        field.value === undefined ||
+                        field.value === null ||
+                        Number.isNaN(field.value)
+                          ? ""
+                          : formatNumber(field.value)
+                      }
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -335,10 +358,19 @@ export default function LeadForm({
                   <FormLabel>پست</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      min={0}
-                      value={field.value}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      inputMode="numeric"
+                      onInput={onInputP2EHandler}
+                      onFocus={onFocus}
+                      value={
+                        field.value === undefined ||
+                        field.value === null ||
+                        Number.isNaN(field.value)
+                          ? ""
+                          : formatNumber(field.value)
+                      }
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
+                      }
                     />
                   </FormControl>
                   <FormMessage />

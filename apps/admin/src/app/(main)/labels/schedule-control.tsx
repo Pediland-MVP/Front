@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { ScheduleType } from "./types";
@@ -64,7 +65,8 @@ export function ScheduleControl({
           {value.scheduleType === "interval" && (
             <>
               <Input
-                type="number"
+                inputMode="numeric"
+                onInput={onInputP2EHandler}
                 min={1}
                 className="w-20"
                 value={amountStr}
@@ -94,7 +96,8 @@ export function ScheduleControl({
           {value.scheduleType === "daily" && (
             <>
               <Input
-                type="number"
+                inputMode="numeric"
+                onInput={onInputP2EHandler}
                 min={0}
                 max={23}
                 className="w-20"

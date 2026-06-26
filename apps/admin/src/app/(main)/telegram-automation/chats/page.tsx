@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { ColumnDef, Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
 import { LayoutTable } from "@/components/layout/LayoutTable";
 import { DataTable } from "@/components/table/data-table";
 import { DataTablePagination } from "@/components/table/pagination";
@@ -375,6 +376,7 @@ export default function ChatsPage() {
                 <input
                   type="text"
                   inputMode="numeric"
+                  onInput={onInputP2EHandler}
                   value={irtRateInput}
                   onChange={(e) => setIrtRateInput(e.target.value)}
                   onBlur={handleIrtRateSave}
