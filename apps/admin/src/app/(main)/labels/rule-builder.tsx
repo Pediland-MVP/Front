@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   Select,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { onInputP2EHandler } from "@/lib/p2eNumber";
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import {
   ConditionGroup,
@@ -26,6 +28,42 @@ function defaultLeafFor(fields: LabelFieldDef[]): ConditionLeaf {
     operator: (f?.operators[0] ?? "gt") as ComparisonOperator,
     value: f?.valueType === "status" ? (f.statusOptions?.[0] ?? "") : 0,
   };
+}
+
+// Trailing-days input for a growth condition. Keeps a local draft string so the
+// user can fully clear the box while typing; only a valid number (>= 1) is pushed
+// up, and an empty/invalid box is restored from the last value on blur. This lets
+// the field be cleared without ever sending an empty/NaN day count to the rule.
+function GrowthDaysInput({
+  days,
+  onDaysChange,
+}: {
+  days: number;
+  onDaysChange: (days: number) => void;
+}) {
+  const t = useTranslations("Labels");
+  const [draft, setDraft] = useState(String(days));
+
+  return (
+    <Input
+      inputMode="numeric"
+      onInput={onInputP2EHandler}
+      min={1}
+      max={365}
+      className="w-28"
+      placeholder={t("growthDaysPlaceholder")}
+      title={t("growthDaysLabel")}
+      value={draft}
+      onChange={(e) => {
+        setDraft(e.target.value);
+        const n = Number(e.target.value);
+        if (e.target.value !== "" && Number.isFinite(n) && n >= 1) onDaysChange(n);
+      }}
+      onBlur={() => {
+        if (draft === "" || !(Number(draft) >= 1)) setDraft(String(days));
+      }}
+    />
+  );
 }
 
 function LeafEditor({
@@ -84,10 +122,16 @@ function LeafEditor({
         </Select>
       ) : (
         <Input
-          type="number"
+          inputMode="numeric"
+          onInput={onInputP2EHandler}
           className="w-28"
-          value={Number(leaf.value)}
-          onChange={(e) => onChange({ ...leaf, value: Number(e.target.value) })}
+          value={leaf.value === "" ? "" : Number(leaf.value)}
+          onChange={(e) =>
+            onChange({
+              ...leaf,
+              value: e.target.value === "" ? "" : Number(e.target.value),
+            })
+          }
         />
       )}
 
@@ -113,7 +157,9 @@ function LeafEditor({
             </Select>
             {mode === "window" && (
               <Input
-                type="number" min={1} max={365} className="w-28"
+                inputMode="numeric"
+                onInput={onInputP2EHandler}
+                min={1} max={365} className="w-28"
                 placeholder={t("windowDaysPlaceholder")} title={t("windowDaysLabel")}
                 value={leaf.windowDays ?? ""}
                 onChange={(e) =>
@@ -122,16 +168,11 @@ function LeafEditor({
               />
             )}
             {mode === "growth" && (
-              <Input
-                type="number" min={1} max={365} className="w-28"
-                placeholder={t("growthDaysPlaceholder")} title={t("growthDaysLabel")}
-                value={leaf.growth?.period.days ?? 7}
-                onChange={(e) => {
-                  const n = Number(e.target.value);
-                  const days =
-                    e.target.value === "" || Number.isNaN(n) ? leaf.growth?.period.days ?? 7 : n;
-                  onChange({ ...leaf, growth: { period: { type: "trailingDays", days } } });
-                }}
+              <GrowthDaysInput
+                days={leaf.growth?.period.days ?? 7}
+                onDaysChange={(days) =>
+                  onChange({ ...leaf, growth: { period: { type: "trailingDays", days } } })
+                }
               />
             )}
           </>
