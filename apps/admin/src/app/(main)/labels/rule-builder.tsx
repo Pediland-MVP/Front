@@ -91,23 +91,49 @@ function LeafEditor({
         />
       )}
 
-      {def?.windowable && (
-        <Input
-          type="number"
-          min={1}
-          max={365}
-          className="w-28"
-          placeholder={t("windowDaysPlaceholder")}
-          title={t("windowDaysLabel")}
-          value={leaf.windowDays ?? ""}
-          onChange={(e) =>
-            onChange({
-              ...leaf,
-              windowDays: e.target.value === "" ? undefined : Number(e.target.value),
-            })
-          }
-        />
-      )}
+      {def?.windowable && (() => {
+        const mode: "allTime" | "window" | "growth" =
+          leaf.growth ? "growth" : leaf.windowDays != null ? "window" : "allTime";
+        const onModeChange = (m: string) => {
+          const base: ConditionLeaf = { field: leaf.field, operator: leaf.operator, value: leaf.value };
+          if (m === "window") onChange({ ...base, windowDays: leaf.windowDays ?? 7 });
+          else if (m === "growth")
+            onChange({ ...base, growth: { period: { type: "trailingDays", days: leaf.growth?.period.days ?? 7 } } });
+          else onChange(base);
+        };
+        return (
+          <>
+            <Select value={mode} onValueChange={onModeChange}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="allTime">{t("modeAllTime")}</SelectItem>
+                <SelectItem value="window">{t("modeWindow")}</SelectItem>
+                <SelectItem value="growth">{t("modeGrowth")}</SelectItem>
+              </SelectContent>
+            </Select>
+            {mode === "window" && (
+              <Input
+                type="number" min={1} max={365} className="w-28"
+                placeholder={t("windowDaysPlaceholder")} title={t("windowDaysLabel")}
+                value={leaf.windowDays ?? ""}
+                onChange={(e) =>
+                  onChange({ ...leaf, windowDays: e.target.value === "" ? undefined : Number(e.target.value) })
+                }
+              />
+            )}
+            {mode === "growth" && (
+              <Input
+                type="number" min={1} max={365} className="w-28"
+                placeholder={t("growthDaysPlaceholder")} title={t("growthDaysLabel")}
+                value={leaf.growth?.period.days ?? 7}
+                onChange={(e) =>
+                  onChange({ ...leaf, growth: { period: { type: "trailingDays", days: Number(e.target.value) } } })
+                }
+              />
+            )}
+          </>
+        );
+      })()}
 
       <Button size="icon" variant="ghost" type="button" onClick={onRemove}>
         <TrashIcon size={16} />

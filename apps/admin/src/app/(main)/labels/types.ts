@@ -1,11 +1,14 @@
 export type ComparisonOperator = "gt" | "gte" | "lt" | "lte" | "eq" | "neq";
 export type ScheduleType = "interval" | "daily";
 
+export type PeriodSpec = { type: "trailingDays"; days: number };
+
 export interface ConditionLeaf {
   field: string;
   operator: ComparisonOperator;
   value: number | string;
   windowDays?: number;
+  growth?: { period: PeriodSpec };
 }
 export interface ConditionGroup {
   op: "and" | "or";
