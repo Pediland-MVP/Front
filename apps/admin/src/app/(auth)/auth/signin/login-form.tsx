@@ -1,24 +1,18 @@
 // src/app/(auth)/login/login-form.tsx
-"use client";
+'use client';
 
-import { signIn } from "@/lib/auth";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
+import { signIn } from '@/lib/auth';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import z from 'zod';
 
 // UI Imports
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -26,26 +20,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { mutate } from "swr";
-import { useState } from "react";
+} from '@/components/ui/form';
+import { mutate } from 'swr';
+import { useState } from 'react';
 
 const FormSchema = z.object({
-  username: z.string().min(10, { message: "" }),
+  username: z.string().min(10, { message: '' }),
   password: z.string().min(6),
 });
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     },
   });
 
@@ -54,22 +45,19 @@ export function LoginForm({
 
     try {
       await signIn(values);
-      await mutate("/auth/me"); // ✅ همین‌جا
-      toast.success("ورود با موفقیت انجام شد.");
-      router.push("/customers");
+      await mutate('/auth/me'); // ✅ همین‌جا
+      toast.success('ورود با موفقیت انجام شد.');
+      router.push('/customers');
     } catch (err) {
       console.log(err);
-      toast.error("نام کاربری یا رمز عبور اشتباه است.");
+      toast.error('نام کاربری یا رمز عبور اشتباه است.');
     } finally {
       setIsLoggingIn(false);
     }
   };
 
   return (
-    <div
-      className={cn("flex w-full flex-col gap-6 md:max-w-[340px]", className)}
-      {...props}
-    >
+    <div className={cn('flex w-full flex-col gap-6 md:max-w-[340px]', className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle>پورتال مدیریت بفروش</CardTitle>
@@ -119,7 +107,7 @@ export function LoginForm({
               />
 
               <Button type="submit" className="w-full" disabled={isLoggingIn}>
-                {isLoggingIn ? "در حال ورود..." : "ورود به پورتال"}
+                {isLoggingIn ? 'در حال ورود...' : 'ورود به پورتال'}
               </Button>
             </form>
           </Form>

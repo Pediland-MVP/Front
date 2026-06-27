@@ -1,26 +1,24 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import type { AutomationResponse } from "@/schemas/automation";
-import type { PageMeta } from "@/schemas/pageMeta";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import type { Table } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
-import useSWR, { mutate } from "swr";
+import api from '@/hooks/swr/api-client';
+import type { AutomationResponse } from '@/schemas/automation';
+import type { PageMeta } from '@/schemas/pageMeta';
+import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import type { Table } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+import { useCallback, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import useSWR, { mutate } from 'swr';
 
-import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
-import { DataTable } from "../Table/TableData";
-import { TablePagination } from "../Table/TablePagination";
-import { AutomationTableColumns } from "./AutomationTableColumns";
+import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
+import { DataTable } from '../Table/TableData';
+import { TablePagination } from '../Table/TablePagination';
+import { AutomationTableColumns } from './AutomationTableColumns';
 
 export const AutomationsListTable = () => {
-  const t = useTranslations("Automations.List");
+  const t = useTranslations('Automations.List');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedAutomationId, setSelectedAutomationId] = useState<
-    string | null
-  >(null);
+  const [selectedAutomationId, setSelectedAutomationId] = useState<string | null>(null);
 
   // Handle delete action
   const handleDelete = (id: string) => {
@@ -33,11 +31,11 @@ export const AutomationsListTable = () => {
       await api
         .delete(`/contentCycle/${selectedAutomationId}`)
         .then((res) => {
-          toast.success(t("Toast.deleted"));
-          mutate(mutateIncludeStringKey("/contentCycle"));
+          toast.success(t('Toast.deleted'));
+          mutate(mutateIncludeStringKey('/contentCycle'));
         })
         .catch((e) => {
-          toast.error(t("Toast.delete_error"));
+          toast.error(t('Toast.delete_error'));
         })
         .finally(() => {
           setDeleteDialogOpen(false);
@@ -59,10 +57,7 @@ export const AutomationsListTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
 
-  const onPageChange = useCallback(
-    (newPage: number) => setPage(Math.max(1, newPage)),
-    [],
-  );
+  const onPageChange = useCallback((newPage: number) => setPage(Math.max(1, newPage)), []);
 
   const onLimitChange = useCallback((newLimit: number) => {
     setLimit(newLimit);

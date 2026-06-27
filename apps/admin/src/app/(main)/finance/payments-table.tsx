@@ -1,15 +1,15 @@
 // src/app/(main)/finance/payments-table.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Table } from "@tanstack/react-table";
-import { DataTable } from "@/components/table/data-table";
-import { DataTablePagination } from "@/components/table/pagination";
-import { Input } from "@/components/ui/input";
-import type { Payment } from "@/types/finance";
-import type { PageMeta } from "@/types/meta";
-import { paymentColumns } from "./columns";
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Table } from '@tanstack/react-table';
+import { DataTable } from '@/components/table/data-table';
+import { DataTablePagination } from '@/components/table/pagination';
+import { Input } from '@/components/ui/input';
+import type { Payment } from '@/types/finance';
+import type { PageMeta } from '@/types/meta';
+import { paymentColumns } from './columns';
 
 interface PaymentsTableProps {
   payments: Payment[];
@@ -28,7 +28,7 @@ export function PaymentsTable({
   search,
   onSearchChange,
 }: PaymentsTableProps) {
-  const t = useTranslations("Finance");
+  const t = useTranslations('Finance');
   const [tableInstance, setTableInstance] = useState<Table<Payment> | null>(null);
   const [tempSearch, setTempSearch] = useState(search);
 
@@ -44,15 +44,15 @@ export function PaymentsTable({
           onChange={(e) => {
             const value = e.target.value;
             setTempSearch(value);
-            if (value === "") onSearchChange("");
+            if (value === '') onSearchChange('');
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === 'Enter') {
               e.preventDefault();
               onSearchChange(tempSearch);
             }
           }}
-          placeholder={t("searchPlaceholder")}
+          placeholder={t('searchPlaceholder')}
           className="max-w-[220px]"
         />
       </div>
@@ -68,9 +68,7 @@ export function PaymentsTable({
         onLimitChange={onLimitChange}
       />
 
-      {tableInstance && (
-        <DataTablePagination table={tableInstance} totalCount={meta.totalItems} />
-      )}
+      {tableInstance && <DataTablePagination table={tableInstance} totalCount={meta.totalItems} />}
     </div>
   );
 }

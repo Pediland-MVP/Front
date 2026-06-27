@@ -1,8 +1,8 @@
 // src/types/lead.ts
 
-import { MarketingLeadsAdmins } from "./admin";
-import { Category } from "./category";
-import { Instagram } from "./instagram";
+import { MarketingLeadsAdmins } from './admin';
+import { Category } from './category';
+import { Instagram } from './instagram';
 
 export type MarketingLead = {
   id: string;
@@ -20,9 +20,9 @@ export type MarketingLead = {
 };
 
 export enum MarketingLeadStatusEnum {
-  INCOMING = "incoming",
-  FOLLOW = "follow",
-  FORCE = "force",
-  FAILED = "failed",
-  SUCCESS = "success",
+  INCOMING = 'incoming',
+  FOLLOW = 'follow',
+  FORCE = 'force',
+  FAILED = 'failed',
+  SUCCESS = 'success',
 }

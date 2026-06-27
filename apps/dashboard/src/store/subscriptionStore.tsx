@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import { AxiosError } from "axios";
-import useUser from "@/hooks/useUser";
-import useSWR, { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
-import { useEffect } from "react";
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { AxiosError } from 'axios';
+import useUser from '@/hooks/useUser';
+import useSWR, { mutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import { useEffect } from 'react';
 
 // Types
-import { PlanNamespace } from "@/types/plans/plan.namespace";
-import { SubscriptionNamespace } from "@/types/subscriptions/subscription.namspace";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
+import { PlanNamespace } from '@/types/plans/plan.namespace';
+import { SubscriptionNamespace } from '@/types/subscriptions/subscription.namspace';
+import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -25,8 +25,8 @@ interface ActiveTabs {
 
 interface SubscriptionState {
   active: ActiveTabs;
-  subscriptions: SubscriptionNamespace.GET.Subscriptions["items"];
-  plans: PlanNamespace.GET.PlansData["plans"];
+  subscriptions: SubscriptionNamespace.GET.Subscriptions['items'];
+  plans: PlanNamespace.GET.PlansData['plans'];
   plansData?: PlanNamespace.GET.PlansData;
   discountCode?: string;
   isLoading: boolean;
@@ -39,10 +39,8 @@ interface SubscriptionState {
   setDiscountCode: (code: string) => void;
   setIsLoading: (val: boolean) => void;
   setInitialized: (val: boolean) => void;
-  setSubscriptions: (
-    data: SubscriptionNamespace.GET.Subscriptions["items"],
-  ) => void;
-  setPlans: (data: PlanNamespace.GET.PlansData["plans"]) => void;
+  setSubscriptions: (data: SubscriptionNamespace.GET.Subscriptions['items']) => void;
+  setPlans: (data: PlanNamespace.GET.PlansData['plans']) => void;
   setPlansData: (data?: PlanNamespace.GET.PlansData) => void;
   calculateDays: () => void;
 }
@@ -57,7 +55,7 @@ export const useSubscriptionStore = create<SubscriptionState>()(
     subscriptions: [],
     plans: [],
     plansData: undefined,
-    discountCode: "",
+    discountCode: '',
     isLoading: false,
     initialized: false,
     totalRemainingDays: 0,
@@ -67,28 +65,22 @@ export const useSubscriptionStore = create<SubscriptionState>()(
     setDiscountCode: (discountCode) => set({ discountCode }),
     setIsLoading: (isLoading) => set({ isLoading }),
     setInitialized: (initialized) => set({ initialized }),
-    setSubscriptions: (subscriptions) =>
-      set({ subscriptions }, false, "setSubscriptions"),
+    setSubscriptions: (subscriptions) => set({ subscriptions }, false, 'setSubscriptions'),
     setPlans: (plans) => set({ plans }),
     setPlansData: (plansData) => set({ plansData }),
 
     calculateDays: () => {
       const { subscriptions } = get();
 
-      if (!subscriptions?.length)
-        return set({ totalRemainingDays: 0, totalPurchasedDays: 0 });
+      if (!subscriptions?.length) return set({ totalRemainingDays: 0, totalPurchasedDays: 0 });
 
       const now = new Date();
 
       // اشتراک فعال
-      const active = subscriptions.find(
-        (s) => s.status === SubscriptionStatusEnum.ACTIVE,
-      );
+      const active = subscriptions.find((s) => s.status === SubscriptionStatusEnum.ACTIVE);
 
       // اشتراک‌های رزروشده
-      const reserved = subscriptions.filter(
-        (s) => s.status === SubscriptionStatusEnum.RESERVED,
-      );
+      const reserved = subscriptions.filter((s) => s.status === SubscriptionStatusEnum.RESERVED);
 
       // مجموع کل روزهای خریداری‌شده
       const totalPurchasedDays = subscriptions.reduce(
@@ -151,9 +143,7 @@ export function useSubscriptionData() {
       sub.status === SubscriptionStatusEnum.RESERVED,
   );
 
-  const planApiUrl = `${API_URL}/plans${
-    discountCode ? `?discountCode=${discountCode}` : ""
-  }`;
+  const planApiUrl = `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ''}`;
   const { data: plansData, isLoading: isPlansLoading } = useSWRImmutable<
     PlanNamespace.GET.PlansData,
     AxiosError
@@ -163,7 +153,7 @@ export function useSubscriptionData() {
   });
 
   useEffect(() => {
-    mutate(mutateIncludeStringKey("/instagram"));
+    mutate(mutateIncludeStringKey('/instagram'));
   }, [plansData]);
 
   // Update store when data changes

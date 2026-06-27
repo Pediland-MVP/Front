@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useLogout } from "@/hooks/swr/api-client";
-import useUser from "@/hooks/useUser";
-import { usePermissions } from "@/hooks/usePermissions";
-import { useWorkspaces } from "@/hooks/useWorkspaces";
-import { cn } from "@/lib/utils";
-import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useLogout } from '@/hooks/swr/api-client';
+import useUser from '@/hooks/useUser';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { cn } from '@/lib/utils';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { useLocale, useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 // TODO: Refactor Types & Schemas
-import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
 import {
   ArrowsClockwiseIcon,
@@ -20,37 +20,23 @@ import {
   PlugsIcon,
   SignOutIcon,
   UserCircleIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { ProgressLine } from "../Console/ProgressLine";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-  CardContent,
-} from "../ui";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../ui/popover";
-import { Spinner } from "../ui/spinner";
-import { ButtonLoading } from "../ui-custom/ButtonLoading";
-import { CardSimple } from "../ui-custom/CardSimple";
+} from '@phosphor-icons/react/dist/ssr';
+import { ProgressLine } from '../Console/ProgressLine';
+import { Avatar, AvatarFallback, AvatarImage, Button, CardContent } from '../ui';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Spinner } from '../ui/spinner';
+import { ButtonLoading } from '../ui-custom/ButtonLoading';
+import { CardSimple } from '../ui-custom/CardSimple';
 
 export const UserDetailsCard = () => {
   const router = useRouter();
   const locale = useLocale();
   const pathname = usePathname();
   const logout = useLogout();
-  const t = useTranslations("Console.Dashboard");
+  const t = useTranslations('Console.Dashboard');
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
-  const {
-    user: userData,
-    error: userError,
-    isLoading: userIsLoading,
-  } = useUser();
+  const { user: userData, error: userError, isLoading: userIsLoading } = useUser();
 
   const {
     subscriptions,
@@ -75,7 +61,7 @@ export const UserDetailsCard = () => {
     try {
       await changeWorkspace(wsId);
     } catch (error) {
-      console.error("Switch workspace error:", error);
+      console.error('Switch workspace error:', error);
     } finally {
       setIsSwitchingWorkspace(false);
       setWorkspacePopoverOpen(false);
@@ -92,24 +78,18 @@ export const UserDetailsCard = () => {
   const activeSubscription = useMemo(() => {
     if (!subscriptions?.length) return undefined;
 
-    return subscriptions?.find(
-      (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-    );
+    return subscriptions?.find((sub) => sub.status === SubscriptionStatusEnum.ACTIVE);
   }, [subscriptions]);
 
   const expiredSubscription = useMemo(() => {
     if (!subscriptions?.length) return undefined;
 
-    return subscriptions?.find(
-      (sub) => sub.status === SubscriptionStatusEnum.EXPIRED,
-    );
+    return subscriptions?.find((sub) => sub.status === SubscriptionStatusEnum.EXPIRED);
   }, [subscriptions]);
 
   const currentSubscription = activeSubscription || expiredSubscription;
   const hasActiveSubscription =
-    currentSubscription?.status === SubscriptionStatusEnum.ACTIVE
-      ? true
-      : false;
+    currentSubscription?.status === SubscriptionStatusEnum.ACTIVE ? true : false;
 
   const logoutHandler = async () => {
     setIsLogoutLoading(true);
@@ -120,9 +100,9 @@ export const UserDetailsCard = () => {
       subStore.setSubscriptions([]);
       subStore.setPlans([]);
       subStore.setPlansData(undefined);
-      router.replace("/auth");
+      router.replace('/auth');
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
     } finally {
       setIsLogoutLoading(false);
     }
@@ -172,27 +152,27 @@ export const UserDetailsCard = () => {
                 </span>
               </div> */}
 
-            {activeSubscription?.type !== "credit" && (
+            {activeSubscription?.type !== 'credit' && (
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">{t("remain")}:</span>
+                  <span className="text-muted-foreground">{t('remain')}:</span>
                   <span
                     className={cn(
-                      "text-primary",
-                      !hasActiveSubscription && "text-muted-foreground",
+                      'text-primary',
+                      !hasActiveSubscription && 'text-muted-foreground',
                     )}
                   >
-                    {currentSubscription?.type === "credit"
-                      ? `${currentSubscription?.credit} ${t("message")}`
-                      : `${totalRemainingDays} ${t("day")}`}
+                    {currentSubscription?.type === 'credit'
+                      ? `${currentSubscription?.credit} ${t('message')}`
+                      : `${totalRemainingDays} ${t('day')}`}
                   </span>
                 </div>
                 <Button
                   size="sm"
-                  className="h-auto gap-"
-                  onClick={() => router.push("/settings/subscription")}
+                  className="gap- h-auto"
+                  onClick={() => router.push('/settings/subscription')}
                 >
-                  {t("renewal")}
+                  {t('renewal')}
                   {/* {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"} */}
                 </Button>
               </div>
@@ -200,23 +180,19 @@ export const UserDetailsCard = () => {
 
             <div className="mb-1 flex items-center gap-1">
               <span className="text-muted-foreground">
-                {userData?.mobile ? t("mobile") : t("email")}:
+                {userData?.mobile ? t('mobile') : t('email')}:
               </span>
-              <span className="tracking-wider">
-                {userData?.mobile || userData?.email}
-              </span>
+              <span className="tracking-wider">{userData?.mobile || userData?.email}</span>
             </div>
 
             {currentWorkspace && (
               <div className="mb-1 flex items-center gap-1">
-                <span className="text-muted-foreground">{t("workspace")}:</span>
-                <span className="line-clamp-1 flex-1 font-semibold">
-                  {currentWorkspace.name}
-                </span>
+                <span className="text-muted-foreground">{t('workspace')}:</span>
+                <span className="line-clamp-1 flex-1 font-semibold">{currentWorkspace.name}</span>
                 <Popover open={workspacePopoverOpen} onOpenChange={setWorkspacePopoverOpen}>
                   <PopoverTrigger asChild>
                     <button
-                      className="shrink-0 rounded-md p-0.5 text-muted-foreground transition-colors hover:bg-gray-100 hover:text-primary cursor-pointer border-0 bg-transparent"
+                      className="text-muted-foreground hover:text-primary shrink-0 cursor-pointer rounded-md border-0 bg-transparent p-0.5 transition-colors hover:bg-gray-100"
                       title="تغییر فضای کاری"
                     >
                       {isSwitchingWorkspace ? (
@@ -229,10 +205,10 @@ export const UserDetailsCard = () => {
                   <PopoverContent
                     align="end"
                     sideOffset={6}
-                    className="w-56 p-2 font-Yekan"
+                    className="font-Yekan w-56 p-2"
                     dir="rtl"
                   >
-                    <p className="mb-1.5 px-1 text-[11px] font-semibold text-muted-foreground">
+                    <p className="text-muted-foreground mb-1.5 px-1 text-[11px] font-semibold">
                       فضاهای کاری
                     </p>
                     {isWorkspacesLoading ? (
@@ -249,27 +225,27 @@ export const UserDetailsCard = () => {
                               onClick={() => handleSwitchWorkspace(ws.id)}
                               disabled={isSwitchingWorkspace}
                               className={cn(
-                                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-right text-sm transition-colors cursor-pointer border-0",
+                                'flex w-full cursor-pointer items-center gap-2 rounded-md border-0 px-2 py-1.5 text-right text-sm transition-colors',
                                 isActive
-                                  ? "bg-primary/8 font-semibold text-primary"
-                                  : "text-secondary hover:bg-gray-50",
+                                  ? 'bg-primary/8 text-primary font-semibold'
+                                  : 'text-secondary hover:bg-gray-50',
                               )}
                             >
                               <div
                                 className={cn(
-                                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold uppercase",
-                                  isActive
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-100 text-gray-600",
+                                  'flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold uppercase',
+                                  isActive ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600',
                                 )}
                               >
                                 {ws.name.charAt(0)}
                               </div>
-                              <span className="flex-1 truncate text-right">
-                                {ws.name}
-                              </span>
+                              <span className="flex-1 truncate text-right">{ws.name}</span>
                               {isActive && (
-                                <CheckIcon size={14} weight="bold" className="shrink-0 text-primary" />
+                                <CheckIcon
+                                  size={14}
+                                  weight="bold"
+                                  className="text-primary shrink-0"
+                                />
                               )}
                             </button>
                           );
@@ -286,32 +262,24 @@ export const UserDetailsCard = () => {
                 <div key={ig.id} className="flex items-center gap-1">
                   <span
                     className={cn(
-                      "text-muted-foreground",
-                      !ig.isIgTokenValid && "text-destructive",
+                      'text-muted-foreground',
+                      !ig.isIgTokenValid && 'text-destructive',
                     )}
                   >
-                    {t("instagram")}:
+                    {t('instagram')}:
                   </span>
                   <span
                     className={cn(
-                      "line-clamp-1 flex-1 font-semibold tracking-wider",
-                      !ig.isIgTokenValid && "text-destructive",
+                      'line-clamp-1 flex-1 font-semibold tracking-wider',
+                      !ig.isIgTokenValid && 'text-destructive',
                     )}
                   >
                     {ig.username}
                   </span>
                   {ig.isIgTokenValid ? (
-                    <PlugsConnectedIcon
-                      size={20}
-                      weight="duotone"
-                      className="text-green-600"
-                    />
+                    <PlugsConnectedIcon size={20} weight="duotone" className="text-green-600" />
                   ) : (
-                    <PlugsIcon
-                      size={20}
-                      weight="duotone"
-                      className="text-destructive"
-                    />
+                    <PlugsIcon size={20} weight="duotone" className="text-destructive" />
                   )}
                 </div>
               ))}
@@ -345,12 +313,9 @@ export const UserDetailsCard = () => {
             onClick={logoutHandler}
           >
             {isLogoutLoading ? (
-              ""
+              ''
             ) : (
-              <SignOutIcon
-                className={cn(locale === "fa" && "rotate-180")}
-                size={20}
-              />
+              <SignOutIcon className={cn(locale === 'fa' && 'rotate-180')} size={20} />
             )}
           </ButtonLoading>
         </div>

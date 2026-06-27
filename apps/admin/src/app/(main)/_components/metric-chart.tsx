@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Area,
   AreaChart,
@@ -14,21 +14,13 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { ChartType, MetricMeta } from "./metrics.constants";
-import type { SeriesPoint, SeriesResolution } from "@/hooks/use-platform-metrics";
-import { formatBucket } from "./chart-format";
+} from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { ChartType, MetricMeta } from './metrics.constants';
+import type { SeriesPoint, SeriesResolution } from '@/hooks/use-platform-metrics';
+import { formatBucket } from './chart-format';
 
 interface MetricChartProps {
   metric: MetricMeta;
@@ -45,7 +37,7 @@ export function MetricChart({
   resolution,
   isLoading,
 }: MetricChartProps) {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations('Dashboard');
 
   const data = useMemo(
     () =>
@@ -66,7 +58,7 @@ export function MetricChart({
           <Skeleton className="h-[140px] w-full" />
         ) : data.length === 0 ? (
           <div className="text-muted-foreground flex h-[140px] items-center justify-center text-xs">
-            {t("noData")}
+            {t('noData')}
           </div>
         ) : (
           <ChartContainer
@@ -83,9 +75,9 @@ export function MetricChart({
   );
 }
 
-import { LabelList } from "recharts";
+import { LabelList } from 'recharts';
 
-const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
 
 function renderChart(
   chartType: ChartType,
@@ -106,14 +98,14 @@ function renderChart(
       <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
       <XAxis
         dataKey="label"
-        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
         tickLine={false}
         axisLine={false}
         minTickGap={32}
         tickMargin={10}
       />
       <YAxis
-        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
         tickLine={false}
         axisLine={false}
         width={40}
@@ -122,13 +114,13 @@ function renderChart(
         tickMargin={8}
       />
       <Tooltip
-        cursor={{ fill: "hsl(var(--muted)/0.2)", strokeWidth: 1, strokeDasharray: "3 3" }}
+        cursor={{ fill: 'hsl(var(--muted)/0.2)', strokeWidth: 1, strokeDasharray: '3 3' }}
         content={<ChartTooltipContent indicator="dot" />}
       />
     </>
   );
 
-  if (chartType === "bar") {
+  if (chartType === 'bar') {
     return (
       <BarChart data={data} margin={margin}>
         {axes}
@@ -137,7 +129,7 @@ function renderChart(
     );
   }
 
-  if (chartType === "area") {
+  if (chartType === 'area') {
     return (
       <AreaChart data={data} margin={margin}>
         {axes}

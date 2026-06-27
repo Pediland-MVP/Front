@@ -1,22 +1,22 @@
-import { SWRProvider } from "@/hooks/swr/api-client";
-import "@/styles/globals.css";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { Toaster } from "sonner";
+import { SWRProvider } from '@/hooks/swr/api-client';
+import '@/styles/globals.css';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { Toaster } from 'sonner';
 
-import { InstagramInvalidDialog } from "@/components/Console/InstagramInvalidDialog";
-import { ConsoleProvider } from "@/components/Layout/ConsoleProvider";
-import { NavBottom } from "@/components/Layout/NavBottom";
-import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
-import { AuthProvider } from "@/components/Providers/AuthProvider";
-import { SiteProvider } from "@/components/Providers/SiteProvider";
-import { Metadata } from "next";
-import InstagramInvalidRedirector from "@/components/Console/InstagramInvalidRedirector";
+import { InstagramInvalidDialog } from '@/components/Console/InstagramInvalidDialog';
+import { ConsoleProvider } from '@/components/Layout/ConsoleProvider';
+import { NavBottom } from '@/components/Layout/NavBottom';
+import { ZodErrorsMapProvider } from '@/components/Layout/ZodErrorsMapProvider';
+import { AuthProvider } from '@/components/Providers/AuthProvider';
+import { SiteProvider } from '@/components/Providers/SiteProvider';
+import { Metadata } from 'next';
+import InstagramInvalidRedirector from '@/components/Console/InstagramInvalidRedirector';
 
 export const metadata: Metadata = {
   title: {
-    default: "بفروش | مدیریت مشتریان",
-    template: "%s | بفروش",
+    default: 'بفروش | مدیریت مشتریان',
+    template: '%s | بفروش',
   },
 };
 
@@ -46,7 +46,7 @@ export default async function ConsoleLayout({
               richColors
               theme="light"
               toastOptions={{
-                className: "font-Yekan text-[13px]",
+                className: 'font-Yekan text-[13px]',
               }}
             />
           </ZodErrorsMapProvider>

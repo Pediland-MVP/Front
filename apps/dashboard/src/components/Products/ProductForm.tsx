@@ -1,49 +1,42 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { AttributeValue, ProductNamespace } from "@/types/product";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { UploadNamespace } from "@/types/upload";
-import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
-import * as z from "zod";
+import api from '@/hooks/swr/api-client';
+import { AttributeValue, ProductNamespace } from '@/types/product';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import { ProductFieldTypeEnum } from '@/types/product.enum';
+import { UploadNamespace } from '@/types/upload';
+import { ProductVariationNamespace } from '@/types/variations/productAttribute.namespace';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import * as z from 'zod';
 
 // UI Components from shadcn and custom theme
-import { FormCustomFields } from "@/components/Products/FormCustomFields";
-import { FormProductDetails } from "@/components/Products/FormProductDetails";
-import { FormShippingCost } from "@/components/Products/FormShippingCost";
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Form,
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { FileUploader } from "@/components/ui-custom/FileUploader";
-import { FormVitrinDetails } from "./FormVitrinDetails";
-import { FormVitrinButtons } from "./FormVitrinButtons";
+import { FormCustomFields } from '@/components/Products/FormCustomFields';
+import { FormProductDetails } from '@/components/Products/FormProductDetails';
+import { FormShippingCost } from '@/components/Products/FormShippingCost';
+import { Button, Card, CardContent, CardHeader, CardTitle, Form } from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { FileUploader } from '@/components/ui-custom/FileUploader';
+import { FormVitrinDetails } from './FormVitrinDetails';
+import { FormVitrinButtons } from './FormVitrinButtons';
 
 interface ProductFormProps {
   shouldBeEdit?: ProductNamespace.Product;
-  type: "p" | "v";
+  type: 'p' | 'v';
 }
 
 export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
-  const t = useTranslations("Products.Form");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Products.Form');
+  const t_ec = useTranslations('ERROR_CODES');
   const router = useRouter();
 
-  const formType = type === "p" ? "Product" : "Vitrin";
+  const formType = type === 'p' ? 'Product' : 'Vitrin';
 
   const {
     data: variations,
@@ -69,53 +62,50 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       title: z
         .string()
         .min(1, {
-          message: t("Alerts.title", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
+          message: t('Alerts.title', {
+            product: formType === 'Product' ? t('product') : t('vitrin'),
           }),
         })
         .min(3, {
-          message: t("Alerts.title_length", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
+          message: t('Alerts.title_length', {
+            product: formType === 'Product' ? t('product') : t('vitrin'),
           }),
         }),
       description:
-        formType === "Vitrin"
+        formType === 'Vitrin'
           ? z.string().optional()
           : z
               .string()
               .min(1, {
-                message: t("Alerts.description", {
-                  product: t("product"),
+                message: t('Alerts.description', {
+                  product: t('product'),
                 }),
               })
               .min(5, {
-                message: t("Alerts.descrption_length", {
-                  product: t("product"),
+                message: t('Alerts.descrption_length', {
+                  product: t('product'),
                 }),
               }),
       imageId: z
         .number({
-          message: t("Alerts.image", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
+          message: t('Alerts.image', {
+            product: formType === 'Product' ? t('product') : t('vitrin'),
           }),
         })
         .min(1, {
-          message: t("Alerts.image", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
+          message: t('Alerts.image', {
+            product: formType === 'Product' ? t('product') : t('vitrin'),
           }),
         }),
       // Product-specific fields
-      ...(formType === "Product"
+      ...(formType === 'Product'
         ? {
             isInfinite: z.boolean(),
             quantity: z.number().nonnegative().optional(),
             price: z.union([z.number().int().nonnegative(), z.nan()]),
             shippingCost: z.union([z.number().int().nonnegative(), z.nan()]),
             isDiscount: z.boolean().default(false),
-            discountPrice: z
-              .union([z.number().int().nonnegative(), z.nan()])
-              .optional()
-              .nullable(),
+            discountPrice: z.union([z.number().int().nonnegative(), z.nan()]).optional().nullable(),
             isDigital: z.boolean(),
             haveColor: z.boolean().nullable(),
             haveSize: z.boolean().nullable(),
@@ -146,8 +136,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               )
               .optional(),
             orderButtonText: z.string().nullable().optional(),
-          orderProcessText: z.string().max(1000).nullable().optional(),
-          orderCardToCardProcessText: z.string().max(1000).nullable().optional(),
+            orderProcessText: z.string().max(1000).nullable().optional(),
+            orderCardToCardProcessText: z.string().max(1000).nullable().optional(),
             // Just used in submit
             attributeValueIds: z.array(z.number()),
             fields: z
@@ -166,80 +156,69 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         : {}),
 
       // Vitrin-specific fields
-      ...(formType === "Vitrin"
+      ...(formType === 'Vitrin'
         ? {
             buttons: z
               .array(
-                z.discriminatedUnion("postbackPayloadType", [
+                z.discriminatedUnion('postbackPayloadType', [
                   z.object({
                     _xid: z.string().optional(),
                     postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
-                    title: z
-                      .string()
-                      .min(1, { message: t("Alerts.button_title_required") }),
+                    title: z.string().min(1, { message: t('Alerts.button_title_required') }),
                     url: z.string().optional().nullable(),
                     destinationContentCycleId: z.string().optional().nullable(),
                   }),
                   z.object({
                     _xid: z.string().optional(),
                     postbackPayloadType: z.literal(ButtonTypeEnum.URL),
-                    title: z
-                      .string()
-                      .min(1, { message: t("Alerts.button_title_required") }),
+                    title: z.string().min(1, { message: t('Alerts.button_title_required') }),
                     url: z
                       .string({
-                        required_error: t("Alerts.button_url_required"),
+                        required_error: t('Alerts.button_url_required'),
                       })
-                      .min(1, { message: t("Alerts.button_url_required") }),
+                      .min(1, { message: t('Alerts.button_url_required') }),
                     destinationContentCycleId: z.string().optional().nullable(),
                   }),
                   z.object({
                     _xid: z.string().optional(),
-                    postbackPayloadType: z.literal(
-                      ButtonTypeEnum.START_AUTOMATION,
-                    ),
-                    title: z
-                      .string()
-                      .min(1, { message: t("Alerts.button_title_required") }),
+                    postbackPayloadType: z.literal(ButtonTypeEnum.START_AUTOMATION),
+                    title: z.string().min(1, { message: t('Alerts.button_title_required') }),
                     url: z.string().optional().nullable(),
                     destinationContentCycleId: z
                       .string({
-                        required_error: t("Alerts.button_automation_required"),
+                        required_error: t('Alerts.button_automation_required'),
                       })
                       .min(1, {
-                        message: t("Alerts.button_automation_required"),
+                        message: t('Alerts.button_automation_required'),
                       }),
                   }),
                 ]),
               )
-              .min(1, { message: t("Alerts.buttons") }),
+              .min(1, { message: t('Alerts.buttons') }),
           }
         : {}),
     })
     .superRefine((data, ctx) => {
-      if (
-        data.isDiscount &&
-        (data.discountPrice === undefined || data.discountPrice === null)
-      ) {
+      if (data.isDiscount && (data.discountPrice === undefined || data.discountPrice === null)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "قیمت با تخفیف را وارد کنید.",
-          path: ["discountPrice"],
+          message: 'قیمت با تخفیف را وارد کنید.',
+          path: ['discountPrice'],
         });
       }
       if (data.price < 1000 && data.price !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "قیمت کالا می‌تواند ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد.",
-          path: ["price"],
+          message: 'قیمت کالا می‌تواند ۰ و یا بزرگتر از ۱۰۰۰ تومان باشد.',
+          path: ['price'],
         });
       }
 
       if (data.shippingCost < 1000 && data.shippingCost !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: t("shippingCost.errors.under1000"),
-          path: ["shippingCost"],
+          message: t('shippingCost.errors.under1000'),
+          path: ['shippingCost'],
         });
       }
 
@@ -247,15 +226,15 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         if (data.discountPrice >= data.price) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "قیمت تخفیف نمی‌تواند بیشتر یا مساوی قیمت کالا باشد.",
-            path: ["discountPrice"],
+            message: 'قیمت تخفیف نمی‌تواند بیشتر یا مساوی قیمت کالا باشد.',
+            path: ['discountPrice'],
           });
         }
         if (data.discountPrice < 1000) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "قیمت تخفیف نمی‌تواند کمتر از 1000 تومان باشد.",
-            path: ["discountPrice"],
+            message: 'قیمت تخفیف نمی‌تواند کمتر از 1000 تومان باشد.',
+            path: ['discountPrice'],
           });
         }
       }
@@ -274,7 +253,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       return ButtonTypeEnum.START_AUTOMATION;
     }
     // Check for URL
-    if (button.url && button.url !== null && button.url !== "") {
+    if (button.url && button.url !== null && button.url !== '') {
       return ButtonTypeEnum.URL;
     }
     // Default to TEXT
@@ -285,12 +264,12 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       status: true,
-      title: "",
+      title: '',
       isInfinite: false,
       quantity: 0,
       price: 0,
       shippingCost: 0,
-      description: "",
+      description: '',
       isDigital: false,
       haveColor: false,
       haveSize: false,
@@ -302,13 +281,13 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             ...shouldBeEdit,
             imageId: shouldBeEdit?.images?.[0]?.id || undefined,
             isDiscount:
-              typeof shouldBeEdit?.discountPrice === "number"
+              typeof shouldBeEdit?.discountPrice === 'number'
                 ? shouldBeEdit.discountPrice >= 0
                   ? true
                   : false
                 : false,
             discountPrice:
-              typeof shouldBeEdit?.discountPrice === "number"
+              typeof shouldBeEdit?.discountPrice === 'number'
                 ? shouldBeEdit.discountPrice >= 0
                   ? shouldBeEdit?.discountPrice
                   : undefined
@@ -316,23 +295,17 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             // Override buttons with properly mapped version
             buttons: shouldBeEdit?.buttons?.map((b: any) => ({
               ...b,
-              postbackPayloadType:
-                b.postbackPayloadType || b.type || inferButtonType(b),
-              _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
+              postbackPayloadType: b.postbackPayloadType || b.type || inferButtonType(b),
+              _xid: typeof b.id !== 'undefined' ? String(b.id) : undefined,
               destinationContentCycleId:
-                b.cycleId ||
-                b.destinationContentCycleId ||
-                b.contentCycle?.id ||
-                b.cycle?.id ||
-                "",
+                b.cycleId || b.destinationContentCycleId || b.contentCycle?.id || b.cycle?.id || '',
               // Preserve the destinationContentCycle object for display
-              destinationContentCycle:
-                b.destinationContentCycle || b.contentCycle || b.cycle,
-              url: b.url || "",
-              title: b.title || "",
+              destinationContentCycle: b.destinationContentCycle || b.contentCycle || b.cycle,
+              url: b.url || '',
+              title: b.title || '',
             })),
             shippingCost: shouldBeEdit?.shippingCost ?? 0,
-            orderButtonText: shouldBeEdit?.orderButtonText || "سفارش",
+            orderButtonText: shouldBeEdit?.orderButtonText || 'سفارش',
             orderProcessText:
               shouldBeEdit?.orderProcessText ||
               `#نام پرداخت شما باموفقیت انجام شد. \\nمبلغ: #قیمت\\nکد تراکنش: #شناسه`,
@@ -342,23 +315,23 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
             isDiscount: false,
             discountPrice: undefined,
             buttons:
-              formType === "Vitrin"
+              formType === 'Vitrin'
                 ? [
                     {
                       postbackPayloadType: ButtonTypeEnum.TEXT,
-                      title: "",
-                      url: "",
+                      title: '',
+                      url: '',
                       destinationContentCycleId: null,
                     },
                   ]
                 : [],
-            orderButtonText: "سفارش",
+            orderButtonText: 'سفارش',
             orderProcessText: `#نام پرداخت شما باموفقیت انجام شد. \\nمبلغ: #قیمت\\nکد تراکنش: #شناسه`,
           }),
     },
   });
 
-  const fields = form.getValues("fields");
+  const fields = form.getValues('fields');
 
   const [isLoading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -369,10 +342,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   );
 
   // TODO: Dynamic
-  const colorAttribute =
-    variations?.items?.find((vari) => vari.title === "رنگ") ?? null;
-  const sizeAttribute =
-    variations?.items?.find((vari) => vari.title === "اندازه") ?? null;
+  const colorAttribute = variations?.items?.find((vari) => vari.title === 'رنگ') ?? null;
+  const sizeAttribute = variations?.items?.find((vari) => vari.title === 'اندازه') ?? null;
 
   useEffect(() => {
     if (shouldBeEdit?.images?.[0]?.url) {
@@ -382,34 +353,28 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   }, [shouldBeEdit]);
 
   useEffect(() => {
-    if (!shouldBeEdit || formType !== "Vitrin") return;
+    if (!shouldBeEdit || formType !== 'Vitrin') return;
 
     if (shouldBeEdit.buttons?.length) {
       const mappedButtons = shouldBeEdit.buttons.map((b: any) => ({
         ...b,
-        postbackPayloadType:
-          b.postbackPayloadType || b.type || inferButtonType(b),
-        _xid: typeof b.id !== "undefined" ? String(b.id) : undefined,
+        postbackPayloadType: b.postbackPayloadType || b.type || inferButtonType(b),
+        _xid: typeof b.id !== 'undefined' ? String(b.id) : undefined,
         destinationContentCycleId:
-          b.cycleId ||
-          b.destinationContentCycleId ||
-          b.contentCycle?.id ||
-          b.cycle?.id ||
-          "",
+          b.cycleId || b.destinationContentCycleId || b.contentCycle?.id || b.cycle?.id || '',
         // Preserve the destinationContentCycle object for display
-        destinationContentCycle:
-          b.destinationContentCycle || b.contentCycle || b.cycle,
-        url: b.url || "",
-        title: b.title || "",
+        destinationContentCycle: b.destinationContentCycle || b.contentCycle || b.cycle,
+        url: b.url || '',
+        title: b.title || '',
       }));
-      form.setValue("buttons", mappedButtons);
+      form.setValue('buttons', mappedButtons);
     }
   }, [shouldBeEdit, formType]);
 
   useEffect(() => {
     if (
       !shouldBeEdit ||
-      formType !== "Product" ||
+      formType !== 'Product' ||
       colorAttribute === null ||
       sizeAttribute === null ||
       isInitilized
@@ -418,10 +383,10 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
 
     if (shouldBeEdit.fields?.length) {
       const fieldsWith_xid = shouldBeEdit.fields.map((f) => {
-        f["_xid"] = f.id;
+        f['_xid'] = f.id;
         return f;
       });
-      form.setValue("fields", fieldsWith_xid);
+      form.setValue('fields', fieldsWith_xid);
     }
 
     if (sizeAttribute) {
@@ -436,9 +401,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           }
         });
       });
-      form.setValue("sizes", sizes);
+      form.setValue('sizes', sizes);
       if (sizes.length > 0) {
-        form.setValue("haveSize", true);
+        form.setValue('haveSize', true);
       }
     }
 
@@ -454,9 +419,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           }
         });
       });
-      form.setValue("colors", colors);
+      form.setValue('colors', colors);
       if (colors.length > 0) {
-        form.setValue("haveColor", true);
+        form.setValue('haveColor', true);
       }
     }
 
@@ -464,12 +429,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   }, [shouldBeEdit, colorAttribute, sizeAttribute, formType, isInitilized]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (formType === "Product") {
-      if (
-        values.isInfinite &&
-        (values.quantity === undefined || values.quantity === null)
-      ) {
-        form.setError("quantity", { message: t("stockError") });
+    if (formType === 'Product') {
+      if (values.isInfinite && (values.quantity === undefined || values.quantity === null)) {
+        form.setError('quantity', { message: t('stockError') });
         return;
       }
 
@@ -496,11 +458,11 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
       }
     }
 
-    if (formType === "Product") {
+    if (formType === 'Product') {
       delete (values as any).buttons;
     }
 
-    if (formType === "Vitrin") {
+    if (formType === 'Vitrin') {
       delete (values as any).orderButtonText;
       delete (values as any).orderProcessText;
       delete (values as any).status;
@@ -527,38 +489,30 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     setLoading(true);
 
     try {
-      if (formType === "Product") {
+      if (formType === 'Product') {
         await api({
-          method: shouldBeEdit ? "PUT" : "POST",
-          url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
+          method: shouldBeEdit ? 'PUT' : 'POST',
+          url: `/products${shouldBeEdit ? `/${shouldBeEdit.id}` : ''}`,
           data: values,
         });
-        toast.success(
-          shouldBeEdit ? t("productEditedSuccess") : t("productAddedSuccess"),
-        );
-        await mutate(
-          (key) => typeof key === "string" && key.includes("products"),
-        );
+        toast.success(shouldBeEdit ? t('productEditedSuccess') : t('productAddedSuccess'));
+        await mutate((key) => typeof key === 'string' && key.includes('products'));
       }
 
-      if (formType === "Vitrin") {
+      if (formType === 'Vitrin') {
         await api({
-          method: shouldBeEdit ? "PUT" : "POST",
-          url: `/vitrin${shouldBeEdit ? `/${shouldBeEdit.id}` : ""}`,
+          method: shouldBeEdit ? 'PUT' : 'POST',
+          url: `/vitrin${shouldBeEdit ? `/${shouldBeEdit.id}` : ''}`,
           data: values,
         });
-        toast.success(
-          shouldBeEdit ? t("vitrinEditedSuccess") : t("vitrinAddedSuccess"),
-        );
-        await mutate(
-          (key) => typeof key === "string" && key.includes("vitrin"),
-        );
+        toast.success(shouldBeEdit ? t('vitrinEditedSuccess') : t('vitrinAddedSuccess'));
+        await mutate((key) => typeof key === 'string' && key.includes('vitrin'));
       }
 
-      router.push("/products");
+      router.push('/products');
     } catch (e: any) {
-      if (e.code === "ERR_BAD_REQUEST") {
-        toast.error(t_ec("ERR_BAD_REQUEST"));
+      if (e.code === 'ERR_BAD_REQUEST') {
+        toast.error(t_ec('ERR_BAD_REQUEST'));
       } else {
         toast.error(t_ec(e.response?.data.code));
       }
@@ -572,29 +526,23 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     setIsUploading(true);
     const file = files[0];
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append('image', file);
     const controller = new AbortController();
 
     try {
-      const response = await api.post<UploadNamespace.POST["Image"]>(
-        `/upload/image`,
-        formData,
-        {
-          signal: controller.signal,
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total,
-              );
-              setUploadProgress(percentCompleted);
-            } else {
-              console.log(`Loaded ${progressEvent.loaded} bytes`);
-            }
-          },
-          withCredentials: true,
+      const response = await api.post<UploadNamespace.POST['Image']>(`/upload/image`, formData, {
+        signal: controller.signal,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          } else {
+            console.log(`Loaded ${progressEvent.loaded} bytes`);
+          }
         },
-      );
-      form.setValue("imageId", response.data.id, { shouldValidate: true });
+        withCredentials: true,
+      });
+      form.setValue('imageId', response.data.id, { shouldValidate: true });
       setImages([response.data.url]);
     } catch (error) {
       console.error(error);
@@ -608,11 +556,11 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   const addCustomField = () => {
     if (fields?.length === undefined || fields.length === null) return;
     if (fields!.length < 5) {
-      form.setValue("fields", [
+      form.setValue('fields', [
         ...fields,
         {
           isRequired: false,
-          label: "",
+          label: '',
           type: ProductFieldTypeEnum.TEXT,
         },
       ]);
@@ -623,7 +571,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
   const removeCustomField = (label: string) => {
     if (fields?.length === undefined || fields.length === null) return;
     form.setValue(
-      "fields",
+      'fields',
       fields.filter((field) => field.label !== label),
     );
   };
@@ -632,11 +580,11 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
     <>
       <div className="mb-4 space-y-1">
         <h2 className="text-foreground font-semibold">
-          {t("add")} {formType === "Product" ? t("product") : t("vitrin")}
+          {t('add')} {formType === 'Product' ? t('product') : t('vitrin')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {t("description", {
-            product: formType === "Product" ? t("product") : t("vitrin"),
+          {t('description', {
+            product: formType === 'Product' ? t('product') : t('vitrin'),
           })}
         </p>
       </div>
@@ -645,12 +593,9 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-5">
             <div className="_right-column space-y-4">
-              {formType === "Product" ? (
+              {formType === 'Product' ? (
                 <>
-                  <FormProductDetails
-                    variations={variations}
-                    attributeValues={attributeValues}
-                  />
+                  <FormProductDetails variations={variations} attributeValues={attributeValues} />
 
                   <FormCustomFields />
 
@@ -669,7 +614,7 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
               {/* Item Images */}
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("upload_image")}</CardTitle>
+                  <CardTitle>{t('upload_image')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <FileUploader
@@ -690,21 +635,17 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           </div>
 
           <div className="flex gap-2">
-            <ButtonLoading
-              isLoading={isLoading}
-              type="submit"
-              className="flex-1 sm:flex-none"
-            >
-              {shouldBeEdit ? t("edit") : t("submit")}{" "}
-              {formType === "Product" ? t("product") : t("vitrin")}
+            <ButtonLoading isLoading={isLoading} type="submit" className="flex-1 sm:flex-none">
+              {shouldBeEdit ? t('edit') : t('submit')}{' '}
+              {formType === 'Product' ? t('product') : t('vitrin')}
             </ButtonLoading>
             <Button
               variant="outline"
               type="button"
-              onClick={() => router.push("/products")}
+              onClick={() => router.push('/products')}
               className="flex-1 sm:flex-none"
             >
-              {t("cancel")}
+              {t('cancel')}
             </Button>
           </div>
         </form>

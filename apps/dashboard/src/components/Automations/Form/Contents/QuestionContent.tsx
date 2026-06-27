@@ -1,7 +1,7 @@
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { ValidationTypeEnum } from "@/types/validationType.enum";
-import { useTranslations } from "next-intl";
-import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { AutomationContentModeEnum } from '@/constants/automationContent.enum';
+import { ValidationTypeEnum } from '@/types/validationType.enum';
+import { useTranslations } from 'next-intl';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 
 import {
   FormField,
@@ -13,12 +13,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui";
-import { InputCounter } from "@/components/ui-custom/InputCounter";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { AutomationButtons } from "./AutomationButtons";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import { useState } from "react";
+} from '@/components/ui';
+import { InputCounter } from '@/components/ui-custom/InputCounter';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { AutomationButtons } from './AutomationButtons';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import { useState } from 'react';
 
 export type QuestionContentProps = {
   index: number;
@@ -26,40 +26,36 @@ export type QuestionContentProps = {
   control: any;
 };
 
-export type AppendQuestionButtonType = (a: { title: string, postbackPayloadType: ButtonTypeEnum }) => void
+export type AppendQuestionButtonType = (a: {
+  title: string;
+  postbackPayloadType: ButtonTypeEnum;
+}) => void;
 
-export const QuestionTextErrorMessage = "متن وارد شده صحیح نیست"
+export const QuestionTextErrorMessage = 'متن وارد شده صحیح نیست';
 
-export const QuestionContent = ({
-  index,
-  mode,
-  control,
-}: QuestionContentProps) => {
-  const t = useTranslations("Automations.Contents.Question");
-  const t_err = useTranslations("Automations.Contents.Text.Errors");
+export const QuestionContent = ({ index, mode, control }: QuestionContentProps) => {
+  const t = useTranslations('Automations.Contents.Question');
+  const t_err = useTranslations('Automations.Contents.Text.Errors');
   const { watch, setValue, getValues } = useFormContext();
 
   const { fields, update, append } = useFieldArray({
     control: control,
-    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}.quickReplies`,
+    name: `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${index}.quickReplies`,
   });
 
-  const fieldName =
-    mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders";
-
-
+  const fieldName = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
 
   // Default error messages based on validation type
   const getDefaultErrorMessage = (type: ValidationTypeEnum) => {
     switch (type) {
       case ValidationTypeEnum.Mobile:
-        return "شماره موبایل شما صحیح نیست";
+        return 'شماره موبایل شما صحیح نیست';
       case ValidationTypeEnum.Email:
-        return "ایمیل شما صحیح نیست";
+        return 'ایمیل شما صحیح نیست';
       case ValidationTypeEnum.NationalCode:
-        return "کد ملی شما درست نیست";
+        return 'کد ملی شما درست نیست';
       case ValidationTypeEnum.Number:
-        return "عدد وارد شده صحیح نیست";
+        return 'عدد وارد شده صحیح نیست';
       case ValidationTypeEnum.Text:
       default:
         return QuestionTextErrorMessage;
@@ -68,22 +64,19 @@ export const QuestionContent = ({
 
   // Update error message when validation type changes
   const handleValidationTypeChange = (value: ValidationTypeEnum) => {
-    console.log('value', value, fields)
+    console.log('value', value, fields);
     if (value === ValidationTypeEnum.Selectbox) {
       if (!fields.length) {
         append({
           postbackPayloadType: ButtonTypeEnum.TEXT,
-          title: "",
+          title: '',
         });
       }
     } else {
-      setValue(`${fieldName}.${index}.quickReplies`, [])
+      setValue(`${fieldName}.${index}.quickReplies`, []);
     }
     setValue(`${fieldName}.${index}.validationType`, value);
-    setValue(
-      `${fieldName}.${index}.validationErrorMessage`,
-      getDefaultErrorMessage(value),
-    );
+    setValue(`${fieldName}.${index}.validationErrorMessage`, getDefaultErrorMessage(value));
   };
 
   return (
@@ -94,10 +87,8 @@ export const QuestionContent = ({
         render={({ field, fieldState: { error } }) => (
           <FormItem className="w-full">
             <Label>
-              {t.rich("you_can_use_vars", {
-                name: (chunks) => (
-                  <span className="text-blue-500">{chunks}</span>
-                ),
+              {t.rich('you_can_use_vars', {
+                name: (chunks) => <span className="text-blue-500">{chunks}</span>,
               })}
             </Label>
             <Textarea
@@ -109,7 +100,7 @@ export const QuestionContent = ({
               placeholder={t('enter_question_title')}
             />
             <InputCounter text={field.value} maxLength={1000} />
-            {error && <ErrorMessage>{t_err("required")}</ErrorMessage>}
+            {error && <ErrorMessage>{t_err('required')}</ErrorMessage>}
           </FormItem>
         )}
       />
@@ -120,24 +111,18 @@ export const QuestionContent = ({
           control={control}
           render={({ field }) => (
             <FormItem className="w-full">
-              <Label>{t("validationType.label")}</Label>
+              <Label>{t('validationType.label')}</Label>
               <Select
-                value={field.value || ""}
+                value={field.value || ''}
                 defaultValue={ValidationTypeEnum.Text}
-                onValueChange={(value) =>
-                  handleValidationTypeChange(value as ValidationTypeEnum)
-                }
+                onValueChange={(value) => handleValidationTypeChange(value as ValidationTypeEnum)}
               >
                 <SelectTrigger>
-                  <SelectValue
-                    placeholder={t("validationType.selectboxDefault")}
-                  />
+                  <SelectValue placeholder={t('validationType.selectboxDefault')} />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(ValidationTypeEnum).map((el) => (
-                    <SelectItem value={el}>
-                      {t(`validationType.items.${el}`)}
-                    </SelectItem>
+                    <SelectItem value={el}>{t(`validationType.items.${el}`)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -157,21 +142,15 @@ export const QuestionContent = ({
                 rows={1}
                 className="w-full"
               />
-              { }
+              {}
             </FormItem>
           )}
         />
       </div>
 
-      {watch(`${fieldName}.${index}.validationType`) ===
-        ValidationTypeEnum.Selectbox ? (
-        <AutomationButtons
-          contentIndex={index}
-          mode={mode}
-          contentType="question"
-        />
+      {watch(`${fieldName}.${index}.validationType`) === ValidationTypeEnum.Selectbox ? (
+        <AutomationButtons contentIndex={index} mode={mode} contentType="question" />
       ) : null}
     </>
   );
 };
-

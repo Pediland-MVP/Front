@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useSubscriptionContext } from "../../../../../store/subscriptionStore";
+import { useMemo } from 'react';
+import { useSubscriptionContext } from '../../../../../store/subscriptionStore';
 
 export default function usePlanDurationMap() {
   const { plans } = useSubscriptionContext();

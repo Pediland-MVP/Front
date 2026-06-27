@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
-import { LayoutTable } from "@/components/layout/LayoutTable";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { LayoutTable } from '@/components/layout/LayoutTable';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import MultipleSelector, { Option } from "@/components/ui/multi-selector";
-import { Input } from "@/components/ui/input";
-import { Trash2, Plus } from "lucide-react";
-import api from "@/hooks/swr/api-client";
-import { Plan } from "@/types/subscription";
-import { ApifyToken, SettingsData } from "./client-page";
-import ReconcileMetricsCard from "./reconcile-metrics-card";
+} from '@/components/ui/select';
+import MultipleSelector, { Option } from '@/components/ui/multi-selector';
+import { Input } from '@/components/ui/input';
+import { Trash2, Plus } from 'lucide-react';
+import api from '@/hooks/swr/api-client';
+import { Plan } from '@/types/subscription';
+import { ApifyToken, SettingsData } from './client-page';
+import ReconcileMetricsCard from './reconcile-metrics-card';
 
 interface SettingsFormProps {
   isRefetching?: boolean;
@@ -37,21 +37,15 @@ export default function SettingsForm({
   mutate,
   showReconcile,
 }: SettingsFormProps) {
-  const t = useTranslations("Settings");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Settings');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [durationIds, setDurationIds] = useState<number[]>(
     data.settings.DEFAULT_FREE_PLAN_DURATION_IDS ?? [],
   );
-  const [smsProvider, setSmsProvider] = useState<string>(
-    data.settings.SMS_PROVIDER,
-  );
-  const [gateway, setGateway] = useState<string>(
-    data.settings.PAYMENT_DEFAULT_GATEWAY,
-  );
-  const [apifyTokens, setApifyTokens] = useState<ApifyToken[]>(
-    data.settings.APIFY_TOKENS ?? [],
-  );
+  const [smsProvider, setSmsProvider] = useState<string>(data.settings.SMS_PROVIDER);
+  const [gateway, setGateway] = useState<string>(data.settings.PAYMENT_DEFAULT_GATEWAY);
+  const [apifyTokens, setApifyTokens] = useState<ApifyToken[]>(data.settings.APIFY_TOKENS ?? []);
   const [isSaving, setIsSaving] = useState(false);
 
   // Flatten every plan's durations into selectable options.
@@ -79,18 +73,15 @@ export default function SettingsForm({
   const gatewayOptions = data.options.PAYMENT_DEFAULT_GATEWAY ?? [];
 
   const updateToken = (index: number, patch: Partial<ApifyToken>) =>
-    setApifyTokens((rows) =>
-      rows.map((row, i) => (i === index ? { ...row, ...patch } : row)),
-    );
-  const addToken = () =>
-    setApifyTokens((rows) => [...rows, { name: "", token: "" }]);
+    setApifyTokens((rows) => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
+  const addToken = () => setApifyTokens((rows) => [...rows, { name: '', token: '' }]);
   const removeToken = (index: number) =>
     setApifyTokens((rows) => rows.filter((_, i) => i !== index));
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await api.patch("/settings", {
+      await api.patch('/settings', {
         DEFAULT_FREE_PLAN_DURATION_IDS: durationIds,
         SMS_PROVIDER: smsProvider,
         PAYMENT_DEFAULT_GATEWAY: gateway,
@@ -98,11 +89,11 @@ export default function SettingsForm({
           .map((t) => ({ name: t.name.trim(), token: t.token.trim() }))
           .filter((t) => t.token.length > 0),
       });
-      toast.success(t("saveSuccess"));
+      toast.success(t('saveSuccess'));
       mutate();
     } catch (err: any) {
       const code = err?.response?.data?.code;
-      toast.error(t_ec(code) || t("saveError"));
+      toast.error(t_ec(code) || t('saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -112,42 +103,34 @@ export default function SettingsForm({
     <LayoutTable isRefetching={isRefetching}>
       <div className="flex flex-1 flex-col gap-6 p-6" dir="rtl">
         <div>
-          <h1 className="text-lg font-bold">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+          <h1 className="text-lg font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
         </div>
 
         <div className="flex max-w-xl flex-col gap-6">
           {/* Default free plan durations */}
           <div className="flex flex-col gap-2 rounded-lg border p-4">
-            <Label>{t("defaultFreePlanDurations")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("defaultFreePlanDurationsHint")}
-            </p>
+            <Label>{t('defaultFreePlanDurations')}</Label>
+            <p className="text-muted-foreground text-xs">{t('defaultFreePlanDurationsHint')}</p>
             <MultipleSelector
               value={selectedDurationOptions}
               options={durationOptions}
-              placeholder={t("selectDurations")}
+              placeholder={t('selectDurations')}
               hidePlaceholderWhenSelected
               emptyIndicator={
-                <span className="text-sm text-muted-foreground">
-                  {t("noDurations")}
-                </span>
+                <span className="text-muted-foreground text-sm">{t('noDurations')}</span>
               }
-              onChange={(opts) =>
-                setDurationIds(opts.map((o) => Number(o.value)))
-              }
+              onChange={(opts) => setDurationIds(opts.map((o) => Number(o.value)))}
             />
           </div>
 
           {/* SMS provider */}
           <div className="flex flex-col gap-2 rounded-lg border p-4">
-            <Label>{t("smsProvider")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("smsProviderHint")}
-            </p>
+            <Label>{t('smsProvider')}</Label>
+            <p className="text-muted-foreground text-xs">{t('smsProviderHint')}</p>
             <Select value={smsProvider} onValueChange={setSmsProvider}>
               <SelectTrigger>
-                <SelectValue placeholder={t("selectProvider")} />
+                <SelectValue placeholder={t('selectProvider')} />
               </SelectTrigger>
               <SelectContent>
                 {smsOptions.map((provider) => (
@@ -161,13 +144,11 @@ export default function SettingsForm({
 
           {/* Payment default gateway */}
           <div className="flex flex-col gap-2 rounded-lg border p-4">
-            <Label>{t("paymentGateway")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("paymentGatewayHint")}
-            </p>
+            <Label>{t('paymentGateway')}</Label>
+            <p className="text-muted-foreground text-xs">{t('paymentGatewayHint')}</p>
             <Select value={gateway} onValueChange={setGateway}>
               <SelectTrigger>
-                <SelectValue placeholder={t("selectGateway")} />
+                <SelectValue placeholder={t('selectGateway')} />
               </SelectTrigger>
               <SelectContent>
                 {gatewayOptions.map((g) => (
@@ -181,39 +162,33 @@ export default function SettingsForm({
 
           {/* Apify API tokens (super-admin managed) */}
           <div className="flex flex-col gap-3 rounded-lg border p-4">
-            <Label>{t("apifyTokens")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("apifyTokensHint")}
-            </p>
+            <Label>{t('apifyTokens')}</Label>
+            <p className="text-muted-foreground text-xs">{t('apifyTokensHint')}</p>
 
             <div className="flex flex-col gap-2">
               {apifyTokens.length === 0 && (
-                <span className="text-sm text-muted-foreground">
-                  {t("apifyTokensEmpty")}
-                </span>
+                <span className="text-muted-foreground text-sm">{t('apifyTokensEmpty')}</span>
               )}
               {apifyTokens.map((row, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <Input
                     className="w-1/3"
                     value={row.name}
-                    placeholder={t("apifyTokenNamePlaceholder")}
+                    placeholder={t('apifyTokenNamePlaceholder')}
                     onChange={(e) => updateToken(index, { name: e.target.value })}
                   />
                   <Input
                     className="flex-1"
                     value={row.token}
-                    placeholder={t("apifyTokenValuePlaceholder")}
-                    onChange={(e) =>
-                      updateToken(index, { token: e.target.value })
-                    }
+                    placeholder={t('apifyTokenValuePlaceholder')}
+                    onChange={(e) => updateToken(index, { token: e.target.value })}
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
                     onClick={() => removeToken(index)}
-                    aria-label={t("apifyTokenRemove")}
+                    aria-label={t('apifyTokenRemove')}
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -229,13 +204,13 @@ export default function SettingsForm({
               onClick={addToken}
             >
               <Plus className="size-4" />
-              {t("apifyTokenAdd")}
+              {t('apifyTokenAdd')}
             </Button>
           </div>
 
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? t("saving") : t("save")}
+              {isSaving ? t('saving') : t('save')}
             </Button>
           </div>
         </div>

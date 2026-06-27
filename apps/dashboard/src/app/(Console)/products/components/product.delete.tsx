@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,8 +8,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -24,25 +24,18 @@ export function ProductDeleteDialog({
   onConfirm,
   itemId,
 }: DeleteConfirmationDialogProps) {
-
-  const t = useTranslations('Products.Delete')
+  const t = useTranslations('Products.Delete');
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("deleteConfirmation")}
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('deleteConfirmation')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction
-            onClick={onConfirm}
-          >
-            {t("delete")}
-          </AlertDialogAction>
-          <AlertDialogCancel onClick={onClose}>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{t('delete')}</AlertDialogAction>
+          <AlertDialogCancel onClick={onClose}>{t('cancel')}</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

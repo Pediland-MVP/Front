@@ -4,14 +4,10 @@ const CircularProgress = ({ value = 0, size = 40, strokeWidth = 4 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (value / 100) * circumference;
-  
+
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg
-        className="transform -rotate-90"
-        width={size}
-        height={size}
-      >
+      <svg className="-rotate-90 transform" width={size} height={size}>
         {/* Background circle */}
         <circle
           className="text-gray-200"
@@ -38,9 +34,7 @@ const CircularProgress = ({ value = 0, size = 40, strokeWidth = 4 }) => {
       </svg>
       {/* Percentage text */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xs font-medium">
-          {Math.round(value)}%
-        </span>
+        <span className="text-xs font-medium">{Math.round(value)}%</span>
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 // src/types/subscription.ts
 
 export enum SubscriptionStatusEnum {
-  PENDING = "pending",
-  RESERVED = "reserved",
-  ACTIVE = "active",
-  CANCELLED = "cancelled",
-  FAILED = "failed",
-  EXPIRED = "expired",
-  PEND_FOR_ACTIVATOR = "pendForActivator",
+  PENDING = 'pending',
+  RESERVED = 'reserved',
+  ACTIVE = 'active',
+  CANCELLED = 'cancelled',
+  FAILED = 'failed',
+  EXPIRED = 'expired',
+  PEND_FOR_ACTIVATOR = 'pendForActivator',
 }
 
 export type PlanDuration = {

@@ -432,10 +432,34 @@
   "Tasks": {
     "title": "تسک‌ها",
     "search": "جستجو (نام، موبایل، یوزرنیم، متن تسک)...",
-    "stats": { "today": "تسک‌های امروز", "expired": "تسک‌های گذشته", "doneToday": "انجام‌شده امروز", "thisWeek": "تسک‌های این هفته" },
+    "stats": {
+      "today": "تسک‌های امروز",
+      "expired": "تسک‌های گذشته",
+      "doneToday": "انجام‌شده امروز",
+      "thisWeek": "تسک‌های این هفته"
+    },
     "presets": { "today": "امروز", "passed": "گذشته", "tomorrow": "فردا", "thisWeek": "این هفته" },
-    "filters": { "from": "از تاریخ", "to": "تا تاریخ", "status": "وضعیت", "admin": "ادمین", "label": "برچسب", "done": "انجام شده", "todo": "انجام نشده", "clear": "حذف فیلترها" },
-    "columns": { "actions": "عملیات", "admin": "ادمین", "actionDate": "تاریخ و ساعت", "description": "شرح تسک", "user": "کاربر", "instagram": "اینستاگرام", "mobile": "موبایل", "labels": "برچسب‌ها", "status": "وضعیت" },
+    "filters": {
+      "from": "از تاریخ",
+      "to": "تا تاریخ",
+      "status": "وضعیت",
+      "admin": "ادمین",
+      "label": "برچسب",
+      "done": "انجام شده",
+      "todo": "انجام نشده",
+      "clear": "حذف فیلترها"
+    },
+    "columns": {
+      "actions": "عملیات",
+      "admin": "ادمین",
+      "actionDate": "تاریخ و ساعت",
+      "description": "شرح تسک",
+      "user": "کاربر",
+      "instagram": "اینستاگرام",
+      "mobile": "موبایل",
+      "labels": "برچسب‌ها",
+      "status": "وضعیت"
+    },
     "manage": "مدیریت",
     "drawerTitle": "مدیریت تسک کاربر",
     "empty": "تسکی یافت نشد",
@@ -451,9 +475,30 @@
       "loading": "در حال بارگذاری...",
       "emptyTimeline": "هنوز تسکی ثبت نشده است."
     },
-    "types": { "phone": "تلفن", "telegram": "تلگرام", "instagram": "اینستاگرم", "whatsapp": "واتسپ", "unknown": "نامشخص" },
-    "recommended": { "tomorrow": "فردا", "in3days": "سه روز دیگر", "in1week": "یک هفته دیگر", "in2weeks": "دو هفته دیگر", "in1month": "یک ماه دیگر" },
-    "toasts": { "created": "تسک با موفقیت ثبت شد", "createError": "خطا در ثبت تسک", "deleteError": "خطا در حذف تسک", "statusUpdated": "وضعیت تسک به‌روز شد", "statusError": "خطا در به‌روزرسانی وضعیت", "fillAll": "لطفاً همه فیلدها را پر کنید", "reassigned": "تسک‌ها با موفقیت واگذار شد", "reassignError": "خطا در واگذاری تسک‌ها" },
+    "types": {
+      "phone": "تلفن",
+      "telegram": "تلگرام",
+      "instagram": "اینستاگرم",
+      "whatsapp": "واتسپ",
+      "unknown": "نامشخص"
+    },
+    "recommended": {
+      "tomorrow": "فردا",
+      "in3days": "سه روز دیگر",
+      "in1week": "یک هفته دیگر",
+      "in2weeks": "دو هفته دیگر",
+      "in1month": "یک ماه دیگر"
+    },
+    "toasts": {
+      "created": "تسک با موفقیت ثبت شد",
+      "createError": "خطا در ثبت تسک",
+      "deleteError": "خطا در حذف تسک",
+      "statusUpdated": "وضعیت تسک به‌روز شد",
+      "statusError": "خطا در به‌روزرسانی وضعیت",
+      "fillAll": "لطفاً همه فیلدها را پر کنید",
+      "reassigned": "تسک‌ها با موفقیت واگذار شد",
+      "reassignError": "خطا در واگذاری تسک‌ها"
+    },
     "bulk": { "select": "انتخاب ادمین", "empty": "نتیجه‌ای یافت نشد", "assign": "واگذاری به ادمین" }
   }
 }

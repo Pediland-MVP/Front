@@ -1,11 +1,11 @@
-import { GENDERS_ENUM } from "@/constants/gender.constant";
-import { ORDER_STATUS } from "./order.namespace";
-import { ORDER_PAYMENT_METHODS } from "./order.enum";
-import { City } from "../user";
+import { GENDERS_ENUM } from '@/constants/gender.constant';
+import { ORDER_STATUS } from './order.namespace';
+import { ORDER_PAYMENT_METHODS } from './order.enum';
+import { City } from '../user';
 
 export interface IOrder {
   createDate: string;
-  from: "instagram";
+  from: 'instagram';
   id: string;
   instagram: Instagram;
   instagramId: string;
@@ -129,9 +129,8 @@ interface Image {
 }
 
 enum ORDER_FROM {
-  INSTAGRAM = "instagram",
+  INSTAGRAM = 'instagram',
 }
-
 
 interface IOrderGet {
   items: Item[];

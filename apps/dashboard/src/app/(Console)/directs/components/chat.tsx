@@ -1,15 +1,15 @@
-"use client";
-import { Card } from "@/components/ui/card";
-import useCurrentLead from "@/store/currentLead.store";
-import { leadNamespace } from "@/types/lead";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
-import useSWR from "swr";
-import ChatSkeleton from "./chat.skeleton";
-import ChatBottombar from "./chatBottombar";
-import { ChatMessages } from "./chatMessages";
-import ChatTopbar from "./chatTopbar";
-import useFetchMessages from "./useFetchMessages";
+'use client';
+import { Card } from '@/components/ui/card';
+import useCurrentLead from '@/store/currentLead.store';
+import { leadNamespace } from '@/types/lead';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
+import useSWR from 'swr';
+import ChatSkeleton from './chat.skeleton';
+import ChatBottombar from './chatBottombar';
+import { ChatMessages } from './chatMessages';
+import ChatTopbar from './chatTopbar';
+import useFetchMessages from './useFetchMessages';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -24,9 +24,7 @@ export function Chat({ leadId }: ChatProps) {
     data: lead,
     isLoading: isLeadLoading,
     error: leadError,
-  } = useSWR<leadNamespace.GET["One"]>(
-    `${API_URL}/leads/${leadId}?leadInstagram=true`,
-  );
+  } = useSWR<leadNamespace.GET['One']>(`${API_URL}/leads/${leadId}?leadInstagram=true`);
 
   useEffect(() => {
     if (lead) {

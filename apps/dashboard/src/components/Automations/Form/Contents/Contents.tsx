@@ -1,32 +1,24 @@
-"use client";
+'use client';
 
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
-} from "@/constants/automationContent.enum";
-import useUser from "@/hooks/useUser";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import {
-  FieldArrayWithId,
-  useFieldArray,
-  useFormContext,
-  useWatch,
-} from "react-hook-form";
-import { WizardVideoLinks } from "../../wizardVideoLinks.conf";
-import { ContentTypeOption, contentTypeOptions } from "./ContentTypeOptions";
+} from '@/constants/automationContent.enum';
+import useUser from '@/hooks/useUser';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import { FieldArrayWithId, useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { WizardVideoLinks } from '../../wizardVideoLinks.conf';
+import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
 // TODO: Refactor Types & Schemas
-import type {
-  AutomationFormType,
-  ContentItemSchema,
-} from "@/schemas/automationForm";
-import type { UploadedFile } from "@/types/fileUploader";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
+import type { AutomationFormType, ContentItemSchema } from '@/schemas/automationForm';
+import type { UploadedFile } from '@/types/fileUploader';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
 
-import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
-import { Alert, AlertDescription, AlertTitle, Button } from "@/components/ui";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import type { DragEndEvent } from "@dnd-kit/core";
+import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
+import { Alert, AlertDescription, AlertTitle, Button } from '@/components/ui';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import type { DragEndEvent } from '@dnd-kit/core';
 import {
   closestCenter,
   DndContext,
@@ -34,22 +26,22 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import { PlusCircleIcon } from "lucide-react";
-import { ContentItem } from "./ContentItem";
-import { ContentPromotion } from "./ContentPromotion";
-import { ContentsContext } from "./ContentsContext";
-import { ContentsUploaderContextProvider } from "./ContentsUploaderContext";
-import { ValidationTypeEnum } from "@/types/validationType.enum";
-import { QuestionTextErrorMessage } from "./QuestionContent";
-import { FilePlusIcon } from "@phosphor-icons/react/dist/ssr";
-import { ChooseAutomationType } from "./ChooseAutomationType";
-import z from "zod";
+} from '@dnd-kit/sortable';
+import { PlusCircleIcon } from 'lucide-react';
+import { ContentItem } from './ContentItem';
+import { ContentPromotion } from './ContentPromotion';
+import { ContentsContext } from './ContentsContext';
+import { ContentsUploaderContextProvider } from './ContentsUploaderContext';
+import { ValidationTypeEnum } from '@/types/validationType.enum';
+import { QuestionTextErrorMessage } from './QuestionContent';
+import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
+import { ChooseAutomationType } from './ChooseAutomationType';
+import z from 'zod';
 
 type ContentsProps = {
   mode: AutomationContentModeEnum;
@@ -57,9 +49,9 @@ type ContentsProps = {
 };
 
 export const Contents = ({ mode, automationId }: ContentsProps) => {
-  const t = useTranslations("Automations.Contents");
-  const t_contentTypes = useTranslations("Automations.Contents.Types");
-  const t_err = useTranslations("Automations.Contents.Errors");
+  const t = useTranslations('Automations.Contents');
+  const t_contentTypes = useTranslations('Automations.Contents.Types');
+  const t_err = useTranslations('Automations.Contents.Errors');
   const { user } = useUser();
 
   const isPromotion = user?.instagrams?.[0]?.isPromotion;
@@ -72,15 +64,11 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   } = useFormContext<AutomationFormType>();
 
   const [isChoosingType, setIsChoosingType] = useState(
-    !!automationId || mode === AutomationContentModeEnum.REMINDER
-      ? false
-      : true,
+    !!automationId || mode === AutomationContentModeEnum.REMINDER ? false : true,
   );
 
   const arrayName =
-    mode === AutomationContentModeEnum.REMINDER
-      ? "reminders"
-      : ("contents" as const);
+    mode === AutomationContentModeEnum.REMINDER ? 'reminders' : ('contents' as const);
 
   const {
     fields: contents,
@@ -91,8 +79,8 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
     insert: insertContents,
   } = useFieldArray({
     control: control,
-    name: arrayName as "reminders" | "contents",
-    keyName: "_xid",
+    name: arrayName as 'reminders' | 'contents',
+    keyName: '_xid',
   });
 
   const watched = useWatch({ name: arrayName, control });
@@ -101,8 +89,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   useEffect(() => {
     if (
       hasItems &&
-      ((errors as any)?.[arrayName]?.root?.message ||
-        (errors as any)?.[arrayName]?.message)
+      ((errors as any)?.[arrayName]?.root?.message || (errors as any)?.[arrayName]?.message)
     ) {
       clearErrors(arrayName);
     }
@@ -134,21 +121,18 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const arrayErrorType = arrayErrors?.root?.type ?? arrayErrors?.type;
 
   const selectAutomationTypeHandler = (option: ContentTypeOption) => {
-    console.log(`Selected Type: ${option.value} previous array: `, contents)
+    console.log(`Selected Type: ${option.value} previous array: `, contents);
     appendContents({
-      type:
-        option.value === "media"
-          ? AutomationContentTypesEnum.IMAGE
-          : option.value,
+      type: option.value === 'media' ? AutomationContentTypesEnum.IMAGE : option.value,
       ...(mode === AutomationContentModeEnum.AUTOMATION && {
         haveConsent: false,
       }),
       ...(option.value === AutomationContentTypesEnum.BUTTON_TEMPLATE && {
         buttonTemplate: {
-          text: "",
+          text: '',
           buttons: [
             {
-              title: "",
+              title: '',
             },
           ],
         },
@@ -160,20 +144,20 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       ...(option.value === AutomationContentTypesEnum.VITRIN && {
         vitrins: [
           {
-            imageId: "",
-            imageUrl: "",
-            title: "",
-            description: "",
+            imageId: '',
+            imageUrl: '',
+            title: '',
+            description: '',
             buttons: [],
           },
         ],
       }),
       ...(option.value === AutomationContentTypesEnum.DELAY && {
         delayMs: 1000 * 60 * 60,
-        delayUnit: "hour"
-      })
+        delayUnit: 'hour',
+      }),
     });
-    console.log("After array: ", contents)
+    console.log('After array: ', contents);
     setIsChoosingType(false);
     clearErrors(arrayName);
   };
@@ -185,16 +169,12 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   };
 
   return (
-    <ContentsContext.Provider
-      value={{ contents, updateContents, removeContents }}
-    >
+    <ContentsContext.Provider value={{ contents, updateContents, removeContents }}>
       <div className="_content-item flex flex-col gap-3">
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
-            <p className="font-bold text-gray-500">
-              هنوز محتوایی اضافه نشده‌است
-            </p>
+            <p className="font-bold text-gray-500">هنوز محتوایی اضافه نشده‌است</p>
             {/* <p className="text-center text-sm">
               روی دکمه "افزودن محتوا" کلیک کنید و نوع محتوای خود را انتخاب کنید
             </p> */}
@@ -223,11 +203,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
                       id={content._xid}
                       index={index}
                       appendContents={appendContents}
-                      content={
-                        content as FieldArrayWithId<
-                          z.infer<typeof ContentItemSchema>
-                        >
-                      }
+                      content={content as FieldArrayWithId<z.infer<typeof ContentItemSchema>>}
                     />
                   </ContentsUploaderContextProvider>
                 ))}
@@ -240,20 +216,14 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           items={contents.map((field) => field._xid)}
           strategy={rectSortingStrategy}
         >
-          {isPromotion &&
-            contents.length > 0 &&
-            mode === AutomationContentModeEnum.AUTOMATION && (
-              <ContentPromotion />
-            )}
+          {isPromotion && contents.length > 0 && mode === AutomationContentModeEnum.AUTOMATION && (
+            <ContentPromotion />
+          )}
         </SortableContext>
 
-        {isChoosingType && (
-          <ChooseAutomationType onSelect={selectAutomationTypeHandler} />
-        )}
+        {isChoosingType && <ChooseAutomationType onSelect={selectAutomationTypeHandler} />}
 
-        {arrayErrorMsg && (
-          <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>
-        )}
+        {arrayErrorMsg && <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>}
 
         {contents.length > 0 && !isChoosingType && (
           <div className="flex items-center justify-center">
@@ -265,13 +235,13 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
               onClick={() => setIsChoosingType(true)}
             >
               <PlusCircleIcon />
-              {t("add_content")}
+              {t('add_content')}
             </Button>
             <div className="relative w-1/12">
               <HelpMeDialog
                 position="center"
-                title={t("Help.title")}
-                description={t("Help.description")}
+                title={t('Help.title')}
+                description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
               />
             </div>

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
-} from "@/constants/automationContent.enum";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+} from '@/constants/automationContent.enum';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 // TODO: Refactor Types & Schemas
-import { AutomationFormType } from "@/schemas/automationForm";
+import { AutomationFormType } from '@/schemas/automationForm';
 
 import {
   Checkbox,
@@ -24,12 +24,12 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui";
-import { TrashSimpleIcon } from "@phosphor-icons/react/dist/ssr";
-import { ContentPromotionDialog } from "./ContentPromotionDialog";
+} from '@/components/ui';
+import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { ContentPromotionDialog } from './ContentPromotionDialog';
 
 export const ContentPromotion = () => {
-  const t = useTranslations("Automations.Contents");
+  const t = useTranslations('Automations.Contents');
   const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState(false);
 
   const {
@@ -64,9 +64,7 @@ export const ContentPromotion = () => {
     trigger();
   };
 
-  const handleMessageTypeChange = async (
-    type: AutomationContentTypesEnum | "media",
-  ) => {
+  const handleMessageTypeChange = async (type: AutomationContentTypesEnum | 'media') => {
     // Create a new content object with the selected type
     //NOTE: Default values of the new content
     const updatedContent = {
@@ -83,11 +81,11 @@ export const ContentPromotion = () => {
       ...(type === AutomationContentTypesEnum.BUTTON_TEMPLATE
         ? {
             buttonTemplate: {
-              text: "",
+              text: '',
               buttons: [
                 {
-                  url: "",
-                  text: "",
+                  url: '',
+                  text: '',
                 },
               ],
             },
@@ -103,10 +101,10 @@ export const ContentPromotion = () => {
 
     // Trigger form validation
     await trigger(
-      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
+      `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${index}`,
     );
 
-    clearErrors("contents.0.buttonTemplate");
+    clearErrors('contents.0.buttonTemplate');
   };
 
   return (
@@ -114,9 +112,7 @@ export const ContentPromotion = () => {
       <div className="flex flex-col items-start gap-y-3 rounded-xl border border-dashed border-violet-200/75 bg-violet-50/60 p-3 hover:border-violet-300">
         <div className="_header flex w-full items-center justify-between gap-2">
           <div className="flex items-center gap-3">
-            <Label className="text-primary leading-4">
-              {t("promotion_announcement")}
-            </Label>
+            <Label className="text-primary leading-4">{t('promotion_announcement')}</Label>
           </div>
 
           <div>
@@ -124,7 +120,7 @@ export const ContentPromotion = () => {
               size={20}
               className="cursor-pointer text-red-600"
               onClick={() => setSubscriptionDialogOpen(true)}
-              aria-label={t("remove_content")}
+              aria-label={t('remove_content')}
             />
           </div>
         </div>
@@ -137,12 +133,7 @@ export const ContentPromotion = () => {
 
           <div className="flex w-full flex-col gap-2">
             <FormItem>
-              <Textarea
-                disabled
-                value={t("promotion_text")}
-                className="text-[13px]"
-                rows={3}
-              />
+              <Textarea disabled value={t('promotion_text')} className="text-[13px]" rows={3} />
             </FormItem>
 
             {contents?.[index]?.type === AutomationContentTypesEnum.TEXT &&
@@ -159,8 +150,7 @@ export const ContentPromotion = () => {
                           <TooltipProvider>
                             <Tooltip
                               {...(contents.length > 1 &&
-                                contents?.[index]?.type ===
-                                  AutomationContentTypesEnum.TEXT && {
+                                contents?.[index]?.type === AutomationContentTypesEnum.TEXT && {
                                   open: false,
                                 })}
                             >
@@ -168,15 +158,13 @@ export const ContentPromotion = () => {
                                 asChild
                                 disabled={
                                   contents.length > 1 ||
-                                  contents?.[index]?.type !==
-                                    AutomationContentTypesEnum.TEXT
+                                  contents?.[index]?.type !== AutomationContentTypesEnum.TEXT
                                 }
                               >
                                 <Checkbox
                                   disabled={
                                     contents.length <= 1 ||
-                                    contents?.[index]?.type !==
-                                      AutomationContentTypesEnum.TEXT
+                                    contents?.[index]?.type !== AutomationContentTypesEnum.TEXT
                                   }
                                   dir="ltr"
                                   checked={field.value || false}
@@ -185,15 +173,14 @@ export const ContentPromotion = () => {
                               </TooltipTrigger>
                               <TooltipContent>
                                 {contents.length <= 1
-                                  ? t("consentTooltip")
-                                  : contents?.[index]?.type !==
-                                      AutomationContentTypesEnum.TEXT &&
-                                    t("consentTooltipType")}
+                                  ? t('consentTooltip')
+                                  : contents?.[index]?.type !== AutomationContentTypesEnum.TEXT &&
+                                    t('consentTooltipType')}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         </FormControl>
-                        <FormLabel className="">{t("consent")}</FormLabel>
+                        <FormLabel className="">{t('consent')}</FormLabel>
                       </div>
                       {!!field.value && (
                         <Controller
@@ -201,13 +188,8 @@ export const ContentPromotion = () => {
                           control={control}
                           render={({ field, fieldState: { error } }) => (
                             <FormItem>
-                              <Input
-                                placeholder={t("consent_message")}
-                                {...field}
-                              />
-                              {error && (
-                                <FormMessage> {error.message} </FormMessage>
-                              )}
+                              <Input placeholder={t('consent_message')} {...field} />
+                              {error && <FormMessage> {error.message} </FormMessage>}
                             </FormItem>
                           )}
                         />

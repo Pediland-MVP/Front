@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useLocale, useTranslations } from "next-intl";
-import Link from "next/link";
-import useSWRImmutable from "swr/immutable";
-import { usePermissions } from "@/hooks/usePermissions";
+import { useLocale, useTranslations } from 'next-intl';
+import Link from 'next/link';
+import useSWRImmutable from 'swr/immutable';
+import { usePermissions } from '@/hooks/usePermissions';
 // TODO: Should Refactor
-import { OverallStats } from "@/types/stats";
+import { OverallStats } from '@/types/stats';
 
-import { CardContent } from "@/components/ui";
-import { CardSimple } from "@/components/ui-custom/CardSimple";
-import { LoaderPulse } from "@/components/ui-custom/LoaderPulse";
-import { PlusCircleIcon } from "@phosphor-icons/react";
-import { ItemsStatisticCard } from "./ItemsStatisticCard";
+import { CardContent } from '@/components/ui';
+import { CardSimple } from '@/components/ui-custom/CardSimple';
+import { LoaderPulse } from '@/components/ui-custom/LoaderPulse';
+import { PlusCircleIcon } from '@phosphor-icons/react';
+import { ItemsStatisticCard } from './ItemsStatisticCard';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -23,12 +23,12 @@ interface HomeItems {
 }
 
 export const DashboardStats = () => {
-  const t = useTranslations("Console.Dashboard");
+  const t = useTranslations('Console.Dashboard');
   const locale = useLocale();
   const { can } = usePermissions();
 
-  const canViewAnalytics = can("analytics:view");
-  const canCreateAutomation = can("automation:create");
+  const canViewAnalytics = can('analytics:view');
+  const canCreateAutomation = can('automation:create');
 
   const {
     data: stats,
@@ -37,23 +37,23 @@ export const DashboardStats = () => {
   } = useSWRImmutable<OverallStats>(canViewAnalytics ? `${API_URL}/stats/overall` : null);
 
   const rlsPriceFormat = (price: number) => {
-    if (!price) return "0";
+    if (!price) return '0';
 
     const million = price / 1000000;
     return (
       <>
-        {million.toLocaleString("fa-IR")}{" "}
-        <span className="flex text-sm font-medium">{t("million")}</span>
+        {million.toLocaleString('fa-IR')}{' '}
+        <span className="flex text-sm font-medium">{t('million')}</span>
       </>
     );
   };
 
   const homeItems: HomeItems[] = [
     {
-      title: t("automation"),
+      title: t('automation'),
       total: isStatsLoading ? <LoaderPulse /> : stats?.contentCycles?.count,
-      icon: "Lightning",
-      link: "/automations",
+      icon: 'Lightning',
+      link: '/automations',
     },
     // {
     //   title: t("sessions"),
@@ -62,32 +62,28 @@ export const DashboardStats = () => {
     //   link: "/automations/sessions",
     // },
     {
-      title: t("leads"),
+      title: t('leads'),
       total: isStatsLoading ? <LoaderPulse /> : stats?.leads?.count,
-      icon: "AddressBook",
-      link: "/contacts",
+      icon: 'AddressBook',
+      link: '/contacts',
     },
     {
-      title: t("products"),
+      title: t('products'),
       total: isStatsLoading ? <LoaderPulse /> : stats?.products?.count,
-      icon: "Cube",
-      link: "/products",
+      icon: 'Cube',
+      link: '/products',
     },
     {
-      title: t("orders"),
+      title: t('orders'),
       total: isStatsLoading ? <LoaderPulse /> : stats?.sales?.count,
-      icon: "ShoppingBag",
-      link: "/orders",
+      icon: 'ShoppingBag',
+      link: '/orders',
     },
     {
-      title: t("sales"),
-      total: isStatsLoading ? (
-        <LoaderPulse />
-      ) : (
-        rlsPriceFormat(stats?.sales?.total)
-      ),
-      icon: "Coins",
-      link: "/orders",
+      title: t('sales'),
+      total: isStatsLoading ? <LoaderPulse /> : rlsPriceFormat(stats?.sales?.total),
+      icon: 'Coins',
+      link: '/orders',
     },
   ];
 
@@ -106,9 +102,9 @@ export const DashboardStats = () => {
                 className="text-secondary mx-auto size-6 md:size-8"
               />
               <div className="text-secondary/90 p-1 text-center text-sm leading-relaxed font-semibold">
-                {t("add")}
+                {t('add')}
                 <br />
-                {t("automation")}
+                {t('automation')}
               </div>
             </CardContent>
           </CardSimple>

@@ -3,14 +3,10 @@ import useUser from '@/hooks/useUser';
 import { ReactNode } from 'react';
 
 interface UserStateHandlerProps {
-  children: (props: {
-    hasSubscription: boolean;
-    hasInstagram: boolean;
-  }) => ReactNode;
+  children: (props: { hasSubscription: boolean; hasInstagram: boolean }) => ReactNode;
   loadingComponent?: ReactNode;
   errorComponent?: ReactNode;
 }
-
 
 export default function UserStateHandler({
   children,

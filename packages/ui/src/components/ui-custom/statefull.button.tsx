@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
 import { cn } from '@/lib/utils';
 import { ImSpinner2 } from 'react-icons/im';
- 
+
 // mock async code
 const useStatus = ({ resloveTo }: { resloveTo: 'success' | 'error' }) => {
   const [status, setStatus] = React.useState('idle');
@@ -16,13 +16,13 @@ const useStatus = ({ resloveTo }: { resloveTo: 'success' | 'error' }) => {
       setStatus(resloveTo);
     }, 3500);
   };
- 
+
   return {
     onSubmit,
     status,
   };
 };
- 
+
 //======================================
 export function StatefulButton({ ...rest }: ButtonProps) {
   const { status, onSubmit } = useStatus({ resloveTo: 'success' });
@@ -32,7 +32,7 @@ export function StatefulButton({ ...rest }: ButtonProps) {
       onClick={onSubmit}
       {...rest}
       variant={status === 'error' ? 'destructive' : rest.variant}
-      className={cn('w-36 rounded-lg overflow-hidden', rest.className)}
+      className={cn('w-36 overflow-hidden rounded-lg', rest.className)}
     >
       <AnimatePresence mode="wait">
         {/* //------------------------------IDLE */}
@@ -59,7 +59,7 @@ export function StatefulButton({ ...rest }: ButtonProps) {
             <ImSpinner2 className="animate-spin" size="19" />
           </motion.span>
         )}
- 
+
         {/* //------------------------------RESOLVED */}
         {['success', 'error'].includes(status) && (
           <motion.span

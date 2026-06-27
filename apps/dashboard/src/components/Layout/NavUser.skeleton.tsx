@@ -1,5 +1,5 @@
 // src/components/layout/NavUser.skeleton.tsx
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const NavUserSkeleton = () => {
   return (
@@ -10,6 +10,5 @@ export const NavUserSkeleton = () => {
         <Skeleton className="h-4 w-[160px]" />
       </div>
     </div>
-  )
-}
-
+  );
+};

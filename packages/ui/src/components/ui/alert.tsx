@@ -1,23 +1,23 @@
 // DO NOT overwrite this file
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from "@/lib/utils";
-import { MessageCircleWarningIcon } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { MessageCircleWarningIcon } from 'lucide-react';
 
 const alertVariants = cva(
-  "flex items-center gap-1.5 w-full rounded-md border p-3  flex items-center",
+  'flex items-center gap-1.5 w-full rounded-md border p-3  flex items-center',
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
+        default: 'bg-background text-foreground',
         destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive bg-destructive/3 dark:bg-destructive/20",
-        note: "text-amber-700/80 bg-amber-50 border-amber-600/20 [&>svg]:text-amber-600 [&_svg]:size-4",
+          'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive bg-destructive/3 dark:bg-destructive/20',
+        note: 'text-amber-700/80 bg-amber-50 border-amber-600/20 [&>svg]:text-amber-600 [&_svg]:size-4',
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: 'default',
     },
   },
 );
@@ -34,17 +34,12 @@ const Alert = React.forwardRef<
   // });
 
   return (
-    <div
-      ref={ref}
-      role="alert"
-      className={cn(alertVariants({ variant }), className)}
-      {...props}
-    >
+    <div ref={ref} role="alert" className={cn(alertVariants({ variant }), className)} {...props}>
       {children}
     </div>
   );
 });
-Alert.displayName = "Alert";
+Alert.displayName = 'Alert';
 
 const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
@@ -52,10 +47,7 @@ const AlertTitle = React.forwardRef<
 >(({ className, children, icon, ...props }, ref) => (
   <h5
     ref={ref}
-    className={cn(
-      "flex items-center gap-3 text-[13px] leading-none font-medium",
-      className,
-    )}
+    className={cn('flex items-center gap-3 text-[13px] leading-none font-medium', className)}
     {...props}
   >
     {icon && (
@@ -66,7 +58,7 @@ const AlertTitle = React.forwardRef<
     {children}
   </h5>
 ));
-AlertTitle.displayName = "AlertTitle";
+AlertTitle.displayName = 'AlertTitle';
 
 const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -74,10 +66,7 @@ const AlertDescription = React.forwardRef<
 >(({ className, children, icon, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(
-      "flex items-center gap-3 text-[13px] leading-snug",
-      className,
-    )}
+    className={cn('flex items-center gap-3 text-[13px] leading-snug', className)}
     {...props}
   >
     {icon && (
@@ -88,6 +77,6 @@ const AlertDescription = React.forwardRef<
     {children}
   </div>
 ));
-AlertDescription.displayName = "AlertDescription";
+AlertDescription.displayName = 'AlertDescription';
 
 export { Alert, AlertTitle, AlertDescription };

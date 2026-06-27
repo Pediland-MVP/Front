@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Copy,
   CreditCard,
@@ -11,27 +11,20 @@ import {
   CreditCardIcon,
   CheckIcon,
   CopyIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { useCheckout } from "../useCheckout";
-import { useCopyToClipboard } from "@/hooks/useCopyToCllipboard";
-import useStartPayment from "../hooks/useStartPayment";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { Button } from "@/components/ui/button";
-import { ORDER_PAYMENT_METHODS } from "@/types/order/order.enum";
-import Image from "next/image";
-import useCheckoutStep from "../hooks/useCheckoutStep";
+} from '@phosphor-icons/react/dist/ssr';
+import { useCheckout } from '../useCheckout';
+import { useCopyToClipboard } from '@/hooks/useCopyToCllipboard';
+import useStartPayment from '../hooks/useStartPayment';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { Button } from '@/components/ui/button';
+import { ORDER_PAYMENT_METHODS } from '@/types/order/order.enum';
+import Image from 'next/image';
+import useCheckoutStep from '../hooks/useCheckoutStep';
 
 export default function PaymentDetails() {
-  const t = useTranslations("Checkout");
-  const {
-    shop,
-    product,
-    orderQuantity,
-    pendingOrder,
-    setStep,
-    setPaymentMethod,
-    paymentMethod,
-  } = useCheckout();
+  const t = useTranslations('Checkout');
+  const { shop, product, orderQuantity, pendingOrder, setStep, setPaymentMethod, paymentMethod } =
+    useCheckout();
   const cardToCard = shop?.user.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
 
@@ -43,9 +36,9 @@ export default function PaymentDetails() {
   const { startPayment, loading: isStartPaymentLoading } = useStartPayment();
 
   function separateTextBySpace(text: string | undefined): string {
-    if (!text) return "";
-    const cleanedText = text.replace(/\s/g, "");
-    return cleanedText.replace(/(\d{4})/g, "$1 ").trim();
+    if (!text) return '';
+    const cleanedText = text.replace(/\s/g, '');
+    return cleanedText.replace(/(\d{4})/g, '$1 ').trim();
   }
 
   const copyCardNumber = async () => {
@@ -77,7 +70,7 @@ export default function PaymentDetails() {
     <div className="_customer-details p-4">
       <h2 className="text-primary mb-4 flex items-center gap-2 border-b pb-2 text-lg font-semibold">
         <CreditCardIcon size={28} weight="duotone" className="text-primary" />
-        {t("paymentMethod")}
+        {t('paymentMethod')}
       </h2>
 
       <div className="mb-6 grid gap-2">
@@ -109,7 +102,7 @@ export default function PaymentDetails() {
               />
               <Label
                 htmlFor="r2"
-                className={`text-base ${!shop?.user?.paymentDetail?.cardToCard && "text-black/30"}`}
+                className={`text-base ${!shop?.user?.paymentDetail?.cardToCard && 'text-black/30'}`}
               >
                 کارت به کارت
               </Label>
@@ -123,13 +116,13 @@ export default function PaymentDetails() {
               <Image
                 width={80}
                 height={190}
-                src={"/images/zarinpal.svg"}
+                src={'/images/zarinpal.svg'}
                 alt="لوگوی زرین پال"
                 quality={100}
               />
               <p className="text-sm leading-relaxed text-gray-600">
-                در مرحله بعد به درگاه پرداخت زرین پال منتقل خواهید شد و پرداخت
-                شما با پرداخت ایمن زرین پال انجام میشود
+                در مرحله بعد به درگاه پرداخت زرین پال منتقل خواهید شد و پرداخت شما با پرداخت ایمن
+                زرین پال انجام میشود
               </p>
             </div>
           )}
@@ -137,28 +130,24 @@ export default function PaymentDetails() {
           {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD && (
             <>
               <p className="text-sm leading-relaxed text-gray-600">
-                لطفا مبلغ{" "}
+                لطفا مبلغ{' '}
                 <span className="text-secondary bg-yellow-100 px-1 font-semibold">
                   {(
                     (pendingOrder?.orderProducts?.[0]?.discountPrice
-                      ? pendingOrder?.orderProducts?.[0]?.discountPrice *
-                        orderQuantity
-                      : (pendingOrder?.orderProducts?.[0]?.price || 0) *
-                        orderQuantity) + (product?.shippingCost || 0)
-                  ).toLocaleString()}{" "}
+                      ? pendingOrder?.orderProducts?.[0]?.discountPrice * orderQuantity
+                      : (pendingOrder?.orderProducts?.[0]?.price || 0) * orderQuantity) +
+                    (product?.shippingCost || 0)
+                  ).toLocaleString()}{' '}
                   تومان
                 </span>
                 {product?.shippingCost
                   ? `(شامل ${product.shippingCost.toLocaleString()} تومان هزینه ارسال) `
-                  : " "}
-                به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد
-                بارگزاری نمایید.
+                  : ' '}
+                به حساب زیر واریز کرده و تصویر رسید پرداخت خود را در مرحله بعد بارگزاری نمایید.
               </p>
 
               <div className="_card-template mt-3 flex flex-col gap-3 rounded-lg border border-b-[3px] border-sky-600 border-b-sky-600 bg-linear-to-bl from-blue-50 to-blue-100 p-3">
-                <p className="text-secondary font-bold">
-                  {cardToCard?.bankName}
-                </p>
+                <p className="text-secondary font-bold">{cardToCard?.bankName}</p>
                 <div className="text-secondary flex flex-col text-sm">
                   <div className="flex flex-col items-start">
                     <span className="font-medium">شماره کارت:</span>
@@ -171,11 +160,7 @@ export default function PaymentDetails() {
                         className="transition-all duration-300 ease-in-out"
                       >
                         {cardNumberCopied ? (
-                          <CheckIcon
-                            size={22}
-                            weight="duotone"
-                            className="text-green-500"
-                          />
+                          <CheckIcon size={22} weight="duotone" className="text-green-500" />
                         ) : (
                           <CopyIcon size={22} weight="duotone" />
                         )}
@@ -185,19 +170,13 @@ export default function PaymentDetails() {
                   <div className="flex flex-col items-start">
                     <span className="font-medium">شبا:</span>
                     <div className="flex w-full items-center justify-end gap-2">
-                      <span className="font-medium">
-                        IR - {cardToCard?.iban}
-                      </span>
+                      <span className="font-medium">IR - {cardToCard?.iban}</span>
                       <button
                         onClick={copyIban}
                         className="transition-all duration-300 ease-in-out"
                       >
                         {ibanCopied ? (
-                          <Check
-                            size={22}
-                            weight="duotone"
-                            className="text-green-500"
-                          />
+                          <Check size={22} weight="duotone" className="text-green-500" />
                         ) : (
                           <Copy size={22} weight="duotone" />
                         )}
@@ -206,8 +185,7 @@ export default function PaymentDetails() {
                   </div>
                 </div>
                 <p className="text-secondary text-sm font-medium">
-                  <span>دارنده حساب:</span>{" "}
-                  <span>{cardToCard?.accountHolder}</span>
+                  <span>دارنده حساب:</span> <span>{cardToCard?.accountHolder}</span>
                 </p>
               </div>
             </>
@@ -221,16 +199,12 @@ export default function PaymentDetails() {
           className="w-8/12"
         >
           {paymentMethod === ORDER_PAYMENT_METHODS.CARD_TO_CARD
-            ? t("nextStep")
-            : t("payWithZarinpal")}
+            ? t('nextStep')
+            : t('payWithZarinpal')}
         </ButtonLoading>
 
-        <Button
-          onClick={() => setStep(prevStep())}
-          className="w-4/12"
-          variant="outline"
-        >
-          {t("back")}
+        <Button onClick={() => setStep(prevStep())} className="w-4/12" variant="outline">
+          {t('back')}
         </Button>
       </div>
     </div>

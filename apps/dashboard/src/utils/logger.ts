@@ -1,2 +1,2 @@
-const logger = console
-export default logger
+const logger = console;
+export default logger;

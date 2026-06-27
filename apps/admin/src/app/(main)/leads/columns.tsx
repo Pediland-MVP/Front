@@ -1,20 +1,20 @@
 // src/app/leads/columns.tsx
-"use client";
+'use client';
 
-import { UserStatus } from "@/constants/user-status";
-import dayjs from "@/lib/dayjs-jalali";
-import { MarketingLead } from "@/types/lead";
-import { ColumnDef } from "@tanstack/react-table";
+import { UserStatus } from '@/constants/user-status';
+import dayjs from '@/lib/dayjs-jalali';
+import { MarketingLead } from '@/types/lead';
+import { ColumnDef } from '@tanstack/react-table';
 
 // UI Imports
-import { ColumnHeader } from "@/components/table/column-header";
-import { ContactOptions } from "@/components/table/contact-options";
-import { StatusBadge } from "@/components/table/status-badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { User } from "@/types/user";
-import { SmsData } from "@/types/sms";
-import Link from "next/link";
-import DeleteItem from "@/components/lead/DeleteItem";
+import { ColumnHeader } from '@/components/table/column-header';
+import { ContactOptions } from '@/components/table/contact-options';
+import { StatusBadge } from '@/components/table/status-badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { User } from '@/types/user';
+import { SmsData } from '@/types/sms';
+import Link from 'next/link';
+import DeleteItem from '@/components/lead/DeleteItem';
 
 export function columns(
   user: User,
@@ -23,22 +23,20 @@ export function columns(
 ): ColumnDef<MarketingLead>[] {
   const cols: ColumnDef<MarketingLead>[] = [
     {
-      accessorKey: "createDate",
-      header: ({ column }) => (
-        <ColumnHeader column={column} title="تاریخ ثبت" />
-      ),
+      accessorKey: 'createDate',
+      header: ({ column }) => <ColumnHeader column={column} title="تاریخ ثبت" />,
       cell: ({ row }) => {
-        const date = row.getValue("createDate") as string;
-        const formatted = dayjs(date).calendar("jalali").format("YYYY/MM/DD");
+        const date = row.getValue('createDate') as string;
+        const formatted = dayjs(date).calendar('jalali').format('YYYY/MM/DD');
 
         return <span>{formatted}</span>;
       },
     },
     {
-      accessorKey: "status",
-      header: "وضعیت",
+      accessorKey: 'status',
+      header: 'وضعیت',
       cell: ({ row }) => {
-        const status = row.getValue("status") as UserStatus;
+        const status = row.getValue('status') as UserStatus;
 
         return (
           <Link href={`/leads/${row.original.id}`}>
@@ -48,19 +46,19 @@ export function columns(
       },
     },
     {
-      id: "instagramTitle",
+      id: 'instagramTitle',
       accessorFn: (row) => {
-        const name = row.instagram?.name ?? "";
-        return name.length > 30 ? name.slice(0, 30) + "..." : name;
+        const name = row.instagram?.name ?? '';
+        return name.length > 30 ? name.slice(0, 30) + '...' : name;
       },
-      header: "عنوان پیج اینستاگرام",
+      header: 'عنوان پیج اینستاگرام',
     },
     {
-      id: "instagramId",
-      accessorFn: (row) => row.instagram?.username ?? "-",
-      header: "آیدی اینستاگرام",
+      id: 'instagramId',
+      accessorFn: (row) => row.instagram?.username ?? '-',
+      header: 'آیدی اینستاگرام',
       cell: ({ row }) => {
-        const instagramId = row.getValue("instagramId") as string;
+        const instagramId = row.getValue('instagramId') as string;
 
         return instagramId ? (
           <Link
@@ -72,42 +70,38 @@ export function columns(
             {instagramId}
           </Link>
         ) : (
-          "-"
+          '-'
         );
       },
     },
     {
-      accessorKey: "mobile",
-      header: "همراه",
+      accessorKey: 'mobile',
+      header: 'همراه',
       cell: ({ row }) => {
-        const mobile = row.getValue("mobile") as string;
+        const mobile = row.getValue('mobile') as string;
 
         return (
           <ContactOptions
             leadId={row.original.id}
             mobile={mobile}
-            fullName={row.getValue("fullName")}
+            fullName={row.getValue('fullName')}
             openSmsDialog={openSmsDialog}
           />
         );
       },
     },
     {
-      id: "category",
+      id: 'category',
       accessorFn: (row) => row.category?.name,
-      header: "دسته‌بندی",
+      header: 'دسته‌بندی',
     },
     {
-      id: "fullName",
+      id: 'fullName',
       accessorFn: (row) =>
-        !row.firstname && !row.lastname
-          ? "نامشخص"
-          : `${row.firstname ?? ""} ${row.lastname ?? ""}`,
-      header: ({ column }) => (
-        <ColumnHeader column={column} title="نام و نام خانوادگی" />
-      ),
+        !row.firstname && !row.lastname ? 'نامشخص' : `${row.firstname ?? ''} ${row.lastname ?? ''}`,
+      header: ({ column }) => <ColumnHeader column={column} title="نام و نام خانوادگی" />,
       cell: ({ row }) => {
-        const fullName = row.getValue("fullName") as string;
+        const fullName = row.getValue('fullName') as string;
         const id = row.original.id;
 
         return (
@@ -121,48 +115,46 @@ export function columns(
       },
     },
     {
-      id: "followersCount",
+      id: 'followersCount',
       accessorFn: (row) => row.instagram?.followersCount,
       header: ({ column }) => <ColumnHeader column={column} title="فالوور" />,
       meta: { isNumeric: true },
     },
     {
-      id: "followsCount",
+      id: 'followsCount',
       accessorFn: (row) => row.instagram?.followsCount,
       header: ({ column }) => <ColumnHeader column={column} title="فالوینگ" />,
       meta: { isNumeric: true },
     },
     {
-      id: "mediaCount",
+      id: 'mediaCount',
       accessorFn: (row) => row.instagram?.mediaCount,
       header: ({ column }) => <ColumnHeader column={column} title="پست" />,
       meta: { isNumeric: true },
     },
   ];
 
-  if (user?.role !== "kam") {
+  if (user?.role !== 'kam') {
     cols.push({
-      id: "deleteItem",
-      header: "حذف",
+      id: 'deleteItem',
+      header: 'حذف',
       cell: ({ row }) => {
         return <DeleteItem id={row.original.id} mutate={mutateLeads} />;
       },
     });
   }
 
-  if (user?.role !== "kam") {
+  if (user?.role !== 'kam') {
     cols.unshift(
       {
-        id: "select",
+        id: 'select',
         header: ({ table }) => (
           <Checkbox
             checked={
               table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
           />
         ),
@@ -175,15 +167,13 @@ export function columns(
         ),
       },
       {
-        id: "kam",
+        id: 'kam',
         accessorFn: (row) => {
-          const activeAdmin = row.marketingLeadsAdmins.find(
-            (admin) => admin.isActive,
-          );
+          const activeAdmin = row.marketingLeadsAdmins.find((admin) => admin.isActive);
 
           return activeAdmin
             ? `${activeAdmin.admin.firstname} ${activeAdmin.admin.lastname}`
-            : "بدون مسئول";
+            : 'بدون مسئول';
         },
         header: ({ column }) => <ColumnHeader column={column} title="مسئول" />,
       },

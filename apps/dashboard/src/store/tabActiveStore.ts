@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface TabStore {
   activeTab: string;
@@ -6,6 +6,6 @@ interface TabStore {
 }
 
 export const useTabStore = create<TabStore>((set) => ({
-  activeTab: "chat",
+  activeTab: 'chat',
   setActiveTab: (tab) => set({ activeTab: tab }),
 }));

@@ -1,18 +1,18 @@
-import { SWRProvider } from "@/hooks/swr/api-client";
-import "@/styles/globals.css";
-import type { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { SWRProvider } from '@/hooks/swr/api-client';
+import '@/styles/globals.css';
+import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 
-import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
-import { AuthProvider } from "@/components/Providers/AuthProvider";
-import { SiteProvider } from "@/components/Providers/SiteProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { ZodErrorsMapProvider } from '@/components/Layout/ZodErrorsMapProvider';
+import { AuthProvider } from '@/components/Providers/AuthProvider';
+import { SiteProvider } from '@/components/Providers/SiteProvider';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: {
-    default: "بفروش | مدیریت مشتریان",
-    template: "%s | بفروش",
+    default: 'بفروش | مدیریت مشتریان',
+    template: '%s | بفروش',
   },
 };
 
@@ -37,7 +37,7 @@ export default async function ConsoleLayout({
               richColors
               theme="light"
               toastOptions={{
-                className: "font-Yekan text-[13px]",
+                className: 'font-Yekan text-[13px]',
               }}
             />
           </ZodErrorsMapProvider>

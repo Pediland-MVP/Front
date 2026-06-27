@@ -1,4 +1,4 @@
-import WorkspacesPageClient from "./client-page";
+import WorkspacesPageClient from './client-page';
 
 export default function WorkspacesPage() {
   return <WorkspacesPageClient />;

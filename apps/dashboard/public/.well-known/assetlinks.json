@@ -1,23 +1,19 @@
 [
-    {
-        "relation": [
-            "delegate_permission/common.handle_all_urls"
-        ],
-        "target": {
-            "namespace": "android_app",
-            "package_name": "app.befroosh.console.twa",
-            "sha256_cert_fingerprints": [
-                "88:70:3D:CF:FF:95:81:04:E6:76:78:00:46:E0:1E:B0:7D:25:20:02:D1:FB:06:7C:02:1B:30:EE:77:82:FC:93"
-            ]
-        }
-    },
-    {
-        "relation": [
-            "check_validation"
-        ],
-        "target": {
-            "namespace": "cafebazaar_twa",
-            "package_name": "app.befroosh.console.twa"
-        }
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.befroosh.console.twa",
+      "sha256_cert_fingerprints": [
+        "88:70:3D:CF:FF:95:81:04:E6:76:78:00:46:E0:1E:B0:7D:25:20:02:D1:FB:06:7C:02:1B:30:EE:77:82:FC:93"
+      ]
     }
+  },
+  {
+    "relation": ["check_validation"],
+    "target": {
+      "namespace": "cafebazaar_twa",
+      "package_name": "app.befroosh.console.twa"
+    }
+  }
 ]

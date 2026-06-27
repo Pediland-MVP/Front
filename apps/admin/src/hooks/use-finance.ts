@@ -1,10 +1,6 @@
-import useSWR from "swr";
-import type {
-  FinanceSummary,
-  InvoiceStatusEnum,
-  RevenueSeries,
-} from "@/types/finance";
-import type { RangeConfig } from "@/app/(main)/_components/metrics.constants";
+import useSWR from 'swr';
+import type { FinanceSummary, InvoiceStatusEnum, RevenueSeries } from '@/types/finance';
+import type { RangeConfig } from '@/app/(main)/_components/metrics.constants';
 
 // Responses are ResponseMessage-wrapped (CLAUDE.md §8); the SWR fetcher returns
 // the axios body, so the payload lives under `.data`.
@@ -14,7 +10,7 @@ interface Wrapped<T> {
 
 /** Converts a RangeConfig into a concrete [from, to) ISO window. */
 export function rangeToWindow(range: RangeConfig): { from: string; to: string } {
-  if (range.mode === "custom") {
+  if (range.mode === 'custom') {
     return { from: range.from, to: range.to };
   }
   const to = new Date();
@@ -31,7 +27,7 @@ export function useRevenueSeries(
   statuses: InvoiceStatusEnum[],
 ) {
   const params = windowParams(window);
-  if (statuses.length) params.set("statuses", statuses.join(","));
+  if (statuses.length) params.set('statuses', statuses.join(','));
 
   const { data, error, isLoading, isValidating } = useSWR<Wrapped<RevenueSeries>>(
     `/finance/revenue-series?${params.toString()}`,

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from 'react';
 import {
   configForTemplate,
   defaultViewConfig,
@@ -9,7 +9,7 @@ import {
   type Layout,
   type RangeConfig,
   type ViewConfig,
-} from "./metrics.constants";
+} from './metrics.constants';
 
 /**
  * In-memory dashboard view state. Not persisted — every page load starts from

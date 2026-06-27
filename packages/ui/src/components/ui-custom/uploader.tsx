@@ -1,15 +1,15 @@
-import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
-import React, { useState } from "react";
+import { UploadSimple } from '@phosphor-icons/react/dist/ssr';
+import React, { useState } from 'react';
 
 const FileUploader: React.FC = () => {
-  const [fileName, setFileName] = useState<string>("");
+  const [fileName, setFileName] = useState<string>('');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]; // بررسی وجود فایل
     if (file) {
       setFileName(file.name); // ذخیره نام فایل در state
     } else {
-      setFileName(""); // اگر فایل انتخاب نشد
+      setFileName(''); // اگر فایل انتخاب نشد
     }
   };
 
@@ -23,9 +23,7 @@ const FileUploader: React.FC = () => {
           <p className="text-muted-foreground text-center text-sm">
             فایل انتخاب شده: <span className="font-medium">{fileName}</span>
             <br />
-            <span className="text-xs font-light">
-              جهت تغییر فایل دوباره اینجا کلیک کنید.
-            </span>
+            <span className="text-xs font-light">جهت تغییر فایل دوباره اینجا کلیک کنید.</span>
           </p>
         ) : (
           <UploadSimple
@@ -35,12 +33,7 @@ const FileUploader: React.FC = () => {
           />
         )}
       </label>
-      <input
-        id="picture"
-        type="file"
-        className="hidden"
-        onChange={handleFileChange}
-      />
+      <input id="picture" type="file" className="hidden" onChange={handleFileChange} />
     </div>
   );
 };

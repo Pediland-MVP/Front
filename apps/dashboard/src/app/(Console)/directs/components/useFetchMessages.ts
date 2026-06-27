@@ -1,15 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { messagesSocket } from "@/utils/socket";
-import { leadNamespace } from "@/types/lead";
-import {
-  WsConversation,
-  WsConversationMessage,
-} from "@/types/conversations/conversation.ws";
-import { WsMessageSent } from "@/types/conversations/messageSent.ws";
-import { WsNewMessage } from "@/types/conversations/newMessage.ws";
-import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
+import { useEffect, useState } from 'react';
+import { messagesSocket } from '@/utils/socket';
+import { leadNamespace } from '@/types/lead';
+import { WsConversation, WsConversationMessage } from '@/types/conversations/conversation.ws';
+import { WsMessageSent } from '@/types/conversations/messageSent.ws';
+import { WsNewMessage } from '@/types/conversations/newMessage.ws';
+import { WsMessageEvents } from '@/types/conversations/wsMessage.enum';
 
 export type UseFetchMessage = {
   next: () => void;
@@ -17,9 +14,7 @@ export type UseFetchMessage = {
   messagesList: (WsConversationMessage | WsMessageSent | WsNewMessage)[];
 };
 
-export default function useFetchMessages(
-  lead?: leadNamespace.GET["One"]
-): UseFetchMessage {
+export default function useFetchMessages(lead?: leadNamespace.GET['One']): UseFetchMessage {
   const [messagesList, setMessagesList] = useState<
     (WsConversationMessage | WsMessageSent | WsNewMessage)[]
   >([]);
@@ -32,12 +27,12 @@ export default function useFetchMessages(
     if (message.lead.id === lead?.id) {
       setMessagesList((old) => [message, ...old]);
     }
-  }
+  };
 
   const onMessageSent = (data: string) => {
     const message: WsMessageSent = JSON.parse(data);
     setMessagesList((old) => [message, ...old]);
-  }
+  };
 
   const onConversation = (data: string) => {
     //Get conversation data
@@ -47,7 +42,7 @@ export default function useFetchMessages(
       return;
     }
     setMessagesList((old) => [...old, ...conversation.items]);
-  }
+  };
 
   useEffect(() => {
     if (isListenersSet) return;
@@ -72,7 +67,7 @@ export default function useFetchMessages(
     messagesSocket.emit(WsMessageEvents.CONVERSATION, {
       leadId: lead?.id,
       page: page + 1,
-     limit: 40
+      limit: 40,
     });
     setPage((old) => old + 1);
   };

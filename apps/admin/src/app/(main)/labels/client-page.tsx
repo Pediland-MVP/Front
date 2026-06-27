@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useDebounce } from "use-debounce";
-import { Loading } from "@/components/loading";
-import { FetchError } from "@/components/fetch-error";
-import { useLabelsList } from "./use-labels";
-import LabelsTable from "./labels-table";
-import { LabelFormDialog } from "./label-form-dialog";
-import type { LabelListItem } from "./types";
+import { useState } from 'react';
+import { useDebounce } from 'use-debounce';
+import { Loading } from '@/components/loading';
+import { FetchError } from '@/components/fetch-error';
+import { useLabelsList } from './use-labels';
+import LabelsTable from './labels-table';
+import { LabelFormDialog } from './label-form-dialog';
+import type { LabelListItem } from './types';
 
 export default function LabelsPageClient() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [debounced] = useDebounce(search, 750);
   const [editing, setEditing] = useState<LabelListItem | null>(null);
   const [formOpen, setFormOpen] = useState(false);

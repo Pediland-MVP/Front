@@ -1,4 +1,4 @@
-import { SubscriptionStatusEnum } from "./enums/subscriptionStatus.enum";
+import { SubscriptionStatusEnum } from './enums/subscriptionStatus.enum';
 
 export interface ISubscriptions {
   items: Subscription[];

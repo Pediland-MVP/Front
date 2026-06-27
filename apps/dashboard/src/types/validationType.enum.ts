@@ -1,8 +1,8 @@
 export enum ValidationTypeEnum {
-    Mobile = 'mobile',
-    Email = 'email',
-    NationalCode = 'nationalCode',
-    Text = 'text',
-    Number = 'number',
-    Selectbox =  'selectbox'
+  Mobile = 'mobile',
+  Email = 'email',
+  NationalCode = 'nationalCode',
+  Text = 'text',
+  Number = 'number',
+  Selectbox = 'selectbox',
 }

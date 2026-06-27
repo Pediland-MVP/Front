@@ -91,7 +91,7 @@
 }
 
 @layer components {
-  input[type="file"]::file-selector-button:hover {
+  input[type='file']::file-selector-button:hover {
     font-weight: bold;
     color: dodgerblue;
     padding: 0.5em;

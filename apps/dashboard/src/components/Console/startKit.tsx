@@ -1,17 +1,17 @@
 // app/(Console)/components/startKit.tsx
-"use client";
+'use client';
 
-import useConnectInstagram from "@/hooks/useConnectInstagram";
-import useUser from "@/hooks/useUser";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import useConnectInstagram from '@/hooks/useConnectInstagram';
+import useUser from '@/hooks/useUser';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 
 // UI Imports
-import { DiscountAlert } from "@/components/Settings/DiscountAlert";
-import { Button } from "@/components/ui/button";
-import { PlayIcon, PlugIcon } from "@phosphor-icons/react/dist/ssr";
+import { DiscountAlert } from '@/components/Settings/DiscountAlert';
+import { Button } from '@/components/ui/button';
+import { PlayIcon, PlugIcon } from '@phosphor-icons/react/dist/ssr';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -49,8 +49,7 @@ export default function StartKit({ isAfterPurchasingPlan }: StartKitProps) {
     <div className="_startkit-page mx-auto flex h-full flex-1 items-center justify-center md:max-w-[480px]">
       <div className="p-5">
         <h2 className="text-primary mb-1.5 font-semibold">
-          حالا وقت اتصال اینستاگرامه!{" "}
-          {isAfterPurchasingPlan && "اشتراکت رو خریدی "}
+          حالا وقت اتصال اینستاگرامه! {isAfterPurchasingPlan && 'اشتراکت رو خریدی '}
         </h2>
         <p className="mb-4 text-sm">
           حالا باید اکانت اینستاگرام خودتون رو با توجه به این آموزش متصل کنید.

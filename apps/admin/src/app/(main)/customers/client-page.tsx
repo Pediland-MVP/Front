@@ -1,55 +1,51 @@
 // src/app/(main)/customers/client-page.tsx
-"use client";
+'use client';
 
-import { fetcher } from "@/hooks/swr/api-client";
-import { useKams } from "@/hooks/use-kams";
-import { SmsData } from "@/types/sms";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
-import { useDebounce } from "use-debounce";
-import { useLabelsList } from "../labels/use-labels";
+import { fetcher } from '@/hooks/swr/api-client';
+import { useKams } from '@/hooks/use-kams';
+import { SmsData } from '@/types/sms';
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { useDebounce } from 'use-debounce';
+import { useLabelsList } from '../labels/use-labels';
 
 // UI Imports
-import { FetchError } from "@/components/fetch-error";
-import { Loading } from "@/components/loading";
-import { SendSMSDialog } from "@/components/table/dialog-sms";
-import CustomerTable from "./customer-table";
-import { useAuth } from "@/hooks/use-auth";
-import { SortingState } from "@tanstack/react-table";
+import { FetchError } from '@/components/fetch-error';
+import { Loading } from '@/components/loading';
+import { SendSMSDialog } from '@/components/table/dialog-sms';
+import CustomerTable from './customer-table';
+import { useAuth } from '@/hooks/use-auth';
+import { SortingState } from '@tanstack/react-table';
 
-export type PanelModeType = 'standard' | 'pro'
+export type PanelModeType = 'standard' | 'pro';
 
 export default function CustomersPageClient() {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
-  const [search, setSearch] = useState("");
-  const [customerSort, setCustomerSort] = useState("createDate");
-  const [customerSortOrder, setCustomerSortOrder] = useState("desc");
+  const [search, setSearch] = useState('');
+  const [customerSort, setCustomerSort] = useState('createDate');
+  const [customerSortOrder, setCustomerSortOrder] = useState('desc');
   const [debouncedSearch] = useDebounce(search, 750);
-  const [customersStatus, setCustomersStatus] = useState("");
-  const [customerAdmins, setCustomerAdmins] = useState("");
+  const [customersStatus, setCustomersStatus] = useState('');
+  const [customerAdmins, setCustomerAdmins] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [actionDate, setActionDate] = useState<Date | null>(null);
-  const [isIgTokenValid, setIsIgTokenValid] = useState("");
+  const [isIgTokenValid, setIsIgTokenValid] = useState('');
   const [labelId, setLabelId] = useState<string | undefined>(undefined);
   const [showDeleteFlagged, setShowDeleteFlagged] = useState(false);
   const [smsDialogOpen, setSmsDialogOpen] = useState(false);
   const [smsData, setSmsData] = useState<SmsData | null>(null);
-  const [panelMode, setPanelMode] = useState<PanelModeType>('standard')
+  const [panelMode, setPanelMode] = useState<PanelModeType>('standard');
 
   // Only ADMINs may view delete-flagged users.
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === 'admin';
 
-  const sortQuery = customerSort
-    ? `&sort=${customerSort}:${customerSortOrder}`
-    : "";
-  const searchQuery = debouncedSearch ? `&search=${debouncedSearch}` : "";
-  const statusQuery = customersStatus ? `&status=${customersStatus}` : "";
+  const sortQuery = customerSort ? `&sort=${customerSort}:${customerSortOrder}` : '';
+  const searchQuery = debouncedSearch ? `&search=${debouncedSearch}` : '';
+  const statusQuery = customersStatus ? `&status=${customersStatus}` : '';
   const adminQuery =
-    user && user.role !== "kam" && customerAdmins
-      ? `&adminIds=${customerAdmins}`
-      : "";
+    user && user.role !== 'kam' && customerAdmins ? `&adminIds=${customerAdmins}` : '';
 
   const fakeUTCISOString = (date: Date) => {
     const tzOffsetMs = date.getTimezoneOffset() * 60 * 1000;
@@ -57,16 +53,12 @@ export default function CustomersPageClient() {
     return fakeDate.toISOString();
   };
 
-  const actionDateQuery = actionDate
-    ? `&actionDate=${fakeUTCISOString(actionDate)}`
-    : "";
+  const actionDateQuery = actionDate ? `&actionDate=${fakeUTCISOString(actionDate)}` : '';
 
-  const categoryQuery =
-    categories.length > 0 ? `&categoryIds=${categories.join(",")}` : "";
-  const igTokenQuery = isIgTokenValid ? `&isIgTokenValid=${isIgTokenValid}` : "";
-  const labelIdQuery = labelId ? `&labelId=${labelId}` : "";
-  const deleteFlaggedQuery =
-    isAdmin && showDeleteFlagged ? `&showDeleteFlagged=true` : "";
+  const categoryQuery = categories.length > 0 ? `&categoryIds=${categories.join(',')}` : '';
+  const igTokenQuery = isIgTokenValid ? `&isIgTokenValid=${isIgTokenValid}` : '';
+  const labelIdQuery = labelId ? `&labelId=${labelId}` : '';
+  const deleteFlaggedQuery = isAdmin && showDeleteFlagged ? `&showDeleteFlagged=true` : '';
 
   const { data: labelsData } = useLabelsList({ page: 1, limit: 100 });
 
@@ -83,7 +75,7 @@ export default function CustomersPageClient() {
   );
 
   useEffect(() => {
-    console.log("action date..", actionDateQuery);
+    console.log('action date..', actionDateQuery);
   }, [actionDateQuery]);
 
   const customers = customersData?.items || [];
@@ -94,18 +86,18 @@ export default function CustomersPageClient() {
     isLoading: isKamsLoading,
     isError: kamsError,
   } = useKams({
-    roles: "manager,kam",
-    enabled: user && user.role !== "kam",
+    roles: 'manager,kam',
+    enabled: user && user.role !== 'kam',
   });
 
   const handleSortingChange = (sorting: SortingState) => {
     const sort = sorting[0];
     if (sort) {
       setCustomerSort(sort.id);
-      setCustomerSortOrder(sort.desc ? "desc" : "asc");
+      setCustomerSortOrder(sort.desc ? 'desc' : 'asc');
     } else {
-      setCustomerSort("");
-      setCustomerSortOrder("asc");
+      setCustomerSort('');
+      setCustomerSortOrder('asc');
     }
   };
 
@@ -134,9 +126,7 @@ export default function CustomersPageClient() {
         setPanelMode={setPanelMode}
         panelMode={panelMode}
         sortingState={
-          customerSort
-            ? [{ id: customerSort, desc: customerSortOrder === "desc" }]
-            : []
+          customerSort ? [{ id: customerSort, desc: customerSortOrder === 'desc' }] : []
         }
         onSortingChange={handleSortingChange}
         customersStatus={customersStatus}

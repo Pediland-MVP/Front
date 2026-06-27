@@ -1,18 +1,18 @@
 // Refactored
-import { cn } from "@/lib/utils";
-import { useLocale } from "next-intl";
-import * as React from "react";
+import { cn } from '@/lib/utils';
+import { useLocale } from 'next-intl';
+import * as React from 'react';
 
-import { EyeClosedIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
-import { Input } from "../ui/input";
+import { EyeClosedIcon, EyeIcon } from '@phosphor-icons/react/dist/ssr';
+import { Input } from '../ui/input';
 
-interface InputProps extends React.ComponentProps<"input"> {
-  iconName?: "Eye" | "EyeClosed";
+interface InputProps extends React.ComponentProps<'input'> {
+  iconName?: 'Eye' | 'EyeClosed';
   messages?: Record<string, string>;
 }
 
 const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, iconName = "EyeClosed", messages, ...props }, ref) => {
+  ({ className, type, iconName = 'EyeClosed', messages, ...props }, ref) => {
     const [isVisible, setIsVisible] = React.useState(false);
     const toggleVisibility = () => {
       setIsVisible((prev) => !prev);
@@ -24,7 +24,7 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="group relative flex items-center">
         <Input
-          type={isVisible ? "text" : "password"}
+          type={isVisible ? 'text' : 'password'}
           className={cn(className)}
           ref={ref}
           {...props}
@@ -33,15 +33,12 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
           <button
             type="button"
             className={cn(
-              "absolute flex h-10 w-10 items-center justify-center bg-transparent focus:outline-none",
-              locale === "fa" ? "left-0" : "right-0",
+              'absolute flex h-10 w-10 items-center justify-center bg-transparent focus:outline-none',
+              locale === 'fa' ? 'left-0' : 'right-0',
             )}
             onClick={toggleVisibility}
           >
-            <Icon
-              size={20}
-              className="text-gray-400 duration-200 hover:text-gray-600"
-            />
+            <Icon size={20} className="text-gray-400 duration-200 hover:text-gray-600" />
           </button>
         )}
       </div>
@@ -49,6 +46,6 @@ const InputPassword = React.forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-InputPassword.displayName = "InputPassword";
+InputPassword.displayName = 'InputPassword';
 
 export { InputPassword };

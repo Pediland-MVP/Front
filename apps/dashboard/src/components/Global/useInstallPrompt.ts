@@ -1,9 +1,8 @@
-import { BeforeInstallPromptEvent } from "@/types/beforeInstallPromptEvent";
-import { useEffect, useState } from "react";
+import { BeforeInstallPromptEvent } from '@/types/beforeInstallPromptEvent';
+import { useEffect, useState } from 'react';
 
 export function useInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -11,10 +10,10 @@ export function useInstallPrompt() {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    window.addEventListener("beforeinstallprompt", handler as any);
+    window.addEventListener('beforeinstallprompt', handler as any);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler as any);
+      window.removeEventListener('beforeinstallprompt', handler as any);
     };
   }, []);
 

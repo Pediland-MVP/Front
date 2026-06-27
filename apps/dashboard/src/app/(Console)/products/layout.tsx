@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 type ProductsLayoutProps = {
   children: React.ReactNode;

@@ -1,16 +1,16 @@
 // src/components/Automations/Form/Contents/IGPostContent.tsx
-"use client";
+'use client';
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { AutomationContentModeEnum } from '@/constants/automationContent.enum';
+import { AutomationFormType } from '@/schemas/automationForm';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
-import { Button } from "@/components/ui";
-import { IGPostContentDialog } from "./IGPostContentDialog";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+import { Button } from '@/components/ui';
+import { IGPostContentDialog } from './IGPostContentDialog';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
 const PAGE_SIZE = 9;
 
@@ -21,8 +21,8 @@ export type InstagramPostContentProps = {
 
 export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const t = useTranslations("Automations.Contents.InstagramPost");
-  const t_err = useTranslations("Automations.Contents.InstagramPost.Errors");
+  const t = useTranslations('Automations.Contents.InstagramPost');
+  const t_err = useTranslations('Automations.Contents.InstagramPost.Errors');
 
   const {
     control,
@@ -30,8 +30,7 @@ export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
     watch,
   } = useFormContext<AutomationFormType>();
 
-  const fieldPath =
-    mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders";
+  const fieldPath = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
 
   // Watch the specific field directly
   const watchedPost = watch(`${fieldPath}.${index}.instagramPost`);
@@ -52,11 +51,11 @@ export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
               <Button
                 type="button"
                 className="text-white hover:no-underline"
-                variant={"link"}
+                variant={'link'}
                 size="sm"
                 onClick={() => setIsOpen(true)}
               >
-                {t("change")}
+                {t('change')}
               </Button>
             </div>
           </div>
@@ -68,24 +67,17 @@ export const IGPostContent = ({ index, mode }: InstagramPostContentProps) => {
               variant="link"
               onClick={() => setIsOpen(true)}
             >
-              {t("select")}
+              {t('select')}
             </Button>
 
             {(errors as any)?.[fieldPath]?.[index]?.instagramPost && (
-              <ErrorMessage className="col-span-3">
-                {t_err("selection_required")}
-              </ErrorMessage>
+              <ErrorMessage className="col-span-3">{t_err('selection_required')}</ErrorMessage>
             )}
           </>
         )}
       </div>
 
-      <IGPostContentDialog
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        index={index}
-        mode={mode}
-      />
+      <IGPostContentDialog isOpen={isOpen} setIsOpen={setIsOpen} index={index} mode={mode} />
     </>
   );
 };

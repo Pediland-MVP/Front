@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { WorkspaceRow } from "@/types/workspace";
-import { PageMeta } from "@/types/meta";
-import { LayoutTable } from "@/components/layout/LayoutTable";
-import { DataTable } from "@/components/table/data-table";
-import { DataTablePagination } from "@/components/table/pagination";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { WorkspaceRow } from '@/types/workspace';
+import { PageMeta } from '@/types/meta';
+import { LayoutTable } from '@/components/layout/LayoutTable';
+import { DataTable } from '@/components/table/data-table';
+import { DataTablePagination } from '@/components/table/pagination';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Table } from "@tanstack/react-table";
-import { useWorkspaceColumns } from "./columns";
+} from '@/components/ui/select';
+import { Table } from '@tanstack/react-table';
+import { useWorkspaceColumns } from './columns';
 
 export default function WorkspaceTable({
   isRefetching,
@@ -39,9 +39,8 @@ export default function WorkspaceTable({
   type: string;
   onTypeChange: (type: string) => void;
 }) {
-  const t = useTranslations("Workspaces");
-  const [tableInstance, setTableInstance] =
-    useState<Table<WorkspaceRow> | null>(null);
+  const t = useTranslations('Workspaces');
+  const [tableInstance, setTableInstance] = useState<Table<WorkspaceRow> | null>(null);
   const [tempSearch, setTempSearch] = useState(search);
   const columns = useWorkspaceColumns();
 
@@ -55,29 +54,29 @@ export default function WorkspaceTable({
             onChange={(e) => {
               const value = e.target.value;
               setTempSearch(value);
-              if (value === "") onSearchChange("");
+              if (value === '') onSearchChange('');
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === 'Enter') {
                 e.preventDefault();
                 onSearchChange(tempSearch);
               }
             }}
-            placeholder={t("search")}
+            placeholder={t('search')}
             className="h-9 flex-1 text-[13px] md:max-w-[220px]"
           />
 
           <Select
-            value={type || "all"}
-            onValueChange={(value) => onTypeChange(value === "all" ? "" : value)}
+            value={type || 'all'}
+            onValueChange={(value) => onTypeChange(value === 'all' ? '' : value)}
           >
             <SelectTrigger className="h-9 w-[140px] text-[13px]">
-              <SelectValue placeholder={t("filterType")} />
+              <SelectValue placeholder={t('filterType')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("all")}</SelectItem>
-              <SelectItem value="personal">{t("personal")}</SelectItem>
-              <SelectItem value="team">{t("team")}</SelectItem>
+              <SelectItem value="all">{t('all')}</SelectItem>
+              <SelectItem value="personal">{t('personal')}</SelectItem>
+              <SelectItem value="team">{t('team')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -94,10 +93,7 @@ export default function WorkspaceTable({
         />
 
         {tableInstance && (
-          <DataTablePagination
-            table={tableInstance}
-            totalCount={meta.totalItems}
-          />
+          <DataTablePagination table={tableInstance} totalCount={meta.totalItems} />
         )}
       </div>
     </LayoutTable>

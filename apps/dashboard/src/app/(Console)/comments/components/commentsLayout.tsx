@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
-import React, { Suspense } from "react";
+import React, { Suspense } from 'react';
 
-import CommentsList from "./commentsList";
+import CommentsList from './commentsList';
 
 interface ChatLayoutProps {
   children: React.ReactNode;
 }
 
 export function CommentsLayout({ children }: ChatLayoutProps) {
-
   return (
-    <div className="w-full flex">
+    <div className="flex w-full">
       <div className="lg:w-1/3">
         <Suspense>
           <CommentsList />

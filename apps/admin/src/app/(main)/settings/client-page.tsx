@@ -1,20 +1,20 @@
 // src/app/(main)/settings/client-page.tsx
-"use client";
+'use client';
 
-import { notFound } from "next/navigation";
-import useSWR from "swr";
-import { fetcher } from "@/hooks/swr/api-client";
-import { useAuth } from "@/hooks/use-auth";
-import { Loading } from "@/components/loading";
-import { FetchError } from "@/components/fetch-error";
-import { Plan } from "@/types/subscription";
-import SettingsForm from "./settings-form";
+import { notFound } from 'next/navigation';
+import useSWR from 'swr';
+import { fetcher } from '@/hooks/swr/api-client';
+import { useAuth } from '@/hooks/use-auth';
+import { Loading } from '@/components/loading';
+import { FetchError } from '@/components/fetch-error';
+import { Plan } from '@/types/subscription';
+import SettingsForm from './settings-form';
 
 export type SettingsKey =
-  | "DEFAULT_FREE_PLAN_DURATION_IDS"
-  | "SMS_PROVIDER"
-  | "PAYMENT_DEFAULT_GATEWAY"
-  | "APIFY_TOKENS";
+  | 'DEFAULT_FREE_PLAN_DURATION_IDS'
+  | 'SMS_PROVIDER'
+  | 'PAYMENT_DEFAULT_GATEWAY'
+  | 'APIFY_TOKENS';
 
 export interface ApifyToken {
   name: string;
@@ -40,15 +40,15 @@ export default function SettingsPageClient() {
     isValidating,
     error,
     mutate,
-  } = useSWR("/settings", fetcher, { keepPreviousData: true });
+  } = useSWR('/settings', fetcher, { keepPreviousData: true });
 
   // Plan durations power the multi-select for DEFAULT_FREE_PLAN_DURATION_IDS.
-  const { data: plansRes } = useSWR("/plans", fetcher, {
+  const { data: plansRes } = useSWR('/plans', fetcher, {
     keepPreviousData: true,
   });
 
   // Settings cover environment-level configuration; hide from low-privilege KAM.
-  if (user && user.role === "kam") notFound();
+  if (user && user.role === 'kam') notFound();
 
   if ((!settingsRes && isLoading) || !user) return <Loading />;
   if (error) return <FetchError />;
@@ -65,7 +65,7 @@ export default function SettingsPageClient() {
       plans={plans}
       mutate={mutate}
       // Metrics reconcile is a heavy, destructive-overwrite operation — super-admin only.
-      showReconcile={user.role === "admin"}
+      showReconcile={user.role === 'admin'}
     />
   );
 }

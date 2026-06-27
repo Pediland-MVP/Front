@@ -1,12 +1,8 @@
-"use client";
+'use client';
 
-import { AssignedLabel } from "@/types/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { AssignedLabel } from '@/types/label';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 // How many label chips render inline before collapsing the rest into a "+N"
 // overflow chip. Keeps the table cell on a single line so row height and
@@ -27,12 +23,8 @@ export function LabelChips({ labels }: { labels?: AssignedLabel[] }) {
         <Badge
           key={ul.labelId}
           title={ul.label.name}
-          className="min-w-0 max-w-[96px] shrink-0"
-          style={
-            ul.label.color
-              ? { backgroundColor: ul.label.color, color: "#fff" }
-              : undefined
-          }
+          className="max-w-[96px] min-w-0 shrink-0"
+          style={ul.label.color ? { backgroundColor: ul.label.color, color: '#fff' } : undefined}
         >
           <span className="truncate">{ul.label.name}</span>
         </Badge>
@@ -41,10 +33,7 @@ export function LabelChips({ labels }: { labels?: AssignedLabel[] }) {
       {overflow.length > 0 && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge
-              variant="secondary"
-              className="shrink-0 cursor-default tabular-nums"
-            >
+            <Badge variant="secondary" className="shrink-0 cursor-default tabular-nums">
               +{overflow.length}
             </Badge>
           </TooltipTrigger>
@@ -54,7 +43,7 @@ export function LabelChips({ labels }: { labels?: AssignedLabel[] }) {
                 <span key={ul.labelId} className="flex items-center gap-1.5">
                   <span
                     className="inline-block size-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: ul.label.color || "#888" }}
+                    style={{ backgroundColor: ul.label.color || '#888' }}
                   />
                   {ul.label.name}
                 </span>

@@ -1,4 +1,3 @@
-
 export interface GetComments {
   items: CommentItem[];
   meta: Meta;

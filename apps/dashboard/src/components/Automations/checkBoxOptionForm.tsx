@@ -1,10 +1,10 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import React from "react";
-import { Controller } from "react-hook-form";
+import { Checkbox } from '@/components/ui/checkbox';
+import React from 'react';
+import { Controller } from 'react-hook-form';
 
 const items = [
-  { id: "if-follow", label: "ارسال پاسخ به شرط فالو داشتن صفحه" },
-  { id: "like-direct", label: "پیام‌های دایرکت لایک شوند" },
+  { id: 'if-follow', label: 'ارسال پاسخ به شرط فالو داشتن صفحه' },
+  { id: 'like-direct', label: 'پیام‌های دایرکت لایک شوند' },
 ];
 
 export default function CheckBoxOptionForm({ control }: any) {
@@ -17,19 +17,17 @@ export default function CheckBoxOptionForm({ control }: any) {
             name="checkboxes"
             control={control}
             render={({ field }) => (
-              <div className="flex items-center py-2 gap-2">
+              <div className="flex items-center gap-2 py-2">
                 <Checkbox
                   onCheckedChange={(checked) => {
                     return checked
                       ? field.onChange([...field.value, item.id])
-                      : field.onChange(
-                          field.value.filter((value: any) => value !== item.id)
-                        );
+                      : field.onChange(field.value.filter((value: any) => value !== item.id));
                   }}
                 />
                 <label
                   htmlFor="terms"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   {item.label}
                 </label>

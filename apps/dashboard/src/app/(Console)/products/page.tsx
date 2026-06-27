@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import useSWRImmutable from "swr/immutable";
+import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import useSWRImmutable from 'swr/immutable';
 
-import { LayoutCard } from "@/components/Layout/LayoutCard";
-import { ProducstCardList } from "@/components/Products/ProducstCardList";
-import { Button } from "@/components/ui";
-import { SearchInput } from "@/components/ui-custom/SearchInput";
-import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
-import { CircleFadingPlusIcon } from "lucide-react";
-import { usePermissions } from "@/hooks/usePermissions";
+import { LayoutCard } from '@/components/Layout/LayoutCard';
+import { ProducstCardList } from '@/components/Products/ProducstCardList';
+import { Button } from '@/components/ui';
+import { SearchInput } from '@/components/ui-custom/SearchInput';
+import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
+import { CircleFadingPlusIcon } from 'lucide-react';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function Page() {
   const router = useRouter();
-  const t = useTranslations("Products");
+  const t = useTranslations('Products');
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
-  const [effectiveSearch, setEffectiveSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>('');
+  const [effectiveSearch, setEffectiveSearch] = useState<string>('');
 
   const setTools = useHeaderFeatures((s) => s.setTools);
   const clearTools = useHeaderFeatures((s) => s.clearTools);
@@ -32,7 +32,7 @@ export default function Page() {
   });
 
   const { can } = usePermissions();
-  const allowAdd = !!cardToCardData && can("product:create");
+  const allowAdd = !!cardToCardData && can('product:create');
 
   const HeaderButton = useMemo(() => {
     return (
@@ -42,14 +42,14 @@ export default function Page() {
           setIsSearchVisible={setIsSearchVisible}
         />
 
-        {can("product:create") && (
+        {can('product:create') && (
           <Button
             type="button"
             size="md"
             disabled={error || !cardToCardData}
-            onClick={() => router.push("/products/add?t=p")}
+            onClick={() => router.push('/products/add?t=p')}
           >
-            {t("add")}
+            {t('add')}
             <CircleFadingPlusIcon />
           </Button>
         )}

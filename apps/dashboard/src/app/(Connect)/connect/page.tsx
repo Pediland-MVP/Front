@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useLogout } from "@/hooks/swr/api-client";
-import useConnectInstagram from "@/hooks/useConnectInstagram";
-import useUser from "@/hooks/useUser";
-import { useWorkspaces } from "@/hooks/useWorkspaces";
-import { usePermissions } from "@/hooks/usePermissions";
-import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useLogout } from '@/hooks/swr/api-client';
+import useConnectInstagram from '@/hooks/useConnectInstagram';
+import useUser from '@/hooks/useUser';
+import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
-import { LogoSlogan } from "@/components/Global/LogoSlogan";
-import { LogoText } from "@/components/Global/LogoText";
-import { WorkspaceSwitcherDialog } from "@/components/Console/WorkspaceSwitcherDialog";
+import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
+import { LogoSlogan } from '@/components/Global/LogoSlogan';
+import { LogoText } from '@/components/Global/LogoText';
+import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherDialog';
 import {
   Button,
   Dialog,
@@ -23,9 +23,9 @@ import {
   DialogTitle,
   Input,
   Spinner,
-} from "@/components/ui";
-import { HowToConnectDialog } from "@components/Connect/HowToConnectDialog";
-import { HeadsetIcon, PlugsIcon, SignOutIcon, ArrowsLeftRight } from "@phosphor-icons/react";
+} from '@/components/ui';
+import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
+import { HeadsetIcon, PlugsIcon, SignOutIcon, ArrowsLeftRight } from '@phosphor-icons/react';
 import {
   ClipboardCopyIcon,
   CopyIcon,
@@ -33,32 +33,32 @@ import {
   Pencil,
   SquarePlayIcon,
   TvMinimalPlayIcon,
-} from "lucide-react";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export default function ConnectPage() {
-  const t = useTranslations("Connect");
+  const t = useTranslations('Connect');
   const locale = useLocale();
   const router = useRouter();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
-  const [editedUsername, setEditedUsername] = useState("");
+  const [editedUsername, setEditedUsername] = useState('');
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
-  const code = searchParams.get("code");
+  const code = searchParams.get('code');
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
   const { workspaces } = useWorkspaces();
   const { workspaceId, can } = usePermissions();
-  const canConnect = canConnectInstagram && (workspaceId ? can("instagram:manage") : true);
+  const canConnect = canConnectInstagram && (workspaceId ? can('instagram:manage') : true);
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
   const atInstagramLimit = instagramCount >= 5;
@@ -78,9 +78,9 @@ export default function ConnectPage() {
 
     try {
       await logout();
-      router.replace("/auth");
+      router.replace('/auth');
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
     } finally {
       setIsLogoutLoading(false);
     }
@@ -96,7 +96,7 @@ export default function ConnectPage() {
             <SignOutIcon
               size={26}
               onClick={logoutHandler}
-              className={cn("cursor-pointer", locale !== "fa" && "rotate-180")}
+              className={cn('cursor-pointer', locale !== 'fa' && 'rotate-180')}
             />
           )}
 
@@ -106,12 +106,12 @@ export default function ConnectPage() {
             className="flex items-center gap-2 md:justify-center"
           >
             <HeadsetIcon size={28} weight="duotone" />
-            <span className="text-sm">{t("support")}</span>
+            <span className="text-sm">{t('support')}</span>
           </Link>
         </div>
 
         <div className="flex items-center gap-1.5">
-          {locale === "fa" && <LogoSlogan variant="white" />}
+          {locale === 'fa' && <LogoSlogan variant="white" />}
           <LogoText variant="white" size="sm" />
         </div>
       </header>
@@ -122,22 +122,19 @@ export default function ConnectPage() {
         <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>{t("edit_instagram_username")}</DialogTitle>
+              <DialogTitle>{t('edit_instagram_username')}</DialogTitle>
             </DialogHeader>
             <div className="py-4">
               <Input
                 value={editedUsername}
                 onChange={(e) => setEditedUsername(e.target.value)}
-                placeholder={t("instagram_username_placeholder")}
+                placeholder={t('instagram_username_placeholder')}
                 className="w-full"
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setEditDialogOpen(false)}
-              >
-                {t("cancel")}
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                {t('cancel')}
               </Button>
               <Button
                 onClick={() => {
@@ -147,10 +144,10 @@ export default function ConnectPage() {
                     user.submittedInstagramUsername = editedUsername;
                   }
                   setEditDialogOpen(false);
-                  toast.success(t("username_updated"));
+                  toast.success(t('username_updated'));
                 }}
               >
-                {t("save")}
+                {t('save')}
               </Button>
             </div>
           </DialogContent>
@@ -162,34 +159,31 @@ export default function ConnectPage() {
 
             <div className="space-y-3">
               <p className="text-center font-medium">
-                {t("title1")}
+                {t('title1')}
                 <br />
-                {t("title2")}
+                {t('title2')}
               </p>
               <div className="flex flex-col items-center text-[15px]">
                 <div className="text-muted-foreground">
-                  {t("mobile")}{" "}
-                  <span className="text-secondary font-semibold">
-                    {user?.mobile}
-                  </span>
+                  {t('mobile')} <span className="text-secondary font-semibold">{user?.mobile}</span>
                 </div>
                 {currentWorkspace && (
-                  <div className="text-muted-foreground flex items-center gap-1.5 mt-1">
-                    <span>{locale === "fa" ? "فضای کاری:" : "Workspace:"}</span>
-                    <span className="text-secondary font-semibold">
-                      {currentWorkspace.name}
-                    </span>
-                    <WorkspaceSwitcherDialog trigger={
-                      <button className="text-xs text-primary font-bold hover:underline cursor-pointer bg-transparent border-0 p-0 flex items-center gap-0.5">
-                        <ArrowsLeftRight size={14} className="inline" />
-                        <span>{locale === "fa" ? "تغییر" : "Change"}</span>
-                      </button>
-                    } />
+                  <div className="text-muted-foreground mt-1 flex items-center gap-1.5">
+                    <span>{locale === 'fa' ? 'فضای کاری:' : 'Workspace:'}</span>
+                    <span className="text-secondary font-semibold">{currentWorkspace.name}</span>
+                    <WorkspaceSwitcherDialog
+                      trigger={
+                        <button className="text-primary flex cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0 text-xs font-bold hover:underline">
+                          <ArrowsLeftRight size={14} className="inline" />
+                          <span>{locale === 'fa' ? 'تغییر' : 'Change'}</span>
+                        </button>
+                      }
+                    />
                   </div>
                 )}
                 {!hasInstagram && user?.submittedInstagramUsername && (
                   <div className="text-muted-foreground flex items-center gap-2">
-                    {t("instagram")}{" "}
+                    {t('instagram')}{' '}
                     <span className="text-secondary font-semibold">
                       {user?.submittedInstagramUsername}
                     </span>
@@ -197,9 +191,7 @@ export default function ConnectPage() {
                       size={16}
                       className="text-muted-foreground hover:text-secondary cursor-pointer"
                       onClick={() => {
-                        setEditedUsername(
-                          user?.submittedInstagramUsername || "",
-                        );
+                        setEditedUsername(user?.submittedInstagramUsername || '');
                         setEditDialogOpen(true);
                       }}
                     />
@@ -211,31 +203,27 @@ export default function ConnectPage() {
             <div className="flex w-full flex-col items-center justify-center">
               {atInstagramLimit ? (
                 <div className="w-full rounded-xl bg-violet-50 px-4 py-3 text-center text-sm text-violet-700">
-                  {t("instagram_limit")}
+                  {t('instagram_limit')}
                 </div>
               ) : !canConnect ? (
                 // Sub-scenario B.2 — member lacks instagram:manage permission.
                 // Backend already blocks the connect; this surfaces the reason in the UI.
                 <div className="w-full rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-center text-sm text-amber-800">
-                  <p className="mb-1 font-medium">{t("no_connect_permission_title")}</p>
-                  <p className="text-xs">{t("no_connect_permission_description")}</p>
+                  <p className="mb-1 font-medium">{t('no_connect_permission_title')}</p>
+                  <p className="text-xs">{t('no_connect_permission_description')}</p>
                 </div>
               ) : (
                 <>
-                  <Button
-                    className="w-full"
-                    disabled={isCallbackIGLoading}
-                    asChild
-                  >
+                  <Button className="w-full" disabled={isCallbackIGLoading} asChild>
                     <Link
                       href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
                     >
                       {isCallbackIGLoading ? (
                         <>
-                          <Spinner className="size-5" /> {t("connecting_account")}
+                          <Spinner className="size-5" /> {t('connecting_account')}
                         </>
                       ) : (
-                        t("connect_account")
+                        t('connect_account')
                       )}
                     </Link>
                   </Button>
@@ -244,19 +232,19 @@ export default function ConnectPage() {
                     className="text-muted-foreground mt-4 text-sm font-normal"
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        "https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments",
+                        'https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments',
                       );
-                      toast.success("لینک اتصال با موفقیت کپی شد!");
+                      toast.success('لینک اتصال با موفقیت کپی شد!');
                     }}
                   >
-                    {t("copy_manual")}
+                    {t('copy_manual')}
                     <CopyIcon />
                   </Button>
                 </>
               )}
 
               <HelpMeDialog
-                title={t("how_to_connect")}
+                title={t('how_to_connect')}
                 videoSrc="https://befroosh.s3.ir-thr-at1.arvanstorage.ir/learn%2Ff54e8c002432b82b23a046865a9e9f1067430006-720p.mp4?versionId="
                 videoPoster="/images/photo_2025-02-26_22-00-50.jpg"
                 noAbsolute
@@ -268,23 +256,19 @@ export default function ConnectPage() {
                   className="text-muted-foreground mt-4"
                 >
                   <TvMinimalPlayIcon className="size-6" />
-                  {t("how_to_connect")}
+                  {t('how_to_connect')}
                 </Button>
               </HelpMeDialog>
 
               {hasInstagram && (
-                <Button
-                  variant="outline"
-                  className="mt-4 w-full"
-                  asChild
-                >
-                  <Link href="/">{t("back_to_home")}</Link>
+                <Button variant="outline" className="mt-4 w-full" asChild>
+                  <Link href="/">{t('back_to_home')}</Link>
                 </Button>
               )}
             </div>
           </div>
 
-          <div className="mx-auto flex flex-col items-center mb-24">
+          <div className="mx-auto mb-24 flex flex-col items-center">
             <div className="mx-auto mb-4 flex items-center justify-center gap-4">
               <Image
                 src="/images/logo-threads.svg"
@@ -310,7 +294,7 @@ export default function ConnectPage() {
             </div>
 
             <p className="mb-2 text-center">
-              {t.rich("befroosh_meta_partner", {
+              {t.rich('befroosh_meta_partner', {
                 bold: (chunks) => <strong>{chunks}</strong>,
                 span: (chunks) => <span className="text-sm">{chunks}</span>,
               })}

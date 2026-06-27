@@ -1,7 +1,7 @@
 // src/components/Automations/Form/Contents/ProductContentItemDialog.tsx
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,18 +9,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import api from "@/hooks/swr/api-client";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { ProductNamespace } from "@/types/product";
-import { AxiosError, AxiosResponse } from "axios";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { MouseEvent, useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import api from '@/hooks/swr/api-client';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { ProductNamespace } from '@/types/product';
+import { AxiosError, AxiosResponse } from 'axios';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { MouseEvent, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const PAGE_SIZE = 50;
 
@@ -39,7 +39,7 @@ export const ProductContentItemDialog = ({
   isOpen,
   onOpenChange,
 }: ProductContentItemDialogProps) => {
-  const t = useTranslations("Automations.Contents.Product.Dialog");
+  const t = useTranslations('Automations.Contents.Product.Dialog');
   const [products, setProducts] = useState<ProductNamespace.Products>([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
@@ -55,7 +55,7 @@ export const ProductContentItemDialog = ({
         setPage((prevPage) => prevPage + 1);
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
-        console.error(t("fetch_error"), e);
+        console.error(t('fetch_error'), e);
       })
       .finally(() => {
         setIsLoading(false);
@@ -87,10 +87,8 @@ export const ProductContentItemDialog = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>{t("select_product")}</DialogTitle>
-          <DialogDescription>
-            {t("select_product_description")}
-          </DialogDescription>
+          <DialogTitle>{t('select_product')}</DialogTitle>
+          <DialogDescription>{t('select_product_description')}</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={products.length}
@@ -98,16 +96,14 @@ export const ProductContentItemDialog = ({
           hasMore={hasMore}
           loader={<></>}
           endMessage={
-            <p className="text-muted-foreground mt-4 text-center text-sm">
-              {t("no_more_posts")}
-            </p>
+            <p className="text-muted-foreground mt-4 text-center text-sm">{t('no_more_posts')}</p>
           }
           scrollableTarget="scrollableDiv"
         >
           <div
             className="grid w-full grid-cols-3 gap-4"
             id="scrollableDiv"
-            style={{ maxHeight: "60vh", overflowY: "auto" }}
+            style={{ maxHeight: '60vh', overflowY: 'auto' }}
           >
             {!products.length
               ? Array.from({ length: 9 }).map((_, index) => (
@@ -126,17 +122,15 @@ export const ProductContentItemDialog = ({
                   >
                     <Image
                       src={product?.images[0]?.url}
-                      alt={product?.title || t("instagram_post_alt")}
+                      alt={product?.title || t('instagram_post_alt')}
                       layout="fill"
                       objectFit="cover"
                       className="duration-150 hover:opacity-80"
                     />
                     <div className="bg-opacity-50 absolute inset-x-0 bottom-0 bg-black px-2 py-1">
-                      <div className="text-sm font-bold text-white">
-                        {product?.title}
-                      </div>
+                      <div className="text-sm font-bold text-white">{product?.title}</div>
                       <div className="text-sm text-white">
-                        {t("price", { price: product.price })}
+                        {t('price', { price: product.price })}
                       </div>
                     </div>
                   </div>
@@ -144,7 +138,7 @@ export const ProductContentItemDialog = ({
           </div>
         </InfiniteScroll>
         <DialogFooter className="flex items-center justify-center gap-x-2">
-          <Button onClick={() => onOpenChange(false)}>{t("close")}</Button>
+          <Button onClick={() => onOpenChange(false)}>{t('close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

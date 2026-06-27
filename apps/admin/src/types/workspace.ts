@@ -1,6 +1,6 @@
-import { SubscriptionStatusEnum } from "@/types/subscription";
+import { SubscriptionStatusEnum } from '@/types/subscription';
 
-export type WorkspaceListSubscriptionStatus = "active" | "expired" | "none";
+export type WorkspaceListSubscriptionStatus = 'active' | 'expired' | 'none';
 
 export type WorkspaceOwner = {
   id: string;
@@ -27,7 +27,7 @@ export type WorkspaceMember = {
   userId: string;
   name: string;
   mobile: string | null;
-  role: "owner" | "member";
+  role: 'owner' | 'member';
   status: string;
   joinedAt: string;
   permissions: WorkspaceMemberPermission[];

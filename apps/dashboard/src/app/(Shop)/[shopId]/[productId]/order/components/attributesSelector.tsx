@@ -1,23 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
-import type { z } from "zod";
-import type { orderFormSchema } from "../../../../../../components/Shop/CheckoutPage";
-import { cn } from "@/lib/utils";
-import { Check, CheckIcon } from "lucide-react";
-import { useCheckout } from "../useCheckout";
-import { useUpdateAttributes } from "../hooks/useUpdateAttributes";
-import type { Attribute, AttributeValue } from "@/types/product";
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
+import type { z } from 'zod';
+import type { orderFormSchema } from '../../../../../../components/Shop/CheckoutPage';
+import { cn } from '@/lib/utils';
+import { Check, CheckIcon } from 'lucide-react';
+import { useCheckout } from '../useCheckout';
+import { useUpdateAttributes } from '../hooks/useUpdateAttributes';
+import type { Attribute, AttributeValue } from '@/types/product';
 
 interface AttributeSelectorProps {
   attributes: Attribute[];
 }
 
 export function AttributeSelector({ attributes }: AttributeSelectorProps) {
-  const { setValue, watch, getValues } =
-    useFormContext<z.infer<typeof orderFormSchema>>();
-  const selectedAttributeValueIds = watch("attributeValueIds") || [];
+  const { setValue, watch, getValues } = useFormContext<z.infer<typeof orderFormSchema>>();
+  const selectedAttributeValueIds = watch('attributeValueIds') || [];
 
   const { isUpdateAttributesLoading, updateAttributes } = useUpdateAttributes();
 
@@ -28,7 +27,7 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
     const initialSelectedIds = attributes
       .map((attr) => attr.attributeValues[0]?.id)
       .filter(Boolean);
-    setValue("attributeValueIds", initialSelectedIds);
+    setValue('attributeValueIds', initialSelectedIds);
   }, [attributes, setValue]);
 
   const handleAttributeValueSelect = (attributeId: number, valueId: number) => {
@@ -42,11 +41,11 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
     });
 
     // Add the newly selected value
-    setValue("attributeValueIds", [...filteredIds, valueId]);
+    setValue('attributeValueIds', [...filteredIds, valueId]);
 
     // Update attributes when order exist
     if (pendingOrder) {
-      updateAttributes(getValues("attributeValueIds"));
+      updateAttributes(getValues('attributeValueIds'));
     }
   };
 
@@ -54,7 +53,7 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
     return selectedAttributeValueIds.includes(valueId);
   };
 
-  const isDisabled = pendingOrder?.status === "payment";
+  const isDisabled = pendingOrder?.status === 'payment';
 
   if (!attributes || attributes.length === 0) return null;
 
@@ -65,19 +64,17 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
           <h3 className="text-sm font-medium">{attribute.title}</h3>
 
           <div className="flex flex-wrap gap-2">
-            {attribute.style === "color"
+            {attribute.style === 'color'
               ? // Color selector
                 attribute.attributeValues.map((value) => (
                   <button
                     disabled={isDisabled}
                     key={value.id}
                     type="button"
-                    onClick={() =>
-                      handleAttributeValueSelect(attribute.id, value.id)
-                    }
+                    onClick={() => handleAttributeValueSelect(attribute.id, value.id)}
                     className={cn(
-                      "relative flex h-8 w-8 items-center justify-center rounded-full",
-                      isDisabled ? "cursor-not-allowed opacity-50" : "",
+                      'relative flex h-8 w-8 items-center justify-center rounded-full',
+                      isDisabled ? 'cursor-not-allowed opacity-50' : '',
                     )}
                     style={{ backgroundColor: value.colorHex || undefined }}
                     title={value.label}
@@ -93,15 +90,13 @@ export function AttributeSelector({ attributes }: AttributeSelectorProps) {
                     disabled={isDisabled}
                     key={value.id}
                     type="button"
-                    onClick={() =>
-                      handleAttributeValueSelect(attribute.id, value.id)
-                    }
+                    onClick={() => handleAttributeValueSelect(attribute.id, value.id)}
                     className={cn(
-                      "text-primary flex size-9 items-center justify-center rounded-full border pt-1 text-sm leading-none font-medium",
+                      'text-primary flex size-9 items-center justify-center rounded-full border pt-1 text-sm leading-none font-medium',
                       isSelected(value.id)
-                        ? "bg-primary/80 text-primary-foreground border-primary"
-                        : "bg-background border-input hover:bg-muted",
-                      isDisabled ? "cursor-not-allowed opacity-50" : "",
+                        ? 'bg-primary/80 text-primary-foreground border-primary'
+                        : 'bg-background border-input hover:bg-muted',
+                      isDisabled ? 'cursor-not-allowed opacity-50' : '',
                     )}
                   >
                     {value.label}

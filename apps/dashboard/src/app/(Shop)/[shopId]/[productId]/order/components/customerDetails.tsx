@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
-import useOrder from "../hooks/useOrder";
-import useUpdateContact from "../hooks/useUpdateContact";
-import { useCheckout } from "../useCheckout";
+import { cn } from '@/lib/utils';
+import { ProductFieldTypeEnum } from '@/types/product.enum';
+import { onInputP2EHandler } from '@/utils/p2eNumber';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { z } from 'zod';
+import useOrder from '../hooks/useOrder';
+import useUpdateContact from '../hooks/useUpdateContact';
+import { useCheckout } from '../useCheckout';
 
-import { orderFormSchema } from "@/components/Shop/CheckoutPage";
+import { orderFormSchema } from '@/components/Shop/CheckoutPage';
 import {
   FormControl,
   FormField,
@@ -20,13 +20,13 @@ import {
   FormMessage,
   Input,
   Textarea,
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { UserRectangleIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { UserRectangleIcon } from '@phosphor-icons/react/dist/ssr';
 
 export default function CustomerDetails() {
-  const t = useTranslations("Checkout");
+  const t = useTranslations('Checkout');
 
   const { pendingOrder, product } = useCheckout();
   const { createOrder, loading: isCreateOrderLoading } = useOrder();
@@ -47,12 +47,12 @@ export default function CustomerDetails() {
 
   const createOrderHandler = async () => {
     // Validate required fields
-    const isFirstNameValid = await trigger("firstname");
-    const isLastNameValid = await trigger("lastname");
-    const isMobileValid = await trigger("mobile");
+    const isFirstNameValid = await trigger('firstname');
+    const isLastNameValid = await trigger('lastname');
+    const isMobileValid = await trigger('mobile');
 
     let isProductFieldsValid = true;
-    const productFieldValues = watch("productFieldValues");
+    const productFieldValues = watch('productFieldValues');
     if ((product?.fields?.length || 0) > 0) {
       productFieldValues?.forEach((pf, index) => {
         if (pf.isRequired && !pf.value) {
@@ -65,12 +65,7 @@ export default function CustomerDetails() {
       });
     }
 
-    if (
-      !isFirstNameValid ||
-      !isLastNameValid ||
-      !isMobileValid ||
-      !isProductFieldsValid
-    ) {
+    if (!isFirstNameValid || !isLastNameValid || !isMobileValid || !isProductFieldsValid) {
       return;
     }
 
@@ -87,12 +82,8 @@ export default function CustomerDetails() {
   return (
     <div className="_customer-details px-4 pb-6">
       <h2 className="text-primary mb-2 flex items-center gap-2 border-b pb-2 text-lg font-semibold md:mb-4">
-        <UserRectangleIcon
-          size={28}
-          weight="duotone"
-          className="text-primary"
-        />
-        {t("customerDetails")}
+        <UserRectangleIcon size={28} weight="duotone" className="text-primary" />
+        {t('customerDetails')}
       </h2>
 
       <div className="grid gap-3 md:grid-cols-3">
@@ -101,14 +92,14 @@ export default function CustomerDetails() {
           name="firstname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("firstName")}</FormLabel>
+              <FormLabel>{t('firstName')}</FormLabel>
               <FormControl>
                 <Input
                   id="firstname"
                   {...field}
                   onChange={(e) => {
                     field.onChange(e);
-                    trigger("firstname");
+                    trigger('firstname');
                   }}
                 />
               </FormControl>
@@ -122,14 +113,14 @@ export default function CustomerDetails() {
           name="lastname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("lastName")}</FormLabel>
+              <FormLabel>{t('lastName')}</FormLabel>
               <FormControl>
                 <Input
                   id="lastname"
                   {...field}
                   onChange={(e) => {
                     field.onChange(e);
-                    trigger("lastname");
+                    trigger('lastname');
                   }}
                 />
               </FormControl>
@@ -143,7 +134,7 @@ export default function CustomerDetails() {
           name="mobile"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("mobile")}</FormLabel>
+              <FormLabel>{t('mobile')}</FormLabel>
               <FormControl>
                 <Input
                   id="mobile"
@@ -153,7 +144,7 @@ export default function CustomerDetails() {
                   {...field}
                   onChange={(e) => {
                     field.onChange(e);
-                    trigger("mobile");
+                    trigger('mobile');
                   }}
                 />
               </FormControl>
@@ -162,18 +153,14 @@ export default function CustomerDetails() {
           )}
         />
 
-        {watch("productFieldValues")?.map((f, index) => (
+        {watch('productFieldValues')?.map((f, index) => (
           <FormField
             key={index}
             control={control}
             name={`productFieldValues.${index}.value`}
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel
-                  className={cn(
-                    isProductFieldsError[index] && "text-destructive",
-                  )}
-                >
+                <FormLabel className={cn(isProductFieldsError[index] && 'text-destructive')}>
                   {f.label}
                 </FormLabel>
                 <FormControl>
@@ -211,9 +198,7 @@ export default function CustomerDetails() {
                     )
                   )}
                 </FormControl>
-                {isProductFieldsError[index] && (
-                  <ErrorMessage>{t("required")}</ErrorMessage>
-                )}
+                {isProductFieldsError[index] && <ErrorMessage>{t('required')}</ErrorMessage>}
               </FormItem>
             )}
           />
@@ -228,7 +213,7 @@ export default function CustomerDetails() {
           type="button"
           disabled={!product?.isInfinite && product?.quantity === 0}
         >
-          {t("nextStep")}
+          {t('nextStep')}
         </ButtonLoading>
       </div>
     </div>

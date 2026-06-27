@@ -1,38 +1,34 @@
 // src/app/(main)/finance/client-page.tsx
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-import useSWR from "swr";
-import { useDebounce } from "use-debounce";
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import useSWR from 'swr';
+import { useDebounce } from 'use-debounce';
 
-import { useAuth } from "@/hooks/use-auth";
-import {
-  rangeToWindow,
-  useFinanceSummary,
-  useRevenueSeries,
-} from "@/hooks/use-finance";
-import type { RangeConfig } from "@/app/(main)/_components/metrics.constants";
-import { InvoiceStatusEnum, type PaymentsResponse } from "@/types/finance";
+import { useAuth } from '@/hooks/use-auth';
+import { rangeToWindow, useFinanceSummary, useRevenueSeries } from '@/hooks/use-finance';
+import type { RangeConfig } from '@/app/(main)/_components/metrics.constants';
+import { InvoiceStatusEnum, type PaymentsResponse } from '@/types/finance';
 
-import { Loading } from "@/components/loading";
-import { FetchError } from "@/components/fetch-error";
-import { RangeControl } from "@/app/(main)/_components/range-control";
-import { StatusFilter } from "./_components/status-filter";
-import { SummaryCards } from "./_components/summary-cards";
-import { RevenueChart } from "./_components/revenue-chart";
-import { PaymentsTable } from "./payments-table";
-import { LayoutTable } from "@/components/layout/LayoutTable";
+import { Loading } from '@/components/loading';
+import { FetchError } from '@/components/fetch-error';
+import { RangeControl } from '@/app/(main)/_components/range-control';
+import { StatusFilter } from './_components/status-filter';
+import { SummaryCards } from './_components/summary-cards';
+import { RevenueChart } from './_components/revenue-chart';
+import { PaymentsTable } from './payments-table';
+import { LayoutTable } from '@/components/layout/LayoutTable';
 
 export default function FinancePageClient() {
-  const t = useTranslations("Finance");
+  const t = useTranslations('Finance');
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const [range, setRange] = useState<RangeConfig>({ mode: "preset", days: 30 });
+  const [range, setRange] = useState<RangeConfig>({ mode: 'preset', days: 30 });
   const [statuses, setStatuses] = useState<InvoiceStatusEnum[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(50);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 750);
 
   const window = useMemo(() => rangeToWindow(range), [range]);
@@ -53,8 +49,8 @@ export default function FinancePageClient() {
       startDate: window.from,
       endDate: window.to,
     });
-    if (statuses.length) params.set("statuses", statuses.join(","));
-    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (statuses.length) params.set('statuses', statuses.join(','));
+    if (debouncedSearch) params.set('search', debouncedSearch);
     return `/finance/payments?${params.toString()}`;
   }, [page, limit, window, statuses, debouncedSearch]);
 
@@ -70,10 +66,10 @@ export default function FinancePageClient() {
   }, [window, statuses, debouncedSearch]);
 
   if (isAuthLoading) return <Loading />;
-  if (user && user.role === "kam") {
+  if (user && user.role === 'kam') {
     return (
       <div className="text-muted-foreground flex flex-1 items-center justify-center py-20 text-sm">
-        {t("forbidden")}
+        {t('forbidden')}
       </div>
     );
   }
@@ -90,7 +86,7 @@ export default function FinancePageClient() {
   return (
     <LayoutTable>
       <div className="flex flex-1 flex-col gap-4 p-4">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
+        <h1 className="text-xl font-semibold">{t('title')}</h1>
 
         <div className="flex flex-col gap-3">
           <RangeControl value={range} onChange={setRange} />

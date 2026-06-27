@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Card,
@@ -18,54 +18,49 @@ import {
   RadioGroupItem,
   Switch,
   Textarea,
-} from "@/components/ui";
-import { useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
-import { formatNumber } from "@/utils/formatNumber";
-import MultipleSelector, { Option } from "@/components/ui/multi-selector";
-import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
-import { useEffect, useState } from "react";
-import { ProductVariationNamespace } from "@/types/variations/productAttribute.namespace";
-import { BarcodeIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/components/ui';
+import { useFormContext } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
+import { onInputP2EHandler } from '@/utils/p2eNumber';
+import { formatNumber } from '@/utils/formatNumber';
+import MultipleSelector, { Option } from '@/components/ui/multi-selector';
+import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
+import { useEffect, useState } from 'react';
+import { ProductVariationNamespace } from '@/types/variations/productAttribute.namespace';
+import { BarcodeIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface FormProductDetailsProps {
   variations?: ProductVariationNamespace.GET.ProductAttributes;
   attributeValues?: ProductVariationNamespace.GET.ProductAttributeValues;
 }
 
-export const FormProductDetails = ({
-  variations,
-  attributeValues,
-}: FormProductDetailsProps) => {
+export const FormProductDetails = ({ variations, attributeValues }: FormProductDetailsProps) => {
   const form = useFormContext();
-  const t = useTranslations("Products.Form.Product");
+  const t = useTranslations('Products.Form.Product');
   const { onFocus } = useSelectOnFocus();
 
-  const isDigital = form.watch("isDigital");
+  const isDigital = form.watch('isDigital');
 
   const onHaveSizeChanged = (isChecked: boolean) => {
-    form.setValue("sizes", []);
-    form.setValue("haveSize", isChecked);
+    form.setValue('sizes', []);
+    form.setValue('haveSize', isChecked);
   };
 
   const onHaveColorChanged = (isChecked: boolean) => {
-    form.setValue("colors", []);
-    form.setValue("haveColor", isChecked);
+    form.setValue('colors', []);
+    form.setValue('haveColor', isChecked);
   };
 
   // TODO: Dynamic
-  const colorAttribute =
-    variations?.items?.find((vari) => vari.title === "رنگ") ?? null;
-  const sizeAttribute =
-    variations?.items?.find((vari) => vari.title === "اندازه") ?? null;
+  const colorAttribute = variations?.items?.find((vari) => vari.title === 'رنگ') ?? null;
+  const sizeAttribute = variations?.items?.find((vari) => vari.title === 'اندازه') ?? null;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
           <BarcodeIcon weight="duotone" />
-          {isDigital ? t("service_details") : t("product_details")}
+          {isDigital ? t('service_details') : t('product_details')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2.5">
@@ -75,18 +70,16 @@ export const FormProductDetails = ({
           name="status"
           render={({ field }) => (
             <FormItem className="flex items-center gap-2 space-y-0">
-              <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("status")}
-              </FormLabel>
+              <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t('status')}</FormLabel>
               <FormControl>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="status-active">{t("active")}</Label>
+                  <Label htmlFor="status-active">{t('active')}</Label>
                   <Switch
                     id="status-active"
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
-                  <Label htmlFor="status-inactive">{t("inactive")}</Label>
+                  <Label htmlFor="status-inactive">{t('inactive')}</Label>
                 </div>
               </FormControl>
               <FormMessage />
@@ -100,15 +93,11 @@ export const FormProductDetails = ({
           control={form.control}
           render={({ field }) => (
             <FormItem className="flex items-center gap-2 space-y-0 xl:gap-3">
-              <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("type_item")}
-              </FormLabel>
+              <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t('type_item')}</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={(val) =>
-                    val === "true"
-                      ? field.onChange(true)
-                      : field.onChange(false)
+                    val === 'true' ? field.onChange(true) : field.onChange(false)
                   }
                   value={field.value?.toString()}
                   className="flex h-7 items-center"
@@ -117,13 +106,13 @@ export const FormProductDetails = ({
                     <FormControl>
                       <RadioGroupItem value="false" />
                     </FormControl>
-                    <Label>{t("physical_product")}</Label>
+                    <Label>{t('physical_product')}</Label>
                   </FormItem>
                   <FormItem className="flex items-center gap-1.5 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="true" />
                     </FormControl>
-                    <Label>{t("digital_service")}</Label>
+                    <Label>{t('digital_service')}</Label>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -139,7 +128,7 @@ export const FormProductDetails = ({
           render={({ field }) => (
             <FormItem className="flex items-center gap-2 space-y-0 xl:gap-3">
               <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {isDigital ? t("title_service") : t("title_product")}
+                {isDigital ? t('title_service') : t('title_product')}
               </FormLabel>
               <div className="w-full space-y-1.5">
                 <FormControl>
@@ -157,12 +146,10 @@ export const FormProductDetails = ({
           control={form.control}
           render={({ field }) => (
             <FormItem className="flex items-center gap-2 space-y-0 xl:gap-3">
-              <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("stock")}
-              </FormLabel>
+              <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t('stock')}</FormLabel>
               <FormControl>
                 <RadioGroup
-                  onValueChange={(value) => field.onChange(value === "true")}
+                  onValueChange={(value) => field.onChange(value === 'true')}
                   value={`${field.value}`}
                   className="flex h-7 items-center"
                 >
@@ -170,13 +157,13 @@ export const FormProductDetails = ({
                     <FormControl>
                       <RadioGroupItem value="true" />
                     </FormControl>
-                    <Label>{t("unlimited")}</Label>
+                    <Label>{t('unlimited')}</Label>
                   </FormItem>
                   <FormItem className="flex items-center gap-1.5 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="false" />
                     </FormControl>
-                    <Label>{t("limited")}</Label>
+                    <Label>{t('limited')}</Label>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -193,9 +180,7 @@ export const FormProductDetails = ({
                           placeholder="۰"
                           onFocus={onFocus}
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
-                          }
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -213,9 +198,7 @@ export const FormProductDetails = ({
           name="price"
           render={({ field }) => (
             <FormItem className="flex items-center gap-2 space-y-0 xl:gap-3">
-              <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("price")}
-              </FormLabel>
+              <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t('price')}</FormLabel>
               <div className="w-full space-y-1.5">
                 <FormControl>
                   <Input
@@ -239,7 +222,7 @@ export const FormProductDetails = ({
           render={({ field }) => (
             <FormItem className="flex flex-wrap items-center justify-start gap-2 space-y-0 xl:flex-nowrap xl:gap-3">
               <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("activate_discount")}
+                {t('activate_discount')}
               </FormLabel>
               <FormControl>
                 <Switch
@@ -257,7 +240,7 @@ export const FormProductDetails = ({
                   render={({ field }) => (
                     <FormItem className="flex w-full items-center gap-2 space-y-0 xl:gap-3">
                       <FormLabel className="min-w-[88px] xl:min-w-fit">
-                        {t("discount_price")}
+                        {t('discount_price')}
                       </FormLabel>
                       <div className="w-full space-y-1.5">
                         <FormControl>
@@ -267,12 +250,12 @@ export const FormProductDetails = ({
                             {...field}
                             value={
                               field.value == null || field.value === 0
-                                ? ""
+                                ? ''
                                 : formatNumber(field.value)
                             }
                             onChange={(e) => {
                               const newValue = e.target.value;
-                              field.onChange(newValue === "" ? 0 : +newValue);
+                              field.onChange(newValue === '' ? 0 : +newValue);
                             }}
                           />
                         </FormControl>
@@ -292,9 +275,7 @@ export const FormProductDetails = ({
           name="haveColor"
           render={({ field }) => (
             <FormItem className="flex flex-wrap items-center justify-start gap-2 space-y-0 xl:flex-nowrap xl:gap-3">
-              <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("activate_color")}
-              </FormLabel>
+              <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t('activate_color')}</FormLabel>
               <FormControl>
                 <Switch
                   id="haveColor"
@@ -318,12 +299,8 @@ export const FormProductDetails = ({
                           defaultOptions={attributeValues?.items.filter(
                             (vv) => vv.attributeId == colorAttribute?.id,
                           )}
-                          placeholder={t("select_color")}
-                          emptyIndicator={
-                            <p className="text-muted-foreground">
-                              موردی یافت نشد
-                            </p>
-                          }
+                          placeholder={t('select_color')}
+                          emptyIndicator={<p className="text-muted-foreground">موردی یافت نشد</p>}
                         />
                       </FormControl>
                       <FormMessage />
@@ -340,9 +317,7 @@ export const FormProductDetails = ({
           name="haveSize"
           render={({ field }) => (
             <FormItem className="flex flex-wrap items-center justify-start gap-2 space-y-0 xl:flex-nowrap xl:gap-3">
-              <FormLabel className="min-w-[88px] xl:min-w-[80px]">
-                {t("activate_size")}
-              </FormLabel>
+              <FormLabel className="min-w-[88px] xl:min-w-[80px]">{t('activate_size')}</FormLabel>
               <FormControl>
                 <Switch
                   id="isSize"
@@ -365,7 +340,7 @@ export const FormProductDetails = ({
                           defaultOptions={attributeValues?.items.filter(
                             (vv) => vv.attributeId == sizeAttribute?.id,
                           )}
-                          placeholder={t("select_size")}
+                          placeholder={t('select_size')}
                           emptyIndicator={
                             <p className="text-center text-gray-600 dark:text-gray-400">
                               موردی یافت نشد
@@ -388,7 +363,7 @@ export const FormProductDetails = ({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("description")}</FormLabel>
+              <FormLabel>{t('description')}</FormLabel>
               <FormControl>
                 <Textarea rows={5} {...field} />
               </FormControl>
@@ -402,17 +377,15 @@ export const FormProductDetails = ({
           name="orderButtonText"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("orderButtonText.label")}</FormLabel>
+              <FormLabel>{t('orderButtonText.label')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("orderButtonText.placeholder")}
+                  placeholder={t('orderButtonText.placeholder')}
                   {...field}
-                  value={field.value || ""}
+                  value={field.value || ''}
                 />
               </FormControl>
-              <FormDescription>
-                {t("orderButtonText.description")}
-              </FormDescription>
+              <FormDescription>{t('orderButtonText.description')}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -445,18 +418,16 @@ export const FormProductDetails = ({
           name="orderCardToCardProcessText"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("orderCardToCardProcessText.label")}</FormLabel>
+              <FormLabel>{t('orderCardToCardProcessText.label')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("orderCardToCardProcessText.placeholder")}
+                  placeholder={t('orderCardToCardProcessText.placeholder')}
                   {...field}
-                  value={field.value || ""}
+                  value={field.value || ''}
                   rows={4}
                 />
               </FormControl>
-              <FormDescription>
-                {t("orderCardToCardProcessText.description")}
-              </FormDescription>
+              <FormDescription>{t('orderCardToCardProcessText.description')}</FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { ReactNode } from "react";
+import { create } from 'zustand';
+import { ReactNode } from 'react';
 
 type State = {
   tools: ReactNode | null;

@@ -15,10 +15,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Single worker since we are sharing a real database
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }]
-  ],
+  reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   globalSetup: require.resolve('./e2e/global-setup'),
   use: {
     baseURL: process.env.E2E_FRONTEND_URL || 'http://localhost:3000',

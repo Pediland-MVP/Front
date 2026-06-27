@@ -8,10 +8,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/dialog';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export default function DialogDelete({
   open,
@@ -22,7 +22,7 @@ export default function DialogDelete({
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }) {
-  const t = useTranslations("DialogDelete");
+  const t = useTranslations('DialogDelete');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -30,11 +30,9 @@ export default function DialogDelete({
         <DialogHeader>
           <DialogTitle className="text-red-500">
             <WarningCircleIcon weight="duotone" />
-            {t("title")}
+            {t('title')}
           </DialogTitle>
-          <DialogDescription>
-            {t("description")}
-          </DialogDescription>
+          <DialogDescription>{t('description')}</DialogDescription>
           <DialogFooter>
             <Button
               type="button"
@@ -43,10 +41,10 @@ export default function DialogDelete({
                 onConfirm();
               }}
             >
-              {t("confirm")}
+              {t('confirm')}
             </Button>
             <DialogClose asChild>
-              <Button color="cancel">{t("cancel")}</Button>
+              <Button color="cancel">{t('cancel')}</Button>
             </DialogClose>
           </DialogFooter>
         </DialogHeader>

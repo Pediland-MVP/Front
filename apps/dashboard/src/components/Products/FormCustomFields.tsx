@@ -1,17 +1,10 @@
-"use client";
+'use client';
 
-import { ProductFieldTypeEnum } from "@/types/product.enum";
-import { useTranslations } from "next-intl";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { ProductFieldTypeEnum } from '@/types/product.enum';
+import { useTranslations } from 'next-intl';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import {
   closestCenter,
   DndContext,
@@ -20,24 +13,24 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { TextboxIcon } from "@phosphor-icons/react/dist/ssr";
-import { CirclePlusIcon } from "lucide-react";
-import { SortableFieldItem } from "./SortableFieldItem";
+} from '@dnd-kit/sortable';
+import { TextboxIcon } from '@phosphor-icons/react/dist/ssr';
+import { CirclePlusIcon } from 'lucide-react';
+import { SortableFieldItem } from './SortableFieldItem';
 
 export const FormCustomFields = () => {
-  const t = useTranslations("Products.Form.Product");
+  const t = useTranslations('Products.Form.Product');
   const form = useFormContext();
 
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
-    name: "fields",
-    keyName: "_xid",
+    name: 'fields',
+    keyName: '_xid',
   });
 
   // Set up sensors for drag and drop
@@ -53,7 +46,7 @@ export const FormCustomFields = () => {
     if (fields.length < 5) {
       append({
         type: ProductFieldTypeEnum.TEXT,
-        label: "",
+        label: '',
         isRequired: false,
       });
     }
@@ -85,9 +78,9 @@ export const FormCustomFields = () => {
     <Card>
       <CardHeader>
         <CardTitle>
-          <TextboxIcon weight="duotone" /> {t("custom_fields_title")}
+          <TextboxIcon weight="duotone" /> {t('custom_fields_title')}
         </CardTitle>
-        <CardDescription>{t("custom_fields_description")}</CardDescription>
+        <CardDescription>{t('custom_fields_description')}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3">
@@ -99,7 +92,7 @@ export const FormCustomFields = () => {
           disabled={fields.length >= 5}
         >
           <CirclePlusIcon />
-          {t("add_custom_field")}
+          {t('add_custom_field')}
         </Button>
 
         {fields.length > 0 && (
@@ -125,10 +118,8 @@ export const FormCustomFields = () => {
             </DndContext>
 
             {/* Consolidated error message for all fields */}
-            {form.formState.errors["fields"] && (
-              <p className="text-destructive text-[13px] font-medium">
-                {t("fields_error")}
-              </p>
+            {form.formState.errors['fields'] && (
+              <p className="text-destructive text-[13px] font-medium">{t('fields_error')}</p>
             )}
           </div>
         )}

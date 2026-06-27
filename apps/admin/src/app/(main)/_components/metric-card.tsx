@@ -1,15 +1,9 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { MetricMeta } from "./metrics.constants";
+import { useTranslations } from 'next-intl';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { MetricMeta } from './metrics.constants';
 
 interface MetricCardProps {
   metric: MetricMeta;
@@ -18,10 +12,10 @@ interface MetricCardProps {
   isLoading: boolean;
 }
 
-const nf = new Intl.NumberFormat("fa-IR");
+const nf = new Intl.NumberFormat('fa-IR');
 
 export function MetricCard({ metric, total, delta, isLoading }: MetricCardProps) {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations('Dashboard');
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -33,11 +27,7 @@ export function MetricCard({ metric, total, delta, isLoading }: MetricCardProps)
           {t(metric.key)}
         </CardDescription>
         <CardTitle className="text-2xl tabular-nums">
-          {isLoading || total === null ? (
-            <Skeleton className="h-7 w-24" />
-          ) : (
-            nf.format(total)
-          )}
+          {isLoading || total === null ? <Skeleton className="h-7 w-24" /> : nf.format(total)}
         </CardTitle>
       </CardHeader>
       <CardContent className="text-muted-foreground text-xs">
@@ -45,8 +35,7 @@ export function MetricCard({ metric, total, delta, isLoading }: MetricCardProps)
           <Skeleton className="h-4 w-20" />
         ) : (
           <span>
-            <span style={{ color: metric.color }}>+{nf.format(delta)}</span>{" "}
-            {t("thisPeriod")}
+            <span style={{ color: metric.color }}>+{nf.format(delta)}</span> {t('thisPeriod')}
           </span>
         )}
       </CardContent>

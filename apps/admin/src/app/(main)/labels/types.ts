@@ -1,7 +1,7 @@
-export type ComparisonOperator = "gt" | "gte" | "lt" | "lte" | "eq" | "neq";
-export type ScheduleType = "interval" | "daily";
+export type ComparisonOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'neq';
+export type ScheduleType = 'interval' | 'daily';
 
-export type PeriodSpec = { type: "trailingDays"; days: number };
+export type PeriodSpec = { type: 'trailingDays'; days: number };
 
 export interface ConditionLeaf {
   field: string;
@@ -11,23 +11,25 @@ export interface ConditionLeaf {
   growth?: { period: PeriodSpec };
 }
 export interface ConditionGroup {
-  op: "and" | "or";
+  op: 'and' | 'or';
   conditions: Array<ConditionGroup | ConditionLeaf>;
 }
 export type LabelRule = ConditionGroup;
 
 export function isGroup(node: ConditionGroup | ConditionLeaf): node is ConditionGroup {
-  return (node as ConditionGroup).op !== undefined && Array.isArray((node as ConditionGroup).conditions);
+  return (
+    (node as ConditionGroup).op !== undefined && Array.isArray((node as ConditionGroup).conditions)
+  );
 }
 
 export function emptyGroup(): ConditionGroup {
-  return { op: "and", conditions: [] };
+  return { op: 'and', conditions: [] };
 }
 
 // One entry from GET /labels/fields
 export interface LabelFieldDef {
   field: string;
-  valueType: "number" | "status";
+  valueType: 'number' | 'status';
   operators: ComparisonOperator[];
   statusOptions?: string[];
   windowable?: boolean;

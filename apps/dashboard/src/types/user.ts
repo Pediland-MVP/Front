@@ -1,5 +1,5 @@
-import { GENDERS_ENUM } from "@/constants/gender.constant";
-import { ProvinceNamespace } from "./province";
+import { GENDERS_ENUM } from '@/constants/gender.constant';
+import { ProvinceNamespace } from './province';
 
 export namespace UserNamespace {
   export type user = IUser;

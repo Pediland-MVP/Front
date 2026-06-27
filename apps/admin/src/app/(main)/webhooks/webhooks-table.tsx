@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Table } from "@tanstack/react-table";
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Table } from '@tanstack/react-table';
 
-import { LayoutTable } from "@/components/layout/LayoutTable";
-import { DataTable } from "@/components/table/data-table";
-import { DataTablePagination } from "@/components/table/pagination";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { columns } from "./columns";
-import { WebhookFormDialog } from "./webhook-form-dialog";
-import { SecretRevealDialog } from "./secret-reveal-dialog";
-import { WebhookDrawer } from "./webhook-drawer";
-import { RevealedSecrets, WebhookEndpoint } from "./types";
+import { LayoutTable } from '@/components/layout/LayoutTable';
+import { DataTable } from '@/components/table/data-table';
+import { DataTablePagination } from '@/components/table/pagination';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { columns } from './columns';
+import { WebhookFormDialog } from './webhook-form-dialog';
+import { SecretRevealDialog } from './secret-reveal-dialog';
+import { WebhookDrawer } from './webhook-drawer';
+import { RevealedSecrets, WebhookEndpoint } from './types';
 
 interface WebhooksTableProps {
   isRefetching?: boolean;
@@ -40,7 +40,7 @@ export default function WebhooksTable({
   onSearchChange,
   mutate,
 }: WebhooksTableProps) {
-  const t = useTranslations("Webhooks");
+  const t = useTranslations('Webhooks');
   const [createOpen, setCreateOpen] = useState(false);
   const [reveal, setReveal] = useState<RevealedSecrets | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -52,12 +52,12 @@ export default function WebhooksTable({
         <div className="flex flex-wrap items-center gap-2 pb-3">
           <Input
             type="search"
-            placeholder={t("searchPlaceholder")}
+            placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             className="max-w-xs"
           />
-          <Button onClick={() => setCreateOpen(true)}>{t("newWebhook")}</Button>
+          <Button onClick={() => setCreateOpen(true)}>{t('newWebhook')}</Button>
         </div>
 
         <DataTable

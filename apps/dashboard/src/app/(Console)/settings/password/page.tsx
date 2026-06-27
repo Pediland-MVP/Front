@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import useUser from "@/hooks/useUser";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import api from '@/hooks/swr/api-client';
+import useUser from '@/hooks/useUser';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-import { LayoutSettings } from "@/components/Layout/LayoutSettings";
+import { LayoutSettings } from '@/components/Layout/LayoutSettings';
 import {
   Button,
   Form,
@@ -23,14 +23,14 @@ import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { CounterDown } from "@/components/ui-custom/CounterDown";
-import { InputPassword } from "@/components/ui-custom/InputPassword";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { CircleNotchIcon, LockIcon, LockOpenIcon } from "@phosphor-icons/react";
-import { RefreshCwIcon } from "lucide-react";
-import { REGEX_PASSWORD } from "@/utils/regex";
+} from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { CounterDown } from '@/components/ui-custom/CounterDown';
+import { InputPassword } from '@/components/ui-custom/InputPassword';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+import { CircleNotchIcon, LockIcon, LockOpenIcon } from '@phosphor-icons/react';
+import { RefreshCwIcon } from 'lucide-react';
+import { REGEX_PASSWORD } from '@/utils/regex';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -38,25 +38,22 @@ const formSchema = z
   .object({
     password: z
       .string()
-      .regex(REGEX_PASSWORD, { message: "رمز عبور باید ۸ تا ۶۴ کاراکتر بوده و حداقل شامل یک حرف و یک عدد باشد." })
-      .min(1, "رمز عبور الزامی است")
-      .min(6, "رمز عبور باید حداقل ۶ کاراکتر باشد"),
-    confirmPassword: z
-      .string()
-      .min(1, "تأیید رمز عبور الزامی است"),
-    otp: z
-      .string()
-      .min(1, "کد فعالسازی الزامی است")
-      .length(5, "کد باید ۵ رقم باشد"),
+      .regex(REGEX_PASSWORD, {
+        message: 'رمز عبور باید ۸ تا ۶۴ کاراکتر بوده و حداقل شامل یک حرف و یک عدد باشد.',
+      })
+      .min(1, 'رمز عبور الزامی است')
+      .min(6, 'رمز عبور باید حداقل ۶ کاراکتر باشد'),
+    confirmPassword: z.string().min(1, 'تأیید رمز عبور الزامی است'),
+    otp: z.string().min(1, 'کد فعالسازی الزامی است').length(5, 'کد باید ۵ رقم باشد'),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "رمز عبور و تأیید آن یکسان نیستند",
-    path: ["confirmPassword"],
+    message: 'رمز عبور و تأیید آن یکسان نیستند',
+    path: ['confirmPassword'],
   });
 
 export default function PasswordPage() {
-  const t = useTranslations("Settings.Password");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Settings.Password');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [showForm, setShowForm] = useState(false);
   const [showResend, setShowResend] = useState(false);
@@ -67,12 +64,12 @@ export default function PasswordPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: "onBlur",
-    reValidateMode: "onChange",
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
-      password: "",
-      confirmPassword: "",
-      otp: "",
+      password: '',
+      confirmPassword: '',
+      otp: '',
     },
   });
   const { control } = form;
@@ -80,7 +77,7 @@ export default function PasswordPage() {
   // Watch form values for validation
   const watchedValues = useWatch({
     control,
-    name: ["password", "confirmPassword", "otp"],
+    name: ['password', 'confirmPassword', 'otp'],
   });
 
   const [password, confirmPassword, otp] = watchedValues;
@@ -104,33 +101,29 @@ export default function PasswordPage() {
 
   // Blur handlers - validation only when leaving field
   const handlePasswordBlur = () => {
-    form.trigger("password");
+    form.trigger('password');
   };
 
   const handleConfirmPasswordBlur = () => {
-    form.trigger("confirmPassword");
+    form.trigger('confirmPassword');
   };
 
   const handleOtpBlur = () => {
-    form.trigger("otp");
+    form.trigger('otp');
   };
 
   const requestHandler = async () => {
     setIsRequesting(true);
 
     try {
-      const otpRequest = await api.patch(
-        `${API_URL}/auth/mobile/sendResetPasswordCode`,
-        {
-          mobile: user?.mobile,
-        },
-      );
-      toast.success(t("otp_sent"));
+      const otpRequest = await api.patch(`${API_URL}/auth/mobile/sendResetPasswordCode`, {
+        mobile: user?.mobile,
+      });
+      toast.success(t('otp_sent'));
       setShowResend(false);
       setShowForm(true);
     } catch (error) {
-      if (error?.response?.data?.statusCode === 429)
-        toast.error(t_ec("TOO_MANY_REQUESTS"));
+      if (error?.response?.data?.statusCode === 429) toast.error(t_ec('TOO_MANY_REQUESTS'));
       else toast.error(t_ec(error?.response?.data?.code) || error.response?.data?.message);
     } finally {
       setIsRequesting(false);
@@ -147,11 +140,8 @@ export default function PasswordPage() {
     };
 
     try {
-      const response = await api.patch(
-        `${API_URL}/auth/mobile/resetPassword`,
-        submitData,
-      );
-      toast.success(t("success"));
+      const response = await api.patch(`${API_URL}/auth/mobile/resetPassword`, submitData);
+      toast.success(t('success'));
       setShowForm(false);
       await mutateUser();
     } catch (error) {
@@ -164,21 +154,18 @@ export default function PasswordPage() {
   return (
     <LayoutSettings className="_password-page">
       <div className="mb-5">
-        <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
+        <h2 className="text-primary mb-1 font-semibold">{t('title')}</h2>
         <div className="text-muted-foreground inline-flex flex-wrap items-center gap-1 text-sm">
           {havePassword ? (
             <LockIcon size={20} weight="duotone" />
           ) : (
             <LockOpenIcon size={20} weight="duotone" />
           )}
-          <span>{t("description")}</span>
+          <span>{t('description')}</span>
           <span
-            className={cn(
-              "font-semibold",
-              havePassword ? "text-green-600" : "text-destructive",
-            )}
+            className={cn('font-semibold', havePassword ? 'text-green-600' : 'text-destructive')}
           >
-            {havePassword ? t("is_active") : t("is_not_active")}
+            {havePassword ? t('is_active') : t('is_not_active')}
           </span>
         </div>
       </div>
@@ -189,10 +176,7 @@ export default function PasswordPage() {
         ) : showForm ? (
           <div className="w-full md:w-1/2">
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(submitHandler)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(submitHandler)} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="password"
@@ -200,11 +184,7 @@ export default function PasswordPage() {
                     <FormItem>
                       <FormLabel>رمز عبور</FormLabel>
                       <FormControl>
-                        <InputPassword
-                          {...field}
-                          onBlur={handlePasswordBlur}
-                          autoFocus
-                        />
+                        <InputPassword {...field} onBlur={handlePasswordBlur} autoFocus />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -218,10 +198,7 @@ export default function PasswordPage() {
                     <FormItem>
                       <FormLabel>تأیید رمز عبور</FormLabel>
                       <FormControl>
-                        <InputPassword
-                          {...field}
-                          onBlur={handleConfirmPasswordBlur}
-                        />
+                        <InputPassword {...field} onBlur={handleConfirmPasswordBlur} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -242,13 +219,9 @@ export default function PasswordPage() {
                           onBlur={handleOtpBlur}
                           dir="rtl"
                         >
-                          <InputOTPGroup className="flex flex-row-reverse w-full justify-between gap-2.5">
+                          <InputOTPGroup className="flex w-full flex-row-reverse justify-between gap-2.5">
                             {[0, 1, 2, 3, 4].map((i) => (
-                              <InputOTPSlot
-                                className="w-full"
-                                key={i}
-                                index={i}
-                              />
+                              <InputOTPSlot className="w-full" key={i} index={i} />
                             ))}
                           </InputOTPGroup>
                         </InputOTP>
@@ -275,7 +248,7 @@ export default function PasswordPage() {
                       ) : (
                         <>
                           <RefreshCwIcon className="size-3.5" />
-                          {t("resend_code")}
+                          {t('resend_code')}
                         </>
                       )}
                     </Button>
@@ -289,7 +262,7 @@ export default function PasswordPage() {
                     className="flex-1"
                     disabled={!isFormValid || isRequesting}
                   >
-                    {havePassword ? t("change_password") : t("create_password")}
+                    {havePassword ? t('change_password') : t('create_password')}
                   </ButtonLoading>
                   <Button
                     variant="outline"
@@ -297,7 +270,7 @@ export default function PasswordPage() {
                     onClick={() => setShowForm(false)}
                     className="flex-1"
                   >
-                    {t("cancel")}
+                    {t('cancel')}
                   </Button>
                 </div>
               </form>
@@ -305,12 +278,8 @@ export default function PasswordPage() {
           </div>
         ) : (
           <div className="w-full md:w-1/2">
-            <ButtonLoading
-              isLoading={isRequesting}
-              onClick={requestHandler}
-              className="w-full"
-            >
-              {havePassword ? t("change_password") : t("create_password")}
+            <ButtonLoading isLoading={isRequesting} onClick={requestHandler} className="w-full">
+              {havePassword ? t('change_password') : t('create_password')}
             </ButtonLoading>
           </div>
         )}

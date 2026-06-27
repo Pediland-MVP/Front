@@ -1,21 +1,17 @@
-"use client";
+'use client';
 
-import Script from "next/script";
-import { GoftinoSnippet } from "../Global/GoftinoSnippet";
-import { useEffect, useState } from "react";
-import { useSubscriptionData } from "@/store/subscriptionStore";
+import Script from 'next/script';
+import { GoftinoSnippet } from '../Global/GoftinoSnippet';
+import { useEffect, useState } from 'react';
+import { useSubscriptionData } from '@/store/subscriptionStore';
 
 interface SiteProviderProps {
   children: React.ReactNode;
 }
 
-const GTM_ID = "GTM-W86SW8X8";
+const GTM_ID = 'GTM-W86SW8X8';
 
-const BLOCKED_DOMAINS = [
-  "localhost",
-  "testofbef.befroosh.app",
-  "testmain.befroosh.app",
-];
+const BLOCKED_DOMAINS = ['localhost', 'testofbef.befroosh.app', 'testmain.befroosh.app'];
 
 export function SiteProvider({ children }: SiteProviderProps) {
   const [shouldLoadGTM, setShouldLoadGTM] = useState(false);
@@ -52,7 +48,7 @@ export function SiteProvider({ children }: SiteProviderProps) {
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
             height="0"
             width="0"
-            style={{ display: "none", visibility: "hidden" }}
+            style={{ display: 'none', visibility: 'hidden' }}
           ></iframe>
         </noscript>
       )}

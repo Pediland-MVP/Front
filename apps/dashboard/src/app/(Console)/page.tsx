@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { DashboardHelpBanner } from "@/components/Console/Dashboard/DashboardHelpBanner";
-import { DashboardInstagramBanner } from "@/components/Console/Dashboard/DashboardInstagramBanner";
-import { DashboardStats } from "@/components/Console/Dashboard/DashboardStats";
-import { DashboardTelegramBanner } from "@/components/Console/Dashboard/DashboardTelegramBanner";
-import { SubscriptionBoard } from "@/components/Console/Dashboard/SubscriptionBoard";
-import { LayoutPage } from "@/components/Layout/LayoutPage";
-import { useLocale } from "next-intl";
+import { DashboardHelpBanner } from '@/components/Console/Dashboard/DashboardHelpBanner';
+import { DashboardInstagramBanner } from '@/components/Console/Dashboard/DashboardInstagramBanner';
+import { DashboardStats } from '@/components/Console/Dashboard/DashboardStats';
+import { DashboardTelegramBanner } from '@/components/Console/Dashboard/DashboardTelegramBanner';
+import { SubscriptionBoard } from '@/components/Console/Dashboard/SubscriptionBoard';
+import { LayoutPage } from '@/components/Layout/LayoutPage';
+import { useLocale } from 'next-intl';
 
 export default function DashboardPage() {
   const locale = useLocale();
@@ -19,7 +19,7 @@ export default function DashboardPage() {
 
         <DashboardStats />
 
-        {locale === "fa" && (
+        {locale === 'fa' && (
           <div className="grid gap-3 md:grid-cols-2">
             <DashboardTelegramBanner />
             <DashboardInstagramBanner />

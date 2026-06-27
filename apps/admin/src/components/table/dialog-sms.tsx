@@ -1,57 +1,52 @@
 // src/components/table/dialog-sms.tsx
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { useState } from "react";
-import { toast } from "sonner";
+import api from '@/hooks/swr/api-client';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 // UI Imports
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { ChatCenteredTextIcon } from "@phosphor-icons/react/dist/ssr";
-import { SmsData } from "@/types/sms";
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr';
+import { SmsData } from '@/types/sms';
 
-interface SendSMSDialogProps  {
+interface SendSMSDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   smsData: SmsData | null;
-  recipientType: 'marketingLead' | 'user'
+  recipientType: 'marketingLead' | 'user';
 }
 
-export function SendSMSDialog({
-  open,
-  onOpenChange,
-  smsData,
-  recipientType
-}: SendSMSDialogProps) {
-  const [text, setText] = useState("");
+export function SendSMSDialog({ open, onOpenChange, smsData, recipientType }: SendSMSDialogProps) {
+  const [text, setText] = useState('');
 
   const handleSend = async () => {
     if (!text.trim()) {
-      toast.error("متن پیامک نمی‌تواند خالی باشد.");
+      toast.error('متن پیامک نمی‌تواند خالی باشد.');
       return;
     }
 
     try {
-      await api.post("/sms/sendSms", {
+      await api.post('/sms/sendSms', {
         recipientType,
-        leadOrUserId: smsData?.id ?? "",
+        leadOrUserId: smsData?.id ?? '',
         text,
       });
 
-      toast.success("پیامک با موفقیت ارسال شد.");
-      setText("");
+      toast.success('پیامک با موفقیت ارسال شد.');
+      setText('');
       onOpenChange(false);
     } catch (error) {
       console.error(error);
-      toast.error("ارسال پیامک با خطا مواجه شد.");
+      toast.error('ارسال پیامک با خطا مواجه شد.');
     }
   };
 
@@ -64,7 +59,7 @@ export function SendSMSDialog({
           </DialogTitle>
           <DialogDescription>
             شماره گیرنده: {smsData?.mobile} <br />
-            نام گیرنده: {smsData?.name ?? "نامشخص"}
+            نام گیرنده: {smsData?.name ?? 'نامشخص'}
           </DialogDescription>
         </DialogHeader>
         <Textarea

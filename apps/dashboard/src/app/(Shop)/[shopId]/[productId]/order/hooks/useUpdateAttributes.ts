@@ -1,23 +1,23 @@
-import { toast } from "sonner";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { toast } from 'sonner';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export const useUpdateAttributes = () => {
   const [loading, setLoading] = useState(false);
-  const t = useTranslations("Checkout");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Checkout');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const updateAttributes = async (attributeValueIds: number[]) => {
     setLoading(true);
     await fetch(`${API_URL}/orders/updateAttributes`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
       body: JSON.stringify({
         attributeValueIds,
       }),
@@ -31,7 +31,7 @@ export const useUpdateAttributes = () => {
         toast.error(t_ec(resJson.code));
       })
       .catch((e) => {
-        toast.error(t_ec("CHECK_CONNECTION"));
+        toast.error(t_ec('CHECK_CONNECTION'));
       })
       .finally(() => {
         setLoading(false);

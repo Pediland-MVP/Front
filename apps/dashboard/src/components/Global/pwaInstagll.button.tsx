@@ -49,13 +49,7 @@ export default function PWAInstallButton() {
     return null;
   }
 
-  return (
-    <Button
-      onClick={handleInstallClick}
-    >
-      نصب بفروش
-    </Button>
-  );
+  return <Button onClick={handleInstallClick}>نصب بفروش</Button>;
 }
 
 type BeforeInstallPromptEvent = Event & {

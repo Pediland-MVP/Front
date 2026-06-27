@@ -1,35 +1,32 @@
-"use client";
-import { toast } from "sonner";
-import useUser from "@/hooks/useUser";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { PlanNamespace } from "@/types/plans/plan.namespace";
-import { AxiosError } from "axios";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
+'use client';
+import { toast } from 'sonner';
+import useUser from '@/hooks/useUser';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { PlanNamespace } from '@/types/plans/plan.namespace';
+import { AxiosError } from 'axios';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export function usePlanSelection() {
-  const [selectedPlan, setSelectedPlan] =
-    useState<PlanNamespace.GET.PlansData["plans"][0]>();
+  const [selectedPlan, setSelectedPlan] = useState<PlanNamespace.GET.PlansData['plans'][0]>();
   const [selectedDuration, setSelectedDuration] =
-    useState<PlanNamespace.GET.PlansData["plans"][0]["durations"][0]>();
+    useState<PlanNamespace.GET.PlansData['plans'][0]['durations'][0]>();
 
   const [discountCode, setDiscountCode] = useState<string>();
 
-  const t_ec = useTranslations("ERROR_CODES");
+  const t_ec = useTranslations('ERROR_CODES');
   const { isAuthenticated } = useUser();
 
-  const plansApiUrl = `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ""}`;
+  const plansApiUrl = `${API_URL}/plans${discountCode ? `?discountCode=${discountCode}` : ''}`;
   const {
     data: plansData,
     isLoading: isPlansLoading,
     error: plansError,
     mutate,
-  } = useSWR<PlanNamespace.GET.PlansData, AxiosError>(
-    isAuthenticated ? plansApiUrl : null,
-  );
+  } = useSWR<PlanNamespace.GET.PlansData, AxiosError>(isAuthenticated ? plansApiUrl : null);
 
   useEffect(() => {
     if (!plansError) return;

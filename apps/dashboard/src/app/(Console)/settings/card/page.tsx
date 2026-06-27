@@ -1,66 +1,59 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
-import { REGEX_NUMBERICAL_STRING } from "@/utils/regex";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import useSWRImmutable from "swr/immutable";
-import { z } from "zod";
+import api from '@/hooks/swr/api-client';
+import { onInputP2EHandler } from '@/utils/p2eNumber';
+import { REGEX_NUMBERICAL_STRING } from '@/utils/regex';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import useSWRImmutable from 'swr/immutable';
+import { z } from 'zod';
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  Input,
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { usePermissions } from "@/hooks/usePermissions";
+import { Form, FormControl, FormField, FormItem, FormLabel, Input } from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export const bankDetailsSchema = z.object({
   bankName: z.string().min(1).max(255),
   accountHolder: z.string().min(1).max(255),
   cardNumber: z
     .string()
-    .regex(REGEX_NUMBERICAL_STRING, { message: "required" })
-    .length(16, { message: "must be 16 digits" }),
+    .regex(REGEX_NUMBERICAL_STRING, { message: 'required' })
+    .length(16, { message: 'must be 16 digits' }),
   iban: z
     .string()
-    .transform((val) => (val === "" ? undefined : val))
+    .transform((val) => (val === '' ? undefined : val))
     .optional()
     .refine((val) => !val || REGEX_NUMBERICAL_STRING.test(val), {
-      message: "required",
+      message: 'required',
     })
     .refine((val) => !val || val.length === 24, {
-      message: "must be 24 digits",
+      message: 'must be 24 digits',
     }),
 });
 
 export default function BankCardPage() {
-  const t = useTranslations("Settings.BankDetails");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Settings.BankDetails');
+  const t_ec = useTranslations('ERROR_CODES');
   const { can, isLoading: permissionsLoading } = usePermissions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof bankDetailsSchema>>({
     defaultValues: {
-      bankName: "",
-      cardNumber: "",
-      iban: "",
-      accountHolder: "",
+      bankName: '',
+      cardNumber: '',
+      iban: '',
+      accountHolder: '',
     },
     resolver: zodResolver(bankDetailsSchema),
   });
 
-  const canView = can("billing:view");
-  const canManage = can("billing:manage");
+  const canView = can('billing:view');
+  const canManage = can('billing:manage');
 
   const {
     data: cardToCardData,
@@ -74,10 +67,10 @@ export default function BankCardPage() {
     if (!cardToCardData) return;
 
     form.reset({
-      bankName: cardToCardData.bankName ?? "",
-      cardNumber: cardToCardData.cardNumber ?? "",
-      iban: cardToCardData.iban ?? "",
-      accountHolder: cardToCardData.accountHolder ?? "",
+      bankName: cardToCardData.bankName ?? '',
+      cardNumber: cardToCardData.cardNumber ?? '',
+      iban: cardToCardData.iban ?? '',
+      accountHolder: cardToCardData.accountHolder ?? '',
     });
   }, [cardToCardData]);
 
@@ -85,14 +78,14 @@ export default function BankCardPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await api.post("/payments/cardToCard", data);
+      const res = await api.post('/payments/cardToCard', data);
       if (res.status >= 200 && res.status < 300) {
-        toast.success(t("cardToCardUpdated"));
+        toast.success(t('cardToCardUpdated'));
       } else {
-        toast.error(t("cardToCardUpdateFailed"));
+        toast.error(t('cardToCardUpdateFailed'));
       }
     } catch (e) {
-      toast.error(t("cardToCardUpdateFailed"));
+      toast.error(t('cardToCardUpdateFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +99,7 @@ export default function BankCardPage() {
 
   if (permissionsLoading || (canView && cardToCardLoading)) {
     return (
-      <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl flex h-[300px] items-center justify-center">
+      <div className="_card-page flex h-[300px] flex-1 items-center justify-center rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
         <LoaderSpin />
       </div>
     );
@@ -117,11 +110,11 @@ export default function BankCardPage() {
       <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
         <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
           <div className="mb-5">
-            <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-            <p className="text-muted-foreground text-sm">{t("description")}</p>
+            <h2 className="text-primary mb-1 font-semibold">{t('title')}</h2>
+            <p className="text-muted-foreground text-sm">{t('description')}</p>
           </div>
-          <div className="py-12 text-center text-muted-foreground text-sm border rounded-xl bg-white shadow-xs">
-            {t_ec("PERMISSION_DENIED")}
+          <div className="text-muted-foreground rounded-xl border bg-white py-12 text-center text-sm shadow-xs">
+            {t_ec('PERMISSION_DENIED')}
           </div>
         </div>
       </div>
@@ -132,8 +125,8 @@ export default function BankCardPage() {
     <div className="_card-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
       <div className="flex h-full flex-col border-gray-100 px-4 py-5 md:pt-0">
         <div className="mb-5">
-          <h2 className="text-primary mb-1 font-semibold">{t("title")}</h2>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
+          <h2 className="text-primary mb-1 font-semibold">{t('title')}</h2>
+          <p className="text-muted-foreground text-sm">{t('description')}</p>
         </div>
         <div className="flex-1">
           {cardToCardLoading ? (
@@ -142,25 +135,18 @@ export default function BankCardPage() {
             <>
               <FormProvider {...form}>
                 <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="w-full md:w-1/2"
-                  >
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-1/2">
                     <div className="grid gap-2">
                       <FormField
                         control={control}
                         name="bankName"
                         render={({ field, fieldState: { error } }) => (
                           <FormItem>
-                            <FormLabel>{t("bankName.label")}</FormLabel>
+                            <FormLabel>{t('bankName.label')}</FormLabel>
                             <FormControl>
                               <Input id="bankname" disabled={!canManage} {...field} />
                             </FormControl>
-                            {error && (
-                              <ErrorMessage>
-                                {t("bankName.required")}
-                              </ErrorMessage>
-                            )}
+                            {error && <ErrorMessage>{t('bankName.required')}</ErrorMessage>}
                           </FormItem>
                         )}
                       />
@@ -169,15 +155,11 @@ export default function BankCardPage() {
                         name="accountHolder"
                         render={({ field, fieldState: { error } }) => (
                           <FormItem>
-                            <FormLabel>{t("accountHolder.label")}</FormLabel>
+                            <FormLabel>{t('accountHolder.label')}</FormLabel>
                             <FormControl>
                               <Input id="accountholder" disabled={!canManage} {...field} />
                             </FormControl>
-                            {error && (
-                              <ErrorMessage>
-                                {t("accountHolder.required")}
-                              </ErrorMessage>
-                            )}
+                            {error && <ErrorMessage>{t('accountHolder.required')}</ErrorMessage>}
                           </FormItem>
                         )}
                       />
@@ -186,7 +168,7 @@ export default function BankCardPage() {
                         name="cardNumber"
                         render={({ field, fieldState: { error } }) => (
                           <FormItem>
-                            <FormLabel>{t("cardNumber.label")}</FormLabel>
+                            <FormLabel>{t('cardNumber.label')}</FormLabel>
                             <FormControl>
                               <Input
                                 id="cardnumber"
@@ -200,11 +182,7 @@ export default function BankCardPage() {
                                 }}
                               />
                             </FormControl>
-                            {error && (
-                              <ErrorMessage>
-                                {t("cardNumber.required")}
-                              </ErrorMessage>
-                            )}
+                            {error && <ErrorMessage>{t('cardNumber.required')}</ErrorMessage>}
                           </FormItem>
                         )}
                       />
@@ -213,7 +191,7 @@ export default function BankCardPage() {
                         name="iban"
                         render={({ field, fieldState: { error } }) => (
                           <FormItem>
-                            <FormLabel>{t("iban.label")}</FormLabel>
+                            <FormLabel>{t('iban.label')}</FormLabel>
                             <FormControl>
                               <div className="relative w-full">
                                 <Input
@@ -236,9 +214,7 @@ export default function BankCardPage() {
                                 </p>
                               </div>
                             </FormControl>
-                            {error && (
-                              <ErrorMessage>{t("iban.required")}</ErrorMessage>
-                            )}
+                            {error && <ErrorMessage>{t('iban.required')}</ErrorMessage>}
                           </FormItem>
                         )}
                       />
@@ -249,7 +225,7 @@ export default function BankCardPage() {
                         className="w-full"
                         disabled={!canManage}
                       >
-                        {t("save")}
+                        {t('save')}
                       </ButtonLoading>
                     </div>
                   </form>

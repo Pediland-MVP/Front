@@ -1,36 +1,33 @@
-"use client";
+'use client';
 
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
-} from "@/constants/automationContent.enum";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import api from "@/hooks/swr/api-client";
-import { useI18nZodErrors } from "@/hooks/useI18nZodErrors";
-import useUser from "@/hooks/useUser";
-import { cn } from "@/lib/utils";
-import {
-  AutomationFormSchema,
-  type AutomationFormType,
-} from "@/schemas/automationForm";
-import type { ExceptionMessage } from "@/types/exceptionMessage";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
+} from '@/constants/automationContent.enum';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import api from '@/hooks/swr/api-client';
+import { useI18nZodErrors } from '@/hooks/useI18nZodErrors';
+import useUser from '@/hooks/useUser';
+import { cn } from '@/lib/utils';
+import { AutomationFormSchema, type AutomationFormType } from '@/schemas/automationForm';
+import type { ExceptionMessage } from '@/types/exceptionMessage';
+import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
 
-import { Button, Form } from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { SeperateLine } from "@/components/ui-custom/SeperateLine";
-import { ConnectInstagramAlert } from "./ConnectInstagramAlert";
+import { Button, Form } from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+import { SeperateLine } from '@/components/ui-custom/SeperateLine';
+import { ConnectInstagramAlert } from './ConnectInstagramAlert';
 import {
   CommentReplies,
   CommentTriggerInputs,
@@ -42,10 +39,10 @@ import {
   Reminder,
   TargetPostComment,
   Triggers,
-} from "./Form";
-import { ValidationTypeEnum } from "@/types/validationType.enum";
-import { CommentLimitAlert } from "./Form/CommentLimitAlert";
-import { useInstagramFilterStore } from "@/lib/stores/useInstagramFilterStore";
+} from './Form';
+import { ValidationTypeEnum } from '@/types/validationType.enum';
+import { CommentLimitAlert } from './Form/CommentLimitAlert';
+import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 
 type AutomationFormProps = {
   id?: string;
@@ -61,16 +58,13 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { hasInstagram, isLoading } = useUser();
-  const t = useTranslations("Automations");
-  const t_ec = useTranslations("ERROR_CODES");
-  const t_err = useTranslations("Automations.Errors");
+  const t = useTranslations('Automations');
+  const t_ec = useTranslations('ERROR_CODES');
+  const t_err = useTranslations('Automations.Errors');
   const { selectedIds: filterSelectedIds } = useInstagramFilterStore();
 
   const isUUID = (s?: string) =>
-    !!s &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      s,
-    );
+    !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
   const key = isUUID(id) ? `/contentCycle/${id}` : null;
 
@@ -85,17 +79,17 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
   const form = useForm<AutomationFormType>({
     resolver: zodResolver(AutomationFormSchema),
-    mode: "onSubmit",
-    reValidateMode: "onChange",
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: {
-      instagramId: filterSelectedIds[0] ?? "",
+      instagramId: filterSelectedIds[0] ?? '',
       conditionType: ConditionTypesEnum.EQUAL,
       isNoCondition: false,
-      commentStartText: t("comment_start_text"),
-      commentStartTitle: t("comment_start_title"),
-      conditions: [{ type: "EQUAL", value: "" }],
+      commentStartText: t('comment_start_text'),
+      commentStartTitle: t('comment_start_title'),
+      conditions: [{ type: 'EQUAL', value: '' }],
       contents: [],
-      followCheckMessage: t("follow_check_message"),
+      followCheckMessage: t('follow_check_message'),
       isComment: false,
       isCommentContentTargetEnabled: false,
       isDirect: true,
@@ -105,7 +99,6 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       reminders: [],
     },
   });
-
 
   useEffect(() => {
     if (!automation) {
@@ -121,16 +114,16 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
         if (typeToNormalize) {
           const lowerType = typeToNormalize.toLowerCase();
-          if (lowerType === "text" || lowerType === ButtonTypeEnum.TEXT) {
+          if (lowerType === 'text' || lowerType === ButtonTypeEnum.TEXT) {
             btn.type = ButtonTypeEnum.TEXT;
             btn.postbackPayloadType = ButtonTypeEnum.TEXT;
-          } else if (lowerType === "url" || lowerType === ButtonTypeEnum.URL) {
+          } else if (lowerType === 'url' || lowerType === ButtonTypeEnum.URL) {
             btn.type = ButtonTypeEnum.URL;
             btn.postbackPayloadType = ButtonTypeEnum.URL;
           } else if (
-            lowerType === "contentcycle" ||
-            lowerType === "automation" ||
-            typeToNormalize === "AUTOMATION" ||
+            lowerType === 'contentcycle' ||
+            lowerType === 'automation' ||
+            typeToNormalize === 'AUTOMATION' ||
             lowerType === ButtonTypeEnum.START_AUTOMATION.toLowerCase()
           ) {
             btn.type = ButtonTypeEnum.START_AUTOMATION;
@@ -138,10 +131,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
           }
         }
 
-        if (
-          btn.type === ButtonTypeEnum.START_AUTOMATION &&
-          btn.destinationContentCycle
-        ) {
+        if (btn.type === ButtonTypeEnum.START_AUTOMATION && btn.destinationContentCycle) {
           return {
             ...btn,
             destinationContentCycleId: btn.destinationContentCycle.id,
@@ -176,23 +166,23 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       }
 
       if (content.vitrins?.length) {
-        content.vitrins = content.vitrins.map(v => ({
+        content.vitrins = content.vitrins.map((v) => ({
           ...v,
           imageId: v.images[0]?.id,
           imageUrl: v.images[0]?.url,
-          ...content.vitrins.buttons?.length && {
-            buttons: transformButtons(content.vitrins.buttons)
-          }
-        }))
+          ...(content.vitrins.buttons?.length && {
+            buttons: transformButtons(content.vitrins.buttons),
+          }),
+        }));
       }
 
       if (content.type === AutomationContentTypesEnum.DELAY) {
         if (content.delayMs >= 1000 * 60 * 60) {
-          content.delayUnit = "hour"
+          content.delayUnit = 'hour';
         } else if (content.delayMs >= 1000 * 60) {
-          content.delayUnit = "min"
+          content.delayUnit = 'min';
         } else {
-          content.delayUnit = 'sec'
+          content.delayUnit = 'sec';
         }
       }
 
@@ -212,9 +202,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       ...(transformedAutomation.reminders?.length > 0 && {
         isRemindersEnabled: true,
       }),
-      reminderTime: automation.reminderTime
-        ? `${automation.reminderTime}`
-        : undefined,
+      reminderTime: automation.reminderTime ? `${automation.reminderTime}` : undefined,
       isReplyCommentEnabled: !!automation.commentTexts?.length,
       isCommentContentTargetEnabled: !!automation.instagramPost,
     });
@@ -227,46 +215,45 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
     // TotalDelays should be under 23 hours
     let totalDelaysMs: number = 0;
-    let lastDelayContentIndex: number = null
+    let lastDelayContentIndex: number = null;
     values.contents.forEach((c, index) => {
       if (c.type === AutomationContentTypesEnum.DELAY) {
-        totalDelaysMs += c.delayMs
-        lastDelayContentIndex = index
+        totalDelaysMs += c.delayMs;
+        lastDelayContentIndex = index;
       }
-    })
+    });
 
-    if (totalDelaysMs > ((1000 * 60 * 60) * 23)) {
-      toast.error(t("Errors.totalDelayMsShouldBeUnder23Hour"))
-      haveError = true
+    if (totalDelaysMs > 1000 * 60 * 60 * 23) {
+      toast.error(t('Errors.totalDelayMsShouldBeUnder23Hour'));
+      haveError = true;
     }
 
     if (
       values.isComment &&
-      (firstType === AutomationContentTypesEnum.PRODUCT ||
-        values.contents.length > 1) &&
+      (firstType === AutomationContentTypesEnum.PRODUCT || values.contents.length > 1) &&
       !values.justFollowers &&
       !values.commentStartText
     ) {
-      form.setError("commentStartText", {
-        message: "در حالت کامنت، پیام درخواست شروع ضروری است",
+      form.setError('commentStartText', {
+        message: 'در حالت کامنت، پیام درخواست شروع ضروری است',
       });
-      form.setFocus("commentStartText");
+      form.setFocus('commentStartText');
       haveError = true;
     }
 
     if (values.justFollowers) {
       if (!values.followMessage) {
-        form.setError("followMessage", {
-          message: "متن درخواست فالو در این حالت اجباری است",
+        form.setError('followMessage', {
+          message: 'متن درخواست فالو در این حالت اجباری است',
         });
-        form.setFocus("followMessage");
+        form.setFocus('followMessage');
         haveError = true;
       }
       if (!values.followCheckMessage) {
-        form.setError("followCheckMessage", {
-          message: "متن دکمه بررسی مجدد در این حالت اجباری است",
+        form.setError('followCheckMessage', {
+          message: 'متن دکمه بررسی مجدد در این حالت اجباری است',
         });
-        form.setFocus("followCheckMessage");
+        form.setFocus('followCheckMessage');
         haveError = true;
       }
     }
@@ -319,42 +306,40 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     }
 
     if (!values.commentStartText) {
-      values.commentStartText = t("comment_start_text");
+      values.commentStartText = t('comment_start_text');
     }
 
     if (!values.commentStartTitle) {
-      values.commentStartTitle = t("comment_start_title");
+      values.commentStartTitle = t('comment_start_title');
     }
 
     if (!values.followCheckMessage) {
-      values.followCheckMessage = t("follow_check_message");
+      values.followCheckMessage = t('follow_check_message');
     }
 
     setIsSubmitting(true);
 
-    console.log("Submited values", JSON.stringify(values, undefined, " "))
+    console.log('Submited values', JSON.stringify(values, undefined, ' '));
 
     const { instagramId, ...payload } = values;
 
     await api({
-      method: id ? "PATCH" : "POST",
-      url: id
-        ? `/contentCycle/${instagramId}/${id}`
-        : `/contentCycle?instagramId=${instagramId}`,
+      method: id ? 'PATCH' : 'POST',
+      url: id ? `/contentCycle/${instagramId}/${id}` : `/contentCycle?instagramId=${instagramId}`,
       data: payload,
     })
       .then((res) => {
-        toast.success(id ? t("Toast.updated") : t("Toast.created"));
-        router.push("/automations");
-        mutate(mutateIncludeStringKey("/contentCycle"));
+        toast.success(id ? t('Toast.updated') : t('Toast.created'));
+        router.push('/automations');
+        mutate(mutateIncludeStringKey('/contentCycle'));
         automationMutate();
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
-        if (e.response?.data?.code == "INSTAGRAM_REQUIRED") {
+        if (e.response?.data?.code == 'INSTAGRAM_REQUIRED') {
           toast.error(t_ec(e.response?.data?.code), {
             action: {
-              label: t_err("goToInstagram"),
-              onClick: () => router.push("/settings/instagram"),
+              label: t_err('goToInstagram'),
+              onClick: () => router.push('/settings/instagram'),
             },
           });
           return;
@@ -369,15 +354,11 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
             toast.error(errorMessage);
           } catch (translationError) {
             // Fallback to generic error message if translation key doesn't exist
-            console.error(
-              "Missing translation for error code:",
-              errorCode,
-              translationError,
-            );
-            toast.error("خطایی رخ داده است");
+            console.error('Missing translation for error code:', errorCode, translationError);
+            toast.error('خطایی رخ داده است');
           }
         } else {
-          toast.error("خطایی رخ داده است");
+          toast.error('خطایی رخ داده است');
         }
       })
       .then(() => setIsSubmitting(false));
@@ -385,7 +366,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
   return (
     <FormProvider {...form}>
-      <div className={cn("_automation-form flex min-h-full flex-col gap-5")}>
+      <div className={cn('_automation-form flex min-h-full flex-col gap-5')}>
         {isAutomationLoading || isLoading ? (
           <LoaderSpin />
         ) : (
@@ -396,7 +377,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
               <form
                 onSubmit={form.handleSubmit(onSubmit, (e) => {
                   console.log(e);
-                  toast.error(t("form_errors"));
+                  toast.error(t('form_errors'));
                 })}
                 className="grid gap-3.5"
               >
@@ -404,10 +385,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                   <InstagramSelectField disabled={!!id} />
                   <SeperateLine />
 
-                  <Conditions
-                    control={form.control}
-                    getValues={form.getValues}
-                  />
+                  <Conditions control={form.control} getValues={form.getValues} />
                   <SeperateLine />
 
                   <Triggers control={form.control} getValues={form.getValues} />
@@ -415,17 +393,11 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 </div>
 
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <Contents
-                    automationId={id}
-                    mode={AutomationContentModeEnum.AUTOMATION}
-                  />
+                  <Contents automationId={id} mode={AutomationContentModeEnum.AUTOMATION} />
                 </div>
 
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <JustFollowers
-                    control={form.control}
-                    getValues={form.getValues}
-                  />
+                  <JustFollowers control={form.control} getValues={form.getValues} />
 
                   <CommentReplies />
 
@@ -437,7 +409,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
                   <div className="flex items-center gap-2">
                     <ButtonLoading isLoading={isSubmitting} className="flex-1">
-                      {id ? t("save_changes") : t("add_automation")}
+                      {id ? t('save_changes') : t('add_automation')}
                     </ButtonLoading>
                     <Button
                       variant="outline"
@@ -445,7 +417,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                       className="flex-1"
                       onClick={() => router.back()}
                     >
-                      {t("cancel")}
+                      {t('cancel')}
                     </Button>
                   </div>
                 </div>
@@ -454,7 +426,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
           </>
         )}
 
-        {automationError && <ErrorMessage>{t_ec("LOAD_FAILED")}</ErrorMessage>}
+        {automationError && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
       </div>
     </FormProvider>
   );

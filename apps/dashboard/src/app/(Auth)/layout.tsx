@@ -1,14 +1,14 @@
-import { SWRProvider } from "@/hooks/swr/api-client";
-import "@/styles/globals.css";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { Toaster } from "sonner";
+import { SWRProvider } from '@/hooks/swr/api-client';
+import '@/styles/globals.css';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { Toaster } from 'sonner';
 
-import { AuthProvider } from "@/components/Providers/AuthProvider";
-import { GoogleAuthProvider } from "@/components/Providers/GoogleAuthProvider";
-import { SiteProvider } from "@/components/Providers/SiteProvider";
-import { Metadata } from "next";
-import SupportButton from "./auth/supportButton";
+import { AuthProvider } from '@/components/Providers/AuthProvider';
+import { GoogleAuthProvider } from '@/components/Providers/GoogleAuthProvider';
+import { SiteProvider } from '@/components/Providers/SiteProvider';
+import { Metadata } from 'next';
+import SupportButton from './auth/supportButton';
 
 // TODO: Refactor Intl metadata with this code
 // export async function generateMetadata() {
@@ -24,8 +24,8 @@ import SupportButton from "./auth/supportButton";
 
 export const metadata: Metadata = {
   title: {
-    default: "بفروش | مدیریت مشتریان",
-    template: "%s | بفروش",
+    default: 'بفروش | مدیریت مشتریان',
+    template: '%s | بفروش',
   },
 };
 
@@ -41,11 +41,11 @@ export default async function AuthLayout({
       <AuthProvider>
         <NextIntlClientProvider messages={messages}>
           <GoogleAuthProvider>
-          <SiteProvider>
-            <main className="flex min-h-screen flex-col items-center justify-center bg-violet-50">
-              {children}
-            </main>
-          </SiteProvider>
+            <SiteProvider>
+              <main className="flex min-h-screen flex-col items-center justify-center bg-violet-50">
+                {children}
+              </main>
+            </SiteProvider>
           </GoogleAuthProvider>
 
           <Toaster
@@ -53,7 +53,7 @@ export default async function AuthLayout({
             position="top-center"
             theme="light"
             toastOptions={{
-              className: "font-Yekan text-[13px]",
+              className: 'font-Yekan text-[13px]',
             }}
           />
         </NextIntlClientProvider>

@@ -1,9 +1,6 @@
-import z, { string } from "zod";
-import { PageMetaSchema } from "./pageMeta";
-import {
-  ContentItemConditionSchema,
-  ContentItemSchema,
-} from "./automationForm";
+import z, { string } from 'zod';
+import { PageMetaSchema } from './pageMeta';
+import { ContentItemConditionSchema, ContentItemSchema } from './automationForm';
 
 export const AutomationSchema = z.object({
   id: z.string(),
@@ -20,14 +17,14 @@ export const AutomationSchema = z.object({
   isRemindersEnabled: z.boolean(),
   commentTexts: z.array(z.string()),
   instagramId: z.string(),
-  instagramPost: z.object({
-    mediaUrl: z.string().optional().nullable(),
-    mediaId: z.string().min(1),
-    picture: z
-      .object({ url: z.string().optional().nullable() })
-      .optional()
-      .nullable(),
-  }).optional().nullable(),
+  instagramPost: z
+    .object({
+      mediaUrl: z.string().optional().nullable(),
+      mediaId: z.string().min(1),
+      picture: z.object({ url: z.string().optional().nullable() }).optional().nullable(),
+    })
+    .optional()
+    .nullable(),
   contents: z.array(ContentItemSchema),
   conditions: z.array(ContentItemConditionSchema),
   sessionsCount: z.number(),

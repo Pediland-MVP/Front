@@ -1,9 +1,9 @@
 // src/schemas/contact.ts
-import { z } from "zod";
+import { z } from 'zod';
 
 export const ISODateString = z
   .string()
-  .refine((s) => !Number.isNaN(Date.parse(s)), "Invalid ISO date");
+  .refine((s) => !Number.isNaN(Date.parse(s)), 'Invalid ISO date');
 
 export const LeadWireSchema = z.object({
   contactId: z.string(),
@@ -28,7 +28,7 @@ export const ContactWireSchema = z.object({
   postalcode: z.string().nullable(),
   cityId: z.string().nullable(),
   country: z.string().nullable(),
-  gender: z.enum(["male", "female", "other"]).nullable(),
+  gender: z.enum(['male', 'female', 'other']).nullable(),
   birthDate: ISODateString.nullable(),
   createDate: ISODateString,
   updateDate: ISODateString,

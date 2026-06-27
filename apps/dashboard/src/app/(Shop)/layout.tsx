@@ -1,14 +1,14 @@
-import "@/styles/globals.css";
-import { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
-import SWRProvider from "./swr.prvider";
-import { ZodErrorsMapProvider } from "@/components/Layout/ZodErrorsMapProvider";
-import { SiteProvider } from "@/components/Providers/SiteProvider";
+import '@/styles/globals.css';
+import { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
+import SWRProvider from './swr.prvider';
+import { ZodErrorsMapProvider } from '@/components/Layout/ZodErrorsMapProvider';
+import { SiteProvider } from '@/components/Providers/SiteProvider';
 
 export const metadata: Metadata = {
-  title: "Befroosh Application",
-  description: "This is first version of Befroosh application.",
+  title: 'Befroosh Application',
+  description: 'This is first version of Befroosh application.',
 };
 
 export default async function ShopLayout({
@@ -22,10 +22,8 @@ export default async function ShopLayout({
   return (
     <html
       lang={locale}
-      dir={locale === "fa" ? "rtl" : "ltr"}
-      className={
-        locale === "fa" ? "font-Yekan antialiased" : "font-Roboto antialiased"
-      }
+      dir={locale === 'fa' ? 'rtl' : 'ltr'}
+      className={locale === 'fa' ? 'font-Yekan antialiased' : 'font-Roboto antialiased'}
     >
       <body className="flex h-full min-h-screen flex-col bg-linear-to-b from-violet-50 to-blue-50">
         <SWRProvider>

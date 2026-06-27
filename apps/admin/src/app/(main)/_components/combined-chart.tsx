@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Area,
   AreaChart,
@@ -16,13 +16,13 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { ChartType, MetricMeta } from "./metrics.constants";
-import type { SeriesPoint, SeriesResolution } from "@/hooks/use-platform-metrics";
-import { formatBucket } from "./chart-format";
+} from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { ChartType, MetricMeta } from './metrics.constants';
+import type { SeriesPoint, SeriesResolution } from '@/hooks/use-platform-metrics';
+import { formatBucket } from './chart-format';
 
 interface CombinedChartProps {
   metrics: MetricMeta[]; // the selected metrics, in display order
@@ -42,7 +42,7 @@ export function CombinedChart({
   resolution,
   isLoading,
 }: CombinedChartProps) {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations('Dashboard');
   const selectedTypes = useMemo(() => metrics.map((m) => m.type), [metrics]);
 
   // Pivot points → one row per bucket, a column per metric.
@@ -73,14 +73,14 @@ export function CombinedChart({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{t("combinedTitle")}</CardTitle>
+        <CardTitle className="text-sm font-medium">{t('combinedTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-[320px] w-full" />
         ) : data.length === 0 ? (
           <div className="text-muted-foreground flex h-[320px] items-center justify-center text-xs">
-            {t("noData")}
+            {t('noData')}
           </div>
         ) : (
           <ChartContainer config={config} className="h-[320px] w-full">
@@ -94,7 +94,7 @@ export function CombinedChart({
   );
 }
 
-const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
 
 function commonAxes(metrics: MetricMeta[]) {
   return (
@@ -110,14 +110,14 @@ function commonAxes(metrics: MetricMeta[]) {
       <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
       <XAxis
         dataKey="label"
-        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
         tickLine={false}
         axisLine={false}
         minTickGap={32}
         tickMargin={10}
       />
       <YAxis
-        tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
         tickLine={false}
         axisLine={false}
         width={40}
@@ -126,7 +126,7 @@ function commonAxes(metrics: MetricMeta[]) {
         tickMargin={8}
       />
       <Tooltip
-        cursor={{ fill: "hsl(var(--muted)/0.2)", strokeWidth: 1, strokeDasharray: "3 3" }}
+        cursor={{ fill: 'hsl(var(--muted)/0.2)', strokeWidth: 1, strokeDasharray: '3 3' }}
         content={<ChartTooltipContent indicator="dot" />}
       />
       <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
@@ -141,7 +141,7 @@ function renderChart(
 ) {
   const margin = { top: 20, right: 12, left: 0, bottom: 0 };
 
-  if (chartType === "bar") {
+  if (chartType === 'bar') {
     return (
       <BarChart data={data} margin={margin}>
         {commonAxes(metrics)}
@@ -159,7 +159,7 @@ function renderChart(
     );
   }
 
-  if (chartType === "area") {
+  if (chartType === 'area') {
     return (
       <AreaChart data={data} margin={margin}>
         {commonAxes(metrics)}

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import Image from 'next/image';
+import { useState, useEffect, useCallback } from 'react';
 
 interface CardImageProps {
   src?: string;
@@ -10,13 +10,8 @@ interface CardImageProps {
   priority?: boolean;
 }
 
-export function CardImage({
-  src,
-  alt = "",
-  className = "",
-  priority = false,
-}: CardImageProps) {
-  const placeholder = "/images/placeholder.webp";
+export function CardImage({ src, alt = '', className = '', priority = false }: CardImageProps) {
+  const placeholder = '/images/placeholder.webp';
   const [imgSrc, setImgSrc] = useState(placeholder);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,7 +29,7 @@ export function CardImage({
       onError={handleError}
       onLoad={handleLoad}
       className={`rounded-lg object-cover transition-opacity duration-300 ${
-        isLoading ? "opacity-0" : "opacity-100"
+        isLoading ? 'opacity-0' : 'opacity-100'
       } ${className}`}
       fill
       sizes="(max-width: 768px) 100vw, 33vw"

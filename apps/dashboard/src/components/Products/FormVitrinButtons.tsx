@@ -1,18 +1,11 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui";
-import { DresserIcon } from "@phosphor-icons/react/dist/ssr";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import { CirclePlusIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { SortableButtonItem } from "./SortableButtonItem";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
+import { DresserIcon } from '@phosphor-icons/react/dist/ssr';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import { CirclePlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { SortableButtonItem } from './SortableButtonItem';
 import {
   closestCenter,
   DndContext,
@@ -21,21 +14,21 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+} from '@dnd-kit/sortable';
 
 export const FormVitrinButtons = () => {
-  const t = useTranslations("Products.Form.Vitrin");
+  const t = useTranslations('Products.Form.Vitrin');
   const form = useFormContext();
 
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
-    name: "buttons",
-    keyName: "_xid",
+    name: 'buttons',
+    keyName: '_xid',
   });
 
   const sensors = useSensors(
@@ -62,8 +55,8 @@ export const FormVitrinButtons = () => {
     if (fields.length < 3) {
       append({
         postbackPayloadType: ButtonTypeEnum.TEXT,
-        title: "",
-        url: "",
+        title: '',
+        url: '',
         destinationContentCycleId: null, // explicit null to avoid undefined/ID issues
       });
     }
@@ -78,7 +71,7 @@ export const FormVitrinButtons = () => {
 
   // Check if there are any button errors (root or nested)
   const hasButtonErrors = () => {
-    const buttonErrors = form.formState.errors["buttons"];
+    const buttonErrors = form.formState.errors['buttons'];
     if (!buttonErrors) return false;
 
     // Check for root-level error (e.g., min length)
@@ -98,7 +91,7 @@ export const FormVitrinButtons = () => {
         <CardTitle>
           <DresserIcon weight="duotone" /> دکمه ها
         </CardTitle>
-        <CardDescription>{t("buttons_description")}</CardDescription>
+        <CardDescription>{t('buttons_description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Button
@@ -109,7 +102,7 @@ export const FormVitrinButtons = () => {
           disabled={fields.length >= 3}
         >
           <CirclePlusIcon />
-          {t("add_button")}
+          {t('add_button')}
         </Button>
 
         {fields.length > 0 && (
@@ -138,9 +131,9 @@ export const FormVitrinButtons = () => {
 
         {hasButtonErrors() && (
           <p className="text-destructive text-[13px] font-medium">
-            {typeof form.formState.errors["buttons"]?.message === "string"
-              ? form.formState.errors["buttons"].message
-              : t("buttons_error")}
+            {typeof form.formState.errors['buttons']?.message === 'string'
+              ? form.formState.errors['buttons'].message
+              : t('buttons_error')}
           </p>
         )}
       </CardContent>

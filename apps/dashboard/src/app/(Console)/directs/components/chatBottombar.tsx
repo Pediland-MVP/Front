@@ -1,24 +1,24 @@
-import { buttonVariants } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import useCurrentLead from "@/store/currentLead.store";
-import { WsMessageEvents } from "@/types/conversations/wsMessage.enum";
-import { messagesSocket } from "@/utils/socket";
-import { PaperPlaneRightIcon } from "@phosphor-icons/react/dist/ssr";
-import { AnimatePresence, motion } from "framer-motion";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import React, { useRef, useState } from "react";
-import { toast } from "sonner";
-import { EmojiPicker } from "./emojiPicker";
+import { buttonVariants } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import useCurrentLead from '@/store/currentLead.store';
+import { WsMessageEvents } from '@/types/conversations/wsMessage.enum';
+import { messagesSocket } from '@/utils/socket';
+import { PaperPlaneRightIcon } from '@phosphor-icons/react/dist/ssr';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import React, { useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { EmojiPicker } from './emojiPicker';
 
 export default function ChatBottombar() {
   const { currentLead } = useCurrentLead();
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const t = useTranslations("Inbox.ChatBottombar");
+  const t = useTranslations('Inbox.ChatBottombar');
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
@@ -26,7 +26,7 @@ export default function ChatBottombar() {
 
   const handleSend = async () => {
     if (!currentLead) {
-      return toast.error(t("errors.send"));
+      return toast.error(t('errors.send'));
     }
 
     if (message.trim()) {
@@ -41,7 +41,7 @@ export default function ChatBottombar() {
         digest,
       });
 
-      setMessage("");
+      setMessage('');
 
       if (inputRef.current) {
         inputRef.current.focus();
@@ -50,14 +50,14 @@ export default function ChatBottombar() {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       handleSend();
     }
 
-    if (event.key === "Enter" && event.shiftKey) {
+    if (event.key === 'Enter' && event.shiftKey) {
       event.preventDefault();
-      setMessage((prev) => prev + "\n");
+      setMessage((prev) => prev + '\n');
     }
   };
 
@@ -76,18 +76,15 @@ export default function ChatBottombar() {
         </div>
         <div className="_like ml-3">
           <Link
-            href={"#"}
+            href={'#'}
             className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "h-9 w-9",
-              "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted shrink-0 dark:hover:text-white",
+              buttonVariants({ variant: 'ghost', size: 'icon' }),
+              'h-9 w-9',
+              'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted shrink-0 dark:hover:text-white',
             )}
             onClick={handleSend}
           >
-            <PaperPlaneRightIcon
-              size={22}
-              className="text-muted-foreground -rotate-[30deg]"
-            />
+            <PaperPlaneRightIcon size={22} className="text-muted-foreground -rotate-[30deg]" />
           </Link>
         </div>
 
@@ -102,7 +99,7 @@ export default function ChatBottombar() {
             transition={{
               opacity: { duration: 0.05 },
               layout: {
-                type: "spring",
+                type: 'spring',
                 bounce: 0.15,
               },
             }}
@@ -114,7 +111,7 @@ export default function ChatBottombar() {
               onKeyDown={handleKeyPress}
               onChange={handleInputChange}
               name="message"
-              placeholder={t("textPlaceholder")}
+              placeholder={t('textPlaceholder')}
               className="h-20 w-full resize-none rounded-md border-gray-200/60 focus-visible:border-gray-300"
             ></Textarea>
           </motion.div>

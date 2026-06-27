@@ -1,7 +1,7 @@
-import type React from "react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { useLocale } from "next-intl";
+import type React from 'react';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { useLocale } from 'next-intl';
 
 interface ProgressLineProps {
   percentage: number;
@@ -11,7 +11,7 @@ interface ProgressLineProps {
   size?: number;
   strokeWidth?: number;
   id?: string;
-  type?: "percentage" | "days";
+  type?: 'percentage' | 'days';
   totalDays?: number;
   showText?: boolean;
 }
@@ -22,8 +22,8 @@ export const ProgressLine = ({
   height,
   size,
   strokeWidth,
-  id = "linear-progress-gradient",
-  type = "percentage",
+  id = 'linear-progress-gradient',
+  type = 'percentage',
   totalDays,
   showText = false,
 }: ProgressLineProps) => {
@@ -34,25 +34,23 @@ export const ProgressLine = ({
   const locale = useLocale();
 
   const actualPercentage =
-    type === "days" && totalDays ? (percentage / totalDays) * 100 : percentage;
+    type === 'days' && totalDays ? (percentage / totalDays) * 100 : percentage;
 
   // Ensure we have a valid percentage
   const validPercentage = Math.max(0, Math.min(100, actualPercentage || 0));
 
   return (
-    <div className={cn("flex flex-col", showText ? "gap-2" : "")}>
+    <div className={cn('flex flex-col', showText ? 'gap-2' : '')}>
       {/* نوار پیشرفت */}
       <div
         className="relative w-full"
-        style={{ transform: locale === "fa" ? "scaleX(-1)" : "scaleX(1)" }}
+        style={{ transform: locale === 'fa' ? 'scaleX(-1)' : 'scaleX(1)' }}
       >
         <svg
-          width={useFullWidth ? "100%" : finalWidth}
+          width={useFullWidth ? '100%' : finalWidth}
           height={finalHeight}
           className="overflow-hidden rounded-full"
-          viewBox={
-            useFullWidth ? undefined : `0 0 ${finalWidth} ${finalHeight}`
-          }
+          viewBox={useFullWidth ? undefined : `0 0 ${finalWidth} ${finalHeight}`}
         >
           {/* پس‌زمینه خاکستری */}
           <rect
@@ -68,14 +66,8 @@ export const ProgressLine = ({
           {/* تعریف گرادیانت */}
           <defs>
             <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop
-                offset="0%"
-                className="[stop-color:theme(colors.violet.600)]"
-              />
-              <stop
-                offset="100%"
-                className="[stop-color:theme(colors.blue.400)]"
-              />
+              <stop offset="0%" className="[stop-color:theme(colors.violet.600)]" />
+              <stop offset="100%" className="[stop-color:theme(colors.blue.400)]" />
             </linearGradient>
           </defs>
 
@@ -89,12 +81,12 @@ export const ProgressLine = ({
             rx={finalHeight / 2}
             ry={finalHeight / 2}
             initial={{
-              width: "0%",
+              width: '0%',
             }}
             animate={{
               width: `${validPercentage}%`,
             }}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            transition={{ duration: 1, ease: 'easeInOut' }}
           />
         </svg>
       </div>
@@ -109,14 +101,12 @@ export const ProgressLine = ({
         >
           <span
             className={cn(
-              "text-sm font-bold",
-              validPercentage < 50 ? "text-blue-600" : "text-violet-700",
-              validPercentage === 0 && "text-destructive",
+              'text-sm font-bold',
+              validPercentage < 50 ? 'text-blue-600' : 'text-violet-700',
+              validPercentage === 0 && 'text-destructive',
             )}
           >
-            {type === "days"
-              ? `${percentage} روز`
-              : `${Math.round(validPercentage)}%`}
+            {type === 'days' ? `${percentage} روز` : `${Math.round(validPercentage)}%`}
           </span>
         </motion.div>
       )}

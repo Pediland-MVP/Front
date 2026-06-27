@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import {
   ArrowsCounterClockwiseIcon,
   CheckIcon,
   MicrophoneIcon,
-} from "@phosphor-icons/react/dist/ssr";
+} from '@phosphor-icons/react/dist/ssr';
 
 type Props = {
   className?: string;
@@ -28,7 +28,7 @@ let recordingChunks: BlobPart[] = [];
 let timerTimeout: NodeJS.Timeout;
 
 const padWithLeadingZeros = (num: number, length: number): string => {
-  return String(num).padStart(length, "0");
+  return String(num).padStart(length, '0');
 };
 
 export const AudioRecorderWithVisualizer = ({
@@ -37,13 +37,12 @@ export const AudioRecorderWithVisualizer = ({
   onRecordingComplete,
 }: Props) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
-  const t = useTranslations("AudioRecorderWithVisualizer");
-  const [isRecordingFinished, setIsRecordingFinished] =
-    useState<boolean>(false);
+  const t = useTranslations('AudioRecorderWithVisualizer');
+  const [isRecordingFinished, setIsRecordingFinished] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
   const [currentRecord, setCurrentRecord] = useState<RecordState>({
     id: -1,
-    name: "",
+    name: '',
     file: null,
   });
 
@@ -51,16 +50,13 @@ export const AudioRecorderWithVisualizer = ({
   const minutes = Math.floor((timer % 3600) / 60);
   const seconds = timer % 60;
 
-  const [hourLeft, hourRight] = useMemo(
-    () => padWithLeadingZeros(hours, 2).split(""),
-    [hours],
-  );
+  const [hourLeft, hourRight] = useMemo(() => padWithLeadingZeros(hours, 2).split(''), [hours]);
   const [minuteLeft, minuteRight] = useMemo(
-    () => padWithLeadingZeros(minutes, 2).split(""),
+    () => padWithLeadingZeros(minutes, 2).split(''),
     [minutes],
   );
   const [secondLeft, secondRight] = useMemo(
-    () => padWithLeadingZeros(seconds, 2).split(""),
+    () => padWithLeadingZeros(seconds, 2).split(''),
     [seconds],
   );
 
@@ -78,9 +74,7 @@ export const AudioRecorderWithVisualizer = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<any>(null);
 
-  function startRecording(
-    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
-  ) {
+  function startRecording(e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) {
     e.stopPropagation();
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
@@ -101,17 +95,14 @@ export const AudioRecorderWithVisualizer = ({
             audioContext: audioCtx,
           };
 
-          const mimeType = MediaRecorder.isTypeSupported("audio/mpeg")
-            ? "audio/mpeg"
-            : MediaRecorder.isTypeSupported("audio/webm")
-              ? "audio/webm"
-              : "audio/wav";
+          const mimeType = MediaRecorder.isTypeSupported('audio/mpeg')
+            ? 'audio/mpeg'
+            : MediaRecorder.isTypeSupported('audio/webm')
+              ? 'audio/webm'
+              : 'audio/wav';
 
           const options = { mimeType };
-          mediaRecorderRef.current.mediaRecorder = new MediaRecorder(
-            stream,
-            options,
-          );
+          mediaRecorderRef.current.mediaRecorder = new MediaRecorder(stream, options);
           mediaRecorderRef.current.mediaRecorder.start();
           recordingChunks = [];
 
@@ -128,18 +119,16 @@ export const AudioRecorderWithVisualizer = ({
     }
   }
 
-  function stopRecording(
-    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
-  ) {
+  function stopRecording(e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) {
     e.stopPropagation();
     recorder.onstop = () => {
       const recordBlob = new Blob(recordingChunks, {
-        type: "audio/wav",
+        type: 'audio/wav',
       });
 
       if (onRecordingComplete) {
         const file = new File([recordBlob], `Audio_${Date.now()}.wav`, {
-          type: "audio/wav",
+          type: 'audio/wav',
         });
         onRecordingComplete(file);
       }
@@ -159,12 +148,9 @@ export const AudioRecorderWithVisualizer = ({
     clearTimeout(timerTimeout);
   }
 
-  function resetRecording(
-    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
-  ) {
+  function resetRecording(e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) {
     e.stopPropagation();
-    const { mediaRecorder, stream, analyser, audioContext } =
-      mediaRecorderRef.current;
+    const { mediaRecorder, stream, analyser, audioContext } = mediaRecorderRef.current;
 
     if (mediaRecorder) {
       mediaRecorder.onstop = () => {
@@ -172,7 +158,7 @@ export const AudioRecorderWithVisualizer = ({
       };
       mediaRecorder.stop();
     } else {
-      alert("recorder instance is null!");
+      alert('recorder instance is null!');
     }
 
     if (analyser) {
@@ -192,7 +178,7 @@ export const AudioRecorderWithVisualizer = ({
     cancelAnimationFrame(animationRef.current || 0);
     const canvas = canvasRef.current;
     if (canvas) {
-      const canvasCtx = canvas.getContext("2d");
+      const canvasCtx = canvas.getContext('2d');
       if (canvasCtx) {
         const WIDTH = canvas.width;
         const HEIGHT = canvas.height;
@@ -201,9 +187,7 @@ export const AudioRecorderWithVisualizer = ({
     }
   }
 
-  const handleSubmit = (
-    e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
-  ) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
     stopRecording(e);
   };
 
@@ -220,14 +204,14 @@ export const AudioRecorderWithVisualizer = ({
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const canvasCtx = canvas.getContext("2d");
+    const canvasCtx = canvas.getContext('2d');
     const WIDTH = canvas.width;
     const HEIGHT = canvas.height;
 
     const drawWaveform = (dataArray: Uint8Array) => {
       if (!canvasCtx) return;
       canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-      canvasCtx.fillStyle = "#939393";
+      canvasCtx.fillStyle = '#939393';
 
       const barWidth = 1;
       const spacing = 1;
@@ -243,11 +227,7 @@ export const AudioRecorderWithVisualizer = ({
     };
 
     const visualizeVolume = () => {
-      if (
-        !mediaRecorderRef.current?.stream?.getAudioTracks()[0]?.getSettings()
-          .sampleRate
-      )
-        return;
+      if (!mediaRecorderRef.current?.stream?.getAudioTracks()[0]?.getSettings().sampleRate) return;
       const bufferLength =
         (mediaRecorderRef.current?.stream?.getAudioTracks()[0]?.getSettings()
           .sampleRate as number) / 100;
@@ -284,7 +264,7 @@ export const AudioRecorderWithVisualizer = ({
     <TooltipProvider>
       <div
         className={cn(
-          "bg-background text-muted-foreground hover:bg-muted/50 relative flex min-h-20 cursor-pointer items-center justify-center rounded-lg border py-2 transition-colors",
+          'bg-background text-muted-foreground hover:bg-muted/50 relative flex min-h-20 cursor-pointer items-center justify-center rounded-lg border py-2 transition-colors',
           className,
         )}
         onClick={(e) => startRecording(e)}
@@ -293,10 +273,7 @@ export const AudioRecorderWithVisualizer = ({
           <div className="lex h-full w-full flex-col items-center justify-center">
             <div className="flex w-full flex-col items-center justify-center gap-x-1 px-10">
               <div className="flex w-6/12 flex-col items-center justify-center">
-                <canvas
-                  ref={canvasRef}
-                  className={`bg-background flex h-12 w-full`}
-                />
+                <canvas ref={canvasRef} className={`bg-background flex h-12 w-full`} />
 
                 <Timer
                   hourLeft={hourLeft}
@@ -316,17 +293,17 @@ export const AudioRecorderWithVisualizer = ({
                   variant="ghost"
                 >
                   <CheckIcon weight="bold" size={15} />
-                  {t("saveRecord")}
+                  {t('saveRecord')}
                 </Button>
-                
+
                 <Button
                   className="h-7 text-xs hover:text-red-500"
                   type="button"
                   onClick={resetRecording}
-                  variant={"ghost"}
+                  variant={'ghost'}
                 >
                   <ArrowsCounterClockwiseIcon size={15} />
-                  {t("recordAgain")}
+                  {t('recordAgain')}
                 </Button>
               </div>
             </div>
@@ -336,7 +313,7 @@ export const AudioRecorderWithVisualizer = ({
           {!isRecording ? (
             <div className="flex h-full w-full flex-col items-center justify-center gap-y-2 p-3">
               <MicrophoneIcon size={40} />
-              <p>{t("title")}</p>
+              <p>{t('title')}</p>
             </div>
           ) : null}
         </div>
@@ -366,32 +343,20 @@ const Timer = React.memo(
     return (
       <div
         className={cn(
-          "text-foreground flex items-center justify-center gap-0.5 rounded-md font-mono font-medium rtl:flex-row-reverse",
+          'text-foreground flex items-center justify-center gap-0.5 rounded-md font-mono font-medium rtl:flex-row-reverse',
           timerClassName,
         )}
       >
-        <span className="bg-background text-foreground rounded-md p-0.5">
-          {hourLeft}
-        </span>
-        <span className="bg-background text-foreground rounded-md p-0.5">
-          {hourRight}
-        </span>
+        <span className="bg-background text-foreground rounded-md p-0.5">{hourLeft}</span>
+        <span className="bg-background text-foreground rounded-md p-0.5">{hourRight}</span>
         <span>:</span>
-        <span className="bg-background text-foreground rounded-md p-0.5">
-          {minuteLeft}
-        </span>
-        <span className="bg-background text-foreground rounded-md p-0.5">
-          {minuteRight}
-        </span>
+        <span className="bg-background text-foreground rounded-md p-0.5">{minuteLeft}</span>
+        <span className="bg-background text-foreground rounded-md p-0.5">{minuteRight}</span>
         <span>:</span>
-        <span className="bg-background text-foreground rounded-md p-0.5">
-          {secondLeft}
-        </span>
-        <span className="bg-background text-foreground rounded-md p-0.5">
-          {secondRight}
-        </span>
+        <span className="bg-background text-foreground rounded-md p-0.5">{secondLeft}</span>
+        <span className="bg-background text-foreground rounded-md p-0.5">{secondRight}</span>
       </div>
     );
   },
 );
-Timer.displayName = "Timer";
+Timer.displayName = 'Timer';

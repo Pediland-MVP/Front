@@ -1,7 +1,7 @@
-import { withSentryConfig } from "@sentry/nextjs";
-import createNextIntlPlugin from "next-intl/plugin";
-import { fileURLToPath } from "url";
-import path from "path";
+import { withSentryConfig } from '@sentry/nextjs';
+import createNextIntlPlugin from 'next-intl/plugin';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,21 +11,21 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   turbopack: {
-    root: path.resolve(__dirname, "../../"),
+    root: path.resolve(__dirname, '../../'),
   },
 
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "**.fbcdn.net" },
-      { protocol: "https", hostname: "**.cdninstagram.com" },
-      { protocol: "https", hostname: "pcfcdn.kommo.com" },
-      { protocol: "https", hostname: "miro.medium.com" },
-      { protocol: "https", hostname: "github.com" },
-      { protocol: "https", hostname: "koochaa-cdn.s3.**.amazonaws.com" },
-      { protocol: "https", hostname: "koochaa-cdn.s3.amazonaws.com" },
-      { protocol: "https", hostname: "cdn.zarinpal.com" },
-      { protocol: "https", hostname: "befroosh.app" },
-      { protocol: "https", hostname: "befroosh.s3.ir-thr-at1.arvanstorage.ir" },
+      { protocol: 'https', hostname: '**.fbcdn.net' },
+      { protocol: 'https', hostname: '**.cdninstagram.com' },
+      { protocol: 'https', hostname: 'pcfcdn.kommo.com' },
+      { protocol: 'https', hostname: 'miro.medium.com' },
+      { protocol: 'https', hostname: 'github.com' },
+      { protocol: 'https', hostname: 'koochaa-cdn.s3.**.amazonaws.com' },
+      { protocol: 'https', hostname: 'koochaa-cdn.s3.amazonaws.com' },
+      { protocol: 'https', hostname: 'cdn.zarinpal.com' },
+      { protocol: 'https', hostname: 'befroosh.app' },
+      { protocol: 'https', hostname: 'befroosh.s3.ir-thr-at1.arvanstorage.ir' },
     ],
   },
 
@@ -40,9 +40,9 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "befroosh",
+  org: 'befroosh',
 
-  project: "my",
+  project: 'my',
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
@@ -57,7 +57,7 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   // This can increase your server load as well as your hosting bill.
   // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
   // side errors will fail.
-  tunnelRoute: "/monitoring",
+  tunnelRoute: '/monitoring',
 
   webpack: {
     // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)

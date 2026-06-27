@@ -1,28 +1,25 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { ProductNamespace } from "@/types/product";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { memo } from "react";
+import { cn } from '@/lib/utils';
+import { ProductNamespace } from '@/types/product';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { memo } from 'react';
 
-import { Button, Card, CardContent, CardFooter } from "@/components/ui";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
-import { CircleXIcon, PencilIcon } from "lucide-react";
-import { CardImage } from "../Global/CardImage";
+import { Button, Card, CardContent, CardFooter } from '@/components/ui';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { CircleXIcon, PencilIcon } from 'lucide-react';
+import { CardImage } from '../Global/CardImage';
 
 interface ProductCardComponentProps {
   product: ProductNamespace.Product;
   handleDelete: (id: string) => void;
 }
 
-const ProductCardComponent = ({
-  product,
-  handleDelete,
-}: ProductCardComponentProps) => {
+const ProductCardComponent = ({ product, handleDelete }: ProductCardComponentProps) => {
   const router = useRouter();
-  const t = useTranslations("Products.Card");
-  const isVitrin = product.type === "vitrin";
+  const t = useTranslations('Products.Card');
+  const isVitrin = product.type === 'vitrin';
 
   return (
     <Card className="gap-0 border-violet-200 p-0 shadow-violet-200">
@@ -30,14 +27,12 @@ const ProductCardComponent = ({
         <div className="flex gap-2">
           <div className="relative h-20 w-20">
             <CardImage
-              src={product.images?.[0]?.url || "/images/placeholder.webp"}
+              src={product.images?.[0]?.url || '/images/placeholder.webp'}
               alt={product.title}
             />
           </div>
           <div className="flex flex-1 flex-col space-y-1.5 p-1">
-            <div className="text-secondary text-[15px] font-semibold">
-              {product.title}
-            </div>
+            <div className="text-secondary text-[15px] font-semibold">{product.title}</div>
             <div className="flex flex-1 gap-2">
               <div className="text-secondary space-y-1.5 text-[13px]">
                 <div className="flex items-center gap-1">
@@ -49,27 +44,21 @@ const ProductCardComponent = ({
                     )}
                   </div> */}
                   <div className="text-primary font-semibold">
-                    {isVitrin
-                      ? t("vitrin")
-                      : product.isDigital
-                        ? t("digital")
-                        : t("physical")}
+                    {isVitrin ? t('vitrin') : product.isDigital ? t('digital') : t('physical')}
                   </div>
                 </div>
 
                 {isVitrin && (
-                  <div className="text-muted-foreground line-clamp-2">
-                    {product.description}
-                  </div>
+                  <div className="text-muted-foreground line-clamp-2">{product.description}</div>
                 )}
                 {!isVitrin && (
                   <div className="font-medium">
                     {product.quantity === 0 ? (
-                      t("unlimited")
+                      t('unlimited')
                     ) : (
                       <div className="flex items-center gap-1">
                         <span className="text-[15px]">{product.quantity}</span>
-                        <span>{t("number")}</span>
+                        <span>{t('number')}</span>
                       </div>
                     )}
                   </div>
@@ -81,21 +70,21 @@ const ProductCardComponent = ({
                   <div className="flex flex-col items-end justify-center">
                     <span
                       className={cn(
-                        "",
-                        typeof product?.discountPrice === "number"
-                          ? "text-muted-foreground text-sm line-through"
-                          : "text-primary font-semibold",
+                        '',
+                        typeof product?.discountPrice === 'number'
+                          ? 'text-muted-foreground text-sm line-through'
+                          : 'text-primary font-semibold',
                       )}
                     >
                       {product?.price?.toLocaleString()}
                     </span>
-                    {typeof product.discountPrice === "number" && (
+                    {typeof product.discountPrice === 'number' && (
                       <span className="text-primary font-semibold">
                         {product.discountPrice?.toLocaleString()}
                       </span>
                     )}
                   </div>
-                  <div className="text-[13px] text-gray-400">{t("tooman")}</div>
+                  <div className="text-[13px] text-gray-400">{t('tooman')}</div>
                 </div>
               )}
             </div>
@@ -110,14 +99,14 @@ const ProductCardComponent = ({
           size="sm"
           onClick={() =>
             router.push(
-              product.type === "product"
+              product.type === 'product'
                 ? `/products/${product.id}?t=p`
                 : `/products/${product.id}?t=v`,
             )
           }
         >
           <PencilIcon className="text-green-600" />
-          {t("edit")}
+          {t('edit')}
         </Button>
 
         <Button
@@ -128,7 +117,7 @@ const ProductCardComponent = ({
           onClick={() => handleDelete(product.id)}
         >
           <CircleXIcon className="text-destructive" />
-          {t("delete")}
+          {t('delete')}
         </Button>
       </CardFooter>
     </Card>

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import api from "@/hooks/swr/api-client";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from 'react';
+import api from '@/hooks/swr/api-client';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 interface DocType {
   id: string;
@@ -14,7 +14,7 @@ interface DocType {
 }
 
 export default function DocsPage() {
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState('');
   const [activeDoc, setActiveDoc] = useState<DocType | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -23,14 +23,14 @@ export default function DocsPage() {
     const fetchDocs = async () => {
       setLoading(true);
       try {
-        const { data } = await api.get("/telegram-automation/docs");
+        const { data } = await api.get('/telegram-automation/docs');
         const list: DocType[] = data?.data || data || [];
         if (list.length > 0) {
           setActiveDoc(list[0]);
           setContent(list[0].content);
         }
       } catch {
-        toast.error("خطا در دریافت مستندات");
+        toast.error('خطا در دریافت مستندات');
       } finally {
         setLoading(false);
       }
@@ -40,7 +40,7 @@ export default function DocsPage() {
 
   const handleSave = async () => {
     if (!content.trim()) {
-      toast.error("محتوای مستندات نمی‌تواند خالی باشد");
+      toast.error('محتوای مستندات نمی‌تواند خالی باشد');
       return;
     }
     setSaving(true);
@@ -49,15 +49,15 @@ export default function DocsPage() {
         const { data } = await api.put(`/telegram-automation/docs/${activeDoc.id}`, { content });
         const updated = data?.data || data;
         if (updated) setActiveDoc(updated);
-        toast.success("مستندات با موفقیت به‌روزرسانی شد");
+        toast.success('مستندات با موفقیت به‌روزرسانی شد');
       } else {
-        const { data } = await api.post("/telegram-automation/docs", { content });
+        const { data } = await api.post('/telegram-automation/docs', { content });
         const created = data?.data || data;
         if (created) setActiveDoc(created);
-        toast.success("مستندات با موفقیت ذخیره شد");
+        toast.success('مستندات با موفقیت ذخیره شد');
       }
     } catch {
-      toast.error("خطا در ذخیره مستندات");
+      toast.error('خطا در ذخیره مستندات');
     } finally {
       setSaving(false);
     }
@@ -81,15 +81,15 @@ export default function DocsPage() {
           ) : (
             <div className="flex flex-col gap-4">
               <Textarea
-                className="min-h-[450px] font-mono text-sm leading-relaxed resize-y"
-                placeholder={"# عنوان مستندات\n\nتوضیحات و قوانین خدمات..."}
+                className="min-h-[450px] resize-y font-mono text-sm leading-relaxed"
+                placeholder={'# عنوان مستندات\n\nتوضیحات و قوانین خدمات...'}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 dir="rtl"
               />
               <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={saving} type="button">
-                  {saving ? "در حال ذخیره..." : "ذخیره مستندات"}
+                  {saving ? 'در حال ذخیره...' : 'ذخیره مستندات'}
                 </Button>
               </div>
             </div>

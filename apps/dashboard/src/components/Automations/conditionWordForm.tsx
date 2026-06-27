@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Controller } from "react-hook-form";
+import React, { useState } from 'react';
+import { Controller } from 'react-hook-form';
 import {
   Select,
   SelectContent,
@@ -8,15 +8,15 @@ import {
   SelectTrigger,
   SelectLabel,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { PlusCircle, Trash } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { PlusCircle, Trash } from '@phosphor-icons/react/dist/ssr';
+import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 export default function ConditionWordForm({ control, remove }: any) {
   const [conditions, setConditions] = useState([{ id: 1 }]);
 
-  const t = useTranslations("Automations.Conditions");
+  const t = useTranslations('Automations.Conditions');
 
   const addCondition = () => {
     setConditions([...conditions, { id: Date.now() }]);
@@ -30,20 +30,15 @@ export default function ConditionWordForm({ control, remove }: any) {
 
   return (
     <div>
-      <p>{t("wordOrPhrase")} wdifrewr9q4q23oekwasikaeaeo</p>
-      <div className=" space-y-4">
+      <p>{t('wordOrPhrase')} wdifrewr9q4q23oekwasikaeaeo</p>
+      <div className="space-y-4">
         {conditions.map((condition, index) => (
-          <div key={condition.id} className="flex gap-4 items-center">
+          <div key={condition.id} className="flex items-center gap-4">
             <Controller
               name={`conditions.${index}.value`}
               control={control}
               render={({ field }) => (
-                <Input
-                  {...field}
-                  className="max-w-[15rem]"
-                  type="text"
-                  placeholder="مقدار"
-                />
+                <Input {...field} className="max-w-[15rem]" type="text" placeholder="مقدار" />
               )}
             />
 
@@ -51,19 +46,17 @@ export default function ConditionWordForm({ control, remove }: any) {
             {conditions.length > 1 && (
               <Trash
                 size={24}
-                className="text-red-600 cursor-pointer"
+                className="cursor-pointer text-red-600"
                 onClick={() => deleteCondition(condition.id, index)}
               />
             )}
             <Button
               onClick={addCondition}
               variant="ghost"
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex cursor-pointer items-center gap-2"
             >
               <PlusCircle size={24} />
-              <span className="text-sm font-semibold text-blue-600">
-                افزودن شرط جدید
-              </span>
+              <span className="text-sm font-semibold text-blue-600">افزودن شرط جدید</span>
             </Button>
           </div>
         ))}

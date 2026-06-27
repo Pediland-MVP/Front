@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { ReactNode, useState } from "react";
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { ReactNode, useState } from 'react';
 
 import {
   Button,
@@ -13,25 +13,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui";
-import { InfoIcon, MonitorPlayIcon } from "@phosphor-icons/react";
-import { VideoComp } from "./VideoComp";
-import { QuestionIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/components/ui';
+import { InfoIcon, MonitorPlayIcon } from '@phosphor-icons/react';
+import { VideoComp } from './VideoComp';
+import { QuestionIcon } from '@phosphor-icons/react/dist/ssr';
 
 type Position =
-  | "left"
-  | "left-top"
-  | "left-bottom"
-  | "right"
-  | "right-top"
-  | "right-bottom"
-  | "top"
-  | "top-left"
-  | "top-right"
-  | "bottom"
-  | "bottom-left"
-  | "bottom-right"
-  | "center";
+  | 'left'
+  | 'left-top'
+  | 'left-bottom'
+  | 'right'
+  | 'right-top'
+  | 'right-bottom'
+  | 'top'
+  | 'top-left'
+  | 'top-right'
+  | 'bottom'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'center';
 
 interface HelpDialogProps {
   title: string;
@@ -44,31 +44,28 @@ interface HelpDialogProps {
   children?: ReactNode;
 }
 
-const getPositionClasses = (
-  position: Position,
-  noAbsolute: boolean = false,
-): string => {
+const getPositionClasses = (position: Position, noAbsolute: boolean = false): string => {
   const positions = {
-    left: "absolute left-0 top-1/2 -translate-y-1/2",
-    "left-top": "absolute left-0 top-2",
-    "left-bottom": "absolute left-2 bottom-2",
-    right: "absolute right-2 top-1/2 -translate-y-1/2",
-    "right-top": "absolute right-2 top-2",
-    "right-bottom": "absolute right-2 bottom-2",
-    top: "absolute top-2 left-1/2 -translate-x-1/2",
-    "top-left": "absolute top-2 left-2",
-    "top-right": "absolute top-2 right-2",
-    bottom: "absolute bottom-2 left-1/2 -translate-x-1/2",
-    "bottom-left": "absolute bottom-2 left-2",
-    "bottom-right": "absolute bottom-2 right-2",
-    center: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+    left: 'absolute left-0 top-1/2 -translate-y-1/2',
+    'left-top': 'absolute left-0 top-2',
+    'left-bottom': 'absolute left-2 bottom-2',
+    right: 'absolute right-2 top-1/2 -translate-y-1/2',
+    'right-top': 'absolute right-2 top-2',
+    'right-bottom': 'absolute right-2 bottom-2',
+    top: 'absolute top-2 left-1/2 -translate-x-1/2',
+    'top-left': 'absolute top-2 left-2',
+    'top-right': 'absolute top-2 right-2',
+    bottom: 'absolute bottom-2 left-1/2 -translate-x-1/2',
+    'bottom-left': 'absolute bottom-2 left-2',
+    'bottom-right': 'absolute bottom-2 right-2',
+    center: 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
   };
 
   if (!noAbsolute) {
-    return positions[position] || positions["right-top"];
+    return positions[position] || positions['right-top'];
   }
 
-  return "";
+  return '';
 };
 
 export const HelpMeDialog = ({
@@ -76,13 +73,13 @@ export const HelpMeDialog = ({
   description,
   videoSrc,
   videoPoster,
-  position = "right-top",
+  position = 'right-top',
   className,
   noAbsolute = false,
   children,
 }: HelpDialogProps) => {
   const [open, setOpen] = useState(false);
-  const t = useTranslations("Helpme");
+  const t = useTranslations('Helpme');
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -92,13 +89,13 @@ export const HelpMeDialog = ({
         ) : (
           <div
             className={cn(
-              noAbsolute ? "" : getPositionClasses(position),
+              noAbsolute ? '' : getPositionClasses(position),
               className,
-              "cursor-pointer duration-100 hover:scale-110",
+              'cursor-pointer duration-100 hover:scale-110',
             )}
           >
             <QuestionIcon size={20} weight="duotone" className="text-gray-500" />
-            <span className="sr-only">{t("help")}</span>
+            <span className="sr-only">{t('help')}</span>
           </div>
         )}
       </DialogTrigger>
@@ -126,13 +123,13 @@ export const HelpMeDialog = ({
             className="h-[800px] w-full object-cover"
             preload="metadata"
           >
-            {t("browserDosntSupport")}
+            {t('browserDosntSupport')}
           </VideoComp>
         </div>
 
         <DialogFooter>
           <Button onClick={() => setOpen(false)} className="mx-auto w-[260px]">
-            {t("close")}
+            {t('close')}
           </Button>
         </DialogFooter>
       </DialogContent>

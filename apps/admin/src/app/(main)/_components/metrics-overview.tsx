@@ -1,30 +1,22 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
-import {
-  usePlatformSeries,
-  usePlatformTotals,
-} from "@/hooks/use-platform-metrics";
-import { METRICS } from "./metrics.constants";
-import { useViewConfig } from "./use-view-config";
-import { CustomizationBar } from "./customization-bar";
-import { MetricCard } from "./metric-card";
-import { MetricChart } from "./metric-chart";
-import { CombinedChart } from "./combined-chart";
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { usePlatformSeries, usePlatformTotals } from '@/hooks/use-platform-metrics';
+import { METRICS } from './metrics.constants';
+import { useViewConfig } from './use-view-config';
+import { CustomizationBar } from './customization-bar';
+import { MetricCard } from './metric-card';
+import { MetricChart } from './metric-chart';
+import { CombinedChart } from './combined-chart';
 
 export function MetricsOverview() {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations('Dashboard');
   const view = useViewConfig();
   const { config } = view;
 
   const { totals, isLoading: totalsLoading } = usePlatformTotals();
-  const {
-    series,
-    byMetric,
-    deltas,
-    isLoading: seriesLoading,
-  } = usePlatformSeries(config.range);
+  const { series, byMetric, deltas, isLoading: seriesLoading } = usePlatformSeries(config.range);
 
   // The metrics selected for this view, in canonical display order.
   const selectedMetrics = useMemo(
@@ -33,9 +25,9 @@ export function MetricsOverview() {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-4 pr-1">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 pb-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
+        <h1 className="text-xl font-semibold">{t('title')}</h1>
       </div>
 
       <CustomizationBar view={view} />
@@ -54,7 +46,7 @@ export function MetricsOverview() {
       </div>
 
       {/* Charts: grid of per-metric charts, or one combined overlay */}
-      {config.layout === "combined" ? (
+      {config.layout === 'combined' ? (
         <CombinedChart
           metrics={selectedMetrics}
           points={series?.points ?? []}

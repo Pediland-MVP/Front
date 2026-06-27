@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { TelegramLogoIcon } from "@phosphor-icons/react/dist/ssr";
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface TelegramOtpInlineLinkProps {
   phone?: string;
@@ -9,10 +9,10 @@ interface TelegramOtpInlineLinkProps {
 export const TelegramOtpInlineLink = ({ phone }: TelegramOtpInlineLinkProps) => {
   const botUrl = phone
     ? `https://t.me/befrooshappbot?start=${encodeURIComponent(phone)}`
-    : "https://t.me/befrooshappbot";
+    : 'https://t.me/befrooshappbot';
 
   return (
-    <div className="flex items-center justify-center gap-1.5 text-[13px] text-muted-foreground">
+    <div className="text-muted-foreground flex items-center justify-center gap-1.5 text-[13px]">
       <span>کد دریافت نشد؟</span>
       <a
         href={botUrl}

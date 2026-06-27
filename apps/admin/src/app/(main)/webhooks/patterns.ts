@@ -20,7 +20,7 @@ export function groupEventTypes(types: string[]): EventGroup[] {
   const order: string[] = [];
   const map = new Map<string, EventLeaf[]>();
   for (const type of types) {
-    const dot = type.indexOf(".");
+    const dot = type.indexOf('.');
     const parent = dot === -1 ? type : type.slice(0, dot);
     const label = dot === -1 ? type : type.slice(dot + 1);
     if (!map.has(parent)) {
@@ -38,7 +38,7 @@ export function groupEventTypes(types: string[]): EventGroup[] {
  */
 export function selectedToPatterns(selected: Set<string>, groups: EventGroup[]): string[] {
   const totalLeaves = groups.reduce((n, g) => n + g.leaves.length, 0);
-  if (totalLeaves > 0 && selected.size === totalLeaves) return ["*"];
+  if (totalLeaves > 0 && selected.size === totalLeaves) return ['*'];
   const patterns: string[] = [];
   for (const g of groups) {
     const allSelected = g.leaves.every((l) => selected.has(l.type));
@@ -55,14 +55,14 @@ export function selectedToPatterns(selected: Set<string>, groups: EventGroup[]):
 export function patternsToSelected(patterns: string[], types: string[]): Set<string> {
   const selected = new Set<string>();
   for (const p of patterns) {
-    if (p === "*") {
+    if (p === '*') {
       types.forEach((t) => selected.add(t));
       continue;
     }
-    if (p.endsWith(".*")) {
+    if (p.endsWith('.*')) {
       const prefix = p.slice(0, -2);
       types.forEach((t) => {
-        if (t === prefix || t.startsWith(prefix + ".")) selected.add(t);
+        if (t === prefix || t.startsWith(prefix + '.')) selected.add(t);
       });
       continue;
     }

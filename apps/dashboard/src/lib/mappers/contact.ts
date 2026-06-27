@@ -1,8 +1,7 @@
 // src/lib/mappers/contact.ts
-import { Contact, ContactWire, Lead, LeadWire } from "@/types/contact";
+import { Contact, ContactWire, Lead, LeadWire } from '@/types/contact';
 
-const toDate = (s: string | null | undefined): Date | null =>
-  s ? new Date(s) : null;
+const toDate = (s: string | null | undefined): Date | null => (s ? new Date(s) : null);
 
 const toLead = (wire: LeadWire): Lead => ({
   ...wire,

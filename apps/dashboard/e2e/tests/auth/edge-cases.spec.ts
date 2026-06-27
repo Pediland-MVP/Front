@@ -29,7 +29,7 @@ test.describe('Authentication Edge Cases & Validations', () => {
     await authPage.goto();
     await authPage.fillMobile(testMobile);
     await authPage.submit();
-    
+
     await page.waitForURL('**/auth/otp');
     await otpPage.expectOnPage();
 
@@ -38,13 +38,16 @@ test.describe('Authentication Edge Cases & Validations', () => {
     await otpPage.fillOtp('99999'); // Obviously incorrect
 
     // 3. Wait for error message or toast
-    // The shadcn/sonner toast displays the error. 
+    // The shadcn/sonner toast displays the error.
     // We expect the URL to stay on /auth/otp
     await page.waitForTimeout(2000);
     expect(page.url()).toContain('/auth/otp');
   });
 
-  test('should successfully navigate back from OTP page to Auth page', async ({ page, testMobile }) => {
+  test('should successfully navigate back from OTP page to Auth page', async ({
+    page,
+    testMobile,
+  }) => {
     const authPage = new AuthPage(page);
     const otpPage = new OtpPage(page);
 

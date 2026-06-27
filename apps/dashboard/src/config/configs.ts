@@ -1,1 +1,1 @@
-export const MAX_PAYMENT_LIFE_TIME_IN_SEC = 900
+export const MAX_PAYMENT_LIFE_TIME_IN_SEC = 900;

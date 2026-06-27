@@ -1,7 +1,7 @@
 // src/hooks/use-kams.ts
 
-import useSWR from "swr";
-import { fetcher } from "@/hooks/swr/api-client";
+import useSWR from 'swr';
+import { fetcher } from '@/hooks/swr/api-client';
 
 export function useKams({ roles, enabled = true }) {
   const { data, isLoading, error } = useSWR(

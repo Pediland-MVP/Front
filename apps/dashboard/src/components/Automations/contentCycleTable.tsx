@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
-import Link from "next/link";
-import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
-import { toast } from "sonner";
+import { useLocale, useTranslations } from 'next-intl';
+import { useState } from 'react';
+import Link from 'next/link';
+import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
+import { toast } from 'sonner';
 import {
   Table,
   TableBody,
@@ -12,19 +12,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import {
   PencilIcon,
   TrashIcon,
   CaretRightIcon,
   CaretLeftIcon,
   EnvelopeSimpleIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { Card } from "@/components/ui/card";
-import useSWRImmutable from "swr/immutable";
-import api from "@/hooks/swr/api-client";
-import { ContnetCycleTableWizard } from "./contentCycleTable.wizard";
+} from '@phosphor-icons/react/dist/ssr';
+import { Card } from '@/components/ui/card';
+import useSWRImmutable from 'swr/immutable';
+import api from '@/hooks/swr/api-client';
+import { ContnetCycleTableWizard } from './contentCycleTable.wizard';
 
 type ContentCycle = {
   title: string;
@@ -48,7 +48,7 @@ type ContentCycleResponse = {
 };
 
 export default function ContentCycleTable() {
-  const t = useTranslations("Automations.List");
+  const t = useTranslations('Automations.List');
   const [isDeleteLoading, setIsDeleteLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -88,11 +88,11 @@ export default function ContentCycleTable() {
       await api
         .delete(`/contentCycle/${itemToDelete}`)
         .then((res) => {
-          toast.success(t("deleted"));
+          toast.success(t('deleted'));
           contentCycleMutate();
         })
         .catch((e) => {
-          toast.error(t("error"));
+          toast.error(t('error'));
         })
         .finally(() => {
           setIsDeleteLoading(false);
@@ -118,8 +118,8 @@ export default function ContentCycleTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("conditionValue")}</TableHead>
-              <TableHead>{t("actions")}</TableHead>
+              <TableHead>{t('conditionValue')}</TableHead>
+              <TableHead>{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -127,7 +127,7 @@ export default function ContentCycleTable() {
             {contentCycleError ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-red-500">
-                  {t("errorLoadingContacts")}
+                  {t('errorLoadingContacts')}
                 </TableCell>
               </TableRow>
             ) : isContentCycleLoading ? (
@@ -137,14 +137,12 @@ export default function ContentCycleTable() {
                 <TableRow key={item.id}>
                   <TableCell>
                     {item.conditions.length > 0
-                      ? item.conditions.map((c) => c.value).join(", ")
-                      : t("notAvailable")}
+                      ? item.conditions.map((c) => c.value).join(', ')
+                      : t('notAvailable')}
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-center gap-3">
-                      <Link
-                        href={`/automations/sessions?contentCycleId=${item.id}`}
-                      >
+                      <Link href={`/automations/sessions?contentCycleId=${item.id}`}>
                         <EnvelopeSimpleIcon
                           size={20}
                           weight="light"
@@ -175,29 +173,24 @@ export default function ContentCycleTable() {
 
       {contentCycles?.meta && (
         <div className="mt-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size={"sm"}
-            onClick={prevPage}
-            disabled={currentPage === 1}
-          >
-            {locale === "fa" ? <CaretRightIcon /> : <CaretLeftIcon />}
-            {t("previous")}
+          <Button variant="ghost" size={'sm'} onClick={prevPage} disabled={currentPage === 1}>
+            {locale === 'fa' ? <CaretRightIcon /> : <CaretLeftIcon />}
+            {t('previous')}
           </Button>
           <span className="text-muted-foreground text-sm">
-            {t("pageOf", {
+            {t('pageOf', {
               current: currentPage,
               total: contentCycles.meta.totalPages,
             })}
           </span>
           <Button
             variant="ghost"
-            size={"sm"}
+            size={'sm'}
             onClick={nextPage}
             disabled={currentPage === contentCycles.meta.totalPages}
           >
-            {t("next")}
-            {locale === "fa" ? <CaretLeftIcon /> : <CaretRightIcon />}
+            {t('next')}
+            {locale === 'fa' ? <CaretLeftIcon /> : <CaretRightIcon />}
           </Button>
         </div>
       )}

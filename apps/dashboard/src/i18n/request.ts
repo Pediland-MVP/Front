@@ -1,12 +1,12 @@
-import logger from "@/utils/logger";
-import { getRequestConfig } from "next-intl/server";
-import { cookies } from "next/headers";
+import logger from '@/utils/logger';
+import { getRequestConfig } from 'next-intl/server';
+import { cookies } from 'next/headers';
 
 export default getRequestConfig(async () => {
   const cookiesStore = await cookies();
   // const header = await headers()
 
-  const locale = cookiesStore.get("NEXT_LOCALE")?.value;
+  const locale = cookiesStore.get('NEXT_LOCALE')?.value;
 
   // const acceptLanguageHeader = header.get('Accept-Language')
   //   let acceptLanguage: parser.Language[] = []
@@ -39,12 +39,12 @@ export default getRequestConfig(async () => {
   // }
 
   return {
-    locale: "fa",
+    locale: 'fa',
     messages: {
-      ...(await import(`../messages/${"fa"}.json`)).default,
-      ...(await import(`../messages/${"fa"}/Auth.json`)).default,
-      ...(await import(`../messages/${"fa"}/ErrorCodes.json`)).default,
-      ...(await import(`../messages/${"fa"}/Console.json`)).default,
+      ...(await import(`../messages/${'fa'}.json`)).default,
+      ...(await import(`../messages/${'fa'}/Auth.json`)).default,
+      ...(await import(`../messages/${'fa'}/ErrorCodes.json`)).default,
+      ...(await import(`../messages/${'fa'}/Console.json`)).default,
     },
   };
 });

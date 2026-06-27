@@ -1,7 +1,7 @@
 // src/layout/header.tsx
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { AppBreadcrumb } from '@/components/app-breadcrumb';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 export default function Header() {
   return (

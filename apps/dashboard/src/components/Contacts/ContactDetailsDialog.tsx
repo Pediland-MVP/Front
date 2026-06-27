@@ -1,9 +1,9 @@
 // src/components/Contacts/ContactDetailsDialog.tsx
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl';
 
-import { ContactForm } from "./ContactForm";
+import { ContactForm } from './ContactForm';
 import {
   DialogStyled,
   DialogStyledBody,
@@ -11,7 +11,7 @@ import {
   DialogStyledDescription,
   DialogStyledHeader,
   DialogStyledTitle,
-} from "../ui-custom/dialogStyled";
+} from '../ui-custom/dialogStyled';
 
 type ContactDetailsDialogProps = {
   open: boolean;
@@ -19,20 +19,14 @@ type ContactDetailsDialogProps = {
   contactId: string;
 };
 
-export const ContactDetailsDialog = ({
-  open,
-  setOpen,
-  contactId,
-}: ContactDetailsDialogProps) => {
-  const t = useTranslations("Contacts.Dialog");
+export const ContactDetailsDialog = ({ open, setOpen, contactId }: ContactDetailsDialogProps) => {
+  const t = useTranslations('Contacts.Dialog');
 
   return (
     <DialogStyled open={open} onOpenChange={setOpen}>
       <DialogStyledContent showCloseButton={false}>
         <DialogStyledHeader>
-          <DialogStyledTitle icon={"AddressBookTabsIcon"}>
-            {t("detailsInfo")}
-          </DialogStyledTitle>
+          <DialogStyledTitle icon={'AddressBookTabsIcon'}>{t('detailsInfo')}</DialogStyledTitle>
           <DialogStyledDescription></DialogStyledDescription>
         </DialogStyledHeader>
         <DialogStyledBody>

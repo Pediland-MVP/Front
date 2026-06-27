@@ -1,8 +1,8 @@
-import { isUUID } from "class-validator";
-import { redirect } from "next/navigation";
+import { isUUID } from 'class-validator';
+import { redirect } from 'next/navigation';
 
-import { AutomationForm } from "@/components/Automations/AutomationForm";
-import { LayoutPage } from "@/components/Layout/LayoutPage";
+import { AutomationForm } from '@/components/Automations/AutomationForm';
+import { LayoutPage } from '@/components/Layout/LayoutPage';
 
 type PageProps = {
   params: Promise<{
@@ -13,8 +13,8 @@ type PageProps = {
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
-  if (!isUUID(id, "4")) {
-    redirect("/automations");
+  if (!isUUID(id, '4')) {
+    redirect('/automations');
   }
 
   return (

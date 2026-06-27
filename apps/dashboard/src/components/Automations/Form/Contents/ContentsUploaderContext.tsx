@@ -1,16 +1,15 @@
 // src/components/Automations/form/Contents/useContentsUploaderContext.tsx
-"use client";
+'use client';
 
-import { UploadedFile } from "@/types/fileUploader";
-import { createContext, useContext, useEffect, useState } from "react";
+import { UploadedFile } from '@/types/fileUploader';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export type ContentsUploaderContextType = {
   files: UploadedFile[];
   setFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
 };
 
-const ContentsUploaderContext =
-  createContext<ContentsUploaderContextType | null>(null);
+const ContentsUploaderContext = createContext<ContentsUploaderContextType | null>(null);
 
 export const ContentsUploaderContextProvider = ({
   children,
@@ -41,7 +40,7 @@ export const useContentsUploaderContext = () => {
   const context = useContext(ContentsUploaderContext);
   if (context === null) {
     throw new Error(
-      "useContentsUploaderContext must be used within a ContentsUploaderContextProvider",
+      'useContentsUploaderContext must be used within a ContentsUploaderContextProvider',
     );
   }
   return context;

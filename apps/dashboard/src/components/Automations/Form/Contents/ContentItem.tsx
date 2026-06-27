@@ -1,42 +1,50 @@
-"use client";
+'use client';
 
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
-} from "@/constants/automationContent.enum";
-import type { AutomationFormType } from "@/schemas/automationForm";
-import type { UploadedFile } from "@/types/fileUploader";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { useTranslations } from "next-intl";
-import { FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayReturn, useFormContext } from "react-hook-form";
-
+} from '@/constants/automationContent.enum';
+import type { AutomationFormType } from '@/schemas/automationForm';
+import type { UploadedFile } from '@/types/fileUploader';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { useTranslations } from 'next-intl';
 import {
-  ArrowsOutCardinalIcon,
-  TrashSimpleIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { ButtonContent } from "./ButtonContent";
-import { useContentsContext } from "./ContentsContext";
-import { IGPostContent } from "./IGPostContent";
-import { MediaContent } from "./MediaContent";
-import { ProductContentComp } from "./ProductContent";
-import { TextContent } from "./TextContent";
-import { QuestionContent } from "./QuestionContent";
+  FieldArrayWithId,
+  UseFieldArrayAppend,
+  UseFieldArrayReturn,
+  useFormContext,
+} from 'react-hook-form';
+
+import { ArrowsOutCardinalIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { ButtonContent } from './ButtonContent';
+import { useContentsContext } from './ContentsContext';
+import { IGPostContent } from './IGPostContent';
+import { MediaContent } from './MediaContent';
+import { ProductContentComp } from './ProductContent';
+import { TextContent } from './TextContent';
+import { QuestionContent } from './QuestionContent';
 import { ContentItemSchema } from '../../../../schemas/automationForm';
 import { z } from 'zod';
-import VitrinContent from "./VitrinContent";
-import { useEffect } from "react";
-import { DelayContent } from "./DelayContent";
+import VitrinContent from './VitrinContent';
+import { useEffect } from 'react';
+import { DelayContent } from './DelayContent';
 
 interface ReturnContentProps {
   index: number;
   type: AutomationContentTypesEnum;
   mode: AutomationContentModeEnum;
-  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>,
-  content: z.infer<typeof ContentItemSchema>,
+  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>;
+  content: z.infer<typeof ContentItemSchema>;
 }
 
-export const ReturnContent = ({ index, type, mode, appendContents, content }: ReturnContentProps) => {
+export const ReturnContent = ({
+  index,
+  type,
+  mode,
+  appendContents,
+  content,
+}: ReturnContentProps) => {
   const {
     control,
     formState: { errors },
@@ -59,13 +67,21 @@ export const ReturnContent = ({ index, type, mode, appendContents, content }: Re
       return <QuestionContent control={control} mode={mode} index={index} />;
 
     case AutomationContentTypesEnum.VITRIN:
-      return <VitrinContent index={index} mode={mode} control={control} />
+      return <VitrinContent index={index} mode={mode} control={control} />;
 
     case AutomationContentTypesEnum.DELAY:
-      return <DelayContent index={index} />
+      return <DelayContent index={index} />;
 
     default:
-      return <MediaContent content={content} appendContents={appendContents} index={index} mode={mode} type={type} />;
+      return (
+        <MediaContent
+          content={content}
+          appendContents={appendContents}
+          index={index}
+          mode={mode}
+          type={type}
+        />
+      );
   }
 };
 
@@ -75,7 +91,7 @@ export const ContentItem = ({
   mode,
   onContentDeleted,
   appendContents,
-  content
+  content,
 }: {
   id: string;
   index: number;
@@ -84,7 +100,7 @@ export const ContentItem = ({
   defaultUploaderValue?: UploadedFile | null;
   onContentDeleted: (index: number) => any;
   appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>;
-  content: z.infer<typeof ContentItemSchema>,
+  content: z.infer<typeof ContentItemSchema>;
 }) => {
   const {
     control,
@@ -96,16 +112,15 @@ export const ContentItem = ({
   } = useFormContext<AutomationFormType>();
 
   useEffect(() => {
-    console.log("Errors of AutomationForm", JSON.stringify(errors, undefined, " "));
-  }, [errors])
+    console.log('Errors of AutomationForm', JSON.stringify(errors, undefined, ' '));
+  }, [errors]);
 
-  const t = useTranslations("Automations.Contents");
-  const t_contentTypes = useTranslations("Automations.Contents.Types");
+  const t = useTranslations('Automations.Contents');
+  const t_contentTypes = useTranslations('Automations.Contents.Types');
 
   let { removeContents, updateContents, contents } = useContentsContext();
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -113,24 +128,20 @@ export const ContentItem = ({
   };
 
   const deleteContent = () => {
-    onContentDeleted(index)
+    onContentDeleted(index);
     removeContents(index);
     const newList =
-      mode === AutomationContentModeEnum.AUTOMATION
-        ? getValues().contents
-        : getValues().reminders;
+      mode === AutomationContentModeEnum.AUTOMATION ? getValues().contents : getValues().reminders;
 
     if (newList && newList.length === 1) {
       updateContents(0, {
-        ...newList[0]
+        ...newList[0],
       });
     }
   };
 
   // *************** NEVE USED ???????
-  const handleContentTypeChange = async (
-    type: AutomationContentTypesEnum | "media",
-  ) => {
+  const handleContentTypeChange = async (type: AutomationContentTypesEnum | 'media') => {
     // Create a new content object with the selected type
     //NOTE: Default values of the new content
     const updatedContent = {
@@ -139,22 +150,22 @@ export const ContentItem = ({
       // Reset content-specific fields when changing type
       ...(type === AutomationContentTypesEnum.TEXT && {
         file: null,
-        quickReplies: []
+        quickReplies: [],
       }),
-      ...(type === AutomationContentTypesEnum.INSTAGRAM_POST) && {
-        file: null
-      },
+      ...(type === AutomationContentTypesEnum.INSTAGRAM_POST && {
+        file: null,
+      }),
       ...(type === AutomationContentTypesEnum.PRODUCT && {
         products: [{}],
       }),
       ...(type === AutomationContentTypesEnum.BUTTON_TEMPLATE
         ? {
             buttonTemplate: {
-              text: "",
+              text: '',
               buttons: [
                 {
-                  url: "",
-                  text: "",
+                  url: '',
+                  text: '',
                 },
               ],
             },
@@ -170,10 +181,10 @@ export const ContentItem = ({
 
     // Trigger form validation
     await trigger(
-      `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
+      `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${index}`,
     );
 
-    clearErrors("contents.0.buttonTemplate");
+    clearErrors('contents.0.buttonTemplate');
   };
 
   const typeKey = contents?.[index]?.type as string | undefined;
@@ -186,15 +197,8 @@ export const ContentItem = ({
     >
       <div className="_header flex w-full items-center justify-between">
         <div className="flex items-center gap-3">
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-move touch-none"
-          >
-            <ArrowsOutCardinalIcon
-              size={18}
-              className="text-gray-500 hover:text-blue-900"
-            />
+          <div {...attributes} {...listeners} className="cursor-move touch-none">
+            <ArrowsOutCardinalIcon size={18} className="text-gray-500 hover:text-blue-900" />
           </div>
           <div className="text-secondary flex gap-2 text-[13px] font-semibold">
             <div className="bg-secondary flex size-5.5 items-center justify-center rounded-full p-0 text-xs leading-px font-medium text-white">
@@ -208,7 +212,7 @@ export const ContentItem = ({
             size={20}
             className="cursor-pointer text-red-600"
             onClick={deleteContent}
-            aria-label={t("remove_content")}
+            aria-label={t('remove_content')}
           />
         </div>
       </div>

@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { fetcher } from "@/hooks/swr/fetcher";
-import CommentSkeleton from "./comment.skeleton";
-import CommentError from "./comment.error";
-import CommentFooter from "./comment.footer";
-import formatTimestamp from "@/utils/formatTimestamp";
-import Reply from "./reply";
-import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import useSWR from "swr";
-import { AnimatePresence, motion } from "framer-motion";
-import { CommentNamespace } from "@/types/comments/comment.namespace";
-import CommentTopBar from "./commentTopBar";
-import CommentMessages from "./commentMessages";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { fetcher } from '@/hooks/swr/fetcher';
+import CommentSkeleton from './comment.skeleton';
+import CommentError from './comment.error';
+import CommentFooter from './comment.footer';
+import formatTimestamp from '@/utils/formatTimestamp';
+import Reply from './reply';
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import useSWR from 'swr';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CommentNamespace } from '@/types/comments/comment.namespace';
+import CommentTopBar from './commentTopBar';
+import CommentMessages from './commentMessages';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -27,16 +27,12 @@ export default function Component({ id }: { id: string }) {
     error,
     isLoading,
     mutate: mutateComments,
-  } = useSWR<CommentNamespace.GET.Comment>(
-    `${API_URL}/comments/${id}?includeReplies=true`,
-  );
+  } = useSWR<CommentNamespace.GET.Comment>(`${API_URL}/comments/${id}?includeReplies=true`);
 
   useEffect(() => {
     if (!isLoading && !error) {
       if (lastReplyId) {
-        const isHaveLastReply = data?.replies?.some(
-          (reply) => reply.commentId === lastReplyId,
-        );
+        const isHaveLastReply = data?.replies?.some((reply) => reply.commentId === lastReplyId);
         if (isHaveLastReply) {
           setLastReplyId(undefined);
           setComment(data);
@@ -59,7 +55,7 @@ export default function Component({ id }: { id: string }) {
     });
   };
 
-  const t = useTranslations("Comments.Comment");
+  const t = useTranslations('Comments.Comment');
 
   // if (isLoading) return <CommentSkeleton />;
   if (error) return <CommentError />;

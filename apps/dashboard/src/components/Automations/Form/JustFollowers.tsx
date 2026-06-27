@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import useUser from "@/hooks/useUser";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { Control, useFormContext, UseFormGetValues } from "react-hook-form";
-import { WizardVideoLinks } from "../wizardVideoLinks.conf";
+import useUser from '@/hooks/useUser';
+import { AutomationFormType } from '@/schemas/automationForm';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { Control, useFormContext, UseFormGetValues } from 'react-hook-form';
+import { WizardVideoLinks } from '../wizardVideoLinks.conf';
 
 import {
   FormControl,
@@ -16,16 +16,16 @@ import {
   Input,
   Switch,
   Textarea,
-} from "@/components/ui";
-import { HelpMeDialog } from "@/components/Global/HelpMeDialog";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+} from '@/components/ui';
+import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
 type JustFollowersProps = {
   control: Control<AutomationFormType>;
   getValues: UseFormGetValues<AutomationFormType>;
 };
 export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
-  const t = useTranslations("Automations.JustFollowers");
+  const t = useTranslations('Automations.JustFollowers');
   const { setValue, watch, clearErrors } = useFormContext<AutomationFormType>();
 
   const { user, hasInstagram } = useUser();
@@ -33,27 +33,27 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
   useEffect(() => {
     if (!user) return;
 
-    if (watch("justFollowers")) {
+    if (watch('justFollowers')) {
       // Set default values when enabling
-      if (!watch("followMessage") && hasInstagram) {
+      if (!watch('followMessage') && hasInstagram) {
         setValue(
-          "followMessage",
-          t("follow_message", {
+          'followMessage',
+          t('follow_message', {
             username: `@${user?.instagrams[0].username}`,
           }),
         );
       }
-      if (!watch("followCheckMessage")) {
-        setValue("followCheckMessage", t("follow_check_message"));
+      if (!watch('followCheckMessage')) {
+        setValue('followCheckMessage', t('follow_check_message'));
       }
     } else {
       // Reset values and clear errors when disabling
-      setValue("followMessage", "");
-      setValue("followCheckMessage", "");
-      clearErrors("followMessage");
-      clearErrors("followCheckMessage");
+      setValue('followMessage', '');
+      setValue('followCheckMessage', '');
+      clearErrors('followMessage');
+      clearErrors('followCheckMessage');
     }
-  }, [watch("justFollowers")]);
+  }, [watch('justFollowers')]);
 
   return (
     <div className="_just-followers space-y-2">
@@ -64,21 +64,15 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
           <FormItem className="flex flex-col justify-start gap-y-2">
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
-                title={t("Help.title")}
-                description={t("Help.description")}
-                videoSrc={
-                  WizardVideoLinks.Automations.Hints.JustFollowers.video
-                }
+                title={t('Help.title')}
+                description={t('Help.description')}
+                videoSrc={WizardVideoLinks.Automations.Hints.JustFollowers.video}
                 position="left"
               />
               <FormControl>
-                <Switch
-                  type="button"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch type="button" checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
-              <FormLabel className="">{t("title")}</FormLabel>
+              <FormLabel className="">{t('title')}</FormLabel>
             </div>
             <FormMessage />
           </FormItem>
@@ -87,26 +81,22 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
 
       {getValues().justFollowers && (
         <>
-          <p className="text-muted-foreground text-[13px]">{t("helper")}</p>
+          <p className="text-muted-foreground text-[13px]">{t('helper')}</p>
           <FormField
             control={control}
             name="followMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel className="">{t("message_text")}</FormLabel>
+                <FormLabel className="">{t('message_text')}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t("placeholder")}
+                    placeholder={t('placeholder')}
                     {...field}
-                    value={field.value ?? ""}
+                    value={field.value ?? ''}
                     rows={3}
                   />
                 </FormControl>
-                {error && (
-                  <ErrorMessage>
-                    {t("Errors.followMessage.required")}
-                  </ErrorMessage>
-                )}
+                {error && <ErrorMessage>{t('Errors.followMessage.required')}</ErrorMessage>}
               </FormItem>
             )}
           />
@@ -116,19 +106,15 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
             name="followCheckMessage"
             render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel className="">{t("retry_button")}</FormLabel>
+                <FormLabel className="">{t('retry_button')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t("retry_placeholder")}
+                    placeholder={t('retry_placeholder')}
                     {...field}
-                    value={field.value ?? ""}
+                    value={field.value ?? ''}
                   />
                 </FormControl>
-                {error && (
-                  <ErrorMessage>
-                    {t("Errors.followCheckMessage.required")}
-                  </ErrorMessage>
-                )}
+                {error && <ErrorMessage>{t('Errors.followCheckMessage.required')}</ErrorMessage>}
               </FormItem>
             )}
           />

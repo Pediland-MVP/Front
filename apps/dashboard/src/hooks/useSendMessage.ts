@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { mutate } from "swr";
+import { useState } from 'react';
+import { mutate } from 'swr';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -15,17 +15,15 @@ const useSendMessage = () => {
   const sendMessage = async (newMessage: NewMessage) => {
     setIsMessageSendLoading(true);
     return await fetch(`${API_URL}/message/sendMessage`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(newMessage),
-      credentials: "include",
+      credentials: 'include',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     })
       .then(async (res) => {
-        mutate(
-          `${API_URL}/message/conversations/${newMessage.leadId}?limit=20&page=1`,
-        );
+        mutate(`${API_URL}/message/conversations/${newMessage.leadId}?limit=20&page=1`);
         return await res.json();
       })
       .catch((e) => {

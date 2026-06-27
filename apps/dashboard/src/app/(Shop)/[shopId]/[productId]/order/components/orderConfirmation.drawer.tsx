@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerClose,
@@ -11,15 +11,15 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
-import { IPendingOrder } from "@/types/order/pendingOrder"
-import { ProductItem } from "@/types/product"
+} from '@/components/ui/drawer';
+import { IPendingOrder } from '@/types/order/pendingOrder';
+import { ProductItem } from '@/types/product';
 
 interface OrderConfirmationDrawerProps {
-  pendingOrder: IPendingOrder
-  product: ProductItem
-  onCancelOrder: () => void
-  onCreateNewOrder: () => void
+  pendingOrder: IPendingOrder;
+  product: ProductItem;
+  onCancelOrder: () => void;
+  onCreateNewOrder: () => void;
 }
 
 export function OrderConfirmationDrawer({
@@ -28,44 +28,44 @@ export function OrderConfirmationDrawer({
   onCancelOrder,
   onCreateNewOrder,
 }: OrderConfirmationDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const checkOrderMismatch = () => {
     if (pendingOrder.orderProducts[0].id !== product.id) {
-      setIsOpen(true)
+      setIsOpen(true);
     }
-  }
+  };
 
   const handleCancelOrder = () => {
-    onCancelOrder()
-    setIsOpen(false)
-  }
+    onCancelOrder();
+    setIsOpen(false);
+  };
 
   const handleCreateNewOrder = () => {
-    onCreateNewOrder()
-    setIsOpen(false)
-  }
+    onCreateNewOrder();
+    setIsOpen(false);
+  };
 
   const renderOrderProductInfo = () => {
-    const orderProduct = pendingOrder.orderProducts[0]
+    const orderProduct = pendingOrder.orderProducts[0];
     return (
-      <div className="flex items-center justify-center gap-x-7 space-x-4 w-full">
+      <div className="flex w-full items-center justify-center gap-x-7 space-x-4">
         <img
-          src={product?.images[0]?.url || "/placeholder.svg"}
+          src={product?.images[0]?.url || '/placeholder.svg'}
           alt={product?.title}
-          className="w-24 h-24 object-cover rounded"
+          className="h-24 w-24 rounded object-cover"
         />
         <div>
-          <p className="font-medium text-xl">{orderProduct.product?.title}</p>
+          <p className="text-xl font-medium">{orderProduct.product?.title}</p>
           <p className="text-sm text-gray-500">تعداد: {orderProduct.quantity}</p>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   React.useEffect(() => {
-    checkOrderMismatch()
-  }, [pendingOrder, product])
+    checkOrderMismatch();
+  }, [pendingOrder, product]);
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -73,11 +73,11 @@ export function OrderConfirmationDrawer({
         <DrawerHeader className="mt-4">
           <DrawerTitle>یه سفارش ناتموم داری!</DrawerTitle>
           <DrawerDescription>
-           میخوای سفارش قبلیت رو ادامه بدی یا کنسلش کنی و بری سراغ سفارش جدید؟
+            میخوای سفارش قبلیت رو ادامه بدی یا کنسلش کنی و بری سراغ سفارش جدید؟
           </DrawerDescription>
         </DrawerHeader>
-        <div className="p-4 flex justify-center items-center">{renderOrderProductInfo()}</div>
-        <DrawerFooter className="p-4 flex flex-row justify-center items-center mb-16">
+        <div className="flex items-center justify-center p-4">{renderOrderProductInfo()}</div>
+        <DrawerFooter className="mb-16 flex flex-row items-center justify-center p-4">
           <Button variant={'ghost'} onClick={handleCancelOrder}>
             ادامه سفارش قبلی
           </Button>
@@ -85,6 +85,5 @@ export function OrderConfirmationDrawer({
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
-

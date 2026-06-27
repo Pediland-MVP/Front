@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
 import type {
   FileUploaderProps,
   FileWithPreview,
   ExistingFile,
   UploadedFile,
-} from "@/types/fileUploader";
-import { Button } from "@/components/ui/button";
-import { Upload, FileIcon, Music, Play, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import React, { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import Image from "next/image";
-import { AudioRecorderWithVisualizer } from "./AudioRecorder";
-import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
-import { CheckCircleIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/types/fileUploader';
+import { Button } from '@/components/ui/button';
+import { Upload, FileIcon, Music, Play, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import Image from 'next/image';
+import { AudioRecorderWithVisualizer } from './AudioRecorder';
+import { AutomationContentTypesEnum } from '@/constants/automationContent.enum';
+import { CheckCircleIcon, CheckIcon } from '@phosphor-icons/react/dist/ssr';
 
 export const MediaUploader = ({
   files,
@@ -39,22 +39,18 @@ export const MediaUploader = ({
   }, [content]);
 
   const [isDragActive, setIsDragActive] = useState(false);
-  const t = useTranslations("Automations.Contents.Media.FileUploader");
+  const t = useTranslations('Automations.Contents.Media.FileUploader');
 
   // Type guards and helpers
-  const isNewFile = (file: UploadedFile): file is FileWithPreview =>
-    "file" in file;
-  const isExistingFile = (file: UploadedFile): file is ExistingFile =>
-    "url" in file;
+  const isNewFile = (file: UploadedFile): file is FileWithPreview => 'file' in file;
+  const isExistingFile = (file: UploadedFile): file is ExistingFile => 'url' in file;
 
   const getDisplayName = (file: UploadedFile): string => {
     if (isNewFile(file)) return file.file.name;
     if (isExistingFile(file)) {
-      return (
-        file.originalName ?? file.url.split("/").pop() ?? t("uploaded_file")
-      );
+      return file.originalName ?? file.url.split('/').pop() ?? t('uploaded_file');
     }
-    return t("uploaded_file");
+    return t('uploaded_file');
   };
 
   const isUploading = (file: UploadedFile): boolean => {
@@ -69,20 +65,20 @@ export const MediaUploader = ({
 
   const getDisplaySize = (file: UploadedFile): React.ReactNode => {
     if (isNewFile(file)) {
-      return `${(file.file.size / 1024 / 1024).toFixed(2)} ${t("MB")}`;
+      return `${(file.file.size / 1024 / 1024).toFixed(2)} ${t('MB')}`;
     }
     if (isExistingFile(file)) {
       return (
         <p className="flex gap-x-1">
           <CheckCircleIcon weight="fill" size={14} className="text-green-500" />
-          {t("uploaded")}{" "}
+          {t('uploaded')}{' '}
         </p>
       );
     }
     return (
       <p className="flex gap-x-1">
         <CheckCircleIcon weight="fill" size={14} className="text-green-500" />
-        {t("uploaded")}{" "}
+        {t('uploaded')}{' '}
       </p>
     );
   };
@@ -96,7 +92,7 @@ export const MediaUploader = ({
     return (
       <p className="flex gap-x-1">
         <CheckCircleIcon weight="fill" size={14} className="text-green-500" />
-        {t("uploaded")}{" "}
+        {t('uploaded')}{' '}
       </p>
     );
   };
@@ -131,7 +127,7 @@ export const MediaUploader = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: accept
-      ? accept.split(",").reduce(
+      ? accept.split(',').reduce(
           (acc, mimeType) => {
             acc[mimeType.trim()] = [];
             return acc;
@@ -148,7 +144,7 @@ export const MediaUploader = ({
 
   const removeFile = (id: number) => {
     const updatedFiles = files.filter(
-      (file): file is UploadedFile => "id" in file && file.id !== id,
+      (file): file is UploadedFile => 'id' in file && file.id !== id,
     );
     setFiles(updatedFiles);
     onChange(updatedFiles);
@@ -169,14 +165,12 @@ export const MediaUploader = ({
   );
 
   const renderPreview = (file: UploadedFile) => {
-    const isUploaded = "url" in file;
+    const isUploaded = 'url' in file;
     const { file: uploadedFile } = file as FileWithPreview;
-    const fileType = isUploaded
-      ? file.mimeType?.split("/")[0]
-      : uploadedFile.type.split("/")[0];
+    const fileType = isUploaded ? file.mimeType?.split('/')[0] : uploadedFile.type.split('/')[0];
 
     switch (fileType) {
-      case "image":
+      case 'image':
         return (
           <Image
             src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)}
@@ -186,13 +180,13 @@ export const MediaUploader = ({
             className="h-full w-full object-cover"
           />
         );
-      case "video":
+      case 'video':
         return (
           <div className="bg-muted flex h-full w-full items-center justify-center">
             <Play size={24} className="text-muted-foreground" />
           </div>
         );
-      case "audio":
+      case 'audio':
         return (
           <div className="bg-muted flex h-full w-full items-center justify-center">
             <Music size={24} className="text-muted-foreground" />
@@ -208,9 +202,9 @@ export const MediaUploader = ({
   };
 
   const acceptedFormats = {
-    image: "image/png, image/jpeg, image/gif",
-    video: "video/mp4, video/ogg, video/avi, video/quicktime, video/webm",
-    audio: "audio/aac, audio/m4a, audio/wav, audio/mp4",
+    image: 'image/png, image/jpeg, image/gif',
+    video: 'video/mp4, video/ogg, video/avi, video/quicktime, video/webm',
+    audio: 'audio/aac, audio/m4a, audio/wav, audio/mp4',
   };
 
   return (
@@ -228,9 +222,7 @@ export const MediaUploader = ({
             {/* File info */}
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground text-xs">
-                  {t("uploaded_file")}
-                </span>
+                <span className="text-muted-foreground text-xs">{t('uploaded_file')}</span>
                 {isUploading(file) ? (
                   <span className="text-muted-foreground h-6 w-1/3 truncate text-left text-[13px]">
                     {getDisplayName(file)}
@@ -256,9 +248,7 @@ export const MediaUploader = ({
                   className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
                   style={{
                     width: `${
-                      "process" in file && file.process !== undefined
-                        ? file.process
-                        : 100
+                      'process' in file && file.process !== undefined ? file.process : 100
                     }%`,
                   }}
                 />
@@ -274,9 +264,7 @@ export const MediaUploader = ({
 
       {/* Audio Recorder */}
       {fileType === AutomationContentTypesEnum.AUDIO && (
-        <AudioRecorderWithVisualizer
-          onRecordingComplete={handleRecordingComplete}
-        />
+        <AudioRecorderWithVisualizer onRecordingComplete={handleRecordingComplete} />
       )}
 
       {/* Dropzone */}
@@ -284,22 +272,16 @@ export const MediaUploader = ({
         {...getRootProps()}
         className={`bg-background hover:bg-muted/50 relative min-h-32 cursor-pointer rounded-lg border transition-colors`}
       >
-        <input
-          {...getInputProps()}
-          multiple
-          accept={acceptedFormats[fileType]}
-        />
+        <input {...getInputProps()} multiple accept={acceptedFormats[fileType]} />
         <div className="flex flex-col items-center justify-center p-6 text-center">
           <Upload className="text-muted-foreground mb-1 size-8" />
           <p className="text-muted-foreground mb-3 text-sm">
-            {isDragActive ? t("dropzone") : t(`FileTypes.${fileType}.title`)}
+            {isDragActive ? t('dropzone') : t(`FileTypes.${fileType}.title`)}
           </p>
-          <p className="text-muted-foreground text-xs">
-            {t('upload_description')}
-          </p>
+          <p className="text-muted-foreground text-xs">{t('upload_description')}</p>
           <p className="text-muted-foreground text-xs">
             {t(`FileTypes.${fileType}.formats`, {
-              defaultValue: "Drag and drop files here or click to browse",
+              defaultValue: 'Drag and drop files here or click to browse',
             })}
           </p>
         </div>

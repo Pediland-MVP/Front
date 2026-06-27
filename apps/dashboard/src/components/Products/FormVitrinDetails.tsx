@@ -1,5 +1,5 @@
-import { useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
+import { useFormContext } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 
 import {
   Card,
@@ -13,18 +13,18 @@ import {
   FormMessage,
   Input,
   Textarea,
-} from "@/components/ui";
-import { StorefrontIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/components/ui';
+import { StorefrontIcon } from '@phosphor-icons/react/dist/ssr';
 
 export const FormVitrinDetails = () => {
   const form = useFormContext();
-  const t = useTranslations("Products.Form.Vitrin");
+  const t = useTranslations('Products.Form.Vitrin');
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          <StorefrontIcon weight="duotone" /> {t("vitrin_details")}
+          <StorefrontIcon weight="duotone" /> {t('vitrin_details')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2.5">
@@ -34,7 +34,7 @@ export const FormVitrinDetails = () => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("title_label")}</FormLabel>
+              <FormLabel>{t('title_label')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -49,7 +49,7 @@ export const FormVitrinDetails = () => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("description_label")}</FormLabel>
+              <FormLabel>{t('description_label')}</FormLabel>
               <FormControl>
                 <Textarea rows={6} {...field} />
               </FormControl>

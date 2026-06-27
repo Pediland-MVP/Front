@@ -1,12 +1,12 @@
-import { cn } from "@/lib/utils";
-import React, { Fragment, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { useDropzone } from "react-dropzone";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { cn } from '@/lib/utils';
+import React, { Fragment, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useDropzone } from 'react-dropzone';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
-import AnimatedCircularProgressBar from "../ui/animated-circular-progress-bar";
-import { UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import AnimatedCircularProgressBar from '../ui/animated-circular-progress-bar';
+import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr';
 
 const mainVariant = {
   initial: {
@@ -31,8 +31,8 @@ const secondaryVariant = {
 
 export const FileUploader = ({
   onChange,
-  type = "file",
-  accept = "*",
+  type = 'file',
+  accept = '*',
   multiple = false,
   images = [],
   progress = 0,
@@ -40,7 +40,7 @@ export const FileUploader = ({
   className,
 }: {
   onChange?: (files: File[]) => void;
-  type?: "file" | "image";
+  type?: 'file' | 'image';
   accept?: string;
   images?: string[];
   multiple?: boolean;
@@ -48,7 +48,7 @@ export const FileUploader = ({
   isUploading?: boolean;
   className?: string;
 }) => {
-  const t = useTranslations("FileUpload");
+  const t = useTranslations('FileUpload');
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -75,7 +75,7 @@ export const FileUploader = ({
   });
 
   return (
-    <div className={cn(className, "relative duration-300")} {...getRootProps()}>
+    <div className={cn(className, 'relative duration-300')} {...getRootProps()}>
       <div
         onClick={handleClick}
         className="group/file relative block w-full cursor-pointer overflow-hidden"
@@ -93,14 +93,12 @@ export const FileUploader = ({
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <p className="text-muted-foreground relative w-full text-[13px]">
-            {t("description")}
-          </p>
+          <p className="text-muted-foreground relative w-full text-[13px]">{t('description')}</p>
 
           <div className="relative mx-auto grid w-full max-w-xl grid-cols-10 pt-5">
             {/* Show when there are uploaded files OR existing images */}
             {(files.length > 0 || images.length > 0) && (
-              <Fragment key={files.length > 0 ? "file-0" : "existing-image"}>
+              <Fragment key={files.length > 0 ? 'file-0' : 'existing-image'}>
                 <div className="relative col-span-6 flex w-full items-center justify-center sm:col-span-5">
                   <ImageGrid images={images} />
 
@@ -123,12 +121,8 @@ export const FileUploader = ({
                     <p className="text-sm text-neutral-600">
                       {(files[0].size / (1024 * 1024)).toFixed(2)} MB
                     </p>
-                    <p className="max-w-xs truncate text-base text-neutral-700">
-                      {files[0].name}
-                    </p>
-                    <p className="rounded-md bg-gray-100 px-1 py-0.5">
-                      {files[0].type}
-                    </p>
+                    <p className="max-w-xs truncate text-base text-neutral-700">{files[0].name}</p>
+                    <p className="rounded-md bg-gray-100 px-1 py-0.5">{files[0].type}</p>
                   </div>
                 )}
               </Fragment>
@@ -137,25 +131,17 @@ export const FileUploader = ({
             {!(files.length > 0) && (
               <div
                 className={cn(
-                  "flex min-h-32 items-center justify-center",
-                  images.length > 0
-                    ? "col-span-4 sm:col-span-5"
-                    : "col-span-10",
+                  'flex min-h-32 items-center justify-center',
+                  images.length > 0 ? 'col-span-4 sm:col-span-5' : 'col-span-10',
                 )}
               >
                 {isDragActive ? (
                   <div className="text-muted-foreground flex flex-col items-center gap-1 text-sm font-medium">
-                    <UploadSimpleIcon
-                      size={28}
-                      className="text-muted-foreground"
-                    />
-                    {t("dropIt")}
+                    <UploadSimpleIcon size={28} className="text-muted-foreground" />
+                    {t('dropIt')}
                   </div>
                 ) : (
-                  <UploadSimpleIcon
-                    size={28}
-                    className="text-muted-foreground"
-                  />
+                  <UploadSimpleIcon size={28} className="text-muted-foreground" />
                 )}
               </div>
             )}
@@ -179,8 +165,8 @@ export function GridPattern() {
               key={`${col}-${row}`}
               className={`flex h-10 w-10 shrink-0 rounded-[2px] ${
                 index % 2 === 0
-                  ? "bg-gray-50"
-                  : "bg-gray-50 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset]"
+                  ? 'bg-gray-50'
+                  : 'bg-gray-50 shadow-[0px_0px_1px_3px_rgba(255,255,255,1)_inset]'
               }`}
             />
           );
@@ -194,21 +180,12 @@ const ImageGrid = ({ images }: { images: string[] }) => {
   if (images.length === 0) return null;
 
   const gridColsClass =
-    images.length === 1
-      ? "grid-cols-1"
-      : images.length === 2
-        ? "grid-cols-2"
-        : "grid-cols-3";
+    images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3';
 
   return (
-    <div
-      className={`grid ${gridColsClass} place-items-center justify-center gap-4`}
-    >
+    <div className={`grid ${gridColsClass} place-items-center justify-center gap-4`}>
       {images.map((image, index) => (
-        <div
-          key={index}
-          className="relative aspect-square h-40 w-40 overflow-hidden rounded-md"
-        >
+        <div key={index} className="relative aspect-square h-40 w-40 overflow-hidden rounded-md">
           <Image
             src={image}
             alt={`Uploaded image ${index + 1}`}

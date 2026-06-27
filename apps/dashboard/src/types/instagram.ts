@@ -1,9 +1,9 @@
-import { Meta } from "./meta";
-import { IResponseMessage } from "./responseMessage";
+import { Meta } from './meta';
+import { IResponseMessage } from './responseMessage';
 
 export namespace InstagramNamespace {
   export namespace GET {
-    export type RedirectLink = IResponseMessage<{ link: string}>
+    export type RedirectLink = IResponseMessage<{ link: string }>;
   }
   export interface Account {
     id: string;
@@ -19,7 +19,7 @@ export namespace InstagramNamespace {
     username: string | null;
     profileUrl: string;
     profilePictureUrl: string | null;
-    isIgTokenValid: boolean
+    isIgTokenValid: boolean;
   }
 
   export interface Page {
@@ -77,7 +77,7 @@ export interface Messages {
   messageId: string;
   attachment: null;
   sendDate: Date;
-  from: "instagram" | "lead";
+  from: 'instagram' | 'lead';
 
   postId: null;
   text: string;

@@ -12,15 +12,18 @@ export class OtpPage {
   }
 
   async fillOtp(otp: string) {
-    // Shadcn InputOTP renders a hidden or styled input under the hood. 
+    // Shadcn InputOTP renders a hidden or styled input under the hood.
     // We click the container/first slot to focus it, then type the OTP.
-    const container = this.page.locator('.flex-row-reverse, .flex-row').filter({ has: this.page.locator('input') }).first();
+    const container = this.page
+      .locator('.flex-row-reverse, .flex-row')
+      .filter({ has: this.page.locator('input') })
+      .first();
     if (await container.isVisible()) {
       await container.click();
     } else {
       await this.page.locator('input').first().click();
     }
-    
+
     // Type the digits one by one to ensure events fire correctly
     for (const char of otp) {
       await this.page.keyboard.press(char);

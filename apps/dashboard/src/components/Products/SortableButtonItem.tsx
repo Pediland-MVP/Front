@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { useTranslations } from 'next-intl';
+import { useFormContext } from 'react-hook-form';
 
 import {
   Button,
@@ -15,13 +15,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { ArrowsVerticalIcon } from "@phosphor-icons/react/dist/ssr";
-import { Trash2Icon } from "lucide-react";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import { AutomationSearchSelect } from "./AutomationSearchSelect";
+} from '@/components/ui';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { ArrowsVerticalIcon } from '@phosphor-icons/react/dist/ssr';
+import { Trash2Icon } from 'lucide-react';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import { AutomationSearchSelect } from './AutomationSearchSelect';
 
 export const SortableButtonItem = ({
   field,
@@ -32,12 +32,13 @@ export const SortableButtonItem = ({
   index: number;
   removeButton: (id: string) => void;
 }) => {
-  const t = useTranslations("Products.Form.Vitrin");
+  const t = useTranslations('Products.Form.Vitrin');
   const form = useFormContext();
   const selectedType = form.watch(`buttons.${index}.postbackPayloadType`);
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: field._xid });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: field._xid,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -45,16 +46,8 @@ export const SortableButtonItem = ({
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="_item flex items-center gap-1.5"
-    >
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab touch-none active:cursor-grabbing"
-      >
+    <div ref={setNodeRef} style={style} className="_item flex items-center gap-1.5">
+      <div {...attributes} {...listeners} className="cursor-grab touch-none active:cursor-grabbing">
         <ArrowsVerticalIcon size={16} className="text-gray-500" />
       </div>
 
@@ -64,23 +57,16 @@ export const SortableButtonItem = ({
           name={`buttons.${index}.postbackPayloadType`}
           render={({ field: typeField }) => (
             <FormItem className="w-full space-y-0 sm:w-auto">
-              <Select
-                value={typeField.value}
-                onValueChange={typeField.onChange}
-              >
+              <Select value={typeField.value} onValueChange={typeField.onChange}>
                 <SelectTrigger className="gap-1 pr-2 pl-1.5">
-                  <SelectValue placeholder={t("button_type")} />
+                  <SelectValue placeholder={t('button_type')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value={ButtonTypeEnum.TEXT}>
-                      {t("text")}
-                    </SelectItem>
-                    <SelectItem value={ButtonTypeEnum.URL}>
-                      {t("url")}
-                    </SelectItem>
+                    <SelectItem value={ButtonTypeEnum.TEXT}>{t('text')}</SelectItem>
+                    <SelectItem value={ButtonTypeEnum.URL}>{t('url')}</SelectItem>
                     <SelectItem value={ButtonTypeEnum.START_AUTOMATION}>
-                      {t("automation")}
+                      {t('automation')}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -97,9 +83,9 @@ export const SortableButtonItem = ({
               <FormItem className="w-full space-y-0 sm:flex-1">
                 <FormControl>
                   <Input
-                    placeholder={t("button_text")}
+                    placeholder={t('button_text')}
                     {...labelField}
-                    value={labelField.value ?? ""}
+                    value={labelField.value ?? ''}
                   />
                 </FormControl>
               </FormItem>
@@ -117,9 +103,9 @@ export const SortableButtonItem = ({
                   <Input
                     type="url"
                     dir="ltr"
-                    placeholder={t("url")}
+                    placeholder={t('url')}
                     {...valueField}
-                    value={valueField.value ?? ""}
+                    value={valueField.value ?? ''}
                   />
                 </FormControl>
               </FormItem>
@@ -145,12 +131,7 @@ export const SortableButtonItem = ({
         )}
       </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={() => removeButton(field._xid)}
-      >
+      <Button type="button" variant="outline" size="icon" onClick={() => removeButton(field._xid)}>
         <Trash2Icon className="text-destructive" />
       </Button>
     </div>

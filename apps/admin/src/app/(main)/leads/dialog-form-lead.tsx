@@ -6,10 +6,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import LeadForm from "./form-lead";
-import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr";
-import { MarketingLead } from "@/types/lead";
+} from '@/components/ui/dialog';
+import LeadForm from './form-lead';
+import { PlusCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { MarketingLead } from '@/types/lead';
 
 export default function DialogFormLead({
   open,
@@ -28,15 +28,11 @@ export default function DialogFormLead({
         <DialogHeader>
           <DialogTitle>
             <PlusCircleIcon weight="duotone" />
-            {data ? "ویرایش سرنخ" : " ایجاد سرنخ جدید"}
+            {data ? 'ویرایش سرنخ' : ' ایجاد سرنخ جدید'}
           </DialogTitle>
           <DialogDescription></DialogDescription>
 
-          <LeadForm
-            data={data}
-            onOpenChange={onOpenChange}
-            mutateLeads={mutate}
-          />
+          <LeadForm data={data} onOpenChange={onOpenChange} mutateLeads={mutate} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

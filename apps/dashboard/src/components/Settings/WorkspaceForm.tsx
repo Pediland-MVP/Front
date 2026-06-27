@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
-import api from "@/hooks/swr/api-client";
-import { useWorkspaces } from "@/hooks/useWorkspaces";
-import { usePermissions } from "@/hooks/usePermissions";
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import api from '@/hooks/swr/api-client';
+import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { usePermissions } from '@/hooks/usePermissions';
 import {
   FormControl,
   FormField,
@@ -16,13 +16,13 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  Form
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+  Form,
+} from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 
 export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
-  const t = useTranslations("Settings.Workspace");
+  const t = useTranslations('Settings.Workspace');
   const { workspaceId } = usePermissions();
   const { workspaces, isLoading: workspacesIsLoading, mutate } = useWorkspaces();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +36,7 @@ export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      name: '',
     },
   });
 
@@ -53,11 +53,11 @@ export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
     setIsSubmitting(true);
     try {
       await api.patch(`/workspaces/${workspaceId}`, { name: data.name });
-      toast.success(t("success"));
+      toast.success(t('success'));
       mutate(); // Refresh workspaces
       onSuccess?.();
     } catch (e) {
-      toast.error(t("error"));
+      toast.error(t('error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -74,7 +74,7 @@ export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("name")}</FormLabel>
+                <FormLabel>{t('name')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -83,12 +83,8 @@ export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
             )}
           />
         </div>
-        <ButtonLoading
-          isLoading={isSubmitting}
-          type="submit"
-          className="mt-4 w-full md:w-auto"
-        >
-          {t("save")}
+        <ButtonLoading isLoading={isSubmitting} type="submit" className="mt-4 w-full md:w-auto">
+          {t('save')}
         </ButtonLoading>
       </form>
     </Form>

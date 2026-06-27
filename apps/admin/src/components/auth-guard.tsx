@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
-import { Loading } from "@/components/loading";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
+import { Loading } from '@/components/loading';
 
 /**
  * Gates the authenticated (main) area. Renders nothing but a loader until we
@@ -21,7 +21,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || isError)) {
-      router.replace("/auth/signin");
+      router.replace('/auth/signin');
     }
   }, [isLoading, isAuthenticated, isError, router]);
 

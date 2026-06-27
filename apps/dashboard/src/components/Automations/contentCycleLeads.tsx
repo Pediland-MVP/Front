@@ -1,33 +1,21 @@
-"use client";
+'use client';
 
-import { useState, useMemo, SetStateAction } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { TableCell } from "@/components/ui/table";
+import { useState, useMemo, SetStateAction } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { TableCell } from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ArrowUp, Eye } from "@phosphor-icons/react";
-import Image from "next/image";
+} from '@/components/ui/dropdown-menu';
+import { ArrowUp, Eye } from '@phosphor-icons/react';
+import Image from 'next/image';
 type Lead = {
   profile: string;
   name: string;
@@ -36,9 +24,9 @@ type Lead = {
   lastSeen: string;
 };
 export default function ContentCycleLeads() {
-  const [search, setSearch] = useState("");
-  const [sortColumn, setSortColumn] = useState<keyof Lead>("messages");
-  const [sortDirection, setSortDirection] = useState("desc");
+  const [search, setSearch] = useState('');
+  const [sortColumn, setSortColumn] = useState<keyof Lead>('messages');
+  const [sortDirection, setSortDirection] = useState('desc');
   const [selectedLeads, setSelectedLeads] = useState<any[]>([]);
 
   const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
@@ -47,10 +35,10 @@ export default function ContentCycleLeads() {
 
   const handleSort = (column: keyof Lead) => {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection("asc");
+      setSortDirection('asc');
     }
   };
 
@@ -65,78 +53,72 @@ export default function ContentCycleLeads() {
   const filteredLeads: Lead[] = useMemo(() => {
     return [
       {
-        profile: "https://github.com/shadcn.png",
-        name: "sina pirani",
-        username: "@sina_pirani",
+        profile: 'https://github.com/shadcn.png',
+        name: 'sina pirani',
+        username: '@sina_pirani',
         messages: 125,
-        lastSeen: "2h ago",
+        lastSeen: '2h ago',
       },
       {
-        profile: "https://github.com/shadcn.png",
-        name: "Fatemeh soleimani",
-        username: "@fatemehsoleimani",
+        profile: 'https://github.com/shadcn.png',
+        name: 'Fatemeh soleimani',
+        username: '@fatemehsoleimani',
         messages: 78,
-        lastSeen: "2h ago",
+        lastSeen: '2h ago',
       },
       {
-        profile: "https://github.com/shadcn.png",
-        name: "nazi",
-        username: "@nazi",
+        profile: 'https://github.com/shadcn.png',
+        name: 'nazi',
+        username: '@nazi',
         messages: 52,
-        lastSeen: "2h ago",
+        lastSeen: '2h ago',
       },
       {
-        profile: "https://github.com/shadcn.png",
-        name: "Michael ",
-        username: "@michael_johnson",
+        profile: 'https://github.com/shadcn.png',
+        name: 'Michael ',
+        username: '@michael_johnson',
         messages: 32,
-        lastSeen: "2h ago",
+        lastSeen: '2h ago',
       },
       {
-        profile: "https://github.com/shadcn.png",
-        name: "Emily ",
-        username: "@emily_martinez",
+        profile: 'https://github.com/shadcn.png',
+        name: 'Emily ',
+        username: '@emily_martinez',
         messages: 18,
-        lastSeen: "2h ago",
+        lastSeen: '2h ago',
       },
     ]
       .filter((lead) => lead.name.toLowerCase().includes(search.toLowerCase()))
       .sort((a, b) => {
-        if (a[sortColumn] < b[sortColumn])
-          return sortDirection === "asc" ? -1 : 1;
-        if (a[sortColumn] > b[sortColumn])
-          return sortDirection === "asc" ? 1 : -1;
+        if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1;
+        if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1;
         return 0;
       });
   }, [search, sortColumn, sortDirection]);
 
   return (
-    <Card className="w-ful shadow-none border-none">
+    <Card className="w-ful border-none shadow-none">
       <CardHeader>
         <CardTitle>لیدهای اینستاگرام</CardTitle>
         <CardDescription>مدیریت لیدهای اینستاگرام شما</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-8 items-center mb-4">
+        <div className="mb-4 flex items-center gap-8">
           <Input
             type="search"
             placeholder="جستجو ..."
             value={search}
             onChange={handleSearch}
-            className="flex-1 mr-4"
+            className="mr-4 flex-1"
           />
           <div className="relative">
-            {" "}
+            {' '}
             {/* Ensure dropdown stays in place */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex py-[19px] items-center gap-2"
-                >
-                  <ArrowUp size={18} color="#0e0d0e" /> مرتب‌سازی بر اساس{" "}
-                  {sortColumn === "messages" ? "پیام‌ها" : "نام"}
+                <Button variant="outline" size="sm" className="flex items-center gap-2 py-[19px]">
+                  <ArrowUp size={18} color="#0e0d0e" /> مرتب‌سازی بر اساس{' '}
+                  {sortColumn === 'messages' ? 'پیام‌ها' : 'نام'}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
@@ -173,38 +155,28 @@ export default function ContentCycleLeads() {
                   }}
                 />
               </TableHead>
-              <TableHead
-                onClick={() => handleSort("name")}
-                className="cursor-pointer text-right"
-              >
+              <TableHead onClick={() => handleSort('name')} className="cursor-pointer text-right">
                 کاربر
-                {sortColumn === "name" && (
-                  <span className="ml-2">
-                    {sortDirection === "asc" ? "\u2191" : "\u2193"}
-                  </span>
+                {sortColumn === 'name' && (
+                  <span className="ml-2">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
                 )}
               </TableHead>
               <TableHead className="text-right">اخرین پیام</TableHead>
               <TableHead
                 className="cursor-pointer text-right"
-                onClick={() => handleSort("messages")}
+                onClick={() => handleSort('messages')}
               >
                 پیام‌ها
-                {sortColumn === "messages" && (
-                  <span className="ml-2">
-                    {sortDirection === "asc" ? "\u2191" : "\u2193"}
-                  </span>
+                {sortColumn === 'messages' && (
+                  <span className="ml-2">{sortDirection === 'asc' ? '\u2191' : '\u2193'}</span>
                 )}
               </TableHead>
-              <TableHead className="w-[100px] text-center ">اقدامات</TableHead>
+              <TableHead className="w-[100px] text-center">اقدامات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredLeads.map((lead, index) => (
-              <TableRow
-                key={index}
-                className={selectedLeads.includes(lead) ? "bg-muted" : ""}
-              >
+              <TableRow key={index} className={selectedLeads.includes(lead) ? 'bg-muted' : ''}>
                 <TableCell className="text-center">
                   <Checkbox
                     checked={selectedLeads.includes(lead)}
@@ -212,19 +184,17 @@ export default function ContentCycleLeads() {
                   />
                 </TableCell>
                 <TableCell>
-                  <div className="flex gap-4 items-center">
+                  <div className="flex items-center gap-4">
                     <Image
                       src={lead.profile}
                       alt={`${lead.name} profile`}
                       width={42}
                       height={42}
-                      className="rounded-full mr-3"
+                      className="mr-3 rounded-full"
                     />
                     <div className="flex flex-col">
                       <div className="font-medium">{lead.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {lead.username}
-                      </div>
+                      <div className="text-muted-foreground text-xs">{lead.username}</div>
                     </div>
                   </div>
                 </TableCell>

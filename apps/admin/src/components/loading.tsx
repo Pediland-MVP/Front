@@ -1,6 +1,6 @@
 // src/components/loading.tsx
 
-import { SpinnerGapIcon } from "@phosphor-icons/react/dist/ssr";
+import { SpinnerGapIcon } from '@phosphor-icons/react/dist/ssr';
 
 export const Loading = () => {
   return (

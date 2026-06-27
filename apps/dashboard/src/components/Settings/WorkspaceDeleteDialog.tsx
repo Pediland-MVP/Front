@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   AlertDialog,
@@ -9,8 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
 
 interface WorkspaceDeleteDialogProps {
   isOpen: boolean;
@@ -25,16 +25,19 @@ export function WorkspaceDeleteDialog({
   onConfirm,
   isDeleting,
 }: WorkspaceDeleteDialogProps) {
-  const t = useTranslations("Settings.Workspace");
+  const t = useTranslations('Settings.Workspace');
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open && !isDeleting) onClose(); }}>
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open && !isDeleting) onClose();
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("delete_dialog_title")}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t("delete_dialog_description")}
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t('delete_dialog_title')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('delete_dialog_description')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction
@@ -42,10 +45,10 @@ export function WorkspaceDeleteDialog({
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {t(isDeleting ? "deleting" : "delete_confirm")}
+            {t(isDeleting ? 'deleting' : 'delete_confirm')}
           </AlertDialogAction>
           <AlertDialogCancel onClick={onClose} disabled={isDeleting}>
-            {t("cancel")}
+            {t('cancel')}
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>

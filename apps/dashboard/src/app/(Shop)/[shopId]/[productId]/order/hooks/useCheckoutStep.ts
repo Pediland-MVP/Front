@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useCheckout } from "../useCheckout";
+import { useState, useMemo } from 'react';
+import { useCheckout } from '../useCheckout';
 
 /**
  * Custom hook to manage step navigation based on product properties.
@@ -29,10 +29,10 @@ const useCheckoutStep = () => {
     // The price to be used for step validation
     // It is either the pending order's price or the product's price
     const price = pendingOrder
-      ? typeof pendingOrder.orderProducts[0]?.discountPrice === "number"
+      ? typeof pendingOrder.orderProducts[0]?.discountPrice === 'number'
         ? pendingOrder.orderProducts[0]?.discountPrice
         : pendingOrder.orderProducts[0].price
-      : typeof product.discountPrice === "number"
+      : typeof product.discountPrice === 'number'
         ? product.discountPrice
         : product.price;
 

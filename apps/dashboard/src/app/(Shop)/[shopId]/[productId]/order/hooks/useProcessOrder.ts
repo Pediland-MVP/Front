@@ -1,25 +1,25 @@
-import { toast } from "sonner";
-import { useCheckout } from "../useCheckout";
-import { useTranslations } from "next-intl";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { useState } from "react";
+import { toast } from 'sonner';
+import { useCheckout } from '../useCheckout';
+import { useTranslations } from 'next-intl';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function useProcessOrder() {
   const { pendingOrder, setIsCompleted } = useCheckout();
   const [loading, setLoading] = useState(false);
-  const t = useTranslations("Checkout");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Checkout');
+  const t_ec = useTranslations('ERROR_CODES');
 
   async function processOrder() {
     setLoading(true);
     await fetch(`${API_URL}/orders/${pendingOrder?.id}/process`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      credentials: "include",
+      credentials: 'include',
     })
       .then(async (res) => {
         if (res.ok) {
@@ -31,7 +31,7 @@ export default function useProcessOrder() {
         toast.error(t_ec(resJson.code));
       })
       .catch(() => {
-        toast.error(t_ec("CHECK_CONNECTION"));
+        toast.error(t_ec('CHECK_CONNECTION'));
       })
       .finally(() => {
         setLoading(false);

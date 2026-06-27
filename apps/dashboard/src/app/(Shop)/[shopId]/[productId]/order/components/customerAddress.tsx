@@ -1,43 +1,38 @@
-"use client";
+'use client';
 
-import { CityNamespace } from "@/types/city";
-import { ProvinceNamespace } from "@/types/province";
-import { onInputP2EHandler } from "@/utils/p2eNumber";
-import { TruckIcon } from "@phosphor-icons/react/dist/ssr";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
-import useSWRImmutable from "swr/immutable";
-import { z } from "zod";
-import useCheckoutStep from "../hooks/useCheckoutStep";
-import useShipping from "../hooks/useShipping";
+import { CityNamespace } from '@/types/city';
+import { ProvinceNamespace } from '@/types/province';
+import { onInputP2EHandler } from '@/utils/p2eNumber';
+import { TruckIcon } from '@phosphor-icons/react/dist/ssr';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
+import useSWRImmutable from 'swr/immutable';
+import { z } from 'zod';
+import useCheckoutStep from '../hooks/useCheckoutStep';
+import useShipping from '../hooks/useShipping';
 
-import { orderFormSchema } from "@/components/Shop/CheckoutPage";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { Button } from "@/components/ui/button";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { orderFormSchema } from '@/components/Shop/CheckoutPage';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { Button } from '@/components/ui/button';
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useCheckout } from "../useCheckout";
-import { ShippingInfo } from "./shippingInfo";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useCheckout } from '../useCheckout';
+import { ShippingInfo } from './shippingInfo';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function Address() {
-  const t = useTranslations("Checkout");
+  const t = useTranslations('Checkout');
 
   const { setStep, pendingOrder } = useCheckout();
   const { nextStep, prevStep } = useCheckoutStep();
@@ -66,24 +61,24 @@ export default function Address() {
     isLoading: citiesIsLoading,
     mutate: fetchCities,
   } = useSWRImmutable<CityNamespace.GET>(
-    () => `${API_URL}/cities?provinceId=` + `${watch("state")}`,
+    () => `${API_URL}/cities?provinceId=` + `${watch('state')}`,
     {
       revalidateOnMount: true,
     },
   );
 
   useEffect(() => {
-    if (watch("state")) {
+    if (watch('state')) {
       fetchCities();
     }
-  }, [watch("state")]);
+  }, [watch('state')]);
 
   const { updateShipping, loading: isUpdateShippingLoading } = useShipping();
 
   const updateShippingHandler = async () => {
-    await trigger("address");
-    await trigger("cityId");
-    await trigger("postalcode");
+    await trigger('address');
+    await trigger('cityId');
+    await trigger('postalcode');
 
     if (errors.address || errors.cityId || errors.postalcode) {
       return;
@@ -102,9 +97,7 @@ export default function Address() {
         اطلاعات ارسال
       </h2>
 
-      <ShippingInfo
-        shippingCost={pendingOrder?.orderProducts[0]?.shippingCost}
-      />
+      <ShippingInfo shippingCost={pendingOrder?.orderProducts[0]?.shippingCost} />
 
       {/* <FormProvider {...form}>
         <form onSubmit={form.handleSubmit((data) => console.log(data))}> */}
@@ -114,7 +107,7 @@ export default function Address() {
           name="state"
           render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>{t("state")}</FormLabel>
+              <FormLabel>{t('state')}</FormLabel>
               <Select
                 onValueChange={(val) => val && field.onChange(val)}
                 defaultValue={field.value}
@@ -123,7 +116,7 @@ export default function Address() {
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t("state")} />
+                    <SelectValue placeholder={t('state')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -134,11 +127,7 @@ export default function Address() {
                   ))}
                 </SelectContent>
               </Select>
-              {error && (
-                <ErrorMessage>
-                  {t("CustomerAddress.state.Errors.required")}
-                </ErrorMessage>
-              )}
+              {error && <ErrorMessage>{t('CustomerAddress.state.Errors.required')}</ErrorMessage>}
             </FormItem>
           )}
         />
@@ -147,7 +136,7 @@ export default function Address() {
           name="cityId"
           render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>{t("city")}</FormLabel>
+              <FormLabel>{t('city')}</FormLabel>
               <Select
                 onValueChange={(val) => val && field.onChange(val)}
                 defaultValue={field.value}
@@ -156,7 +145,7 @@ export default function Address() {
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t("city")} />
+                    <SelectValue placeholder={t('city')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -167,11 +156,7 @@ export default function Address() {
                   ))}
                 </SelectContent>
               </Select>
-              {error && (
-                <ErrorMessage>
-                  {t("CustomerAddress.cityId.Errors.required")}
-                </ErrorMessage>
-              )}
+              {error && <ErrorMessage>{t('CustomerAddress.cityId.Errors.required')}</ErrorMessage>}
             </FormItem>
           )}
         />
@@ -214,16 +199,11 @@ export default function Address() {
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("address")}</FormLabel>
+              <FormLabel>{t('address')}</FormLabel>
               <FormControl>
-                <Textarea
-                  id="address"
-                  {...register("address", { required: true })}
-                />
+                <Textarea id="address" {...register('address', { required: true })} />
               </FormControl>
-              {errors.address && (
-                <span className="text-sm text-red-500">{t("required")}</span>
-              )}
+              {errors.address && <span className="text-sm text-red-500">{t('required')}</span>}
             </FormItem>
           )}
         />
@@ -233,19 +213,17 @@ export default function Address() {
           name="postalcode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("postalCode")}</FormLabel>
+              <FormLabel>{t('postalCode')}</FormLabel>
               <FormControl>
                 <Input
                   id="postalcode"
                   maxLength={10}
                   inputMode="numeric"
                   onInput={onInputP2EHandler}
-                  {...register("postalcode", { required: true })}
+                  {...register('postalcode', { required: true })}
                 />
               </FormControl>
-              {errors.postalcode && (
-                <span className="text-sm text-red-500">{t("required")}</span>
-              )}
+              {errors.postalcode && <span className="text-sm text-red-500">{t('required')}</span>}
             </FormItem>
           )}
         />
@@ -259,14 +237,10 @@ export default function Address() {
           className="w-8/12"
           type="button"
         >
-          {t("nextStep")}
+          {t('nextStep')}
         </ButtonLoading>
-        <Button
-          onClick={() => setStep(prevStep())}
-          className="w-4/12"
-          variant="outline"
-        >
-          {t("back")}
+        <Button onClick={() => setStep(prevStep())} className="w-4/12" variant="outline">
+          {t('back')}
         </Button>
       </div>
     </div>

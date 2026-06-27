@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
-import { formatNumber } from "@/utils/formatNumber";
-import { useTranslations } from "next-intl";
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { formatNumber } from '@/utils/formatNumber';
+import { useTranslations } from 'next-intl';
 
-import { Button, CardContent } from "@/components/ui";
-import { ClockCountdownIcon } from "@phosphor-icons/react/dist/ssr";
-import { ClockIcon, MoveLeftIcon, ShoppingCartIcon } from "lucide-react";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { CardSimple } from "../ui-custom/CardSimple";
+import { Button, CardContent } from '@/components/ui';
+import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr';
+import { ClockIcon, MoveLeftIcon, ShoppingCartIcon } from 'lucide-react';
+import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { CardSimple } from '../ui-custom/CardSimple';
 
 export const SubscriptionsDetails = () => {
-  const t = useTranslations("Subscription");
+  const t = useTranslations('Subscription');
 
   const {
     active,
@@ -25,7 +25,7 @@ export const SubscriptionsDetails = () => {
     (sub) => sub.status === SubscriptionStatusEnum.RESERVED,
   );
 
-  const labelClass = "text-muted-foreground text-sm font-me";
+  const labelClass = 'text-muted-foreground text-sm font-me';
 
   if (!active.subscriptionInfo) return null;
 
@@ -40,17 +40,13 @@ export const SubscriptionsDetails = () => {
               <ClockCountdownIcon size={20} />
             </div>
             <p className="text-sm">
-              اشتراک‌های زیر پس از اتمام اشتراک فعال به ترتیب اولویت فعال خواهند
-              شد.
+              اشتراک‌های زیر پس از اتمام اشتراک فعال به ترتیب اولویت فعال خواهند شد.
             </p>
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
             {reservedSubscriptions?.map((sub, index) => (
-              <CardSimple
-                className="border-dashed border-blue-200/80 bg-blue-50/50"
-                key={sub.id}
-              >
+              <CardSimple className="border-dashed border-blue-200/80 bg-blue-50/50" key={sub.id}>
                 <CardContent className="text-secondary/70 flex flex-col gap-1 p-4 text-[15px] md:p-5">
                   <div className="flex items-center gap-1.5">
                     <span className={labelClass}>وضعیت:</span>
@@ -75,9 +71,7 @@ export const SubscriptionsDetails = () => {
 
       <div className="flex justify-end">
         <Button
-          onClick={() =>
-            setActive({ choosePlan: true, subscriptionInfo: false })
-          }
+          onClick={() => setActive({ choosePlan: true, subscriptionInfo: false })}
           variant="link"
           className="font-normal"
         >

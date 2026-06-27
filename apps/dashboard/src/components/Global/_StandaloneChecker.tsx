@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useInstallPrompt } from "./useInstallPrompt";
-import { isStandalone } from "@/utils/isStandalone";
+import { useInstallPrompt } from './useInstallPrompt';
+import { isStandalone } from '@/utils/isStandalone';
 
 export function StandaloneChecker({ children }: { children: React.ReactNode }) {
   const { deferredPrompt, promptInstall } = useInstallPrompt();

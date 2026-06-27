@@ -1,9 +1,9 @@
-import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { useSubscriptionStore } from '@/store/subscriptionStore';
 // TODO: Refactor Types & Schemas
-import { ReferralCodeTypeEnum } from "@/types/plans/plans.enum";
+import { ReferralCodeTypeEnum } from '@/types/plans/plans.enum';
 
-import { Card, CardContent } from "@/components/ui";
-import { GiftIcon } from "@phosphor-icons/react/dist/ssr";
+import { Card, CardContent } from '@/components/ui';
+import { GiftIcon } from '@phosphor-icons/react/dist/ssr';
 
 export const DiscountAlert = () => {
   const {
@@ -30,11 +30,10 @@ export const DiscountAlert = () => {
               <GiftIcon size={26} weight="duotone" />
             </div>
             <p>
-              {fixed ? "مبلغ " : ""}
-              <span className="font-bold">{`${discount?.toLocaleString("fa-IR") || 0} ${fixed ? "تومان" : "درصد"}`}</span>{" "}
-              از طرف{" "}
-              {`${discountFrom?.firstname || "..."} ${discountFrom?.lastname || "..."}`}{" "}
-              به عنوان هدیه دریافت کردید.
+              {fixed ? 'مبلغ ' : ''}
+              <span className="font-bold">{`${discount?.toLocaleString('fa-IR') || 0} ${fixed ? 'تومان' : 'درصد'}`}</span>{' '}
+              از طرف {`${discountFrom?.firstname || '...'} ${discountFrom?.lastname || '...'}`} به
+              عنوان هدیه دریافت کردید.
             </p>
           </CardContent>
         </Card>

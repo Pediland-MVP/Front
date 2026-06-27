@@ -1,11 +1,11 @@
 // src/components/nav-user.tsx
-"use client";
+'use client';
 
-import { useLogout } from "@/hooks/swr/api-client";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import useSWR from "swr";
-import { useTranslations } from "next-intl";
+import { useLogout } from '@/hooks/swr/api-client';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import useSWR from 'swr';
+import { useTranslations } from 'next-intl';
 
 // UI Imports
 import {
@@ -13,27 +13,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SignOutIcon, UserCircleIcon } from "@phosphor-icons/react/dist/ssr";
-import { ChevronsUpDown } from "lucide-react";
+} from '@/components/ui/dropdown-menu';
+import { SignOutIcon, UserCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { ChevronsUpDown } from 'lucide-react';
 
 export function NavUser() {
-  const t = useTranslations("NavUser");
+  const t = useTranslations('NavUser');
   const { isMobile } = useSidebar();
-  const { data, isLoading } = useSWR("/auth/me");
+  const { data, isLoading } = useSWR('/auth/me');
   const logout = useLogout();
   const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
-    toast.success(t("logoutSuccess"));
-    router.push("/auth/signin");
+    toast.success(t('logoutSuccess'));
+    router.push('/auth/signin');
   };
 
   return (
@@ -45,7 +45,7 @@ export function NavUser() {
               <UserCircleIcon size={24} weight="duotone" />
               <div className="grid flex-1 text-right text-sm leading-tight">
                 {isLoading ? (
-                  t("loading")
+                  t('loading')
                 ) : (
                   <span className="truncate font-medium">{`${data?.firstname} ${data?.lastname}`}</span>
                 )}
@@ -56,7 +56,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-44 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -69,7 +69,7 @@ export function NavUser() {
             <DropdownMenuSeparator /> */}
             <DropdownMenuItem onClick={handleLogout}>
               <SignOutIcon size={18} />
-              {t("logout")}
+              {t('logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

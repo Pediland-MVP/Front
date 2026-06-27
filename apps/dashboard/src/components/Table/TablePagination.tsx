@@ -5,15 +5,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui";
-import type { Table } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
-import { LoaderPulse } from "../ui-custom/LoaderPulse";
+} from '@/components/ui';
+import type { Table } from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { LoaderPulse } from '../ui-custom/LoaderPulse';
 
 interface TablePaginationProps<TData> {
   table?: Table<TData> | null; // Optional TanStack table instance
@@ -56,23 +51,16 @@ export function TablePagination<TData>({
       : defaultPageSize;
 
   // total items for current query (search or all)
-  const total = Number.isFinite(totalCount as number)
-    ? (totalCount as number)
-    : 0;
+  const total = Number.isFinite(totalCount as number) ? (totalCount as number) : 0;
 
   // Compute total pages: prefer server-provided, fallback to math
-  const computedTotalPages = Math.max(
-    1,
-    Math.ceil(total / Math.max(1, pageSize)) || 1,
-  );
+  const computedTotalPages = Math.max(1, Math.ceil(total / Math.max(1, pageSize)) || 1);
   const totalPages = Number.isFinite(serverTotalPages as number)
     ? (serverTotalPages as number)
     : Math.max(1, Math.ceil(total / pageSize) || 1);
 
   // Current page (0-based for internal logic): prefer server value, fallback to table state
-  const fallbackIndex0 = Number.isFinite(pagination.pageIndex)
-    ? pagination.pageIndex
-    : 0;
+  const fallbackIndex0 = Number.isFinite(pagination.pageIndex) ? pagination.pageIndex : 0;
   const pageIndex0Raw = Number.isFinite(serverPage as number)
     ? (serverPage as number) - 1
     : fallbackIndex0;
@@ -91,8 +79,7 @@ export function TablePagination<TData>({
 
   // Range to display ("Showing X to Y of Z")
   const showingFrom = total === 0 ? 0 : pageIndex0 * pageSize + 1;
-  const showingTo =
-    total === 0 ? 0 : showingFrom + Math.max(0, countThisPage) - 1;
+  const showingTo = total === 0 ? 0 : showingFrom + Math.max(0, countThisPage) - 1;
 
   // Disable all controls while loading
   const disabledAll = !!isLoading;

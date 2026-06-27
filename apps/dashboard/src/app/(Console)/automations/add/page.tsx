@@ -1,5 +1,5 @@
-import { AutomationForm } from "@/components/Automations/AutomationForm";
-import { LayoutPage } from "@/components/Layout/LayoutPage";
+import { AutomationForm } from '@/components/Automations/AutomationForm';
+import { LayoutPage } from '@/components/Layout/LayoutPage';
 
 export default function page() {
   return (

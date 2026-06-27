@@ -1,37 +1,30 @@
-"use client";
+'use client';
 
-import api, { setAccessToken } from "@/hooks/swr/api-client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { mutate } from "swr";
-import { z } from "zod";
+import api, { setAccessToken } from '@/hooks/swr/api-client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import { z } from 'zod';
 
-import {
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { InputPassword } from "@/components/ui-custom/InputPassword";
-import { PasswordIcon } from "@phosphor-icons/react";
-import { MoveLeftIcon, MoveRightIcon } from "lucide-react";
-import SupportButton from "../supportButton";
+import { Button, Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { InputPassword } from '@/components/ui-custom/InputPassword';
+import { PasswordIcon } from '@phosphor-icons/react';
+import { MoveLeftIcon, MoveRightIcon } from 'lucide-react';
+import SupportButton from '../supportButton';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function PasswordPage() {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations("Auth");
-  const t_err = useTranslations("Auth.Errors");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Auth');
+  const t_err = useTranslations('Auth.Errors');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [mobile, setMobile] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
@@ -39,10 +32,10 @@ export default function PasswordPage() {
   const [isForgetLoading, setIsForgetLoading] = useState(false);
 
   useEffect(() => {
-    const storedMobile = sessionStorage.getItem("prelogin_mobile");
+    const storedMobile = sessionStorage.getItem('prelogin_mobile');
 
     if (!storedMobile) {
-      router.replace("/auth");
+      router.replace('/auth');
       return;
     }
 
@@ -54,20 +47,20 @@ export default function PasswordPage() {
 
   const formSchema = z.object({
     mobile: z.string(),
-    password: z.string().min(6, t_err("password_min_length")),
+    password: z.string().min(6, t_err('password_min_length')),
   });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      mobile: "",
-      password: "",
+      mobile: '',
+      password: '',
     },
   });
 
   useEffect(() => {
-    if (mobile) form.setValue("mobile", mobile);
+    if (mobile) form.setValue('mobile', mobile);
   }, [mobile, form]);
 
   const forgetPasswordHandler = async () => {
@@ -78,17 +71,17 @@ export default function PasswordPage() {
         mobile,
       });
 
-      if (response.data?.data?.result?.next === "otp") {
-        if (typeof window !== "undefined" && mobile) {
-          sessionStorage.setItem("prelogin_mobile", mobile);
+      if (response.data?.data?.result?.next === 'otp') {
+        if (typeof window !== 'undefined' && mobile) {
+          sessionStorage.setItem('prelogin_mobile', mobile);
         }
-        router.push("/auth/otp");
+        router.push('/auth/otp');
       }
     } catch (error) {
       if (error?.response?.data?.statusCode === 429) {
-        toast.error(t_ec("TOO_MANY_REQUESTS"));
+        toast.error(t_ec('TOO_MANY_REQUESTS'));
       } else {
-        console.error("❌ API Error:", error.response?.data);
+        console.error('❌ API Error:', error.response?.data);
         toast.error(error.response?.data?.message);
       }
       setIsForgetLoading(false);
@@ -103,11 +96,11 @@ export default function PasswordPage() {
       });
       setAccessToken(res?.data?.data?.accessToken);
       await mutate(() => true);
-      router.push("/");
+      router.push('/');
     } catch (error) {
       const message = error.response?.data?.message;
-      if (message === "SignIn data is invalid") {
-        toast.error(t_ec("PASSWORD_INVALID"));
+      if (message === 'SignIn data is invalid') {
+        toast.error(t_ec('PASSWORD_INVALID'));
       } else {
         toast.error(message);
       }
@@ -122,27 +115,25 @@ export default function PasswordPage() {
       <div className="mb-12 flex flex-1 items-end justify-center">
         <h1 className="flex items-center gap-2 text-lg font-bold">
           <PasswordIcon size={28} weight="duotone" />
-          {t("title_password")}
+          {t('title_password')}
         </h1>
       </div>
 
       <div className="space-y-3">
         <div className="flex flex-col text-center text-[15px] font-medium">
-          <div>{t("enter_your_password")}</div>
+          <div>{t('enter_your_password')}</div>
           <div className="flex items-center justify-center">
-            <span className="text-primary text-base tracking-widest">
-              {mobile}
-            </span>
+            <span className="text-primary text-base tracking-widest">{mobile}</span>
             <Button
               variant="link"
               type="button"
               size="sm"
               className="text-muted-foreground text-[13px]"
               onClick={() => {
-                router.push("/auth");
+                router.push('/auth');
               }}
             >
-              {t("change_number")}
+              {t('change_number')}
             </Button>
           </div>
         </div>
@@ -161,7 +152,7 @@ export default function PasswordPage() {
                     <InputPassword
                       className="text-center"
                       {...field}
-                      placeholder={t("password")}
+                      placeholder={t('password')}
                       autoFocus
                     />
                   </FormControl>
@@ -179,7 +170,7 @@ export default function PasswordPage() {
               size="sm"
               className="text-muted-foreground h-auto text-[13px] font-normal"
             >
-              {t("forgot_password")}
+              {t('forgot_password')}
             </ButtonLoading>
 
             <ButtonLoading
@@ -187,12 +178,12 @@ export default function PasswordPage() {
               isLoading={isLoading}
               disabled={isLoading || !form.formState.isValid}
             >
-              {t("confirm_and_continue")}
+              {t('confirm_and_continue')}
             </ButtonLoading>
           </form>
         </Form>
       </div>
-      <SupportButton type="external"/>
+      <SupportButton type="external" />
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <Button
@@ -201,11 +192,11 @@ export default function PasswordPage() {
           className="text-muted-foreground"
           disabled={isLoading || isForgetLoading}
           onClick={() => {
-            router.push("/auth");
+            router.push('/auth');
           }}
         >
-          {t("back")}
-          {locale === "fa" ? <MoveLeftIcon /> : <MoveRightIcon />}
+          {t('back')}
+          {locale === 'fa' ? <MoveLeftIcon /> : <MoveRightIcon />}
         </Button>
       </div>
     </div>

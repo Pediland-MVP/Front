@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl';
 
 import {
   AlertDialog,
@@ -11,8 +11,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui";
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/components/ui';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ export const DeleteConfirmationDialog = ({
   onConfirm,
   instagram,
 }: DeleteConfirmationDialogProps) => {
-  const t = useTranslations("DeleteConfirmationDialog");
+  const t = useTranslations('DeleteConfirmationDialog');
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -35,17 +35,15 @@ export const DeleteConfirmationDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle className="text-destructive flex items-center gap-1">
             <WarningCircleIcon size={24} weight="duotone" />
-            {instagram ? t("title_instagram") : t("title")}
+            {instagram ? t('title_instagram') : t('title')}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {instagram ? t("description_instagram") : t("description")}
+            {instagram ? t('description_instagram') : t('description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={onConfirm}>
-            {t("delete")}
-          </AlertDialogAction>
-          <AlertDialogCancel onClick={onClose}>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{t('delete')}</AlertDialogAction>
+          <AlertDialogCancel onClick={onClose}>{t('cancel')}</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

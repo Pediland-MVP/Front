@@ -1,6 +1,6 @@
-import useSWR from "swr";
-import { fetcher } from "@/hooks/swr/api-client";
-import { IResponseMessage } from "@/types/responseMessage";
+import useSWR from 'swr';
+import { fetcher } from '@/hooks/swr/api-client';
+import { IResponseMessage } from '@/types/responseMessage';
 
 export type Invitation = {
   id: string;
@@ -11,12 +11,12 @@ export type Invitation = {
 
 export function useInvitations() {
   const { data, error, isLoading, mutate } = useSWR<Invitation[] | IResponseMessage<Invitation[]>>(
-    "/invitations/pending",
+    '/invitations/pending',
     fetcher,
   );
 
-  const invitations: Invitation[] = (data as any)?.items
-    ?? (Array.isArray(data) ? data : (data?.data ?? []));
+  const invitations: Invitation[] =
+    (data as any)?.items ?? (Array.isArray(data) ? data : (data?.data ?? []));
 
   return {
     invitations,

@@ -4,22 +4,22 @@
 
 export interface MetricMeta {
   type: number;
-  key: "sessions" | "comments" | "messages" | "leads" | "leadInstagrams";
+  key: 'sessions' | 'comments' | 'messages' | 'leads' | 'leadInstagrams';
   totalsField:
-    | "sessionsCount"
-    | "commentsCount"
-    | "messagesCount"
-    | "leadsCount"
-    | "leadInstagramsCount";
+    | 'sessionsCount'
+    | 'commentsCount'
+    | 'messagesCount'
+    | 'leadsCount'
+    | 'leadInstagramsCount';
   color: string;
 }
 
 export const METRICS: MetricMeta[] = [
-  { type: 1, key: "sessions", totalsField: "sessionsCount", color: "rgb(190 24 93)" },
-  { type: 2, key: "comments", totalsField: "commentsCount", color: "rgb(37 99 235)" },
-  { type: 3, key: "messages", totalsField: "messagesCount", color: "rgb(124 58 237)" },
-  { type: 4, key: "leads", totalsField: "leadsCount", color: "rgb(5 150 105)" },
-  { type: 5, key: "leadInstagrams", totalsField: "leadInstagramsCount", color: "rgb(217 119 6)" },
+  { type: 1, key: 'sessions', totalsField: 'sessionsCount', color: 'rgb(190 24 93)' },
+  { type: 2, key: 'comments', totalsField: 'commentsCount', color: 'rgb(37 99 235)' },
+  { type: 3, key: 'messages', totalsField: 'messagesCount', color: 'rgb(124 58 237)' },
+  { type: 4, key: 'leads', totalsField: 'leadsCount', color: 'rgb(5 150 105)' },
+  { type: 5, key: 'leadInstagrams', totalsField: 'leadInstagramsCount', color: 'rgb(217 119 6)' },
 ];
 
 export const ALL_METRIC_TYPES = METRICS.map((m) => m.type);
@@ -37,16 +37,16 @@ export const DEFAULT_RANGE_DAYS: RangeDays = 30;
 // Customizable view model
 // ---------------------------------------------------------------------------
 
-export type ChartType = "line" | "bar" | "area";
-export const CHART_TYPES: ChartType[] = ["line", "bar", "area"];
+export type ChartType = 'line' | 'bar' | 'area';
+export const CHART_TYPES: ChartType[] = ['line', 'bar', 'area'];
 
-export type Layout = "grid" | "combined";
-export const LAYOUTS: Layout[] = ["grid", "combined"];
+export type Layout = 'grid' | 'combined';
+export const LAYOUTS: Layout[] = ['grid', 'combined'];
 
 /** A preset day window, or an arbitrary ISO from/to range. */
 export type RangeConfig =
-  | { mode: "preset"; days: RangeDays }
-  | { mode: "custom"; from: string; to: string };
+  | { mode: 'preset'; days: RangeDays }
+  | { mode: 'custom'; from: string; to: string };
 
 export interface ViewConfig {
   metrics: number[]; // selected MetricType values, subset of ALL_METRIC_TYPES
@@ -64,44 +64,44 @@ export interface PresetView {
 // ViewConfig. Order here is the order rendered in the template bar.
 export const PRESET_VIEWS: PresetView[] = [
   {
-    id: "all",
+    id: 'all',
     config: {
       metrics: [...ALL_METRIC_TYPES],
-      chartType: "line",
-      layout: "grid",
-      range: { mode: "preset", days: 30 },
+      chartType: 'line',
+      layout: 'grid',
+      range: { mode: 'preset', days: 30 },
     },
   },
   {
-    id: "funnel",
+    id: 'funnel',
     config: {
       metrics: [1, 4, 5], // sessions → leads → leadInstagrams
-      chartType: "area",
-      layout: "combined",
-      range: { mode: "preset", days: 30 },
+      chartType: 'area',
+      layout: 'combined',
+      range: { mode: 'preset', days: 30 },
     },
   },
   {
-    id: "engagement",
+    id: 'engagement',
     config: {
       metrics: [2, 3], // comments, messages
-      chartType: "line",
-      layout: "combined",
-      range: { mode: "preset", days: 14 },
+      chartType: 'line',
+      layout: 'combined',
+      range: { mode: 'preset', days: 14 },
     },
   },
   {
-    id: "today",
+    id: 'today',
     config: {
       metrics: [...ALL_METRIC_TYPES],
-      chartType: "bar",
-      layout: "grid",
-      range: { mode: "preset", days: 1 },
+      chartType: 'bar',
+      layout: 'grid',
+      range: { mode: 'preset', days: 1 },
     },
   },
 ];
 
-export const DEFAULT_TEMPLATE_ID = "all";
+export const DEFAULT_TEMPLATE_ID = 'all';
 
 function cloneConfig(config: ViewConfig): ViewConfig {
   return {
@@ -125,21 +125,21 @@ export function defaultViewConfig(): ViewConfig {
 }
 
 const sameRange = (a: RangeConfig, b: RangeConfig): boolean =>
-  a.mode === "preset" && b.mode === "preset"
+  a.mode === 'preset' && b.mode === 'preset'
     ? a.days === b.days
-    : a.mode === "custom" && b.mode === "custom"
+    : a.mode === 'custom' && b.mode === 'custom'
       ? a.from === b.from && a.to === b.to
       : false;
 
 /** Returns the matching template id for a config, or 'custom' if it matches none. */
 export function matchTemplateId(config: ViewConfig): string {
-  const sorted = [...config.metrics].sort((x, y) => x - y).join(",");
+  const sorted = [...config.metrics].sort((x, y) => x - y).join(',');
   const found = PRESET_VIEWS.find(
     (p) =>
       p.config.chartType === config.chartType &&
       p.config.layout === config.layout &&
-      [...p.config.metrics].sort((x, y) => x - y).join(",") === sorted &&
+      [...p.config.metrics].sort((x, y) => x - y).join(',') === sorted &&
       sameRange(p.config.range, config.range),
   );
-  return found?.id ?? "custom";
+  return found?.id ?? 'custom';
 }

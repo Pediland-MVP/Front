@@ -1,9 +1,9 @@
 // src/components/sync-button.tsx
-"use client";
+'use client';
 
-import { useTransition, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { useTransition, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export function SyncButton() {
   const [isPending, startTransition] = useTransition();
@@ -11,13 +11,13 @@ export function SyncButton() {
 
   const handleClick = () => {
     startTransition(async () => {
-      const res = await fetch("/api/sync", { method: "POST" });
+      const res = await fetch('/api/sync', { method: 'POST' });
 
       if (res.ok) {
-        toast.success("Synced successfully!");
+        toast.success('Synced successfully!');
         setLastSync(new Date());
       } else {
-        toast.error("Sync failed.");
+        toast.error('Sync failed.');
       }
     });
   };
@@ -25,10 +25,10 @@ export function SyncButton() {
   return (
     <div className="space-y-2">
       <Button onClick={handleClick} disabled={isPending}>
-        {isPending ? "در حال بروزرسانی..." : "بروزرسانی"}
+        {isPending ? 'در حال بروزرسانی...' : 'بروزرسانی'}
       </Button>
       {lastSync && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           آخرین بروزرسانی در {lastSync.toLocaleTimeString()}
         </p>
       )}

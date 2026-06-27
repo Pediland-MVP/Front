@@ -1,26 +1,16 @@
-"use client";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-  Textarea,
-} from "@/components/ui";
-import {
-  useContentStore,
-  useCurrentTextAreaValue,
-} from "@/store/contentCycleStore";
+'use client';
+import { Avatar, AvatarFallback, AvatarImage, Button, Textarea } from '@/components/ui';
+import { useContentStore, useCurrentTextAreaValue } from '@/store/contentCycleStore';
 import {
   CameraIcon,
   CaretLeftIcon,
   PhoneIcon,
   VideoCameraIcon,
-} from "@phosphor-icons/react/dist/ssr";
+} from '@phosphor-icons/react/dist/ssr';
 
 export default function InstaDirectUi() {
   const { adminContentCycle } = useContentStore();
-  const { currentTextAreaValue, setCurrentTextAreaValue } =
-    useCurrentTextAreaValue();
+  const { currentTextAreaValue, setCurrentTextAreaValue } = useCurrentTextAreaValue();
   // console.log(adminContentCycle);
 
   return (
@@ -49,13 +39,10 @@ export default function InstaDirectUi() {
             adminContentCycle?.map(
               (value, index) =>
                 value && ( // Only render if the value is truthy
-                  <div
-                    key={index}
-                    className="flex flex-col items-end justify-end gap-4 py-2"
-                  >
+                  <div key={index} className="flex flex-col items-end justify-end gap-4 py-2">
                     <div className="max-w-[70%] rounded-[2rem] bg-gray-200 px-6 py-3 break-words">
                       {value}
-                    </div>{" "}
+                    </div>{' '}
                     <div className="flex justify-end gap-2">
                       <Button variant="secondary" className="rounded-2xl">
                         دکمه

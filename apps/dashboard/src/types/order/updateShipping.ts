@@ -1,4 +1,4 @@
-import { IResponseMessage } from "../responseMessage";
+import { IResponseMessage } from '../responseMessage';
 
 export type UpdateShippingResponse = IResponseMessage<{
   order: {

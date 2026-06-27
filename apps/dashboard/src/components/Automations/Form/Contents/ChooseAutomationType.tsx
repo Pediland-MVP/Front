@@ -1,18 +1,17 @@
-import { Alert, AlertTitle, Button } from "@/components/ui";
-import { ContentTypeOption, contentTypeOptions } from "./ContentTypeOptions";
-import { useTranslations } from "next-intl";
-
+import { Alert, AlertTitle, Button } from '@/components/ui';
+import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
+import { useTranslations } from 'next-intl';
 
 type ChooseAutomationTypeProps = {
-  onSelect: (option: ContentTypeOption) => any
+  onSelect: (option: ContentTypeOption) => any;
 };
 
 export function ChooseAutomationType({ onSelect }: ChooseAutomationTypeProps) {
-  const t_contentTypes = useTranslations("Automations.Contents.Types");
+  const t_contentTypes = useTranslations('Automations.Contents.Types');
   return (
     <>
       <Alert variant="note" className="col-span-5">
-        <AlertTitle>{t_contentTypes("select_your_type")}</AlertTitle>
+        <AlertTitle>{t_contentTypes('select_your_type')}</AlertTitle>
       </Alert>
       <div className="grid w-full grid-cols-5 justify-start gap-x-1.5 gap-y-2.5">
         {contentTypeOptions.map((option) => (

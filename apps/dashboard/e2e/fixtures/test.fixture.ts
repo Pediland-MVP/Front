@@ -16,7 +16,7 @@ export const test = base.extend<BefrooshFixtures>({
   testMobile: async ({}, use) => {
     // Generate a unique mobile number for the test
     const mobile = generateTestMobile();
-    
+
     // Provide it to the test
     await use(mobile);
 

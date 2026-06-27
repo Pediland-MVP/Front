@@ -3,7 +3,6 @@ networks:
     external: true
 
 services:
-
   front12:
     build:
       context: /home/cicd/Front
@@ -12,5 +11,5 @@ services:
     networks:
       - app_networks
     ports:
-    - "51001:3000"
+      - '51001:3000'
     restart: always

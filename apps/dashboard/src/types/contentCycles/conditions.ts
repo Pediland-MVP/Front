@@ -1,1 +1,1 @@
-export type ContentCycleConditionTypes = "EQUAL" | "INCLUDE" | "noCondition"
+export type ContentCycleConditionTypes = 'EQUAL' | 'INCLUDE' | 'noCondition';

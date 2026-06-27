@@ -1,19 +1,16 @@
 // src/components/Automations/form/Contents/ProductContentItem.tsx
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
+import { cn } from '@/lib/utils';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 
-import { Button } from "@/components/ui";
-import {
-  ArrowsOutCardinalIcon,
-  TrashSimpleIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { useState } from "react";
-import { ProductContentItemDialog } from "./ProductContentItemDialog";
+import { Button } from '@/components/ui';
+import { ArrowsOutCardinalIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { useState } from 'react';
+import { ProductContentItemDialog } from './ProductContentItemDialog';
 
 type ProductContentItemProps = {
   id: string;
@@ -35,30 +32,25 @@ export const ProductContentItem = ({
   mode,
 }: ProductContentItemProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  const t = useTranslations("Automations.Contents.Product");
+  const t = useTranslations('Automations.Contents.Product');
 
   return (
     <>
-      <div ref={setNodeRef} style={style} className={cn("group relative")}>
+      <div ref={setNodeRef} style={style} className={cn('group relative')}>
         <div className="absolute top-0 right-0 z-50 flex w-full items-center justify-between">
           {productsField.length > 1 && (
             <Button
               size="icon"
-              variant={"link"}
+              variant={'link'}
               className="cursor-move touch-none text-white transition-opacity group-hover:opacity-100 lg:opacity-0"
               type="button"
               {...attributes}
@@ -86,7 +78,7 @@ export const ProductContentItem = ({
             <>
               <Image
                 src={productsField[index]?.images?.[0]?.url}
-                alt={t("cover_image_alt")}
+                alt={t('cover_image_alt')}
                 width={250}
                 height={0}
                 className="aspect-square rounded-lg object-cover"
@@ -96,10 +88,10 @@ export const ProductContentItem = ({
                   type="button"
                   size="sm"
                   className="text-white hover:no-underline"
-                  variant={"link"}
+                  variant={'link'}
                   onClick={() => setIsOpen(true)}
                 >
-                  {t("change")}
+                  {t('change')}
                 </Button>
               </div>
             </>
@@ -110,7 +102,7 @@ export const ProductContentItem = ({
               variant="link"
               onClick={() => setIsOpen(true)}
             >
-              {t("select")}
+              {t('select')}
             </Button>
           )}
         </div>

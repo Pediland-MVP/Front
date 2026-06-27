@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-import { LayoutCard } from "@/components/Layout/LayoutCard";
-import { OrdersCardList } from "@/components/Orders/OrdersCardList";
-import { Button } from "@/components/ui";
-import { SearchInput } from "@/components/ui-custom/SearchInput";
-import { SearchToggleButton } from "@/components/ui-custom/SearchToggleButton";
-import { DownloadIcon } from "lucide-react";
-import { ExcelExportOrdersDrawer } from "./components/excelExportOrders.drawer";
-import { usePermissions } from "@/hooks/usePermissions";
+import { LayoutCard } from '@/components/Layout/LayoutCard';
+import { OrdersCardList } from '@/components/Orders/OrdersCardList';
+import { Button } from '@/components/ui';
+import { SearchInput } from '@/components/ui-custom/SearchInput';
+import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
+import { DownloadIcon } from 'lucide-react';
+import { ExcelExportOrdersDrawer } from './components/excelExportOrders.drawer';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export default function Page() {
   const router = useRouter();
-  const t = useTranslations("Orders");
+  const t = useTranslations('Orders');
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
-  const [effectiveSearch, setEffectiveSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>('');
+  const [effectiveSearch, setEffectiveSearch] = useState<string>('');
 
   const setTools = useHeaderFeatures((s) => s.setTools);
   const clearTools = useHeaderFeatures((s) => s.clearTools);
@@ -37,14 +37,14 @@ export default function Page() {
           isSearchVisible={isSearchVisible}
           setIsSearchVisible={setIsSearchVisible}
         />
-        {can("order:manage") && (
+        {can('order:manage') && (
           <Button
             type="button"
             size="md"
             onClick={() => setExportDialogOpen(true)}
             disabled={error}
           >
-            {t("ExcelExport.title")}
+            {t('ExcelExport.title')}
             <DownloadIcon />
           </Button>
         )}
@@ -79,10 +79,7 @@ export default function Page() {
 
   return (
     <LayoutCard className="_products">
-      <ExcelExportOrdersDrawer
-        onOpenChange={setExportDialogOpen}
-        open={exportDialogOpen}
-      />
+      <ExcelExportOrdersDrawer onOpenChange={setExportDialogOpen} open={exportDialogOpen} />
       <OrdersCardList search={effectiveSearch} />
     </LayoutCard>
   );

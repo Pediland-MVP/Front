@@ -1,34 +1,30 @@
 // src/components/table/filter-admin.tsx
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import * as React from "react";
+import { cn } from '@/lib/utils';
+import * as React from 'react';
 
 // UI Imports
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, FunnelIcon } from "lucide-react";
-import { User } from "@/types/user";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, FunnelIcon } from 'lucide-react';
+import { User } from '@/types/user';
 
 type FilterAdminProps = {
   data: User[];
   onChange: (value: string) => void;
   value?: string;
-  size?: "default" | "sm";
+  size?: 'default' | 'sm';
 };
 
-export function FilterAdmin({ onChange, value = "", data, size = "default" }: FilterAdminProps) {
+export function FilterAdmin({ onChange, value = '', data, size = 'default' }: FilterAdminProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -43,11 +39,9 @@ export function FilterAdmin({ onChange, value = "", data, size = "default" }: Fi
           {value
             ? (() => {
                 const selected = data.find((s) => s.id === value);
-                return selected
-                  ? `${selected.firstname} ${selected.lastname}`
-                  : "مسئول";
+                return selected ? `${selected.firstname} ${selected.lastname}` : 'مسئول';
               })()
-            : "مسئول"}
+            : 'مسئول'}
           <FunnelIcon className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -63,19 +57,13 @@ export function FilterAdmin({ onChange, value = "", data, size = "default" }: Fi
                   key={s.id}
                   value={s.id}
                   onSelect={(currentValue) => {
-                    const nextValue =
-                      currentValue === value ? "" : currentValue;
+                    const nextValue = currentValue === value ? '' : currentValue;
                     onChange(nextValue);
                     setOpen(false);
                   }}
                 >
                   {`${s.firstname} ${s.lastname}`}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === s.id ? "opacity-100" : "opacity-0",
-                    )}
-                  />
+                  <Check className={cn('ml-auto', value === s.id ? 'opacity-100' : 'opacity-0')} />
                 </CommandItem>
               ))}
             </CommandGroup>

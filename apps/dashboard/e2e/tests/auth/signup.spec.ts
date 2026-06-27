@@ -6,7 +6,11 @@ import { ConnectPage } from '../../pages/connect.page';
 import { TEST_USER } from '../../helpers/test-data';
 
 test.describe('Signup Flow (New User)', () => {
-  test('should successfully complete signup from mobile entry to connect page', async ({ page, testMobile, apiHelper }) => {
+  test('should successfully complete signup from mobile entry to connect page', async ({
+    page,
+    testMobile,
+    apiHelper,
+  }) => {
     const authPage = new AuthPage(page);
     const otpPage = new OtpPage(page);
     const onboardingPage = new OnboardingPage(page);

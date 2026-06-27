@@ -1,26 +1,25 @@
-import { useState } from "react";
-import { useCheckout } from "../useCheckout";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useState } from 'react';
+import { useCheckout } from '../useCheckout';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export default function useQuantityUpDown() {
-  const t_ec = useTranslations("ERROR_CODES");
-  const { pendingOrder, shopId, setOrderQuantity, setOutOfStock, productId } =
-    useCheckout();
+  const t_ec = useTranslations('ERROR_CODES');
+  const { pendingOrder, shopId, setOrderQuantity, setOutOfStock, productId } = useCheckout();
   const [loading, setLoading] = useState(false);
-  async function updateQuantity(adjustment: "increment" | "decrement") {
+  async function updateQuantity(adjustment: 'increment' | 'decrement') {
     setLoading(true);
     await fetch(
-      `${API_URL}/orders/${shopId}/${pendingOrder!.id}/${adjustment === "decrement" ? "quantityDown" : "quantityUp"}`,
+      `${API_URL}/orders/${shopId}/${pendingOrder!.id}/${adjustment === 'decrement' ? 'quantityDown' : 'quantityUp'}`,
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        method: "POST",
+        credentials: 'include',
+        method: 'POST',
         body: JSON.stringify({
           productId,
         }),
@@ -28,7 +27,7 @@ export default function useQuantityUpDown() {
     )
       .then(async (res) => {
         if (res.ok) {
-          if (adjustment === "decrement") {
+          if (adjustment === 'decrement') {
             setOutOfStock(false);
             setOrderQuantity((old) => old - 1);
           } else {
@@ -42,12 +41,12 @@ export default function useQuantityUpDown() {
         }
 
         const jsonError = (await res.json()) as ExceptionMessage;
-        if (jsonError.code === "PRODUCT_OUT_OF_STOCK") {
+        if (jsonError.code === 'PRODUCT_OUT_OF_STOCK') {
           setOutOfStock(true);
         }
       })
       .catch(() => {
-        toast.error(t_ec("CHECK_CONNECTION"));
+        toast.error(t_ec('CHECK_CONNECTION'));
       })
       .finally(() => {
         setLoading(false);

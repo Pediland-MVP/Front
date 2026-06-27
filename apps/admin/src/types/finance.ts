@@ -1,20 +1,20 @@
 // src/types/finance.ts
 
-import type { SeriesResolution } from "@/hooks/use-platform-metrics";
-import type { PageMeta } from "@/types/meta";
+import type { SeriesResolution } from '@/hooks/use-platform-metrics';
+import type { PageMeta } from '@/types/meta';
 
 export enum InvoiceStatusEnum {
-  PENDING = "pending",
-  SUCCESS = "success",
-  CANCELLED = "cancelled",
-  FAILED = "failed",
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  CANCELLED = 'cancelled',
+  FAILED = 'failed',
 }
 
 export enum InvoicePaymentMethodEnum {
-  Zarinpal = "zarinpal",
-  Zibal = "zibal",
-  Free = "Free",
-  ByAdmin = "byAdmin",
+  Zarinpal = 'zarinpal',
+  Zibal = 'zibal',
+  Free = 'Free',
+  ByAdmin = 'byAdmin',
 }
 
 /** One stacked-bar segment: revenue for a status within a time-bucket. */

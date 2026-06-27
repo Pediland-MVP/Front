@@ -40,57 +40,70 @@ export const useFileUpload = <TFieldValues extends FieldValues>({
 }: UseFileUploadProps<TFieldValues>): UseFileUploadReturn => {
   const [files, setFiles] = useState<FileOrUploadedFile[]>([]);
 
-  const uploadFile = useCallback(async (file: File): Promise<UploadedFile> => {
-    const formData = new FormData();
-    formData.append(fileFieldName, file);
+  const uploadFile = useCallback(
+    async (file: File): Promise<UploadedFile> => {
+      const formData = new FormData();
+      formData.append(fileFieldName, file);
 
-    const response = await fetch(uploadUrl, {
-      method: uploadMethod,
-      body: formData,
-      credentials: 'include'
-    });
+      const response = await fetch(uploadUrl, {
+        method: uploadMethod,
+        body: formData,
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      throw new Error('Upload failed');
-    }
-
-    const data: UploadedFile = await response.json();
-    return data;
-  }, [uploadUrl, uploadMethod, fileFieldName]);
-
-  const addFiles = useCallback(async (newFiles: FileList) => {
-    const fileArray = Array.from(newFiles);
-    const newFilesWithPreview: FileWithPreview[] = fileArray.map((file) => Object.assign(file, {
-      preview: URL.createObjectURL(file)
-    }));
-
-    setFiles((prevFiles) => [...prevFiles, ...newFilesWithPreview]);
-
-    const uploadedFiles = await Promise.all(fileArray.map(uploadFile));
-    const currentValue = getValues(fieldName) || [];
-    logger.log(fieldName, [...currentValue, ...uploadedFiles])
-    setValue(fieldName, [...currentValue, ...uploadedFiles] as any);
-  }, [uploadFile, setValue, getValues, fieldName]);
-
-  const removeFile = useCallback((index: number) => {
-    setFiles((prevFiles) => {
-      const newFiles = [...prevFiles];
-      const removedFile = newFiles.splice(index, 1)[0];
-      if ('preview' in removedFile) {
-        URL.revokeObjectURL(removedFile.preview);
+      if (!response.ok) {
+        throw new Error('Upload failed');
       }
-      return newFiles;
-    });
 
-    const currentValue = getValues(fieldName) || [];
-    setValue(fieldName, (currentValue as any[]).filter((_, i) => i !== index) as any);
-  }, [setValue, getValues, fieldName]);
+      const data: UploadedFile = await response.json();
+      return data;
+    },
+    [uploadUrl, uploadMethod, fileFieldName],
+  );
 
-  const setDefaultFiles = useCallback((defaultFiles: UploadedFile[]) => {
-    setFiles(defaultFiles);
-    setValue(fieldName, defaultFiles as any);
-  }, [setValue, fieldName]);
+  const addFiles = useCallback(
+    async (newFiles: FileList) => {
+      const fileArray = Array.from(newFiles);
+      const newFilesWithPreview: FileWithPreview[] = fileArray.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        }),
+      );
+
+      setFiles((prevFiles) => [...prevFiles, ...newFilesWithPreview]);
+
+      const uploadedFiles = await Promise.all(fileArray.map(uploadFile));
+      const currentValue = getValues(fieldName) || [];
+      logger.log(fieldName, [...currentValue, ...uploadedFiles]);
+      setValue(fieldName, [...currentValue, ...uploadedFiles] as any);
+    },
+    [uploadFile, setValue, getValues, fieldName],
+  );
+
+  const removeFile = useCallback(
+    (index: number) => {
+      setFiles((prevFiles) => {
+        const newFiles = [...prevFiles];
+        const removedFile = newFiles.splice(index, 1)[0];
+        if ('preview' in removedFile) {
+          URL.revokeObjectURL(removedFile.preview);
+        }
+        return newFiles;
+      });
+
+      const currentValue = getValues(fieldName) || [];
+      setValue(fieldName, (currentValue as any[]).filter((_, i) => i !== index) as any);
+    },
+    [setValue, getValues, fieldName],
+  );
+
+  const setDefaultFiles = useCallback(
+    (defaultFiles: UploadedFile[]) => {
+      setFiles(defaultFiles);
+      setValue(fieldName, defaultFiles as any);
+    },
+    [setValue, fieldName],
+  );
 
   return { files, addFiles, removeFile, setDefaultFiles };
 };
-

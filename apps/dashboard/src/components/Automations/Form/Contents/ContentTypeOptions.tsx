@@ -1,6 +1,6 @@
 // src/components/Automations/form/Contents/contentTypeOptions.tsx
 
-import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
+import { AutomationContentTypesEnum } from '@/constants/automationContent.enum';
 import {
   ChatTextIcon,
   InstagramLogoIcon,
@@ -11,11 +11,11 @@ import {
   MusicNoteSimpleIcon,
   CardsIcon,
   TimerIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import React from "react";
+} from '@phosphor-icons/react/dist/ssr';
+import React from 'react';
 
 export interface ContentTypeOption {
-  value: AutomationContentTypesEnum | "media";
+  value: AutomationContentTypesEnum | 'media';
   label: string;
   icon: React.ReactNode;
 }
@@ -23,52 +23,52 @@ export interface ContentTypeOption {
 export const contentTypeOptions: ContentTypeOption[] = [
   {
     value: AutomationContentTypesEnum.TEXT,
-    label: "Text",
+    label: 'Text',
     icon: <ChatTextIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.IMAGE,
-    label: "Image",
+    label: 'Image',
     icon: <ImageIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.VIDEO,
-    label: "Video",
+    label: 'Video',
     icon: <VideoIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.AUDIO,
-    label: "Audio",
+    label: 'Audio',
     icon: <MusicNoteSimpleIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.BUTTON_TEMPLATE,
-    label: "Button",
+    label: 'Button',
     icon: <RadioButtonIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.INSTAGRAM_POST,
-    label: "Instagram Post",
+    label: 'Instagram Post',
     icon: <InstagramLogoIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.PRODUCT,
-    label: "Product",
+    label: 'Product',
     icon: <ShoppingBagIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.QUESTION,
-    label: "Question",
+    label: 'Question',
     icon: <ChatTextIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.VITRIN,
-    label: "Vitrin",
-    icon: <CardsIcon size={30} />
+    label: 'Vitrin',
+    icon: <CardsIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.DELAY,
-    label: "Delay",
-    icon: <TimerIcon size={30} />
-  }
+    label: 'Delay',
+    icon: <TimerIcon size={30} />,
+  },
 ];

@@ -1,32 +1,24 @@
 // src/components/table/pagination.tsx
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Table } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+} from '@/components/ui/select';
+import { Table } from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
   totalCount: number;
 }
 
-export function DataTablePagination<TData>({
-  table,
-  totalCount,
-}: DataTablePaginationProps<TData>) {
-  const t = useTranslations("Pagination");
+export function DataTablePagination<TData>({ table, totalCount }: DataTablePaginationProps<TData>) {
+  const t = useTranslations('Pagination');
   const locale = useLocale();
   const { pageIndex, pageSize } = table.getState().pagination;
   const totalItems = totalCount;
@@ -38,7 +30,7 @@ export function DataTablePagination<TData>({
     <div className="flex flex-wrap items-center justify-between gap-2">
       <div className="hidden items-center gap-2 md:flex">
         <Select
-          dir={locale === "fa" ? "rtl" : "ltr"}
+          dir={locale === 'fa' ? 'rtl' : 'ltr'}
           value={`${table.getState().pagination.pageSize}`}
           onValueChange={(value) => {
             table.setPageSize(Number(value));
@@ -55,7 +47,7 @@ export function DataTablePagination<TData>({
             ))}
           </SelectContent>
         </Select>
-        <p className="text-sm font-medium">{t("pageSize")}</p>
+        <p className="text-sm font-medium">{t('pageSize')}</p>
       </div>
 
       <div className="flex w-full items-center justify-center md:w-auto">
@@ -67,7 +59,7 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to next page</span>
-            {locale === "fa" ? <ChevronLeft /> : <ChevronRight />}
+            {locale === 'fa' ? <ChevronLeft /> : <ChevronRight />}
           </Button>
           <Button
             size="icon"
@@ -76,11 +68,11 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            {locale === "fa" ? <ChevronsLeft /> : <ChevronsRight />}
+            {locale === 'fa' ? <ChevronsLeft /> : <ChevronsRight />}
           </Button>
 
           <div className="flex items-center justify-center px-4 text-sm font-medium">
-            {t("pageIndicator", { pageIndex: pageIndex + 1, totalPages })}
+            {t('pageIndicator', { pageIndex: pageIndex + 1, totalPages })}
           </div>
 
           <Button
@@ -89,8 +81,8 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{t("firstPage")}</span>
-            {locale === "fa" ? <ChevronsRight /> : <ChevronsLeft />}
+            <span className="sr-only">{t('firstPage')}</span>
+            {locale === 'fa' ? <ChevronsRight /> : <ChevronsLeft />}
           </Button>
           <Button
             size="icon"
@@ -98,14 +90,14 @@ export function DataTablePagination<TData>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{t("prevPage")}</span>
-            {locale === "fa" ? <ChevronRight /> : <ChevronLeft />}
+            <span className="sr-only">{t('prevPage')}</span>
+            {locale === 'fa' ? <ChevronRight /> : <ChevronLeft />}
           </Button>
         </div>
       </div>
 
       <div className="hidden text-sm md:block md:pl-3">
-        {t("showingItems", { from: showingFrom, to: showingTo, total: totalItems })}
+        {t('showingItems', { from: showingFrom, to: showingTo, total: totalItems })}
       </div>
     </div>
   );

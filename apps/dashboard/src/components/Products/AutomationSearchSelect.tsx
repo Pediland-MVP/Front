@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useDebounce } from "@/hooks/useDebounce";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useTranslations } from "next-intl";
-import * as React from "react";
-import useSWR from "swr";
+import { useDebounce } from '@/hooks/useDebounce';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import * as React from 'react';
+import useSWR from 'swr';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -14,13 +14,9 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface ContentCycleCondition {
   id: string;
@@ -34,10 +30,10 @@ interface DestinationContentCycle {
 
 interface AutomationSearchSelectProps {
   value?: string;
-  onSelect: (value: string, label: string) => void;  // ← label اضافه شد
+  onSelect: (value: string, label: string) => void; // ← label اضافه شد
   error?: boolean;
   initialData?: DestinationContentCycle;
-  title?: string;  // ← فیلد جدید
+  title?: string; // ← فیلد جدید
 }
 interface ConditionItem {
   value: string;
@@ -53,24 +49,26 @@ export function AutomationSearchSelect({
   onSelect,
   error,
   initialData,
-  title
+  title,
 }: AutomationSearchSelectProps) {
-  const t = useTranslations("Products.Form.Vitrin");
+  const t = useTranslations('Products.Form.Vitrin');
   const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState('');
   const debouncedSearch = useDebounce(search, 300);
 
   React.useEffect(() => {
-    console.log('AutomationSearchSelect Props', JSON.stringify({value, initialData}, undefined, " "));
-
-  }, [])
+    console.log(
+      'AutomationSearchSelect Props',
+      JSON.stringify({ value, initialData }, undefined, ' '),
+    );
+  }, []);
 
   const displayLabel = React.useMemo(() => {
     if (title) return title;
     if (value && initialData?.id === value) {
-      return initialData.conditions.map((c) => c.value).join(", ");
+      return initialData.conditions.map((c) => c.value).join(', ');
     }
-    return value || "";
+    return value || '';
   }, [title, value, initialData]);
 
   // Store the selected item info (label) for display
@@ -81,14 +79,14 @@ export function AutomationSearchSelect({
 
   React.useEffect(() => {
     if (!open) {
-      setSearch("");
+      setSearch('');
     }
   }, [open]);
 
   // Fetch conditions when dropdown is open
   const { data, isLoading } = useSWR<ConditionsResponse>(
     open
-      ? `/contentCycle/conditions?page=1&limit=30${debouncedSearch ? `&search=${debouncedSearch}` : ""}`
+      ? `/contentCycle/conditions?page=1&limit=30${debouncedSearch ? `&search=${debouncedSearch}` : ''}`
       : null,
   );
 
@@ -116,7 +114,7 @@ export function AutomationSearchSelect({
 
     return Array.from(groups.values()).map((group) => ({
       destinationContentCycleId: group.id,
-      value: group.values.join(", "),
+      value: group.values.join(', '),
     }));
   }, [data?.items]);
 
@@ -137,16 +135,14 @@ export function AutomationSearchSelect({
     if (initialData?.id === value) {
       setSelectedItem({
         id: value,
-        label: initialData.conditions.map((c) => c.value).join(", "),
+        label: initialData.conditions.map((c) => c.value).join(', '),
       });
       return;
     }
 
     // 4. Try finding in grouped API Data
     if (groupedItems.length > 0) {
-      const found = groupedItems.find(
-        (item) => item.destinationContentCycleId === value,
-      );
+      const found = groupedItems.find((item) => item.destinationContentCycleId === value);
       if (found) {
         setSelectedItem({ id: value, label: found.value });
         return;
@@ -155,7 +151,7 @@ export function AutomationSearchSelect({
   }, [value, initialData, groupedItems, selectedItem?.id]);
 
   const handleSelect = (id: string, label: string) => {
-    onSelect(id, label);  // ← label رو هم پاس بده
+    onSelect(id, label); // ← label رو هم پاس بده
     setOpen(false);
   };
 
@@ -167,14 +163,14 @@ export function AutomationSearchSelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-full justify-between border bg-white font-normal hover:bg-white",
-            !value && "text-muted-foreground",
-            error && "border-destructive",
+            'w-full justify-between border bg-white font-normal hover:bg-white',
+            !value && 'text-muted-foreground',
+            error && 'border-destructive',
           )}
         >
           {selectedItem && selectedItem.id === value
             ? selectedItem.label
-            : displayLabel || t("search_automation")}
+            : displayLabel || t('search_automation')}
           <ChevronsUpDown className="-ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -185,11 +181,11 @@ export function AutomationSearchSelect({
           <CommandList>
             {showLoading && (
               <div className="text-muted-foreground py-3 text-center text-[13px]">
-                {t("loading")}
+                {t('loading')}
               </div>
             )}
             {!showLoading && groupedItems.length === 0 && (
-              <CommandEmpty>{t("no_results_found")}</CommandEmpty>
+              <CommandEmpty>{t('no_results_found')}</CommandEmpty>
             )}
             <CommandGroup>
               {!showLoading &&
@@ -198,17 +194,13 @@ export function AutomationSearchSelect({
                     key={`${item.destinationContentCycleId}-${index}`}
                     value={item.value}
                     className="justify-between text-[13px]"
-                    onSelect={() =>
-                      handleSelect(item.destinationContentCycleId, item.value)
-                    }
+                    onSelect={() => handleSelect(item.destinationContentCycleId, item.value)}
                   >
                     {item.value}
                     <Check
                       className={cn(
-                        "size-4",
-                        value === item.destinationContentCycleId
-                          ? "opacity-100"
-                          : "opacity-0",
+                        'size-4',
+                        value === item.destinationContentCycleId ? 'opacity-100' : 'opacity-0',
                       )}
                     />
                   </CommandItem>

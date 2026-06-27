@@ -1,11 +1,11 @@
 // src/components/lead/DeleteItem.tsx
 
-import { TrashIcon } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button";
-import api from "@/hooks/swr/api-client";
-import { toast } from "sonner";
-import DialogDelete from "../dialog-delete";
-import { useState } from "react";
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr';
+import { Button } from '@/components/ui/button';
+import api from '@/hooks/swr/api-client';
+import { toast } from 'sonner';
+import DialogDelete from '../dialog-delete';
+import { useState } from 'react';
 
 type DeleteItemProps = {
   id: string;
@@ -20,10 +20,10 @@ export default function DeleteItem({ id, mutate }: DeleteItemProps) {
       await api.delete(`/marketingLeads/${id}`);
       setOpenDialog(false);
       mutate?.();
-      toast.success("سرنخ با موفقیت حذف شد.");
+      toast.success('سرنخ با موفقیت حذف شد.');
     } catch (error) {
       console.error(error);
-      toast.error("خطا در حذف سرنخ.");
+      toast.error('خطا در حذف سرنخ.');
     }
   };
 
@@ -40,11 +40,7 @@ export default function DeleteItem({ id, mutate }: DeleteItemProps) {
         <TrashIcon />
       </Button>
 
-      <DialogDelete
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-        onConfirm={handleDeleteLead}
-      />
+      <DialogDelete open={openDialog} onOpenChange={setOpenDialog} onConfirm={handleDeleteLead} />
     </>
   );
 }

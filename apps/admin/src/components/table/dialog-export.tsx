@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { DownloadIcon } from "lucide-react";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { DownloadIcon } from 'lucide-react';
 
 // UI Imports
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -24,31 +24,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { DatePicker } from "@/components/ui/date-picker";
-import { formatNumber } from "@/lib/formatNumber";
-import { onInputP2EHandler } from "@/lib/p2eNumber";
-import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/date-picker';
+import { formatNumber } from '@/lib/formatNumber';
+import { onInputP2EHandler } from '@/lib/p2eNumber';
+import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
 
 // Form schema
 const exportSchema = z.object({
   startDate: z.date().refine((date) => date !== undefined, {
-    message: "تاریخ شروع الزامی است",
+    message: 'تاریخ شروع الزامی است',
   }),
   endDate: z.date().refine((date) => date !== undefined, {
-    message: "تاریخ پایان الزامی است",
+    message: 'تاریخ پایان الزامی است',
   }),
   email: z.string().email({
-    message: "ایمیل معتبر وارد کنید",
+    message: 'ایمیل معتبر وارد کنید',
   }),
   count: z
     .number()
     .min(1, {
-      message: "تعداد باید حداقل 1 باشد",
+      message: 'تعداد باید حداقل 1 باشد',
     })
     .max(10000, {
-      message: "تعداد حداکثر 10000 می‌تواند باشد",
+      message: 'تعداد حداکثر 10000 می‌تواند باشد',
     }),
 });
 
@@ -59,7 +59,7 @@ interface ExportDialogProps {
   description: string;
   onExport: (data: ExportFormValues) => Promise<void>;
   trigger?: React.ReactNode;
-  size?: "default" | "sm";
+  size?: 'default' | 'sm';
 }
 
 export function ExportDialog({
@@ -67,7 +67,7 @@ export function ExportDialog({
   description,
   onExport,
   trigger,
-  size = "default",
+  size = 'default',
 }: ExportDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,7 +75,7 @@ export function ExportDialog({
   const form = useForm<ExportFormValues>({
     resolver: zodResolver(exportSchema),
     defaultValues: {
-      email: "",
+      email: '',
       count: 1000,
     },
   });
@@ -89,7 +89,7 @@ export function ExportDialog({
       setOpen(false);
       form.reset();
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error('Export failed:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -119,7 +119,11 @@ export function ExportDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>تاریخ شروع</FormLabel>
-                    <DatePicker buttonClassName="w-full" onChange={field.onChange} date={field.value} />
+                    <DatePicker
+                      buttonClassName="w-full"
+                      onChange={field.onChange}
+                      date={field.value}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -130,7 +134,11 @@ export function ExportDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>تاریخ پایان</FormLabel>
-                    <DatePicker buttonClassName="w-full" onChange={field.onChange} date={field.value} />
+                    <DatePicker
+                      buttonClassName="w-full"
+                      onChange={field.onChange}
+                      date={field.value}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -143,11 +151,7 @@ export function ExportDialog({
                 <FormItem>
                   <FormLabel>ایمیل</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="example@email.com"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="example@email.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,12 +174,10 @@ export function ExportDialog({
                         field.value === undefined ||
                         field.value === null ||
                         Number.isNaN(field.value)
-                          ? ""
+                          ? ''
                           : formatNumber(field.value)
                       }
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
-                      }
+                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -183,15 +185,11 @@ export function ExportDialog({
               )}
             />
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 انصراف
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "در حال ارسال..." : "ارسال خروجی"}
+                {isSubmitting ? 'در حال ارسال...' : 'ارسال خروجی'}
               </Button>
             </DialogFooter>
           </form>

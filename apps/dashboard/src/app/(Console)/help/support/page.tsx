@@ -1,5 +1,5 @@
-import SupportPage from "@/app/(Support)/support/page";
+import SupportPage from '@/app/(Support)/support/page';
 
 export default function Page() {
-    return <SupportPage/>
+  return <SupportPage />;
 }

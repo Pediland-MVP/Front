@@ -1,8 +1,8 @@
 // src/components/layout/headerFeaturesContext.tsx
-"use client";
+'use client';
 
-import type React from "react";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import type React from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
 type HeaderFeaturesContextType = {
   setTools: (tools: ReactNode) => void;
@@ -13,13 +13,9 @@ type HeaderFeaturesContextType = {
   buttons: ReactNode;
 };
 
-const HeaderFeaturesContext = createContext<
-  HeaderFeaturesContextType | undefined
->(undefined);
+const HeaderFeaturesContext = createContext<HeaderFeaturesContextType | undefined>(undefined);
 
-export const HeaderFeaturesProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const HeaderFeaturesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [tools, setTools] = useState<ReactNode | null>(null);
   const [buttons, setButtons] = useState<ReactNode | null>(null);
 
@@ -38,9 +34,7 @@ export const HeaderFeaturesProvider: React.FC<{ children: ReactNode }> = ({
 export const useHeaderFeatures = () => {
   const context = useContext(HeaderFeaturesContext);
   if (context === undefined) {
-    throw new Error(
-      "useHeaderFeatures must be used within a HeaderFeaturesProvider"
-    );
+    throw new Error('useHeaderFeatures must be used within a HeaderFeaturesProvider');
   }
   return context;
 };

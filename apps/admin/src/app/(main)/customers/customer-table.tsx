@@ -1,34 +1,34 @@
 // src/app/(main)/customers/customer-table.tsx
-"use client";
+'use client';
 
-import { Customer } from "@/types/customer";
-import { PageMeta } from "@/types/meta";
-import { SmsData } from "@/types/sms";
-import { User } from "@/types/user";
-import { useState } from "react";
-import api from "@/hooks/swr/api-client";
-import { toast } from "sonner";
+import { Customer } from '@/types/customer';
+import { PageMeta } from '@/types/meta';
+import { SmsData } from '@/types/sms';
+import { User } from '@/types/user';
+import { useState } from 'react';
+import api from '@/hooks/swr/api-client';
+import { toast } from 'sonner';
 
 // UI Imports
-import { LayoutTable } from "@/components/layout/LayoutTable";
-import { FilterStatus } from "@/components/table/filter-status";
-import { DataTable } from "@/components/table/data-table";
-import { DataTablePagination } from "@/components/table/pagination";
-import { SelectAdmins } from "@/components/table/select-admins";
-import { Input } from "@/components/ui/input";
-import { SortingState, Table } from "@tanstack/react-table";
-import { columns } from "./columns";
-import { FilterAdmin } from "@/components/table/filter-admin";
-import { FilterCategory } from "@/components/table/filter-category";
-import { DatePicker } from "@/components/ui/date-picker";
-import { ExportDialog } from "@/components/table/dialog-export";
-import { FilterIgToken } from "@/components/table/filter-ig-token";
-import { OtpDialog } from "@/components/table/dialog-otp";
-import { PanelModeType } from "./client-page";
-import { Button } from "@/components/ui/button";
-import { LabelListItem } from "../labels/types";
-import { FilterLabel } from "@/components/table/filter-label";
-import { FilterDeleteFlagged } from "@/components/table/filter-delete-flagged";
+import { LayoutTable } from '@/components/layout/LayoutTable';
+import { FilterStatus } from '@/components/table/filter-status';
+import { DataTable } from '@/components/table/data-table';
+import { DataTablePagination } from '@/components/table/pagination';
+import { SelectAdmins } from '@/components/table/select-admins';
+import { Input } from '@/components/ui/input';
+import { SortingState, Table } from '@tanstack/react-table';
+import { columns } from './columns';
+import { FilterAdmin } from '@/components/table/filter-admin';
+import { FilterCategory } from '@/components/table/filter-category';
+import { DatePicker } from '@/components/ui/date-picker';
+import { ExportDialog } from '@/components/table/dialog-export';
+import { FilterIgToken } from '@/components/table/filter-ig-token';
+import { OtpDialog } from '@/components/table/dialog-otp';
+import { PanelModeType } from './client-page';
+import { Button } from '@/components/ui/button';
+import { LabelListItem } from '../labels/types';
+import { FilterLabel } from '@/components/table/filter-label';
+import { FilterDeleteFlagged } from '@/components/table/filter-delete-flagged';
 
 export default function CustomerTable({
   isRefetching,
@@ -95,13 +95,11 @@ export default function CustomerTable({
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const [selectedRows, setSelectedRows] = useState<Customer[]>([]);
-  const [tableInstance, setTableInstance] = useState<Table<Customer> | null>(
-    null,
-  );
+  const [tableInstance, setTableInstance] = useState<Table<Customer> | null>(null);
   const [tempSearch, setTempSearch] = useState(search);
 
   const selectedIds = selectedRows.map((row) => row.id);
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === 'admin';
   const cols = columns(
     user,
     panelMode,
@@ -117,7 +115,7 @@ export default function CustomerTable({
     count: number;
   }) => {
     try {
-      const response = await api.post("/users/excelExport", {
+      const response = await api.post('/users/excelExport', {
         startDate: data.startDate.toISOString(),
         endDate: data.endDate.toISOString(),
         email: data.email,
@@ -125,11 +123,13 @@ export default function CustomerTable({
       });
 
       if (response.data) {
-        toast.success("درخواست خروجی اکسل کاربران با موفقیت ارسال شد. لطفاً ایمیل خود را بررسی کنید.");
+        toast.success(
+          'درخواست خروجی اکسل کاربران با موفقیت ارسال شد. لطفاً ایمیل خود را بررسی کنید.',
+        );
       }
     } catch (error) {
-      console.error("Export failed:", error);
-      toast.error("خطا در ارسال درخواست خروجی اکسل کاربران.");
+      console.error('Export failed:', error);
+      toast.error('خطا در ارسال درخواست خروجی اکسل کاربران.');
       throw error;
     }
   };
@@ -140,11 +140,11 @@ export default function CustomerTable({
         {/* Row 1: action buttons + search */}
         <div className="flex flex-wrap items-center gap-1.5">
           <Button
-            variant={panelMode === "pro" ? "default" : "outline"}
+            variant={panelMode === 'pro' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setPanelMode(panelMode === "standard" ? "pro" : "standard")}
+            onClick={() => setPanelMode(panelMode === 'standard' ? 'pro' : 'standard')}
           >
-            {panelMode === "standard" ? "استاندارد" : "پرو"}
+            {panelMode === 'standard' ? 'استاندارد' : 'پرو'}
           </Button>
 
           <OtpDialog size="sm" />
@@ -163,10 +163,10 @@ export default function CustomerTable({
             onChange={(e) => {
               const value = e.target.value;
               setTempSearch(value);
-              if (value === "") onSearchChange("");
+              if (value === '') onSearchChange('');
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === 'Enter') {
                 e.preventDefault();
                 onSearchChange(tempSearch);
               }
@@ -190,9 +190,14 @@ export default function CustomerTable({
 
             <FilterLabel size="sm" value={labelId} onChange={onLabelIdChange} items={labelsItems} />
 
-            <FilterStatus size="sm" type="customer" value={customersStatus} onChange={onStatusChange} />
+            <FilterStatus
+              size="sm"
+              type="customer"
+              value={customersStatus}
+              onChange={onStatusChange}
+            />
 
-            {user && user.role !== "kam" && (
+            {user && user.role !== 'kam' && (
               <FilterAdmin size="sm" data={kams} value={customerAdmins} onChange={onAdminChange} />
             )}
 
@@ -204,7 +209,7 @@ export default function CustomerTable({
               />
             )}
 
-            {user && user.role !== "kam" && Object.keys(rowSelection).length > 0 && (
+            {user && user.role !== 'kam' && Object.keys(rowSelection).length > 0 && (
               <SelectAdmins
                 type="customer"
                 kams={kams}
@@ -219,29 +224,26 @@ export default function CustomerTable({
           </div>
         </div>
 
-      <DataTable
-        columns={cols}
-        data={customers}
-        rowSelection={rowSelection}
-        onRowSelectionChange={setRowSelection}
-        setSelectedRows={setSelectedRows}
-        tableInstanceRef={setTableInstance}
-        page={meta.currentPage}
-        limit={meta.itemsPerPage}
-        totalCount={meta.totalItems}
-        onPageChange={onPageChange}
-        onLimitChange={onLimitChange}
-        serverSorting
-        sortingState={sortingState}
-        onSortingChange={onSortingChange}
-      />
-
-      {tableInstance && (
-        <DataTablePagination
-          table={tableInstance}
+        <DataTable
+          columns={cols}
+          data={customers}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          setSelectedRows={setSelectedRows}
+          tableInstanceRef={setTableInstance}
+          page={meta.currentPage}
+          limit={meta.itemsPerPage}
           totalCount={meta.totalItems}
+          onPageChange={onPageChange}
+          onLimitChange={onLimitChange}
+          serverSorting
+          sortingState={sortingState}
+          onSortingChange={onSortingChange}
         />
-      )}
+
+        {tableInstance && (
+          <DataTablePagination table={tableInstance} totalCount={meta.totalItems} />
+        )}
       </div>
     </LayoutTable>
   );

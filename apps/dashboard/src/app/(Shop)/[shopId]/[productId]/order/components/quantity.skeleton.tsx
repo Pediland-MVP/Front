@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { Skeleton } from "@/components/ui/skeleton"
-import { Label } from "@/components/ui/label"
+import { Skeleton } from '@/components/ui/skeleton';
+import { Label } from '@/components/ui/label';
 
 export function QuantitySkeleton() {
   return (
@@ -12,8 +12,7 @@ export function QuantitySkeleton() {
         <Skeleton className="h-8 w-12 rounded" />
         <Skeleton className="h-8 w-8 rounded" />
       </div>
-      <Skeleton className="h-4 w-24 mt-1" />
+      <Skeleton className="mt-1 h-4 w-24" />
     </div>
-  )
+  );
 }
-

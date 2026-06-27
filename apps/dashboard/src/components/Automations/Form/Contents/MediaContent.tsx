@@ -1,27 +1,25 @@
 // src/components/Automations/form/Contents/MediaContent.tsx
-"use client";
+'use client';
 
 import {
   AutomationContentFileType,
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
-} from "@/constants/automationContent.enum";
-import api from "@/hooks/swr/api-client";
-import { AutomationFormType, ContentItemSchema } from "@/schemas/automationForm";
-import { FileNamespace } from "@/types/file";
-import { UploadedFile } from "@/types/fileUploader";
-import React, { useState } from "react";
-import { UseFieldArrayAppend, useFormContext } from "react-hook-form";
-import { useTranslations } from "next-intl";
-import { AxiosResponse, AxiosError } from "axios";
-import { toast } from "sonner";
+} from '@/constants/automationContent.enum';
+import api from '@/hooks/swr/api-client';
+import { AutomationFormType, ContentItemSchema } from '@/schemas/automationForm';
+import { FileNamespace } from '@/types/file';
+import { UploadedFile } from '@/types/fileUploader';
+import React, { useState } from 'react';
+import { UseFieldArrayAppend, useFormContext } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
+import { AxiosResponse, AxiosError } from 'axios';
+import { toast } from 'sonner';
 
-import {
-  FormMessage,
-} from "@/components/ui";
-import { useContentsUploaderContext } from "./ContentsUploaderContext";
-import { MediaUploader } from "@/components/ui-custom/MediaUploader";
-import z from "zod";
+import { FormMessage } from '@/components/ui';
+import { useContentsUploaderContext } from './ContentsUploaderContext';
+import { MediaUploader } from '@/components/ui-custom/MediaUploader';
+import z from 'zod';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -29,8 +27,8 @@ interface MediaContentProps {
   index: number;
   mode: AutomationContentModeEnum;
   type: AutomationContentTypesEnum;
-  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>
-  content: z.infer<typeof ContentItemSchema>,
+  appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>;
+  content: z.infer<typeof ContentItemSchema>;
 }
 
 export const MediaContent = ({ index, mode, type, appendContents, content }: MediaContentProps) => {
@@ -44,10 +42,8 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
     formState: { errors },
   } = useFormContext<AutomationFormType>();
 
-  const t_err = useTranslations("Automations.Contents.Media.Errors");
-  const t_fileUploader = useTranslations(
-    "Automations.Contents.Media.FileUploader",
-  );
+  const t_err = useTranslations('Automations.Contents.Media.Errors');
+  const t_fileUploader = useTranslations('Automations.Contents.Media.FileUploader');
 
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -61,20 +57,20 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
       if (rejectedFile.errors) {
         const errorCode = rejectedFile.errors[0].code;
         switch (errorCode) {
-          case "file-invalid-type":
-            setUploadError(t_fileUploader("Errors.invalid_type"));
+          case 'file-invalid-type':
+            setUploadError(t_fileUploader('Errors.invalid_type'));
             break;
-          case "file-too-large":
-            setUploadError(t_fileUploader("Errors.file_too_large"));
+          case 'file-too-large':
+            setUploadError(t_fileUploader('Errors.file_too_large'));
             break;
-          case "file-too-small":
-            setUploadError(t_fileUploader("Errors.file_too_small"));
+          case 'file-too-small':
+            setUploadError(t_fileUploader('Errors.file_too_small'));
             break;
-          case "too-many-files":
-            setUploadError(t_fileUploader("Errors.too_many_files"));
+          case 'too-many-files':
+            setUploadError(t_fileUploader('Errors.too_many_files'));
             break;
           default:
-            setUploadError(t_fileUploader("Errors.upload_failed"));
+            setUploadError(t_fileUploader('Errors.upload_failed'));
         }
       }
       return;
@@ -82,29 +78,27 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
 
     if (files.length === 0) {
       setValue(
-        `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}.file`,
+        `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${index}.file`,
         null,
       );
       return;
     }
 
-    if (files[0] && "file" in files[0]) {
+    if (files[0] && 'file' in files[0]) {
       setFiles((files) => {
         return [{ ...files[0], isUploading: true, process: 0 }];
       });
       const formData = new FormData();
-      formData.append("file", files[0].file);
+      formData.append('file', files[0].file);
       const res = api
         .post(`${API_URL}/contentCycle/upload`, formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
           withCredentials: true,
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
-              const process = Math.round(
-                (progressEvent.loaded / progressEvent.total) * 100,
-              );
+              const process = Math.round((progressEvent.loaded / progressEvent.total) * 100);
               setFiles((prev) => {
                 return [{ ...prev[0], process: process }];
               });
@@ -120,7 +114,7 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
               mimeType: res.data.mimeType,
               // Preserve original file info
               ...(originalFile &&
-                "file" in originalFile && {
+                'file' in originalFile && {
                   originalName: originalFile.file.name,
                   originalSize: originalFile.file.size,
                 }),
@@ -128,14 +122,12 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
           ]);
 
           setValue(
-            `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
+            `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${index}`,
             {
               ...getValues(
-                `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${index}`,
+                `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${index}`,
               ),
-              type: res.data.mimeType.split(
-                "/",
-              )[0] as AutomationContentTypesEnum,
+              type: res.data.mimeType.split('/')[0] as AutomationContentTypesEnum,
               file: {
                 id: res.data.id,
                 url: res.data.url,
@@ -155,7 +147,7 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
           setFiles((prev) => {
             return [{ ...prev[0], isUploading: false }];
           });
-          trigger("contents");
+          trigger('contents');
         });
     }
   };
@@ -178,9 +170,7 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
       )}
 
       {errors.contents?.[index]?.file && (
-        <FormMessage>
-          {t_err(`${errors.contents?.[index]?.file.message}`)}
-        </FormMessage>
+        <FormMessage>{t_err(`${errors.contents?.[index]?.file.message}`)}</FormMessage>
       )}
     </>
   );

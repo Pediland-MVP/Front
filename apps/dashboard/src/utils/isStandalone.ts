@@ -1,5 +1,5 @@
 export function isStandalone(): boolean {
-  if (typeof window === "undefined") return false; // روی سرور
+  if (typeof window === 'undefined') return false; // روی سرور
 
   // iOS Safari
   if ((window.navigator as any)?.standalone !== undefined) {
@@ -7,5 +7,5 @@ export function isStandalone(): boolean {
   }
 
   // all other browsers: Chrome, Edge, Firefox, etc.
-  return window.matchMedia("(display-mode: standalone)").matches;
+  return window.matchMedia('(display-mode: standalone)').matches;
 }

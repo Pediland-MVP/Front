@@ -1,8 +1,8 @@
 // src/types/customer.ts
 
-import { Category } from "./category";
-import { Instagram } from "./instagram";
-import { AssignedLabel } from "./label";
+import { Category } from './category';
+import { Instagram } from './instagram';
+import { AssignedLabel } from './label';
 
 export type Customer = {
   id: string;
@@ -16,9 +16,9 @@ export type Customer = {
   updateDate: string;
   lastActivityDate?: string | null;
   note: string | null;
-  submittedInstagramUsername?: string
-  submittedInstagramFollowersCount?: number
-  isDeleteFlaged?: boolean
+  submittedInstagramUsername?: string;
+  submittedInstagramFollowersCount?: number;
+  isDeleteFlaged?: boolean;
   usersAdmins: {
     admin: {
       id: string;

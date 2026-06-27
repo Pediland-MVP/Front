@@ -1,11 +1,11 @@
 // app/(Console)/automations/components/form/catalogue.tsx
-"use client";
+'use client';
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { AutomationContentModeEnum } from '@/constants/automationContent.enum';
+import { AutomationFormType } from '@/schemas/automationForm';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
 import {
   closestCenter,
@@ -15,26 +15,23 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import { ProductContentItem } from "./ProductContentItem";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
+} from '@dnd-kit/sortable';
+import { ProductContentItem } from './ProductContentItem';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
 type ProductContentProps = {
   index: number;
   mode: AutomationContentModeEnum;
 };
 
-export const ProductContentComp = ({
-  index: contentIndex,
-  mode,
-}: ProductContentProps) => {
-  const t = useTranslations("Automations.Contents.Product");
-  const t_errors = useTranslations("Automations.Errors");
+export const ProductContentComp = ({ index: contentIndex, mode }: ProductContentProps) => {
+  const t = useTranslations('Automations.Contents.Product');
+  const t_errors = useTranslations('Automations.Errors');
   const { control, trigger } = useFormContext<AutomationFormType>();
 
   const {
@@ -46,8 +43,8 @@ export const ProductContentComp = ({
     insert: insertProducts,
   } = useFieldArray({
     control: control,
-    name: `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.products`,
-    keyName: "_xid",
+    name: `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.products`,
+    keyName: '_xid',
   });
 
   const sensors = useSensors(
@@ -64,12 +61,8 @@ export const ProductContentComp = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
-      const oldIndex = productsField.findIndex(
-        (item) => item._xid === active.id,
-      );
-      const newIndex = productsField.findIndex(
-        (item) => item._xid === over?.id,
-      );
+      const oldIndex = productsField.findIndex((item) => item._xid === active.id);
+      const newIndex = productsField.findIndex((item) => item._xid === over?.id);
       moveProducts(oldIndex, newIndex);
     }
   };
@@ -96,11 +89,7 @@ export const ProductContentComp = ({
   return (
     <div className="flex flex-col space-y-3">
       <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-3">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext
             items={productsField.map((item) => item._xid)}
             strategy={rectSortingStrategy}
@@ -114,26 +103,20 @@ export const ProductContentComp = ({
                 removeProducts={removeProducts}
                 updateProducts={updateProducts}
                 contentIndex={contentIndex}
-                mode={
-                  mode === AutomationContentModeEnum.AUTOMATION
-                    ? "contents"
-                    : "reminders"
-                }
+                mode={mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}
               />
             ))}
           </SortableContext>
         </DndContext>
       </div>
 
-      {productsField.length === 10 && productsField.every(product => product.id) && (
-        <ErrorMessage>{t("limit")}</ErrorMessage>
+      {productsField.length === 10 && productsField.every((product) => product.id) && (
+        <ErrorMessage>{t('limit')}</ErrorMessage>
       )}
 
       {(errors as any)?.[
-        mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"
-      ]?.[contentIndex]?.products && (
-        <ErrorMessage>{t("selection_required")}</ErrorMessage>
-      )}
+        mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'
+      ]?.[contentIndex]?.products && <ErrorMessage>{t('selection_required')}</ErrorMessage>}
     </div>
   );
 };

@@ -1,21 +1,20 @@
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-export default function SwitchOfForm({control: control}: any) {
-
+export default function SwitchOfForm({ control: control }: any) {
   return (
     <div className="space-y-8">
-      {" "}
+      {' '}
       <p>اگر کاربر شما در</p>
       <div className="flex gap-4">
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <Controller
             name="direct"
             control={control}
             render={({ field }) => (
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <Switch
                   dir="ltr"
                   id="direct"
@@ -27,12 +26,12 @@ export default function SwitchOfForm({control: control}: any) {
             )}
           />
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <Controller
             name="post"
             control={control}
             render={({ field }) => (
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <Switch
                   dir="ltr"
                   id="post"

@@ -1,28 +1,18 @@
-'use client'
-import { commentsSocket } from "@/utils/socket";
-import { CommentNamespace } from "@/types/comments/comment.namespace";
-import { WsCommentEvents } from "@/types/comments/wsComment.enum";
-import { createContext, useContext, useEffect, useState } from "react";
+'use client';
+import { commentsSocket } from '@/utils/socket';
+import { CommentNamespace } from '@/types/comments/comment.namespace';
+import { WsCommentEvents } from '@/types/comments/wsComment.enum';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export type CommentsContextType = {
-  comments: CommentNamespace.WS.Comments["items"];
-  setComments: React.Dispatch<
-    React.SetStateAction<CommentNamespace.WS.Comments["items"]>
-  >;
+  comments: CommentNamespace.WS.Comments['items'];
+  setComments: React.Dispatch<React.SetStateAction<CommentNamespace.WS.Comments['items']>>;
 };
 
-const CommentsContext = createContext<CommentsContextType | undefined>(
-  undefined
-);
+const CommentsContext = createContext<CommentsContextType | undefined>(undefined);
 
-export const CommentsProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const [comments, setComments] = useState<
-    CommentNamespace.WS.Comments["items"]
-  >([]);
+export const CommentsProvider = ({ children }: { children: React.ReactNode }) => {
+  const [comments, setComments] = useState<CommentNamespace.WS.Comments['items']>([]);
 
   const onNewComment = (data: string) => {
     const comment: CommentNamespace.WS.NewComment = JSON.parse(data);
@@ -44,11 +34,10 @@ export const CommentsProvider = ({
   );
 };
 
-
 export const useComments = () => {
   const context = useContext(CommentsContext);
   if (context === undefined) {
-    throw new Error("useComments must be used within a CommentsProvider");
+    throw new Error('useComments must be used within a CommentsProvider');
   }
   return context;
 };

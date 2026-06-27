@@ -1,17 +1,17 @@
-"use client";
-import useUser from "@/hooks/useUser";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+'use client';
+import useUser from '@/hooks/useUser';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function InstagramInvalidRedirector() {
   const { user } = useUser();
   const pathname = usePathname();
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
     // When user is in settings/isntagram it's maybe redirected from relogin
     // So We shouldn't show this message to that
-    if (pathname.startsWith("/settings/instagram")) return;
+    if (pathname.startsWith('/settings/instagram')) return;
     if (pathname.startsWith('/help')) return;
     if (pathname.startsWith('/learn')) return;
 
@@ -19,11 +19,10 @@ export default function InstagramInvalidRedirector() {
     if (user && user.instagrams) {
       if (
         user.instagrams.find(
-          (ig) =>
-            ig.isIgTokenValid === false || ig.isIgWebhookSubscribed === false,
+          (ig) => ig.isIgTokenValid === false || ig.isIgWebhookSubscribed === false,
         )
       ) {
-        router.push('/settings/instagram')
+        router.push('/settings/instagram');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,43 +1,42 @@
-"use client";
+'use client';
 
-import { useDebounce } from "@/hooks/useDebounce";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-import useSWRImmutable from "swr/immutable";
-import { usePermissions } from "@/hooks/usePermissions";
+import { useDebounce } from '@/hooks/useDebounce';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useState } from 'react';
+import useSWRImmutable from 'swr/immutable';
+import { usePermissions } from '@/hooks/usePermissions';
 
-import { PageMeta } from "@/schemas/pageMeta";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
-import { OrderCard } from "./OrderCard";
-import { OrderNamespace } from "@/types/order/order.namespace";
-import EditOrderDialog from "@/app/(Console)/orders/components/editOrderDialog";
-import { NoDataError } from "../Global/NoDataError";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { ItemsPagination } from "../Console/ItemsPagination";
-import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
+import { PageMeta } from '@/schemas/pageMeta';
+import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
+import { OrderCard } from './OrderCard';
+import { OrderNamespace } from '@/types/order/order.namespace';
+import EditOrderDialog from '@/app/(Console)/orders/components/editOrderDialog';
+import { NoDataError } from '../Global/NoDataError';
+import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { ItemsPagination } from '../Console/ItemsPagination';
+import { InstagramFilter } from '@/components/ui-custom/InstagramFilter';
 
 interface OrdersCardListProps {
   search: string;
 }
 
 export const OrdersCardList = ({ search }: OrdersCardListProps) => {
-  const t = useTranslations("Orders.List");
+  const t = useTranslations('Orders.List');
   const { can } = usePermissions();
-  const hasViewPermission = can("order:view");
+  const hasViewPermission = can('order:view');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
   const [selectedInstagramIds, setSelectedInstagramIds] = useState<string[]>([]);
   const { setError } = useHeaderFeatures();
   const [openOrderDialog, setOpenOrderDialog] = useState(false);
-  const [selectedOrder, setSelectedOrder] =
-    useState<OrderNamespace.GET.OneItemOfOrders | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderNamespace.GET.OneItemOfOrders | null>(
+    null,
+  );
 
-  let searchParams = "";
+  let searchParams = '';
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
-  const instagramIdsParam = selectedInstagramIds
-    .map((id) => `instagramIds=${id}`)
-    .join("&");
+  const instagramIdsParam = selectedInstagramIds.map((id) => `instagramIds=${id}`).join('&');
   const apiUrl =
     hasViewPermission && selectedInstagramIds.length > 0
       ? `/orders?page=${page}&limit=${limit}${searchParams}&${instagramIdsParam}`
@@ -62,10 +61,7 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
   };
   const meta: PageMeta = ordersData?.meta ?? defaultMeta;
 
-  const onPageChange = useCallback(
-    (newPage: number) => setPage(Math.max(1, newPage)),
-    [],
-  );
+  const onPageChange = useCallback((newPage: number) => setPage(Math.max(1, newPage)), []);
 
   const onLimitChange = useCallback((newLimit: number) => {
     setLimit(newLimit);
@@ -89,23 +85,14 @@ export const OrdersCardList = ({ search }: OrdersCardListProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <EditOrderDialog
-        open={openOrderDialog}
-        setOpen={setOpenOrderDialog}
-        order={selectedOrder}
-      />
+      <EditOrderDialog open={openOrderDialog} setOpen={setOpenOrderDialog} order={selectedOrder} />
 
-      <InstagramFilter
-        selectedIds={selectedInstagramIds}
-        onChange={setSelectedInstagramIds}
-      />
+      <InstagramFilter selectedIds={selectedInstagramIds} onChange={setSelectedInstagramIds} />
 
       <div className="flex-1">
         {orders.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <div className="text-muted-foreground text-sm">
-              {t("no_orders")}
-            </div>
+            <div className="text-muted-foreground text-sm">{t('no_orders')}</div>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">

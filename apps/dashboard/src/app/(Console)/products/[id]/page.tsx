@@ -1,5 +1,5 @@
-import { LayoutPage } from "@/components/Layout/LayoutPage";
-import Product from "./product";
+import { LayoutPage } from '@/components/Layout/LayoutPage';
+import Product from './product';
 
 interface PageProps {
   params: Promise<{ id: string }>;

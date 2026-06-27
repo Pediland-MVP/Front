@@ -1,11 +1,7 @@
-import { useState } from "react";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
-import { RocketIcon, Cross1Icon } from "@radix-ui/react-icons";
-import { WarningCircle } from "@phosphor-icons/react";
+import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { RocketIcon, Cross1Icon } from '@radix-ui/react-icons';
+import { WarningCircle } from '@phosphor-icons/react';
 
 export function ChatAlert() {
   const [visible, setVisible] = useState(true);
@@ -13,15 +9,15 @@ export function ChatAlert() {
   if (!visible) return null;
 
   return (
-    <div className="mb-2 ">
-      <Alert className="bg-yellow-50 border-yellow-500 border-2">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex gap-2 items-center">
+    <div className="mb-2">
+      <Alert className="border-2 border-yellow-500 bg-yellow-50">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
             <WarningCircle size={24} color="#855707" />
             <div>
               {/* <AlertTitle>Heads up!</AlertTitle> */}
               <AlertDescription className="text-yellow-700">
-              برای مشاهده آخرین نسخه پیام ها صفحه را رفرش کنید.
+                برای مشاهده آخرین نسخه پیام ها صفحه را رفرش کنید.
               </AlertDescription>
             </div>
           </div>

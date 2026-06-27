@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { CheckIcon, CopyIcon, KeyIcon, LogInIcon, LockKeyholeIcon } from "lucide-react";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { CheckIcon, CopyIcon, KeyIcon, LogInIcon, LockKeyholeIcon } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -22,11 +22,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { MOBILE_REGEX } from "@/lib/regex";
-import api from "@/hooks/swr/api-client";
-import { AxiosError } from "axios";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { MOBILE_REGEX } from '@/lib/regex';
+import api from '@/hooks/swr/api-client';
+import { AxiosError } from 'axios';
 
 const exportSchema = z.object({
   mobile: z.string().regex(MOBILE_REGEX),
@@ -36,7 +36,7 @@ type OtpByMobileValues = z.infer<typeof exportSchema>;
 
 interface OtpByMobileProps {
   trigger?: React.ReactNode;
-  size?: "default" | "sm";
+  size?: 'default' | 'sm';
 }
 
 interface OtpResult {
@@ -62,22 +62,16 @@ function CopyableOtp({
   };
 
   return (
-    <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-4 py-3 gap-3">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground min-w-0">
+    <div className="bg-muted/40 flex items-center justify-between gap-3 rounded-lg border px-4 py-3">
+      <div className="text-muted-foreground flex min-w-0 items-center gap-2 text-sm">
         {icon}
         <span className="truncate">{label}</span>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <span className="font-mono text-base font-semibold tracking-widest text-foreground">
+      <div className="flex shrink-0 items-center gap-2">
+        <span className="text-foreground font-mono text-base font-semibold tracking-widest">
           {code}
         </span>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          onClick={handleCopy}
-        >
+        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy}>
           {copied ? (
             <CheckIcon className="h-4 w-4 text-green-500" />
           ) : (
@@ -89,7 +83,7 @@ function CopyableOtp({
   );
 }
 
-export function OtpDialog({ trigger, size = "default" }: OtpByMobileProps) {
+export function OtpDialog({ trigger, size = 'default' }: OtpByMobileProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpResult, setOtpResult] = useState<OtpResult | null>(null);
@@ -97,7 +91,7 @@ export function OtpDialog({ trigger, size = "default" }: OtpByMobileProps) {
 
   const form = useForm<OtpByMobileValues>({
     resolver: zodResolver(exportSchema),
-    defaultValues: { mobile: "" },
+    defaultValues: { mobile: '' },
   });
 
   const onSubmit = async (data: OtpByMobileValues) => {
@@ -111,14 +105,14 @@ export function OtpDialog({ trigger, size = "default" }: OtpByMobileProps) {
     } catch (e) {
       if (e instanceof AxiosError) {
         switch (e.response?.data?.code) {
-          case "OTP_NOT_GENERATED":
-            setErrorMessage("کاربر هنوز درخواست OTP نداده است");
+          case 'OTP_NOT_GENERATED':
+            setErrorMessage('کاربر هنوز درخواست OTP نداده است');
             break;
-          case "USER_NOTFOUND":
-            setErrorMessage("کاربری با این شماره موبایل وجود ندارد");
+          case 'USER_NOTFOUND':
+            setErrorMessage('کاربری با این شماره موبایل وجود ندارد');
             break;
           default:
-            setErrorMessage("خطایی پیش آمده");
+            setErrorMessage('خطایی پیش آمده');
         }
       }
     } finally {
@@ -166,9 +160,7 @@ export function OtpDialog({ trigger, size = "default" }: OtpByMobileProps) {
               )}
             />
 
-            {errorMessage && (
-              <p className="text-sm text-destructive">{errorMessage}</p>
-            )}
+            {errorMessage && <p className="text-destructive text-sm">{errorMessage}</p>}
 
             {otpResult && (otpResult.otp || otpResult.resetPasswordOtp) && (
               <div className="space-y-2">
@@ -190,15 +182,11 @@ export function OtpDialog({ trigger, size = "default" }: OtpByMobileProps) {
             )}
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
                 بستن
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "در حال دریافت..." : "دریافت کد"}
+                {isSubmitting ? 'در حال دریافت...' : 'دریافت کد'}
               </Button>
             </DialogFooter>
           </form>

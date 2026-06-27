@@ -1,37 +1,31 @@
 // src/components/nav-bottom.tsx
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useLogout } from "@/hooks/swr/api-client";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import {
-  CreditCardIcon,
-  GiftIcon,
-  PlantIcon,
-  SignOutIcon,
-  UsersIcon,
-} from "@phosphor-icons/react";
+import { cn } from '@/lib/utils';
+import { useLogout } from '@/hooks/swr/api-client';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+import { CreditCardIcon, GiftIcon, PlantIcon, SignOutIcon, UsersIcon } from '@phosphor-icons/react';
 
 const navItems = [
-  { href: "/customers", icon: UsersIcon, labelKey: "customers" as const },
-  { href: "/leads", icon: PlantIcon, labelKey: "leads" as const },
-  { href: "/subscriptions", icon: CreditCardIcon, labelKey: "subscriptions" as const },
-  { href: "/referral-codes", icon: GiftIcon, labelKey: "referralCodes" as const },
+  { href: '/customers', icon: UsersIcon, labelKey: 'customers' as const },
+  { href: '/leads', icon: PlantIcon, labelKey: 'leads' as const },
+  { href: '/subscriptions', icon: CreditCardIcon, labelKey: 'subscriptions' as const },
+  { href: '/referral-codes', icon: GiftIcon, labelKey: 'referralCodes' as const },
 ];
 
 export function NavBottom() {
   const pathname = usePathname();
-  const t = useTranslations("NavBottom");
+  const t = useTranslations('NavBottom');
   const logout = useLogout();
   const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
-    toast.success(t("logoutSuccess"));
-    router.push("/auth/signin");
+    toast.success(t('logoutSuccess'));
+    router.push('/auth/signin');
   };
 
   return (
@@ -46,11 +40,13 @@ export function NavBottom() {
               className="flex flex-col items-center justify-center gap-0.5"
             >
               <item.icon
-                weight={isActive ? "duotone" : "regular"}
+                weight={isActive ? 'duotone' : 'regular'}
                 size={26}
-                className={cn(isActive ? "text-primary" : "text-muted-foreground")}
+                className={cn(isActive ? 'text-primary' : 'text-muted-foreground')}
               />
-              <span className={cn("text-[10px]", isActive ? "text-primary" : "text-muted-foreground")}>
+              <span
+                className={cn('text-[10px]', isActive ? 'text-primary' : 'text-muted-foreground')}
+              >
                 {t(item.labelKey)}
               </span>
             </Link>
@@ -59,10 +55,10 @@ export function NavBottom() {
 
         <button
           onClick={handleLogout}
-          className="flex flex-col items-center justify-center gap-0.5 cursor-pointer"
+          className="flex cursor-pointer flex-col items-center justify-center gap-0.5"
         >
           <SignOutIcon weight="regular" size={26} className="text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">{t("logout")}</span>
+          <span className="text-muted-foreground text-[10px]">{t('logout')}</span>
         </button>
       </div>
     </nav>

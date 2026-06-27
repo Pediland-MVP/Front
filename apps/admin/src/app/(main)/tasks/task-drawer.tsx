@@ -1,22 +1,17 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
+import React from 'react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
-import { TaskListItem } from "@/types/task";
+import { TaskListItem } from '@/types/task';
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { ContactOptions } from "@/components/table/contact-options";
-import { OtpDialog } from "@/components/table/dialog-otp";
-import { LabelChips } from "@/components/table/label-chips";
-import { TaskManagementPanel } from "@/components/tasks/task-management-panel";
-import { toAssignedLabels } from "./to-assigned-labels";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { ContactOptions } from '@/components/table/contact-options';
+import { OtpDialog } from '@/components/table/dialog-otp';
+import { LabelChips } from '@/components/table/label-chips';
+import { TaskManagementPanel } from '@/components/tasks/task-management-panel';
+import { toAssignedLabels } from './to-assigned-labels';
 
 interface TaskDrawerProps {
   task: TaskListItem | null;
@@ -33,11 +28,9 @@ export function TaskDrawer({
   currentUserRole,
   onChanged,
 }: TaskDrawerProps): React.JSX.Element {
-  const t = useTranslations("Tasks");
+  const t = useTranslations('Tasks');
 
-  const fullName = task
-    ? `${task.user.firstname} ${task.user.lastname}`.trim()
-    : "";
+  const fullName = task ? `${task.user.firstname} ${task.user.lastname}`.trim() : '';
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -48,9 +41,7 @@ export function TaskDrawer({
       >
         {/* ps-12 keeps the title clear of the Sheet close button (top inline-start in RTL). */}
         <SheetHeader className="shrink-0 border-b px-4 py-3 ps-12">
-          <SheetTitle className="text-start text-base">
-            {t("drawerTitle")}
-          </SheetTitle>
+          <SheetTitle className="text-start text-base">{t('drawerTitle')}</SheetTitle>
         </SheetHeader>
 
         {task && (
@@ -58,9 +49,7 @@ export function TaskDrawer({
             {/* Compact user header */}
             <div className="flex shrink-0 items-start gap-3 border-b bg-slate-50/60 px-4 py-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-xs font-bold text-white">
-                {`${task.user.firstname?.[0] ?? ""}${
-                  task.user.lastname?.[0] ?? ""
-                }`.trim() || "—"}
+                {`${task.user.firstname?.[0] ?? ''}${task.user.lastname?.[0] ?? ''}`.trim() || '—'}
               </div>
 
               <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -68,7 +57,7 @@ export function TaskDrawer({
                   href={`/customers/${task.user.id}`}
                   className="text-primary truncate text-sm font-semibold underline-offset-4 hover:underline"
                 >
-                  {fullName || "—"}
+                  {fullName || '—'}
                 </Link>
 
                 {task.instagramUsername ? (

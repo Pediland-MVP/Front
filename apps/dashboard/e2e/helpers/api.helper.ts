@@ -47,7 +47,7 @@ export class ApiHelper {
       await axios.post(
         `${this.baseUrl}/e2e/set-password`,
         { mobile, password },
-        { headers: this.getHeaders() }
+        { headers: this.getHeaders() },
       );
     } catch (error: any) {
       const errMsg = error.response?.data?.message || error.message;

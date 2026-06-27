@@ -4,8 +4,8 @@ export type TaskListItem = {
   id: string;
   actionDate: string;
   doneDate: string | null;
-  status: "todo" | "done";
-  type: "phone" | "telegram" | "instagram" | "whatsapp";
+  status: 'todo' | 'done';
+  type: 'phone' | 'telegram' | 'instagram' | 'whatsapp';
   description: string | null;
   admin: { id: string; firstname: string; lastname: string };
   user: { id: string; firstname: string; lastname: string; mobile: string | null };

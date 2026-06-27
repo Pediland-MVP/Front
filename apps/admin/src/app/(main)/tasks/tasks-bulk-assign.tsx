@@ -1,11 +1,11 @@
 // src/app/(main)/tasks/tasks-bulk-assign.tsx
-"use client";
+'use client';
 
-import * as React from "react";
-import { useTranslations } from "next-intl";
+import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 // Types
-import type { User } from "@/types/user";
+import type { User } from '@/types/user';
 
 // UI
 import {
@@ -14,19 +14,15 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Check, CheckIcon, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Check, CheckIcon, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Utilities
-import api from "@/hooks/swr/api-client";
-import { toast } from "sonner";
+import api from '@/hooks/swr/api-client';
+import { toast } from 'sonner';
 
 export function TasksBulkAssign({
   kams,
@@ -39,12 +35,12 @@ export function TasksBulkAssign({
   mutateData?: () => void;
   onClearSelection?: () => void;
 }) {
-  const tb = useTranslations("Tasks.bulk");
-  const tt = useTranslations("Tasks.toasts");
-  const t_ec = useTranslations("ERROR_CODES");
+  const tb = useTranslations('Tasks.bulk');
+  const tt = useTranslations('Tasks.toasts');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [open, setOpen] = React.useState(false);
-  const [internalValue, setInternalValue] = React.useState("");
+  const [internalValue, setInternalValue] = React.useState('');
 
   const selectedKam = kams.find((kam) => kam.id === internalValue);
 
@@ -57,17 +53,17 @@ export function TasksBulkAssign({
     if (!internalValue) return;
 
     try {
-      await api.post("/actions/assignAdmin", {
+      await api.post('/actions/assignAdmin', {
         adminId: internalValue,
         actionIds,
       });
 
       mutateData?.();
       onClearSelection?.();
-      toast.success(tt("reassigned"));
+      toast.success(tt('reassigned'));
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { code?: string }; }; };
-      toast.error(t_ec(err?.response?.data?.code as string) || tt("reassignError"));
+      const err = error as { response?: { data?: { code?: string } } };
+      toast.error(t_ec(err?.response?.data?.code as string) || tt('reassignError'));
     }
   };
 
@@ -75,34 +71,25 @@ export function TasksBulkAssign({
     <div className="order-1 col-span-2 flex items-center gap-1.5">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            role="combobox"
-            className="flex-1 justify-between md:w-[140px]"
-          >
-            {selectedKam
-              ? `${selectedKam.firstname} ${selectedKam.lastname}`
-              : tb("select")}
+          <Button role="combobox" className="flex-1 justify-between md:w-[140px]">
+            {selectedKam ? `${selectedKam.firstname} ${selectedKam.lastname}` : tb('select')}
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0 md:w-[140px]">
           <Command>
             <CommandList>
-              <CommandEmpty>{tb("empty")}</CommandEmpty>
+              <CommandEmpty>{tb('empty')}</CommandEmpty>
               <CommandGroup>
                 {kams.map((kam) => {
                   const fullName = `${kam.firstname} ${kam.lastname}`;
                   return (
-                    <CommandItem
-                      key={kam.id}
-                      value={kam.id}
-                      onSelect={() => handleSelect(kam.id)}
-                    >
+                    <CommandItem key={kam.id} value={kam.id} onSelect={() => handleSelect(kam.id)}>
                       {fullName}
                       <Check
                         className={cn(
-                          "mr-auto",
-                          internalValue === kam.id ? "opacity-100" : "opacity-0",
+                          'mr-auto',
+                          internalValue === kam.id ? 'opacity-100' : 'opacity-0',
                         )}
                       />
                     </CommandItem>
@@ -114,11 +101,7 @@ export function TasksBulkAssign({
         </PopoverContent>
       </Popover>
 
-      <Button
-        icon
-        disabled={!internalValue}
-        onClick={handleAssign}
-      >
+      <Button icon disabled={!internalValue} onClick={handleAssign}>
         <CheckIcon />
       </Button>
     </div>

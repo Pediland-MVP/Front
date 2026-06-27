@@ -1,88 +1,78 @@
-"use client";
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
-import dayjs from "@/lib/dayjs-jalali";
-import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
-import { SubscriptionStatusBadge } from "@/components/table/subscription-status-badge";
-import { SubscriptionStatusEnum } from "@/types/subscription";
-import { WorkspaceRow } from "@/types/workspace";
+import { ColumnDef } from '@tanstack/react-table';
+import Link from 'next/link';
+import dayjs from '@/lib/dayjs-jalali';
+import { useTranslations } from 'next-intl';
+import { Badge } from '@/components/ui/badge';
+import { SubscriptionStatusBadge } from '@/components/table/subscription-status-badge';
+import { SubscriptionStatusEnum } from '@/types/subscription';
+import { WorkspaceRow } from '@/types/workspace';
 
 export function useWorkspaceColumns(): ColumnDef<WorkspaceRow>[] {
-  const t = useTranslations("Workspaces");
+  const t = useTranslations('Workspaces');
 
   return [
     {
-      accessorKey: "name",
-      header: t("name"),
+      accessorKey: 'name',
+      header: t('name'),
       cell: ({ row }) => (
         <Link
           href={`/workspaces/${row.original.id}`}
-          className="font-medium text-primary hover:underline"
+          className="text-primary font-medium hover:underline"
         >
           {row.original.name}
         </Link>
       ),
     },
     {
-      id: "owner",
-      header: t("owner"),
+      id: 'owner',
+      header: t('owner'),
       cell: ({ row }) => {
         const { name, mobile } = row.original.owner;
         return (
           <div className="flex flex-col">
-            <span>{name || "—"}</span>
-            {mobile && (
-              <span className="text-xs text-muted-foreground">{mobile}</span>
-            )}
+            <span>{name || '—'}</span>
+            {mobile && <span className="text-muted-foreground text-xs">{mobile}</span>}
           </div>
         );
       },
     },
     {
-      accessorKey: "membersCount",
-      header: t("membersCount"),
+      accessorKey: 'membersCount',
+      header: t('membersCount'),
     },
     {
-      accessorKey: "isPersonal",
-      header: t("type"),
+      accessorKey: 'isPersonal',
+      header: t('type'),
       cell: ({ row }) => (
-        <Badge variant={row.original.isPersonal ? "secondary" : "default"}>
-          {row.original.isPersonal ? t("personal") : t("team")}
+        <Badge variant={row.original.isPersonal ? 'secondary' : 'default'}>
+          {row.original.isPersonal ? t('personal') : t('team')}
         </Badge>
       ),
     },
     {
-      accessorKey: "subscriptionStatus",
-      header: t("subscriptionStatus"),
+      accessorKey: 'subscriptionStatus',
+      header: t('subscriptionStatus'),
       cell: ({ row }) => {
         const status = row.original.subscriptionStatus;
-        if (status === "none") {
-          return (
-            <span className="text-xs text-muted-foreground">
-              {t("noSubscription")}
-            </span>
-          );
+        if (status === 'none') {
+          return <span className="text-muted-foreground text-xs">{t('noSubscription')}</span>;
         }
         return (
           <SubscriptionStatusBadge
             status={
-              status === "active"
-                ? SubscriptionStatusEnum.ACTIVE
-                : SubscriptionStatusEnum.EXPIRED
+              status === 'active' ? SubscriptionStatusEnum.ACTIVE : SubscriptionStatusEnum.EXPIRED
             }
           />
         );
       },
     },
     {
-      accessorKey: "createDate",
-      header: t("createDate"),
+      accessorKey: 'createDate',
+      header: t('createDate'),
       cell: ({ row }) => (
-        <span>
-          {dayjs(row.original.createDate).calendar("jalali").format("YYYY/MM/DD")}
-        </span>
+        <span>{dayjs(row.original.createDate).calendar('jalali').format('YYYY/MM/DD')}</span>
       ),
     },
   ];

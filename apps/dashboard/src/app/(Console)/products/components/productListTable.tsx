@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { ProductNamespace } from "@/types/product";
-import { useDebounce } from "@/hooks/useDebounce";
-import EditProduct from "./product.dialog";
-import { DateObject } from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { useRouter } from "next/navigation";
-import useSWR, { mutate } from "swr";
-import { ProductDeleteDialog } from "./product.delete";
-import { cn } from "@/lib/utils";
-import ProductListSkeleton from "./productListSkeleton";
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { ProductNamespace } from '@/types/product';
+import { useDebounce } from '@/hooks/useDebounce';
+import EditProduct from './product.dialog';
+import { DateObject } from 'react-multi-date-picker';
+import persian from 'react-date-object/calendars/persian';
+import persian_fa from 'react-date-object/locales/persian_fa';
+import { useRouter } from 'next/navigation';
+import useSWR, { mutate } from 'swr';
+import { ProductDeleteDialog } from './product.delete';
+import { cn } from '@/lib/utils';
+import ProductListSkeleton from './productListSkeleton';
 
 // Just UI Imports Below
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -25,21 +25,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { toast } from "sonner";
+} from '@/components/ui/table';
+import { toast } from 'sonner';
 import {
   CaretRightIcon,
   CaretLeftIcon,
   PencilIcon,
   TrashIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import CardToCardAlert from "./cardToCard.alert";
-import useSWRImmutable from "swr/immutable";
-import api from "@/hooks/swr/api-client";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { AxiosError } from "axios";
-import { usePermissions } from "@/hooks/usePermissions";
+} from '@phosphor-icons/react/dist/ssr';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import CardToCardAlert from './cardToCard.alert';
+import useSWRImmutable from 'swr/immutable';
+import api from '@/hooks/swr/api-client';
+import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import { AxiosError } from 'axios';
+import { usePermissions } from '@/hooks/usePermissions';
 
 interface ContentItem {
   id: number;
@@ -52,32 +52,27 @@ interface ContentItem {
 export default function ProductListTable() {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const debouncedSearchTerm = useDebounce(search, 500);
-  const t = useTranslations("Products.List");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Products.List');
+  const t_ec = useTranslations('ERROR_CODES');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-  
-  const { can } = usePermissions();
-  const canEdit = can("product:edit");
-  const canDelete = can("product:delete");
-  
-  
-  
-  
-  const [open, setOpen] = useState<boolean>(false);
-  const [productId, setProductId] = useState<string>("");
 
-  const { 
+  const { can } = usePermissions();
+  const canEdit = can('product:edit');
+  const canDelete = can('product:delete');
+
+  const [open, setOpen] = useState<boolean>(false);
+  const [productId, setProductId] = useState<string>('');
+
+  const {
     data: productsData,
     error: productsError,
     isLoading: isProductsLoading,
     mutate: fetchproducts,
   } = useSWRImmutable<ProductNamespace.GET>(
-    `/products?page=${page}&limit=${limit}${
-      search ? `&search=${debouncedSearchTerm}` : ""
-    }`,
+    `/products?page=${page}&limit=${limit}${search ? `&search=${debouncedSearchTerm}` : ''}`,
     {
       revalidateOnMount: true,
     },
@@ -87,8 +82,7 @@ export default function ProductListTable() {
 
   const router = useRouter();
 
-  const [isUserNeedAddPaymentMethod, setIsUserNeedAddPaymentMethod] =
-    useState(false);
+  const [isUserNeedAddPaymentMethod, setIsUserNeedAddPaymentMethod] = useState(false);
 
   const shouldCheckPaymentMethod: boolean = Boolean(
     productsData && productsData.items.length === 0,
@@ -123,15 +117,15 @@ export default function ProductListTable() {
       await api
         .delete(`/products/${itemToDelete}`)
         .then((res) => {
-          toast.success(t("deleted"));
-          mutate(mutateIncludeStringKey("products"));
+          toast.success(t('deleted'));
+          mutate(mutateIncludeStringKey('products'));
         })
         .catch((e: AxiosError<ExceptionMessage>) => {
           const code = e.response?.data?.code;
-          if (code === "PRODUCT_IS_IN_AUTOMATION") {
+          if (code === 'PRODUCT_IS_IN_AUTOMATION') {
             e.response?.data.data?.contentCycles?.forEach((cc: any) => {
               toast.error(t_ec(code), {
-                description: t("productInAutomation", {
+                description: t('productInAutomation', {
                   automationTitle: cc?.title,
                 }),
               });
@@ -159,18 +153,16 @@ export default function ProductListTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("image")}</TableHead>
-              <TableHead
-                className={cn(locale === "fa" ? "text-right" : "text-left")}
-              >
-                {t("title")}
+              <TableHead>{t('image')}</TableHead>
+              <TableHead className={cn(locale === 'fa' ? 'text-right' : 'text-left')}>
+                {t('title')}
               </TableHead>
-              <TableHead>{t("type")}</TableHead>
-              <TableHead>{t("price")}</TableHead>
-              <TableHead>{t("quantity")}</TableHead>
-              <TableHead>{t("creationDate")}</TableHead>
-              <TableHead>{t("status")}</TableHead>
-              <TableHead>{t("actions")}</TableHead>
+              <TableHead>{t('type')}</TableHead>
+              <TableHead>{t('price')}</TableHead>
+              <TableHead>{t('quantity')}</TableHead>
+              <TableHead>{t('creationDate')}</TableHead>
+              <TableHead>{t('status')}</TableHead>
+              <TableHead>{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -193,19 +185,17 @@ export default function ProductListTable() {
                   <TableCell>{product?.title}</TableCell>
 
                   <TableCell>
-                    {product.isDigital
-                      ? t("digitalProduct")
-                      : t("regularProduct")}
+                    {product.isDigital ? t('digitalProduct') : t('regularProduct')}
                   </TableCell>
 
                   <TableCell>
                     <span
-                      className={`${typeof product?.discountPrice === "number" ? "line-through" : ""}`}
+                      className={`${typeof product?.discountPrice === 'number' ? 'line-through' : ''}`}
                     >
                       {product.price.toLocaleString()}
                     </span>
                     <br />
-                    {typeof product.discountPrice === "number" && (
+                    {typeof product.discountPrice === 'number' && (
                       <span>{product.discountPrice?.toLocaleString()}</span>
                     )}
                   </TableCell>
@@ -216,7 +206,7 @@ export default function ProductListTable() {
                     {new DateObject(product.createDate)
                       .setCalendar(persian)
                       .setLocale(persian_fa)
-                      .format("YYYY/MM/DD")}
+                      .format('YYYY/MM/DD')}
                   </TableCell>
 
                   <TableCell>فعال</TableCell>
@@ -254,25 +244,23 @@ export default function ProductListTable() {
         <Button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          variant={"ghost"}
-          size={"sm"}
+          variant={'ghost'}
+          size={'sm'}
         >
-          {locale === "fa" ? <CaretRightIcon /> : <CaretLeftIcon />}
-          {t("previous")}
+          {locale === 'fa' ? <CaretRightIcon /> : <CaretLeftIcon />}
+          {t('previous')}
         </Button>
         <span className="text-muted-foreground text-sm">
-          {t("pageOf", { current: page, total: productsMeta?.totalPages })}
+          {t('pageOf', { current: page, total: productsMeta?.totalPages })}
         </span>
         <Button
-          onClick={() =>
-            setPage((prev) => Math.min(prev + 1, productsMeta?.totalPages || 1))
-          }
+          onClick={() => setPage((prev) => Math.min(prev + 1, productsMeta?.totalPages || 1))}
           disabled={page === productsMeta?.totalPages}
-          variant={"ghost"}
-          size={"sm"}
+          variant={'ghost'}
+          size={'sm'}
         >
-          {t("next")}
-          {locale === "fa" ? <CaretLeftIcon /> : <CaretRightIcon />}
+          {t('next')}
+          {locale === 'fa' ? <CaretLeftIcon /> : <CaretRightIcon />}
         </Button>
       </div>
 
@@ -280,7 +268,7 @@ export default function ProductListTable() {
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        itemId={itemToDelete || ""}
+        itemId={itemToDelete || ''}
       />
     </div>
   );

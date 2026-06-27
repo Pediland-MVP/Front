@@ -1,109 +1,121 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
-import useSWR from "swr"
-import { useFormContext } from "react-hook-form"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { FormItem } from "@/components/ui/form"
-import MultipleSelector, { type Option } from "@/components/ui/multi-selector"
-import api from "@/hooks/swr/api-client"
-import { useTranslations } from "next-intl"
-import { Plus, Trash } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { useFormContext } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { FormItem } from '@/components/ui/form';
+import MultipleSelector, { type Option } from '@/components/ui/multi-selector';
+import api from '@/hooks/swr/api-client';
+import { useTranslations } from 'next-intl';
+import { Plus, Trash } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Types for our API responses
 export interface Attribute {
-  id: number
-  title: string
-  style: string
-  createDate: string
-  updateDate: string
-  isLocked: boolean
+  id: number;
+  title: string;
+  style: string;
+  createDate: string;
+  updateDate: string;
+  isLocked: boolean;
 }
 
 export interface AttributeValue {
-  id: number
-  value: string
-  colorHex?: string
-  attributeId: number
-  createDate: string
-  updateDate: string
+  id: number;
+  value: string;
+  colorHex?: string;
+  attributeId: number;
+  createDate: string;
+  updateDate: string;
 }
 
 export interface ApiResponse<T> {
-  items: T[]
+  items: T[];
   meta: {
-    itemCount: number
-    currentPage: number
-    itemsPerPage: number
-    totalItems: number
-    totalPages: number
-  }
+    itemCount: number;
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
 }
 
 // This matches the structure in the product JSON
 export interface ProductVariation {
-  id?: string
-  createDate?: string
-  updateDate?: string
-  attributeValues: AttributeValue[]
+  id?: string;
+  createDate?: string;
+  updateDate?: string;
+  attributeValues: AttributeValue[];
 }
 
 interface ProductVariationManagerProps {
-  initialVariations?: ProductVariation[]
+  initialVariations?: ProductVariation[];
 }
 
-export default function ProductVariationManager({ initialVariations = [] }: ProductVariationManagerProps) {
-  const t = useTranslations("Products.Form")
-  const form = useFormContext()
+export default function ProductVariationManager({
+  initialVariations = [],
+}: ProductVariationManagerProps) {
+  const t = useTranslations('Products.Form');
+  const form = useFormContext();
 
   // Fetch all variation types
   const { data: attributesData } = useSWR<ApiResponse<Attribute>>(
-    "/variations/attributes?page=1&limit=35",
+    '/variations/attributes?page=1&limit=35',
     api,
-  )
+  );
 
   // State to track selected variation types and their values
   const [variations, setVariations] = useState<ProductVariation[]>(
     initialVariations.length > 0 ? initialVariations : [{ attributeValues: [] }],
-  )
+  );
 
   // Update form value when variations change
   useEffect(() => {
-    form.setValue("productVariations", variations)
-  }, [variations, form])
+    form.setValue('productVariations', variations);
+  }, [variations, form]);
 
   // Add a new variation
   const addVariation = () => {
-    setVariations([...variations, { attributeValues: [] }])
-  }
+    setVariations([...variations, { attributeValues: [] }]);
+  };
 
   // Remove a variation
   const removeVariation = (index: number) => {
-    if (variations.length <= 1) return // Keep at least one variation
-    const newVariations = [...variations]
-    newVariations.splice(index, 1)
-    setVariations(newVariations)
-  }
+    if (variations.length <= 1) return; // Keep at least one variation
+    const newVariations = [...variations];
+    newVariations.splice(index, 1);
+    setVariations(newVariations);
+  };
 
   // Update variation values
-  const updateAttributeValues = (index: number, typeId: number, selectedValues: AttributeValue[]) => {
-    const newVariations = [...variations]
+  const updateAttributeValues = (
+    index: number,
+    typeId: number,
+    selectedValues: AttributeValue[],
+  ) => {
+    const newVariations = [...variations];
     newVariations[index] = {
       ...newVariations[index],
       attributeValues: selectedValues,
-    }
-    setVariations(newVariations)
-  }
+    };
+    setVariations(newVariations);
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-base font-medium">{t("productVariations")}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-base font-medium">{t('productVariations')}</h3>
         <Button type="button" size="sm" variant="outline" onClick={addVariation}>
-          <Plus className="w-4 h-4 mr-2" />
-          {t("addVariation")}
+          <Plus className="mr-2 h-4 w-4" />
+          {t('addVariation')}
         </Button>
       </div>
 
@@ -120,18 +132,22 @@ export default function ProductVariationManager({ initialVariations = [] }: Prod
       ))}
 
       {/* Hidden field to store variations in form */}
-      <input type="hidden" {...form.register("productVariations")} value={JSON.stringify(variations)} />
+      <input
+        type="hidden"
+        {...form.register('productVariations')}
+        value={JSON.stringify(variations)}
+      />
     </div>
-  )
+  );
 }
 
 interface VariationSelectorProps {
-  index: number
-  variation: ProductVariation
-  onRemove: () => void
-  onValuesChange: (typeId: number, values: AttributeValue[]) => void
-  attributes: Attribute[]
-  showRemoveButton: boolean
+  index: number;
+  variation: ProductVariation;
+  onRemove: () => void;
+  onValuesChange: (typeId: number, values: AttributeValue[]) => void;
+  attributes: Attribute[];
+  showRemoveButton: boolean;
 }
 
 function VariationSelector({
@@ -142,16 +158,18 @@ function VariationSelector({
   attributes,
   showRemoveButton,
 }: VariationSelectorProps) {
-  const t = useTranslations("Products.Form")
+  const t = useTranslations('Products.Form');
   const [selectedTypeId, setSelectedTypeId] = useState<number | null>(
     variation.attributeValues[0]?.attributeId || null,
-  )
+  );
 
   // Fetch variation values when a type is selected
   const { data: attributeValuesData } = useSWR<ApiResponse<AttributeValue>>(
-    selectedTypeId ? `/variations/attributeValues?page=1&limit=35&attributeId=${selectedTypeId}` : null,
+    selectedTypeId
+      ? `/variations/attributeValues?page=1&limit=35&attributeId=${selectedTypeId}`
+      : null,
     api,
-  )
+  );
 
   // Convert API data to options for MultipleSelector
   const valueOptions: Option[] =
@@ -160,7 +178,7 @@ function VariationSelector({
       value: item.id.toString(),
       color: item.colorHex,
       data: item, // Store the full item data
-    })) || []
+    })) || [];
 
   // Get the selected values
   const selectedValues = variation.attributeValues.map((value) => ({
@@ -168,47 +186,49 @@ function VariationSelector({
     value: value.id.toString(),
     color: value.colorHex,
     data: value,
-  }))
+  }));
 
   // Handle type selection change
   const handleTypeChange = (typeId: string) => {
-    const id = Number.parseInt(typeId)
-    setSelectedTypeId(id)
-    onValuesChange(id, []) // Reset values when type changes
-  }
+    const id = Number.parseInt(typeId);
+    setSelectedTypeId(id);
+    onValuesChange(id, []); // Reset values when type changes
+  };
 
   // Handle value selection changes
   const handleValueChange = (options: Option[]) => {
-    if (!selectedTypeId) return
+    if (!selectedTypeId) return;
 
     // Convert selected options back to AttributeValue objects
-    const values = options.map((option) => option.data as AttributeValue)
-    onValuesChange(selectedTypeId, values)
-  }
+    const values = options.map((option) => option.data as AttributeValue);
+    onValuesChange(selectedTypeId, values);
+  };
 
   return (
-    <div className="p-4 border rounded-md bg-blue-50/30">
-      <div className="flex justify-between items-center mb-3">
+    <div className="rounded-md border bg-blue-50/30 p-4">
+      <div className="mb-3 flex items-center justify-between">
         <div className="font-medium">
-          {t("variation")} #{index + 1}
+          {t('variation')} #{index + 1}
         </div>
         {showRemoveButton && (
           <Button type="button" size="icon" variant="ghost" onClick={onRemove}>
-            <Trash className="w-4 h-4 text-red-500" />
+            <Trash className="h-4 w-4 text-red-500" />
           </Button>
         )}
       </div>
 
       <div className="space-y-3">
         <FormItem>
-          <Label>{t("attribute")}</Label>
-          <Select value={selectedTypeId?.toString() || ""} onValueChange={handleTypeChange}>
+          <Label>{t('attribute')}</Label>
+          <Select value={selectedTypeId?.toString() || ''} onValueChange={handleTypeChange}>
             <SelectTrigger>
-              <SelectValue placeholder={t("selectAttribute")} />
+              <SelectValue placeholder={t('selectAttribute')} />
             </SelectTrigger>
             <SelectContent>
               {attributes.length === 0 ? (
-                <div className="p-2 text-center text-muted-foreground">{t("noAttributesAvailable")}</div>
+                <div className="text-muted-foreground p-2 text-center">
+                  {t('noAttributesAvailable')}
+                </div>
               ) : (
                 attributes.map((type) => (
                   <SelectItem key={type.id} value={type.id.toString()}>
@@ -222,21 +242,22 @@ function VariationSelector({
 
         {selectedTypeId && (
           <FormItem>
-            <Label>{t("attributeValues")}</Label>
+            <Label>{t('attributeValues')}</Label>
             <MultipleSelector
               value={selectedValues}
               onChange={handleValueChange}
               defaultOptions={valueOptions}
-              placeholder={t("selectAttributeValues")}
-              emptyIndicator={<p className="text-center text-gray-600 dark:text-gray-400">{t("noValuesFound")}</p>}
+              placeholder={t('selectAttributeValues')}
+              emptyIndicator={
+                <p className="text-center text-gray-600 dark:text-gray-400">{t('noValuesFound')}</p>
+              }
             />
             {selectedValues.length === 0 && (
-              <p className="text-xs text-red-500 mt-1">{t("pleaseSelectAtLeastOneValue")}</p>
+              <p className="mt-1 text-xs text-red-500">{t('pleaseSelectAtLeastOneValue')}</p>
             )}
           </FormItem>
         )}
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import api from "@/hooks/swr/api-client";
-import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
-import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import Image from "next/image";
+import { AutomationContentModeEnum } from '@/constants/automationContent.enum';
+import api from '@/hooks/swr/api-client';
+import { cn } from '@/lib/utils';
+import { useState, useRef, useEffect } from 'react';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+import Image from 'next/image';
 import {
   PlusIcon,
   ArrowLeftIcon,
@@ -16,22 +16,15 @@ import {
   UploadIcon,
   CheckIcon,
   Cross1Icon,
-} from "@radix-ui/react-icons";
+} from '@radix-ui/react-icons';
 
-import {
-  Button,
-  Input,
-  Textarea,
-  Label,
-  FormField,
-  FormItem,
-} from "@/components/ui";
-import { Progress } from "@/components/ui/progress";
-import { AutomationButtons } from "./AutomationButtons";
-import { AnimatePresence, motion } from "framer-motion";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { AutomationFormSchema, VitrinItemType } from "@/schemas/automationForm";
-import { z } from "zod";
+import { Button, Input, Textarea, Label, FormField, FormItem } from '@/components/ui';
+import { Progress } from '@/components/ui/progress';
+import { AutomationButtons } from './AutomationButtons';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { AutomationFormSchema, VitrinItemType } from '@/schemas/automationForm';
+import { z } from 'zod';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -54,15 +47,13 @@ type UploadState = {
 async function uploadCroppedImage(
   formData: FormData,
   onProgress: (progress: number) => void,
-): Promise<{id: number, url: string}> {
+): Promise<{ id: number; url: string }> {
   const response = await api.post(`${API_URL}/contentCycle/upload`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { 'Content-Type': 'multipart/form-data' },
     withCredentials: true,
     onUploadProgress: (progressEvent) => {
       if (progressEvent.total) {
-        const progress = Math.round(
-          (progressEvent.loaded / progressEvent.total) * 100,
-        );
+        const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
         onProgress(progress);
       }
     },
@@ -89,7 +80,7 @@ function VitrinItemCard({
   parentContentIndex,
   mode,
 }: VitrinItemCardProps) {
-  const t = useTranslations("Automations.Contents.Vitrin");
+  const t = useTranslations('Automations.Contents.Vitrin');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [uploadState, setUploadState] = useState<UploadState>({
@@ -100,8 +91,7 @@ function VitrinItemCard({
 
   const { setValue, watch } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
-  const itemBasePath: `${"contents" | "reminders"}.${number}.vitrins.${number}` =
-   `${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}`;
+  const itemBasePath: `${'contents' | 'reminders'}.${number}.vitrins.${number}` = `${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}`;
 
   const vitrin = useWatch({
     control,
@@ -112,12 +102,12 @@ function VitrinItemCard({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
+    if (!file.type.startsWith('image/')) {
       setUploadState((prev) => ({
         ...prev,
-        error: "Please select an image file",
+        error: 'Please select an image file',
       }));
-      e.target.value = "";
+      e.target.value = '';
       return;
     }
 
@@ -129,21 +119,18 @@ function VitrinItemCard({
 
     try {
       const formData = new FormData();
-      formData.append("file", file, file.name);
+      formData.append('file', file, file.name);
 
-      const { id: imageId, url: imageUrl } = await uploadCroppedImage(
-        formData,
-        (progress) => {
-          setUploadState((prev) => ({
-            ...prev,
-            progress,
-          }));
-        },
-      );
+      const { id: imageId, url: imageUrl } = await uploadCroppedImage(formData, (progress) => {
+        setUploadState((prev) => ({
+          ...prev,
+          progress,
+        }));
+      });
 
       console.log(
-        "Image uploaded",
-        JSON.stringify({ itemBasePath, imageId, imageUrl, vitrin }, undefined, " "),
+        'Image uploaded',
+        JSON.stringify({ itemBasePath, imageId, imageUrl, vitrin }, undefined, ' '),
       );
 
       onUpdate(vitrinIndex, {
@@ -161,11 +148,11 @@ function VitrinItemCard({
       setUploadState({
         isUploading: false,
         progress: 0,
-        error: "Upload failed",
+        error: 'Upload failed',
       });
-      toast.error("Upload failed");
+      toast.error('Upload failed');
     } finally {
-      e.target.value = "";
+      e.target.value = '';
     }
   };
 
@@ -173,8 +160,8 @@ function VitrinItemCard({
     <div className="flex w-full flex-col gap-y-3">
       <div
         className={cn(
-          "hover:bg-muted/50 relative h-[180px] w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-all",
-          uploadState.error && "border-destructive",
+          'hover:bg-muted/50 relative h-[180px] w-full cursor-pointer overflow-hidden rounded-lg border-2 border-dashed transition-all',
+          uploadState.error && 'border-destructive',
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -187,12 +174,7 @@ function VitrinItemCard({
         />
 
         {vitrin?.imageUrl ? (
-          <Image
-            src={vitrin.imageUrl}
-            alt="vitrin"
-            fill
-            className="object-cover"
-          />
+          <Image src={vitrin.imageUrl} alt="vitrin" fill className="object-cover" />
         ) : (
           <FormField
             name={`${baseFieldName}.${parentContentIndex}.vitrins.${vitrinIndex}.title`}
@@ -200,14 +182,8 @@ function VitrinItemCard({
             render={({ fieldState: { error } }) => (
               <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-2">
                 <UploadIcon className="h-8 w-8" />
-                <span className="text-sm font-medium">
-                  {t("buttons.uploader.title")}
-                </span>
-                {error && (
-                  <ErrorMessage>
-                    {t(`imageUploader.errors.${error.type}`)}
-                  </ErrorMessage>
-                )}
+                <span className="text-sm font-medium">{t('buttons.uploader.title')}</span>
+                {error && <ErrorMessage>{t(`imageUploader.errors.${error.type}`)}</ErrorMessage>}
               </div>
             )}
           />
@@ -216,9 +192,7 @@ function VitrinItemCard({
         {uploadState.isUploading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
             <Progress value={uploadState.progress} className="w-2/3" />
-            <span className="mt-2 text-xs text-white">
-              {uploadState.progress}%
-            </span>
+            <span className="mt-2 text-xs text-white">{uploadState.progress}%</span>
           </div>
         )}
       </div>
@@ -230,8 +204,8 @@ function VitrinItemCard({
           <FormItem>
             <Input
               {...field}
-              placeholder={t("fields.title.placeholder")}
-              value={field.value || ""}
+              placeholder={t('fields.title.placeholder')}
+              value={field.value || ''}
             />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </FormItem>
@@ -245,9 +219,9 @@ function VitrinItemCard({
           <FormItem>
             <Textarea
               {...field}
-              placeholder={t("fields.description.placeholder")}
+              placeholder={t('fields.description.placeholder')}
               rows={2}
-              value={field.value || ""}
+              value={field.value || ''}
             />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </FormItem>
@@ -269,7 +243,7 @@ function VitrinItemCard({
         className="text-destructive hover:bg-destructive/10 flex items-center gap-2"
       >
         <TrashIcon className="h-4 w-4" />
-        {t("buttons.remove.title")}
+        {t('buttons.remove.title')}
       </Button>
     </div>
   );
@@ -277,35 +251,29 @@ function VitrinItemCard({
 
 /* ----------------------------- Main VitrinContent ----------------------------- */
 
-export default function VitrinContent({
-  index,
-  mode,
-  control,
-}: VitrinContentProps) {
-  const t = useTranslations("Automations.Contents.Vitrin");
+export default function VitrinContent({ index, mode, control }: VitrinContentProps) {
+  const t = useTranslations('Automations.Contents.Vitrin');
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const baseFieldName =
-    mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders";
+  const baseFieldName = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
 
   const { fields, update } = useFieldArray({
     control,
     name: `${baseFieldName}.${index}.vitrins`,
-    keyName: "_xid",
+    keyName: '_xid',
   });
 
   const vitrins = useWatch({
     control,
     name: `${baseFieldName}.${index}.vitrins`,
-  })
+  });
 
   useEffect(() => {
-    console.log(JSON.stringify(vitrins, undefined, " "))
-  }, [vitrins])
+    console.log(JSON.stringify(vitrins, undefined, ' '));
+  }, [vitrins]);
 
   // در بالای کامپوننت VitrinContent اضافه کن
-  const { getValues, setValue } =
-    useFormContext<z.infer<typeof AutomationFormSchema>>();
+  const { getValues, setValue } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
   const {
     formState: { errors },
@@ -321,20 +289,21 @@ export default function VitrinContent({
   }, [errors, baseFieldName, index]);
 
   const handleAppend = () => {
-    console.log("=== handleAppend START ===", {
+    console.log('=== handleAppend START ===', {
       currentLength: fields.length,
       currentIndex,
     });
 
-    const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` = `${baseFieldName}.${index}.vitrins`;
+    const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` =
+      `${baseFieldName}.${index}.vitrins`;
 
     const currentVitrins = getValues(fieldPath) || [];
 
     const newItem: VitrinItemType = {
-      imageId: "",
-      imageUrl: "",
-      title: "",
-      description: "",
+      imageId: '',
+      imageUrl: '',
+      title: '',
+      description: '',
       buttons: [],
     };
 
@@ -350,7 +319,7 @@ export default function VitrinContent({
     // به آخرین آیتم برو
     setCurrentIndex(newVitrins.length - 1);
 
-    console.log("=== handleAppend END - new length:", newVitrins.length);
+    console.log('=== handleAppend END - new length:', newVitrins.length);
   };
   useEffect(() => {
     if (fields.length > 0) {
@@ -359,7 +328,8 @@ export default function VitrinContent({
   }, [fields.length]);
 
   const handleRemove = (vIndex: number) => {
-    const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` = `${baseFieldName}.${index}.vitrins`;
+    const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` =
+      `${baseFieldName}.${index}.vitrins`;
     const currentVitrins = getValues(fieldPath) || [];
 
     const newVitrins = currentVitrins.filter((_, i) => i !== vIndex);
@@ -376,7 +346,7 @@ export default function VitrinContent({
     <div className="flex w-full flex-col gap-4">
       <div className="flex items-center justify-between px-1">
         <Label className="text-sm font-semibold">
-          {t("title", { defaultValue: "Vitrin Items" })}
+          {t('title', { defaultValue: 'Vitrin Items' })}
         </Label>
         {fields.length > 0 && (
           <div className="bg-muted rounded-full px-2 py-1 text-xs font-medium">
@@ -426,7 +396,7 @@ export default function VitrinContent({
                 animate={{ opacity: 1 }}
                 className="text-muted-foreground flex h-full flex-col items-center justify-center py-20"
               >
-                <p className="text-sm italic">{t("noItems")}</p>
+                <p className="text-sm italic">{t('noItems')}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -437,9 +407,7 @@ export default function VitrinContent({
             type="button"
             variant="outline"
             size="icon"
-            onClick={() =>
-              setCurrentIndex((p) => Math.min(fields.length - 1, p + 1))
-            }
+            onClick={() => setCurrentIndex((p) => Math.min(fields.length - 1, p + 1))}
             disabled={currentIndex >= fields.length - 1 || fields.length === 0}
             className="h-9 w-9 shrink-0 rounded-full"
           >

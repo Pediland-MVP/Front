@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useLogout } from "@/hooks/swr/api-client";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useLogout } from '@/hooks/swr/api-client';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import {
   DropdownMenu,
@@ -15,20 +15,17 @@ import {
   DropdownMenuTrigger,
   Spinner,
   useSidebar,
-} from "@/components/ui";
-import { CrownIcon, LogOutIcon, UserRoundPenIcon } from "lucide-react";
-import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
+} from '@/components/ui';
+import { CrownIcon, LogOutIcon, UserRoundPenIcon } from 'lucide-react';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
 interface UserDropdownMenuProps {
   children: React.ReactNode;
-  size?: "md" | "sm";
+  size?: 'md' | 'sm';
 }
 
-export const UserDropdownMenu = ({
-  children,
-  size = "md",
-}: UserDropdownMenuProps) => {
+export const UserDropdownMenu = ({ children, size = 'md' }: UserDropdownMenuProps) => {
   const router = useRouter();
   const { isMobile, setOpenMobile } = useSidebar();
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
@@ -40,7 +37,7 @@ export const UserDropdownMenu = ({
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
 
-  const t = useTranslations("Console.Sidebar");
+  const t = useTranslations('Console.Sidebar');
 
   const routeHandler = (route: string) => {
     router.push(route);
@@ -52,9 +49,9 @@ export const UserDropdownMenu = ({
 
     try {
       await logout();
-      router.replace("/auth");
+      router.replace('/auth');
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
     } finally {
       setIsLogoutLoading(false);
     }
@@ -66,23 +63,23 @@ export const UserDropdownMenu = ({
 
       <DropdownMenuContent
         className={cn(
-          "w-[--radix-dropdown-menu-trigger-width] rounded-lg",
-          size === "md" && "min-w-56",
-          size === "sm" && "min-w-40",
+          'w-[--radix-dropdown-menu-trigger-width] rounded-lg',
+          size === 'md' && 'min-w-56',
+          size === 'sm' && 'min-w-40',
         )}
         side="top"
         align="start"
         sideOffset={4}
       >
-        {activeSubscription?.type !== "credit" && (
+        {activeSubscription?.type !== 'credit' && (
           <>
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="hover:text-primary text-secondary cursor-pointer"
-                onClick={() => routeHandler("/settings/subscription")}
+                onClick={() => routeHandler('/settings/subscription')}
               >
                 <CrownIcon />
-                <span>{t("upgradeAccount")}</span>
+                <span>{t('upgradeAccount')}</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
 
@@ -93,10 +90,10 @@ export const UserDropdownMenu = ({
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="hover:text-primary text-secondary cursor-pointer"
-            onClick={() => routeHandler("/settings/profile")}
+            onClick={() => routeHandler('/settings/profile')}
           >
             <UserRoundPenIcon />
-            {t("profile")}
+            {t('profile')}
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -107,7 +104,7 @@ export const UserDropdownMenu = ({
           className="text-secondary flex cursor-pointer items-center"
         >
           {isLogoutLoading ? <Spinner /> : <LogOutIcon />}
-          {t("logout")}
+          {t('logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

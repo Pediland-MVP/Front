@@ -1,19 +1,14 @@
 // src/components/app-sidebar.tsx
-"use client";
+'use client';
 
-import * as React from "react";
-import { useTranslations } from "next-intl";
+import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 // UI Imports
-import logo from "@/assets/images/befroosh-logo.svg";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-} from "@/components/ui/sidebar";
+import logo from '@/assets/images/befroosh-logo.svg';
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import {
   // ChartPieSliceIcon,
   PlantIcon,
@@ -31,101 +26,94 @@ import {
   WebhooksLogoIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
-import { useAuth } from "@/hooks/use-auth";
+} from '@phosphor-icons/react/dist/ssr';
+import Image from 'next/image';
+import { useAuth } from '@/hooks/use-auth';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const t = useTranslations("Sidebar");
+  const t = useTranslations('Sidebar');
   const { user } = useAuth();
 
-  const items = React.useMemo(() => [
-    {
-      title: t("myCustomers"),
-      url: "/customers",
-      icon: UsersIcon,
-    },
-    {
-      title: t("myLeads"),
-      url: "/leads",
-      icon: PlantIcon,
-    },
-    {
-      title: t("tasks"),
-      url: "/tasks",
-      icon: ClipboardTextIcon,
-    },
-    {
-      title: t("subscriptions"),
-      url: "/subscriptions",
-      icon: CreditCardIcon,
-    },
-    ...(user?.role !== "kam"
-      ? [{ title: t("finance"), url: "/finance", icon: CurrencyCircleDollarIcon }]
-      : []),
-    {
-      title: t("workspaces"),
-      url: "/workspaces",
-      icon: BuildingsIcon,
-    },
-    ...(user?.role !== "kam"
-      ? [{ title: t("plans"), url: "/plans", icon: StackIcon }]
-      : []),
-    {
-      title: t("referralCodes"),
-      url: "/referral-codes",
-      icon: GiftIcon,
-    },
-    {
-      title: t("discountCodes"),
-      url: "/discount-codes",
-      icon: TagIcon,
-    },
-    ...(user?.role !== "kam"
-      ? [{ title: t("webhooks"), url: "/webhooks", icon: WebhooksLogoIcon }]
-      : []),
-    ...(user?.role !== "kam"
-      ? [{ title: t("labels"), url: "/labels", icon: BookmarksSimpleIcon }]
-      : []),
-    {
-      title: t("aiAgent"),
-      url: "/aiagent",
-      icon: RobotIcon,
-    },
-    {
-      title: t("telegramAutomation"),
-      url: "/telegram-automation/chats",
-      icon: ChatDotsIcon,
-      children: [
-        { title: t("docs"), url: "/telegram-automation/docs" },
-        { title: t("qa"), url: "/telegram-automation/qa" },
-        { title: t("guides"), url: "/telegram-automation/guides" },
-        { title: t("chats"), url: "/telegram-automation/chats" },
-      ],
-    },
-    ...(user?.role === "admin"
-      ? [{ title: t("admins"), url: "/admins", icon: UserGearIcon }]
-      : []),
-    ...(user?.role !== "kam"
-      ? [{ title: t("settings"), url: "/settings", icon: GearSixIcon }]
-      : []),
-  ], [t, user?.role]);
+  const items = React.useMemo(
+    () => [
+      {
+        title: t('myCustomers'),
+        url: '/customers',
+        icon: UsersIcon,
+      },
+      {
+        title: t('myLeads'),
+        url: '/leads',
+        icon: PlantIcon,
+      },
+      {
+        title: t('tasks'),
+        url: '/tasks',
+        icon: ClipboardTextIcon,
+      },
+      {
+        title: t('subscriptions'),
+        url: '/subscriptions',
+        icon: CreditCardIcon,
+      },
+      ...(user?.role !== 'kam'
+        ? [{ title: t('finance'), url: '/finance', icon: CurrencyCircleDollarIcon }]
+        : []),
+      {
+        title: t('workspaces'),
+        url: '/workspaces',
+        icon: BuildingsIcon,
+      },
+      ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans', icon: StackIcon }] : []),
+      {
+        title: t('referralCodes'),
+        url: '/referral-codes',
+        icon: GiftIcon,
+      },
+      {
+        title: t('discountCodes'),
+        url: '/discount-codes',
+        icon: TagIcon,
+      },
+      ...(user?.role !== 'kam'
+        ? [{ title: t('webhooks'), url: '/webhooks', icon: WebhooksLogoIcon }]
+        : []),
+      ...(user?.role !== 'kam'
+        ? [{ title: t('labels'), url: '/labels', icon: BookmarksSimpleIcon }]
+        : []),
+      {
+        title: t('aiAgent'),
+        url: '/aiagent',
+        icon: RobotIcon,
+      },
+      {
+        title: t('telegramAutomation'),
+        url: '/telegram-automation/chats',
+        icon: ChatDotsIcon,
+        children: [
+          { title: t('docs'), url: '/telegram-automation/docs' },
+          { title: t('qa'), url: '/telegram-automation/qa' },
+          { title: t('guides'), url: '/telegram-automation/guides' },
+          { title: t('chats'), url: '/telegram-automation/chats' },
+        ],
+      },
+      ...(user?.role === 'admin'
+        ? [{ title: t('admins'), url: '/admins', icon: UserGearIcon }]
+        : []),
+      ...(user?.role !== 'kam'
+        ? [{ title: t('settings'), url: '/settings', icon: GearSixIcon }]
+        : []),
+    ],
+    [t, user?.role],
+  );
 
   return (
     <Sidebar {...props} side="right" variant="inset" collapsible="offcanvas">
       <SidebarHeader className="flex-row gap-2">
-        <Image
-          src={logo}
-          alt="logo"
-          className="aspect-square"
-          width={32}
-          height={32}
-        />
+        <Image src={logo} alt="logo" className="aspect-square" width={32} height={32} />
         <div className="flex items-center gap-1 truncate leading-tight">
-          <h1 className="text-gradient text-[15px] font-bold">
-            {t("befroosh")}
-          </h1>
-          <h2 className="text-[13px] text-muted-foreground font-semibold">{t("adminPortal")}</h2>
+          <h1 className="text-gradient text-[15px] font-bold">{t('befroosh')}</h1>
+          <h2 className="text-muted-foreground text-[13px] font-semibold">{t('adminPortal')}</h2>
         </div>
       </SidebarHeader>
 

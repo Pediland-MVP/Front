@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import {
   CreditCardIcon,
@@ -11,13 +11,13 @@ import {
   InstagramLogoIcon,
   PasswordIcon,
   UserCircleIcon,
-} from "@phosphor-icons/react";
-import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
-import { usePermissions } from "@/hooks/usePermissions";
+} from '@phosphor-icons/react';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export const SettingsOptions = () => {
-  const t = useTranslations("Settings.Navigation");
+  const t = useTranslations('Settings.Navigation');
   const { can } = usePermissions();
 
   const { subscriptions } = useSubscriptionStore();
@@ -26,19 +26,19 @@ export const SettingsOptions = () => {
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
 
-  const canViewBilling = can("billing:view");
+  const canViewBilling = can('billing:view');
 
   const items = [
     {
-      title: t("accounts"),
-      url: "/settings/instagram",
+      title: t('accounts'),
+      url: '/settings/instagram',
       icon: InstagramLogoIcon,
     },
-    ...(activeSubscription?.type !== "credit" && canViewBilling
+    ...(activeSubscription?.type !== 'credit' && canViewBilling
       ? [
           {
-            title: t("upgrade_plan"),
-            url: "/settings/subscription",
+            title: t('upgrade_plan'),
+            url: '/settings/subscription',
             icon: CrownSimpleIcon,
           },
         ]
@@ -46,20 +46,20 @@ export const SettingsOptions = () => {
     ...(canViewBilling
       ? [
           {
-            title: t("bank_accounts"),
-            url: "/settings/card",
+            title: t('bank_accounts'),
+            url: '/settings/card',
             icon: CreditCardIcon,
           },
         ]
       : []),
     {
-      title: t("profile"),
-      url: "/settings/profile",
+      title: t('profile'),
+      url: '/settings/profile',
       icon: UserCircleIcon,
     },
     {
-      title: t("password"),
-      url: "/settings/password",
+      title: t('password'),
+      url: '/settings/password',
       icon: PasswordIcon,
     },
   ];
@@ -73,17 +73,15 @@ export const SettingsOptions = () => {
           <Link
             href={item.url}
             className={cn(
-              "group text-secondary flex h-12 min-w-60 items-center gap-2.5 rounded-md bg-blue-50 px-4 font-medium shadow shadow-blue-200/90 duration-300 hover:bg-blue-100/80 md:h-11 md:px-3",
-              pathname.startsWith(item.url) && "bg-blue-100",
+              'group text-secondary flex h-12 min-w-60 items-center gap-2.5 rounded-md bg-blue-50 px-4 font-medium shadow shadow-blue-200/90 duration-300 hover:bg-blue-100/80 md:h-11 md:px-3',
+              pathname.startsWith(item.url) && 'bg-blue-100',
             )}
           >
             <item.icon
               className="group-hover:text-secondary size-5.5 duration-300 md:size-5"
               weight="duotone"
             />
-            <span className="group-hover:text-secondary text-sm duration-300">
-              {item.title}
-            </span>
+            <span className="group-hover:text-secondary text-sm duration-300">{item.title}</span>
           </Link>
         </div>
       ))}

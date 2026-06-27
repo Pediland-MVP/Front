@@ -1,11 +1,11 @@
 // src/types/contact.ts
 
-import { Paginated } from "./api";
+import { Paginated } from './api';
 
 export type ContactsGetResponse = Paginated<ContactWire>;
 
 // ------------- WIRE (raw API) -------------
-export type GenderWire = "male" | "female" | "other" | null;
+export type GenderWire = 'male' | 'female' | 'other' | null;
 export type ISODateString = string;
 
 export interface LeadWire {
@@ -41,7 +41,7 @@ export interface ContactWire {
 }
 
 // ------------- DOMAIN (used in UI) -------------
-export type Gender = "male" | "female" | "other";
+export type Gender = 'male' | 'female' | 'other';
 
 export interface Lead {
   contactId: string;

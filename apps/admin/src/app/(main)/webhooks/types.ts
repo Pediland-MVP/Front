@@ -1,4 +1,4 @@
-export type WebhookStatus = "active" | "disabled";
+export type WebhookStatus = 'active' | 'disabled';
 
 export interface WebhookEndpoint {
   id: string;

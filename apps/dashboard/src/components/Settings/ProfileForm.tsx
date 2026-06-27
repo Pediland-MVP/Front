@@ -1,44 +1,46 @@
-"use client";
+'use client';
 
-import { GENDERS_ENUM } from "@/constants/gender.constant";
-import api from "@/hooks/swr/api-client";
-import logger from "@/utils/logger";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import DateObject from "react-date-object";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import DatePicker from "react-multi-date-picker";
-import { toast } from "sonner";
-import { mutate } from "swr";
-import useSWRImmutable from "swr/immutable";
-import { z } from "zod";
+import { GENDERS_ENUM } from '@/constants/gender.constant';
+import api from '@/hooks/swr/api-client';
+import logger from '@/utils/logger';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import DateObject from 'react-date-object';
+import persian from 'react-date-object/calendars/persian';
+import persian_fa from 'react-date-object/locales/persian_fa';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
+import DatePicker from 'react-multi-date-picker';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import { z } from 'zod';
 // TODO: Refactor Types & Schemas
-import { CityNamespace } from "@/types/city";
-import { ProvinceNamespace } from "@/types/province";
-import { UserNamespace } from "@/types/user";
+import { CityNamespace } from '@/types/city';
+import { ProvinceNamespace } from '@/types/province';
+import { UserNamespace } from '@/types/user';
 
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, Input, Select,
+  FormMessage,
+  Input,
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { ButtonLoading } from "../ui-custom/ButtonLoading";
+  SelectValue,
+} from '@/components/ui';
+import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { ButtonLoading } from '../ui-custom/ButtonLoading';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 export function ProfileForm() {
-  const t = useTranslations("Profile.Form");
+  const t = useTranslations('Profile.Form');
   const locale = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -91,9 +93,9 @@ export function ProfileForm() {
     .superRefine((data, ctx) => {
       if (data.state && !data.cityId) {
         ctx.addIssue({
-          code: "custom",
-          message: t("Errors.cityRequired"),
-          path: ["cityId"],
+          code: 'custom',
+          message: t('Errors.cityRequired'),
+          path: ['cityId'],
         });
       }
     });
@@ -101,8 +103,8 @@ export function ProfileForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      cityId: "",
-      state: "",
+      cityId: '',
+      state: '',
     },
   });
 
@@ -162,20 +164,20 @@ export function ProfileForm() {
     if (form.getValues().state) {
       fetchCities();
     }
-  }, [form.watch("state")]);
+  }, [form.watch('state')]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     await api
-      .post("/users", {
+      .post('/users', {
         ...data,
       })
       .then((res) => {
-        toast.success(t("profileUpdated"));
+        toast.success(t('profileUpdated'));
         mutate(`${API_URL}/users/me`);
       })
       .catch((e) => {
-        toast.error(t("profileUpdateFailed"));
+        toast.error(t('profileUpdateFailed'));
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -184,7 +186,7 @@ export function ProfileForm() {
 
   const router = useRouter();
   const onCancel = () => {
-    router.push("/");
+    router.push('/');
   };
 
   if (userIsLoading) return <LoaderSpin />;
@@ -198,7 +200,7 @@ export function ProfileForm() {
             name="gender"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>{t("gender")}</FormLabel>
+                <FormLabel>{t('gender')}</FormLabel>
                 <Select
                   onValueChange={(val) => val && field.onChange(val)}
                   defaultValue={field.value}
@@ -207,13 +209,13 @@ export function ProfileForm() {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder={t("genderSelect")} />
+                      <SelectValue placeholder={t('genderSelect')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="female">{t("female")}</SelectItem>
-                    <SelectItem value="male">{t("male")}</SelectItem>
-                    <SelectItem value="other">{t("other")}</SelectItem>
+                    <SelectItem value="female">{t('female')}</SelectItem>
+                    <SelectItem value="male">{t('male')}</SelectItem>
+                    <SelectItem value="other">{t('other')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -230,30 +232,28 @@ export function ProfileForm() {
               formState: { errors },
             }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>{t("birthDate")}</FormLabel>
+                <FormLabel>{t('birthDate')}</FormLabel>
                 <DatePicker
                   containerClassName="w-full"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   value={
                     value
                       ? new DateObject(+value)
                           .setLocale(persian_fa)
                           .setCalendar(persian)
-                          .format("YYYY/MM/DD")
-                      : ""
+                          .format('YYYY/MM/DD')
+                      : ''
                   }
                   onChange={(date) => {
-                    onChange(
-                      date?.isValid ? (date.unix * 1000).toString() : "",
-                    );
+                    onChange(date?.isValid ? (date.unix * 1000).toString() : '');
                   }}
-                  format={"YYYY/MM/DD"}
+                  format={'YYYY/MM/DD'}
                   calendar={persian}
                   locale={persian_fa}
                   render={<Input name="birthDate" />}
                 />
-                {errors && errors[name] && errors[name].type === "required" && (
-                  <span>{t("errors.birthDateRequired")}</span>
+                {errors && errors[name] && errors[name].type === 'required' && (
+                  <span>{t('errors.birthDateRequired')}</span>
                 )}
               </FormItem>
             )}
@@ -263,15 +263,13 @@ export function ProfileForm() {
             name="firstname"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>{t("firstname")}</FormLabel>
+                <FormLabel>{t('firstname')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
                 {form.formState.errors?.firstname && (
                   <span className="text-sm text-red-500">
-                    {t(
-                      `Errors.firstname.${form.formState.errors.firstname.type}`,
-                    )}
+                    {t(`Errors.firstname.${form.formState.errors.firstname.type}`)}
                   </span>
                 )}
               </FormItem>
@@ -282,15 +280,13 @@ export function ProfileForm() {
             name="lastname"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>{t("lastname")}</FormLabel>
+                <FormLabel>{t('lastname')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
                 {form.formState.errors?.lastname && (
                   <span className="text-sm text-red-500">
-                    {t(
-                      `Errors.lastname.${form.formState.errors.lastname.type}`,
-                    )}
+                    {t(`Errors.lastname.${form.formState.errors.lastname.type}`)}
                   </span>
                 )}
               </FormItem>
@@ -302,7 +298,7 @@ export function ProfileForm() {
             disabled
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>{t("email")}</FormLabel>
+                <FormLabel>{t('email')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -320,7 +316,7 @@ export function ProfileForm() {
             disabled
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>{t("mobile")}</FormLabel>
+                <FormLabel>{t('mobile')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -332,14 +328,14 @@ export function ProfileForm() {
               </FormItem>
             )}
           />
-          {locale === "fa" && (
+          {locale === 'fa' && (
             <>
               <FormField
                 control={form.control}
                 name="state"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>{t("state")}</FormLabel>
+                    <FormLabel>{t('state')}</FormLabel>
                     <Select
                       onValueChange={(val) => val && field.onChange(val)}
                       defaultValue={field.value}
@@ -348,15 +344,12 @@ export function ProfileForm() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t("genderSelect")} />
+                          <SelectValue placeholder={t('genderSelect')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {provinces?.map((province) => (
-                          <SelectItem
-                            key={province.id}
-                            value={`${province.id}`}
-                          >
+                          <SelectItem key={province.id} value={`${province.id}`}>
                             {province.name}
                           </SelectItem>
                         ))}
@@ -371,7 +364,7 @@ export function ProfileForm() {
                 name="cityId"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>{t("city")}</FormLabel>
+                    <FormLabel>{t('city')}</FormLabel>
                     <Select
                       onValueChange={(val) => val && field.onChange(val)}
                       defaultValue={field.value}
@@ -380,7 +373,7 @@ export function ProfileForm() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t("genderSelect")} />
+                          <SelectValue placeholder={t('genderSelect')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -398,12 +391,8 @@ export function ProfileForm() {
             </>
           )}
         </div>
-        <ButtonLoading
-          isLoading={isSubmitting}
-          type="submit"
-          className="mt-4 w-full"
-        >
-          {t("save")}
+        <ButtonLoading isLoading={isSubmitting} type="submit" className="mt-4 w-full">
+          {t('save')}
         </ButtonLoading>
       </form>
     </FormProvider>

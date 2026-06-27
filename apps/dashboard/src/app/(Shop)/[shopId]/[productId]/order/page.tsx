@@ -1,26 +1,20 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { OrderNamespace } from "@/types/order/order.namespace";
-import { useSearchParams } from "next/navigation";
-import { Suspense, use, useEffect, useState } from "react";
-import useSWR from "swr";
-import useSWRImmutable from "swr/immutable";
+import api from '@/hooks/swr/api-client';
+import { OrderNamespace } from '@/types/order/order.namespace';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, use, useEffect, useState } from 'react';
+import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
 
-import { CheckoutPage } from "@/components/Shop/CheckoutPage";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
+import { CheckoutPage } from '@/components/Shop/CheckoutPage';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
-function OrderPageContent({
-  shopId,
-  productId,
-}: {
-  shopId: string;
-  productId: string;
-}) {
+function OrderPageContent({ shopId, productId }: { shopId: string; productId: string }) {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? undefined;
+  const token = searchParams.get('token') ?? undefined;
   const [isReady, setIsReady] = useState<boolean>(false);
 
   const {
@@ -54,12 +48,12 @@ function OrderPageContent({
     const run = async () => {
       if (pendingOrder.orderProducts[0].product.id != productId) {
         await api
-          .delete("/orders/pending")
+          .delete('/orders/pending')
           .then(async () => {
             await mutate(undefined);
           })
           .catch((e) => {
-            console.log("Error in deleting previous order", e);
+            console.log('Error in deleting previous order', e);
           })
           .finally(() => {
             setIsReady(true);

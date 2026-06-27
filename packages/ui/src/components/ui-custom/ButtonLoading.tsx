@@ -1,25 +1,25 @@
-import { cn } from "@/lib/utils";
-import React from "react";
+import { cn } from '@/lib/utils';
+import React from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ButtonLoadingProps {
   isLoading: boolean;
-  variant?: "default" | "outline" | "ghost" | "link" | "destructive";
+  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'destructive';
   onClick?: () => void;
   className?: string;
   children: React.ReactNode;
   disabled?: boolean;
-  type?: "button" | "submit" | "reset";
-  size?: "default" | "sm" | "lg";
+  type?: 'button' | 'submit' | 'reset';
+  size?: 'default' | 'sm' | 'lg';
 }
 export const ButtonLoading = ({
   isLoading,
-  variant = "default",
+  variant = 'default',
   onClick,
-  type = "submit",
-  size = "default",
+  type = 'submit',
+  size = 'default',
   ...props
 }: ButtonLoadingProps) => {
   return (

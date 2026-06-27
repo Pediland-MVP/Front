@@ -1,8 +1,8 @@
 // src/hooks/swr/api-client.tsx
-"use client";
+'use client';
 
-import axios, { AxiosError, AxiosHeaders, AxiosRequestConfig } from "axios";
-import { SWRConfig, useSWRConfig } from "swr";
+import axios, { AxiosError, AxiosHeaders, AxiosRequestConfig } from 'axios';
+import { SWRConfig, useSWRConfig } from 'swr';
 
 /**
  * ----------------------------------------------------------------------------
@@ -80,7 +80,7 @@ api.interceptors.request.use(
   (config) => {
     if (accessToken) {
       const headers = new AxiosHeaders(config.headers);
-      headers.set("Authorization", `Bearer ${accessToken}`);
+      headers.set('Authorization', `Bearer ${accessToken}`);
       config.headers = headers;
     }
     return config;
@@ -131,12 +131,12 @@ api.interceptors.response.use(
 
       try {
         // Important: use apiRefresh (NO interceptors) to avoid infinite loops
-        const resp = await apiRefresh.post("/auth/refresh-token");
+        const resp = await apiRefresh.post('/auth/refresh-token');
         const newToken: string | undefined = resp.data?.data?.accessToken;
 
         if (!newToken) {
           // Refresh failed (malformed or missing token in response)
-          processQueue(new Error("Failed to refresh token"));
+          processQueue(new Error('Failed to refresh token'));
           clearAccessToken();
           return Promise.reject(error);
         }
@@ -185,7 +185,7 @@ export const fetcher = async <T = unknown,>(
   const [url, cfg] = Array.isArray(key) ? key : [key];
   const res = await api.request<T>({
     url,
-    method: "GET",
+    method: 'GET',
     ...cfg,
     // SWR passes an AbortSignal in config.signal; axios will cancel the request
     signal: (cfg as any)?.signal,
@@ -218,7 +218,7 @@ export function SWRProvider({ children }: { children: React.ReactNode }) {
         shouldRetryOnError: false,
         onError: (err) => {
           // Centralized logging hook; integrate with a toast/monitoring if desired
-          console.error("SWR Error:", err);
+          console.error('SWR Error:', err);
         },
       }}
     >
@@ -240,12 +240,12 @@ export function useLogout() {
 
   return async () => {
     try {
-      await api.delete("/auth/logout");
+      await api.delete('/auth/logout');
       clearAccessToken();
       await mutate(() => true, undefined, { revalidate: false });
       return true;
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
       return false;
     }
   };

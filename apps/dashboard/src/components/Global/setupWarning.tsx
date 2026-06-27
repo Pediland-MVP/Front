@@ -1,28 +1,25 @@
 // components/global/setupWarning.tsx
-"use client";
+'use client';
 
-import useUser from "@/hooks/useUser";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
+import useUser from '@/hooks/useUser';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 // UI Imports
-import { useSidebar } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { PlugIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { useSidebar } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { PlugIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface SetupWarningProps {
   subscriptionWarningText?: string;
   instagramWarningText?: string;
 }
 
-export function SetupWarning({
-  instagramWarningText,
-  subscriptionWarningText,
-}: SetupWarningProps) {
+export function SetupWarning({ instagramWarningText, subscriptionWarningText }: SetupWarningProps) {
   const { hasInstagram, isLoading } = useUser();
   const { isMobile, setOpenMobile } = useSidebar();
-  const t = useTranslations("SetupWarning");
+  const t = useTranslations('SetupWarning');
 
   if (isLoading) return null;
 
@@ -39,14 +36,11 @@ export function SetupWarning({
               <WarningCircleIcon size={28} weight="duotone" />
             </div>
 
-            <p>{instagramWarningText || t("instagramWarningText")}</p>
+            <p>{instagramWarningText || t('instagramWarningText')}</p>
           </div>
-          <Button
-            className="bg-sidebar w-full text-black hover:bg-blue-100"
-            asChild
-          >
+          <Button className="bg-sidebar w-full text-black hover:bg-blue-100" asChild>
             <Link
-              href={"/settings/instagram"}
+              href={'/settings/instagram'}
               onClick={() => {
                 if (isMobile) setOpenMobile(false);
               }}

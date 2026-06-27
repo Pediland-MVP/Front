@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
-import axios from "axios";
-import Image from "next/image";
-import { Progress } from "@/components/ui/progress";
-import { Upload, X } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState, useEffect } from 'react';
+import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
+import Image from 'next/image';
+import { Progress } from '@/components/ui/progress';
+import { Upload, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface PersianImageUploaderProps {
   url: string;
@@ -22,14 +22,10 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
   defaultImageUrl,
 }) => {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(
-    defaultImageUrl || null,
-  );
+  const [preview, setPreview] = useState<string | null>(defaultImageUrl || null);
   const [progress, setProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(
-    defaultImageUrl || null,
-  );
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(defaultImageUrl || null);
 
   const onDrop = (acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
@@ -40,7 +36,7 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
     },
     multiple: false,
   });
@@ -73,12 +69,10 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
       if (onUploadComplete) {
         onUploadComplete(response.data.url);
       }
-      toast.success("تصویر شما با موفقیت آپلود شد.");
+      toast.success('تصویر شما با موفقیت آپلود شد.');
     } catch (error) {
-      console.error("خطا در آپلود فایل:", error);
-      toast.error(
-        "متأسفانه در آپلود تصویر مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
-      );
+      console.error('خطا در آپلود فایل:', error);
+      toast.error('متأسفانه در آپلود تصویر مشکلی پیش آمد. لطفاً دوباره تلاش کنید.');
     } finally {
       setUploading(false);
     }
@@ -90,7 +84,7 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
     setProgress(0);
     setUploadedUrl(null);
     if (onUploadComplete) {
-      onUploadComplete("");
+      onUploadComplete('');
     }
   };
 
@@ -99,7 +93,7 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
       <div
         {...getRootProps()}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-4 text-center ${
-          isDragActive ? "border-primary" : "border-gray-300"
+          isDragActive ? 'border-primary' : 'border-gray-300'
         }`}
       >
         <input {...getInputProps()} />
@@ -127,8 +121,8 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
             <Upload className="text-muted-foreground mx-auto h-12 w-12" />
             <p className="mt-3 text-sm text-gray-600">
               {isDragActive
-                ? "فایل را اینجا رها کنید."
-                : "اینجا کلیک کنید و یا فایل را به اینجا بکشید."}
+                ? 'فایل را اینجا رها کنید.'
+                : 'اینجا کلیک کنید و یا فایل را به اینجا بکشید.'}
             </p>
           </div>
         )}
@@ -137,17 +131,13 @@ const ImageUploader: React.FC<PersianImageUploaderProps> = ({
       {uploading && (
         <div className="mt-4">
           <Progress value={progress} className="w-full" />
-          <p className="mt-2 text-center text-sm">
-            در حال آپلود... {progress}%
-          </p>
+          <p className="mt-2 text-center text-sm">در حال آپلود... {progress}%</p>
         </div>
       )}
 
       {uploadedUrl && (
         <div className="mt-4 text-center">
-          <p className="font-semibold text-green-600">
-            فایل با موفقیت آپلود شد!
-          </p>
+          <p className="font-semibold text-green-600">فایل با موفقیت آپلود شد!</p>
           <a
             href={uploadedUrl}
             target="_blank"

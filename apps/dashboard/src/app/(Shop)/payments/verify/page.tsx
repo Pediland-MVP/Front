@@ -1,24 +1,23 @@
-"use client";
-import { toast } from "sonner";
-import { PaymentNamespace } from "@/types/payments/payment.namespace";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+'use client';
+import { toast } from 'sonner';
+import { PaymentNamespace } from '@/types/payments/payment.namespace';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 function VerifyPageContent() {
   const searchParams = useSearchParams();
-  const Authority = searchParams.get("Authority");
-  const Status = searchParams.get("Status") as "OK" | "NOK" | null;
-  const ItsFree = searchParams.get("ItsFree") === "true";
-  const t_ec = useTranslations("ERROR_CODES");
+  const Authority = searchParams.get('Authority');
+  const Status = searchParams.get('Status') as 'OK' | 'NOK' | null;
+  const ItsFree = searchParams.get('ItsFree') === 'true';
+  const t_ec = useTranslations('ERROR_CODES');
   const [isLoading, setIsLoading] = useState(false);
   const [isOk, setIsOk] = useState<boolean>();
-  const [response, setResponse] =
-    useState<PaymentNamespace.GET.OrderpaymentVerify>();
-  const t = useTranslations("Checkout");
+  const [response, setResponse] = useState<PaymentNamespace.GET.OrderpaymentVerify>();
+  const t = useTranslations('Checkout');
 
   useEffect(() => {
     if (ItsFree) {
@@ -28,16 +27,12 @@ function VerifyPageContent() {
 
     if (!Authority && !Status) return;
     setIsLoading(true);
-    fetch(
-      `${API_URL}/payments/zarinpal/verify?Authority=${Authority}&Status=${Status}`,
-      {
-        credentials: "include",
-      },
-    )
+    fetch(`${API_URL}/payments/zarinpal/verify?Authority=${Authority}&Status=${Status}`, {
+      credentials: 'include',
+    })
       .then(async (res) => {
         if (res.ok) {
-          const json =
-            (await res.json()) as PaymentNamespace.GET.OrderpaymentVerify;
+          const json = (await res.json()) as PaymentNamespace.GET.OrderpaymentVerify;
           setIsOk(true);
           setResponse(json);
           return;
@@ -45,7 +40,7 @@ function VerifyPageContent() {
         setIsOk(false);
       })
       .catch((e) => {
-        toast.error(t_ec("CHECK_CONNECTION"));
+        toast.error(t_ec('CHECK_CONNECTION'));
       })
       .finally(() => {
         setIsLoading(false);
@@ -55,9 +50,7 @@ function VerifyPageContent() {
   if (isLoading) {
     return (
       <div className="flex h-svh items-center justify-center">
-        <span className="loading loading-spinner text-primary">
-          درحال بارگزاری
-        </span>
+        <span className="loading loading-spinner text-primary">درحال بارگزاری</span>
       </div>
     );
   }
@@ -67,13 +60,13 @@ function VerifyPageContent() {
       {isOk === true ? (
         <div className="_checkout flex h-svh flex-col items-center justify-center rounded-xl border bg-white p-5 md:p-10">
           <Image
-            src={"/images/emojies/smiling-face-with-hearts.webp"}
+            src={'/images/emojies/smiling-face-with-hearts.webp'}
             height={200}
             width={200}
-            alt={"قلب"}
+            alt={'قلب'}
           />
           <p className="text-center text-lg">
-            {response?.data.orderProcessText || t("orderProcessingDescription")}
+            {response?.data.orderProcessText || t('orderProcessingDescription')}
           </p>
 
           {response?.data?.ref_id && (
@@ -86,14 +79,12 @@ function VerifyPageContent() {
         isOk === false && (
           <div className="flex flex-col items-center justify-center gap-2">
             <Image
-              src={"/images/emojies/broken-heart.webp"}
+              src={'/images/emojies/broken-heart.webp'}
               height={200}
               width={200}
-              alt={"قلب شکسته"}
+              alt={'قلب شکسته'}
             />
-            <span className="text-primary text-2xl font-semibold">
-              پرداخت با شکست مواجه شد
-            </span>
+            <span className="text-primary text-2xl font-semibold">پرداخت با شکست مواجه شد</span>
           </div>
         )
       )}
@@ -106,9 +97,7 @@ export default function VerifyPage() {
     <Suspense
       fallback={
         <div className="flex h-svh items-center justify-center">
-          <span className="loading loading-spinner text-primary">
-            درحال بارگزاری
-          </span>
+          <span className="loading loading-spinner text-primary">درحال بارگزاری</span>
         </div>
       }
     >

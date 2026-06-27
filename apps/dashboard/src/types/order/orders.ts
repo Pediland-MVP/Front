@@ -1,5 +1,5 @@
-import { ORDER_PAYMENT_METHODS } from "./order.enum";
-import { ORDER_STATUS } from "./order.namespace";
+import { ORDER_PAYMENT_METHODS } from './order.enum';
+import { ORDER_STATUS } from './order.namespace';
 export interface IOrders {
   items: Item[];
   meta: Meta;
@@ -11,7 +11,7 @@ interface Item {
   updateDate: string;
   startPaymentDate: string;
   status: ORDER_STATUS;
-  from: "instagram";
+  from: 'instagram';
   step: number;
   paymentMethod: ORDER_PAYMENT_METHODS;
   orderCardToCard: OrderCardToCard;
@@ -22,7 +22,7 @@ interface Item {
   instagram: Instagram;
   instagramId: string;
   secret: string;
-  productFieldValues?: ProductFieldValue[]
+  productFieldValues?: ProductFieldValue[];
 }
 
 interface Instagram {
@@ -108,10 +108,10 @@ interface OrderProduct {
   createDate: string;
   updateDate: string;
   price: number;
-  discountPrice: number | null
+  discountPrice: number | null;
   quantity: number;
   product: Product;
-  shippingCost: number | null
+  shippingCost: number | null;
   attributeValues: {
     id: number;
     createDate: string;
@@ -173,4 +173,3 @@ type ProductFieldValue = {
     priority: number;
   };
 };
-

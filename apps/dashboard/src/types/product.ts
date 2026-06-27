@@ -1,5 +1,5 @@
-import { ButtonTypeEnum } from "./buttons.enum";
-import { ProductFieldTypeEnum } from "./product.enum";
+import { ButtonTypeEnum } from './buttons.enum';
+import { ProductFieldTypeEnum } from './product.enum';
 
 export namespace ProductNamespace {
   export interface GET {
@@ -29,7 +29,7 @@ export interface ProductItem {
   orderButtonText: string;
   orderProcessText: string;
   shippingCost: number;
-  type: "product" | "vitrin";
+  type: 'product' | 'vitrin';
   fields: {
     id: string;
     label: string;
@@ -69,7 +69,7 @@ export interface ProductVariation {
 export interface Attribute {
   id: number;
   title: string;
-  style: "button" | "color";
+  style: 'button' | 'color';
   attributeValues: AttributeValue[];
 }
 

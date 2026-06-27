@@ -1,38 +1,38 @@
 // src/app/leads/[id]/page.tsx
-"use client";
+'use client';
 
-import api, { fetcher } from "@/hooks/swr/api-client";
-import { useAuth } from "@/hooks/use-auth";
-import { useKams } from "@/hooks/use-kams";
-import { formatNumber } from "@/lib/formatNumber";
-import { MarketingLead } from "@/types/lead";
-import { User } from "@/types/user";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import useSWR from "swr";
-import z from "zod";
-import dayjs from "@/lib/dayjs-jalali";
-import { cn } from "@/lib/utils";
-import React from "react";
+import api, { fetcher } from '@/hooks/swr/api-client';
+import { useAuth } from '@/hooks/use-auth';
+import { useKams } from '@/hooks/use-kams';
+import { formatNumber } from '@/lib/formatNumber';
+import { MarketingLead } from '@/types/lead';
+import { User } from '@/types/user';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { use, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import useSWR from 'swr';
+import z from 'zod';
+import dayjs from '@/lib/dayjs-jalali';
+import { cn } from '@/lib/utils';
+import React from 'react';
 
 // UI Imports
-import { FetchError } from "@/components/fetch-error";
-import { Loading } from "@/components/loading";
-import { StatusBadge } from "@/components/table/status-badge";
-import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FetchError } from '@/components/fetch-error';
+import { Loading } from '@/components/loading';
+import { StatusBadge } from '@/components/table/status-badge';
+import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   ChatCenteredTextIcon,
   CrosshairSimpleIcon,
@@ -41,23 +41,19 @@ import {
   TelegramLogoIcon,
   TrashIcon,
   WhatsappLogoIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { CheckIcon, PhoneCallIcon } from "lucide-react";
-import { Action } from "@/types/actions";
-import { SendSMSDialog } from "@/components/table/dialog-sms";
-import DialogFormLead from "../dialog-form-lead";
-import DialogDelete from "@/components/dialog-delete";
+} from '@phosphor-icons/react/dist/ssr';
+import { CheckIcon, PhoneCallIcon } from 'lucide-react';
+import { Action } from '@/types/actions';
+import { SendSMSDialog } from '@/components/table/dialog-sms';
+import DialogFormLead from '../dialog-form-lead';
+import DialogDelete from '@/components/dialog-delete';
 
 const FormSchema = z.object({
-  status: z.string().min(1, { message: "وضعیت را انتخاب کنید." }),
+  status: z.string().min(1, { message: 'وضعیت را انتخاب کنید.' }),
   admin: z.string().min(1),
 });
 
-export default function LeadDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function LeadDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const [dialogLeadFormOpen, setDialogLeadFormOpen] = useState(false);
   const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
@@ -65,11 +61,10 @@ export default function LeadDetailsPage({
   const [isAdminChanged, setIsAdminChanged] = useState(false);
   const [isSavingAction, setIsSavingAction] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>();
-  const [actionType, setActionType] = useState<string>("");
-  const [marketingLeadNote, setMarketingLeadNote] = useState<string>("");
-  const [isMarketingLeadNoteChanged, setIsMarketingLeadNoteChanged] =
-    useState(false);
-  const [note, setNote] = useState<string>("");
+  const [actionType, setActionType] = useState<string>('');
+  const [marketingLeadNote, setMarketingLeadNote] = useState<string>('');
+  const [isMarketingLeadNoteChanged, setIsMarketingLeadNoteChanged] = useState(false);
+  const [note, setNote] = useState<string>('');
   const [smsDialogOpen, setSmsDialogOpen] = useState(false);
   const [smsData, setSmsData] = useState<{
     id: string;
@@ -91,8 +86,8 @@ export default function LeadDetailsPage({
     isLoading: isKamsLoading,
     isError: kamsError,
   } = useKams({
-    roles: "manager,kam",
-    enabled: user?.role !== "kam",
+    roles: 'manager,kam',
+    enabled: user?.role !== 'kam',
   });
 
   const {
@@ -105,8 +100,8 @@ export default function LeadDetailsPage({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: "",
-      admin: "",
+      status: '',
+      admin: '',
     },
   });
 
@@ -114,49 +109,47 @@ export default function LeadDetailsPage({
     if (marketingLead) {
       form.reset({
         status: marketingLead?.status,
-        admin: marketingLead?.marketingLeadsAdmins.find(
-          (admin) => admin.isActive,
-        )?.adminId,
+        admin: marketingLead?.marketingLeadsAdmins.find((admin) => admin.isActive)?.adminId,
       });
     }
   }, [marketingLead, form]);
 
   const handleUpdateStatus = async () => {
     try {
-      const status = form.getValues("status");
+      const status = form.getValues('status');
 
       await api.patch(`/marketingLeads/status/${id}`, {
         status,
       });
 
       setIsStatusChanged(false);
-      toast.success("وضعیت با موفقیت به‌روز شد.");
+      toast.success('وضعیت با موفقیت به‌روز شد.');
     } catch (error) {
-      console.error("خطا در آپدیت وضعیت:", error);
-      toast.error("خطا در ذخیره‌سازی");
+      console.error('خطا در آپدیت وضعیت:', error);
+      toast.error('خطا در ذخیره‌سازی');
     }
   };
 
   const handleUpdateAdmin = async () => {
     try {
-      const adminId = form.getValues("admin");
+      const adminId = form.getValues('admin');
 
-      await api.post("/marketingLeads/assignAdmin", {
+      await api.post('/marketingLeads/assignAdmin', {
         adminId,
         marketingLeadIds: [id],
       });
 
       setIsAdminChanged(false);
-      toast.success("مسئول با موفقیت تغییر کرد");
+      toast.success('مسئول با موفقیت تغییر کرد');
     } catch (error) {
       console.error(error);
-      toast.error("خطا در تغییر مسئول");
+      toast.error('خطا در تغییر مسئول');
     }
   };
 
   const handleAddAction = async () => {
-    if (!selectedDate || !actionType || note.trim() === "") {
-      toast.error("لطفاً همه‌ی فیلدها را پر کنید.");
+    if (!selectedDate || !actionType || note.trim() === '') {
+      toast.error('لطفاً همه‌ی فیلدها را پر کنید.');
       return;
     }
 
@@ -166,30 +159,26 @@ export default function LeadDetailsPage({
       leadOrUserId: id,
       actionDate: selectedDate
         ? new Date(
-            Date.UTC(
-              selectedDate.getFullYear(),
-              selectedDate.getMonth(),
-              selectedDate.getDate(),
-            ),
+            Date.UTC(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()),
           ).toISOString()
         : undefined,
-      for: "marketingLead",
+      for: 'marketingLead',
       type: actionType,
       description: note.trim(),
-      status: "todo",
+      status: 'todo',
     };
 
     try {
-      await api.post("/actions", payload);
+      await api.post('/actions', payload);
       setSelectedDate(undefined);
-      setActionType("");
-      setNote("");
+      setActionType('');
+      setNote('');
       await mutateActions();
       await mutateLead();
-      toast.success("عملیات با موفقیت ثبت شد.");
+      toast.success('عملیات با موفقیت ثبت شد.');
     } catch (error) {
       console.error(error);
-      toast.error("خطا در ثبت عملیات.");
+      toast.error('خطا در ثبت عملیات.');
     } finally {
       setIsSavingAction(false);
     }
@@ -200,10 +189,10 @@ export default function LeadDetailsPage({
       await api.delete(`/actions/${actionId}`);
       setDialogDeleteOpen(false);
       await mutateActions();
-      toast.success("عملیات با موفقیت حذف شد.");
+      toast.success('عملیات با موفقیت حذف شد.');
     } catch (error) {
       console.error(error);
-      toast.error("خطا در حذف عملیات.");
+      toast.error('خطا در حذف عملیات.');
     }
   };
 
@@ -217,10 +206,10 @@ export default function LeadDetailsPage({
     try {
       await api.patch(`/marketingLeads/${id}`, { note: marketingLeadNote });
       setIsMarketingLeadNoteChanged(false);
-      toast.success("یادداشت با موفقیت به‌روز شد.");
+      toast.success('یادداشت با موفقیت به‌روز شد.');
     } catch (error) {
-      console.error("خطا در آپدیت یادداشت:", error);
-      toast.error("خطا در ذخیره‌سازی");
+      console.error('خطا در آپدیت یادداشت:', error);
+      toast.error('خطا در ذخیره‌سازی');
     }
   };
 
@@ -237,29 +226,30 @@ export default function LeadDetailsPage({
 
   if (isLoading || isKamsLoading || isActionsLoading) return <Loading />;
   if (error || kamsError || actionsError) return <FetchError />;
-  if (!form.getValues("status")) return <p>ارور</p>;
+  if (!form.getValues('status')) return <p>ارور</p>;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-4 h-[calc(100vh-40px)] overflow-hidden bg-slate-50/20" dir="rtl">
-
+    <div
+      className="flex h-[calc(100vh-40px)] flex-col gap-6 overflow-hidden bg-slate-50/20 p-4 lg:flex-row"
+      dir="rtl"
+    >
       {/* Left Column: Profile Sidebar */}
-      <div className="w-full lg:w-96 shrink-0 flex flex-col gap-5 overflow-y-auto pr-1 bg-white border border-slate-100 rounded-2xl p-5 shadow-xs scrollbar-thin scrollbar-thumb-slate-200">
-
+      <div className="scrollbar-thin scrollbar-thumb-slate-200 flex w-full shrink-0 flex-col gap-5 overflow-y-auto rounded-2xl border border-slate-100 bg-white p-5 pr-1 shadow-xs lg:w-96">
         {/* Profile Header */}
-        <div className="flex flex-col items-center text-center space-y-3 pb-4 border-b border-slate-100">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-md border-4 border-white">
+        <div className="flex flex-col items-center space-y-3 border-b border-slate-100 pb-4 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-gradient-to-tr from-blue-500 to-indigo-600 text-2xl font-bold text-white shadow-md">
             {marketingLead
-              ? `${marketingLead.firstname?.[0] || ""}${marketingLead.lastname?.[0] || ""}`
-              : "م"}
+              ? `${marketingLead.firstname?.[0] || ''}${marketingLead.lastname?.[0] || ''}`
+              : 'م'}
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-800">
               {!marketingLead?.firstname && !marketingLead?.lastname
-                ? "ثبت نشده است"
-                : `${marketingLead?.firstname ?? ""} ${marketingLead?.lastname ?? ""}`}
+                ? 'ثبت نشده است'
+                : `${marketingLead?.firstname ?? ''} ${marketingLead?.lastname ?? ''}`}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5" dir="ltr">
-              {marketingLead?.mobile || ""}
+            <p className="mt-0.5 text-xs text-slate-400" dir="ltr">
+              {marketingLead?.mobile || ''}
             </p>
           </div>
 
@@ -267,21 +257,21 @@ export default function LeadDetailsPage({
           <div className="flex items-center justify-center gap-2 pt-2">
             <a
               href={`tel:${marketingLead?.mobile}`}
-              className="w-9 h-9 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800 flex items-center justify-center border border-slate-200/60 shadow-3xs transition-all duration-150"
+              className="shadow-3xs flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/60 bg-slate-50 text-slate-600 transition-all duration-150 hover:bg-slate-100 hover:text-slate-800"
               title="تماس تلفنی"
             >
-              <PhoneCallIcon className="w-4 h-4" />
+              <PhoneCallIcon className="h-4 w-4" />
             </a>
             <button
               onClick={handleOpenSmsDialog}
-              className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center border border-blue-100 shadow-3xs transition-all duration-150"
+              className="shadow-3xs flex h-9 w-9 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-blue-600 transition-all duration-150 hover:bg-blue-100"
               title="ارسال پیامک"
             >
               <ChatCenteredTextIcon size={18} />
             </button>
             <a
-              href={`https://t.me/+98${marketingLead?.mobile?.replace(/^0/, "")}`}
-              className="w-9 h-9 rounded-full bg-sky-50 text-sky-600 hover:bg-sky-100 flex items-center justify-center border border-sky-100 shadow-3xs transition-all duration-150"
+              href={`https://t.me/+98${marketingLead?.mobile?.replace(/^0/, '')}`}
+              className="shadow-3xs flex h-9 w-9 items-center justify-center rounded-full border border-sky-100 bg-sky-50 text-sky-600 transition-all duration-150 hover:bg-sky-100"
               target="_blank"
               rel="noopener noreferrer"
               title="تلگرام"
@@ -289,8 +279,8 @@ export default function LeadDetailsPage({
               <TelegramLogoIcon size={18} />
             </a>
             <a
-              href={`https://wa.me/98${marketingLead?.mobile?.replace(/^0/, "")}`}
-              className="w-9 h-9 rounded-full bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center border border-green-100 shadow-3xs transition-all duration-150"
+              href={`https://wa.me/98${marketingLead?.mobile?.replace(/^0/, '')}`}
+              className="shadow-3xs flex h-9 w-9 items-center justify-center rounded-full border border-green-100 bg-green-50 text-green-600 transition-all duration-150 hover:bg-green-100"
               target="_blank"
               rel="noopener noreferrer"
               title="واتسپ"
@@ -303,37 +293,45 @@ export default function LeadDetailsPage({
         {/* Instagram Info */}
         {marketingLead?.instagram?.username && (
           <div className="space-y-2">
-            <h4 className="text-xs text-slate-400 font-semibold">اطلاعات اینستاگرام:</h4>
+            <h4 className="text-xs font-semibold text-slate-400">اطلاعات اینستاگرام:</h4>
             <a
-              className="text-slate-600 hover:text-indigo-600 flex items-center gap-2 text-xs font-semibold p-2 bg-slate-50 rounded-xl border border-slate-100 transition-colors"
+              className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 p-2 text-xs font-semibold text-slate-600 transition-colors hover:text-indigo-600"
               href={`https://instagram.com/${marketingLead.instagram.username}`}
               target="_blank"
               dir="ltr"
             >
-              <InstagramLogoIcon size={18} className="text-pink-600 shrink-0" />
+              <InstagramLogoIcon size={18} className="shrink-0 text-pink-600" />
               <span>@{marketingLead.instagram.username}</span>
             </a>
             {marketingLead.instagram.name && (
-              <p className="text-xs text-slate-500 font-medium px-1">{marketingLead.instagram.name}</p>
+              <p className="px-1 text-xs font-medium text-slate-500">
+                {marketingLead.instagram.name}
+              </p>
             )}
             <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-3xs text-center space-y-0.5">
-                <span className="text-slate-400 block text-[10px]">فالوور</span>
-                <span className="font-bold text-slate-800 block">{formatNumber(marketingLead.instagram.followersCount)}</span>
+              <div className="shadow-3xs space-y-0.5 rounded-xl border border-slate-100 bg-white p-2 text-center">
+                <span className="block text-[10px] text-slate-400">فالوور</span>
+                <span className="block font-bold text-slate-800">
+                  {formatNumber(marketingLead.instagram.followersCount)}
+                </span>
               </div>
-              <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-3xs text-center space-y-0.5">
-                <span className="text-slate-400 block text-[10px]">فالووینگ</span>
-                <span className="font-bold text-slate-800 block">{formatNumber(marketingLead.instagram.followsCount)}</span>
+              <div className="shadow-3xs space-y-0.5 rounded-xl border border-slate-100 bg-white p-2 text-center">
+                <span className="block text-[10px] text-slate-400">فالووینگ</span>
+                <span className="block font-bold text-slate-800">
+                  {formatNumber(marketingLead.instagram.followsCount)}
+                </span>
               </div>
-              <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-3xs text-center space-y-0.5">
-                <span className="text-slate-400 block text-[10px]">پست</span>
-                <span className="font-bold text-slate-800 block">{formatNumber(marketingLead.instagram.mediaCount)}</span>
+              <div className="shadow-3xs space-y-0.5 rounded-xl border border-slate-100 bg-white p-2 text-center">
+                <span className="block text-[10px] text-slate-400">پست</span>
+                <span className="block font-bold text-slate-800">
+                  {formatNumber(marketingLead.instagram.mediaCount)}
+                </span>
               </div>
             </div>
             {marketingLead.category && (
               <div className="flex items-center gap-1.5 px-1">
                 <span className="text-xs text-slate-500">دسته‌بندی:</span>
-                <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full">
+                <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
                   {marketingLead.category.name}
                 </span>
               </div>
@@ -350,36 +348,44 @@ export default function LeadDetailsPage({
                 name="status"
                 render={({ field }) => (
                   <FormItem className="space-y-1.5">
-                    <FormLabel className="text-xs text-slate-500 font-semibold">وضعیت سرنخ</FormLabel>
-                    <div className="flex gap-2 items-center">
+                    <FormLabel className="text-xs font-semibold text-slate-500">
+                      وضعیت سرنخ
+                    </FormLabel>
+                    <div className="flex items-center gap-2">
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
                           setIsStatusChanged(true);
                         }}
                         value={field.value}
-                        disabled={marketingLead?.status === "incoming"}
+                        disabled={marketingLead?.status === 'incoming'}
                       >
                         <FormControl>
-                          <SelectTrigger className="w-full bg-white h-9 rounded-xl border border-slate-200 px-3 text-sm shadow-2xs">
+                          <SelectTrigger className="h-9 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm shadow-2xs">
                             <SelectValue placeholder="انتخاب وضعیت">
                               <StatusBadge status={field.value} />
                             </SelectValue>
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="follow"><StatusBadge status="follow" /></SelectItem>
-                          <SelectItem value="force"><StatusBadge status="force" /></SelectItem>
-                          <SelectItem value="failed"><StatusBadge status="failed" /></SelectItem>
+                          <SelectItem value="follow">
+                            <StatusBadge status="follow" />
+                          </SelectItem>
+                          <SelectItem value="force">
+                            <StatusBadge status="force" />
+                          </SelectItem>
+                          <SelectItem value="failed">
+                            <StatusBadge status="failed" />
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       {isStatusChanged && (
                         <Button
                           type="button"
-                          className="h-9 w-9 p-0 shrink-0 rounded-xl"
+                          className="h-9 w-9 shrink-0 rounded-xl p-0"
                           onClick={handleUpdateStatus}
                         >
-                          <CheckIcon className="w-4 h-4" />
+                          <CheckIcon className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
@@ -387,7 +393,7 @@ export default function LeadDetailsPage({
                 )}
               />
 
-              {user?.role !== "kam" && (
+              {user?.role !== 'kam' && (
                 <FormField
                   control={form.control}
                   name="admin"
@@ -396,12 +402,14 @@ export default function LeadDetailsPage({
                     const adminKam = marketingLead?.marketingLeadsAdmins.find((a) => a.isActive);
                     const adminFullName = adminKam
                       ? `${adminKam.admin.firstname} ${adminKam.admin.lastname}`
-                      : "بدون مسئول";
+                      : 'بدون مسئول';
 
                     return (
                       <FormItem className="space-y-1.5">
-                        <FormLabel className="text-xs text-slate-500 font-semibold">مسئول پیگیری (اپراتور)</FormLabel>
-                        <div className="flex gap-2 items-center">
+                        <FormLabel className="text-xs font-semibold text-slate-500">
+                          مسئول پیگیری (اپراتور)
+                        </FormLabel>
+                        <div className="flex items-center gap-2">
                           <Select
                             onValueChange={(value) => {
                               field.onChange(value);
@@ -410,7 +418,7 @@ export default function LeadDetailsPage({
                             value={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="w-full bg-white h-9 rounded-xl border border-slate-200 px-3 text-sm shadow-2xs">
+                              <SelectTrigger className="h-9 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm shadow-2xs">
                                 <SelectValue placeholder="انتخاب مسئول">
                                   {selectedKam
                                     ? `${selectedKam.firstname} ${selectedKam.lastname}`
@@ -429,10 +437,10 @@ export default function LeadDetailsPage({
                           {isAdminChanged && (
                             <Button
                               type="button"
-                              className="h-9 w-9 p-0 shrink-0 rounded-xl"
+                              className="h-9 w-9 shrink-0 rounded-xl p-0"
                               onClick={handleUpdateAdmin}
                             >
-                              <CheckIcon className="w-4 h-4" />
+                              <CheckIcon className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
@@ -452,26 +460,26 @@ export default function LeadDetailsPage({
           className="w-full rounded-xl"
           onClick={() => setDialogLeadFormOpen(true)}
         >
-          <PencilSimpleLineIcon className="w-4 h-4 ml-1" />
+          <PencilSimpleLineIcon className="ml-1 h-4 w-4" />
           ویرایش اطلاعات سرنخ
         </Button>
 
         {/* Note Textarea */}
-        <div className="space-y-2 mt-auto">
+        <div className="mt-auto space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-slate-700 text-xs">یادداشت سرنخ:</h3>
+            <h3 className="text-xs font-semibold text-slate-700">یادداشت سرنخ:</h3>
             {isMarketingLeadNoteChanged && (
               <Button
                 type="button"
-                className="h-7 w-7 p-0 shrink-0 rounded-lg"
+                className="h-7 w-7 shrink-0 rounded-lg p-0"
                 onClick={handleUpdateNote}
               >
-                <CheckIcon className="w-3.5 h-3.5" />
+                <CheckIcon className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
           <Textarea
-            className="w-full min-h-[90px] text-xs border-yellow-200 bg-yellow-50/50 focus-visible:ring-yellow-300 rounded-xl leading-relaxed resize-none shadow-3xs"
+            className="shadow-3xs min-h-[90px] w-full resize-none rounded-xl border-yellow-200 bg-yellow-50/50 text-xs leading-relaxed focus-visible:ring-yellow-300"
             placeholder="یادداشتی در مورد این سرنخ بنویسید..."
             value={marketingLeadNote}
             onChange={(e) => {
@@ -483,93 +491,95 @@ export default function LeadDetailsPage({
       </div>
 
       {/* Right Column: Activity Panel */}
-      <div className="flex-1 flex flex-col h-full bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-xs">
-
+      <div className="flex h-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xs">
         {/* Panel Header */}
-        <div className="bg-slate-50/40 border-b border-slate-100 p-4 shrink-0">
+        <div className="shrink-0 border-b border-slate-100 bg-slate-50/40 p-4">
           <div className="space-y-0.5">
             <h1 className="text-base font-bold text-slate-800">تاریخچه و جزئیات فعالیت‌ها</h1>
             <p className="text-xs text-slate-400">ثبت و پیگیری عملیات‌های فروش</p>
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 flex flex-col bg-slate-50/20">
-
+        <div className="flex min-h-0 flex-1 flex-col bg-slate-50/20">
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-4 min-h-0 flex flex-col scrollbar-thin scrollbar-thumb-slate-200">
+          <div className="scrollbar-thin scrollbar-thumb-slate-200 flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto p-5">
             {actions?.items?.length > 0 ? (
-              <div className="space-y-4 flex flex-col">
+              <div className="flex flex-col space-y-4">
                 {[...actions.items]
-                  .sort((a, b) => new Date(a.actionDate).getTime() - new Date(b.actionDate).getTime())
+                  .sort(
+                    (a, b) => new Date(a.actionDate).getTime() - new Date(b.actionDate).getTime(),
+                  )
                   .map((action: Action) => {
                     const formattedDate = dayjs
-                      .tz(action.actionDate, "Asia/Tehran")
-                      .calendar("jalali")
-                      .format("YYYY/MM/DD HH:mm");
+                      .tz(action.actionDate, 'Asia/Tehran')
+                      .calendar('jalali')
+                      .format('YYYY/MM/DD HH:mm');
 
                     const typeLabels: Record<string, string> = {
-                      phone: "تلفن",
-                      whatsapp: "واتسپ",
-                      telegram: "تلگرام",
-                      instagram: "اینستاگرم",
+                      phone: 'تلفن',
+                      whatsapp: 'واتسپ',
+                      telegram: 'تلگرام',
+                      instagram: 'اینستاگرم',
                     };
 
                     const typeIcons: Record<string, React.ReactNode> = {
-                      phone: <PhoneCallIcon className="w-3.5 h-3.5 text-sky-500 shrink-0" />,
-                      whatsapp: <WhatsappLogoIcon size={14} className="text-green-500 shrink-0" />,
-                      telegram: <TelegramLogoIcon size={14} className="text-blue-500 shrink-0" />,
-                      instagram: <InstagramLogoIcon size={14} className="text-pink-500 shrink-0" />,
+                      phone: <PhoneCallIcon className="h-3.5 w-3.5 shrink-0 text-sky-500" />,
+                      whatsapp: <WhatsappLogoIcon size={14} className="shrink-0 text-green-500" />,
+                      telegram: <TelegramLogoIcon size={14} className="shrink-0 text-blue-500" />,
+                      instagram: <InstagramLogoIcon size={14} className="shrink-0 text-pink-500" />,
                     };
 
-                    const isDone = action.status === "done";
+                    const isDone = action.status === 'done';
 
                     return (
                       <div
                         key={action.id}
                         className={cn(
-                          "flex flex-col max-w-[80%] md:max-w-[70%] rounded-2xl p-3 shadow-3xs border transition-all duration-200",
+                          'shadow-3xs flex max-w-[80%] flex-col rounded-2xl border p-3 transition-all duration-200 md:max-w-[70%]',
                           isDone
-                            ? "bg-slate-100/90 border-slate-200 text-slate-500 mr-auto rounded-tl-none"
-                            : "bg-blue-50/90 border-blue-100 text-blue-900 ml-auto rounded-tr-none"
+                            ? 'mr-auto rounded-tl-none border-slate-200 bg-slate-100/90 text-slate-500'
+                            : 'ml-auto rounded-tr-none border-blue-100 bg-blue-50/90 text-blue-900',
                         )}
                       >
-                        <div className="flex items-center justify-between gap-6 text-[10px] font-bold mb-1.5 opacity-75">
+                        <div className="mb-1.5 flex items-center justify-between gap-6 text-[10px] font-bold opacity-75">
                           <span className="flex items-center gap-1">
                             {typeIcons[action.type]}
-                            <span>{typeLabels[action.type] ?? "نامشخص"}</span>
+                            <span>{typeLabels[action.type] ?? 'نامشخص'}</span>
                           </span>
                           <span>{`${action.admin.firstname} ${action.admin.lastname}`}</span>
                         </div>
 
-                        <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap font-medium">
+                        <p className="text-xs leading-relaxed font-medium whitespace-pre-wrap md:text-sm">
                           {action.description}
                         </p>
 
-                        <div className="flex items-center justify-between gap-4 text-[10px] mt-2.5 opacity-60 border-t pt-1.5 border-current/10">
+                        <div className="mt-2.5 flex items-center justify-between gap-4 border-t border-current/10 pt-1.5 text-[10px] opacity-60">
                           <span>{formattedDate}</span>
                           <div className="flex items-center gap-2">
-                            <label className="flex items-center gap-1 cursor-pointer select-none font-semibold">
+                            <label className="flex cursor-pointer items-center gap-1 font-semibold select-none">
                               <Checkbox
-                                className="w-3.5 h-3.5 rounded-sm border-current/30 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 cursor-pointer"
+                                className="h-3.5 w-3.5 cursor-pointer rounded-sm border-current/30 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                                 checked={isDone}
                                 onCheckedChange={async (checked) => {
-                                  const newStatus = checked ? "done" : "todo";
+                                  const newStatus = checked ? 'done' : 'todo';
                                   try {
-                                    await api.post(`/actions/status/${action.id}`, { status: newStatus });
+                                    await api.post(`/actions/status/${action.id}`, {
+                                      status: newStatus,
+                                    });
                                     await mutateActions();
-                                    toast.success("وضعیت عملیات به‌روز شد.");
+                                    toast.success('وضعیت عملیات به‌روز شد.');
                                   } catch {
-                                    toast.error("خطا در به‌روزرسانی وضعیت.");
+                                    toast.error('خطا در به‌روزرسانی وضعیت.');
                                   }
                                 }}
                               />
                               <span>انجام شد</span>
                             </label>
-                            {user?.role !== "kam" && (
+                            {user?.role !== 'kam' && (
                               <Button
                                 type="button"
                                 variant="ghost"
-                                className="w-5 h-5 p-0 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md"
+                                className="h-5 w-5 rounded-md p-0 text-rose-600 hover:bg-rose-50 hover:text-rose-800"
                                 onClick={() => {
                                   setSelectedActionId(action.id);
                                   setDialogDeleteOpen(true);
@@ -585,10 +595,10 @@ export default function LeadDetailsPage({
                   })}
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
+              <div className="flex flex-1 flex-col items-center justify-center py-10 text-slate-400">
                 <CrosshairSimpleIcon size={48} className="mb-2 opacity-50" />
                 <p className="text-xs font-semibold">در حال حاضر هیچ عملیاتی وجود ندارد.</p>
-                <p className="text-[10px] text-slate-400/80 mt-1 max-w-sm text-center">
+                <p className="mt-1 max-w-sm text-center text-[10px] text-slate-400/80">
                   پس از ثبت اولین عملیات وضعیت این سرنخ بطور خودکار به (پیگیری) تغییر خواهد کرد.
                 </p>
               </div>
@@ -596,14 +606,14 @@ export default function LeadDetailsPage({
           </div>
 
           {/* Bottom Input Bar */}
-          <div className="border-t bg-white p-3.5 space-y-3 shrink-0 shadow-lg">
+          <div className="shrink-0 space-y-3 border-t bg-white p-3.5 shadow-lg">
             <div className="flex flex-wrap items-center gap-3">
               <div className="w-auto">
                 <DatePicker date={selectedDate} onChange={setSelectedDate} />
               </div>
               <div className="w-36">
                 <Select value={actionType} onValueChange={setActionType}>
-                  <SelectTrigger className="w-full bg-white h-9 rounded-xl border border-slate-200 px-3 text-xs shadow-3xs cursor-pointer">
+                  <SelectTrigger className="shadow-3xs h-9 w-full cursor-pointer rounded-xl border border-slate-200 bg-white px-3 text-xs">
                     <SelectValue placeholder="نوع عملیات" />
                   </SelectTrigger>
                   <SelectContent>
@@ -614,20 +624,20 @@ export default function LeadDetailsPage({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex-1 flex gap-2.5 min-w-[260px]">
+              <div className="flex min-w-[260px] flex-1 gap-2.5">
                 <Textarea
-                  className="min-h-9 max-h-16 flex-1 resize-none rounded-xl border border-slate-200 px-3 py-1.5 text-xs focus-visible:ring-blue-500 shadow-3xs leading-relaxed"
+                  className="shadow-3xs max-h-16 min-h-9 flex-1 resize-none rounded-xl border border-slate-200 px-3 py-1.5 text-xs leading-relaxed focus-visible:ring-blue-500"
                   placeholder="شرح پیگیری را اینجا بنویسید..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                 />
                 <Button
                   type="button"
-                  className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 rounded-xl px-4 h-9 text-xs font-bold cursor-pointer shadow-sm"
+                  className="h-9 shrink-0 cursor-pointer rounded-xl bg-blue-600 px-4 text-xs font-bold text-white shadow-sm hover:bg-blue-700"
                   disabled={isSavingAction}
                   onClick={handleAddAction}
                 >
-                  {isSavingAction ? "ارسال..." : "ثبت پیگیری"}
+                  {isSavingAction ? 'ارسال...' : 'ثبت پیگیری'}
                 </Button>
               </div>
             </div>

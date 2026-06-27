@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,18 +10,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { AlertCircle } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+} from '@/components/ui/dialog';
+import { AlertCircle } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import useUser from '@/hooks/useUser';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 
 export default function SubscriptionExpireWarningDialog() {
   const [showPopup, setShowPopup] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
   const [isNavigationLoading, setIsNavigationLoading] = useState(false);
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
-  const t = useTranslations("subscriptionWarning");
+  const t = useTranslations('subscriptionWarning');
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
@@ -30,17 +30,13 @@ export default function SubscriptionExpireWarningDialog() {
     if (!user || isAborted) return;
 
     // Don't show on upgrade settings page
-    if (pathname.startsWith("/settings/subscription")) return;
+    if (pathname.startsWith('/settings/subscription')) return;
 
-    const isHaveReserved = user.subscriptions.find(
-      (sub) => sub.status === "reserved",
-    );
+    const isHaveReserved = user.subscriptions.find((sub) => sub.status === 'reserved');
     if (isHaveReserved) return;
 
     // Find active subscription
-    const activeSub = user.subscriptions.find(
-      (sub) => sub.status === "active" && sub.expire,
-    );
+    const activeSub = user.subscriptions.find((sub) => sub.status === 'active' && sub.expire);
     if (!activeSub) return;
 
     const expireDate = new Date(activeSub.expire);
@@ -59,7 +55,7 @@ export default function SubscriptionExpireWarningDialog() {
   const handleUpgrade = () => {
     setShowPopup(false);
     setIsAborted(true);
-    router.push("/settings/subscription?active=planSelection");
+    router.push('/settings/subscription?active=planSelection');
   };
 
   const handleClose = () => {
@@ -73,21 +69,18 @@ export default function SubscriptionExpireWarningDialog() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-red-500" />
-            {t("title")}
+            {t('title')}
           </DialogTitle>
           <DialogDescription>
-            {daysLeft !== null && t("description", { count: daysLeft })}
+            {daysLeft !== null && t('description', { count: daysLeft })}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex gap-x-2">
           <Button variant="outline" onClick={handleClose}>
-            {t("buttons.ok")}
+            {t('buttons.ok')}
           </Button>
-          <ButtonLoading
-            isLoading={isNavigationLoading}
-            onClick={handleUpgrade}
-          >
-            {t("buttons.upgrade")}
+          <ButtonLoading isLoading={isNavigationLoading} onClick={handleUpgrade}>
+            {t('buttons.upgrade')}
           </ButtonLoading>
         </DialogFooter>
       </DialogContent>

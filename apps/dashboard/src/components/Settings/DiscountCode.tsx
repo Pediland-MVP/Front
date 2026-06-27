@@ -1,32 +1,25 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import api from '@/hooks/swr/api-client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 // TODO: Refactor Types & Schemas
-import { useSubscriptionStore } from "@/store/subscriptionStore";
+import { useSubscriptionStore } from '@/store/subscriptionStore';
 
-import {
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  Input,
-} from "@/components/ui";
-import { CheckIcon, TicketIcon, XIcon } from "lucide-react";
+import { Button, Form, FormControl, FormField, FormItem, Input } from '@/components/ui';
+import { CheckIcon, TicketIcon, XIcon } from 'lucide-react';
 
 const schema = z.object({
   code: z.string().min(1),
 });
 
 export const DiscountCode = () => {
-  const t = useTranslations("UpdateReferralCode");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('UpdateReferralCode');
+  const t_ec = useTranslations('ERROR_CODES');
   const [isCodeSubmitting, setIsCodeSubmitting] = useState(false);
 
   const {
@@ -42,7 +35,7 @@ export const DiscountCode = () => {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      code: "",
+      code: '',
     },
   });
 
@@ -76,7 +69,7 @@ export const DiscountCode = () => {
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder={t("Code.placeholder")}
+                        placeholder={t('Code.placeholder')}
                         className="rounded-full md:h-9 md:min-w-[240px]"
                         {...field}
                       />
@@ -97,7 +90,7 @@ export const DiscountCode = () => {
 
             <Button
               type="button"
-              variant={"outline"}
+              variant={'outline'}
               size="icon"
               className="rounded-full [&_svg:not([class*='size-'])]:size-5"
               disabled={isCodeSubmitting}
@@ -114,7 +107,7 @@ export const DiscountCode = () => {
         </Form>
       ) : (
         <Button
-          variant={"link"}
+          variant={'link'}
           onClick={() =>
             setActive({
               ...active,
@@ -123,7 +116,7 @@ export const DiscountCode = () => {
           }
         >
           <TicketIcon />
-          {t("have_coupon")}
+          {t('have_coupon')}
         </Button>
       )}
     </div>

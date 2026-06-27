@@ -1,7 +1,7 @@
-"use client";
-import { cn } from "@/lib/utils";
+'use client';
+import { cn } from '@/lib/utils';
 
-import { Spinner } from "../ui/spinner";
+import { Spinner } from '../ui/spinner';
 
 interface LoaderSpinProps {
   className?: string;
@@ -10,7 +10,7 @@ interface LoaderSpinProps {
 export const LoaderSpin = ({ className }: LoaderSpinProps) => {
   return (
     <div className="flex h-full w-full flex-1 flex-col items-center justify-center">
-      <Spinner className={cn("text-secondary size-7", className)} />
+      <Spinner className={cn('text-secondary size-7', className)} />
     </div>
   );
 };

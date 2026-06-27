@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-import { Card } from "@/components/ui/card";
+import { Card } from '@/components/ui/card';
 
 interface CardSimpleProps {
   children: React.ReactNode;
@@ -9,8 +9,6 @@ interface CardSimpleProps {
 
 export const CardSimple = ({ children, className }: CardSimpleProps) => {
   return (
-    <Card className={cn("gap-0 p-0 shadow-md shadow-gray-200/70", className)}>
-      {children}
-    </Card>
+    <Card className={cn('gap-0 p-0 shadow-md shadow-gray-200/70', className)}>{children}</Card>
   );
 };

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 // Custom error class to include additional properties
 export class FetchError extends Error {
   data?: any;
@@ -9,7 +9,7 @@ export class FetchError extends Error {
     this.name = 'FetchError';
     this.data = data;
     this.status = status;
-    
+
     // This is necessary for proper prototype chain setup in TypeScript
     Object.setPrototypeOf(this, FetchError.prototype);
   }
@@ -22,19 +22,19 @@ export const fetcher = async (url: string, options?: RequestInit) => {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
     });
-    
+
     const data = await res.json();
-    
+
     if (!res.ok) {
       throw new FetchError(
         'An error occurred while fetching the data.',
         data, // The error info from the response
-        res.status
+        res.status,
       );
     }
-    
+
     return data;
   } catch (error) {
     if (error instanceof FetchError) {

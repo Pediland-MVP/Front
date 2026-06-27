@@ -22,7 +22,12 @@ export class OnboardingPage {
     this.cancelButton = page.locator('button:has-text("انصراف از ثبت نام")');
   }
 
-  async fillForm(data: { firstname: string; lastname: string; instagram: string; referralCode?: string }) {
+  async fillForm(data: {
+    firstname: string;
+    lastname: string;
+    instagram: string;
+    referralCode?: string;
+  }) {
     await this.firstnameInput.fill(data.firstname);
     await this.lastnameInput.fill(data.lastname);
     await this.instagramInput.fill(data.instagram);

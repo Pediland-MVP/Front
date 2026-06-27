@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import {
   Button,
@@ -11,10 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui";
-import { InstagramLogoIcon } from "@phosphor-icons/react";
-import { PlugsIcon } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
+} from '@/components/ui';
+import { InstagramLogoIcon } from '@phosphor-icons/react';
+import { PlugsIcon } from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
@@ -24,11 +24,8 @@ interface HowToConnectDialogProps {
   setOpen: (open: boolean) => void;
 }
 
-export const HowToConnectDialog = ({
-  open,
-  setOpen,
-}: HowToConnectDialogProps) => {
-  const t = useTranslations("Connect");
+export const HowToConnectDialog = ({ open, setOpen }: HowToConnectDialogProps) => {
+  const t = useTranslations('Connect');
   const locale = useLocale();
   const router = useRouter();
   const [connecting, setConnecting] = useState(false);
@@ -58,38 +55,32 @@ export const HowToConnectDialog = ({
         {!connecting ? (
           <>
             <DialogHeader className="gap-2">
-              <PlugsIcon
-                size={46}
-                weight="duotone"
-                className="text-primary mx-auto"
-              />
+              <PlugsIcon size={46} weight="duotone" className="text-primary mx-auto" />
               <DialogTitle className="text-primary justify-center text-base">
-                {t("how_to_connect_title")}
+                {t('how_to_connect_title')}
               </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-2">
               <ol
                 className={cn(
-                  "list-decimal space-y-2 text-sm text-violet-950",
-                  locale === "fa" ? "pr-5" : "pl-6",
+                  'list-decimal space-y-2 text-sm text-violet-950',
+                  locale === 'fa' ? 'pr-5' : 'pl-6',
                 )}
               >
-                <li>{t("how_to_connect_list_1")}</li>
-                <li>{t("how_to_connect_list_2")}</li>
-                <li>{t("how_to_connect_list_3")}</li>
-                <li>{t("how_to_connect_list_4")}</li>
+                <li>{t('how_to_connect_list_1')}</li>
+                <li>{t('how_to_connect_list_2')}</li>
+                <li>{t('how_to_connect_list_3')}</li>
+                <li>{t('how_to_connect_list_4')}</li>
               </ol>
 
               <div className="mt-5 rounded-lg border border-dashed border-blue-500/60 bg-blue-50/50 p-3">
-                <p className="text-[13px] text-blue-900">
-                  {t("how_to_connect_description")}
-                </p>
+                <p className="text-[13px] text-blue-900">{t('how_to_connect_description')}</p>
               </div>
             </div>
             <DialogFooter>
               <Button className="w-full" onClick={() => setConnecting(true)}>
-                {t("how_to_connect_button")}
+                {t('how_to_connect_button')}
               </Button>
             </DialogFooter>
           </>
@@ -97,10 +88,10 @@ export const HowToConnectDialog = ({
           <div className="flex flex-col items-center gap-4">
             <div className="text-primary flex flex-col items-center gap-2 font-bold">
               <InstagramLogoIcon size={36} className="text-primary" />
-              {t("connecting_title")}
+              {t('connecting_title')}
             </div>
             <div className="text-muted-foreground text-center text-sm">
-              {t("connecting_description")}
+              {t('connecting_description')}
             </div>
 
             <div className="h-8 w-4/5 bg-[url('/images/loading.gif')] bg-cover bg-center bg-no-repeat"></div>

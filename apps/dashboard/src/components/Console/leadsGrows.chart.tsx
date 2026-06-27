@@ -1,28 +1,15 @@
-"use client";
+'use client';
 
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EachMonthLeadGrow, StatsNamespace } from "../../../src/types/stats";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EachMonthLeadGrow, StatsNamespace } from '../../../src/types/stats';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 export type LeadsGrowsChartProps = {
-  eachMonthLeadGrow: StatsNamespace.Overall["eachMonthLeadGrows"] | undefined;
+  eachMonthLeadGrow: StatsNamespace.Overall['eachMonthLeadGrows'] | undefined;
 };
 
-export default function LeadsGrowsChart({
-  eachMonthLeadGrow,
-}: LeadsGrowsChartProps) {
+export default function LeadsGrowsChart({ eachMonthLeadGrow }: LeadsGrowsChartProps) {
   if (!eachMonthLeadGrow) {
     return null;
   }
@@ -32,8 +19,8 @@ export default function LeadsGrowsChart({
         <ChartContainer
           config={{
             leads: {
-              label: "Leads",
-              color: "rgb(190 24 93)",
+              label: 'Leads',
+              color: 'rgb(190 24 93)',
             },
           }}
         >
@@ -66,12 +53,12 @@ export default function LeadsGrowsChart({
                 strokeWidth={2}
                 activeDot={{
                   r: 6,
-                  style: { fill: "black", opacity: 0.25 },
+                  style: { fill: 'black', opacity: 0.25 },
                 }}
                 style={
                   {
-                    stroke: "rgb(190 24 93)",
-                    "--primary": `rgb(190 24 93)`,
+                    stroke: 'rgb(190 24 93)',
+                    '--primary': `rgb(190 24 93)`,
                   } as React.CSSProperties
                 }
               />

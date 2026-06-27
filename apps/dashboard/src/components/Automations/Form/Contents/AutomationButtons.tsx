@@ -1,10 +1,10 @@
 // src/components/Automations/Form/Contents/ButtonContent.tsx
-"use client";
+'use client';
 
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { AutomationContentModeEnum } from '@/constants/automationContent.enum';
+import { AutomationFormType } from '@/schemas/automationForm';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
 import {
   closestCenter,
   DndContext,
@@ -13,20 +13,20 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import { useTranslations } from "next-intl";
+} from '@dnd-kit/sortable';
+import { useTranslations } from 'next-intl';
 
-import { Button } from "@/components/ui";
-import { RadioButtonIcon } from "@phosphor-icons/react/dist/ssr";
-import { ButtonContentItem } from "./ContentButtonsItem";
-import React, { useEffect } from "react";
+import { Button } from '@/components/ui';
+import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr';
+import { ButtonContentItem } from './ContentButtonsItem';
+import React, { useEffect } from 'react';
 
-export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate' | 'question' | "vitrin";
+export type AutomationButtonsContentTypes = 'text' | 'buttonTemplate' | 'question' | 'vitrin';
 
 type ButtonContentProps = {
   contentType: AutomationButtonsContentTypes;
@@ -40,7 +40,7 @@ const MaximumButtonLength = {
   text: 13,
   buttonTemplate: 3,
   question: 13,
-  vitrin: 3
+  vitrin: 3,
 };
 
 export const AutomationButtons = ({
@@ -49,21 +49,20 @@ export const AutomationButtons = ({
   mode,
   fieldNameOverride,
 }: ButtonContentProps) => {
-  const t = useTranslations("Automations.Contents.Button");
+  const t = useTranslations('Automations.Contents.Button');
   const maximumButtonLength: number = MaximumButtonLength[contentType];
 
   const { control } = useFormContext<AutomationFormType>();
 
-  type DefaultFieldNameType = `${'contents' | 'reminders'}.${number}.${'buttonTemplate.buttons' | 'quickReplies' | 'buttons'}`
-  const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${(contentType === 'text' || contentType === 'question') ? 'quickReplies' : contentType ===  'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
+  type DefaultFieldNameType =
+    `${'contents' | 'reminders'}.${number}.${'buttonTemplate.buttons' | 'quickReplies' | 'buttons'}`;
+  const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : contentType === 'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
 
   const { fields, move, remove, append } = useFieldArray({
     control,
     name: (fieldNameOverride ?? defaultFieldName) as any,
-    keyName: "_xid",                    // ← هماهنگ با VitrinContent
+    keyName: '_xid', // ← هماهنگ با VitrinContent
   });
-
-
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -82,7 +81,7 @@ export const AutomationButtons = ({
   const addButton = () => {
     if (fields.length < maximumButtonLength) {
       append({
-        title: "",
+        title: '',
         ...(contentType === 'question' && { postbackPayloadType: ButtonTypeEnum.TEXT }),
       });
     }
@@ -90,32 +89,29 @@ export const AutomationButtons = ({
 
   return (
     <div className="_AutomationButtons flex flex-col gap-y-3">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={fields.map((item: any) => item._xid)}
           strategy={rectSortingStrategy}
         >
           <div className="flex w-full flex-col items-center justify-center gap-y-3">
             {fields.map((button, index) => {
-              console.log("Buttons inside sortable", button);
+              console.log('Buttons inside sortable', button);
 
               // return JSON.stringify(button)
-              return  (
-              <ButtonContentItem
-                key={button._xid}
-                id={button._xid}
-                index={index}
-                contentIndex={contentIndex}
-                remove={remove}
-                mode={mode}
-                contentType={contentType}
-                fieldNameOverride={fieldNameOverride}
-              />
-            )})}
+              return (
+                <ButtonContentItem
+                  key={button._xid}
+                  id={button._xid}
+                  index={index}
+                  contentIndex={contentIndex}
+                  remove={remove}
+                  mode={mode}
+                  contentType={contentType}
+                  fieldNameOverride={fieldNameOverride}
+                />
+              );
+            })}
           </div>
         </SortableContext>
       </DndContext>
@@ -129,7 +125,7 @@ export const AutomationButtons = ({
           disabled={fields.length >= maximumButtonLength}
         >
           <RadioButtonIcon className="size-5" />
-          {t("add")}
+          {t('add')}
         </Button>
       )}
     </div>

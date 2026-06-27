@@ -1,4 +1,4 @@
-import { FocusEvent } from "react";
+import { FocusEvent } from 'react';
 
 export const useSelectOnFocus = () => {
   const handleFocus = (e: FocusEvent<HTMLInputElement>) => {

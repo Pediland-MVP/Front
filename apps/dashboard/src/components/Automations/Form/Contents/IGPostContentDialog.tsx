@@ -1,16 +1,16 @@
 // src/components/Automations/Form/Contents/IGPostContentDialog.tsx
-"use client";
+'use client';
 
-import { AutomationContentModeEnum } from "@/constants/automationContent.enum";
-import api from "@/hooks/swr/api-client";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { AxiosError } from "axios";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { MouseEvent, useEffect, useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { AutomationContentModeEnum } from '@/constants/automationContent.enum';
+import api from '@/hooks/swr/api-client';
+import { AutomationFormType } from '@/schemas/automationForm';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { AxiosError } from 'axios';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { MouseEvent, useEffect, useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 import {
   Button,
@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   Skeleton,
-} from "@/components/ui";
+} from '@/components/ui';
 
 type IGPostContentDialogProps = {
   isOpen: boolean;
@@ -42,29 +42,26 @@ export const IGPostContentDialog = ({
   const [posts, setPosts] = useState<any[]>([]);
   const [after, setAfter] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const t = useTranslations("Automations.Contents.InstagramPost.Dialog");
+  const t = useTranslations('Automations.Contents.InstagramPost.Dialog');
 
   const { getValues, control } = useFormContext<AutomationFormType>();
   const { update: updateContents } = useFieldArray({
     control: control,
-    name:
-      mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders",
-    keyName: "_xid",
+    name: mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders',
+    keyName: '_xid',
   });
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
     try {
-      const url = afterCursor
-        ? `/posts/pure?after=${afterCursor}`
-        : `/posts/pure`;
+      const url = afterCursor ? `/posts/pure?after=${afterCursor}` : `/posts/pure`;
 
       const res = await api.get(url);
       setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
       setHasMore(res.data.media.data.length === PAGE_SIZE);
       setAfter(res.data.media.paging.cursors.after || null);
     } catch (e: any) {
-      console.error("Error fetching posts:", e);
+      console.error('Error fetching posts:', e);
     } finally {
       setIsLoading(false);
     }
@@ -99,8 +96,8 @@ export const IGPostContentDialog = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
-          <DialogTitle>{t("select_post")}</DialogTitle>
-          <DialogDescription>{t("see_your_last_posts")}</DialogDescription>
+          <DialogTitle>{t('select_post')}</DialogTitle>
+          <DialogDescription>{t('see_your_last_posts')}</DialogDescription>
         </DialogHeader>
         <InfiniteScroll
           dataLength={posts.length}
@@ -109,7 +106,7 @@ export const IGPostContentDialog = ({
           loader={<></>}
           endMessage={
             <p className="text-muted-foreground mt-4 text-center text-sm">
-              {t("there_is_no_more")}
+              {t('there_is_no_more')}
             </p>
           }
           scrollableTarget="scrollableDiv"
@@ -117,7 +114,7 @@ export const IGPostContentDialog = ({
           <div
             className="grid w-full grid-cols-3 gap-4"
             id="scrollableDiv"
-            style={{ maxHeight: "60vh", overflowY: "auto" }}
+            style={{ maxHeight: '60vh', overflowY: 'auto' }}
           >
             {!posts.length && isLoading
               ? Array.from({ length: 9 }).map((_, index) => (
@@ -131,19 +128,13 @@ export const IGPostContentDialog = ({
                     key={post.id}
                     data-postid={post.id}
                     data-mediaurl={
-                      post.media_type === "VIDEO"
-                        ? post.thumbnail_url
-                        : post.media_url
+                      post.media_type === 'VIDEO' ? post.thumbnail_url : post.media_url
                     }
                     onClick={selectPost}
                   >
                     <Image
-                      src={
-                        post.media_type === "VIDEO"
-                          ? post.thumbnail_url
-                          : post.media_url
-                      }
-                      alt={post.caption || "Instagram Post"}
+                      src={post.media_type === 'VIDEO' ? post.thumbnail_url : post.media_url}
+                      alt={post.caption || 'Instagram Post'}
                       fill
                       className="object-cover duration-150 hover:opacity-80"
                     />
@@ -152,7 +143,7 @@ export const IGPostContentDialog = ({
           </div>
         </InfiniteScroll>
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>{t("close")}</Button>
+          <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

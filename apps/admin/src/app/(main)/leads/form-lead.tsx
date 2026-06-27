@@ -1,21 +1,21 @@
 // src/app/(main)/leads/form-lead.tsx
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { useCategories } from "@/hooks/use-categories";
-import { Category } from "@/types/category";
-import { MarketingLead } from "@/types/lead";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
+import api from '@/hooks/swr/api-client';
+import { useCategories } from '@/hooks/use-categories';
+import { Category } from '@/types/category';
+import { MarketingLead } from '@/types/lead';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import z from 'zod';
 
 // UI Imports
-import { FetchError } from "@/components/fetch-error";
-import { Loading } from "@/components/loading";
-import { Button } from "@/components/ui/button";
+import { FetchError } from '@/components/fetch-error';
+import { Loading } from '@/components/loading';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -23,52 +23,49 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { formatNumber } from "@/lib/formatNumber";
-import { onInputP2EHandler } from "@/lib/p2eNumber";
-import { useSelectOnFocus } from "@/hooks/useSelectOnFocus";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { formatNumber } from '@/lib/formatNumber';
+import { onInputP2EHandler } from '@/lib/p2eNumber';
+import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 const FormSchema = z.object({
   firstname: z
     .string()
-    .min(2, "حداقل دو کاراکتر وارد کنید.")
-    .max(50, "حداکثر 50 کاراکتر وارد کنید.")
+    .min(2, 'حداقل دو کاراکتر وارد کنید.')
+    .max(50, 'حداکثر 50 کاراکتر وارد کنید.')
     .optional()
     .nullable()
     .or(z.string().max(0)),
   lastname: z
     .string()
-    .min(2, "حداقل دو کاراکتر وارد کنید.")
-    .max(50, "حداکثر 50 کاراکتر وارد کنید.")
+    .min(2, 'حداقل دو کاراکتر وارد کنید.')
+    .max(50, 'حداکثر 50 کاراکتر وارد کنید.')
     .optional()
     .nullable()
     .or(z.string().max(0)),
   mobile: z
     .string()
-    .length(11, "دقیقاً ۱۱ رقم وارد کنید.")
-    .regex(/^09\d{9}$/, "فرمت شماره موبایل معتبر نیست.")
+    .length(11, 'دقیقاً ۱۱ رقم وارد کنید.')
+    .regex(/^09\d{9}$/, 'فرمت شماره موبایل معتبر نیست.')
     .optional()
     .nullable()
     .or(z.string().max(0)),
   instagram: z.object({
-    username: z.string().min(3, "حداقل 3 کاراکتر وارد کنید."),
+    username: z.string().min(3, 'حداقل 3 کاراکتر وارد کنید.'),
     name: z.string(),
     followersCount: z.number(),
     followsCount: z.number(),
     mediaCount: z.number(),
   }),
-  categoryId: z
-    .number()
-    .min(1, { message: "یک دسته‌بندی انتخاب کنید." })
-    .optional(),
+  categoryId: z.number().min(1, { message: 'یک دسته‌بندی انتخاب کنید.' }).optional(),
 
   note: z.string().optional().nullable(),
 });
@@ -91,14 +88,14 @@ export default function LeadForm({
       lastname: data?.lastname ?? null,
       mobile: data?.mobile ?? null,
       instagram: {
-        username: data?.instagram?.username ?? "",
-        name: data?.instagram?.name ?? "",
+        username: data?.instagram?.username ?? '',
+        name: data?.instagram?.name ?? '',
         followersCount: data?.instagram?.followersCount ?? 0,
         followsCount: data?.instagram?.followsCount ?? 0,
         mediaCount: data?.instagram?.mediaCount ?? 0,
       },
       categoryId: data?.categoryId ?? undefined,
-      note: data?.note ?? "",
+      note: data?.note ?? '',
     },
   });
 
@@ -113,14 +110,14 @@ export default function LeadForm({
         lastname: data.lastname ?? null,
         mobile: data.mobile ?? null,
         instagram: {
-          username: data.instagram.username ?? "",
-          name: data.instagram.name ?? "",
+          username: data.instagram.username ?? '',
+          name: data.instagram.name ?? '',
           followersCount: data.instagram.followersCount ?? 0,
           followsCount: data.instagram.followsCount ?? 0,
           mediaCount: data.instagram.mediaCount ?? 0,
         },
         categoryId: data.categoryId ?? undefined,
-        note: data.note ?? "",
+        note: data.note ?? '',
       });
     }
   }, [data, form]);
@@ -128,18 +125,18 @@ export default function LeadForm({
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     const payload = {
       ...values,
-      note: values.note ?? "",
+      note: values.note ?? '',
     };
 
     try {
       if (data?.id) {
         await api.patch(`/marketingLeads/${data.id}`, payload);
         mutateLeads?.();
-        toast.success("سرنخ با موفقیت ویرایش شد.");
+        toast.success('سرنخ با موفقیت ویرایش شد.');
       } else {
-        await api.post("/marketingLeads", payload);
+        await api.post('/marketingLeads', payload);
         mutateLeads?.();
-        toast.success("سرنخ با موفقیت ایجاد شد.");
+        toast.success('سرنخ با موفقیت ایجاد شد.');
       }
 
       form.reset();
@@ -150,27 +147,27 @@ export default function LeadForm({
 
       if (err.response?.status === 409) {
         switch (code) {
-          case "MARKETINGLEAD_MOBILE_IS_EXIST_IN_USERS_TABLE":
-            toast.error("این شماره موبایل در لیست مشتریان ثبت شده است.");
-            form.setError("mobile", {});
+          case 'MARKETINGLEAD_MOBILE_IS_EXIST_IN_USERS_TABLE':
+            toast.error('این شماره موبایل در لیست مشتریان ثبت شده است.');
+            form.setError('mobile', {});
             break;
-          case "MARKETINGLEAD_MOBILE_IS_EXIST":
-            toast.error("این شماره موبایل در سرنخ‌ها ثبت شده است.");
-            form.setError("mobile", {});
+          case 'MARKETINGLEAD_MOBILE_IS_EXIST':
+            toast.error('این شماره موبایل در سرنخ‌ها ثبت شده است.');
+            form.setError('mobile', {});
             break;
-          case "MARKETINGLEAD_USERNAME_IS_EXIST_IN_INSTAGRAM_TABLE":
-            toast.error("این آیدی اینستاگرام در لیست مشتریان ثبت شده است.");
-            form.setError("instagram.username", {});
+          case 'MARKETINGLEAD_USERNAME_IS_EXIST_IN_INSTAGRAM_TABLE':
+            toast.error('این آیدی اینستاگرام در لیست مشتریان ثبت شده است.');
+            form.setError('instagram.username', {});
             break;
-          case "MARKETINGLEAD_USERNAME_IS_EXIST":
-            toast.error("این آیدی اینستاگرام در سرنخ‌ها ثبت شده است.");
-            form.setError("instagram.username", {});
+          case 'MARKETINGLEAD_USERNAME_IS_EXIST':
+            toast.error('این آیدی اینستاگرام در سرنخ‌ها ثبت شده است.');
+            form.setError('instagram.username', {});
             break;
           default:
-            toast.error("خطای تکراری ناشناخته.");
+            toast.error('خطای تکراری ناشناخته.');
         }
       } else {
-        toast.error("خطا در ایجاد سرنخ.");
+        toast.error('خطا در ایجاد سرنخ.');
       }
     }
   }
@@ -190,7 +187,7 @@ export default function LeadForm({
                 <FormItem>
                   <FormLabel>نام</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ""} />
+                    <Input {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,7 +200,7 @@ export default function LeadForm({
                 <FormItem>
                   <FormLabel>نام خانوادگی</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ""} />
+                    <Input {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -220,7 +217,7 @@ export default function LeadForm({
                       dir="ltr"
                       className="text-center text-sm"
                       {...field}
-                      value={field.value ?? ""}
+                      value={field.value ?? ''}
                       maxLength={11}
                     />
                   </FormControl>
@@ -274,13 +271,10 @@ export default function LeadForm({
                   <FormControl>
                     <Select
                       name="categoryId"
-                      value={field.value ? String(field.value) : ""}
+                      value={field.value ? String(field.value) : ''}
                       onValueChange={(val) => field.onChange(Number(val))}
                     >
-                      <SelectTrigger
-                        className="w-full"
-                        aria-invalid={!!fieldState.error}
-                      >
+                      <SelectTrigger className="w-full" aria-invalid={!!fieldState.error}>
                         <SelectValue placeholder="انتخاب کنید" />
                       </SelectTrigger>
                       <SelectContent>
@@ -311,12 +305,10 @@ export default function LeadForm({
                         field.value === undefined ||
                         field.value === null ||
                         Number.isNaN(field.value)
-                          ? ""
+                          ? ''
                           : formatNumber(field.value)
                       }
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
-                      }
+                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -338,12 +330,10 @@ export default function LeadForm({
                         field.value === undefined ||
                         field.value === null ||
                         Number.isNaN(field.value)
-                          ? ""
+                          ? ''
                           : formatNumber(field.value)
                       }
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
-                      }
+                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -365,12 +355,10 @@ export default function LeadForm({
                         field.value === undefined ||
                         field.value === null ||
                         Number.isNaN(field.value)
-                          ? ""
+                          ? ''
                           : formatNumber(field.value)
                       }
-                      onChange={(e) =>
-                        field.onChange(e.target.value === "" ? 0 : +e.target.value)
-                      }
+                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -379,16 +367,12 @@ export default function LeadForm({
             />
           </div>
           <div className="col-span-6 flex justify-end space-x-2 pt-4">
-            <Button
-              type="submit"
-              className="w-1/2 md:w-auto"
-              disabled={isDisabled}
-            >
-              {isDisabled ? "در حال ثبت..." : "ذخیره"}
+            <Button type="submit" className="w-1/2 md:w-auto" disabled={isDisabled}>
+              {isDisabled ? 'در حال ثبت...' : 'ذخیره'}
             </Button>
             <Button
               type="button"
-              color={"cancel"}
+              color={'cancel'}
               className="w-1/2 md:w-auto"
               disabled={isDisabled}
               onClick={() => onOpenChange(false)}

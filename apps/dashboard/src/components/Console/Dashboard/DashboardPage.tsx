@@ -1,6 +1,6 @@
-import { LayoutPage } from "@/components/Layout/LayoutPage";
-import { SubscriptionBoard } from "./SubscriptionBoard";
-import { DashboardStats } from "./DashboardStats";
+import { LayoutPage } from '@/components/Layout/LayoutPage';
+import { SubscriptionBoard } from './SubscriptionBoard';
+import { DashboardStats } from './DashboardStats';
 
 export const DashboardPage = () => {
   return (

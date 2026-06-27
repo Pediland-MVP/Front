@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import useSWR from "swr";
-import type { RangeConfig } from "@/app/(main)/_components/metrics.constants";
+import { useMemo } from 'react';
+import useSWR from 'swr';
+import type { RangeConfig } from '@/app/(main)/_components/metrics.constants';
 
 export interface PlatformTotals {
   sessionsCount: number;
@@ -10,7 +10,7 @@ export interface PlatformTotals {
   leadInstagramsCount: number;
 }
 
-export type SeriesResolution = "1h" | "1d";
+export type SeriesResolution = '1h' | '1d';
 
 export interface SeriesPoint {
   bucket: string;
@@ -32,9 +32,7 @@ interface Wrapped<T> {
 }
 
 export function usePlatformTotals() {
-  const { data, error, isLoading } = useSWR<Wrapped<PlatformTotals>>(
-    "/metrics/platform/totals",
-  );
+  const { data, error, isLoading } = useSWR<Wrapped<PlatformTotals>>('/metrics/platform/totals');
   return {
     totals: data?.data ?? null,
     isLoading,
@@ -43,7 +41,7 @@ export function usePlatformTotals() {
 }
 
 function seriesUrl(range: RangeConfig): string {
-  if (range.mode === "custom") {
+  if (range.mode === 'custom') {
     const params = new URLSearchParams({ from: range.from, to: range.to });
     return `/metrics/platform/series?${params.toString()}`;
   }
@@ -51,9 +49,7 @@ function seriesUrl(range: RangeConfig): string {
 }
 
 export function usePlatformSeries(range: RangeConfig) {
-  const { data, error, isLoading } = useSWR<Wrapped<PlatformSeries>>(
-    seriesUrl(range),
-  );
+  const { data, error, isLoading } = useSWR<Wrapped<PlatformSeries>>(seriesUrl(range));
   const series = data?.data ?? null;
 
   // Group points by metricType for per-metric charts, and sum each metric's

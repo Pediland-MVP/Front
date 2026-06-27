@@ -1,15 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function ProductDetailsSkeleton() {
   return (
     <div className="md:col-span-4">
-      <div className="flex flex-col gap-4 md:flex-row items-start md:gap-6">
-        <div className="relative w-full md:w-1/3 aspect-square">
-          <Skeleton className="w-full h-full rounded-xl" />
+      <div className="flex flex-col items-start gap-4 md:flex-row md:gap-6">
+        <div className="relative aspect-square w-full md:w-1/3">
+          <Skeleton className="h-full w-full rounded-xl" />
         </div>
 
-        <div className="md:w-2/3 flex items-center h-full w-full">
-          <div className="flex flex-col gap-5 w-full">
+        <div className="flex h-full w-full items-center md:w-2/3">
+          <div className="flex w-full flex-col gap-5">
             <Skeleton className="h-8 w-3/4" /> {/* Title */}
             <Skeleton className="h-20 w-full" /> {/* Description */}
             <Skeleton className="h-6 w-1/4" /> {/* Stock */}
@@ -21,6 +21,5 @@ export function ProductDetailsSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

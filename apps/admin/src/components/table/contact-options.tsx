@@ -5,8 +5,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SmsData } from "@/types/sms";
+} from '@/components/ui/dropdown-menu';
+import { SmsData } from '@/types/sms';
 
 type Props = {
   leadId: string;
@@ -16,14 +16,8 @@ type Props = {
   openSmsDialog?: (data: SmsData) => void;
 };
 
-export const ContactOptions = ({
-  leadId,
-  mobile,
-  email,
-  fullName,
-  openSmsDialog,
-}: Props) => {
-  const label = mobile || email || "-";
+export const ContactOptions = ({ leadId, mobile, email, fullName, openSmsDialog }: Props) => {
+  const label = mobile || email || '-';
 
   if (!mobile && !email) return <span className="text-muted-foreground text-xs">-</span>;
 
@@ -42,7 +36,7 @@ export const ContactOptions = ({
             </DropdownMenuItem>
             <DropdownMenuItem size="sm" className="justify-center">
               <a
-                href={`https://wa.me/98${mobile.replace(/^0/, "")}`}
+                href={`https://wa.me/98${mobile.replace(/^0/, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -51,7 +45,7 @@ export const ContactOptions = ({
             </DropdownMenuItem>
             <DropdownMenuItem size="sm" className="justify-center">
               <a
-                href={`https://t.me/+98${mobile.replace(/^0/, "")}`}
+                href={`https://t.me/+98${mobile.replace(/^0/, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

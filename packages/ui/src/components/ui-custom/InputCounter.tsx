@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 interface InputCounterProps {
   placeholder?: string;
@@ -11,7 +11,7 @@ interface InputCounterProps {
 
 export const InputCounter = ({
   text,
-  placeholder = "Type your message here...",
+  placeholder = 'Type your message here...',
   maxLength = 100,
   className,
 }: InputCounterProps) => {
@@ -29,12 +29,7 @@ export const InputCounter = ({
   return (
     <div className="relative flex items-center gap-2">
       <div className="relative flex size-5 items-center justify-center">
-        <svg
-          width={size}
-          height={size}
-          viewBox={`0 0 ${size} ${size}`}
-          className="rotate-[-90deg]"
-        >
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
           {/* Background circle */}
           <circle
             cx={size / 2}
@@ -56,9 +51,9 @@ export const InputCounter = ({
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            className={isOverLimit ? "text-orange-500" : "text-green-600"}
+            className={isOverLimit ? 'text-orange-500' : 'text-green-600'}
             style={{
-              transition: "stroke-dashoffset 0.2s ease, stroke 0.2s ease",
+              transition: 'stroke-dashoffset 0.2s ease, stroke 0.2s ease',
             }}
           />
         </svg>
@@ -66,8 +61,8 @@ export const InputCounter = ({
 
       <span
         className={cn(
-          "flex text-xs leading-px font-medium",
-          isOverLimit ? "text-orange-500" : "text-green-600",
+          'flex text-xs leading-px font-medium',
+          isOverLimit ? 'text-orange-500' : 'text-green-600',
         )}
       >
         {charCount}/{maxLength} کاراکتر

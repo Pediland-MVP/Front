@@ -1,39 +1,34 @@
-"use client";
+'use client';
 
-import usePayPlan from "@/app/(Console)/settings/subscription/hooks/usePayPlan";
-import useUser from "@/hooks/useUser";
-import { cn } from "@/lib/utils";
-import { useSubscriptionStore } from "@/store/subscriptionStore";
-import { IPlan } from "@/types/plans/plans";
-import { formatNumber } from "@/utils/formatNumber";
-import { zodResolver } from "@hookform/resolvers/zod";
+import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
+import useUser from '@/hooks/useUser';
+import { cn } from '@/lib/utils';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { IPlan } from '@/types/plans/plans';
+import { formatNumber } from '@/utils/formatNumber';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CircleIcon,
   ClockCountdownIcon,
   PackageIcon,
   SealCheckIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import {
-  MoveLeftIcon,
-  ShoppingBagIcon,
-  ShoppingBasketIcon,
-  ShoppingCartIcon,
-} from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { InstagramInvalid } from "../Console/InstagramInvalid";
-import { Alert, AlertDescription, Button, Card, CardContent, CardFooter } from "../ui";
-import { ButtonLoading } from "../ui-custom/ButtonLoading";
-import { DiscountAlert } from "./DiscountAlert";
-import { DiscountCode } from "./DiscountCode";
-import { SubscriptionStatusEnum } from "@/types/subscriptions/enums/subscriptionStatus.enum";
-import { CardSimple } from "../ui-custom/CardSimple";
-import { toJalaliDate } from "@/utils/jalali";
-import { ProgressRadial } from "../Console/ProgressRadial";
+} from '@phosphor-icons/react/dist/ssr';
+import { MoveLeftIcon, ShoppingBagIcon, ShoppingBasketIcon, ShoppingCartIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { InstagramInvalid } from '../Console/InstagramInvalid';
+import { Alert, AlertDescription, Button, Card, CardContent, CardFooter } from '../ui';
+import { ButtonLoading } from '../ui-custom/ButtonLoading';
+import { DiscountAlert } from './DiscountAlert';
+import { DiscountCode } from './DiscountCode';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { CardSimple } from '../ui-custom/CardSimple';
+import { toJalaliDate } from '@/utils/jalali';
+import { ProgressRadial } from '../Console/ProgressRadial';
 
 const planSchema = z.object({
   planId: z.number(),
@@ -45,11 +40,9 @@ type FormValues = z.infer<typeof planSchema>;
 
 export const ChoosePlan = () => {
   const router = useRouter();
-  const t = useTranslations("Subscription");
+  const t = useTranslations('Subscription');
   const [currentPlan, setCurrentPlan] = useState<IPlan>();
-  const [selectedDurationId, setSelectedDurationId] = useState<number | null>(
-    null,
-  );
+  const [selectedDurationId, setSelectedDurationId] = useState<number | null>(null);
 
   const { user } = useUser();
 
@@ -86,19 +79,19 @@ export const ChoosePlan = () => {
     defaultValues: {
       planId: 0,
       durationId: 0,
-      discountCode: "",
+      discountCode: '',
     },
   });
 
   useEffect(() => {
     if (currentPlan?.id) {
-      form.setValue("planId", currentPlan.id);
+      form.setValue('planId', currentPlan.id);
     }
   }, [currentPlan, form]);
 
   const selectPlanHandler = (durationId: number) => {
     setSelectedDurationId(durationId);
-    form.setValue("durationId", durationId);
+    form.setValue('durationId', durationId);
     onSubmit(form.getValues());
   };
 
@@ -111,12 +104,12 @@ export const ChoosePlan = () => {
       };
       await pay(paymentData, setActive);
     } catch (error) {
-      console.error("Error in onSubmit", error);
+      console.error('Error in onSubmit', error);
       toast.error(error);
     }
   };
 
-  const labelClass = "text-muted-foreground text-sm font-me";
+  const labelClass = 'text-muted-foreground text-sm font-me';
 
   if (!active.choosePlan) return null;
 
@@ -132,18 +125,14 @@ export const ChoosePlan = () => {
                   <span className="text-primary flex items-center gap-1 font-semibold">
                     {t(activeSubscription.status)}
                   </span>
-                  <CircleIcon
-                    size={10}
-                    weight="fill"
-                    className="animate-pulse text-green-500"
-                  />
+                  <CircleIcon size={10} weight="fill" className="animate-pulse text-green-500" />
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   <span className={labelClass}>نوع اشتراک:</span>
                   <span className="text-primary font-semibold">
-                    {activeSubscription.type === "credit"
-                      ? "300 پیام رایگان"
+                    {activeSubscription.type === 'credit'
+                      ? '300 پیام رایگان'
                       : activeSubscription.planDuration.name}
                   </span>
                 </div>
@@ -167,22 +156,20 @@ export const ChoosePlan = () => {
                 percentage={
                   isSubscriptionsLoading
                     ? 0
-                    : activeSubscription?.type === "credit"
+                    : activeSubscription?.type === 'credit'
                       ? activeSubscription?.credit
                       : totalRemainingDays
                 }
                 size={90}
                 strokeWidth={8}
-                type={activeSubscription?.type === "credit" ? "credit" : "days"}
+                type={activeSubscription?.type === 'credit' ? 'credit' : 'days'}
                 totalDays={totalPurchasedDays}
               />
             </div>
           </CardContent>
         </CardSimple>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          {t("no_active_subscription")}
-        </p>
+        <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
       )}
 
       {isIgTokenInvalid ? (
@@ -233,11 +220,11 @@ export const ChoosePlan = () => {
         <div>
           <h3 className="text-secondary mb-4 flex items-center gap-1 text-[15px] font-medium">
             <ClockCountdownIcon size={20} />
-            {t("package_title")}:
+            {t('package_title')}:
           </h3>
 
           <Alert variant="destructive">
-            <AlertDescription icon>{t("vpnAlert")}</AlertDescription>
+            <AlertDescription icon>{t('vpnAlert')}</AlertDescription>
           </Alert>
 
           <div className="flex flex-col gap-4 md:flex-row">
@@ -268,66 +255,60 @@ export const ChoosePlan = () => {
                   <Card
                     key={id}
                     className={cn(
-                      "flex-1 gap-0 p-0",
+                      'flex-1 gap-0 p-0',
                       id === topId
-                        ? "border-violet-200 shadow-violet-200"
-                        : "border-blue-200/60 shadow-blue-200/60",
+                        ? 'border-violet-200 shadow-violet-200'
+                        : 'border-blue-200/60 shadow-blue-200/60',
                     )}
                   >
                     <CardContent
                       className={cn(
-                        "flex w-full flex-1 flex-col items-center gap-3 rounded-t-xl px-4 py-5 sm:px-3",
-                        id === topId ? "bg-violet-50/50" : "bg-blue-50/30",
+                        'flex w-full flex-1 flex-col items-center gap-3 rounded-t-xl px-4 py-5 sm:px-3',
+                        id === topId ? 'bg-violet-50/50' : 'bg-blue-50/30',
                       )}
                     >
                       <div className="flex items-center gap-1">
                         <h4
                           className={cn(
-                            "font-bold sm:text-[15px]",
-                            id === topId ? "text-primary" : "text-secondary/80",
+                            'font-bold sm:text-[15px]',
+                            id === topId ? 'text-primary' : 'text-secondary/80',
                           )}
                         >
-                          {t("subscription")} {duration.name}
+                          {t('subscription')} {duration.name}
                         </h4>
                       </div>
                       <div
                         className={cn(
-                          "text-center text-lg",
-                          id === topId
-                            ? "font-semibold text-green-600"
-                            : "font-medium",
+                          'text-center text-lg',
+                          id === topId ? 'font-semibold text-green-600' : 'font-medium',
                         )}
                       >
-                        {monthlyPrice}{" "}
-                        <span className="text-base sm:text-[15px]">
-                          هزار تومان ماهانه
-                        </span>
+                        {monthlyPrice}{' '}
+                        <span className="text-base sm:text-[15px]">هزار تومان ماهانه</span>
                       </div>
 
                       <div className="flex h-full">
                         <div className="text-muted-foreground flex items-center gap-1.5 text-[15px] sm:text-sm">
-                          (جمع {totalBasePrice} {t("toman")})
+                          (جمع {totalBasePrice} {t('toman')})
                         </div>
                       </div>
                     </CardContent>
                     <CardFooter className="w-full p-0">
                       <ButtonLoading
-                        isLoading={
-                          selectedDurationId === duration.id && isPayLoading
-                        }
+                        isLoading={selectedDurationId === duration.id && isPayLoading}
                         type="button"
                         variant="ghost"
                         size="lg"
                         className={cn(
-                          "h-9 w-full rounded-t-none! rounded-b-xl! font-semibold",
+                          'h-9 w-full rounded-t-none! rounded-b-xl! font-semibold',
                           id === topId
-                            ? "text-primary hover:text-primary bg-violet-100/90 hover:bg-violet-200/70"
-                            : "text-secondary/70 hover:text-secondary bg-blue-100/70 hover:bg-blue-100",
+                            ? 'text-primary hover:text-primary bg-violet-100/90 hover:bg-violet-200/70'
+                            : 'text-secondary/70 hover:text-secondary bg-blue-100/70 hover:bg-blue-100',
                         )}
                         onClick={() => selectPlanHandler(duration.id)}
                       >
                         <ShoppingBagIcon />
-                        {t("buy")}
+                        {t('buy')}
                       </ButtonLoading>
                     </CardFooter>
                   </Card>
@@ -342,9 +323,7 @@ export const ChoosePlan = () => {
 
         {reservedSubscriptions?.length > 0 && (
           <Button
-            onClick={() =>
-              setActive({ choosePlan: false, subscriptionInfo: true })
-            }
+            onClick={() => setActive({ choosePlan: false, subscriptionInfo: true })}
             variant="link"
             className="font-normal"
           >

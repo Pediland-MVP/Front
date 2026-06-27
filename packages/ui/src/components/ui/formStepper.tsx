@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { createContext, useContext, useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import * as React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { useEffect } from 'react';
 
 // Types
 interface FormStepperContextValue {
@@ -14,8 +14,7 @@ interface FormStepperContextValue {
   disableNavigation?: boolean;
 }
 
-interface FormStepperProviderProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface FormStepperProviderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   currentStep?: number;
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -34,15 +33,13 @@ interface FormStepProps {
 }
 
 // Context
-const FormStepperContext = createContext<FormStepperContextValue | undefined>(
-  undefined,
-);
+const FormStepperContext = createContext<FormStepperContextValue | undefined>(undefined);
 
 // Custom Hook
 export function useFormStepper() {
   const context = useContext(FormStepperContext);
   if (!context) {
-    throw new Error("useFormStepper must be used within FormStepperProvider");
+    throw new Error('useFormStepper must be used within FormStepperProvider');
   }
   return context;
 }
@@ -82,12 +79,7 @@ export function FormStepperProvider({
   return (
     <FormStepperContext.Provider value={value}>
       <div>
-        <div
-          className={cn(
-            "mb-8 flex items-center justify-center",
-            disable && "hidden",
-          )}
-        >
+        <div className={cn('mb-8 flex items-center justify-center', disable && 'hidden')}>
           {steps.map((step, index) => {
             const isActive = step.step === currentStep;
             const isCompleted = step.step < currentStep;
@@ -97,18 +89,14 @@ export function FormStepperProvider({
               <React.Fragment key={step.step}>
                 <div className="flex items-center">
                   <button
-                    onClick={() =>
-                      !disableNavigation && setCurrentStep(step.step)
-                    }
+                    onClick={() => !disableNavigation && setCurrentStep(step.step)}
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-                      isCompleted && "bg-primary text-primary-foreground",
-                      isActive && "bg-primary text-primary-foreground",
-                      !isActive &&
-                        !isCompleted &&
-                        "bg-muted text-muted-foreground",
-                      disableNavigation && "cursor-default",
-                      !disableNavigation && "hover:opacity-90",
+                      'flex h-10 w-10 items-center justify-center rounded-full transition-colors',
+                      isCompleted && 'bg-primary text-primary-foreground',
+                      isActive && 'bg-primary text-primary-foreground',
+                      !isActive && !isCompleted && 'bg-muted text-muted-foreground',
+                      disableNavigation && 'cursor-default',
+                      !disableNavigation && 'hover:opacity-90',
                     )}
                     disabled={disableNavigation}
                   >
@@ -118,8 +106,8 @@ export function FormStepperProvider({
                 {!isLast && (
                   <div
                     className={cn(
-                      "mx-2 h-[5px] w-[10%] rounded-full transition-colors duration-300",
-                      isCompleted ? "bg-primary" : "bg-muted",
+                      'mx-2 h-[5px] w-[10%] rounded-full transition-colors duration-300',
+                      isCompleted ? 'bg-primary' : 'bg-muted',
                     )}
                   />
                 )}
@@ -145,7 +133,7 @@ export function FormStep({
   const context = useContext(FormStepperContext);
 
   if (!context) {
-    throw new Error("FormStep must be used within FormStepperProvider");
+    throw new Error('FormStep must be used within FormStepperProvider');
   }
 
   const { currentStep, registerStep } = context;
@@ -159,12 +147,7 @@ export function FormStep({
   }
 
   return (
-    <div
-      className={cn(
-        "animate-in fade-in-50 duration-500 ease-in-out",
-        className,
-      )}
-    >
+    <div className={cn('animate-in fade-in-50 duration-500 ease-in-out', className)}>
       {!disableTitle && (
         <div className="mb-6 text-center">
           <h2 className="text-lg font-semibold capitalize">{title}</h2>

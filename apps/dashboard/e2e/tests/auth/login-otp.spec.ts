@@ -6,7 +6,11 @@ import { ConnectPage } from '../../pages/connect.page';
 import { TEST_USER } from '../../helpers/test-data';
 
 test.describe('Login with OTP', () => {
-  test('existing user without password should log in using OTP and reach dashboard', async ({ page, testMobile, apiHelper }) => {
+  test('existing user without password should log in using OTP and reach dashboard', async ({
+    page,
+    testMobile,
+    apiHelper,
+  }) => {
     const authPage = new AuthPage(page);
     const otpPage = new OtpPage(page);
     const onboardingPage = new OnboardingPage(page);
@@ -59,8 +63,8 @@ test.describe('Login with OTP', () => {
     await page.waitForTimeout(2000);
     const currentUrl = page.url();
     console.log(`[OTP Login Test] Redirected to: ${currentUrl}`);
-    
-    // As the user has not connected Instagram yet, they might land on /connect or / (dashboard). 
+
+    // As the user has not connected Instagram yet, they might land on /connect or / (dashboard).
     // Both are acceptable authenticated states. Let's assert they are not on onboarding/otp.
     expect(currentUrl).not.toContain('/auth/onboarding');
     expect(currentUrl).not.toContain('/auth/otp');

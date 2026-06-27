@@ -1,17 +1,17 @@
 // src/components/table/column-visibility.tsx
 
-import { ColumnMeta } from "@/types/tables";
-import { Table, VisibilityState } from "@tanstack/react-table";
+import { ColumnMeta } from '@/types/tables';
+import { Table, VisibilityState } from '@tanstack/react-table';
 
 // UI Imports
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Settings2Icon } from "lucide-react";
+} from '@/components/ui/dropdown-menu';
+import { Settings2Icon } from 'lucide-react';
 
 interface ColVisibilityProps<T> {
   table?: Table<T>;

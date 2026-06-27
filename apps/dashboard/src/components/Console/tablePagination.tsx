@@ -1,5 +1,5 @@
-import React from "react";
-import { useLocale, useTranslations } from "next-intl";
+import React from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 // Just UI Imports Below
 import {
   Select,
@@ -7,14 +7,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
-import { Button } from "@/components/ui/button";
+} from '@radix-ui/react-icons';
+import { Button } from '@/components/ui/button';
 
 interface DataTablePaginationProps {
   currentPage: number;
@@ -35,22 +35,22 @@ export function Pagination({
 }: DataTablePaginationProps) {
   const pageSizeOptions = [10, 20, 30, 40, 50];
 
-  const t = useTranslations("Contacts.Pagination");
+  const t = useTranslations('Contacts.Pagination');
   const locale = useLocale();
 
   return (
-    <div className="_pagination flex items-center justify-between gap-4 mt-4 pt-4 border-t">
+    <div className="_pagination mt-4 flex items-center justify-between gap-4 border-t pt-4">
       <div className="_navigation flex items-center gap-4">
         <div className="flex items-center gap-2">
           <Button
             aria-label="Go to first page"
             variant="outline"
             size="icon"
-            className="size-8 hidden lg:flex"
+            className="hidden size-8 lg:flex"
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
           >
-            {locale === "fa" ? (
+            {locale === 'fa' ? (
               <DoubleArrowRightIcon aria-hidden="true" />
             ) : (
               <DoubleArrowLeftIcon aria-hidden="true" />
@@ -64,7 +64,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            {locale === "fa" ? (
+            {locale === 'fa' ? (
               <ChevronRightIcon aria-hidden="true" />
             ) : (
               <ChevronLeftIcon aria-hidden="true" />
@@ -78,7 +78,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            {locale === "fa" ? (
+            {locale === 'fa' ? (
               <ChevronLeftIcon aria-hidden="true" />
             ) : (
               <ChevronRightIcon aria-hidden="true" />
@@ -88,32 +88,29 @@ export function Pagination({
             aria-label="Go to last page"
             variant="outline"
             size="icon"
-            className="size-8 hidden lg:flex"
+            className="hidden size-8 lg:flex"
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage === totalPages}
           >
-            {locale === "fa" ? (
+            {locale === 'fa' ? (
               <DoubleArrowLeftIcon aria-hidden="true" />
             ) : (
               <DoubleArrowRightIcon aria-hidden="true" />
             )}
           </Button>
         </div>
-        <div className="flex items-center justify-center gap-1 text-gray-500 text-sm">
-          <span>{t("page", { pages: totalPages, page: currentPage })}</span>
+        <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
+          <span>{t('page', { pages: totalPages, page: currentPage })}</span>
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-8 flex-1 text-gray-500 text-sm">
+      <div className="flex flex-1 items-center justify-end gap-8 text-sm text-gray-500">
         <div>
-          <span>{t("itemsCount")}:</span> {totalItems}
+          <span>{t('itemsCount')}:</span> {totalItems}
         </div>
-        <div className="hidden lg:flex items-center gap-2">
-          <span>{t("show")}</span>
-          <Select
-            value={`${pageSize}`}
-            onValueChange={(value) => onPageSizeChange(Number(value))}
-          >
+        <div className="hidden items-center gap-2 lg:flex">
+          <span>{t('show')}</span>
+          <Select value={`${pageSize}`} onValueChange={(value) => onPageSizeChange(Number(value))}>
             <SelectTrigger className="h-8 w-[4.5rem]">
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>

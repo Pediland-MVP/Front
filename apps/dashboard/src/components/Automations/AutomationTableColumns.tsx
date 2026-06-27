@@ -1,44 +1,35 @@
 // src/app/leads/columns.tsx
-"use client";
+'use client';
 
-import type { Automation } from "@/schemas/automation";
-import type { ColumnDef } from "@/types/tables";
-import { toJalaliDate } from "@/utils/jalali";
-import Image from "next/image";
-import Link from "next/link";
-import { memo, useState } from "react";
+import type { Automation } from '@/schemas/automation';
+import type { ColumnDef } from '@/types/tables';
+import { toJalaliDate } from '@/utils/jalali';
+import Image from 'next/image';
+import Link from 'next/link';
+import { memo, useState } from 'react';
 
 import {
   ChatCircleTextIcon,
   CheckCircleIcon,
   DotsThreeOutlineIcon,
   UserCircleIcon,
-} from "@phosphor-icons/react/dist/ssr";
+} from '@phosphor-icons/react/dist/ssr';
 import {
   Badge,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui";
+} from '../ui';
 
-const AvatarCell = memo(function AvatarCell({
-  src,
-  alt,
-}: {
-  src?: string | null;
-  alt: string;
-}) {
+const AvatarCell = memo(function AvatarCell({ src, alt }: { src?: string | null; alt: string }) {
   const [hasError, setHasError] = useState(false);
   const showFallback = hasError || !src;
 
   return (
     <div className="flex justify-center">
       {showFallback ? (
-        <UserCircleIcon
-          className="mx-auto size-8 text-neutral-400"
-          weight="duotone"
-        />
+        <UserCircleIcon className="mx-auto size-8 text-neutral-400" weight="duotone" />
       ) : (
         <Image
           src={src}
@@ -65,7 +56,7 @@ export const AutomationTableColumns = (
 
   if (withRowSelection) {
     cols.push({
-      id: "select",
+      id: 'select',
       header: ({ table }) => (
         <input
           type="checkbox"
@@ -90,31 +81,28 @@ export const AutomationTableColumns = (
 
   cols.push(
     {
-      id: "createDate",
+      id: 'createDate',
       accessorFn: (row) => row.createDate,
-      header: "تاریخ ایجاد",
+      header: 'تاریخ ایجاد',
       size: 120,
       cell: ({ row }) => {
-        const value = row.getValue<string>("createDate");
+        const value = row.getValue<string>('createDate');
 
-        if (!value) return "-";
+        if (!value) return '-';
 
         return (
-          <Link
-            href={`/automations/${row.id}`}
-            className="text-[13px] hover:text-fuchsia-800"
-          >
-            {toJalaliDate(value, "Europe/Berlin")}
+          <Link href={`/automations/${row.id}`} className="text-[13px] hover:text-fuchsia-800">
+            {toJalaliDate(value, 'Europe/Berlin')}
           </Link>
         );
       },
       meta: {
-        title: "تاریخ ایجاد",
-        skeletonClass: "mx-auto",
+        title: 'تاریخ ایجاد',
+        skeletonClass: 'mx-auto',
       },
     },
     {
-      id: "conditions",
+      id: 'conditions',
       accessorFn: (row) =>
         (row.conditions ?? [])
           .map((c) => c?.value)
@@ -127,11 +115,7 @@ export const AutomationTableColumns = (
           <div className="flex gap-1.5">
             {values.length ? (
               values.map((val, i) => (
-                <Badge
-                  key={i}
-                  variant="outline"
-                  className="rounded px-1.5 text-[13px] font-medium"
-                >
+                <Badge key={i} variant="outline" className="rounded px-1.5 text-[13px] font-medium">
                   {val}
                 </Badge>
               ))
@@ -142,16 +126,16 @@ export const AutomationTableColumns = (
         );
       },
       meta: {
-        title: "شرایط فعالسازی",
+        title: 'شرایط فعالسازی',
       },
     },
     {
-      id: "isDirect",
+      id: 'isDirect',
       accessorFn: (row) => row.isDirect,
-      header: "دایرکت",
+      header: 'دایرکت',
       size: 50,
       cell: ({ row }) =>
-        row.getValue<boolean>("isDirect") && (
+        row.getValue<boolean>('isDirect') && (
           <CheckCircleIcon
             weight="light"
             className="group-hover:text-primary mx-auto text-gray-400"
@@ -159,17 +143,17 @@ export const AutomationTableColumns = (
           />
         ),
       meta: {
-        title: "دایرکت",
-        skeletonClass: "mx-auto w-4 rounded-none",
+        title: 'دایرکت',
+        skeletonClass: 'mx-auto w-4 rounded-none',
       },
     },
     {
-      id: "isComment",
+      id: 'isComment',
       accessorFn: (row) => row.isComment,
-      header: "کامنت",
+      header: 'کامنت',
       size: 50,
       cell: ({ row }) =>
-        row.getValue<boolean>("isComment") && (
+        row.getValue<boolean>('isComment') && (
           <CheckCircleIcon
             weight="light"
             className="group-hover:text-primary mx-auto text-gray-400"
@@ -177,13 +161,13 @@ export const AutomationTableColumns = (
           />
         ),
       meta: {
-        title: "کامنت",
-        skeletonClass: "mx-auto w-4 rounded-none",
+        title: 'کامنت',
+        skeletonClass: 'mx-auto w-4 rounded-none',
       },
     },
     {
-      id: "sessions",
-      header: "پاسخ‌ها",
+      id: 'sessions',
+      header: 'پاسخ‌ها',
       size: 150,
       cell: ({ row }) => (
         <div className="flex justify-center gap-1">
@@ -192,25 +176,20 @@ export const AutomationTableColumns = (
       ),
     },
     {
-      id: "actions",
-      header: "عملیات",
+      id: 'actions',
+      header: 'عملیات',
       size: 150,
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <DotsThreeOutlineIcon
-                size={20}
-                className="cursor-pointer hover:text-fuchsia-800"
-              />
+              <DotsThreeOutlineIcon size={20} className="cursor-pointer hover:text-fuchsia-800" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>
                 <Link href={`/automations/${row.id}`}>ویرایش</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onDelete?.(row.original.id)}>
-                حذف
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDelete?.(row.original.id)}>حذف</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

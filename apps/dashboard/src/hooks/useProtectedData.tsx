@@ -4,10 +4,10 @@ import api, { getAccessToken } from './swr/api-client';
 export function useProtectedData(endpoint: string, options = {}) {
   const { data, error, isLoading, mutate } = useSWR(
     // Only fetch if we have an access token
-    getAccessToken() ? endpoint : null, 
-    options
+    getAccessToken() ? endpoint : null,
+    options,
   );
-  
+
   return {
     data: data?.data,
     isLoading,
@@ -22,7 +22,6 @@ export function useProtectedData(endpoint: string, options = {}) {
       } catch (error) {
         throw error;
       }
-    }
+    },
   };
 }
-

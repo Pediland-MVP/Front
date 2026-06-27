@@ -1,35 +1,30 @@
 // src/components/Contacts/contactForm.tsx
-"use client";
+'use client';
 
-import { isAxiosError } from "axios";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { mutate as globalMutate } from "swr";
-import useSWRImmutable from "swr/immutable";
-import { z } from "zod";
+import { isAxiosError } from 'axios';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { mutate as globalMutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import { z } from 'zod';
 
-import api from "@/hooks/swr/api-client";
-import type { ExceptionMessage } from "@/types/exceptionMessage";
+import api from '@/hooks/swr/api-client';
+import type { ExceptionMessage } from '@/types/exceptionMessage';
 
 import {
   Button,
-  Input, Select,
+  Input,
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui";
+  SelectValue,
+} from '@/components/ui';
 
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import {
-  Form,
-  FormControl, FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "../ui/form";
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
 export type ContactFormProps = {
   contactId: string;
@@ -55,8 +50,8 @@ type ContactFormData = z.infer<typeof ContactFormSchema>;
 
 export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-  const t = useTranslations("Contacts.Form");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Contacts.Form');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const {
     data: contact,
@@ -67,17 +62,17 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
 
   const form = useForm<ContactFormData>({
     defaultValues: {
-      firstname: contact?.firstname || "",
-      lastname: contact?.lastname || "",
-      mobile: contact?.mobile || "",
-      email: contact?.email || "",
-      country: contact?.country || "",
-      city: contact?.city || "",
-      state: contact?.state || "",
-      gender: contact?.gender || "",
-      birthDate: contact?.birthDate || "",
-      postalcode: contact?.postalcode || "",
-      address: contact?.address || "",
+      firstname: contact?.firstname || '',
+      lastname: contact?.lastname || '',
+      mobile: contact?.mobile || '',
+      email: contact?.email || '',
+      country: contact?.country || '',
+      city: contact?.city || '',
+      state: contact?.state || '',
+      gender: contact?.gender || '',
+      birthDate: contact?.birthDate || '',
+      postalcode: contact?.postalcode || '',
+      address: contact?.address || '',
     },
   });
 
@@ -87,17 +82,17 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
   useEffect(() => {
     if (!contact) return;
     form.reset({
-      firstname: contact.firstname || "",
-      lastname: contact.lastname || "",
-      mobile: contact.mobile || "",
-      email: contact.email || "",
-      country: contact.country || "",
-      city: contact.city || "",
-      state: contact.state || "",
-      gender: contact.gender || "",
-      birthDate: contact.birthDate || "",
-      postalcode: contact.postalcode || "",
-      address: contact.address || "",
+      firstname: contact.firstname || '',
+      lastname: contact.lastname || '',
+      mobile: contact.mobile || '',
+      email: contact.email || '',
+      country: contact.country || '',
+      city: contact.city || '',
+      state: contact.state || '',
+      gender: contact.gender || '',
+      birthDate: contact.birthDate || '',
+      postalcode: contact.postalcode || '',
+      address: contact.address || '',
     });
   }, [contact, form]);
 
@@ -109,37 +104,35 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
       // this free-text form can't produce, so both are omitted. We preserve the
       // existing `cityId`, which the backend requires to resolve a valid city.
       const editableFields = [
-        "firstname",
-        "lastname",
-        "mobile",
-        "email",
-        "country",
-        "postalcode",
-        "address",
-        "gender",
+        'firstname',
+        'lastname',
+        'mobile',
+        'email',
+        'country',
+        'postalcode',
+        'address',
+        'gender',
       ] as const;
 
       const payload: Record<string, unknown> = {};
       for (const key of editableFields) {
         const value = data[key];
-        if (value != null && value !== "") payload[key] = value;
+        if (value != null && value !== '') payload[key] = value;
       }
-      if (contact["cityId"] != null) payload["cityId"] = contact["cityId"];
+      if (contact['cityId'] != null) payload['cityId'] = contact['cityId'];
 
       await api.put(`/contacts/${contactId}`, payload);
 
-      toast.success(t("updated"));
+      toast.success(t('updated'));
       await mutateContact();
       // Revalidate the contacts list so the table reflects the edit.
-      await globalMutate(
-        (key) => typeof key === "string" && key.startsWith("/contacts"),
-      );
+      await globalMutate((key) => typeof key === 'string' && key.startsWith('/contacts'));
       setOpen(false);
     } catch (error) {
       const code = isAxiosError(error)
         ? (error.response?.data as ExceptionMessage | undefined)?.code
         : undefined;
-      toast.error(code ? t_ec(code) : t("errors.update"));
+      toast.error(code ? t_ec(code) : t('errors.update'));
     } finally {
       setIsSubmitLoading(false);
     }
@@ -151,29 +144,22 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-12 gap-x-2 gap-y-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-x-2 gap-y-4">
         <FormField
           control={form.control}
           name="gender"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-3">
-              <FormLabel> {t("gender")}</FormLabel>
+              <FormLabel> {t('gender')}</FormLabel>
               <FormControl>
-                <Select
-                  dir="rtl"
-                  value={field.value || ""}
-                  onValueChange={field.onChange}
-                >
+                <Select dir="rtl" value={field.value || ''} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("genderPlaceholder")} />
+                    <SelectValue placeholder={t('genderPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="female">{t("female")}</SelectItem>
-                    <SelectItem value="male">{t("male")}</SelectItem>
-                    <SelectItem value="other">{t("other")}</SelectItem>
+                    <SelectItem value="female">{t('female')}</SelectItem>
+                    <SelectItem value="male">{t('male')}</SelectItem>
+                    <SelectItem value="other">{t('other')}</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -187,9 +173,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="firstname"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("firstname")}</FormLabel>
+              <FormLabel>{t('firstname')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -201,9 +187,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="lastname"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-5">
-              <FormLabel>{t("lastname")}</FormLabel>
+              <FormLabel>{t('lastname')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -215,9 +201,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="birthDate"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("birthDate")}</FormLabel>
+              <FormLabel>{t('birthDate')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -229,9 +215,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="mobile"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("mobile")}</FormLabel>
+              <FormLabel>{t('mobile')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -243,9 +229,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="email"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("email")}</FormLabel>
+              <FormLabel>{t('email')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -257,9 +243,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="state"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("state")}</FormLabel>
+              <FormLabel>{t('state')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -271,9 +257,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="city"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("city")}</FormLabel>
+              <FormLabel>{t('city')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -285,9 +271,9 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="postalcode"
           render={({ field }) => (
             <FormItem className="col-span-12 sm:col-span-6 md:col-span-4">
-              <FormLabel>{t("postalcode")}</FormLabel>
+              <FormLabel>{t('postalcode')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -299,26 +285,22 @@ export const ContactForm = ({ contactId, open, setOpen }: ContactFormProps) => {
           name="address"
           render={({ field }) => (
             <FormItem className="col-span-12">
-              <FormLabel>{t("address")}</FormLabel>
+              <FormLabel>{t('address')}</FormLabel>
               <FormControl>
-                <Input {...field} value={field.value || ""} />
+                <Input {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="col-span-12 mt-6 flex flex-col sm:flex-row justify-center gap-2">
+        <div className="col-span-12 mt-6 flex flex-col justify-center gap-2 sm:flex-row">
           <Button type="submit">
-            {t("saveChanges")}
-            {isSubmitLoading && <LoaderSpin/>}
+            {t('saveChanges')}
+            {isSubmitLoading && <LoaderSpin />}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpen(false)}
-          >
-            {t("cancel")}
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            {t('cancel')}
           </Button>
         </div>
       </form>

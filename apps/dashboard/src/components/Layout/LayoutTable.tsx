@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 
 interface LayoutTableProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ export const LayoutTable = ({ children, className }: LayoutTableProps) => {
   return (
     <div
       className={cn(
-        "_layout-table flex h-full flex-col overflow-y-auto rounded-t-3xl bg-white md:rounded-t-none",
+        '_layout-table flex h-full flex-col overflow-y-auto rounded-t-3xl bg-white md:rounded-t-none',
         className,
       )}
     >

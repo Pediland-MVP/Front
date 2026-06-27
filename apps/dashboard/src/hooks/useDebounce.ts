@@ -1,6 +1,6 @@
 // Do not remove this file
-"use client"
-import { useState, useEffect } from "react";
+'use client';
+import { useState, useEffect } from 'react';
 
 export const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);

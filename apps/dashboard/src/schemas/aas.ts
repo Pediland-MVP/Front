@@ -1,6 +1,6 @@
-import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
-import { REGEX_URL } from "@/utils/regex";
-import z from "zod";
+import { AutomationContentTypesEnum } from '@/constants/automationContent.enum';
+import { REGEX_URL } from '@/utils/regex';
+import z from 'zod';
 
 const ContentItemSchema_TEMP = z.object({
   type: z.nativeEnum(AutomationContentTypesEnum),
@@ -106,10 +106,7 @@ export const AutomationFormSchema_TEMP = z
       .object({
         mediaUrl: z.string().optional().nullable(),
         mediaId: z.string().min(1),
-        picture: z
-          .object({ url: z.string().optional().nullable() })
-          .optional()
-          .nullable(),
+        picture: z.object({ url: z.string().optional().nullable() }).optional().nullable(),
       })
       .optional()
       .nullable(),
@@ -215,18 +212,18 @@ export const AutomationFormSchema_TEMP = z
     // Triggers
     if (!data.isDirect && !data.isComment) {
       const issue = {
-        code: "custom" as const,
-        message: "required",
+        code: 'custom' as const,
+        message: 'required',
       };
-      ctx.addIssue({ ...issue, path: ["isDirect"] });
-      ctx.addIssue({ ...issue, path: ["isComment"] });
+      ctx.addIssue({ ...issue, path: ['isDirect'] });
+      ctx.addIssue({ ...issue, path: ['isComment'] });
     }
 
     if (data.reminders.length > 0 && !data.reminderTime) {
       ctx.addIssue({
-        path: ["reminderTime"],
-        code: "custom",
-        message: "required",
+        path: ['reminderTime'],
+        code: 'custom',
+        message: 'required',
       });
     }
 
@@ -234,21 +231,18 @@ export const AutomationFormSchema_TEMP = z
       // Type issues
       if (content.type === AutomationContentTypesEnum.TEXT && !content.text) {
         ctx.addIssue({
-          path: ["contents", index, "text"],
-          code: "custom",
-          message: "required",
+          path: ['contents', index, 'text'],
+          code: 'custom',
+          message: 'required',
         });
         return;
       }
 
-      if (
-        content.type === AutomationContentTypesEnum.INSTAGRAM_POST &&
-        !content.instagramPost
-      ) {
+      if (content.type === AutomationContentTypesEnum.INSTAGRAM_POST && !content.instagramPost) {
         ctx.addIssue({
-          path: ["contents", index, "instagramPost"],
-          code: "custom",
-          message: "required",
+          path: ['contents', index, 'instagramPost'],
+          code: 'custom',
+          message: 'required',
         });
         return;
       }
@@ -261,9 +255,9 @@ export const AutomationFormSchema_TEMP = z
       ) {
         // For files: video, image, voice
         ctx.addIssue({
-          path: ["contents", index, "file"],
-          code: "custom",
-          message: "required",
+          path: ['contents', index, 'file'],
+          code: 'custom',
+          message: 'required',
         });
       }
     });

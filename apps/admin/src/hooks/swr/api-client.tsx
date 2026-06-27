@@ -1,8 +1,8 @@
 // src/hooks/swr/api-client.tsx
-"use client";
+'use client';
 
-import axios from "axios";
-import { SWRConfig, useSWRConfig } from "swr";
+import axios from 'axios';
+import { SWRConfig, useSWRConfig } from 'swr';
 
 // Create an axios instance
 const api = axios.create({
@@ -54,7 +54,7 @@ export const clearAccessToken = () => {
 api.interceptors.request.use(
   (config) => {
     if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -88,7 +88,7 @@ api.interceptors.response.use(
 
       try {
         // Call your refresh token endpoint (refresh token is in HTTP-only cookie)
-        const response = await api.post("/auth/refresh-token");
+        const response = await api.post('/auth/refresh-token');
 
         if (response.data?.data?.accessToken) {
           // Store the new access token in memory
@@ -98,17 +98,17 @@ api.interceptors.response.use(
           processQueue(null, response.data.data.accessToken);
           return api(originalRequest);
         } else {
-          processQueue(new Error("Failed to refresh token"));
+          processQueue(new Error('Failed to refresh token'));
           // Clear token and redirect to login
           clearAccessToken();
-          window.location.href = "/auth/signin";
+          window.location.href = '/auth/signin';
           return Promise.reject(error);
         }
       } catch (refreshError) {
         processQueue(refreshError);
         // Clear token and redirect to login
         clearAccessToken();
-        window.location.href = "/auth/signin";
+        window.location.href = '/auth/signin';
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -153,15 +153,15 @@ export function useLogout() {
 
   return async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post('/auth/logout');
       // Clear the access token
       clearAccessToken();
       // Clear all SWR cache
-      await mutate("/auth/me", null, { revalidate: false }); // Added by Pedram
+      await mutate('/auth/me', null, { revalidate: false }); // Added by Pedram
       mutate(() => true, undefined, { revalidate: false });
       return true;
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error('Logout error:', error);
       return false;
     }
   };

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Icon } from "@phosphor-icons/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { cn } from '@/lib/utils';
+import { Icon } from '@phosphor-icons/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 import {
   Collapsible,
@@ -19,8 +19,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "../ui";
-import { CaretLeftIcon } from "@phosphor-icons/react";
+} from '../ui';
+import { CaretLeftIcon } from '@phosphor-icons/react';
 
 interface NavMainProps {
   items: {
@@ -46,12 +46,9 @@ export const NavMain = ({ items }: NavMainProps) => {
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          const isSubMenuActive = item.items?.some((subItem) =>
-            pathname.startsWith(subItem.url),
-          );
+          const isSubMenuActive = item.items?.some((subItem) => pathname.startsWith(subItem.url));
 
-          const isOpen =
-            openMenu === item.title || item.isActive || isSubMenuActive;
+          const isOpen = openMenu === item.title || item.isActive || isSubMenuActive;
 
           return (
             <Collapsible
@@ -73,10 +70,10 @@ export const NavMain = ({ items }: NavMainProps) => {
                       asChild
                       tooltip={item.title}
                       className={cn(
-                        "text-secondary border border-dashed border-transparent",
+                        'text-secondary border border-dashed border-transparent',
                         pathname === item.url
-                          ? "text-foreground hover:text-foreground bg-blue-50"
-                          : "hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100",
+                          ? 'text-foreground hover:text-foreground bg-blue-50'
+                          : 'hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100',
                       )}
                       onClick={() => {
                         if (!isOpen) setOpenMenu(item.title);
@@ -93,23 +90,20 @@ export const NavMain = ({ items }: NavMainProps) => {
                     asChild
                     tooltip={item.title}
                     className={cn(
-                      "text-secondary border border-dashed border-transparent",
+                      'text-secondary border border-dashed border-transparent',
                       pathname === item.url
-                        ? "text-primary hover:text-primary active:text-primary border-violet-300/70 bg-violet-100 hover:bg-violet-100 active:bg-violet-100"
-                        : "hover:text-primary active:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100",
+                        ? 'text-primary hover:text-primary active:text-primary border-violet-300/70 bg-violet-100 hover:bg-violet-100 active:bg-violet-100'
+                        : 'hover:text-primary active:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100',
                     )}
                     onClick={() => {
                       if (isMobile) toggleSidebar();
                     }}
                   >
-                    <Link
-                      href={item.url}
-                      target={item.external ? "_blank" : "_self"}
-                    >
+                    <Link href={item.url} target={item.external ? '_blank' : '_self'}>
                       <div className="relative">
                         <item.icon size={24} weight="duotone" />
                         {item.badge && item.badge > 0 ? (
-                          <span className="absolute -top-0.5 -start-0.5 h-2 w-2 rounded-full bg-blue-500" />
+                          <span className="absolute -start-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-500" />
                         ) : null}
                       </div>
                       <span>{item.title}</span>
@@ -133,10 +127,10 @@ export const NavMain = ({ items }: NavMainProps) => {
                             <SidebarMenuSubButton
                               asChild
                               className={cn(
-                                "border border-dashed border-transparent",
+                                'border border-dashed border-transparent',
                                 pathname.startsWith(subItem.url)
-                                  ? "text-primary hover:text-primary active:text-primary active:bg-transparent"
-                                  : "hover:text-primary active:text-primary text-secondary active:bg-transparent",
+                                  ? 'text-primary hover:text-primary active:text-primary active:bg-transparent'
+                                  : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
                               )}
                               onClick={() => {
                                 setOpenMenu(item.title);

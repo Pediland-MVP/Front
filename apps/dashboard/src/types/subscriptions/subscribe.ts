@@ -1,7 +1,7 @@
-import { IResponseMessage } from "../responseMessage";
+import { IResponseMessage } from '../responseMessage';
 
 export interface ISubscribe extends IResponseMessage<Data> {}
 interface Data {
-    paymentMethod: string;
-    link:          string;
+  paymentMethod: string;
+  link: string;
 }

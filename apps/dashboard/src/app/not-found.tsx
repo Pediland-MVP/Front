@@ -1,62 +1,54 @@
-"use client";
+'use client';
 
-import "@/styles/globals.css";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import '@/styles/globals.css';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-import { CloudSlashIcon, CloudXIcon, CoffeeIcon } from "@phosphor-icons/react";
-import { LoaderSpin } from "@/components/ui-custom/LoaderSpin";
-import { Button } from "@/components/ui";
+import { CloudSlashIcon, CloudXIcon, CoffeeIcon } from '@phosphor-icons/react';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+import { Button } from '@/components/ui';
 
 function NotFoundContent() {
   const params = useSearchParams();
-  const status = params.get("status");
+  const status = params.get('status');
 
-  
   return (
     <div
       className="font-Yekan flex h-screen flex-col items-center justify-center gap-3 bg-linear-to-t from-violet-300 to-blue-200 antialiased"
       dir="rtl"
     >
       <div>
-        {status === "network" ? (
+        {status === 'network' ? (
           <CloudSlashIcon size={60} weight="duotone" className="text-primary" />
-        ) : status === "server" ? (
+        ) : status === 'server' ? (
           <CloudXIcon size={60} weight="duotone" className="text-primary" />
         ) : (
           <CoffeeIcon size={60} weight="duotone" className="text-primary" />
         )}
       </div>
       <div className="text-secondary text-center">
-        {status === "network" ? (
+        {status === 'network' ? (
           <p>
-            <span className="text-lg font-semibold">
-              ارتباط موقتا برقرار نیست
-            </span>
+            <span className="text-lg font-semibold">ارتباط موقتا برقرار نیست</span>
             <br />
             <span className="text-[15px] font-medium">
-              این مشکل میتواند به دلیل اینترنت شما یا اختلال کوتاه مدت سرور باشد. چند دقیقه دیگر دوباره تلاش کنید.
+              این مشکل میتواند به دلیل اینترنت شما یا اختلال کوتاه مدت سرور باشد. چند دقیقه دیگر
+              دوباره تلاش کنید.
             </span>
           </p>
-        ) : status === "server" ? (
+        ) : status === 'server' ? (
           <p>
-            <span className="text-lg font-semibold">
-              اخـتـلال در ارتـبـاط بـا سـرور
-            </span>
+            <span className="text-lg font-semibold">اخـتـلال در ارتـبـاط بـا سـرور</span>
             <br />
-            <span className="text-[15px] font-medium">
-              لطفا چند لحظه دیگر تلاش کنید.
-            </span>
+            <span className="text-[15px] font-medium">لطفا چند لحظه دیگر تلاش کنید.</span>
           </p>
         ) : (
-          <p className="text-lg font-semibold">
-            صـفـحـه مـورد نـظـر وجـود نـدارد.
-          </p>
+          <p className="text-lg font-semibold">صـفـحـه مـورد نـظـر وجـود نـدارد.</p>
         )}
       </div>
       <div className="mt-3 flex gap-2">
-        {status === "network" || status === "server" ? (
+        {status === 'network' || status === 'server' ? (
           <>
             <Button asChild size="md">
               <Link href="/">تلاش مجدد</Link>

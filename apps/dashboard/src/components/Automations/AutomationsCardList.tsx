@@ -1,51 +1,50 @@
-"use client";
+'use client';
 
-import api from "@/hooks/swr/api-client";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { AxiosError } from "axios";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
-import { mutate } from "swr";
-import useSWR from "swr";
-import { usePermissions } from "@/hooks/usePermissions";
-import type { AutomationResponse } from "@/schemas/automation";
-import type { PageMeta } from "@/schemas/pageMeta";
-import { ExceptionMessage } from "@/types/exceptionMessage";
+import api from '@/hooks/swr/api-client';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
+import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import { AxiosError } from 'axios';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import useSWR from 'swr';
+import { usePermissions } from '@/hooks/usePermissions';
+import type { AutomationResponse } from '@/schemas/automation';
+import type { PageMeta } from '@/schemas/pageMeta';
+import { ExceptionMessage } from '@/types/exceptionMessage';
 
-import { ItemsPagination } from "../Console/ItemsPagination";
-import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
-import { NoDataError } from "../Global/NoDataError";
-import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { AutomationCard } from "./AutomationCard";
-import { useInstagramFilterStore } from "@/lib/stores/useInstagramFilterStore";
+import { ItemsPagination } from '../Console/ItemsPagination';
+import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
+import { NoDataError } from '../Global/NoDataError';
+import { InstagramFilter } from '@/components/ui-custom/InstagramFilter';
+import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { AutomationCard } from './AutomationCard';
+import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 
 interface AutomationsListCardProps {
   search: string;
 }
 
 export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
-  const t = useTranslations("Automations.List");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Automations.List');
+  const t_ec = useTranslations('ERROR_CODES');
   const { can } = usePermissions();
-  const hasViewPermission = can("automation:view");
+  const hasViewPermission = can('automation:view');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-  const { selectedIds: selectedInstagramIds, setSelectedIds: setSelectedInstagramIds } = useInstagramFilterStore();
+  const { selectedIds: selectedInstagramIds, setSelectedIds: setSelectedInstagramIds } =
+    useInstagramFilterStore();
   const { setError } = useHeaderFeatures();
 
   // TODO: Better type for AutomationResponse
-  let searchParams = "";
+  let searchParams = '';
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
-  const instagramIdsParam = selectedInstagramIds
-    .map((id) => `instagramIds=${id}`)
-    .join("&");
+  const instagramIdsParam = selectedInstagramIds.map((id) => `instagramIds=${id}`).join('&');
   const apiUrl =
     hasViewPermission && selectedInstagramIds.length > 0
       ? `/contentCycle?page=${page}&limit=${limit}${searchParams}&isDirect=false&isComment=false&haveInstagramPost=false&${instagramIdsParam}`
@@ -70,10 +69,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
   };
   const meta: PageMeta = automationsData?.meta ?? defaultMeta;
 
-  const onPageChange = useCallback(
-    (newPage: number) => setPage(Math.max(1, newPage)),
-    [],
-  );
+  const onPageChange = useCallback((newPage: number) => setPage(Math.max(1, newPage)), []);
 
   const onLimitChange = useCallback((newLimit: number) => {
     setLimit(newLimit);
@@ -97,8 +93,8 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
       await api
         .delete(`/contentCycle/${itemToDelete}`)
         .then((res) => {
-          toast.success(t("Toast.deleted"));
-          mutate(mutateIncludeStringKey("/contentCycle"));
+          toast.success(t('Toast.deleted'));
+          mutate(mutateIncludeStringKey('/contentCycle'));
         })
         .catch((error: AxiosError<ExceptionMessage>) => {
           const code = error.response?.data?.code;
@@ -128,10 +124,7 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <InstagramFilter
-        selectedIds={selectedInstagramIds}
-        onChange={setSelectedInstagramIds}
-      />
+      <InstagramFilter selectedIds={selectedInstagramIds} onChange={setSelectedInstagramIds} />
       <DeleteConfirmationDialog
         isOpen={deleteDialogOpen}
         onClose={handleDeleteCancel}
@@ -141,18 +134,12 @@ export const AutomationsCardList = ({ search }: AutomationsListCardProps) => {
       <div className="flex-1">
         {automations.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <div className="text-muted-foreground text-sm">
-              {t("no_automations")}
-            </div>
+            <div className="text-muted-foreground text-sm">{t('no_automations')}</div>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {automations.map((item) => (
-              <AutomationCard
-                key={item.id}
-                item={item}
-                handleDelete={handleDelete}
-              />
+              <AutomationCard key={item.id} item={item} handleDelete={handleDelete} />
             ))}
           </div>
         )}

@@ -1,11 +1,11 @@
 // src/schemas/automationForm.ts
 
-import { ConditionTypesEnum } from "@/components/Automations/Form";
-import { AutomationContentTypesEnum } from "@/constants/automationContent.enum";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import { ValidationTypeEnum } from "@/types/validationType.enum";
-import { REGEX_URL } from "@/utils/regex";
-import z from "zod";
+import { ConditionTypesEnum } from '@/components/Automations/Form';
+import { AutomationContentTypesEnum } from '@/constants/automationContent.enum';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import { ValidationTypeEnum } from '@/types/validationType.enum';
+import { REGEX_URL } from '@/utils/regex';
+import z from 'zod';
 
 /* ----------------------------- Helpers & Partials ---------------------------- */
 
@@ -46,7 +46,7 @@ const ProductSchema = z
   .nullable()
   .optional();
 
-const ButtonSchema = z.discriminatedUnion("postbackPayloadType", [
+const ButtonSchema = z.discriminatedUnion('postbackPayloadType', [
   z.object({
     postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
     title: z.string().min(1),
@@ -89,10 +89,7 @@ const InstagramPostSchema = z
   .object({
     mediaUrl: z.string().optional().nullable(),
     mediaId: z.string().min(1),
-    picture: z
-      .object({ url: z.string().optional().nullable() })
-      .optional()
-      .nullable(),
+    picture: z.object({ url: z.string().optional().nullable() }).optional().nullable(),
   })
   .optional()
   .nullable();
@@ -107,7 +104,7 @@ export const VitrinItemSchema = z.object({
   buttons: z.array(ButtonSchema).optional().nullable(),
   destinationContentCycleTitle: z.string().optional().nullable(),
 });
-export type VitrinItemType = z.infer<typeof VitrinItemSchema>
+export type VitrinItemType = z.infer<typeof VitrinItemSchema>;
 
 export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
@@ -132,7 +129,7 @@ export const ContentItemSchema = z.object({
     .transform(() => undefined),
   vitrins: z.array(VitrinItemSchema).optional().nullable(),
   delayMs: z.number().min(1000).optional().nullable(),
-  delayUnit: z.string().optional().nullable()
+  delayUnit: z.string().optional().nullable(),
 });
 
 export const ContentItemConditionSchema = z.object({
@@ -146,7 +143,7 @@ export const ContentItemConditionSchema = z.object({
 export const AutomationFormSchema = z
   .object({
     instagramId: z.string().uuid(),
-    conditionType: z.enum(["EQUAL", "INCLUDE", "noCondition"]),
+    conditionType: z.enum(['EQUAL', 'INCLUDE', 'noCondition']),
     isDirect: z.boolean(),
     isComment: z.boolean(),
     isNoCondition: z.boolean(),
@@ -181,12 +178,15 @@ export const AutomationFormSchema = z
         products: z.array(ProductSchema).optional().nullable(),
         productIds: z.array(z.string()).optional().nullable(),
         id: z.string().optional().nullable(),
-        fileTemp: z.object({
-          file: z.any(),
-          id: z.number(),
-          process: z.number(),
-          isUploading: z.boolean()
-        }).optional().nullable(),
+        fileTemp: z
+          .object({
+            file: z.any(),
+            id: z.number(),
+            process: z.number(),
+            isUploading: z.boolean(),
+          })
+          .optional()
+          .nullable(),
         haveInstagramPost: z
           .boolean()
           .optional()
@@ -206,38 +206,37 @@ export const AutomationFormSchema = z
     isCommentContentTargetEnabled: z.boolean(),
   })
   .superRefine((data, ctx) => {
-
-    if (data.conditionType !== "noCondition" && (data.conditions?.length ?? 0) === 0) {
+    if (data.conditionType !== 'noCondition' && (data.conditions?.length ?? 0) === 0) {
       ctx.addIssue({
-        path: ["conditions"],
-        code: "custom",
-        message: "required",
+        path: ['conditions'],
+        code: 'custom',
+        message: 'required',
       });
     }
 
     if (data.isDirect && data.isCommentContentTargetEnabled) {
       ctx.addIssue({
-        path: ["isDirect"],
-        code: "custom",
-        message: "در حالت دایرکت، نمی‌توانید TargetPostComment را فعال کنید",
+        path: ['isDirect'],
+        code: 'custom',
+        message: 'در حالت دایرکت، نمی‌توانید TargetPostComment را فعال کنید',
       });
     }
 
     if (!data.isDirect && !data.isComment) {
       const issue = {
-        code: "custom" as const,
-        message: "required",
+        code: 'custom' as const,
+        message: 'required',
       };
-      ctx.addIssue({ ...issue, path: ["isDirect"] });
-      ctx.addIssue({ ...issue, path: ["isComment"] });
+      ctx.addIssue({ ...issue, path: ['isDirect'] });
+      ctx.addIssue({ ...issue, path: ['isComment'] });
     }
 
     // اگر reminder تعریف شده، زمان نیز الزامی است
     if ((data.reminders?.length ?? 0) > 0 && !data.reminderTime) {
       ctx.addIssue({
-        path: ["reminderTime"],
-        code: "custom",
-        message: "required",
+        path: ['reminderTime'],
+        code: 'custom',
+        message: 'required',
       });
     }
 
@@ -248,22 +247,19 @@ export const AutomationFormSchema = z
       // TEXT نیاز به text
       if (t === AutomationContentTypesEnum.TEXT && !content.text) {
         ctx.addIssue({
-          path: ["contents", index, "text"],
-          code: "custom",
-          message: "required",
+          path: ['contents', index, 'text'],
+          code: 'custom',
+          message: 'required',
         });
         return;
       }
 
       // INSTAGRAM_POST نیاز به instagramPost
-      if (
-        t === AutomationContentTypesEnum.INSTAGRAM_POST &&
-        !content.instagramPost
-      ) {
+      if (t === AutomationContentTypesEnum.INSTAGRAM_POST && !content.instagramPost) {
         ctx.addIssue({
-          path: ["contents", index, "instagramPost"],
-          code: "custom",
-          message: "required",
+          path: ['contents', index, 'instagramPost'],
+          code: 'custom',
+          message: 'required',
         });
         return;
       }
@@ -276,21 +272,20 @@ export const AutomationFormSchema = z
         !content.file
       ) {
         ctx.addIssue({
-          path: ["contents", index, "file"],
-          code: "custom",
-          message: "required",
+          path: ['contents', index, 'file'],
+          code: 'custom',
+          message: 'required',
         });
       }
 
       // PRODUCT نیاز به حداقل یک محصول انتخاب شده
       if (t === AutomationContentTypesEnum.PRODUCT) {
-        const selectedProducts =
-          content.products?.filter((product) => product?.id) || [];
+        const selectedProducts = content.products?.filter((product) => product?.id) || [];
         if (selectedProducts.length === 0) {
           ctx.addIssue({
-            path: ["contents", index, "products"],
-            code: "custom",
-            message: "required",
+            path: ['contents', index, 'products'],
+            code: 'custom',
+            message: 'required',
           });
         }
       }
@@ -299,16 +294,16 @@ export const AutomationFormSchema = z
       if (t === AutomationContentTypesEnum.QUESTION) {
         if (!content.validationType) {
           ctx.addIssue({
-            path: ["contents", index, "validationType"],
-            code: "custom",
-            message: "required",
+            path: ['contents', index, 'validationType'],
+            code: 'custom',
+            message: 'required',
           });
         }
         if (!content.validationErrorMessage) {
           ctx.addIssue({
-            path: ["contents", index, "validationErrorMessage"],
-            code: "custom",
-            message: "required",
+            path: ['contents', index, 'validationErrorMessage'],
+            code: 'custom',
+            message: 'required',
           });
         }
       }
@@ -317,9 +312,9 @@ export const AutomationFormSchema = z
       if (content.validationType === ValidationTypeEnum.Selectbox) {
         if (!content.quickReplies || content.quickReplies.length === 0) {
           ctx.addIssue({
-            path: ["contents", index, "quickReplies"],
-            code: "custom",
-            message: "required",
+            path: ['contents', index, 'quickReplies'],
+            code: 'custom',
+            message: 'required',
           });
         }
       }
@@ -328,18 +323,18 @@ export const AutomationFormSchema = z
     // اگر isCommentContentTargetEnabled فعال باشد، instagramPost الزامی است
     if (data.isCommentContentTargetEnabled && !data.instagramPost) {
       ctx.addIssue({
-        path: ["instagramPost"],
-        code: "custom",
-        message: "required",
+        path: ['instagramPost'],
+        code: 'custom',
+        message: 'required',
       });
     }
 
     // اگر reminders فعال باشد، حداقل یک reminder content الزامی است
     if (data.isRemindersEnabled && (data.reminders?.length ?? 0) === 0) {
       ctx.addIssue({
-        path: ["reminders"],
-        code: "custom",
-        message: "required",
+        path: ['reminders'],
+        code: 'custom',
+        message: 'required',
       });
     }
 
@@ -347,16 +342,16 @@ export const AutomationFormSchema = z
     if (data.justFollowers) {
       if (!data.followMessage) {
         ctx.addIssue({
-          path: ["followMessage"],
-          code: "custom",
-          message: "required",
+          path: ['followMessage'],
+          code: 'custom',
+          message: 'required',
         });
       }
       if (!data.followCheckMessage) {
         ctx.addIssue({
-          path: ["followCheckMessage"],
-          code: "custom",
-          message: "required",
+          path: ['followCheckMessage'],
+          code: 'custom',
+          message: 'required',
         });
       }
     }
@@ -367,21 +362,18 @@ export const AutomationFormSchema = z
 
       if (t === AutomationContentTypesEnum.TEXT && !content.text) {
         ctx.addIssue({
-          path: ["reminders", index, "text"],
-          code: "custom",
-          message: "required",
+          path: ['reminders', index, 'text'],
+          code: 'custom',
+          message: 'required',
         });
         return;
       }
 
-      if (
-        t === AutomationContentTypesEnum.INSTAGRAM_POST &&
-        !content.instagramPost
-      ) {
+      if (t === AutomationContentTypesEnum.INSTAGRAM_POST && !content.instagramPost) {
         ctx.addIssue({
-          path: ["reminders", index, "instagramPost"],
-          code: "custom",
-          message: "required",
+          path: ['reminders', index, 'instagramPost'],
+          code: 'custom',
+          message: 'required',
         });
         return;
       }
@@ -393,21 +385,20 @@ export const AutomationFormSchema = z
         !content.file
       ) {
         ctx.addIssue({
-          path: ["reminders", index, "file"],
-          code: "custom",
-          message: "required",
+          path: ['reminders', index, 'file'],
+          code: 'custom',
+          message: 'required',
         });
       }
 
       // PRODUCT نیاز به حداقل یک محصول انتخاب شده
       if (t === AutomationContentTypesEnum.PRODUCT) {
-        const selectedProducts =
-          content.products?.filter((product) => product?.id) || [];
+        const selectedProducts = content.products?.filter((product) => product?.id) || [];
         if (selectedProducts.length === 0) {
           ctx.addIssue({
-            path: ["reminders", index, "products"],
-            code: "custom",
-            message: "required",
+            path: ['reminders', index, 'products'],
+            code: 'custom',
+            message: 'required',
           });
         }
       }
@@ -416,16 +407,16 @@ export const AutomationFormSchema = z
       if (t === AutomationContentTypesEnum.QUESTION) {
         if (!content.validationType) {
           ctx.addIssue({
-            path: ["reminders", index, "validationType"],
-            code: "custom",
-            message: "required",
+            path: ['reminders', index, 'validationType'],
+            code: 'custom',
+            message: 'required',
           });
         }
         if (!content.validationErrorMessage) {
           ctx.addIssue({
-            path: ["reminders", index, "validationErrorMessage"],
-            code: "custom",
-            message: "required",
+            path: ['reminders', index, 'validationErrorMessage'],
+            code: 'custom',
+            message: 'required',
           });
         }
       }
@@ -434,9 +425,9 @@ export const AutomationFormSchema = z
       if (content.validationType === ValidationTypeEnum.Selectbox) {
         if (!content.quickReplies || content.quickReplies.length === 0) {
           ctx.addIssue({
-            path: ["reminders", index, "quickReplies"],
-            code: "custom",
-            message: "required",
+            path: ['reminders', index, 'quickReplies'],
+            code: 'custom',
+            message: 'required',
           });
         }
       }

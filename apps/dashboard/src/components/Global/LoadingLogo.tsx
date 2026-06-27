@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
-import { HeartIcon } from "@phosphor-icons/react";
+import { HeartIcon } from '@phosphor-icons/react';
 
 interface LoadingLogoProps {
   delay?: number;
@@ -31,17 +31,12 @@ export const LoadingLogo = ({ delay = 0 }: LoadingLogoProps) => {
   return (
     <div
       className={cn(
-        "fixed inset-0 z-10 flex h-screen flex-col items-center justify-center bg-linear-to-tl from-violet-700 to-blue-400",
+        'fixed inset-0 z-10 flex h-screen flex-col items-center justify-center bg-linear-to-tl from-violet-700 to-blue-400',
       )}
     >
       <div className="text-center">
         <h2 className="text-white">
-          با{" "}
-          <HeartIcon
-            className="-mt-1 inline-block animate-pulse"
-            weight="duotone"
-            size={20}
-          />
+          با <HeartIcon className="-mt-1 inline-block animate-pulse" weight="duotone" size={20} />
         </h2>
         <h1 className="text-3xl font-semibold text-white">بِـفـروش</h1>
       </div>

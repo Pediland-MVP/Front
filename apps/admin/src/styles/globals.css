@@ -1,8 +1,8 @@
-@import "./fonts.css";
-@import "tailwindcss";
-@plugin "tailwindcss-animate";
-@plugin "tailwind-scrollbar";
-@config "../../tailwind.config.ts";
+@import './fonts.css';
+@import 'tailwindcss';
+@plugin 'tailwindcss-animate';
+@plugin 'tailwind-scrollbar';
+@config '../../tailwind.config.ts';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -127,8 +127,12 @@
 }
 
 @keyframes progress {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .text-gradient {

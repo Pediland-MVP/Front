@@ -1,7 +1,7 @@
-import { CaretLeft, EnvelopeSimple } from "@phosphor-icons/react";
-import React from "react";
-import screenShotExplain from "@/public/profile-ui-kommo.png";
-import ExplainFeatures from "./explainFeaturesSmall";
+import { CaretLeft, EnvelopeSimple } from '@phosphor-icons/react';
+import React from 'react';
+import screenShotExplain from '@/public/profile-ui-kommo.png';
+import ExplainFeatures from './explainFeaturesSmall';
 
 interface megaMenuXlProps {
   title1: string;
@@ -9,20 +9,15 @@ interface megaMenuXlProps {
   list1: string | string[];
   list2: string | string[];
 }
-export default function MegaMenuXl({
-  title1,
-  title2,
-  list2,
-  list1,
-}: megaMenuXlProps) {
+export default function MegaMenuXl({ title1, title2, list2, list1 }: megaMenuXlProps) {
   return (
-    <div className="max-w-[72rem] w-full  ">
-      <div className="hidden xl:block w-full bg-white ">
-        <div className="flex  py-7 justify-between ">
+    <div className="w-full max-w-[72rem]">
+      <div className="hidden w-full bg-white xl:block">
+        <div className="flex justify-between py-7">
           <div>
-            <h2 className="font-semibold text-xl">{title1}</h2>
-            <h3 className="text-md "></h3>
-            <ul className="leading-[2rem] mt-4">
+            <h2 className="text-xl font-semibold">{title1}</h2>
+            <h3 className="text-md"></h3>
+            <ul className="mt-4 leading-[2rem]">
               <li>
                 <a className="flex items-center gap-1">
                   لورم اپیزوم <CaretLeft size={13} />
@@ -46,8 +41,8 @@ export default function MegaMenuXl({
             </ul>
           </div>
           <div>
-            <h2 className="font-semibold text-xl">{title2}</h2>
-            <ul className="leading-[2rem] mt-4">
+            <h2 className="text-xl font-semibold">{title2}</h2>
+            <ul className="mt-4 leading-[2rem]">
               <li>
                 <li>
                   <a className="flex items-center gap-1">
@@ -84,7 +79,7 @@ export default function MegaMenuXl({
             />
           </div>
         </div>
-        <div className="border-t cursor-pointer">
+        <div className="cursor-pointer border-t">
           <a href="contact" className="flex items-center pt-4">
             <EnvelopeSimple size={28} className="pl-1" />
             تماس با ما

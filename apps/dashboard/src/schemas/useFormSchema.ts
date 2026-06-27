@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Define and export the schema separately if needed
 const formSchema = z.object({
@@ -6,7 +6,7 @@ const formSchema = z.object({
     z.object({
       type: z.string(),
       value: z.string(),
-    })
+    }),
   ),
   postAndMessage: z.array(
     z.object({
@@ -16,9 +16,9 @@ const formSchema = z.object({
         z.object({
           btnTitle: z.array(z.string()).optional(),
           btnText: z.array(z.string()).optional(),
-        })
+        }),
       ),
-    })
+    }),
   ),
   checkboxes: z.array(z.string()).optional(),
   direct: z.boolean(),

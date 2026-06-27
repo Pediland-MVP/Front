@@ -10,7 +10,7 @@
 //   setContentCycle: (content) => set({ contentCycle: content }),
 // }));
 
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface ContentStore {
   adminContentCycle: any[];
@@ -28,6 +28,6 @@ interface textStore {
 }
 
 export const useCurrentTextAreaValue = create<textStore>((set) => ({
-  currentTextAreaValue: "",
+  currentTextAreaValue: '',
   setCurrentTextAreaValue: (content) => set({ currentTextAreaValue: content }),
 }));

@@ -1,20 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import useSWR from "swr";
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+import useSWR from 'swr';
 
-import api from "@/hooks/swr/api-client";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import api from '@/hooks/swr/api-client';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -22,18 +17,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { SubscriptionsEditor } from "./subscriptions-editor";
-import { CreateWebhookResult, RevealedSecrets, WebhookDetail } from "./types";
+} from '@/components/ui/select';
+import { SubscriptionsEditor } from './subscriptions-editor';
+import { CreateWebhookResult, RevealedSecrets, WebhookDetail } from './types';
 
 interface WebhookFormDialogProps {
   open: boolean;
@@ -50,27 +45,30 @@ export function WebhookFormDialog({
   onCreated,
   onSaved,
 }: WebhookFormDialogProps) {
-  const t = useTranslations("Webhooks");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Webhooks');
+  const t_ec = useTranslations('ERROR_CODES');
   const isEdit = !!endpoint;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: typesData } = useSWR<{ data: { types: string[] } }>(
-    "/analytics-webhooks/event-types",
+    '/analytics-webhooks/event-types',
   );
   const types = typesData?.data?.types ?? [];
 
   const FormSchema = z.object({
-    name: z.string().min(1, t("validationNameRequired")),
-    url: z.string().url(t("validationUrlInvalid")).startsWith("https://", t("validationUrlInvalid")),
-    status: z.enum(["active", "disabled"]),
-    patterns: z.array(z.string()).min(1, t("validationSubscriptionsRequired")),
+    name: z.string().min(1, t('validationNameRequired')),
+    url: z
+      .string()
+      .url(t('validationUrlInvalid'))
+      .startsWith('https://', t('validationUrlInvalid')),
+    status: z.enum(['active', 'disabled']),
+    patterns: z.array(z.string()).min(1, t('validationSubscriptionsRequired')),
   });
   type FormValues = z.infer<typeof FormSchema>;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: { name: "", url: "", status: "active", patterns: [] },
+    defaultValues: { name: '', url: '', status: 'active', patterns: [] },
   });
 
   useEffect(() => {
@@ -83,7 +81,7 @@ export function WebhookFormDialog({
         patterns: endpoint.subscriptions.map((s) => s.pattern),
       });
     } else {
-      form.reset({ name: "", url: "", status: "active", patterns: [] });
+      form.reset({ name: '', url: '', status: 'active', patterns: [] });
     }
   }, [open, endpoint, form]);
 
@@ -97,16 +95,16 @@ export function WebhookFormDialog({
           status: data.status,
           patterns: data.patterns,
         });
-        toast.success(t("toastUpdated"));
+        toast.success(t('toastUpdated'));
         onOpenChange(false);
         onSaved();
       } else {
-        const res = await api.post<{ data: CreateWebhookResult }>("/analytics-webhooks", {
+        const res = await api.post<{ data: CreateWebhookResult }>('/analytics-webhooks', {
           name: data.name,
           url: data.url,
           patterns: data.patterns,
         });
-        toast.success(t("toastCreated"));
+        toast.success(t('toastCreated'));
         onOpenChange(false);
         onSaved();
         onCreated?.({
@@ -116,7 +114,7 @@ export function WebhookFormDialog({
       }
     } catch (err: any) {
       const code = err?.response?.data?.code;
-      toast.error(t_ec(code) || t("toastError"));
+      toast.error(t_ec(code) || t('toastError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -126,7 +124,7 @@ export function WebhookFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg" dir="rtl">
         <DialogHeader>
-          <DialogTitle>{isEdit ? t("editTitle") : t("createTitle")}</DialogTitle>
+          <DialogTitle>{isEdit ? t('editTitle') : t('createTitle')}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
@@ -135,9 +133,9 @@ export function WebhookFormDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("formName")}</FormLabel>
+                  <FormLabel>{t('formName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("formNamePlaceholder")} {...field} />
+                    <Input placeholder={t('formNamePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,7 +146,7 @@ export function WebhookFormDialog({
               name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("formUrl")}</FormLabel>
+                  <FormLabel>{t('formUrl')}</FormLabel>
                   <FormControl>
                     <Input dir="ltr" placeholder="https://hooks.example.com/befroosh" {...field} />
                   </FormControl>
@@ -162,7 +160,7 @@ export function WebhookFormDialog({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("formStatus")}</FormLabel>
+                    <FormLabel>{t('formStatus')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -170,8 +168,8 @@ export function WebhookFormDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="active">{t("statusActive")}</SelectItem>
-                        <SelectItem value="disabled">{t("statusDisabled")}</SelectItem>
+                        <SelectItem value="active">{t('statusActive')}</SelectItem>
+                        <SelectItem value="disabled">{t('statusDisabled')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -184,7 +182,7 @@ export function WebhookFormDialog({
               name="patterns"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("formSubscriptions")}</FormLabel>
+                  <FormLabel>{t('formSubscriptions')}</FormLabel>
                   <FormControl>
                     <SubscriptionsEditor
                       types={types}
@@ -198,10 +196,10 @@ export function WebhookFormDialog({
             />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {t("cancel")}
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isEdit ? t("save") : t("create")}
+                {isEdit ? t('save') : t('create')}
               </Button>
             </div>
           </form>

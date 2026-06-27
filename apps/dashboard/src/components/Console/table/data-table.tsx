@@ -1,9 +1,9 @@
 // src/app/leads/data-table.tsx
-"use client";
+'use client';
 
-import { formatNumber } from "@/utils/formatNumber";
-import { ColumnMeta } from "@/types/tables";
-import { useEffect, useState } from "react";
+import { formatNumber } from '@/utils/formatNumber';
+import { ColumnMeta } from '@/types/tables';
+import { useEffect, useState } from 'react';
 
 // UI Imports
 import {
@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Cell,
   ColumnDef,
@@ -24,7 +24,7 @@ import {
   SortingState,
   useReactTable,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -63,25 +63,23 @@ export function DataTable<TData, TValue>({
   onSortingChange,
   sortingState,
 }: DataTableProps<TData, TValue>) {
-  const [internalColumnVisibility, setInternalColumnVisibility] =
-    useState<VisibilityState>({});
+  const [internalColumnVisibility, setInternalColumnVisibility] = useState<VisibilityState>({});
   const resolvedColumnVisibility = columnVisibility ?? internalColumnVisibility;
-  const resolvedSetColumnVisibility: OnChangeFn<VisibilityState> =
-    onColumnVisibilityChange
-      ? (updaterOrValue) => {
-          // اگه تابع هست
-          if (typeof updaterOrValue === "function") {
-            onColumnVisibilityChange(updaterOrValue(resolvedColumnVisibility));
-          } else {
-            onColumnVisibilityChange(updaterOrValue);
-          }
+  const resolvedSetColumnVisibility: OnChangeFn<VisibilityState> = onColumnVisibilityChange
+    ? (updaterOrValue) => {
+        // اگه تابع هست
+        if (typeof updaterOrValue === 'function') {
+          onColumnVisibilityChange(updaterOrValue(resolvedColumnVisibility));
+        } else {
+          onColumnVisibilityChange(updaterOrValue);
         }
-      : setInternalColumnVisibility;
+      }
+    : setInternalColumnVisibility;
 
   const [internalSorting, setInternalSorting] = useState<SortingState>([]);
   const resolvedSorting = sortingState ?? internalSorting;
   const resolvedSetSorting: OnChangeFn<SortingState> = (updaterOrValue) => {
-    if (typeof updaterOrValue === "function") {
+    if (typeof updaterOrValue === 'function') {
       const updated = updaterOrValue(sortingState ?? internalSorting);
       onSortingChange?.(updated);
       setInternalSorting(updated);
@@ -114,9 +112,7 @@ export function DataTable<TData, TValue>({
     manualPagination: true,
     onPaginationChange: (updater) => {
       const newState =
-        typeof updater === "function"
-          ? updater({ pageIndex: page - 1, pageSize: limit })
-          : updater;
+        typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize: limit }) : updater;
 
       onPageChange(newState.pageIndex + 1);
       onLimitChange(newState.pageSize);
@@ -133,7 +129,7 @@ export function DataTable<TData, TValue>({
     const meta = cell.column.columnDef.meta as ColumnMeta;
     const raw = cell.getValue();
 
-    if (meta?.isNumeric && typeof raw === "number") {
+    if (meta?.isNumeric && typeof raw === 'number') {
       return formatNumber(raw);
     }
 
@@ -146,9 +142,7 @@ export function DataTable<TData, TValue>({
   useEffect(() => {
     if (!setSelectedRows) return;
 
-    const selectedRows = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.original);
+    const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
 
     setSelectedRows(selectedRows);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,10 +158,7 @@ export function DataTable<TData, TValue>({
                 <TableHead key={header.id}>
                   {header.isPlaceholder
                     ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                    : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
             </TableRow>
@@ -177,10 +168,7 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() ? "selected" : undefined}
-              >
+              <TableRow key={row.id} data-state={row.getIsSelected() ? 'selected' : undefined}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>{renderCell(cell)}</TableCell>
                 ))}

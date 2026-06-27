@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 import {
   Button,
@@ -12,18 +12,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui";
-import { CrownSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+} from '@/components/ui';
+import { CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface ContentPromotionDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
-export const ContentPromotionDialog = ({
-  isOpen,
-  setIsOpen,
-}: ContentPromotionDialogProps) => {
-  const t = useTranslations("Automations.ContentPromotionDialog");
+export const ContentPromotionDialog = ({ isOpen, setIsOpen }: ContentPromotionDialogProps) => {
+  const t = useTranslations('Automations.ContentPromotionDialog');
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -35,18 +32,16 @@ export const ContentPromotionDialog = ({
         <DialogHeader>
           <DialogTitle className="text-primary">
             <CrownSimpleIcon size={20} weight="duotone" />
-            {t("title")}
+            {t('title')}
           </DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="default" asChild>
-            <Link href="/settings/subscription?active=planSelection">
-              {t("buttons.upgrade")}
-            </Link>
+            <Link href="/settings/subscription?active=planSelection">{t('buttons.upgrade')}</Link>
           </Button>
           <DialogClose asChild>
-            <Button variant="outline">{t("buttons.close")}</Button>
+            <Button variant="outline">{t('buttons.close')}</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

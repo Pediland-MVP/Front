@@ -1,6 +1,6 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
+'use client';
+import { Button } from '@/components/ui/button';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import {
   Drawer,
   DrawerClose,
@@ -9,7 +9,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
+} from '@/components/ui/drawer';
 import {
   Form,
   FormControl,
@@ -18,22 +18,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import api from "@/hooks/swr/api-client";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { IResponseMessage } from "@/types/responseMessage";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError, AxiosResponse } from "axios";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import DateObject from "react-date-object";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import { Controller, useForm } from "react-hook-form";
-import DatePicker from "react-multi-date-picker";
-import { toast } from "sonner";
-import { z } from "zod";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import api from '@/hooks/swr/api-client';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { IResponseMessage } from '@/types/responseMessage';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError, AxiosResponse } from 'axios';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import DateObject from 'react-date-object';
+import persian from 'react-date-object/calendars/persian';
+import persian_fa from 'react-date-object/locales/persian_fa';
+import { Controller, useForm } from 'react-hook-form';
+import DatePicker from 'react-multi-date-picker';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 // Define a proper type for DateObject
 type DateObjectType =
@@ -48,9 +48,7 @@ type DateObjectType =
 const isDateObject = (value: any): value is DateObjectType => {
   return (
     value instanceof DateObject ||
-    (value &&
-      typeof value.toDate === "function" &&
-      typeof value.unix === "number")
+    (value && typeof value.toDate === 'function' && typeof value.unix === 'number')
   );
 };
 
@@ -58,18 +56,18 @@ const isDateObject = (value: any): value is DateObjectType => {
 const createFormSchema = (t: ReturnType<typeof useTranslations>) => {
   return z.object({
     startDate: z.custom<DateObjectType>((val) => isDateObject(val), {
-      message: t("form.startDate.error"),
+      message: t('form.startDate.error'),
     }),
     endDate: z.custom<DateObjectType>((val) => isDateObject(val), {
-      message: t("form.endDate.error"),
+      message: t('form.endDate.error'),
     }),
     email: z.string().email({
-      message: t("form.email.error"),
+      message: t('form.email.error'),
     }),
     count: z.coerce
       .number()
       .max(10000, {
-        message: t("form.count.error"),
+        message: t('form.count.error'),
       })
       .optional()
       .default(10000),
@@ -81,12 +79,9 @@ interface ExcelExportDirectsDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ExcelExportDirectsDrawer({
-  open,
-  onOpenChange,
-}: ExcelExportDirectsDrawerProps) {
-  const t = useTranslations("Directs.ExcelExport");
-  const t_ec = useTranslations("ERROR_CODES");
+export function ExcelExportDirectsDrawer({ open, onOpenChange }: ExcelExportDirectsDrawerProps) {
+  const t = useTranslations('Directs.ExcelExport');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -114,9 +109,9 @@ export function ExcelExportDirectsDrawer({
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
     await api
-      .post("/directs/excelExport", values)
+      .post('/directs/excelExport', values)
       .then((res: AxiosResponse<IResponseMessage>) => {
-        toast.success(t("success"));
+        toast.success(t('success'));
       })
       .catch((e: AxiosError<ExceptionMessage>) => {
         const error = t_ec(e.code);
@@ -129,22 +124,22 @@ export function ExcelExportDirectsDrawer({
 
   // Date picker styles
   const datePickerStyles = {
-    width: "100%",
-    height: "40px",
-    padding: "8px 12px",
-    borderRadius: "6px",
-    border: "1px solid hsl(var(--input))",
-    fontSize: "14px",
-    backgroundColor: "transparent",
-    color: "hsl(var(--foreground))",
+    width: '100%',
+    height: '40px',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    border: '1px solid hsl(var(--input))',
+    fontSize: '14px',
+    backgroundColor: 'transparent',
+    color: 'hsl(var(--foreground))',
   };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="mx-auto sm:max-w-[425px]">
         <DrawerHeader>
-          <DrawerTitle>{t("title")}</DrawerTitle>
-          <DrawerDescription>{t("description")}</DrawerDescription>
+          <DrawerTitle>{t('title')}</DrawerTitle>
+          <DrawerDescription>{t('description')}</DrawerDescription>
         </DrawerHeader>
         <div className="px-4">
           <Form {...form}>
@@ -154,7 +149,7 @@ export function ExcelExportDirectsDrawer({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>{t("form.startDate.label")}</FormLabel>
+                    <FormLabel>{t('form.startDate.label')}</FormLabel>
                     <FormControl>
                       <Controller
                         control={form.control}
@@ -166,8 +161,8 @@ export function ExcelExportDirectsDrawer({
                                 ? new DateObject(+field.value)
                                     .setLocale(persian_fa)
                                     .setCalendar(persian)
-                                    .format("YYYY/MM/DD")
-                                : ""
+                                    .format('YYYY/MM/DD')
+                                : ''
                             }
                             onChange={(date) => {
                               field.onChange(date);
@@ -190,7 +185,7 @@ export function ExcelExportDirectsDrawer({
                 name="endDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>{t("form.endDate.label")}</FormLabel>
+                    <FormLabel>{t('form.endDate.label')}</FormLabel>
                     <FormControl>
                       <Controller
                         control={form.control}
@@ -202,8 +197,8 @@ export function ExcelExportDirectsDrawer({
                                 ? new DateObject(+field.value)
                                     .setLocale(persian_fa)
                                     .setCalendar(persian)
-                                    .format("YYYY/MM/DD")
-                                : ""
+                                    .format('YYYY/MM/DD')
+                                : ''
                             }
                             onChange={(date) => {
                               field.onChange(date);
@@ -226,16 +221,11 @@ export function ExcelExportDirectsDrawer({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("form.email.label")}</FormLabel>
+                    <FormLabel>{t('form.email.label')}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder={t("form.email.placeholder")}
-                        {...field}
-                      />
+                      <Input placeholder={t('form.email.placeholder')} {...field} />
                     </FormControl>
-                    <FormDescription>
-                      {t("form.email.description")}
-                    </FormDescription>
+                    <FormDescription>{t('form.email.description')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -246,24 +236,20 @@ export function ExcelExportDirectsDrawer({
                 name="count"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("form.count.label")}</FormLabel>
+                    <FormLabel>{t('form.count.label')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder={t("form.count.placeholder")}
+                        placeholder={t('form.count.placeholder')}
                         {...field}
                         onChange={(e) => {
                           const value =
-                            e.target.value === ""
-                              ? undefined
-                              : Number.parseInt(e.target.value, 10);
+                            e.target.value === '' ? undefined : Number.parseInt(e.target.value, 10);
                           field.onChange(value);
                         }}
                       />
                     </FormControl>
-                    <FormDescription>
-                      {t("form.count.description")}
-                    </FormDescription>
+                    <FormDescription>{t('form.count.description')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -271,10 +257,10 @@ export function ExcelExportDirectsDrawer({
 
               <DrawerFooter>
                 <ButtonLoading isLoading={isLoading} type="submit">
-                  {t("buttons.export")}
+                  {t('buttons.export')}
                 </ButtonLoading>
                 <DrawerClose asChild>
-                  <Button variant="outline">{t("buttons.cancel")}</Button>
+                  <Button variant="outline">{t('buttons.cancel')}</Button>
                 </DrawerClose>
               </DrawerFooter>
             </form>

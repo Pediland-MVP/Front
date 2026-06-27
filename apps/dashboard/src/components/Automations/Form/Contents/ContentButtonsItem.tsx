@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
 import {
   AutomationContentModeEnum,
   AutomationContentTypesEnum,
-} from "@/constants/automationContent.enum";
-import { cn } from "@/lib/utils";
-import { AutomationFormType } from "@/schemas/automationForm";
-import { ButtonTypeEnum } from "@/types/buttons.enum";
-import { useTranslations } from "next-intl";
-import { Control, useFormContext, useWatch } from "react-hook-form";
+} from '@/constants/automationContent.enum';
+import { cn } from '@/lib/utils';
+import { AutomationFormType } from '@/schemas/automationForm';
+import { ButtonTypeEnum } from '@/types/buttons.enum';
+import { useTranslations } from 'next-intl';
+import { Control, useFormContext, useWatch } from 'react-hook-form';
 
-import { AutomationSearchSelect } from "@/components/Products/AutomationSearchSelect";
+import { AutomationSearchSelect } from '@/components/Products/AutomationSearchSelect';
 import {
   Button,
   Card,
@@ -26,13 +26,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui";
-import { ErrorMessage } from "@/components/ui-custom/ErrorMessage";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@/components/ui';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-import { MoveVerticalIcon, TrashIcon } from "lucide-react";
-import { AutomationButtonsContentTypes } from "./AutomationButtons";
+import { MoveVerticalIcon, TrashIcon } from 'lucide-react';
+import { AutomationButtonsContentTypes } from './AutomationButtons';
 
 type ButtonContentItemProps = {
   id: string;
@@ -46,11 +46,11 @@ type ButtonContentItemProps = {
 };
 
 const contentTypePayloadType: Record<
-  | "buttonTemplate"
+  | 'buttonTemplate'
   | AutomationContentTypesEnum.QUESTION
   | AutomationContentTypesEnum.TEXT
   | AutomationContentTypesEnum.VITRIN,
-    Partial<Record<ButtonTypeEnum, boolean>>
+  Partial<Record<ButtonTypeEnum, boolean>>
 > = {
   text: {
     startAutomation: true,
@@ -80,35 +80,29 @@ export const ButtonContentItem = ({
   mode,
   contentType,
   fieldNameOverride,
-  control
+  control,
 }: ButtonContentItemProps) => {
   const form = useFormContext<AutomationFormType>();
 
   // ── محاسبه مسیر پویا (اینجا فیکس اصلی است) ──
   type DefaultFieldNameType =
-    `${"contents" | "reminders"}.${number}.${"buttonTemplate.buttons" | "quickReplies" | "buttons"}`;
-  const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? "contents" : "reminders"}.${contentIndex}.${contentType === "text" || contentType === "question" ? "quickReplies" : contentType === "vitrin" ? "buttons" : "buttonTemplate.buttons"}`;
+    `${'contents' | 'reminders'}.${number}.${'buttonTemplate.buttons' | 'quickReplies' | 'buttons'}`;
+  const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : contentType === 'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
   const fieldPath = fieldNameOverride ?? defaultFieldName;
 
-  console.log("FieldPath on ButtonContentItem", fieldPath);
-
+  console.log('FieldPath on ButtonContentItem', fieldPath);
 
   const selectedType = useWatch({
     name: `${fieldPath}.${index}.postbackPayloadType` as any,
-    control
+    control,
   });
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
-  const t = useTranslations("Automations.Contents.Button");
-  const t_ec = useTranslations("Automations.Contents.Button.Errors");
+  const t = useTranslations('Automations.Contents.Button');
+  const t_ec = useTranslations('Automations.Contents.Button.Errors');
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -120,15 +114,15 @@ export const ButtonContentItem = ({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group relative w-full gap-0 transition-all duration-200",
-        isDragging && "z-10",
+        'group relative w-full gap-0 transition-all duration-200',
+        isDragging && 'z-10',
       )}
     >
       <Card
         className={cn(
-          "w-full gap-0 p-3",
-          index !== 0 && "pt-4",
-          isDragging && "ring-primary ring-1",
+          'w-full gap-0 p-3',
+          index !== 0 && 'pt-4',
+          isDragging && 'ring-primary ring-1',
         )}
       >
         <CardHeader className="-mt-2 p-0">
@@ -148,7 +142,7 @@ export const ButtonContentItem = ({
               <div></div>
             )}
 
-            {!(contentType === "question" && index === 0) && (
+            {!(contentType === 'question' && index === 0) && (
               <Button
                 variant="link"
                 size="icon"
@@ -169,21 +163,15 @@ export const ButtonContentItem = ({
             name={`${fieldPath}.${index}.postbackPayloadType` as any}
             render={({ field: typeField, fieldState: { error } }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
-                {Object.keys(contentTypePayloadType[contentType]).length >
-                  1 && (
-                  <Select
-                    value={typeField.value ?? ""}
-                    onValueChange={typeField.onChange}
-                  >
+                {Object.keys(contentTypePayloadType[contentType]).length > 1 && (
+                  <Select value={typeField.value ?? ''} onValueChange={typeField.onChange}>
                     <SelectTrigger className="gap-1 pr-2 pl-1.5">
-                      <SelectValue placeholder={t("button_type")} />
+                      <SelectValue placeholder={t('button_type')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         {Object.values(ButtonTypeEnum).map((buttonType) => {
-                          return contentTypePayloadType[contentType][
-                            buttonType
-                          ] ? (
+                          return contentTypePayloadType[contentType][buttonType] ? (
                             <SelectItem key={buttonType} value={buttonType}>
                               {t(`${buttonType}.label`)}
                             </SelectItem>
@@ -194,9 +182,7 @@ export const ButtonContentItem = ({
                   </Select>
                 )}
                 {error && (
-                  <ErrorMessage className="mt-1">
-                    {t_ec("buttonTypeRequired")}
-                  </ErrorMessage>
+                  <ErrorMessage className="mt-1">{t_ec('buttonTypeRequired')}</ErrorMessage>
                 )}
               </FormItem>
             )}
@@ -234,9 +220,9 @@ export const ButtonContentItem = ({
                     dir="ltr"
                     className="text-left"
                     {...field}
-                    value={field.value ?? ""}
+                    value={field.value ?? ''}
                     aria-invalid={!!error}
-                    placeholder={t("url.placeholder")}
+                    placeholder={t('url.placeholder')}
                   />
                   {error && <ErrorMessage>{error.message}</ErrorMessage>}
                 </FormItem>
@@ -272,7 +258,6 @@ export const ButtonContentItem = ({
               )}
             />
           )}
-
         </CardContent>
       </Card>
     </div>

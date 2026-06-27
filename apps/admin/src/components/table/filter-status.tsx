@@ -1,131 +1,122 @@
 // src/components/table/filter-status.tsx
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import * as React from "react";
+import { cn } from '@/lib/utils';
+import * as React from 'react';
 
 // UI Imports
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, FunnelIcon } from "lucide-react";
-import { statusLabels } from "@/constants/user-status";
-import { stat } from "node:fs/promises";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, FunnelIcon } from 'lucide-react';
+import { statusLabels } from '@/constants/user-status';
+import { stat } from 'node:fs/promises';
 
 const leadStatuses = [
   {
-    value: "incoming",
-    label: "جدید",
+    value: 'incoming',
+    label: 'جدید',
   },
   {
-    value: "follow",
-    label: "پیگیری",
+    value: 'follow',
+    label: 'پیگیری',
   },
   {
-    value: "force",
-    label: "فوری",
+    value: 'force',
+    label: 'فوری',
   },
   {
-    value: "failed",
-    label: "ناموفق",
+    value: 'failed',
+    label: 'ناموفق',
   },
 ];
 
 const customerStatuses = [
   {
-    value: "onboarding",
+    value: 'onboarding',
     label: statusLabels.onboarding,
   },
   {
-    value: "new",
+    value: 'new',
     label: statusLabels.new,
   },
   {
-    value: "needed",
+    value: 'needed',
     label: statusLabels.needed,
   },
   {
-    value: "semiActive",
+    value: 'semiActive',
     label: statusLabels.semiActive,
   },
   {
-    value: "active",
+    value: 'active',
     label: statusLabels.active,
   },
   {
-    value: "keyUser",
+    value: 'keyUser',
     label: statusLabels.keyUser,
   },
   {
-    value: "inactive",
+    value: 'inactive',
     label: statusLabels.inactive,
   },
   {
-    value: "lost",
+    value: 'lost',
     label: statusLabels.lost,
   },
 ];
 
 const subscriptionStatuses = [
   {
-    value: "active",
-    label: "فعال",
+    value: 'active',
+    label: 'فعال',
   },
   {
-    value: "expired",
-    label: "منقضی شده",
+    value: 'expired',
+    label: 'منقضی شده',
   },
   {
-    value: "cancelled",
-    label: "لغو شده",
+    value: 'cancelled',
+    label: 'لغو شده',
   },
   {
-    value: "pending",
-    label: "در انتظار",
+    value: 'pending',
+    label: 'در انتظار',
   },
   {
-    value: "reserved",
-    label: "رزرو شده",
+    value: 'reserved',
+    label: 'رزرو شده',
   },
   {
-    value: "failed",
-    label: "ناموفق",
+    value: 'failed',
+    label: 'ناموفق',
   },
   {
-    value: "pendForActivator",
-    label: "اتصال",
+    value: 'pendForActivator',
+    label: 'اتصال',
   },
 ];
 
 type FilterStatusProps = {
-  type: "lead" | "customer" | "subscription";
+  type: 'lead' | 'customer' | 'subscription';
   value?: string;
   onChange: (value: string) => void;
-  size?: "default" | "sm";
+  size?: 'default' | 'sm';
 };
 
-export function FilterStatus({
-  onChange,
-  value = "",
-  type,
-  size = "default",
-}: FilterStatusProps) {
+export function FilterStatus({ onChange, value = '', type, size = 'default' }: FilterStatusProps) {
   const [open, setOpen] = React.useState(false);
 
   const mapData =
-    type === "lead"
+    type === 'lead'
       ? leadStatuses
-      : type === "subscription"
+      : type === 'subscription'
         ? subscriptionStatuses
         : customerStatuses;
 
@@ -136,18 +127,13 @@ export function FilterStatus({
           size={size}
           role="combobox"
           aria-expanded={open}
-          className={cn(
-            type === "lead" ? "md:w-[120px]" : "md:w-[140px]",
-            "justify-between",
-          )}
+          className={cn(type === 'lead' ? 'md:w-[120px]' : 'md:w-[140px]', 'justify-between')}
         >
-          {value ? mapData.find((s) => s.value === value)?.label : "وضعیت"}
+          {value ? mapData.find((s) => s.value === value)?.label : 'وضعیت'}
           <FunnelIcon className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className={cn(type === "lead" ? "w-[120px]" : "w-[140px]", "p-0")}
-      >
+      <PopoverContent className={cn(type === 'lead' ? 'w-[120px]' : 'w-[140px]', 'p-0')}>
         <Command>
           {/* <CommandInput placeholder="جستجو..." /> */}
           <CommandList>
@@ -159,18 +145,14 @@ export function FilterStatus({
                   key={s.value}
                   value={s.value}
                   onSelect={(currentValue) => {
-                    const nextValue =
-                      currentValue === value ? "" : currentValue;
+                    const nextValue = currentValue === value ? '' : currentValue;
                     onChange(nextValue);
                     setOpen(false);
                   }}
                 >
                   {s.label}
                   <Check
-                    className={cn(
-                      "ml-auto",
-                      value === s.value ? "opacity-100" : "opacity-0",
-                    )}
+                    className={cn('ml-auto', value === s.value ? 'opacity-100' : 'opacity-0')}
                   />
                 </CommandItem>
               ))}

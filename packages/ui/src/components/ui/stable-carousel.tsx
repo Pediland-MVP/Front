@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 /* ----------------------------- Types ----------------------------- */
 
@@ -15,15 +15,12 @@ type StableCarouselContextValue = {
   canScrollNext: boolean;
 };
 
-const StableCarouselContext =
-  React.createContext<StableCarouselContextValue | null>(null);
+const StableCarouselContext = React.createContext<StableCarouselContextValue | null>(null);
 
 export function useStableCarousel() {
   const context = React.useContext(StableCarouselContext);
   if (!context) {
-    throw new Error(
-      "useStableCarousel must be used within a <StableCarousel />"
-    );
+    throw new Error('useStableCarousel must be used within a <StableCarousel />');
   }
   return context;
 }
@@ -61,9 +58,7 @@ export function StableCarousel({
   // Count children to determine total items
   React.useEffect(() => {
     if (containerRef.current) {
-      const items = containerRef.current.querySelectorAll(
-        '[data-stable-carousel-item="true"]'
-      );
+      const items = containerRef.current.querySelectorAll('[data-stable-carousel-item="true"]');
       setTotalItems(items.length);
     }
   });
@@ -77,7 +72,7 @@ export function StableCarousel({
       setCurrentIndex(clampedIndex);
       onIndexChange?.(clampedIndex);
     },
-    [totalItems, onIndexChange]
+    [totalItems, onIndexChange],
   );
 
   const scrollPrev = React.useCallback(() => {
@@ -104,15 +99,7 @@ export function StableCarousel({
         canScrollNext: () => canScrollNext,
       });
     }
-  }, [
-    setApi,
-    scrollTo,
-    scrollPrev,
-    scrollNext,
-    currentIndex,
-    canScrollPrev,
-    canScrollNext,
-  ]);
+  }, [setApi, scrollTo, scrollPrev, scrollNext, currentIndex, canScrollPrev, canScrollNext]);
 
   // Clamp current index when items are removed
   React.useEffect(() => {
@@ -131,22 +118,14 @@ export function StableCarousel({
       canScrollPrev,
       canScrollNext,
     }),
-    [
-      currentIndex,
-      totalItems,
-      scrollTo,
-      scrollPrev,
-      scrollNext,
-      canScrollPrev,
-      canScrollNext,
-    ]
+    [currentIndex, totalItems, scrollTo, scrollPrev, scrollNext, canScrollPrev, canScrollNext],
   );
 
   return (
     <StableCarouselContext.Provider value={contextValue}>
       <div
         ref={containerRef}
-        className={cn("relative", className)}
+        className={cn('relative', className)}
         role="region"
         aria-roledescription="carousel"
         data-slot="stable-carousel"
@@ -164,16 +143,13 @@ type StableCarouselContentProps = {
   className?: string;
 };
 
-export function StableCarouselContent({
-  children,
-  className,
-}: StableCarouselContentProps) {
+export function StableCarouselContent({ children, className }: StableCarouselContentProps) {
   const { currentIndex } = useStableCarousel();
 
   return (
     <div className="overflow-hidden" data-slot="stable-carousel-content">
       <div
-        className={cn("flex transition-transform duration-300 ease-out", className)}
+        className={cn('flex transition-transform duration-300 ease-out', className)}
         style={{
           transform: `translateX(-${currentIndex * 100}%)`,
         }}
@@ -191,17 +167,14 @@ type StableCarouselItemProps = {
   className?: string;
 };
 
-export function StableCarouselItem({
-  children,
-  className,
-}: StableCarouselItemProps) {
+export function StableCarouselItem({ children, className }: StableCarouselItemProps) {
   return (
     <div
       role="group"
       aria-roledescription="slide"
       data-stable-carousel-item="true"
       data-slot="stable-carousel-item"
-      className={cn("w-full shrink-0", className)}
+      className={cn('w-full shrink-0', className)}
     >
       {children}
     </div>

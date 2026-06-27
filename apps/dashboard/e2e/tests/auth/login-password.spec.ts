@@ -7,7 +7,11 @@ import { ConnectPage } from '../../pages/connect.page';
 import { TEST_USER, TEST_PASSWORD } from '../../helpers/test-data';
 
 test.describe('Login with Password', () => {
-  test('existing user with password should log in using password and reach dashboard', async ({ page, testMobile, apiHelper }) => {
+  test('existing user with password should log in using password and reach dashboard', async ({
+    page,
+    testMobile,
+    apiHelper,
+  }) => {
     const authPage = new AuthPage(page);
     const otpPage = new OtpPage(page);
     const onboardingPage = new OnboardingPage(page);

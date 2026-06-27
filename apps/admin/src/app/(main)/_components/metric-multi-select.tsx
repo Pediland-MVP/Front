@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { METRICS } from "./metrics.constants";
+import { useTranslations } from 'next-intl';
+import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { METRICS } from './metrics.constants';
 
 interface MetricMultiSelectProps {
   selected: number[];
@@ -12,17 +12,17 @@ interface MetricMultiSelectProps {
 
 /** Toggle chips for the 5 metrics. At least one stays selected (enforced upstream). */
 export function MetricMultiSelect({ selected, onToggle }: MetricMultiSelectProps) {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations('Dashboard');
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-muted-foreground text-sm">{t("metricsLabel")}:</span>
+      <span className="text-muted-foreground text-sm">{t('metricsLabel')}:</span>
       {METRICS.map((m) => {
         const isOn = selected.includes(m.type);
         return (
           <Button
             key={m.type}
             size="sm"
-            variant={isOn ? "default" : "outline"}
+            variant={isOn ? 'default' : 'outline'}
             onClick={() => onToggle(m.type)}
             aria-pressed={isOn}
           >

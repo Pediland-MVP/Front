@@ -1,54 +1,49 @@
-"use client";
+'use client';
 
-import { useDebounce } from "@/hooks/useDebounce";
-import { ProductNamespace } from "@/types/product";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
-import useSWRImmutable from "swr/immutable";
-import { usePermissions } from "@/hooks/usePermissions";
+import { useDebounce } from '@/hooks/useDebounce';
+import { ProductNamespace } from '@/types/product';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useState } from 'react';
+import useSWRImmutable from 'swr/immutable';
+import { usePermissions } from '@/hooks/usePermissions';
 
-import api from "@/hooks/swr/api-client";
-import { toast } from "sonner";
-import { mutate } from "swr";
-import { mutateIncludeStringKey } from "@/utils/mutateIncludeStringKey";
-import { AxiosError } from "axios";
-import { ExceptionMessage } from "@/types/exceptionMessage";
-import { PageMeta } from "@/schemas/pageMeta";
-import { useHeaderFeatures } from "@/lib/stores/useHeaderFeaturesStore";
-import { NoDataError } from "../Global/NoDataError";
-import { LoaderSpin } from "../ui-custom/LoaderSpin";
-import { DeleteConfirmationDialog } from "../Global/DeleteConfirmationDialog";
-import { ProductCard } from "./ProductCard";
-import { ItemsPagination } from "../Console/ItemsPagination";
-import { Alert, AlertDescription, AlertTitle } from "../ui";
-import { AlertCircleIcon } from "lucide-react";
-import Link from "next/link";
+import api from '@/hooks/swr/api-client';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import { AxiosError } from 'axios';
+import { ExceptionMessage } from '@/types/exceptionMessage';
+import { PageMeta } from '@/schemas/pageMeta';
+import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
+import { NoDataError } from '../Global/NoDataError';
+import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
+import { ProductCard } from './ProductCard';
+import { ItemsPagination } from '../Console/ItemsPagination';
+import { Alert, AlertDescription, AlertTitle } from '../ui';
+import { AlertCircleIcon } from 'lucide-react';
+import Link from 'next/link';
 
 interface ProducstCardListProps {
   search: string;
   allowAdd: boolean;
 }
 
-export const ProducstCardList = ({
-  search,
-  allowAdd,
-}: ProducstCardListProps) => {
-  const t = useTranslations("Products.List");
-  const t_ec = useTranslations("ERROR_CODES");
+export const ProducstCardList = ({ search, allowAdd }: ProducstCardListProps) => {
+  const t = useTranslations('Products.List');
+  const t_ec = useTranslations('ERROR_CODES');
   const { can } = usePermissions();
-  const hasViewPermission = can("product:view");
+  const hasViewPermission = can('product:view');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const { setError } = useHeaderFeatures();
 
-  let searchParams = "";
+  let searchParams = '';
   const debouncedSearchTerm = useDebounce(search, 500);
   search ? (searchParams = `&search=${debouncedSearchTerm}`) : null;
-  const apiUrl = hasViewPermission
-    ? `/products?page=${page}&limit=${limit}${searchParams}`
-    : null;
+  const apiUrl = hasViewPermission ? `/products?page=${page}&limit=${limit}${searchParams}` : null;
   const {
     data: productsData,
     error: productsError,
@@ -69,10 +64,7 @@ export const ProducstCardList = ({
   };
   const meta: PageMeta = productsData?.meta ?? defaultMeta;
 
-  const onPageChange = useCallback(
-    (newPage: number) => setPage(Math.max(1, newPage)),
-    [],
-  );
+  const onPageChange = useCallback((newPage: number) => setPage(Math.max(1, newPage)), []);
 
   const onLimitChange = useCallback((newLimit: number) => {
     setLimit(newLimit);
@@ -96,8 +88,8 @@ export const ProducstCardList = ({
       await api
         .delete(`/products/${itemToDelete}`)
         .then((res) => {
-          toast.success(t("Toast.deleted"));
-          mutate(mutateIncludeStringKey("/products"));
+          toast.success(t('Toast.deleted'));
+          mutate(mutateIncludeStringKey('/products'));
         })
         .catch((error: AxiosError<ExceptionMessage>) => {
           console.error(error);
@@ -139,10 +131,10 @@ export const ProducstCardList = ({
           <Alert variant="destructive">
             <AlertCircleIcon />
             <AlertTitle className="mb-0 w-full text-sm">
-              برای افزودن کالا یا خدمت، ابتدا{" "}
+              برای افزودن کالا یا خدمت، ابتدا{' '}
               <Link href="/settings/card" className="text-secondary">
                 از ایـنـجـا
-              </Link>{" "}
+              </Link>{' '}
               تنظیمات کارت بانکی خود را انجام دهید.
             </AlertTitle>
           </Alert>
@@ -150,18 +142,12 @@ export const ProducstCardList = ({
 
         {products.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <div className="text-muted-foreground text-sm">
-              {t("no_products")}
-            </div>
+            <div className="text-muted-foreground text-sm">{t('no_products')}</div>
           </div>
         ) : (
           <div className="grid gap-3 md:grid-cols-3 2xl:grid-cols-4">
             {products.map((item) => (
-              <ProductCard
-                key={item.id}
-                product={item}
-                handleDelete={handleDelete}
-              />
+              <ProductCard key={item.id} product={item} handleDelete={handleDelete} />
             ))}
           </div>
         )}

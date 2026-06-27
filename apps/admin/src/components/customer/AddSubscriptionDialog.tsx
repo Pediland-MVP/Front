@@ -4,7 +4,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -12,30 +12,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import useSWR from "swr";
-import { DurationResponse, PlanResponse } from "@/types/subscription";
-import api, { fetcher } from "@/hooks/swr/api-client";
-import { useState } from "react";
-import { formatNumber } from "@/lib/formatNumber";
-import { onInputP2EHandler } from "@/lib/p2eNumber";
-import { toast } from "sonner";
+} from '@/components/ui/select';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import useSWR from 'swr';
+import { DurationResponse, PlanResponse } from '@/types/subscription';
+import api, { fetcher } from '@/hooks/swr/api-client';
+import { useState } from 'react';
+import { formatNumber } from '@/lib/formatNumber';
+import { onInputP2EHandler } from '@/lib/p2eNumber';
+import { toast } from 'sonner';
 
 const FormSchema = z.object({
-  planId: z.string().min(1, "اشتراک را انتخاب کنید."),
-  planDurationId: z.string().min(1, "مدت را انتخاب کنید."),
+  planId: z.string().min(1, 'اشتراک را انتخاب کنید.'),
+  planDurationId: z.string().min(1, 'مدت را انتخاب کنید.'),
   price: z.number().optional(),
   finalPrice: z.number().optional(),
 });
@@ -51,28 +51,24 @@ export const AddSubscriptionDialog = ({
   onOpenChange,
   userId,
 }: AddSubscriptionDialogProps) => {
-  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      planId: "",
-      planDurationId: "",
+      planId: '',
+      planDurationId: '',
       price: 0,
       finalPrice: undefined,
     },
   });
 
-  const { data: plansData, isLoading: isPlansLoading } = useSWR<PlanResponse>(
-    `/plans`,
+  const { data: plansData, isLoading: isPlansLoading } = useSWR<PlanResponse>(`/plans`, fetcher);
+
+  const { data: durationsData, isLoading: isDurationsLoading } = useSWR<DurationResponse>(
+    selectedPlanId ? `/plans/planDurations?planId=${selectedPlanId}` : null,
     fetcher,
   );
-
-  const { data: durationsData, isLoading: isDurationsLoading } =
-    useSWR<DurationResponse>(
-      selectedPlanId ? `/plans/planDurations?planId=${selectedPlanId}` : null,
-      fetcher,
-    );
 
   const handleAddSubscription = async (data: z.infer<typeof FormSchema>) => {
     const price = data.finalPrice ?? data.price;
@@ -83,12 +79,12 @@ export const AddSubscriptionDialog = ({
     };
 
     try {
-      await api.post("/subscriptions", payload);
+      await api.post('/subscriptions', payload);
       onOpenChange(false);
-      toast.success("اشتراک با موفقیت اضافه شد.");
+      toast.success('اشتراک با موفقیت اضافه شد.');
     } catch (error) {
       console.error(error);
-      toast.error("خطا در اضافه کردن اشتراک.");
+      toast.error('خطا در اضافه کردن اشتراک.');
     } finally {
       form.reset();
     }
@@ -148,11 +144,9 @@ export const AddSubscriptionDialog = ({
                     disabled={!selectedPlanId || isDurationsLoading}
                     onValueChange={(val) => {
                       field.onChange(val);
-                      const selected = durationsData?.data.find(
-                        (d) => d.id === Number(val),
-                      );
+                      const selected = durationsData?.data.find((d) => d.id === Number(val));
                       if (selected?.price) {
-                        form.setValue("price", selected.price);
+                        form.setValue('price', selected.price);
                       }
                     }}
                     value={field.value ? field.value.toString() : undefined}
@@ -162,10 +156,7 @@ export const AddSubscriptionDialog = ({
                     </SelectTrigger>
                     <SelectContent>
                       {durationsData?.data.map((duration) => (
-                        <SelectItem
-                          key={duration.id}
-                          value={duration.id.toString()}
-                        >
+                        <SelectItem key={duration.id} value={duration.id.toString()}>
                           {duration.name}
                         </SelectItem>
                       ))}
@@ -187,7 +178,7 @@ export const AddSubscriptionDialog = ({
                       type="text"
                       readOnly
                       className="cursor-not-allowed bg-gray-100 text-right"
-                      value={`${formatNumber(field.value ?? 0) ?? ""} تومان`}
+                      value={`${formatNumber(field.value ?? 0) ?? ''} تومان`}
                       onChange={() => {}}
                     />
                   </FormControl>
@@ -210,10 +201,10 @@ export const AddSubscriptionDialog = ({
                       value={
                         field.value !== undefined && field.value !== null
                           ? String(formatNumber(field.value))
-                          : ""
+                          : ''
                       }
                       onChange={(e) => {
-                        const raw = e.target.value.replace(/\D/g, "");
+                        const raw = e.target.value.replace(/\D/g, '');
                         field.onChange(raw ? Number(raw) : undefined);
                       }}
                       className="text-right"
@@ -226,9 +217,7 @@ export const AddSubscriptionDialog = ({
 
             <div className="mt-3 flex gap-2 md:col-span-3">
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting
-                  ? "در حال ثبت..."
-                  : "افزودن اشتراک"}
+                {form.formState.isSubmitting ? 'در حال ثبت...' : 'افزودن اشتراک'}
               </Button>
 
               <Button

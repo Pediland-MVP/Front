@@ -1,12 +1,8 @@
 // src/components/nav-main.tsx
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { cn } from '@/lib/utils';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarMenu,
@@ -17,11 +13,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { CaretLeftIcon } from "@phosphor-icons/react";
-import { type Icon as PhosphorIcon } from "@phosphor-icons/react";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+} from '@/components/ui/sidebar';
+import { CaretLeftIcon } from '@phosphor-icons/react';
+import { type Icon as PhosphorIcon } from '@phosphor-icons/react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 type NavItem = {
   title: string;
@@ -66,10 +62,10 @@ export function NavMain({ items }: { items: NavItem[] }) {
                 asChild
                 tooltip={item.title}
                 className={cn(
-                  "text-secondary border border-dashed border-transparent",
+                  'text-secondary border border-dashed border-transparent',
                   pathname === item.url
-                    ? "text-primary hover:text-primary active:text-primary border-violet-300/70 bg-violet-100 hover:bg-violet-100 active:bg-violet-100"
-                    : "hover:text-primary active:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100",
+                    ? 'text-primary hover:text-primary active:text-primary border-violet-300/70 bg-violet-100 hover:bg-violet-100 active:bg-violet-100'
+                    : 'hover:text-primary active:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100',
                 )}
               >
                 <button
@@ -108,16 +104,19 @@ function CollapsibleNavItem({
             asChild
             tooltip={item.title}
             className={cn(
-              "text-secondary border border-dashed border-transparent",
+              'text-secondary border border-dashed border-transparent',
               isChildActive
-                ? "text-foreground hover:text-foreground bg-blue-50"
-                : "hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100",
+                ? 'text-foreground hover:text-foreground bg-blue-50'
+                : 'hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100',
             )}
             onClick={() => {
               if (!open) setOpen(true);
             }}
           >
-            <button type="button" className="flex w-full cursor-pointer items-center gap-2 text-left">
+            <button
+              type="button"
+              className="flex w-full cursor-pointer items-center gap-2 text-left"
+            >
               <item.icon weight="duotone" size={24} />
               <span>{item.title}</span>
             </button>
@@ -138,10 +137,10 @@ function CollapsibleNavItem({
                 <SidebarMenuSubButton
                   asChild
                   className={cn(
-                    "border border-dashed border-transparent",
+                    'border border-dashed border-transparent',
                     pathname === child.url
-                      ? "text-primary hover:text-primary active:text-primary active:bg-transparent"
-                      : "hover:text-primary active:text-primary text-secondary active:bg-transparent",
+                      ? 'text-primary hover:text-primary active:text-primary active:bg-transparent'
+                      : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
                   )}
                   onClick={() => {
                     setOpen(true);

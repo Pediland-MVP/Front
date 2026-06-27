@@ -1,28 +1,20 @@
-"use client";
+'use client';
 
-import {
-  Label,
-  PolarGrid,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-} from "recharts";
+import { Label, PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts';
 
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from '@/components/ui/chart';
 
-export const description = "A radial chart with a custom shape";
+export const description = 'A radial chart with a custom shape';
 
-const chartData = [
-  { browser: "safari", visitors: 1260, fill: "var(--color-safari)" },
-];
+const chartData = [{ browser: 'safari', visitors: 1260, fill: 'var(--color-safari)' }];
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: 'Visitors',
   },
   safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
+    label: 'Safari',
+    color: 'var(--chart-2)',
   },
 } satisfies ChartConfig;
 
@@ -32,16 +24,8 @@ interface ChartRadialShapeProps {
 
 export function ChartRadialShape({ className }: ChartRadialShapeProps) {
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="mx-auto aspect-square max-h-[250px]"
-    >
-      <RadialBarChart
-        data={chartData}
-        endAngle={100}
-        innerRadius={80}
-        outerRadius={140}
-      >
+    <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+      <RadialBarChart data={chartData} endAngle={100} innerRadius={80} outerRadius={140}>
         <PolarGrid
           gridType="circle"
           radialLines={false}
@@ -53,14 +37,9 @@ export function ChartRadialShape({ className }: ChartRadialShapeProps) {
         <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
           <Label
             content={({ viewBox }) => {
-              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+              if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                 return (
-                  <text
-                    x={viewBox.cx}
-                    y={viewBox.cy}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                  >
+                  <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                     <tspan
                       x={viewBox.cx}
                       y={viewBox.cy}

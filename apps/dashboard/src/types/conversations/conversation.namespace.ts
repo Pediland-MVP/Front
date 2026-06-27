@@ -1,7 +1,7 @@
-import { WsConversation } from "./conversation.ws";
-import { WsConversations } from "./conversations.ws";
-import { WsNewConversation } from "./newConversation.ws";
-import { WsNewMessage } from "./newMessage.ws";
+import { WsConversation } from './conversation.ws';
+import { WsConversations } from './conversations.ws';
+import { WsNewConversation } from './newConversation.ws';
+import { WsNewMessage } from './newMessage.ws';
 
 export namespace ConversationNamespace {
   export namespace WS {
@@ -13,14 +13,14 @@ export namespace ConversationNamespace {
 }
 
 export enum MemeType {
-  ImageJPEG = "image/jpeg",
+  ImageJPEG = 'image/jpeg',
 }
 
 export enum From {
-  Instagram = "instagram",
-  Lead = "lead",
+  Instagram = 'instagram',
+  Lead = 'lead',
 }
 
 export enum MessageType {
-  Text = "text",
+  Text = 'text',
 }

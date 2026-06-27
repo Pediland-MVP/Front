@@ -1,17 +1,16 @@
-"use client";
+'use client';
 //From https://github.com/kushagrasarathe/image-upload-shadcn/blob/main/src/components/image-upload.tsx
 
-import React, { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import Link from "next/link";
-import RadialProgress from "@/components/ui-custom/radial.progress";
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
+import Link from 'next/link';
+import RadialProgress from '@/components/ui-custom/radial.progress';
 
-import axios, { AxiosProgressEvent } from "axios";
-import { UploadSimple } from "@phosphor-icons/react/dist/ssr";
-
+import axios, { AxiosProgressEvent } from 'axios';
+import { UploadSimple } from '@phosphor-icons/react/dist/ssr';
 
 interface ImageUploadProps {
   onUploadComplete?: (url: string) => void;
@@ -21,15 +20,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
-    null
-  );
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(null);
 
   const onUploadProgress = (progressEvent: AxiosProgressEvent) => {
     if (progressEvent.total) {
-      const percentage = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
+      const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
       setProgress(percentage);
     }
   };
@@ -53,8 +48,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("file", image);
-
+    formData.append('file', image);
 
     try {
       const res = await axios.get(`formData, onUploadProgress`);
@@ -67,7 +61,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error uploading image:", error);
+      console.error('Error uploading image:', error);
     }
   };
 
@@ -82,26 +76,25 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
-    <div className="space-y-3 h-full">
+    <div className="h-full space-y-3">
       <div {...getRootProps()} className="h-full">
         <label
           htmlFor="dropzone-file"
-          className="relative flex flex-col items-center justify-center p-6 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 w-full visually-hidden-focusable h-full"
+          className="dark:hover:bg-bray-800 visually-hidden-focusable relative flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
         >
           {loading && (
-            <div className="text-center max-w-md">
+            <div className="max-w-md text-center">
               <RadialProgress progress={progress} />
               <p className="text-sm font-semibold"></p>
               <p className="text-xs text-gray-400">
-                Do not refresh or perform any other action while the picture is
-                being uploaded
+                Do not refresh or perform any other action while the picture is being uploaded
               </p>
             </div>
           )}
 
           {!loading && !uploadedImagePath && (
             <div className="text-center">
-              <div className="border p-2 rounded-md max-w-min mx-auto">
+              <div className="mx-auto max-w-min rounded-md border p-2">
                 <UploadSimple size="1.6em" />
               </div>
 
@@ -115,19 +108,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
           )}
 
           {uploadedImagePath && !loading && (
-            <div className="text-center space-y-2">
+            <div className="space-y-2 text-center">
               <Image
                 width={1000}
                 height={1000}
                 src={uploadedImagePath}
-                className="w-full object-contain max-h-16 opacity-70"
+                className="max-h-16 w-full object-contain opacity-70"
                 alt="uploaded image"
               />
               <div className="space-y-1">
                 <p className="text-sm font-semibold">Image Uploaded</p>
-                <p className="text-xs text-gray-400">
-                  Click here to upload another image
-                </p>
+                <p className="text-xs text-gray-400">Click here to upload another image</p>
               </div>
             </div>
           )}
@@ -146,19 +137,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
 
       {!!uploadedImagePath && (
         <div className="flex items-center justify-between">
-          <Link
-            href={uploadedImagePath}
-            className=" text-gray-500 text-xs hover:underline "
-          >
+          <Link href={uploadedImagePath} className="text-xs text-gray-500 hover:underline">
             Click here to see uploaded image :D
           </Link>
 
-          <Button
-            onClick={removeSelectedImage}
-            type="button"
-            variant="secondary"
-          >
-            {uploadedImagePath ? "Remove" : "Close"}
+          <Button onClick={removeSelectedImage} type="button" variant="secondary">
+            {uploadedImagePath ? 'Remove' : 'Close'}
           </Button>
         </div>
       )}

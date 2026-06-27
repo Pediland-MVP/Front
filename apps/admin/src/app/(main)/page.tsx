@@ -1,14 +1,14 @@
 // src/app/(main)/page.tsx
-"use client";
+'use client';
 
-import { useAuth } from "@/hooks/use-auth";
-import { MetricsOverview } from "./_components/metrics-overview";
+import { useAuth } from '@/hooks/use-auth';
+import { MetricsOverview } from './_components/metrics-overview';
 
 export default function Page() {
   const { user, isLoading } = useAuth();
   // Super-admins are MANAGER / ADMIN; KAM is excluded (mirrors the backend
   // RolesGuard on GET /metrics/platform/*).
-  const isSuperAdmin = !!user && user.role !== "kam";
+  const isSuperAdmin = !!user && user.role !== 'kam';
 
   if (!isLoading && isSuperAdmin) {
     return <MetricsOverview />;

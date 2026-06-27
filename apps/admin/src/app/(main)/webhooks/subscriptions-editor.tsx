@@ -1,15 +1,10 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  EventGroup,
-  groupEventTypes,
-  patternsToSelected,
-  selectedToPatterns,
-} from "./patterns";
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { EventGroup, groupEventTypes, patternsToSelected, selectedToPatterns } from './patterns';
 
 interface SubscriptionsEditorProps {
   types: string[];
@@ -18,7 +13,7 @@ interface SubscriptionsEditorProps {
 }
 
 export function SubscriptionsEditor({ types, value, onChange }: SubscriptionsEditorProps) {
-  const t = useTranslations("Webhooks");
+  const t = useTranslations('Webhooks');
   const groups: EventGroup[] = useMemo(() => groupEventTypes(types), [types]);
   const selected = useMemo(() => patternsToSelected(value, types), [value, types]);
 
@@ -51,10 +46,10 @@ export function SubscriptionsEditor({ types, value, onChange }: SubscriptionsEdi
     <div className="space-y-3 rounded-md border p-3" dir="rtl">
       <label className="flex items-center gap-2 font-medium">
         <Checkbox checked={allChecked} onCheckedChange={(c) => toggleAll(c === true)} />
-        {t("allEvents")}
+        {t('allEvents')}
       </label>
-      <div className="h-px bg-border" />
-      <div className="space-y-3 max-h-72 overflow-y-auto">
+      <div className="bg-border h-px" />
+      <div className="max-h-72 space-y-3 overflow-y-auto">
         {groups.map((group) => {
           const groupChecked = group.leaves.every((l) => selected.has(l.type));
           const groupIndeterminate =
@@ -63,7 +58,7 @@ export function SubscriptionsEditor({ types, value, onChange }: SubscriptionsEdi
             <div key={group.parent} className="space-y-1">
               <label className="flex items-center gap-2 font-medium">
                 <Checkbox
-                  checked={groupIndeterminate ? "indeterminate" : groupChecked}
+                  checked={groupIndeterminate ? 'indeterminate' : groupChecked}
                   onCheckedChange={(c) => toggleGroup(group, c === true)}
                 />
                 <span className="font-mono text-sm">{group.parent}.*</span>
@@ -75,7 +70,7 @@ export function SubscriptionsEditor({ types, value, onChange }: SubscriptionsEdi
                       checked={selected.has(leaf.type)}
                       onCheckedChange={(c) => toggleLeaf(leaf.type, c === true)}
                     />
-                    <span className="font-mono text-xs text-muted-foreground">{leaf.label}</span>
+                    <span className="text-muted-foreground font-mono text-xs">{leaf.label}</span>
                   </label>
                 ))}
               </div>
@@ -84,7 +79,7 @@ export function SubscriptionsEditor({ types, value, onChange }: SubscriptionsEdi
         })}
       </div>
       {!types.length ? (
-        <Label className="text-xs text-muted-foreground">{t("loadingTypes")}</Label>
+        <Label className="text-muted-foreground text-xs">{t('loadingTypes')}</Label>
       ) : null}
     </div>
   );

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useFileUploadProvider } from '@/components/index';
 import { useState, useCallback } from 'react';
@@ -40,7 +40,7 @@ export function useFileUpload({
   url,
   onSuccess,
   onError,
-  headers = {}
+  headers = {},
 }: UseFileUploadOptions): UseFileUploadResult {
   const [progress, setProgress] = useState<UploadProgressData | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -75,14 +75,19 @@ export function useFileUpload({
           withCredentials: true, // Include credentials for cross-origin requests
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
-              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
               setProgress({ fileId, progress: percentCompleted });
-              
-              setFiles(files => {
-                const fileIndex = files.findIndex(f => f.id === fileId);
+
+              setFiles((files) => {
+                const fileIndex = files.findIndex((f) => f.id === fileId);
                 if (fileIndex !== -1) {
                   const updatedFiles = [...files];
-                  updatedFiles[fileIndex] = { ...updatedFiles[fileIndex], progress: percentCompleted };
+                  updatedFiles[fileIndex] = {
+                    ...updatedFiles[fileIndex],
+                    progress: percentCompleted,
+                  };
                   return updatedFiles;
                 }
                 return files;
@@ -94,11 +99,15 @@ export function useFileUpload({
         const responseData: UploadResponse = response.data;
 
         // Set final progress
-        setFiles(files => {
-          const fileIndex = files.findIndex(f => f.id === fileId);
+        setFiles((files) => {
+          const fileIndex = files.findIndex((f) => f.id === fileId);
           if (fileIndex !== -1) {
             const updatedFiles = [...files];
-            updatedFiles[fileIndex] = { ...updatedFiles[fileIndex], progress: 100, data: responseData };
+            updatedFiles[fileIndex] = {
+              ...updatedFiles[fileIndex],
+              progress: 100,
+              data: responseData,
+            };
             return updatedFiles;
           }
           return files;
@@ -114,7 +123,7 @@ export function useFileUpload({
         setIsUploading(false);
       }
     },
-    [url, headers, onSuccess, onError, setFiles]
+    [url, headers, onSuccess, onError, setFiles],
   );
 
   return {
@@ -122,7 +131,6 @@ export function useFileUpload({
     progress,
     isUploading,
     error,
-    reset
+    reset,
   };
 }
-

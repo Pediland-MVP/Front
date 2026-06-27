@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { formatNumber } from "@/utils/formatNumber";
-import { cn } from "@/lib/utils";
-import { ColumnDef, ColumnMeta } from "@/types/tables";
+import { formatNumber } from '@/utils/formatNumber';
+import { cn } from '@/lib/utils';
+import { ColumnDef, ColumnMeta } from '@/types/tables';
 import {
   Cell,
   flexRender,
@@ -12,9 +12,9 @@ import {
   SortingState,
   useReactTable,
   VisibilityState,
-} from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+} from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 import {
   Skeleton,
@@ -24,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui";
+} from '@/components/ui';
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {
@@ -54,7 +54,7 @@ function safeFlexRender(Comp: any, ctx: any, fallback: React.ReactNode = null) {
   } catch (e) {
     const colId = ctx?.column?.id;
     const rowId = ctx?.row?.id;
-    console.error("❌ Cell/Header render error", { colId, rowId, e });
+    console.error('❌ Cell/Header render error', { colId, rowId, e });
     return fallback;
   }
 }
@@ -79,25 +79,23 @@ export function DataTable<TData, TValue>({
   onSortingChange,
   sortingState,
 }: DataTableProps<TData, TValue>) {
-  const t = useTranslations("DataTable");
+  const t = useTranslations('DataTable');
 
   // Local state for column visibility if not externally controlled
-  const [internalColumnVisibility, setInternalColumnVisibility] =
-    useState<VisibilityState>({});
+  const [internalColumnVisibility, setInternalColumnVisibility] = useState<VisibilityState>({});
 
   const resolvedColumnVisibility = columnVisibility ?? internalColumnVisibility;
 
   // Determines whether to use external or internal column visibility handler
-  const resolvedSetColumnVisibility: OnChangeFn<VisibilityState> =
-    onColumnVisibilityChange
-      ? (updaterOrValue) => {
-          if (typeof updaterOrValue === "function") {
-            onColumnVisibilityChange(updaterOrValue(resolvedColumnVisibility));
-          } else {
-            onColumnVisibilityChange(updaterOrValue);
-          }
+  const resolvedSetColumnVisibility: OnChangeFn<VisibilityState> = onColumnVisibilityChange
+    ? (updaterOrValue) => {
+        if (typeof updaterOrValue === 'function') {
+          onColumnVisibilityChange(updaterOrValue(resolvedColumnVisibility));
+        } else {
+          onColumnVisibilityChange(updaterOrValue);
         }
-      : setInternalColumnVisibility;
+      }
+    : setInternalColumnVisibility;
 
   // Local sorting state if not controlled externally
   const [internalSorting, setInternalSorting] = useState<SortingState>([]);
@@ -106,9 +104,7 @@ export function DataTable<TData, TValue>({
   // Determines whether to use internal or external sorting update
   const resolvedSetSorting: OnChangeFn<SortingState> = (updaterOrValue) => {
     const next =
-      typeof updaterOrValue === "function"
-        ? updaterOrValue(resolvedSorting)
-        : updaterOrValue;
+      typeof updaterOrValue === 'function' ? updaterOrValue(resolvedSorting) : updaterOrValue;
     onSortingChange?.(next);
     setInternalSorting(next);
   };
@@ -117,8 +113,8 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     ...(onRowSelectionChange && { onRowSelectionChange }),
     columns,
-    columnResizeMode: "onChange",
-    columnResizeDirection: "rtl",
+    columnResizeMode: 'onChange',
+    columnResizeDirection: 'rtl',
     data,
     getCoreRowModel: getCoreRowModel(),
     // Use custom row ID field (required for rowSelection to work reliably)
@@ -133,9 +129,7 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: resolvedSetColumnVisibility,
     onPaginationChange: (updater) => {
       const newState =
-        typeof updater === "function"
-          ? updater({ pageIndex: page - 1, pageSize: limit })
-          : updater;
+        typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize: limit }) : updater;
       onPageChange(newState.pageIndex + 1);
       onLimitChange(newState.pageSize);
     },
@@ -171,7 +165,7 @@ export function DataTable<TData, TValue>({
   function renderCell<T>(cell: Cell<T, unknown>): React.ReactNode {
     const meta = cell.column.columnDef.meta as ColumnMeta;
     const raw = cell.getValue();
-    if (meta?.isNumeric && typeof raw === "number") {
+    if (meta?.isNumeric && typeof raw === 'number') {
       return formatNumber(raw);
     }
     return safeFlexRender(cell.column.columnDef.cell, cell.getContext());
@@ -191,16 +185,10 @@ export function DataTable<TData, TValue>({
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id} data-header={true}>
             {headerGroup.headers.map((header) => (
-              <TableHead
-                key={header.id}
-                style={{ width: `${header.getSize()}px` }}
-              >
+              <TableHead key={header.id} style={{ width: `${header.getSize()}px` }}>
                 {header.isPlaceholder
                   ? null
-                  : safeFlexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
+                  : safeFlexRender(header.column.columnDef.header, header.getContext())}
               </TableHead>
             ))}
           </TableRow>
@@ -212,16 +200,14 @@ export function DataTable<TData, TValue>({
             <TableRow key={rowIndex}>
               {columns.map((col, colIndex) => {
                 const key =
-                  "accessorKey" in col
-                    ? col.accessorKey?.toString()
-                    : (col.id ?? colIndex);
+                  'accessorKey' in col ? col.accessorKey?.toString() : (col.id ?? colIndex);
 
                 const meta = col.meta as ColumnMeta;
-                const skeletonClass = meta?.skeletonClass ?? "";
+                const skeletonClass = meta?.skeletonClass ?? '';
 
                 return (
                   <TableCell key={key}>
-                    <Skeleton className={cn("h-4", skeletonClass)} />
+                    <Skeleton className={cn('h-4', skeletonClass)} />
                   </TableCell>
                 );
               })}
@@ -235,7 +221,7 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 className="hover:text-primary group text-gray-500"
-                data-state={row.getIsSelected?.() ? "selected" : undefined} // Mark selected rows (if selection is enabled)
+                data-state={row.getIsSelected?.() ? 'selected' : undefined} // Mark selected rows (if selection is enabled)
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
@@ -243,7 +229,7 @@ export function DataTable<TData, TValue>({
                     style={{ width: `${cell.column.getSize()}px` }}
                     className={cn(
                       (cell.column.columnDef.meta as ColumnMeta)?.className,
-                      "text-center",
+                      'text-center',
                     )}
                   >
                     {renderCell(cell)}
@@ -254,9 +240,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-14">
-                <div className="text-muted-foreground px-2">
-                  {t("noResults")}
-                </div>
+                <div className="text-muted-foreground px-2">{t('noResults')}</div>
               </TableCell>
             </TableRow>
           )}

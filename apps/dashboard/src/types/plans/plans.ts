@@ -1,4 +1,4 @@
-import { ReferralCodeTypeEnum } from "./plans.enum";
+import { ReferralCodeTypeEnum } from './plans.enum';
 
 export interface IPlansData {
   data: any;

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import api, { useLogout } from "@/hooks/swr/api-client";
-import useUser from "@/hooks/useUser";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import api, { useLogout } from '@/hooks/swr/api-client';
+import useUser from '@/hooks/useUser';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import {
   Form,
@@ -18,20 +18,20 @@ import {
   FormMessage,
   Input,
   Switch,
-} from "@/components/ui";
-import { ButtonLoading } from "@/components/ui-custom/ButtonLoading";
-import { UserCirclePlusIcon } from "@phosphor-icons/react";
-import SupportButton from "../supportButton";
-import { CustomersSlider } from "./customersSlider";
+} from '@/components/ui';
+import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { UserCirclePlusIcon } from '@phosphor-icons/react';
+import SupportButton from '../supportButton';
+import { CustomersSlider } from './customersSlider';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const t = useTranslations("Auth");
-  const t_err = useTranslations("Auth.Errors");
-  const t_ec = useTranslations("ERROR_CODES");
+  const t = useTranslations('Auth');
+  const t_err = useTranslations('Auth.Errors');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
@@ -42,13 +42,11 @@ export default function OnboardingPage() {
   const formSchema = useMemo(
     () =>
       z.object({
-        firstname: z.string().min(3, t_err("first_name_length", { length: 3 })),
-        lastname: z.string().min(3, t_err("last_name_length", { length: 3 })),
-        submittedInstagramUsername: z
-          .string()
-          .min(3, t_err("instagram_id_length", { length: 3 })),
+        firstname: z.string().min(3, t_err('first_name_length', { length: 3 })),
+        lastname: z.string().min(3, t_err('last_name_length', { length: 3 })),
+        submittedInstagramUsername: z.string().min(3, t_err('instagram_id_length', { length: 3 })),
         referralCode: showReferralCode
-          ? z.string().min(1, t_err("referral_code_required"))
+          ? z.string().min(1, t_err('referral_code_required'))
           : z.string().optional(),
       }),
     [showReferralCode, t_err],
@@ -56,12 +54,12 @@ export default function OnboardingPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: "onBlur",
+    mode: 'onBlur',
     defaultValues: {
-      firstname: "",
-      lastname: "",
-      submittedInstagramUsername: "",
-      referralCode: "",
+      firstname: '',
+      lastname: '',
+      submittedInstagramUsername: '',
+      referralCode: '',
     },
   });
 
@@ -78,9 +76,9 @@ export default function OnboardingPage() {
     try {
       await api.post(`${API_URL}/auth/completeOnboarding`, values);
       await mutateUser();
-      router.push("/connect");
+      router.push('/connect');
     } catch (error) {
-      console.error("❌ Onboarding error:", error);
+      console.error('❌ Onboarding error:', error);
       toast.error(t_ec(error.response?.data?.code));
       setIsSubmitting(false);
     }
@@ -91,9 +89,9 @@ export default function OnboardingPage() {
 
     try {
       await logout();
-      router.replace("/auth");
+      router.replace('/auth');
     } catch (error) {
-      console.error("❌ Logout error:", error);
+      console.error('❌ Logout error:', error);
     } finally {
       setIsCanceling(false);
     }
@@ -114,8 +112,8 @@ export default function OnboardingPage() {
         </div> */}
 
         <div className="space-y-5">
-          <div className="flex flex-col text-center text-[15px] font-medium mt-3">
-            <div>{t("complete_registration_form")}</div>
+          <div className="mt-3 flex flex-col text-center text-[15px] font-medium">
+            <div>{t('complete_registration_form')}</div>
           </div>
 
           <Form {...form}>
@@ -126,11 +124,7 @@ export default function OnboardingPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t("first_name")}
-                        className="text-center"
-                      />
+                      <Input {...field} placeholder={t('first_name')} className="text-center" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -142,11 +136,7 @@ export default function OnboardingPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t("last_name")}
-                        className="text-center"
-                      />
+                      <Input {...field} placeholder={t('last_name')} className="text-center" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -162,11 +152,11 @@ export default function OnboardingPage() {
                         {...field}
                         onChange={(e) => {
                           const filteredValue = e.target.value
-                            .replace(/[^a-zA-Z0-9_.]/g, "")
+                            .replace(/[^a-zA-Z0-9_.]/g, '')
                             .toLowerCase();
                           field.onChange(filteredValue);
                         }}
-                        placeholder={t("instagram_id")}
+                        placeholder={t('instagram_id')}
                         dir="ltr"
                         className="text-center"
                       />
@@ -177,13 +167,8 @@ export default function OnboardingPage() {
               />
 
               <div className="flex items-center gap-3">
-                <Switch
-                  checked={showReferralCode}
-                  onCheckedChange={setShowReferralCode}
-                />
-                <span className="text-primary text-sm">
-                  {t("have_referral_code")}
-                </span>
+                <Switch checked={showReferralCode} onCheckedChange={setShowReferralCode} />
+                <span className="text-primary text-sm">{t('have_referral_code')}</span>
               </div>
               {showReferralCode && (
                 <FormField
@@ -194,12 +179,9 @@ export default function OnboardingPage() {
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t("referral_code")}
+                          placeholder={t('referral_code')}
                           onChange={(e) => {
-                            const filteredValue = e.target.value.replace(
-                              /[^a-zA-Z0-9_.]/g,
-                              "",
-                            );
+                            const filteredValue = e.target.value.replace(/[^a-zA-Z0-9_.]/g, '');
                             field.onChange(filteredValue);
                           }}
                           dir="ltr"
@@ -212,12 +194,8 @@ export default function OnboardingPage() {
                 />
               )}
 
-              <ButtonLoading
-                className="w-full"
-                disabled={isSubmitting}
-                isLoading={isSubmitting}
-              >
-                {t("confirm_and_continue")}
+              <ButtonLoading className="w-full" disabled={isSubmitting} isLoading={isSubmitting}>
+                {t('confirm_and_continue')}
               </ButtonLoading>
             </form>
           </Form>
@@ -235,7 +213,7 @@ export default function OnboardingPage() {
           type="button"
           className="text-muted-foreground"
         >
-          {t("cancel_register")}
+          {t('cancel_register')}
         </ButtonLoading>
       </div>
     </div>

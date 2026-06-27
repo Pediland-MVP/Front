@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { InstagramFilter } from "@/components/ui-custom/InstagramFilter";
-import { toContact } from "@/lib/mappers/contact";
-import type { PageMeta, Paginated } from "@/types/api";
-import type { ContactWire } from "@/types/contact";
-import { Table } from "@tanstack/react-table";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
-import { usePermissions } from "@/hooks/usePermissions";
+import { InstagramFilter } from '@/components/ui-custom/InstagramFilter';
+import { toContact } from '@/lib/mappers/contact';
+import type { PageMeta, Paginated } from '@/types/api';
+import type { ContactWire } from '@/types/contact';
+import { Table } from '@tanstack/react-table';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import useSWR from 'swr';
+import { usePermissions } from '@/hooks/usePermissions';
 
-import { ContactTableColumns } from "./ContactTableColumns";
-import { ContactDetailsDialog } from "./ContactDetailsDialog";
-import { DataTable } from "../Table/TableData";
-import { TablePagination } from "../Table/TablePagination";
+import { ContactTableColumns } from './ContactTableColumns';
+import { ContactDetailsDialog } from './ContactDetailsDialog';
+import { DataTable } from '../Table/TableData';
+import { TablePagination } from '../Table/TablePagination';
 
 export const ContactsList = ({ search }: { search: string }) => {
   const { can } = usePermissions();
-  const hasViewPermission = can("lead:view");
+  const hasViewPermission = can('lead:view');
   // Dialog
   const [open, setOpen] = useState<boolean>(false);
-  const [contactId, setContactId] = useState<string>("");
+  const [contactId, setContactId] = useState<string>('');
 
   // Table
   const [tableInstance, setTableInstance] = useState<Table<any> | null>(null);
@@ -30,10 +30,7 @@ export const ContactsList = ({ search }: { search: string }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(30);
 
-  const onPageChange = useCallback(
-    (newPage: number) => setPage(Math.max(1, newPage)),
-    [],
-  );
+  const onPageChange = useCallback((newPage: number) => setPage(Math.max(1, newPage)), []);
   const onLimitChange = useCallback((newLimit: number) => {
     setLimit(newLimit);
     setPage(1);
@@ -45,14 +42,12 @@ export const ContactsList = ({ search }: { search: string }) => {
   }, [search]);
 
   // SWR key as a tuple: [url, { params }]
-  const instagramIdsParam = selectedInstagramIds
-    .map((id) => `instagramIds=${id}`)
-    .join("&");
+  const instagramIdsParam = selectedInstagramIds.map((id) => `instagramIds=${id}`).join('&');
 
   const swrKey = useMemo(
     () =>
       hasViewPermission && selectedInstagramIds.length > 0
-        ? `/contacts?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}&${instagramIdsParam}`
+        ? `/contacts?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}&${instagramIdsParam}`
         : null,
     [page, limit, search, instagramIdsParam, selectedInstagramIds.length, hasViewPermission],
   );
@@ -64,10 +59,7 @@ export const ContactsList = ({ search }: { search: string }) => {
   const rawItems = data?.items ?? [];
   const items = useMemo(() => rawItems.map(toContact), [rawItems]);
 
-  const columns = useMemo(
-    () => ContactTableColumns(setOpen, setContactId, items),
-    [items],
-  );
+  const columns = useMemo(() => ContactTableColumns(setOpen, setContactId, items), [items]);
 
   // Safe meta (fallback while loading)
   const defaultMeta: PageMeta = {
@@ -95,15 +87,8 @@ export const ContactsList = ({ search }: { search: string }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <InstagramFilter
-        selectedIds={selectedInstagramIds}
-        onChange={setSelectedInstagramIds}
-      />
-      <ContactDetailsDialog
-        open={open}
-        setOpen={setOpen}
-        contactId={contactId}
-      />
+      <InstagramFilter selectedIds={selectedInstagramIds} onChange={setSelectedInstagramIds} />
+      <ContactDetailsDialog open={open} setOpen={setOpen} contactId={contactId} />
 
       <DataTable
         columns={columns}

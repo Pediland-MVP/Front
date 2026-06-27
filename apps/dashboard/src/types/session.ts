@@ -23,8 +23,8 @@ export interface Item {
 }
 
 export enum Flow {
-  GetUserData = "getUserData",
-  Question = "question",
+  GetUserData = 'getUserData',
+  Question = 'question',
 }
 
 export interface LeadInstagram {
@@ -37,17 +37,17 @@ export interface LeadInstagram {
   lead: {
     id: string;
     contact: {
-      mobile: string
-    }
-  }
+      mobile: string;
+    };
+  };
 }
 
 export enum Name {
-  SinaPirani = "Sina Pirani",
+  SinaPirani = 'Sina Pirani',
 }
 
 export enum Username {
-  Sinapiranix = "sinapiranix",
+  Sinapiranix = 'sinapiranix',
 }
 
 export interface Meta {

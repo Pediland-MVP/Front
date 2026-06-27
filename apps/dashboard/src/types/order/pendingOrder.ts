@@ -1,4 +1,4 @@
-import { ORDER_PAYMENT_METHODS } from "./order.enum";
+import { ORDER_PAYMENT_METHODS } from './order.enum';
 
 export interface IPendingOrder {
   status: string;
@@ -13,7 +13,7 @@ export interface IPendingOrder {
   createDate: string;
   updateDate: string;
   orderProducts: IOrderProduct[];
-  productFieldValues: IProductFieldValues[]
+  productFieldValues: IProductFieldValues[];
 }
 
 interface Instagram {
@@ -37,13 +37,13 @@ interface IOrderProduct {
   shippingCost: number | null;
   discountPrice: number | null;
   product: {
-    id: string
-    title: string
-  }
+    id: string;
+    title: string;
+  };
 }
 
 interface IProductFieldValues {
   id: string;
-  value: string
-  fieldId: string
+  value: string;
+  fieldId: string;
 }

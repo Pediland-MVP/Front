@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Bar,
   BarChart,
@@ -12,19 +12,19 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { SeriesResolution } from "@/hooks/use-platform-metrics";
-import type { RevenueSeriesPoint } from "@/types/finance";
-import { InvoiceStatusEnum } from "@/types/finance";
+} from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { SeriesResolution } from '@/hooks/use-platform-metrics';
+import type { RevenueSeriesPoint } from '@/types/finance';
+import { InvoiceStatusEnum } from '@/types/finance';
 import {
   INVOICE_STATUSES,
   invoiceStatusChartColor,
   invoiceStatusLabels,
-} from "@/constants/invoice-status";
-import { formatBucket } from "../../_components/chart-format";
+} from '@/constants/invoice-status';
+import { formatBucket } from '../../_components/chart-format';
 
 interface RevenueChartProps {
   points: RevenueSeriesPoint[];
@@ -34,22 +34,15 @@ interface RevenueChartProps {
   isLoading: boolean;
 }
 
-const compact = new Intl.NumberFormat("fa-IR", { notation: "compact" });
+const compact = new Intl.NumberFormat('fa-IR', { notation: 'compact' });
 
 /** Stacked revenue bars: one band per invoice status, per time-bucket. */
-export function RevenueChart({
-  points,
-  resolution,
-  statuses,
-  isLoading,
-}: RevenueChartProps) {
-  const t = useTranslations("Finance");
+export function RevenueChart({ points, resolution, statuses, isLoading }: RevenueChartProps) {
+  const t = useTranslations('Finance');
 
   const visibleStatuses = useMemo(
     () =>
-      statuses.length
-        ? INVOICE_STATUSES.filter((s) => statuses.includes(s))
-        : INVOICE_STATUSES,
+      statuses.length ? INVOICE_STATUSES.filter((s) => statuses.includes(s)) : INVOICE_STATUSES,
     [statuses],
   );
 
@@ -83,14 +76,14 @@ export function RevenueChart({
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">{t("chartTitle")}</CardTitle>
+        <CardTitle className="text-sm font-medium">{t('chartTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-[320px] w-full" />
         ) : data.length === 0 ? (
           <div className="text-muted-foreground flex h-[320px] items-center justify-center text-xs">
-            {t("noData")}
+            {t('noData')}
           </div>
         ) : (
           <ChartContainer config={config} className="h-[320px] w-full">
@@ -99,14 +92,14 @@ export function RevenueChart({
                 <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                   tickLine={false}
                   axisLine={false}
                   minTickGap={32}
                   tickMargin={10}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                   tickLine={false}
                   axisLine={false}
                   width={48}
@@ -114,7 +107,7 @@ export function RevenueChart({
                   tickMargin={8}
                 />
                 <Tooltip
-                  cursor={{ fill: "hsl(var(--muted)/0.2)", strokeWidth: 1, strokeDasharray: "3 3" }}
+                  cursor={{ fill: 'hsl(var(--muted)/0.2)', strokeWidth: 1, strokeDasharray: '3 3' }}
                   content={<ChartTooltipContent indicator="dot" />}
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 10 }} />
