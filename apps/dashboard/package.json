@@ -7,7 +7,7 @@
     "dev:tailwind-check": "pnpm dlx @tailwindcss/cli@latest -i ./app/styles/globals.css --eject-cli-cache --no-clear --watch",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",

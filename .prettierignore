@@ -1,0 +1,19 @@
+# Dependencies, build output & caches
+**/node_modules/**
+**/.next/**
+**/dist/**
+**/.turbo/**
+**/coverage/**
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# Lockfiles & generated
+pnpm-lock.yaml
+
+# Other git worktrees are separate checkouts — never reformat them from here
+worktrees/**
+
+# Hand-maintained documentation (prose, not auto-reformatted)
+docs/**
+knowledge/**
+**/*.md
