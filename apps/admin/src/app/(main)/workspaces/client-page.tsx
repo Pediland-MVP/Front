@@ -32,6 +32,11 @@ export default function WorkspacesPageClient() {
   const workspaces = data?.items || [];
   const meta = data?.meta;
 
+  const handleLabelIdChange = (v: string | undefined) => {
+    setPage(1);
+    setLabelId(v);
+  };
+
   if (!data && isLoading) return <Loading />;
   if (error) return <FetchError />;
 
@@ -47,8 +52,8 @@ export default function WorkspacesPageClient() {
       type={type}
       onTypeChange={setType}
       labelId={labelId}
-      onLabelIdChange={setLabelId}
-      labelsItems={labelsData?.items ?? []}
+      onLabelIdChange={handleLabelIdChange}
+      labelsItems={(labelsData?.items ?? []).filter((l) => l.targetTypes?.includes('workspace'))}
     />
   );
 }

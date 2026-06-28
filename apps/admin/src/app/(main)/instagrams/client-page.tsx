@@ -83,7 +83,7 @@ export default function InstagramsPageClient() {
       onIgTokenValidChange={handleIgTokenValidChange}
       labelId={labelId}
       onLabelIdChange={handleLabelIdChange}
-      labelsItems={labelsData?.items ?? []}
+      labelsItems={(labelsData?.items ?? []).filter((l) => l.targetTypes?.includes('instagram'))}
       admin={admin}
       onAdminChange={handleAdminChange}
       kams={kams}
