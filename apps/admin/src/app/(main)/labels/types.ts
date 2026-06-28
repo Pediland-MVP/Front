@@ -1,6 +1,9 @@
 export type ComparisonOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'neq';
 export type ScheduleType = 'interval' | 'daily';
 
+export const LABEL_TARGET_TYPES = ['user', 'workspace', 'instagram'] as const;
+export type LabelTargetType = (typeof LABEL_TARGET_TYPES)[number];
+
 export type PeriodSpec = { type: 'trailingDays'; days: number };
 
 export interface ConditionLeaf {
@@ -33,6 +36,7 @@ export interface LabelFieldDef {
   operators: ComparisonOperator[];
   statusOptions?: string[];
   windowable?: boolean;
+  targets: LabelTargetType[];
 }
 
 export interface LabelListItem {
@@ -46,6 +50,8 @@ export interface LabelListItem {
   isActive: boolean;
   lastRunAt?: string | null;
   lastMatchedCount?: number | null;
+  lastMatchedCounts?: Partial<Record<LabelTargetType, number>> | null;
+  targetTypes: LabelTargetType[];
   nextRunAt: string;
 }
 
@@ -58,6 +64,7 @@ export interface CreateLabelPayload {
   color?: string;
   description?: string;
   rule: LabelRule;
+  targetTypes: LabelTargetType[];
   scheduleType: ScheduleType;
   intervalMinutes?: number;
   dailyAtHour?: number;
