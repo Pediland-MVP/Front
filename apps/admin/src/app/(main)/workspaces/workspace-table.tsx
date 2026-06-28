@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/select';
 import { Table } from '@tanstack/react-table';
 import { useWorkspaceColumns } from './columns';
+import { FilterLabel } from '@/components/table/filter-label';
+import { LabelListItem } from '../labels/types';
 
 export default function WorkspaceTable({
   isRefetching,
@@ -28,6 +30,9 @@ export default function WorkspaceTable({
   onSearchChange,
   type,
   onTypeChange,
+  labelId,
+  onLabelIdChange,
+  labelsItems,
 }: {
   isRefetching?: boolean;
   workspaces: WorkspaceRow[];
@@ -38,6 +43,9 @@ export default function WorkspaceTable({
   onSearchChange: (search: string) => void;
   type: string;
   onTypeChange: (type: string) => void;
+  labelId: string | undefined;
+  onLabelIdChange: (labelId: string | undefined) => void;
+  labelsItems: LabelListItem[];
 }) {
   const t = useTranslations('Workspaces');
   const [tableInstance, setTableInstance] = useState<Table<WorkspaceRow> | null>(null);
@@ -79,6 +87,8 @@ export default function WorkspaceTable({
               <SelectItem value="team">{t('team')}</SelectItem>
             </SelectContent>
           </Select>
+
+          <FilterLabel size="sm" value={labelId} onChange={onLabelIdChange} items={labelsItems} />
         </div>
 
         <DataTable

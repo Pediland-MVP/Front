@@ -179,7 +179,8 @@
     "joinedAt": "تاریخ عضویت",
     "mobile": "موبایل",
     "noPermissions": "بدون دسترسی",
-    "notFound": "ورک‌اسپیس یافت نشد"
+    "notFound": "ورک‌اسپیس یافت نشد",
+    "labels": "برچسب‌ها"
   },
   "Webhooks": {
     "title": "وب‌هوک‌ها",
