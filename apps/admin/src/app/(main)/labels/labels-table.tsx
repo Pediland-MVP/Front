@@ -20,6 +20,7 @@ import { PlusIcon, ArrowsClockwiseIcon, PencilSimpleIcon, TrashIcon } from '@pho
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { scheduleSummary } from './schedule-summary';
 import type { LabelListItem } from './types';
+import { LABEL_TARGET_TYPES } from './types';
 
 interface Props {
   items: LabelListItem[];
@@ -112,6 +113,7 @@ export default function LabelsTable(props: Props) {
         <TableHeader>
           <TableRow>
             <TableHead>{t('colName')}</TableHead>
+            <TableHead>{t('colTargets')}</TableHead>
             <TableHead>{t('colSchedule')}</TableHead>
             <TableHead>{t('colMatched')}</TableHead>
             <TableHead>{t('colLastRun')}</TableHead>
@@ -128,6 +130,13 @@ export default function LabelsTable(props: Props) {
                 >
                   {item.name}
                 </Badge>
+              </TableCell>
+              <TableCell className="flex flex-wrap gap-1">
+                {LABEL_TARGET_TYPES.filter((tt) => item.targetTypes?.includes(tt)).map((tt) => (
+                  <Badge key={tt} variant="secondary">
+                    {t(`targetTypes.${tt}`)}
+                  </Badge>
+                ))}
               </TableCell>
               <TableCell>{scheduleSummary(item, t)}</TableCell>
               <TableCell>{item.lastMatchedCount ?? 0}</TableCell>
