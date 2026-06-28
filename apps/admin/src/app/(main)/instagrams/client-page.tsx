@@ -8,6 +8,8 @@ import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
 import { useAuth } from '@/hooks/use-auth';
 import { useKams } from '@/hooks/use-kams';
+import { PageMeta } from '@/types/meta';
+import { InstagramRow } from '@/types/instagram';
 import { useLabelsList } from '../labels/use-labels';
 import InstagramsTable from './instagrams-table';
 
@@ -35,7 +37,10 @@ export default function InstagramsPageClient() {
     enabled: isSuperAdmin,
   });
 
-  const { data, isLoading, isValidating, error } = useSWR(
+  const { data, isLoading, isValidating, error } = useSWR<{
+    items: InstagramRow[];
+    meta: PageMeta;
+  }>(
     `/instagrams?limit=${limit}&page=${page}${searchQuery}${igTokenQuery}${labelIdQuery}${adminQuery}`,
     fetcher,
     { keepPreviousData: true },
@@ -44,8 +49,26 @@ export default function InstagramsPageClient() {
   const instagrams = data?.items || [];
   const meta = data?.meta;
 
+  const handleSearchChange = (v: string) => {
+    setPage(1);
+    setSearch(v);
+  };
+  const handleIgTokenValidChange = (v: string) => {
+    setPage(1);
+    setIsIgTokenValid(v);
+  };
+  const handleLabelIdChange = (v: string | undefined) => {
+    setPage(1);
+    setLabelId(v);
+  };
+  const handleAdminChange = (v: string) => {
+    setPage(1);
+    setAdmin(v);
+  };
+
   if ((!data && isLoading) || (isSuperAdmin && isKamsLoading)) return <Loading />;
   if (error) return <FetchError />;
+  if (!meta) return null;
 
   return (
     <InstagramsTable
@@ -55,14 +78,14 @@ export default function InstagramsPageClient() {
       onPageChange={setPage}
       onLimitChange={setLimit}
       search={search}
-      onSearchChange={setSearch}
+      onSearchChange={handleSearchChange}
       isIgTokenValid={isIgTokenValid}
-      onIgTokenValidChange={setIsIgTokenValid}
+      onIgTokenValidChange={handleIgTokenValidChange}
       labelId={labelId}
-      onLabelIdChange={setLabelId}
+      onLabelIdChange={handleLabelIdChange}
       labelsItems={labelsData?.items ?? []}
       admin={admin}
-      onAdminChange={setAdmin}
+      onAdminChange={handleAdminChange}
       kams={kams}
       showAdminFilter={isSuperAdmin}
     />

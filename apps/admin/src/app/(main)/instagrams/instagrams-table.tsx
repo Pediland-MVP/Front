@@ -59,6 +59,7 @@ export default function InstagramsTable({
   return (
     <LayoutTable isRefetching={isRefetching}>
       <div className="flex flex-1 flex-col gap-2 overflow-hidden p-4">
+        <h1 className="text-lg font-semibold">{t('title')}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
           <Input
             type="search"
