@@ -315,6 +315,11 @@
       "followersCount": "فالوور اینستاگرام",
       "workspaces": "تعداد فضای کاری"
     },
+    "targetBadges": {
+      "user": "ک",
+      "workspace": "و",
+      "instagram": "ا"
+    },
     "operators": {
       "gt": "بزرگ‌تر از",
       "gte": "بزرگ‌تر مساوی",
