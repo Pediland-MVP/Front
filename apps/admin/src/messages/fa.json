@@ -137,7 +137,8 @@
     "LABEL_NAME_EXISTS": "برچسبی با این نام از قبل وجود دارد",
     "INVALID_LABEL_RULE": "قانون برچسب نامعتبر است",
     "INVALID_LABEL_SCHEDULE": "زمان‌بندی برچسب نامعتبر است",
-    "LABEL_NOT_FOUND": "برچسب پیدا نشد"
+    "LABEL_NOT_FOUND": "برچسب پیدا نشد",
+    "LABEL_TARGET_FIELD_MISMATCH": "یکی از فیلدهای انتخاب‌شده با هدف انتخاب‌شده سازگار نیست"
   },
   "Workspaces": {
     "title": "ورک‌اسپیس‌ها",
@@ -296,6 +297,15 @@
     "toastError": "خطایی رخ داد",
     "validationNameRequired": "نام الزامی است",
     "validationRuleEmpty": "حداقل یک شرط لازم است",
+    "validationTargetEmpty": "حداقل یک مورد (کاربر/ورک‌اسپیس/اینستاگرام) را انتخاب کنید",
+    "targetSelectorLabel": "این برچسب روی چه مواردی اعمال شود؟",
+    "targetTypes": {
+      "user": "کاربر",
+      "workspace": "ورک‌اسپیس",
+      "instagram": "اینستاگرام",
+      "all": "همه"
+    },
+    "previewPerTarget": "{target}: {count}",
     "fieldNames": {
       "sessions": "سشن‌ها",
       "leads": "لیدها",
