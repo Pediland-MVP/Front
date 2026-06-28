@@ -26,6 +26,7 @@ import {
   WebhooksLogoIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
+  InstagramLogoIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -63,6 +64,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('workspaces'),
         url: '/workspaces',
         icon: BuildingsIcon,
+      },
+      {
+        title: t('instagrams'),
+        url: '/instagrams',
+        icon: InstagramLogoIcon,
       },
       ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans', icon: StackIcon }] : []),
       {

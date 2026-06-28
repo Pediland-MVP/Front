@@ -20,7 +20,8 @@
     "plans": "پلن‌ها",
     "settings": "تنظیمات",
     "labels": "برچسب‌ها",
-    "tasks": "تسک‌ها"
+    "tasks": "تسک‌ها",
+    "instagrams": "اینستاگرام‌ها"
   },
   "Dashboard": {
     "title": "آمار کلی پلتفرم",
@@ -180,6 +181,19 @@
     "mobile": "موبایل",
     "noPermissions": "بدون دسترسی",
     "notFound": "ورک‌اسپیس یافت نشد",
+    "labels": "برچسب‌ها"
+  },
+  "Instagrams": {
+    "title": "اینستاگرام‌ها",
+    "search": "جستجو بر اساس نام کاربری یا نام...",
+    "username": "نام کاربری",
+    "name": "نام",
+    "followers": "دنبال‌کننده",
+    "connection": "وضعیت اتصال",
+    "connected": "متصل",
+    "disconnected": "قطع",
+    "workspace": "ورک‌اسپیس",
+    "owner": "مالک",
     "labels": "برچسب‌ها"
   },
   "Webhooks": {
