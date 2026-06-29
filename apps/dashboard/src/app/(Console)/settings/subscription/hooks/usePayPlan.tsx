@@ -18,7 +18,7 @@ export default function usePayPlan() {
   const [isPayLoading, setIsPayLoading] = useState<boolean>(false);
 
   const pay = async (
-    values: { planId: number; durationId: number; discountCode?: string },
+    values: { planId: number; durationId: number; discountCode?: string; instagramId?: string },
     setActive: SubscriptionContext['setActive'],
   ) => {
     setIsPayLoading(true);

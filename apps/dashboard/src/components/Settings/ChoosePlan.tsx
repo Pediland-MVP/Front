@@ -38,7 +38,11 @@ const planSchema = z.object({
 
 type FormValues = z.infer<typeof planSchema>;
 
-export const ChoosePlan = () => {
+interface ChoosePlanProps {
+  instagramId?: string;
+}
+
+export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
   const router = useRouter();
   const t = useTranslations('Subscription');
   const [currentPlan, setCurrentPlan] = useState<IPlan>();
@@ -101,6 +105,7 @@ export const ChoosePlan = () => {
         planId: data.planId,
         durationId: data.durationId,
         ...(discountCode && { discountCode }),
+        ...(instagramId && { instagramId }),
       };
       await pay(paymentData, setActive);
     } catch (error) {
@@ -235,8 +240,8 @@ export const ChoosePlan = () => {
                   duration.discountPrice > 0
                     ? Number(duration.discountPrice)
                     : Number(duration.price);
-                var totalBasePrice: number | string;
-                var monthlyPrice: number | string;
+                let totalBasePrice: number | string;
+                let monthlyPrice: number | string;
 
                 if (duration.durationDays === 30) {
                   monthlyPrice = unitPrice / 1000;

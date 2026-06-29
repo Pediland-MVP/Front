@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useSearchParams } from 'next/navigation';
 
 import { LayoutSettings } from '@/components/Layout/LayoutSettings';
 import { ChoosePlan } from '@/components/Settings/ChoosePlan';
@@ -11,6 +12,8 @@ export default function SubscriptionPage() {
   const t = useTranslations('Subscription');
   const t_ec = useTranslations('ERROR_CODES');
   const { can, isLoading } = usePermissions();
+  const searchParams = useSearchParams();
+  const instagramId = searchParams.get('instagramId') ?? undefined;
 
   if (isLoading) {
     return (
@@ -43,7 +46,7 @@ export default function SubscriptionPage() {
 
       <SubscriptionsDetails />
 
-      <ChoosePlan />
+      <ChoosePlan instagramId={instagramId} />
     </LayoutSettings>
   );
 }
