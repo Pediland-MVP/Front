@@ -58,4 +58,7 @@ These `ERROR_CODES` translation keys live in `apps/dashboard/src/messages/fa/Err
 
 ## Deploy Coupling
 
-The `isPromotion` field on Instagram accounts and the `instagramId` field on `POST /subscriptions/subscribe` require coordinated deployment: **Back and Front must ship together**. Deploying only the Front to an older Back will cause `isPromotion` to be `undefined` (treated as `false` — safe, no alert shown). Deploying only the Back is safe (the field is ignored by the old Front).
+The `isPromotion` field on Instagram accounts and the `instagramId` field on `POST /subscriptions/subscribe` require coordinated deployment: **Back and Front MUST ship together — deploying only the Back is NOT safe.**
+
+- **Front-only deploy (old Back):** `isPromotion` is `undefined` in the API response, treated as `false` — no alert is shown. Safe.
+- **Back-only deploy (old Front):** The backend has **dropped the `Instagram.isPromotion` column**. The currently-deployed (old) Front still reads this column, which will break. **Do NOT deploy the Back without also deploying this Front.**
