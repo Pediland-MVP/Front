@@ -66,4 +66,76 @@ testWithAuth.describe('Instagram Connection Flow', () => {
       expect(currentUrl).not.toContain('/connect');
     },
   );
+
+  testWithAuth(
+    'should show NO_ACTIVE_SUBSCRIPTION error toast when callbackIG returns that code',
+    async ({ authenticatedPage }) => {
+      const connectPage = new ConnectPage(authenticatedPage);
+      await connectPage.expectOnPage();
+
+      // Intercept callbackIG to simulate the user having no active subscription for this page
+      console.log('[Instagram Test] Intercepting callbackIG to return NO_ACTIVE_SUBSCRIPTION...');
+      await authenticatedPage.route('**/instagram/callbackIG*', async (route) => {
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            code: 'NO_ACTIVE_SUBSCRIPTION',
+            error: 'Bad Request',
+            message: 'No active subscription for this page',
+            statusCode: 400,
+          }),
+        });
+      });
+
+      // Simulate Instagram redirect back to the frontend with a mock auth code
+      await authenticatedPage.goto('/connect?code=mock_instagram_auth_code_123');
+
+      // The user must stay on /connect — no redirect to dashboard
+      await expect(connectPage.connectButton).toBeVisible();
+
+      // Error toast must appear with the Persian error message for NO_ACTIVE_SUBSCRIPTION
+      await expect(
+        authenticatedPage.getByText('برای این پیج اشتراک فعالی وجود ندارد. لطفاً یک پلن بخرید.'),
+      ).toBeVisible();
+    },
+  );
+
+  testWithAuth(
+    'should show SUBSCRIPTION_ALREADY_BOUND error toast when callbackIG returns that code',
+    async ({ authenticatedPage }) => {
+      const connectPage = new ConnectPage(authenticatedPage);
+      await connectPage.expectOnPage();
+
+      // Intercept callbackIG to simulate the user's active subscription being bound to another page
+      console.log(
+        '[Instagram Test] Intercepting callbackIG to return SUBSCRIPTION_ALREADY_BOUND...',
+      );
+      await authenticatedPage.route('**/instagram/callbackIG*', async (route) => {
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            code: 'SUBSCRIPTION_ALREADY_BOUND',
+            error: 'Bad Request',
+            message: 'Active subscription is already bound to another page',
+            statusCode: 400,
+          }),
+        });
+      });
+
+      // Simulate Instagram redirect back to the frontend with a mock auth code
+      await authenticatedPage.goto('/connect?code=mock_instagram_auth_code_123');
+
+      // The user must stay on /connect — no redirect to dashboard
+      await expect(connectPage.connectButton).toBeVisible();
+
+      // Error toast must appear with the Persian error message for SUBSCRIPTION_ALREADY_BOUND
+      await expect(
+        authenticatedPage.getByText(
+          'اشتراک فعال شما برای پیج دیگری استفاده شده است. برای این پیج یک پلن جدید بخرید.',
+        ),
+      ).toBeVisible();
+    },
+  );
 });
