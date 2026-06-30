@@ -83,6 +83,7 @@
     "SHOP_NOT_FOUND": "فروشگاه پیدا نشد",
     "SUBSCRIPTION_ALREADY_PAID": "این اشتراک قبلا پرداخت شده است",
     "SUBSCRIPTION_ALREADY_BOUND": "اشتراک فعال شما برای پیج دیگری استفاده شده است. برای این پیج یک پلن جدید بخرید.",
+    "SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT": "اشتراک فعال شما با تعداد فالوورهای این پیج هم‌خوانی ندارد. لطفاً پلن متناسب با این پیج را بخرید.",
     "USER_ALREADY_VERIFIED": "کاربر قبلاً تأیید شده است",
     "USER_DATA_TEXT_REQUIRED": "متن داده کاربر الزامی است",
     "USER_NOT_FOUND": "کاربر پیدا نشد",

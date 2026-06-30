@@ -138,4 +138,43 @@ testWithAuth.describe('Instagram Connection Flow', () => {
       ).toBeVisible();
     },
   );
+
+  testWithAuth(
+    'should show SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT error toast when callbackIG returns that code',
+    async ({ authenticatedPage }) => {
+      const connectPage = new ConnectPage(authenticatedPage);
+      await connectPage.expectOnPage();
+
+      // Intercept callbackIG to simulate the active subscription not matching the page's follower tier
+      console.log(
+        '[Instagram Test] Intercepting callbackIG to return SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT...',
+      );
+      await authenticatedPage.route('**/instagram/callbackIG*', async (route) => {
+        await route.fulfill({
+          status: 400,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            code: 'SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT',
+            error: 'Bad Request',
+            message: 'Active subscription is not compatible with the follower count of this page',
+            statusCode: 400,
+          }),
+        });
+      });
+
+      // Simulate Instagram redirect back to the frontend with a mock auth code
+      await authenticatedPage.goto('/connect?code=mock_instagram_auth_code_123');
+
+      // The user must stay on /connect — no redirect to dashboard
+      await expect(connectPage.connectButton).toBeVisible();
+
+      // Error toast must appear with the Persian error message for
+      // SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT (guards the just-added i18n key)
+      await expect(
+        authenticatedPage.getByText(
+          'اشتراک فعال شما با تعداد فالوورهای این پیج هم‌خوانی ندارد. لطفاً پلن متناسب با این پیج را بخرید.',
+        ),
+      ).toBeVisible();
+    },
+  );
 });

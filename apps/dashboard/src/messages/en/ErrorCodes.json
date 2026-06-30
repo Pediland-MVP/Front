@@ -82,6 +82,7 @@
     "SHOP_NOT_FOUND": "Shop not found.",
     "SUBSCRIPTION_ALREADY_PAID": "This subscription has already been paid.",
     "SUBSCRIPTION_ALREADY_BOUND": "Your active subscription is used by another page. Buy a new plan for this page.",
+    "SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT": "Your active subscription does not fit this page's follower count. Please buy a plan that matches this page.",
     "USER_ALREADY_VERIFIED": "User is already verified.",
     "USER_DATA_TEXT_REQUIRED": "User data text is required.",
     "USER_NOT_FOUND": "User not found.",
