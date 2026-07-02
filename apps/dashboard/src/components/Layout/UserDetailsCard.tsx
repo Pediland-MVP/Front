@@ -285,12 +285,14 @@ export const UserDetailsCard = () => {
               ))}
             </div>
 
-            <ProgressLine
-              percentage={isSubscriptionsLoading ? 0 : totalRemainingDays}
-              height={5}
-              type="days"
-              totalDays={totalPurchasedDays}
-            />
+            {activeSubscription?.type !== 'credit' && (
+              <ProgressLine
+                percentage={isSubscriptionsLoading ? 0 : totalRemainingDays}
+                height={5}
+                type="days"
+                totalDays={totalPurchasedDays}
+              />
+            )}
           </div>
         )}
 

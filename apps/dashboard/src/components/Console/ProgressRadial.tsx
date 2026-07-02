@@ -102,7 +102,7 @@ export const ProgressRadial = ({
         {type === 'days'
           ? `${percentage} ${t('days')}`
           : type === 'credit'
-            ? `${percentage} ${t('days')}`
+            ? `${percentage} ${t('message')}`
             : `${Math.round(actualPercentage)}%`}
       </motion.text>
     </svg>

@@ -54,14 +54,18 @@ export const SubscriptionsDetails = () => {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className={labelClass}>نوع اشتراک:</span>
-                    <span className="font-medium">{sub.planDuration.name}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className={labelClass}>قیمت بسته:</span>
                     <span className="font-medium">
-                      {formatNumber(sub.planDuration.price)} تـومـان
+                      {sub.type === 'credit' ? '300 پیام رایگان' : sub.planDuration?.name}
                     </span>
                   </div>
+                  {sub.type !== 'credit' && (
+                    <div className="flex items-center gap-1.5">
+                      <span className={labelClass}>قیمت بسته:</span>
+                      <span className="font-medium">
+                        {formatNumber(sub.planDuration?.price)} تـومـان
+                      </span>
+                    </div>
+                  )}
                 </CardContent>
               </CardSimple>
             ))}
