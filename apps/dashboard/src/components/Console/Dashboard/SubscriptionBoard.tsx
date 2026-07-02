@@ -82,7 +82,7 @@ export const SubscriptionBoard = () => {
                   isSubscriptionsLoading
                     ? 0
                     : currentSubscription?.type === 'credit'
-                      ? currentSubscription?.credit
+                      ? (currentSubscription?.credit ?? 0)
                       : totalRemainingDays
                 }
                 size={isMobile ? 85 : 95}
