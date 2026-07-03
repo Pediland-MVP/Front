@@ -17,6 +17,7 @@ function VerifyContent() {
 
   const [refId, setRefId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [verified, setVerified] = useState(false);
   const [error, setError] = useState<ExceptionMessage | null>(null);
 
   useEffect(() => {
@@ -25,16 +26,25 @@ function VerifyContent() {
 
   useEffect(() => {
     const authority = searchParams.get('Authority');
-    const status = searchParams.get('Status');
-    if (!authority || !status) {
+    const zarinpalStatus = searchParams.get('Status');
+    const trackId = searchParams.get('trackId');
+
+    // Detect which gateway sent us back: Zibal returns `trackId`, Zarinpal
+    // returns `Authority` + `Status`. The backend verify endpoint is generic
+    // (`/payments/subscription/:gatewayType/verify`) and re-verifies server-side.
+    const gatewayType = trackId ? 'zibal' : authority && zarinpalStatus ? 'zarinpal' : null;
+
+    if (!gatewayType) {
+      // Not a real gateway callback (e.g. a direct visit) — never fake success.
       setIsLoading(false);
       return;
     }
 
     api
-      .get(`/payments/subscription/zarinpal/verify?Authority=${authority}&Status=${status}`)
+      .get(`/payments/subscription/${gatewayType}/verify?${searchParams.toString()}`)
       .then(async (res) => {
         setRefId(res.data?.data?.ref_id ?? null);
+        setVerified(true);
         setIsLoading(false);
         await mutate(mutateIncludeStringKey('subscription'));
         router.push(`/settings/instagram?isAfterPurchasingPlan`);
@@ -49,16 +59,16 @@ function VerifyContent() {
     <div className="flex h-full w-full flex-col items-center justify-center gap-y-2">
       {isLoading ? (
         <LoaderSpin />
-      ) : error ? (
-        <>
-          <p className="text-4xl font-bold text-red-600">{t('error')}</p>
-          <p>{error.code ? t_ec(error.code) : t_ec('SERVER_CONNECTION_ERROR')}</p>
-        </>
-      ) : (
+      ) : verified ? (
         <>
           <p className="text-4xl font-bold text-green-600">{t('sucessFull')}</p>
           <p>{t('sucessFullDescription')}</p>
           <p>{t('refId', { refId })}</p>
+        </>
+      ) : (
+        <>
+          <p className="text-4xl font-bold text-red-600">{t('error')}</p>
+          <p>{error?.code ? t_ec(error.code) : t_ec('SERVER_CONNECTION_ERROR')}</p>
         </>
       )}
     </div>

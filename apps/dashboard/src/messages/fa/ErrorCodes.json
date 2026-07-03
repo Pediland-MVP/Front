@@ -89,6 +89,8 @@
     "ZARINPAL_ERROR": "خطا در زرین پال",
     "ZARINPAL_USER_HAVE_NOT": "کاربر زرین پال ندارد",
     "ZARINPAL_VERIFY_ERROR": "خطا در تأیید زرین پال",
+    "ZIBAL_ERROR": "خطا در اتصال به درگاه پرداخت زیبال",
+    "ZIBAL_VERIFY_ERROR": "خطا در تأیید پرداخت زیبال",
 
     "WORKSPACE_NOT_FOUND": "فضای کاری پیدا نشد",
     "CANNOT_DELETE_PERSONAL_WORKSPACE": "فضای کاری شخصی قابل حذف نیست",
