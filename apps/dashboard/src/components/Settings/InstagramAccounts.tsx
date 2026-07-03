@@ -19,6 +19,7 @@ import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
 
 import { usePermissions } from '@/hooks/usePermissions';
+import { PagePromotionAlert } from './PagePromotionAlert';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
@@ -146,6 +147,8 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
                 </div>
               </div>
             </CardContent>
+
+            {instagram.isPromotion && <PagePromotionAlert instagramId={instagram.id} />}
 
             <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
               <Button

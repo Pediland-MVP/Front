@@ -54,14 +54,16 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const t_err = useTranslations('Automations.Contents.Errors');
   const { user } = useUser();
 
-  const isPromotion = user?.instagrams?.[0]?.isPromotion;
-
   const {
     control,
     trigger,
     clearErrors,
     formState: { errors },
   } = useFormContext<AutomationFormType>();
+
+  const selectedInstagramId = useWatch({ control, name: 'instagramId' });
+  const isPromotion =
+    user?.instagrams?.find((i) => i.id === selectedInstagramId)?.isPromotion ?? false;
 
   const [isChoosingType, setIsChoosingType] = useState(
     !!automationId || mode === AutomationContentModeEnum.REMINDER ? false : true,

@@ -1291,7 +1291,9 @@
       },
       "instagramConnected": "Your Instagram account was successfully added.",
       "instagramConnectionError": "Failed to connect to Instagram.",
-      "limitReached": "Maximum of 5 Instagram accounts can be connected"
+      "limitReached": "Maximum of 5 Instagram accounts can be connected",
+      "page_promotion_alert": "This page has no active subscription; the Befroosh promotion is appended to automated messages.",
+      "page_promotion_cta": "Buy a plan for this page"
     },
     "BankDetails": {
       "description": "Fill in the information below to enable the Card-to-Card payment method.",
