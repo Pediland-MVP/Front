@@ -88,6 +88,8 @@
     "ZARINPAL_ERROR": "Zarinpal error.",
     "ZARINPAL_USER_HAVE_NOT": "User does not have a Zarinpal account.",
     "ZARINPAL_VERIFY_ERROR": "Zarinpal verification error.",
+    "ZIBAL_ERROR": "Zibal payment gateway error.",
+    "ZIBAL_VERIFY_ERROR": "Zibal verification error.",
     "WORKSPACE_ID_REQUIRED": "Workspace is required.",
     "PERMISSION_DENIED": "You do not have permission to perform this action."
   }
