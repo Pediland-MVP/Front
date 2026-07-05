@@ -6,7 +6,7 @@ services:
 
   front12:
     build:
-      context: /home/cicd/Front
+      context: /home/cicd/manual-deploy/Sources/Front
       dockerfile: Dockerfile
     container_name: front12
     networks:
