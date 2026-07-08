@@ -1,5 +1,8 @@
 {
   "Sidebar": {
+    "home": "Home",
+    "advanced": "Advanced",
+    "codes": "Codes",
     "myCustomers": "My Customers",
     "myLeads": "My Leads",
     "subscriptions": "Subscriptions",

@@ -11,19 +11,16 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import {
   // ChartPieSliceIcon,
+  HouseIcon,
   PlantIcon,
   UsersIcon,
   CreditCardIcon,
   CurrencyCircleDollarIcon,
-  GiftIcon,
-  TagIcon,
-  RobotIcon,
+  BarcodeIcon,
   ChatDotsIcon,
   UserGearIcon,
   BuildingsIcon,
-  StackIcon,
-  GearSixIcon,
-  WebhooksLogoIcon,
+  SlidersHorizontalIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
 } from '@phosphor-icons/react/dist/ssr';
@@ -34,8 +31,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations('Sidebar');
   const { user } = useAuth();
 
-  const items = React.useMemo(
-    () => [
+  const items = React.useMemo(() => {
+    // Webhooks / AI / Settings live under the "advanced" submenu. Keep the
+    // per-role gating on each child (KAM sees only the AI agent).
+    const advancedChildren = [
+      ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans' }] : []),
+      ...(user?.role !== 'kam' ? [{ title: t('webhooks'), url: '/webhooks' }] : []),
+      { title: t('aiAgent'), url: '/aiagent' },
+      ...(user?.role !== 'kam' ? [{ title: t('settings'), url: '/settings' }] : []),
+    ];
+
+    return [
+      {
+        title: t('home'),
+        url: '/',
+        icon: HouseIcon,
+      },
+      {
+        title: t('workspaces'),
+        url: '/workspaces',
+        icon: BuildingsIcon,
+      },
       {
         title: t('myCustomers'),
         url: '/customers',
@@ -59,32 +75,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...(user?.role !== 'kam'
         ? [{ title: t('finance'), url: '/finance', icon: CurrencyCircleDollarIcon }]
         : []),
-      {
-        title: t('workspaces'),
-        url: '/workspaces',
-        icon: BuildingsIcon,
-      },
-      ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans', icon: StackIcon }] : []),
-      {
-        title: t('referralCodes'),
-        url: '/referral-codes',
-        icon: GiftIcon,
-      },
-      {
-        title: t('discountCodes'),
-        url: '/discount-codes',
-        icon: TagIcon,
-      },
-      ...(user?.role !== 'kam'
-        ? [{ title: t('webhooks'), url: '/webhooks', icon: WebhooksLogoIcon }]
-        : []),
       ...(user?.role !== 'kam'
         ? [{ title: t('labels'), url: '/labels', icon: BookmarksSimpleIcon }]
         : []),
+      ...(user?.role === 'admin'
+        ? [{ title: t('admins'), url: '/admins', icon: UserGearIcon }]
+        : []),
       {
-        title: t('aiAgent'),
-        url: '/aiagent',
-        icon: RobotIcon,
+        title: t('codes'),
+        url: '/referral-codes',
+        icon: BarcodeIcon,
+        children: [
+          { title: t('referralCodes'), url: '/referral-codes' },
+          { title: t('discountCodes'), url: '/discount-codes' },
+        ],
       },
       {
         title: t('telegramAutomation'),
@@ -97,15 +101,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: t('chats'), url: '/telegram-automation/chats' },
         ],
       },
-      ...(user?.role === 'admin'
-        ? [{ title: t('admins'), url: '/admins', icon: UserGearIcon }]
+      ...(advancedChildren.length
+        ? [
+            {
+              title: t('advanced'),
+              url: advancedChildren[0].url,
+              icon: SlidersHorizontalIcon,
+              children: advancedChildren,
+            },
+          ]
         : []),
-      ...(user?.role !== 'kam'
-        ? [{ title: t('settings'), url: '/settings', icon: GearSixIcon }]
-        : []),
-    ],
-    [t, user?.role],
-  );
+    ];
+  }, [t, user?.role]);
 
   return (
     <Sidebar {...props} side="right" variant="inset" collapsible="offcanvas">
