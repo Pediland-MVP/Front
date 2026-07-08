@@ -36,6 +36,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 // ─── Recommended-date button config ───────────────────────────────────────────
 const RECOMMENDED_DATES = [
@@ -87,6 +94,8 @@ export function TaskManagementPanel(props: {
   const [assignAdminId, setAssignAdminId] = useState<string>('');
   const [note, setNote] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  const [doneTarget, setDoneTarget] = useState<string | null>(null);
+  const [doneNote, setDoneNote] = useState<string>('');
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -126,15 +135,41 @@ export function TaskManagementPanel(props: {
     }
   };
 
-  const handleStatusChange = async (actionId: string, checked: boolean) => {
-    const newStatus = checked ? 'done' : 'todo';
+  const setTodo = async (actionId: string) => {
     try {
-      await api.post(`/actions/status/${actionId}`, { status: newStatus });
+      await api.post(`/actions/status/${actionId}`, { status: 'todo' });
       await mutate();
       onChanged?.();
       toast.success(tt('statusUpdated'));
     } catch {
       toast.error(tt('statusError'));
+    }
+  };
+
+  const handleStatusChange = (actionId: string, checked: boolean) => {
+    if (checked) {
+      setDoneNote('');
+      setDoneTarget(actionId);
+    } else {
+      void setTodo(actionId);
+    }
+  };
+
+  const confirmDone = async () => {
+    if (!doneTarget) return;
+    try {
+      await api.post(`/actions/status/${doneTarget}`, {
+        status: 'done',
+        ...(doneNote.trim() ? { doneNote: doneNote.trim() } : {}),
+      });
+      await mutate();
+      onChanged?.();
+      toast.success(tt('statusUpdated'));
+    } catch {
+      toast.error(tt('statusError'));
+    } finally {
+      setDoneTarget(null);
+      setDoneNote('');
     }
   };
 
@@ -352,6 +387,33 @@ export function TaskManagementPanel(props: {
           </Button>
         </div>
       </div>
+
+      <Dialog open={doneTarget !== null} onOpenChange={(o) => !o && setDoneTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('markDoneTitle')}</DialogTitle>
+          </DialogHeader>
+          <label className="text-xs font-semibold text-slate-600">{t('doneNoteLabel')}</label>
+          <Textarea
+            className="min-h-20 resize-none rounded-xl border border-slate-200 px-3 py-2 text-xs"
+            placeholder={t('doneNotePlaceholder')}
+            value={doneNote}
+            onChange={(e) => setDoneNote(e.target.value)}
+          />
+          <DialogFooter className="gap-2">
+            <Button type="button" variant="ghost" onClick={() => setDoneTarget(null)}>
+              {t('cancel')}
+            </Button>
+            <Button
+              type="button"
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              onClick={confirmDone}
+            >
+              {t('confirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
