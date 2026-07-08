@@ -9,9 +9,11 @@ import { fetcher } from '@/hooks/swr/api-client';
 import { useAuth } from '@/hooks/use-auth';
 import { useKams } from '@/hooks/use-kams';
 import { useLabelsList } from '../labels/use-labels';
+import { SmsData } from '@/types/sms';
 
 import { FetchError } from '@/components/fetch-error';
 import { Loading } from '@/components/loading';
+import { SendSMSDialog } from '@/components/table/dialog-sms';
 
 import { TasksTable } from './tasks-table';
 
@@ -23,11 +25,19 @@ export default function TasksPageClient() {
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 750);
-  const [taskStatus, setTaskStatus] = useState('');
+  const [taskStatus, setTaskStatus] = useState('todo');
   const [adminId, setAdminId] = useState('');
   const [labelId, setLabelId] = useState<string | undefined>(undefined);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  // ── SMS dialog state ────────────────────────────────────────────────────────
+  const [smsDialogOpen, setSmsDialogOpen] = useState(false);
+  const [smsData, setSmsData] = useState<SmsData | null>(null);
+  const openSmsDialog = (data: SmsData) => {
+    setSmsData(data);
+    setSmsDialogOpen(true);
+  };
 
   // ── Role / super-admin ──────────────────────────────────────────────────────
   const isSuperAdmin = user?.role !== 'kam';
@@ -82,51 +92,62 @@ export default function TasksPageClient() {
   };
 
   return (
-    <TasksTable
-      tasks={tasks}
-      meta={meta}
-      stats={stats}
-      isStatsLoading={isStatsLoading}
-      isRefetching={isValidating && !!data}
-      kams={kams}
-      labelsItems={labelsData?.items ?? []}
-      role={user?.role ?? ''}
-      // Pagination
-      onPageChange={setPage}
-      onLimitChange={setLimit}
-      // Filters
-      search={search}
-      onSearchChange={(v) => {
-        setSearch(v);
-        setPage(1);
-      }}
-      startDate={startDate}
-      onStartDateChange={(iso) => {
-        setStartDate(iso);
-        setPage(1);
-      }}
-      endDate={endDate}
-      onEndDateChange={(iso) => {
-        setEndDate(iso);
-        setPage(1);
-      }}
-      taskStatus={taskStatus}
-      onTaskStatusChange={(v) => {
-        setTaskStatus(v);
-        setPage(1);
-      }}
-      adminId={adminId}
-      onAdminIdChange={(id) => {
-        setAdminId(id);
-        setPage(1);
-      }}
-      labelId={labelId}
-      onLabelIdChange={(id) => {
-        setLabelId(id);
-        setPage(1);
-      }}
-      // Mutations
-      mutateTasks={mutateTasks}
-    />
+    <>
+      <TasksTable
+        tasks={tasks}
+        meta={meta}
+        stats={stats}
+        isStatsLoading={isStatsLoading}
+        isRefetching={isValidating && !!data}
+        kams={kams}
+        labelsItems={labelsData?.items ?? []}
+        role={user?.role ?? ''}
+        // Pagination
+        onPageChange={setPage}
+        onLimitChange={setLimit}
+        // Filters
+        search={search}
+        onSearchChange={(v) => {
+          setSearch(v);
+          setPage(1);
+        }}
+        startDate={startDate}
+        onStartDateChange={(iso) => {
+          setStartDate(iso);
+          setPage(1);
+        }}
+        endDate={endDate}
+        onEndDateChange={(iso) => {
+          setEndDate(iso);
+          setPage(1);
+        }}
+        taskStatus={taskStatus}
+        onTaskStatusChange={(v) => {
+          setTaskStatus(v);
+          setPage(1);
+        }}
+        adminId={adminId}
+        onAdminIdChange={(id) => {
+          setAdminId(id);
+          setPage(1);
+        }}
+        labelId={labelId}
+        onLabelIdChange={(id) => {
+          setLabelId(id);
+          setPage(1);
+        }}
+        // SMS
+        openSmsDialog={openSmsDialog}
+        // Mutations
+        mutateTasks={mutateTasks}
+      />
+
+      <SendSMSDialog
+        open={smsDialogOpen}
+        onOpenChange={setSmsDialogOpen}
+        smsData={smsData}
+        recipientType="user"
+      />
+    </>
   );
 }
