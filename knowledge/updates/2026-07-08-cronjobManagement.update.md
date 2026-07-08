@@ -19,16 +19,20 @@ cron job and lets a super-admin trigger any of them by click.
 - `client-page.tsx` gates the whole page to non-`kam` users (`notFound()` for `KAM`) and
   fetches `GET /jobs` via `useSWR` with a 15-second `refreshInterval`, so a triggered job's
   status flips from `running` to `success`/`failed` in the table without a manual refresh.
-- `jobs-table.tsx` renders one row per job: name + description, app badge (`core`/`admin`),
-  cron schedule (+ a "prod only" note when set), next run and last run in jalali date/time,
-  a colored status badge (`success`/`failed`/`skipped`/`running`), and a **Run now** button.
+- `jobs-table.tsx` renders one row per job: a **Persian display name** (from `Jobs.name.*`,
+  keyed by job id with dots→underscores, falling back to the raw id) plus the raw id (mono) and
+  a Persian description (`Jobs.desc.*`), app badge (`core`/`admin`), cron schedule (+ a "prod
+  only" note when set), next run and last run in jalali date/time, a colored status badge
+  (`success`/`failed`/`skipped`/`running`), and a **Run now** button. The button has a fixed
+  `min-w-16` and shows a spinner (not the longer "running" text) while busy, so triggering a
+  job does not shift the table layout.
 - **Run now** first opens an `AlertDialog` confirm (showing the job name) — so an accidental
   click cannot re-fire a side-effectful job (e.g. `subscriptions.alert` re-sending expiry
   SMS/email). On confirm it calls `POST /jobs/:name/run`; on success it toasts and re-fetches
   (`mutate()`); on failure it maps the backend's error `code` through `t_ec` (`ERROR_CODES`
   namespace), falling back to a generic message.
-- The sidebar gained a **کران‌جاب‌ها** (cron jobs) nav entry, gated the same way as the page
-  (`user?.role !== 'kam'`).
+- The sidebar exposes the page as a **کران‌جاب‌ها** (cron jobs) child under the **پیشرفته**
+  (advanced) submenu, gated the same way as the page (`user?.role !== 'kam'`).
 - All page text is i18n — new `"Jobs"` namespace in `fa.json` (title, column headers, button/
   status labels), plus `"Sidebar.jobs"` and `"ERROR_CODES.JOB_NOT_FOUND"`.
 
@@ -42,10 +46,11 @@ cron job and lets a super-admin trigger any of them by click.
 - `apps/admin/src/messages/fa.json` — `"Jobs"` namespace (title, `colJob`/`colApp`/
   `colSchedule`/`colNextRun`/`colLastRun`/`colStatus`/`colAction`, `runNow`/`running`/
   `runTriggered`/`runError`/`prodOnly`, `status_running`/`status_success`/`status_failed`/
-  `status_skipped`, and the confirm-dialog keys `confirmTitle`/`confirmBody`/`confirmRun`/
-  `cancel`), `"Sidebar.jobs"`, and `"ERROR_CODES.JOB_NOT_FOUND"`.
-- `apps/admin/src/components/app-sidebar.tsx` — added the `/jobs` nav entry, gated to
-  `role !== 'kam'`.
+  `status_skipped`, the confirm-dialog keys `confirmTitle`/`confirmBody`/`confirmRun`/
+  `cancel`, and the per-job `name.*` / `desc.*` maps), `"Sidebar.jobs"`, and
+  `"ERROR_CODES.JOB_NOT_FOUND"`.
+- `apps/admin/src/components/app-sidebar.tsx` — added the `/jobs` entry as a child of the
+  `advanced` submenu, gated to `role !== 'kam'`.
 
 ### Backend endpoints consumed (admin app, super-admin only)
 
