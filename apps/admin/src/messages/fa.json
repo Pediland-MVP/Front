@@ -23,7 +23,8 @@
     "plans": "پلن‌ها",
     "settings": "تنظیمات",
     "labels": "برچسب‌ها",
-    "tasks": "تسک‌ها"
+    "tasks": "تسک‌ها",
+    "jobs": "کران‌جاب‌ها"
   },
   "Dashboard": {
     "title": "آمار کلی پلتفرم",
@@ -113,7 +114,27 @@
     "updateError": "خطا در ویرایش ادمین",
     "deleteError": "خطا در حذف ادمین"
   },
+  "Jobs": {
+    "title": "کران‌جاب‌ها",
+    "colJob": "جاب",
+    "colApp": "اپ",
+    "colSchedule": "زمان‌بندی",
+    "colNextRun": "اجرای بعدی",
+    "colLastRun": "آخرین اجرا",
+    "colStatus": "وضعیت",
+    "colAction": "عملیات",
+    "runNow": "اجرا",
+    "running": "در حال اجرا...",
+    "runTriggered": "دستور اجرا ارسال شد",
+    "runError": "خطا در اجرای جاب",
+    "prodOnly": "فقط پروداکشن",
+    "status_running": "در حال اجرا",
+    "status_success": "موفق",
+    "status_failed": "ناموفق",
+    "status_skipped": "رد شده"
+  },
   "ERROR_CODES": {
+    "JOB_NOT_FOUND": "جاب یافت نشد",
     "ADMIN_USERNAME_ALREADY_EXISTS": "نام کاربری از قبل وجود دارد",
     "ADMIN_TELEGRAMID_ALREADY_EXISTS": "شناسه تلگرام از قبل ثبت شده است",
     "ADMIN_NOTFOUND": "ادمین یافت نشد",
