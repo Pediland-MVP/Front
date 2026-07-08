@@ -114,10 +114,14 @@ export default function JobsTable({
           <TableBody>
             {jobs.map((job) => (
               <TableRow key={job.name}>
-                <TableCell>
-                  <div className="font-medium">{jobLabel(job.name)}</div>
-                  <div className="text-muted-foreground font-mono text-xs">{job.name}</div>
-                  <div className="text-muted-foreground text-xs">{jobDesc(job)}</div>
+                <TableCell className="py-3 align-top">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium">{jobLabel(job.name)}</span>
+                    <span className="text-muted-foreground font-mono text-xs">{job.name}</span>
+                    <span className="text-muted-foreground text-xs leading-relaxed">
+                      {jobDesc(job)}
+                    </span>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant={job.app === 'core' ? 'default' : 'secondary'}>{job.app}</Badge>
