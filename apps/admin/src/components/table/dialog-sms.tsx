@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr';
+import { ChatCenteredTextIcon, SpinnerIcon } from '@phosphor-icons/react/dist/ssr';
 import { SmsData } from '@/types/sms';
 
 interface SendSMSDialogProps {
@@ -27,6 +27,7 @@ interface SendSMSDialogProps {
 
 export function SendSMSDialog({ open, onOpenChange, smsData, recipientType }: SendSMSDialogProps) {
   const [text, setText] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   const handleSend = async () => {
     if (!text.trim()) {
@@ -34,6 +35,7 @@ export function SendSMSDialog({ open, onOpenChange, smsData, recipientType }: Se
       return;
     }
 
+    setIsSending(true);
     try {
       await api.post('/sms/sendSms', {
         recipientType,
@@ -47,6 +49,8 @@ export function SendSMSDialog({ open, onOpenChange, smsData, recipientType }: Se
     } catch (error) {
       console.error(error);
       toast.error('ارسال پیامک با خطا مواجه شد.');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -68,7 +72,15 @@ export function SendSMSDialog({ open, onOpenChange, smsData, recipientType }: Se
           onChange={(e) => setText(e.target.value)}
           className="w-full rounded border p-2 text-sm"
         />
-        <Button onClick={handleSend}>ارسال</Button>
+        <Button onClick={handleSend} disabled={isSending}>
+          {isSending ? (
+            <>
+              <SpinnerIcon className="animate-spin" /> در حال ارسال...
+            </>
+          ) : (
+            'ارسال'
+          )}
+        </Button>
       </DialogContent>
     </Dialog>
   );
