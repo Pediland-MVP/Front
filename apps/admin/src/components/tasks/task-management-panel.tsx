@@ -201,7 +201,7 @@ export function TaskManagementPanel(props: {
   const sortedActions = useMemo(() => {
     const items = (actions?.items as Action[] | undefined) ?? [];
     return [...items].sort(
-      (a, b) => new Date(a.actionDate).getTime() - new Date(b.actionDate).getTime(),
+      (a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime(),
     );
   }, [actions]);
 
@@ -240,7 +240,13 @@ export function TaskManagementPanel(props: {
                           : tType('unknown')}
                       </span>
                     </span>
-                    <span className="truncate">{`${action.admin.firstname} ${action.admin.lastname}`}</span>
+                    <span className="truncate">
+                      {t('createdBy')}:{' '}
+                      {(() => {
+                        const who = action.createdByAdmin ?? action.admin;
+                        return `${who.firstname} ${who.lastname}`;
+                      })()}
+                    </span>
                   </div>
 
                   {/* Description */}
@@ -280,6 +286,27 @@ export function TaskManagementPanel(props: {
                       )}
                     </div>
                   </div>
+
+                  {isDone && (
+                    <div className="mt-2 space-y-0.5 border-t border-slate-100 pt-1.5 text-[11px] text-slate-500">
+                      {action.doneDate && (
+                        <div>
+                          {t('doneDateLabel')}: {formatTaskDate(action.doneDate)}
+                        </div>
+                      )}
+                      {action.doneByAdmin && (
+                        <div>
+                          {t('doneBy')}: {action.doneByAdmin.firstname}{' '}
+                          {action.doneByAdmin.lastname}
+                        </div>
+                      )}
+                      {action.doneNote && (
+                        <div className="whitespace-pre-wrap">
+                          {t('doneNoteShown')}: {action.doneNote}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -388,7 +415,15 @@ export function TaskManagementPanel(props: {
         </div>
       </div>
 
-      <Dialog open={doneTarget !== null} onOpenChange={(o) => !o && setDoneTarget(null)}>
+      <Dialog
+        open={doneTarget !== null}
+        onOpenChange={(o) => {
+          if (!o) {
+            setDoneTarget(null);
+            setDoneNote('');
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('markDoneTitle')}</DialogTitle>
@@ -401,7 +436,14 @@ export function TaskManagementPanel(props: {
             onChange={(e) => setDoneNote(e.target.value)}
           />
           <DialogFooter className="gap-2">
-            <Button type="button" variant="ghost" onClick={() => setDoneTarget(null)}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setDoneTarget(null);
+                setDoneNote('');
+              }}
+            >
               {t('cancel')}
             </Button>
             <Button
