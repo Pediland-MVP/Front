@@ -47,9 +47,10 @@ Shared component: `apps/admin/src/components/tasks/task-management-panel.tsx`
 
 - `apps/admin/src/types/actions.ts` — `Action` gained `doneNote?`,
   `createdByAdmin?`, `doneByAdmin?` (all optional/nullable, `AdminRef` shape).
-- `apps/admin/src/messages/fa.json` (and `en.json`) — new keys under
+- `apps/admin/src/messages/fa.json` — new keys under
   `Tasks.panel`: `markDoneTitle`, `doneNoteLabel`, `doneNotePlaceholder`,
-  `confirm`, `cancel`, `doneDateLabel`, `doneBy`, `doneNoteShown`.
+  `confirm`, `cancel`, `doneDateLabel`, `doneBy`, `doneNoteShown`. (`en.json`
+  was not touched — English translations get added later, per convention.)
 - `apps/admin/src/components/tasks/task-management-panel.tsx`:
   - Added `doneTarget` / `doneNote` local state and a confirm `Dialog`
     (shadcn `Dialog` + `Textarea`) shown when checking a task done.
