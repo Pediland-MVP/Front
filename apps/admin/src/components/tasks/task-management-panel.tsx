@@ -230,7 +230,7 @@ export function TaskManagementPanel(props: {
                       : 'border-slate-200 border-s-blue-500 bg-white',
                   )}
                 >
-                  {/* Header: type + responsible admin */}
+                  {/* Header: type + creator / assignee */}
                   <div className="mb-1.5 flex items-center justify-between gap-3 text-[11px] font-bold text-slate-500">
                     <span className="flex items-center gap-1">
                       {TYPE_ICONS[action.type]}
@@ -240,12 +240,17 @@ export function TaskManagementPanel(props: {
                           : tType('unknown')}
                       </span>
                     </span>
-                    <span className="truncate">
-                      {t('createdBy')}:{' '}
-                      {(() => {
-                        const who = action.createdByAdmin ?? action.admin;
-                        return `${who.firstname} ${who.lastname}`;
-                      })()}
+                    <span className="flex min-w-0 flex-col items-end gap-0.5">
+                      <span className="truncate">
+                        {t('createdBy')}:{' '}
+                        {(() => {
+                          const who = action.createdByAdmin ?? action.admin;
+                          return `${who.firstname} ${who.lastname}`;
+                        })()}
+                      </span>
+                      <span className="truncate font-medium text-slate-400">
+                        {t('assignedTo')}: {`${action.admin.firstname} ${action.admin.lastname}`}
+                      </span>
                     </span>
                   </div>
 
