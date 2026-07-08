@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import api from '@/hooks/swr/api-client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Spinner } from '@/components/ui/spinner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,6 +73,15 @@ export default function JobsTable({
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmJob, setConfirmJob] = useState<string | null>(null);
 
+  // Job names/descriptions come from the backend catalog in English. Look up a
+  // Persian label keyed by the job id (dots → underscores, since next-intl uses
+  // dots for nesting), falling back to the raw catalog value when unmapped.
+  const jobKey = (name: string) => name.replace(/\./g, '_');
+  const jobLabel = (name: string) =>
+    t.has(`name.${jobKey(name)}`) ? t(`name.${jobKey(name)}`) : name;
+  const jobDesc = (job: JobView) =>
+    t.has(`desc.${jobKey(job.name)}`) ? t(`desc.${jobKey(job.name)}`) : job.description;
+
   const run = async (name: string) => {
     setBusy(name);
     try {
@@ -105,8 +115,9 @@ export default function JobsTable({
             {jobs.map((job) => (
               <TableRow key={job.name}>
                 <TableCell>
-                  <div className="font-mono font-medium">{job.name}</div>
-                  <div className="text-muted-foreground text-xs">{job.description}</div>
+                  <div className="font-medium">{jobLabel(job.name)}</div>
+                  <div className="text-muted-foreground font-mono text-xs">{job.name}</div>
+                  <div className="text-muted-foreground text-xs">{jobDesc(job)}</div>
                 </TableCell>
                 <TableCell>
                   <Badge variant={job.app === 'core' ? 'default' : 'secondary'}>{job.app}</Badge>
@@ -131,10 +142,12 @@ export default function JobsTable({
                 <TableCell>
                   <Button
                     size="sm"
+                    className="min-w-16"
                     disabled={busy === job.name}
+                    aria-label={busy === job.name ? t('running') : t('runNow')}
                     onClick={() => setConfirmJob(job.name)}
                   >
-                    {busy === job.name ? t('running') : t('runNow')}
+                    {busy === job.name ? <Spinner /> : t('runNow')}
                   </Button>
                 </TableCell>
               </TableRow>

@@ -23,7 +23,6 @@ import {
   SlidersHorizontalIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
-  ClockIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -38,6 +37,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const advancedChildren = [
       ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('webhooks'), url: '/webhooks' }] : []),
+      ...(user?.role !== 'kam' ? [{ title: t('jobs'), url: '/jobs' }] : []),
       { title: t('aiAgent'), url: '/aiagent' },
       ...(user?.role !== 'kam' ? [{ title: t('settings'), url: '/settings' }] : []),
     ];
@@ -79,7 +79,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...(user?.role !== 'kam'
         ? [{ title: t('labels'), url: '/labels', icon: BookmarksSimpleIcon }]
         : []),
-      ...(user?.role !== 'kam' ? [{ title: t('jobs'), url: '/jobs', icon: ClockIcon }] : []),
       ...(user?.role === 'admin'
         ? [{ title: t('admins'), url: '/admins', icon: UserGearIcon }]
         : []),
