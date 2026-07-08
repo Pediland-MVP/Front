@@ -6,7 +6,7 @@
 
 ## Problem
 
-Backend cron jobs (12 total, across the `core` and `admin` NestJS apps) had no operational
+Backend cron jobs (across the `core` and `admin` NestJS apps) had no operational
 surface. Operators could not see when a job last ran, whether it succeeded, when it runs
 next, or trigger a job on demand — they had to ask an engineer to check logs or restart a
 process.
@@ -22,9 +22,11 @@ cron job and lets a super-admin trigger any of them by click.
 - `jobs-table.tsx` renders one row per job: name + description, app badge (`core`/`admin`),
   cron schedule (+ a "prod only" note when set), next run and last run in jalali date/time,
   a colored status badge (`success`/`failed`/`skipped`/`running`), and a **Run now** button.
-- **Run now** calls `POST /jobs/:name/run`; on success it toasts and re-fetches (`mutate()`);
-  on failure it maps the backend's error `code` through `t_ec` (`ERROR_CODES` namespace),
-  falling back to a generic message.
+- **Run now** first opens an `AlertDialog` confirm (showing the job name) — so an accidental
+  click cannot re-fire a side-effectful job (e.g. `subscriptions.alert` re-sending expiry
+  SMS/email). On confirm it calls `POST /jobs/:name/run`; on success it toasts and re-fetches
+  (`mutate()`); on failure it maps the backend's error `code` through `t_ec` (`ERROR_CODES`
+  namespace), falling back to a generic message.
 - The sidebar gained a **کران‌جاب‌ها** (cron jobs) nav entry, gated the same way as the page
   (`user?.role !== 'kam'`).
 - All page text is i18n — new `"Jobs"` namespace in `fa.json` (title, column headers, button/
@@ -40,7 +42,8 @@ cron job and lets a super-admin trigger any of them by click.
 - `apps/admin/src/messages/fa.json` — `"Jobs"` namespace (title, `colJob`/`colApp`/
   `colSchedule`/`colNextRun`/`colLastRun`/`colStatus`/`colAction`, `runNow`/`running`/
   `runTriggered`/`runError`/`prodOnly`, `status_running`/`status_success`/`status_failed`/
-  `status_skipped`), `"Sidebar.jobs"`, and `"ERROR_CODES.JOB_NOT_FOUND"`.
+  `status_skipped`, and the confirm-dialog keys `confirmTitle`/`confirmBody`/`confirmRun`/
+  `cancel`), `"Sidebar.jobs"`, and `"ERROR_CODES.JOB_NOT_FOUND"`.
 - `apps/admin/src/components/app-sidebar.tsx` — added the `/jobs` nav entry, gated to
   `role !== 'kam'`.
 
@@ -48,7 +51,7 @@ cron job and lets a super-admin trigger any of them by click.
 
 | Endpoint | Response | Notes |
 |---|---|---|
-| `GET /jobs` | `PaginatedResult<JobView[]>` | All 12 catalog jobs with computed `nextRunAt` (via `cron-parser`) and the latest `job_run` row per job (status/times/`rowsAffected`/`error`). |
+| `GET /jobs` | `PaginatedResult<JobView[]>` | All catalog jobs with computed `nextRunAt` (via `cron-parser`) and the latest `job_run` row per job (status/times/`rowsAffected`/`error`). |
 | `POST /jobs/:name/run` | `ResponseMessage` code `JOB_RUN_TRIGGERED`, data `{ mode: 'local' \| 'queued' }` | Runs an admin-owned job in-process, or enqueues a core-owned job onto the shared `coreOps` queue for `core` to run. Unknown `name` → 400 `JOB_NOT_FOUND`. |
 
 See `Back/knowledge/front-back-relations.md` for the full mapping and
