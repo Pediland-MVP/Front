@@ -82,6 +82,16 @@ export function columns(
       header: 'عنوان پیج اینستاگرام',
     },
     {
+      id: 'totalFollowers',
+      accessorFn: (row) => row.instagrams[0]?.followersCount ?? 0,
+      header: ({ column }) => <ColumnHeader column={column} title="فالوور" />,
+      cell: ({ row }) => {
+        const count = row.original.instagrams[0]?.followersCount;
+        return count != null ? count.toLocaleString('en-US') : '-';
+      },
+      meta: { isNumeric: true },
+    },
+    {
       id: 'instagramId',
       accessorFn: (row) => row.instagrams[0]?.username ?? '-',
       header: 'آیدی اینستاگرام',
@@ -184,12 +194,6 @@ export function columns(
             </Link>
           );
         },
-      },
-      {
-        id: 'totalFollowers',
-        accessorFn: (row) => row.instagrams[0]?.followersCount ?? 0,
-        header: ({ column }) => <ColumnHeader column={column} title="فالوور" />,
-        meta: { isNumeric: true },
       },
       {
         id: 'followsCount',
