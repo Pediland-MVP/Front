@@ -473,7 +473,16 @@
       "submitting": "در حال ثبت...",
       "done": "انجام شد",
       "loading": "در حال بارگذاری...",
-      "emptyTimeline": "هنوز تسکی ثبت نشده است."
+      "emptyTimeline": "هنوز تسکی ثبت نشده است.",
+      "markDoneTitle": "اتمام تسک",
+      "doneNoteLabel": "توضیح انجام (اختیاری)",
+      "doneNotePlaceholder": "توضیح دهید تسک چطور انجام شد...",
+      "confirm": "ثبت",
+      "cancel": "انصراف",
+      "createdBy": "ایجادکننده",
+      "doneBy": "انجام‌دهنده",
+      "doneDateLabel": "تاریخ انجام",
+      "doneNoteShown": "توضیح انجام"
     },
     "types": {
       "phone": "تلفن",
