@@ -18,7 +18,7 @@ export default function JobsPageClient() {
     { refreshInterval: 15000, keepPreviousData: true },
   );
 
-  if (!data && isLoading) return <Loading />;
+  if (!user || (!data && isLoading)) return <Loading />;
   if (error) return <FetchError />;
 
   return (
