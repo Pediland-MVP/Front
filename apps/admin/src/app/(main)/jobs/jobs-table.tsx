@@ -7,6 +7,16 @@ import api from '@/hooks/swr/api-client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Table,
   TableBody,
   TableCell,
@@ -60,6 +70,7 @@ export default function JobsTable({
   const t = useTranslations('Jobs');
   const t_ec = useTranslations('ERROR_CODES');
   const [busy, setBusy] = useState<string | null>(null);
+  const [confirmJob, setConfirmJob] = useState<string | null>(null);
 
   const run = async (name: string) => {
     setBusy(name);
@@ -118,7 +129,11 @@ export default function JobsTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  <Button size="sm" disabled={busy === job.name} onClick={() => run(job.name)}>
+                  <Button
+                    size="sm"
+                    disabled={busy === job.name}
+                    onClick={() => setConfirmJob(job.name)}
+                  >
                     {busy === job.name ? t('running') : t('runNow')}
                   </Button>
                 </TableCell>
@@ -127,6 +142,28 @@ export default function JobsTable({
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog open={!!confirmJob} onOpenChange={(o) => !o && setConfirmJob(null)}>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('confirmBody', { name: confirmJob ?? '' })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirmJob) run(confirmJob);
+                setConfirmJob(null);
+              }}
+            >
+              {t('confirmRun')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </LayoutTable>
   );
 }

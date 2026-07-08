@@ -131,7 +131,11 @@
     "status_running": "در حال اجرا",
     "status_success": "موفق",
     "status_failed": "ناموفق",
-    "status_skipped": "رد شده"
+    "status_skipped": "رد شده",
+    "confirmTitle": "اجرای دستی جاب",
+    "confirmBody": "آیا از اجرای «{name}» مطمئن هستید؟ این کار ممکن است پیام یا عملیات واقعی ایجاد کند.",
+    "confirmRun": "بله، اجرا کن",
+    "cancel": "انصراف"
   },
   "ERROR_CODES": {
     "JOB_NOT_FOUND": "جاب یافت نشد",
