@@ -9,7 +9,7 @@ import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useInvitations } from '@/hooks/useInvitations';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -53,10 +53,6 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
   const { workspaceId } = usePermissions();
   const { pendingCount } = useInvitations();
   const { subscriptions } = useSubscriptionStore();
-
-  const activeSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-  );
 
   const tConsole = useTranslations('Console');
   const tSidebar = useTranslations('Console.Sidebar');
@@ -278,7 +274,7 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
             {tConsole('accountSettings') || 'تنظیمات حساب کاربری'}
           </h3>
 
-          {activeSubscription?.type !== 'credit' && (
+          {!hasOnlyFreeCredit(subscriptions) && (
             <button
               onClick={() => routeHandler('/settings/subscription')}
               className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-right text-sm text-gray-600 transition-all hover:bg-gray-50 active:bg-gray-100"

@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 // TODO: Should Refactor
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 
 import { Alert, AlertTitle, Button, CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
@@ -69,7 +70,7 @@ export const SubscriptionBoard = () => {
 
   const instagramValid = user?.instagrams?.[0]?.isIgTokenValid;
 
-  if (isSubscriptionsLoading || activeSubscription?.type === 'credit') return null;
+  if (isSubscriptionsLoading || hasOnlyFreeCredit(subscriptions)) return null;
 
   return (
     <CardSimple>

@@ -13,7 +13,7 @@ import {
   UserCircleIcon,
 } from '@phosphor-icons/react';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { usePermissions } from '@/hooks/usePermissions';
 
 export const SettingsOptions = () => {
@@ -21,10 +21,6 @@ export const SettingsOptions = () => {
   const { can } = usePermissions();
 
   const { subscriptions } = useSubscriptionStore();
-
-  const activeSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-  );
 
   const canViewBilling = can('billing:view');
 
@@ -34,7 +30,7 @@ export const SettingsOptions = () => {
       url: '/settings/instagram',
       icon: InstagramLogoIcon,
     },
-    ...(activeSubscription?.type !== 'credit' && canViewBilling
+    ...(!hasOnlyFreeCredit(subscriptions) && canViewBilling
       ? [
           {
             title: t('upgrade_plan'),

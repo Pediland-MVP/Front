@@ -13,6 +13,7 @@ import { PlanNamespace } from '@/types/plans/plan.namespace';
 import { SubscriptionNamespace } from '@/types/subscriptions/subscription.namspace';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { getActiveNonCreditSubscriptions, getRemainingDays } from '@/utils/subscription';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -74,10 +75,8 @@ export const useSubscriptionStore = create<SubscriptionState>()(
 
       if (!subscriptions?.length) return set({ totalRemainingDays: 0, totalPurchasedDays: 0 });
 
-      const now = new Date();
-
-      // اشتراک فعال
-      const active = subscriptions.find((s) => s.status === SubscriptionStatusEnum.ACTIVE);
+      // اشتراک‌های فعالِ پولی (چه متصل به یک پیج، چه هنوز تخصیص‌نیافته)
+      const activeNonCredit = getActiveNonCreditSubscriptions(subscriptions);
 
       // اشتراک‌های رزروشده
       const reserved = subscriptions.filter((s) => s.status === SubscriptionStatusEnum.RESERVED);
@@ -94,13 +93,8 @@ export const useSubscriptionStore = create<SubscriptionState>()(
         0,
       );
 
-      const getRemainingDays = (expireDate: string) => {
-        const expire = new Date(expireDate);
-        const diff = expire.getTime() - now.getTime();
-        return Math.max(0, Math.ceil(diff / (1000 * 3600 * 24)));
-      };
-
-      const activeDays = active ? getRemainingDays(active.expire) : 0;
+      // مجموع روزهای باقی‌مانده در همه‌ی اشتراک‌های فعالِ پولی (یک کارگاه می‌تواند چند پیج پوشش‌دار داشته باشد)
+      const activeDays = activeNonCredit.reduce((sum, s) => sum + getRemainingDays(s.expire), 0);
       const totalRemainingDays = activeDays + reservedDays;
 
       set({ totalRemainingDays, totalPurchasedDays });

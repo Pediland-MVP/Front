@@ -5,12 +5,13 @@ export interface ISubscriptions {
   meta: Meta;
 }
 
-interface Subscription {
+export interface Subscription {
   activator: string;
   createDate: string;
   credit: number;
   expire: string;
   id: string;
+  instagramId: string | null;
   planDuration: PlanDuration;
   planDurationId: number;
   status: SubscriptionStatusEnum;

@@ -20,6 +20,7 @@ import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
 
 import { usePermissions } from '@/hooks/usePermissions';
 import { PagePromotionAlert } from './PagePromotionAlert';
+import { PageCoverageBadge } from './PageCoverageBadge';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
@@ -101,7 +102,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
         instagram
       />
 
-      <div className="grid w-full gap-3 md:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid w-full gap-4 md:grid-cols-3 2xl:grid-cols-4">
         {instagramPages?.data?.map((instagram) => (
           <Card
             className={cn(
@@ -148,7 +149,13 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
               </div>
             </CardContent>
 
-            {instagram.isPromotion && <PagePromotionAlert instagramId={instagram.id} />}
+            <div className="px-4 pb-3">
+              {instagram.isPromotion ? (
+                <PagePromotionAlert instagramId={instagram.id} />
+              ) : (
+                <PageCoverageBadge instagramId={instagram.id} />
+              )}
+            </div>
 
             <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
               <Button

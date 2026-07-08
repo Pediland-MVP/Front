@@ -3,7 +3,7 @@ import { CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import useUser from '@/hooks/useUser';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
@@ -19,13 +19,9 @@ export const DashboardHelpBanner = () => {
     totalPurchasedDays,
   } = useSubscriptionStore();
 
-  const activeSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-  );
-
   const helpButtonRef = useRef<HTMLDivElement>(null);
 
-  if (isSubscriptionsLoading || activeSubscription?.type !== 'credit') return null;
+  if (isSubscriptionsLoading || !hasOnlyFreeCredit(subscriptions)) return null;
 
   return (
     <div onClick={() => helpButtonRef.current?.click()} className="mb-5">

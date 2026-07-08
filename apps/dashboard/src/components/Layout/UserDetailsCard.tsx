@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react';
 
 // TODO: Refactor Types & Schemas
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 
 import {
   ArrowsClockwiseIcon,
@@ -152,7 +153,7 @@ export const UserDetailsCard = () => {
                 </span>
               </div> */}
 
-            {activeSubscription?.type !== 'credit' && (
+            {!hasOnlyFreeCredit(subscriptions) && (
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <span className="text-muted-foreground">{t('remain')}:</span>
@@ -285,7 +286,7 @@ export const UserDetailsCard = () => {
               ))}
             </div>
 
-            {activeSubscription?.type !== 'credit' && (
+            {!hasOnlyFreeCredit(subscriptions) && (
               <ProgressLine
                 percentage={isSubscriptionsLoading ? 0 : totalRemainingDays}
                 height={5}

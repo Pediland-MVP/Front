@@ -771,6 +771,9 @@
   "Subscription": {
     "title": "Subscription Management",
     "no_active_subscription": "There is no active subscription.",
+    "page_coverage_title": "Covered pages",
+    "unassigned_active_subscription": "This subscription hasn't been assigned to a page yet",
+    "covered_page": "Page",
     "plan_title": "Choose the right subscription plan for your page",
     "package_title": "Choose the right subscription plan for your page",
     "subscription": "Subscription",
@@ -781,6 +784,13 @@
     "day": "day",
     "reserve_subscription": "Reserve Subscription",
     "buy_subscription": "Buy Subscription",
+    "choose_page_title": "Which page is this subscription for?",
+    "choose_page_description": "Matching plans are shown based on that page's follower count.",
+    "no_pages_connected": "You haven't connected any Instagram page yet.",
+    "connect_page_cta": "Add a page",
+    "renewal_will_queue_notice": "This page already has an active subscription. The new one will be queued and will activate automatically once the current one ends.",
+    "no_plan_for_followers": "No matching plan was found for this page's follower count. Please contact support.",
+    "back": "Back",
     "subscriptionStatus": "Here you can view your active and reserved subscriptions.",
     "selectPlan": "Select your plan",
     "activeSubscription": "Active Subscription",
@@ -1293,7 +1303,12 @@
       "instagramConnectionError": "Failed to connect to Instagram.",
       "limitReached": "Maximum of 5 Instagram accounts can be connected",
       "page_promotion_alert": "This page has no active subscription; the Befroosh promotion is appended to automated messages.",
-      "page_promotion_cta": "Buy a plan for this page"
+      "page_promotion_cta": "Buy a plan for this page",
+      "page_covered_by_plan": "Covered by the {plan} plan",
+      "page_days_left": "{days} days left",
+      "page_covered_by_credit": "This page is currently using the workspace's free credit",
+      "buy_additional_cta": "Buy subscription",
+      "buy_additional_hint": "Activates automatically once the current plan ends"
     },
     "BankDetails": {
       "description": "Fill in the information below to enable the Card-to-Card payment method.",
