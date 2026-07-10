@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import useSWRImmutable from 'swr/immutable';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -33,7 +33,6 @@ interface HomeItems {
 
 export const DashboardStats = () => {
   const t = useTranslations('Console.Dashboard');
-  const locale = useLocale();
   const { can } = usePermissions();
   const { user } = useUser();
 
@@ -106,7 +105,7 @@ export const DashboardStats = () => {
       {hasMultipleAccounts && (
         <div className="flex justify-end">
           <Select value={selectedIg} onValueChange={setSelectedIg}>
-            <SelectTrigger className="w-52" aria-label={t('allAccounts')}>
+            <SelectTrigger className="w-52">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
