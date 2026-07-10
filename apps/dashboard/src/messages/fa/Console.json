@@ -3,6 +3,7 @@
     "Dashboard": {
       "active": "فعال",
       "add": "افزودن",
+      "allAccounts": "همه اکانت‌ها",
       "automation": "پیام خودکار",
       "day": "روز",
       "details": "جـزئـیـات",
@@ -13,6 +14,7 @@
       "mobile": "همراه",
       "orders": "سفارش",
       "products": "کالا/خدمت",
+      "productsSharedHint": "کالاها بین همه اکانت‌ها مشترک هستند و بر اساس اکانت فیلتر نمی‌شوند",
       "remain": "مانده اعتبار",
       "remainingDays": "باقی مانده اشتراک شما",
       "renewal": "تمدید",

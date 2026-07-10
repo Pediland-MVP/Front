@@ -31,6 +31,7 @@
     "IGCONNECT_MALFORMED_CODE": "کد اتصال اینستاگرام نامعتبر است",
     "INSTAGRAM_REQUIRED": "اول باید اینستاگرامتان را وصل کنید",
     "INSTAGRAM_NOT_FOUND": "پیج اینستاگرام پیدا نشد.",
+    "INSTAGRAM_NOT_IN_WORKSPACE": "این اکانت اینستاگرام متعلق به این کسب‌وکار نیست.",
     "INTERNAL_SERVER_ERROR": "خطای داخلی سرور",
     "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام لید پیدا نشد",
     "LEAD_SHOPPING_ACCESS_DENIED": "دسترسی خرید لید رد شد",
