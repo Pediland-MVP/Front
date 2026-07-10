@@ -7,9 +7,7 @@ import api, { useLogout } from '@/hooks/swr/api-client';
 import useUser from '@/hooks/useUser';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useInvitations } from '@/hooks/useInvitations';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -23,17 +21,7 @@ import {
 } from '@/components/ui/drawer';
 import { Avatar, AvatarFallback, AvatarImage, Spinner } from '@/components/ui';
 import { Separator } from '@/components/ui/separator';
-import {
-  CrownIcon,
-  LogOutIcon,
-  MailIcon,
-  UserRoundPenIcon,
-  CheckIcon,
-  UserCircleIcon,
-  PlusIcon,
-  Settings,
-  Instagram,
-} from 'lucide-react';
+import { LogOutIcon, CheckIcon, UserCircleIcon, PlusIcon, Settings } from 'lucide-react';
 
 interface WorkspaceDrawerProps {
   children: React.ReactNode;
@@ -51,16 +39,9 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
   const { user: userData, isLoading: isUserLoading } = useUser();
   const { workspaces, isLoading: isWorkspacesLoading, changeWorkspace, mutate } = useWorkspaces();
   const { workspaceId } = usePermissions();
-  const { pendingCount } = useInvitations();
-  const { subscriptions } = useSubscriptionStore();
 
   const tConsole = useTranslations('Console');
   const tSidebar = useTranslations('Console.Sidebar');
-
-  const routeHandler = (route: string) => {
-    router.push(route);
-    setOpen(false);
-  };
 
   const logoutHandler = async () => {
     setIsLogoutLoading(true);
@@ -268,59 +249,8 @@ export const WorkspaceDrawer = ({ children }: WorkspaceDrawerProps) => {
 
         <Separator className="my-4 bg-gray-100" />
 
-        {/* Quick Actions / Account Settings Section */}
+        {/* Logout */}
         <div className="flex flex-col gap-1.5">
-          <h3 className="mb-1 pr-1 text-right text-xs font-semibold text-gray-500">
-            {tConsole('accountSettings') || 'تنظیمات حساب کاربری'}
-          </h3>
-
-          {!hasOnlyFreeCredit(subscriptions) && (
-            <button
-              onClick={() => routeHandler('/settings/subscription')}
-              className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-right text-sm text-gray-600 transition-all hover:bg-gray-50 active:bg-gray-100"
-            >
-              <CrownIcon className="size-5 stroke-[1.8] text-gray-500" />
-              <span className="font-medium">{tSidebar('upgradeAccount')}</span>
-            </button>
-          )}
-
-          <button
-            onClick={() => routeHandler('/settings/instagram')}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-right text-sm text-gray-600 transition-all hover:bg-gray-50 active:bg-gray-100"
-          >
-            <Instagram className="size-5 stroke-[1.8] text-gray-500" />
-            <span className="font-medium">{tSidebar('accounts')}</span>
-          </button>
-
-          <button
-            onClick={() => routeHandler('/settings')}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-right text-sm text-gray-600 transition-all hover:bg-gray-50 active:bg-gray-100"
-          >
-            <Settings className="size-5 stroke-[1.8] text-gray-500" />
-            <span className="font-medium">{tSidebar('settings')}</span>
-          </button>
-
-          <button
-            onClick={() => routeHandler('/settings/profile')}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-right text-sm text-gray-600 transition-all hover:bg-gray-50 active:bg-gray-100"
-          >
-            <UserRoundPenIcon className="size-5 stroke-[1.8] text-gray-500" />
-            <span className="font-medium">{tSidebar('profile')}</span>
-          </button>
-
-          <button
-            onClick={() => routeHandler('/invitations')}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-3 text-right text-sm text-gray-600 transition-all hover:bg-gray-50 active:bg-gray-100"
-          >
-            <MailIcon className="size-5 stroke-[1.8] text-gray-500" />
-            <span className="flex-1 font-medium">دعوتنامه‌ها</span>
-            {pendingCount > 0 && (
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
-                {pendingCount > 9 ? '9+' : pendingCount}
-              </span>
-            )}
-          </button>
-
           <button
             onClick={logoutHandler}
             disabled={isLogoutLoading}
