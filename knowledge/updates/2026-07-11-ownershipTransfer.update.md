@@ -40,6 +40,13 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
   when there are no incoming transfers; otherwise one card per transfer with **Accept**
   (behind an `AlertDialog` confirm → `window.location.reload()` so the whole app re-reads
   the new ownership) and **Reject** (revalidates the list via `mutate`).
+- **`components/Settings/PendingTransferNotice.tsx`** — owner recovery. Uses
+  `useActiveTransfer(workspaceId)`; renders nothing unless the owner has a live outgoing
+  transfer. Shows a status-aware notice (`pending_otp` → "you still owe the OTP" /
+  `pending_acceptance` → "sent to {name}, awaiting acceptance") and a **Cancel** button
+  (behind an `AlertDialog` confirm) that calls `POST .../:transferId/cancel`, then
+  revalidates. This closes the abandon/expire dead-end — an owner who mistypes or closes
+  the OTP step can cancel and retry immediately instead of waiting out the 48h expiry.
 - **`app/(Console)/workspace/page.tsx`** — renders `<IncomingTransferBanner />` at the top;
   adds an **owner-only** transfer button (gate is `activeWorkspace.ownerId === userId`
   only — unlike delete, transfer **is** allowed for personal workspaces); renders
@@ -49,8 +56,11 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
 
 - New: `types/ownershipTransfer.ts`, `hooks/useIncomingTransfers.ts`,
   `hooks/useActiveTransfer.ts`, `components/Settings/TransferOwnershipDialog.tsx`,
-  `components/Settings/IncomingTransferBanner.tsx`.
-- Modified: `app/(Console)/workspace/page.tsx` (button + banner + dialog + state).
+  `components/Settings/IncomingTransferBanner.tsx`,
+  `components/Settings/PendingTransferNotice.tsx`.
+- Modified: `app/(Console)/workspace/page.tsx` (button + banner + pending-notice + dialog +
+  state; the dialog's `onCompleted` also revalidates the active-transfer SWR key so the
+  notice appears immediately).
 - i18n: `Settings.OwnershipTransfer` namespace + `Settings.Workspace.transfer_ownership_button`
   in `messages/fa.json` (+ `en.json` mirror); 13 new keys in `messages/fa/ErrorCodes.json`
   (+ `en/ErrorCodes.json`) covering every code the backend can return
@@ -74,7 +84,10 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
 
 ## Notes / follow-ups
 
-- There is currently **no cancel button** for a pending transfer, though the backend
-  exposes `POST /workspaces/:id/ownership-transfer/:id/cancel`. Not in the design's
-  frontend scope; an owner aborts today only by letting the request expire. Candidate
-  follow-up (pair it with `useActiveTransfer`, which is already built).
+- The owner **cancel** affordance (`PendingTransferNotice`) was added after final review
+  flagged the abandon/expire dead-end — an owner can now cancel a pending transfer in-app
+  and retry immediately. (The OTP itself still expires after 10 min while the transfer row
+  lives 48h; cancelling is the way to restart after an OTP expiry, since re-initiating a
+  second live transfer returns `TRANSFER_ALREADY_ACTIVE`.)
+- No OTP **resend** endpoint yet — after a 10-min OTP expiry the owner cancels and
+  re-initiates rather than resending. Possible future refinement.
