@@ -1233,7 +1233,14 @@
       "accept_confirm_description": "By accepting, you will become the owner of this workspace and all its data.",
       "accept_success": "Ownership transferred successfully",
       "reject_success": "Request rejected",
-      "action_error": "Error performing the action"
+      "action_error": "Error performing the action",
+      "pending_notice_otp": "You have an open transfer request waiting for a verification code.",
+      "pending_notice_acceptance": "A transfer request was sent to {name} and is waiting for acceptance.",
+      "cancel_pending": "Cancel transfer request",
+      "cancel_confirm_title": "Cancel Ownership Transfer",
+      "cancel_confirm_description": "The current transfer request will be canceled. You can try again later.",
+      "cancel_success": "Transfer request canceled",
+      "cancel_error": "Error canceling the request"
     },
     "Invitations": {
       "title": "My Invitations",

@@ -10,12 +10,14 @@ import { TeamManager } from '@/components/Settings/TeamManager';
 import { WorkspaceDeleteDialog } from '@/components/Settings/WorkspaceDeleteDialog';
 import { TransferOwnershipDialog } from '@/components/Settings/TransferOwnershipDialog';
 import { IncomingTransferBanner } from '@/components/Settings/IncomingTransferBanner';
+import { PendingTransferNotice } from '@/components/Settings/PendingTransferNotice';
 import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherDialog';
 import { useInvitations } from '@/hooks/useInvitations';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import api from '@/hooks/swr/api-client';
 import { toast } from 'sonner';
+import { mutate as globalMutate } from 'swr';
 import {
   Avatar,
   AvatarFallback,
@@ -256,6 +258,10 @@ export default function WorkspacePage() {
                   {tWorkspace('transfer_ownership_button')}
                 </Button>
               )}
+
+              {activeWorkspace && activeWorkspace.ownerId === userId && (
+                <PendingTransferNotice workspaceId={activeWorkspace.id} onChange={() => mutate()} />
+              )}
             </div>
           )}
 
@@ -290,7 +296,10 @@ export default function WorkspacePage() {
           isOpen={isTransferOpen}
           onClose={() => setIsTransferOpen(false)}
           workspaceId={activeWorkspace.id}
-          onCompleted={() => mutate()}
+          onCompleted={() => {
+            mutate();
+            globalMutate(`/workspaces/${activeWorkspace.id}/ownership-transfer/active`);
+          }}
         />
       )}
     </div>

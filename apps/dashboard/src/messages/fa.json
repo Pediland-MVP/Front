@@ -1280,7 +1280,14 @@
       "accept_confirm_description": "با پذیرش، شما مالک این فضای کاری و همه‌ی داده‌های آن می‌شوید.",
       "accept_success": "مالکیت با موفقیت منتقل شد",
       "reject_success": "درخواست رد شد",
-      "action_error": "خطا در انجام عملیات"
+      "action_error": "خطا در انجام عملیات",
+      "pending_notice_otp": "شما یک درخواست انتقال باز دارید که منتظر ورود کد تایید است.",
+      "pending_notice_acceptance": "درخواست انتقال به {name} ارسال شده و منتظر پذیرش است.",
+      "cancel_pending": "لغو درخواست انتقال",
+      "cancel_confirm_title": "لغو انتقال مالکیت",
+      "cancel_confirm_description": "درخواست انتقال فعلی لغو می‌شود. می‌توانید بعداً دوباره تلاش کنید.",
+      "cancel_success": "درخواست انتقال لغو شد",
+      "cancel_error": "خطا در لغو درخواست"
     },
     "Invitations": {
       "title": "دعوت‌نامه‌های من",
