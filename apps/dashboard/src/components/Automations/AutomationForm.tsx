@@ -6,6 +6,7 @@ import {
 } from '@/constants/automationContent.enum';
 import { ButtonTypeEnum } from '@/types/buttons.enum';
 import api from '@/hooks/swr/api-client';
+import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { useI18nZodErrors } from '@/hooks/useI18nZodErrors';
 import useUser from '@/hooks/useUser';
 import { cn } from '@/lib/utils';
@@ -99,6 +100,23 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       reminders: [],
     },
   });
+
+  const { defaults: automationDefaults } = useAutomationDefaults(!id);
+
+  useEffect(() => {
+    if (id || !automationDefaults) return;
+
+    const dirty = form.formState.dirtyFields;
+    if (automationDefaults.commentStartText && !dirty.commentStartText) {
+      form.setValue('commentStartText', automationDefaults.commentStartText);
+    }
+    if (automationDefaults.commentStartTitle && !dirty.commentStartTitle) {
+      form.setValue('commentStartTitle', automationDefaults.commentStartTitle);
+    }
+    if (automationDefaults.followCheckMessage && !dirty.followCheckMessage) {
+      form.setValue('followCheckMessage', automationDefaults.followCheckMessage);
+    }
+  }, [automationDefaults, id]);
 
   useEffect(() => {
     if (!automation) {
@@ -306,15 +324,16 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     }
 
     if (!values.commentStartText) {
-      values.commentStartText = t('comment_start_text');
+      values.commentStartText = automationDefaults?.commentStartText || t('comment_start_text');
     }
 
     if (!values.commentStartTitle) {
-      values.commentStartTitle = t('comment_start_title');
+      values.commentStartTitle = automationDefaults?.commentStartTitle || t('comment_start_title');
     }
 
     if (!values.followCheckMessage) {
-      values.followCheckMessage = t('follow_check_message');
+      values.followCheckMessage =
+        automationDefaults?.followCheckMessage || t('follow_check_message');
     }
 
     setIsSubmitting(true);
