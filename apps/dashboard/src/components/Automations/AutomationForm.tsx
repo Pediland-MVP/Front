@@ -83,7 +83,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     mode: 'onSubmit',
     reValidateMode: 'onChange',
     defaultValues: {
-      instagramId: filterSelectedIds[0] ?? '',
+      instagramIds: filterSelectedIds.length ? filterSelectedIds : [],
       conditionType: ConditionTypesEnum.EQUAL,
       isNoCondition: false,
       commentStartText: t('comment_start_text'),
@@ -217,6 +217,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     };
     form.reset({
       ...transformedAutomation,
+      instagramIds:
+        automation.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
       ...(transformedAutomation.reminders?.length > 0 && {
         isRemindersEnabled: true,
       }),
@@ -340,12 +342,10 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
     console.log('Submited values', JSON.stringify(values, undefined, ' '));
 
-    const { instagramId, ...payload } = values;
-
     await api({
       method: id ? 'PATCH' : 'POST',
-      url: id ? `/contentCycle/${instagramId}/${id}` : `/contentCycle?instagramId=${instagramId}`,
-      data: payload,
+      url: id ? `/contentCycle/${id}` : `/contentCycle`,
+      data: values,
     })
       .then((res) => {
         toast.success(id ? t('Toast.updated') : t('Toast.created'));
@@ -401,7 +401,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 className="grid gap-3.5"
               >
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <InstagramSelectField disabled={!!id} />
+                  <InstagramSelectField />
                   <SeperateLine />
 
                   <Conditions control={form.control} getValues={form.getValues} />
