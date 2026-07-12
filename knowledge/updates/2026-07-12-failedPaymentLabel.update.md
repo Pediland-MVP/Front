@@ -27,7 +27,13 @@ Rules can now use e.g. `failedPayments >= 3`.
 
 ## Verification
 
-- `pnpm --filter admin test -- "src/labels/"` (Back) — all label suites pass.
+- `pnpm --filter admin test -- "src/labels/"` (Back) — 11/11 suites, 102/102
+  tests pass.
 - `nest build` (Back, admin app) — clean.
-- Field appears in `GET /labels/fields` catalog and in the admin rule
-  builder's field dropdown.
+- `pnpm --filter admin exec tsc --noEmit` (Front) — 0 new errors.
+- Statically traced end-to-end: `failedPayments` is in `LABEL_FIELDS`, has a
+  registry entry, and `getFieldCatalog()` iterates `LABEL_FIELDS` so it will
+  auto-surface in `GET /labels/fields` and the rule builder's field dropdown.
+- **Not yet done — pending before release:** a live check (start the admin
+  API against a real DB, confirm `failedPayments` in the `GET /labels/fields`
+  response, save a `failedPayments >= 1` rule in the rule builder UI).
