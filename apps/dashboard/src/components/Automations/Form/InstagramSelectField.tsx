@@ -67,7 +67,7 @@ export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
                       disabled && 'cursor-not-allowed opacity-60',
                     )}
                   >
-                    <SelectedAccounts accounts={selectedAccounts} />
+                    <SelectedAccounts accounts={selectedAccounts} t={t} />
                     {!disabled && (
                       <ChevronDownIcon
                         className={cn(
@@ -126,9 +126,17 @@ export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
   );
 }
 
-function SelectedAccounts({ accounts }: { accounts: InstagramNamespace.Account[] }) {
+function SelectedAccounts({
+  accounts,
+  t,
+}: {
+  accounts: InstagramNamespace.Account[];
+  t: ReturnType<typeof useTranslations>;
+}) {
   if (accounts.length === 0) {
-    return <span className="text-muted-foreground text-[13px]">انتخاب اکانت...</span>;
+    return (
+      <span className="text-muted-foreground text-[13px]">{t('select_account_placeholder')}</span>
+    );
   }
 
   if (accounts.length === 1) {

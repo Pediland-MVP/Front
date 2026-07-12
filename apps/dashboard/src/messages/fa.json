@@ -293,6 +293,7 @@
   },
   "Automations": {
     "instagram_account": "اکانت اینستاگرام",
+    "select_account_placeholder": "انتخاب اکانت...",
     "add_automation": "ایجاد پیام خودکار",
     "add_title": "جزئیات پیام",
     "add": "افزودن",

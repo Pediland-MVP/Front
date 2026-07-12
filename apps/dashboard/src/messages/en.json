@@ -396,6 +396,7 @@
   },
   "Automations": {
     "instagram_account": "Instagram Account",
+    "select_account_placeholder": "Select account...",
     "add_automation": "Create Automation",
     "add_title": "Message Details",
     "add": "Add",
