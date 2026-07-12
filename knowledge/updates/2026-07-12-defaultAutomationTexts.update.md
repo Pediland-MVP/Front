@@ -32,9 +32,15 @@ is unaffected: its own saved values already populate the form.
 
 ## Verification
 
-- `npx tsc --noEmit` — no new errors.
-- Manual end-to-end: saved an automation with distinctive follower-guard/comment-start/
-  comment-reply text, confirmed a subsequent new automation prefilled with those exact values,
-  confirmed editing an existing automation is unaffected. See
+- `npx tsc --noEmit` per task, from a clean baseline — no new errors introduced by this
+  feature's files.
+- Each task's diff was independently reviewed (task-scoped spec + quality gate) against the
+  backend's actual `GET /contentCycle/automation-defaults` response shape.
+- **NOT yet done — manual end-to-end smoke test.** No interactive browser session was available
+  during implementation. Before release: run `core` + `dashboard` together locally, log in as a
+  test user with a connected Instagram page, save an automation with distinctive
+  follower-guard/comment-start/comment-reply text, confirm a subsequent new automation prefills
+  with those exact values, and confirm editing an existing automation is unaffected (workspace
+  defaults must not overwrite an automation's own saved values). See
   `Back/knowledge/updates/2026-07-12-defaultAutomationTexts.update.md` for the backend-side
   verification.
