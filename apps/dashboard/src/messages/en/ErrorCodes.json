@@ -16,6 +16,7 @@
     "CITY_NOT_FOUND": "City not found.",
     "COMMENT_NOT_FOUND": "Comment not found.",
     "CONDITION_IS_ALREADY_EXIST": "This condition is already used in another automation.",
+    "NO_CONDITION_ALREADY_EXISTS_FOR_POST": "A no-condition automation already exists for this post.",
     "CONNECTION_ERROR": "No internet connection.",
     "CONSENT_TEXT_REQUIRED": "Consent text is required.",
     "CONTENT_AUDIO_REQUIRED": "Content audio is required.",

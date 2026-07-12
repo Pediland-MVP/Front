@@ -1765,6 +1765,7 @@
     "FILE_NOT_FOUND": "The file could not be found",
     "CONDITION_EXISTS": "Condition is available",
     "CONDITION_IS_ALREADY_EXIST": "The condition you selected has already been used in another automation",
+    "NO_CONDITION_ALREADY_EXISTS_FOR_POST": "A no-condition automation already exists for this post",
     "CONSENT_TEXT_REQUIRED": "The text of satisfaction is required",
     "USER_DATA_TEXT_REQUIRED": "User data text is required",
     "REMINDER_TIME_REQUIRED": "Reminder time is required.",
