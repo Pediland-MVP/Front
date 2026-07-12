@@ -36,12 +36,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
     if (watch('justFollowers')) {
       // Set default values when enabling
       if (!watch('followMessage') && hasInstagram) {
-        setValue(
-          'followMessage',
-          t('follow_message', {
-            username: `@${user?.instagrams[0].username}`,
-          }),
-        );
+        setValue('followMessage', t('follow_message'));
       }
       if (!watch('followCheckMessage')) {
         setValue('followCheckMessage', t('follow_check_message'));

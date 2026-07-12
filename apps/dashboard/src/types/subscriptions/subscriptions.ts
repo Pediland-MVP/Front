@@ -28,6 +28,14 @@ interface PlanDuration {
   price: number;
   durationDays: number;
   planId: number;
+  plan?: Plan;
+}
+
+interface Plan {
+  id: number;
+  name: string;
+  minFollowers: number;
+  maxFollowers: number;
 }
 
 interface Meta {

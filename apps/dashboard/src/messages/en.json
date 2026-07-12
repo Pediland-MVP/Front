@@ -268,7 +268,8 @@
       "userName": "User Name",
       "instagramId": "Instagram ID",
       "messageCount": "Message Count",
-      "actions": "Actions"
+      "actions": "Actions",
+      "no_contacts": "No contacts found."
     },
     "Pagination": {
       "itemsCount": "Items Count",
@@ -673,7 +674,7 @@
     "JustFollowers": {
       "title": "Send Only If User Follows the Page",
       "message_text": "Message Text",
-      "follow_message": "To receive the message, you need to follow our page 🌟\n {username}",
+      "follow_message": "To receive the message, you need to follow our page 🌟",
       "follow_check_message": "Followed ✅",
       "helper": "If enabled, automation will only run if the user follows your page; otherwise the message below is shown.",
       "placeholder": "Example: Please follow our page to continue",
@@ -1304,11 +1305,14 @@
       "limitReached": "Maximum of 5 Instagram accounts can be connected",
       "page_promotion_alert": "This page has no active subscription; the Befroosh promotion is appended to automated messages.",
       "page_promotion_cta": "Buy a plan for this page",
-      "page_covered_by_plan": "Covered by the {plan} plan",
+      "page_covered_by_plan": "Remaining credit",
       "page_days_left": "{days} days left",
       "page_covered_by_credit": "This page is currently using the workspace's free credit",
       "buy_additional_cta": "Buy subscription",
-      "buy_additional_hint": "Activates automatically once the current plan ends"
+      "buy_additional_hint": "Activates automatically once the current plan ends",
+      "reserved_plan_info": "Reserved: {plan} plan ({days} days)",
+      "reserved_plans_count": "Reserves: {days} days",
+      "followers_count": "{count} followers"
     },
     "BankDetails": {
       "description": "Fill in the information below to enable the Card-to-Card payment method.",

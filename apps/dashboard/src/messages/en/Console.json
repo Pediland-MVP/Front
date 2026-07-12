@@ -15,6 +15,7 @@
       "products": "Products/Services",
       "remain": "Credit",
       "remainingDays": "Your remaining subscription days",
+      "remainingDaysCount": "{count} days",
       "renewal": "Renewal",
       "renewal_subsription": "Renewal",
       "sales": "Sales",

@@ -8,6 +8,7 @@ import { CircleIcon, InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
 import { CardContent } from '@/components/ui';
 import { CardSimple } from '../ui-custom/CardSimple';
 import { ProgressRadial } from '../Console/ProgressRadial';
+import { PlanTierBadge } from './PlanTierBadge';
 import { Subscription } from '@/types/subscriptions/subscriptions';
 import { Instagram } from '@/types/user';
 import { getRemainingDays } from '@/utils/subscription';
@@ -60,6 +61,8 @@ export const PageSubscriptionCard = ({ subscription, instagram }: PageSubscripti
               <span className={labelClass}>نوع اشتراک:</span>
               <span className="text-primary font-semibold">{subscription.planDuration.name}</span>
             </div>
+
+            <PlanTierBadge plan={subscription.planDuration.plan} className="mt-1" />
           </div>
           <ProgressRadial
             percentage={remainingDays}
