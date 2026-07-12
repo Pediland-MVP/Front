@@ -65,9 +65,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const isPromotion =
     user?.instagrams?.find((i) => i.id === selectedInstagramId)?.isPromotion ?? false;
 
-  const [isChoosingType, setIsChoosingType] = useState(
-    !!automationId || mode === AutomationContentModeEnum.REMINDER ? false : true,
-  );
+  const [isChoosingType, setIsChoosingType] = useState(false);
 
   const arrayName =
     mode === AutomationContentModeEnum.REMINDER ? 'reminders' : ('contents' as const);
@@ -160,15 +158,10 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       }),
     });
     console.log('After array: ', contents);
-    setIsChoosingType(false);
     clearErrors(arrayName);
   };
 
-  const onContentDeleted = (index: any) => {
-    if (index === 0) {
-      setIsChoosingType(true);
-    }
-  };
+  const onContentDeleted = () => {};
 
   return (
     <ContentsContext.Provider value={{ contents, updateContents, removeContents }}>
@@ -223,11 +216,15 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           )}
         </SortableContext>
 
-        {isChoosingType && <ChooseAutomationType onSelect={selectAutomationTypeHandler} />}
+        <ChooseAutomationType
+          open={isChoosingType}
+          onOpenChange={setIsChoosingType}
+          onSelect={selectAutomationTypeHandler}
+        />
 
         {arrayErrorMsg && <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>}
 
-        {contents.length > 0 && !isChoosingType && (
+        {!isChoosingType && (
           <div className="flex items-center justify-center">
             <Button
               variant="default"
