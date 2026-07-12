@@ -1287,7 +1287,14 @@
       "cancel_confirm_title": "لغو انتقال مالکیت",
       "cancel_confirm_description": "درخواست انتقال فعلی لغو می‌شود. می‌توانید بعداً دوباره تلاش کنید.",
       "cancel_success": "درخواست انتقال لغو شد",
-      "cancel_error": "خطا در لغو درخواست"
+      "cancel_error": "خطا در لغو درخواست",
+      "target_identifier": "ایمیل یا شماره موبایل کاربر مقصد",
+      "target_identifier_confirm": "تکرار ایمیل یا شماره موبایل",
+      "invalid_identifier": "ایمیل یا شماره موبایل نامعتبر است",
+      "identifier_mismatch": "دو مقدار وارد شده یکسان نیستند",
+      "recipient_label": "انتقال به",
+      "awaiting_acceptance_notice": "درخواست انتقال به {name} ارسال شده و منتظر پذیرش کاربر مقصد است.",
+      "close": "بستن"
     },
     "Invitations": {
       "title": "دعوت‌نامه‌های من",

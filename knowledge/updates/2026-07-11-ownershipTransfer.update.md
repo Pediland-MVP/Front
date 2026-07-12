@@ -12,7 +12,7 @@ A workspace **owner** had no UI to hand the workspace (and all its data) to anot
 dashboard needed:
 
 - an owner-only entry point on the workspace page,
-- a multi-step dialog (target mobile typed **twice** → choose mode → enter OTP),
+- a multi-step dialog (recipient **email or mobile** typed **twice** → choose mode → enter OTP),
 - a **stay** vs **leave** choice, with a warning before "transfer only" (stay), and
 - a banner for the **recipient** to accept or reject an incoming transfer.
 
@@ -29,13 +29,25 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
 - **`hooks/useActiveTransfer.ts`** — `useSWR('/workspaces/:id/ownership-transfer/active')`,
   unwraps `ResponseMessage.data`; returns `{ activeTransfer, isLoading, mutate }`.
   (Created for a future "owner sees pending status" affordance; not yet wired into a view.)
-- **`components/Settings/TransferOwnershipDialog.tsx`** — owner flow. Step `form`: mobile
-  typed twice (client-side `^09\d{9}$` + match check), a red **transfer-and-leave** button
-  and an outline **transfer-only** button; the transfer-only button opens an
-  `AlertDialog` warning ("you stay as a full-access admin, not the owner") before firing.
-  On `initiate` success → step `otp`: a 5-digit `InputOTP` that auto-submits on complete
-  and shows an SMS-vs-email toast based on the returned `channel`. Errors surface via
-  `t_ec(e.response.data.code)`.
+- **`components/Settings/TransferOwnershipDialog.tsx`** — owner flow, now
+  **resume-aware**. On open it reads `useActiveTransfer(workspaceId)`:
+  - **no active transfer** → step `form`: the recipient's **email OR mobile** typed
+    twice (client-side `isMobile || isEmail` + case-insensitive match check), a red
+    **transfer-and-leave** button and an outline **transfer-only** button (which opens
+    an `AlertDialog` "you stay as a full-access admin, not the owner" warning first).
+    The field is a **text** input; a local `p2eKeepText` maps Persian/Arabic digits to
+    latin **without stripping letters** (the shared `onInputP2EHandler` strips every
+    non-digit and would destroy an email). Sends `targetIdentifier` /
+    `targetIdentifierConfirm`.
+  - **`pending_otp`** → jumps straight to step `otp` with the transfer preset, so an
+    owner who left during the OTP step finishes it instead of hitting
+    `TRANSFER_ALREADY_ACTIVE`.
+  - **`pending_acceptance`** → step `sent`: a read-only "already sent to {name},
+    awaiting acceptance" panel (no doomed re-initiate).
+  - The `otp` and `sent` steps show a **recipient block** (`recipient_label` + name +
+    mobile and/or email) — from `activeTransfer.toUser` on resume, or the typed
+    identifier on a fresh initiate. Step `otp` is a 5-digit `InputOTP` that auto-submits
+    and toasts SMS-vs-email by the returned `channel`. Errors via `t_ec(...)`.
 - **`components/Settings/IncomingTransferBanner.tsx`** — recipient flow. Renders nothing
   when there are no incoming transfers; otherwise one card per transfer with **Accept**
   (behind an `AlertDialog` confirm → `window.location.reload()` so the whole app re-reads

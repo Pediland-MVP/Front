@@ -12,5 +12,5 @@ export interface ActiveTransfer {
   id: string;
   mode: OwnershipTransferMode;
   status: string;
-  toUser?: { firstname: string; lastname: string; mobile: string };
+  toUser?: { firstname: string; lastname: string; mobile: string; email?: string | null };
 }
