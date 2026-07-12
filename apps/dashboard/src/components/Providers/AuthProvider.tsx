@@ -13,6 +13,7 @@ interface AuthProviderProps {
 }
 
 type PendingInvitation = { id: string };
+type PendingTransfer = { id: string };
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isAllowed, setIsAllowed] = useState(false);
@@ -50,6 +51,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     : (pendingRaw?.data ?? []);
   const hasPendingInvitations = pendingInvitations.length > 0;
 
+  const dismissedTransfer =
+    typeof window !== 'undefined' && sessionStorage.getItem('ownershipTransferDismissed') === '1';
+
+  // Ownership transfer recipients must already be registered, verified users
+  // (see backend `initiate()`), so this only applies to connect-flow (State B)
+  // users — not the onboarding form, which runs before a name/account exists.
+  const shouldFetchTransfers = isInConnectFlow && !dismissedTransfer;
+
+  const { data: transferRaw, isLoading: isTransferLoading } = useSWR<
+    { data?: PendingTransfer[] } | PendingTransfer[]
+  >(shouldFetchTransfers ? '/ownership-transfers/incoming' : null, fetcher);
+
+  const pendingTransfers: PendingTransfer[] = Array.isArray(transferRaw)
+    ? transferRaw
+    : (transferRaw?.data ?? []);
+  const hasPendingTransfers = pendingTransfers.length > 0;
+
   // When the pathname changes, immediately drop the isAllowed flag so we never
   // render a previous page's content while the new route's redirect decision is
   // being computed.
@@ -63,6 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Hold routing decision while we're still fetching pending invitations
     // to avoid a brief redirect before we know whether to show the picker.
     if (shouldFetchInvitations && isPendingLoading) return;
+    if (shouldFetchTransfers && isTransferLoading) return;
 
     if (error) {
       if (error.response?.status >= 500) {
@@ -83,6 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isAuthRoute = pathname.startsWith('/auth');
     const isOnboardingPage = pathname === '/auth/onboarding';
     const isInvitationsPickerPage = pathname === '/auth/onboarding/invitations';
+    const isTransferPickerPage = pathname === '/auth/onboarding/transfer';
     const isConnectPage = pathname === '/connect';
     const isInstagramPage = pathname === '/settings/instagram';
 
@@ -90,25 +110,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const onboardingDestination =
       hasPendingInvitations && !dismissed ? '/auth/onboarding/invitations' : '/auth/onboarding';
 
+    // Where should a connect-flow user with a pending ownership-transfer land?
+    // `returnTo=/connect` ensures the page's Skip button routes back here.
+    const connectFlowTransferDest =
+      isInConnectFlow && hasPendingTransfers && !dismissedTransfer
+        ? '/auth/onboarding/transfer?returnTo=/connect'
+        : null;
+
     // Where should a connect-flow user with pending invitations land?
     // `returnTo=/connect` ensures the picker's Skip button routes back here.
+    // Invitations take priority over an ownership-transfer request; once
+    // cleared, connectFlowTransferDest is checked next (see below).
     const connectFlowPickerDest =
       isInConnectFlow && hasPendingInvitations && !dismissed
         ? '/auth/onboarding/invitations?returnTo=/connect'
         : null;
+
+    const connectFlowPendingDest = connectFlowPickerDest ?? connectFlowTransferDest;
 
     if (isAuthRoute) {
       if (isOnboardingPage && !isOnboarding && isInConnectFlow) {
         // User just completed onboarding but hasn't connected Instagram yet.
         // Redirect them to the connect page instead of letting them stay on
         // the onboarding form they already submitted.
-        redirect = connectFlowPickerDest ?? '/connect';
+        redirect = connectFlowPendingDest ?? '/connect';
       } else if (isOnboardingPage && !isOnboarding && !isInConnectFlow) {
         // A fully set-up user (has Instagram) has no business on the onboarding form.
         redirect = '/';
-      } else if (isInvitationsPickerPage && !isOnboarding && !isInConnectFlow) {
-        // Picker is only reachable during onboarding OR the connect-flow State B.
-        // Any other authenticated user who lands here gets sent home.
+      } else if (
+        (isInvitationsPickerPage || isTransferPickerPage) &&
+        !isOnboarding &&
+        !isInConnectFlow
+      ) {
+        // These pages are only reachable during onboarding OR the connect-flow
+        // State B. Any other authenticated user who lands here gets sent home.
         redirect = '/';
       } else if (isOnboardingPage && isOnboarding && hasPendingInvitations && !dismissed) {
         // Onboarding user landed on the plain form but has pending invitations
@@ -116,16 +151,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         redirect = '/auth/onboarding/invitations';
       } else if (isInvitationsPickerPage && !hasPendingInvitations) {
         // Picker with no invitations to show — send user to the right next step.
-        redirect = isOnboarding ? '/auth/onboarding' : '/connect';
+        redirect = isOnboarding ? '/auth/onboarding' : (connectFlowTransferDest ?? '/connect');
+      } else if (isTransferPickerPage && !hasPendingTransfers) {
+        // Transfer page with nothing to show — transfer flow is connect-only.
+        redirect = '/connect';
       } else {
         setIsAllowed(true);
       }
     } else if (isConnectPage) {
       if (isOnboarding) {
         redirect = onboardingDestination;
-      } else if (connectFlowPickerDest) {
-        // State B: connect-flow user has unreviewed pending invitations.
-        redirect = connectFlowPickerDest;
+      } else if (connectFlowPendingDest) {
+        // State B: connect-flow user has an unreviewed pending invitation or
+        // ownership-transfer request.
+        redirect = connectFlowPendingDest;
       } else {
         setIsAllowed(true);
       }
@@ -136,7 +175,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (isInstagramPage && searchParams.get('code')) {
           setIsAllowed(true);
         } else {
-          redirect = '/connect';
+          redirect = connectFlowPendingDest ?? '/connect';
         }
       } else {
         setIsAllowed(true);
@@ -163,12 +202,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isInConnectFlow,
     isUserLoading,
     isPendingLoading,
+    isTransferLoading,
     shouldFetchInvitations,
+    shouldFetchTransfers,
     pathname,
     searchParams,
     hasInstagram,
     hasPendingInvitations,
+    hasPendingTransfers,
     dismissed,
+    dismissedTransfer,
     error,
     router,
   ]);

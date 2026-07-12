@@ -95,6 +95,22 @@
     "ZIBAL_ERROR": "Zibal payment gateway error.",
     "ZIBAL_VERIFY_ERROR": "Zibal verification error.",
     "WORKSPACE_ID_REQUIRED": "Workspace is required.",
-    "PERMISSION_DENIED": "You do not have permission to perform this action."
+    "PERMISSION_DENIED": "You do not have permission to perform this action.",
+
+    "USER_NOT_VERIFIED": "The target user is not verified.",
+    "TARGET_USER_NOT_FOUND": "No user was found with this mobile number.",
+    "TRANSFER_MOBILE_MISMATCH": "The two mobile numbers do not match.",
+    "CANNOT_TRANSFER_TO_SELF": "You cannot transfer ownership to yourself.",
+    "TRANSFER_ALREADY_ACTIVE": "A transfer request is already in progress for this workspace.",
+    "TRANSFER_NOT_FOUND": "Transfer request not found.",
+    "TRANSFER_NOT_PENDING": "This transfer request is not in the right state.",
+    "TRANSFER_EXPIRED": "The transfer request has expired.",
+    "TRANSFER_NOT_RECIPIENT": "Only the target user can respond to this request.",
+    "WORKSPACE_TRANSFER_NOT_OWNER": "Only the workspace owner can transfer ownership.",
+    "OWNER_CHANGED": "The workspace ownership has changed since the request was made.",
+    "OWNER_NO_OTP_CHANNEL": "You have no mobile number or email to receive the code.",
+    "INVALID_OTP": "The code entered is incorrect.",
+    "OTP_RESEND_COOLDOWN": "Please wait a moment before requesting a new code.",
+    "OTP_SEND_FAILED": "Could not send the verification code. Please try again."
   }
 }

@@ -133,6 +133,22 @@
     "ALREADY_WORKSPACE_MEMBER": "شما قبلاً عضو این فضای کاری هستید",
     "INVALID_GOOGLE_TOKEN": "توکن گوگل نامعتبر است",
     "WORKSPACE_ID_REQUIRED": "انتخاب فضای کاری الزامی است.",
-    "PERMISSION_DENIED": "دسترسی شما به این بخش محدود شده است."
+    "PERMISSION_DENIED": "دسترسی شما به این بخش محدود شده است.",
+
+    "USER_NOT_VERIFIED": "کاربر مقصد تایید نشده است.",
+    "TARGET_USER_NOT_FOUND": "کاربری با این شماره موبایل یافت نشد.",
+    "TRANSFER_MOBILE_MISMATCH": "دو شماره موبایل یکسان نیستند.",
+    "CANNOT_TRANSFER_TO_SELF": "نمی‌توانید مالکیت را به خودتان منتقل کنید.",
+    "TRANSFER_ALREADY_ACTIVE": "یک درخواست انتقال برای این فضای کاری در جریان است.",
+    "TRANSFER_NOT_FOUND": "درخواست انتقال یافت نشد.",
+    "TRANSFER_NOT_PENDING": "این درخواست انتقال در وضعیت مناسب نیست.",
+    "TRANSFER_EXPIRED": "درخواست انتقال منقضی شده است.",
+    "TRANSFER_NOT_RECIPIENT": "فقط کاربر مقصد می‌تواند این درخواست را پاسخ دهد.",
+    "WORKSPACE_TRANSFER_NOT_OWNER": "فقط مالک فضای کاری می‌تواند مالکیت را منتقل کند.",
+    "OWNER_CHANGED": "مالکیت فضای کاری از زمان ثبت درخواست تغییر کرده است.",
+    "OWNER_NO_OTP_CHANNEL": "شماره موبایل یا ایمیلی برای دریافت کد ندارید.",
+    "INVALID_OTP": "کد وارد شده صحیح نیست.",
+    "OTP_RESEND_COOLDOWN": "برای ارسال دوباره کد کمی صبر کنید.",
+    "OTP_SEND_FAILED": "ارسال کد تایید ناموفق بود. لطفاً دوباره تلاش کنید."
   }
 }

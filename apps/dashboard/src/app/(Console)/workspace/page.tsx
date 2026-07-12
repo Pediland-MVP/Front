@@ -8,12 +8,16 @@ import { Pencil, Plus } from 'lucide-react';
 import { WorkspaceForm } from '@/components/Settings/WorkspaceForm';
 import { TeamManager } from '@/components/Settings/TeamManager';
 import { WorkspaceDeleteDialog } from '@/components/Settings/WorkspaceDeleteDialog';
+import { TransferOwnershipDialog } from '@/components/Settings/TransferOwnershipDialog';
+import { IncomingTransferBanner } from '@/components/Settings/IncomingTransferBanner';
+import { PendingTransferNotice } from '@/components/Settings/PendingTransferNotice';
 import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherDialog';
 import { useInvitations } from '@/hooks/useInvitations';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import api from '@/hooks/swr/api-client';
 import { toast } from 'sonner';
+import { mutate as globalMutate } from 'swr';
 import {
   Avatar,
   AvatarFallback,
@@ -43,6 +47,7 @@ export default function WorkspacePage() {
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
 
@@ -105,6 +110,8 @@ export default function WorkspacePage() {
   return (
     <div className="_workspace-page flex-1 overflow-y-auto rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
       <div className="animate-in fade-in flex h-full flex-col space-y-6 px-4 py-5 duration-300">
+        <IncomingTransferBanner />
+
         {/* Invitation Banner */}
         {!isInvitationsLoading && pendingCount > 0 && (
           <Link
@@ -240,6 +247,21 @@ export default function WorkspacePage() {
               <p className="text-muted-foreground mt-1 max-w-sm text-xs">
                 {tWorkspace('card_description')}
               </p>
+
+              {activeWorkspace && activeWorkspace.ownerId === userId && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => setIsTransferOpen(true)}
+                >
+                  {tWorkspace('transfer_ownership_button')}
+                </Button>
+              )}
+
+              {activeWorkspace && activeWorkspace.ownerId === userId && (
+                <PendingTransferNotice workspaceId={activeWorkspace.id} onChange={() => mutate()} />
+              )}
             </div>
           )}
 
@@ -268,6 +290,18 @@ export default function WorkspacePage() {
         onConfirm={handleDeleteWorkspace}
         isDeleting={isDeleting}
       />
+
+      {activeWorkspace && (
+        <TransferOwnershipDialog
+          isOpen={isTransferOpen}
+          onClose={() => setIsTransferOpen(false)}
+          workspaceId={activeWorkspace.id}
+          onCompleted={() => {
+            mutate();
+            globalMutate(`/workspaces/${activeWorkspace.id}/ownership-transfer/active`);
+          }}
+        />
+      )}
     </div>
   );
 }
