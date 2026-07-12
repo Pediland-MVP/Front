@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import api from '@/hooks/swr/api-client';
 import { useIncomingTransfers } from '@/hooks/useIncomingTransfers';
+import { isSafeInternalPath } from '@/utils/safeInternalPath';
 import { IncomingTransfer } from '@/types/ownershipTransfer';
 import { Button } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
@@ -31,14 +32,11 @@ export default function OnboardingTransferPage() {
 
   // returnTo is set by AuthProvider so Skip/accept sends the user back to
   // /connect rather than some other page they weren't actually on. It comes
-  // from the URL query string, so only accept a same-origin relative path —
-  // otherwise a crafted link (?returnTo=https://evil.example) could redirect
-  // the user off-site.
+  // from the URL query string, so only accept a same-origin relative path
+  // (see isSafeInternalPath) — otherwise a crafted link could redirect the
+  // user off-site.
   const rawReturnTo = searchParams.get('returnTo');
-  const returnTo =
-    rawReturnTo && rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//')
-      ? rawReturnTo
-      : '/connect';
+  const returnTo = isSafeInternalPath(rawReturnTo) ? rawReturnTo : '/connect';
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);

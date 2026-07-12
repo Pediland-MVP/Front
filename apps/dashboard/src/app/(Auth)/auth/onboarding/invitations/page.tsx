@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, Input } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+import { isSafeInternalPath } from '@/utils/safeInternalPath';
 
 type Invitation = {
   id: string;
@@ -34,16 +35,15 @@ export default function OnboardingInvitationsPage() {
 
   // returnTo is set by AuthProvider when routing a connect-flow (State B) user here
   // so that Skip sends them back to /connect rather than /auth/onboarding. It comes
-  // from the URL query string, so only accept a same-origin relative path —
-  // otherwise a crafted link (?returnTo=https://evil.example) could redirect
-  // the user off-site.
+  // from the URL query string, so only accept a same-origin relative path
+  // (see isSafeInternalPath) — otherwise a crafted link could redirect the
+  // user off-site.
   const rawReturnTo = searchParams.get('returnTo');
-  const returnTo =
-    rawReturnTo && rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//')
-      ? rawReturnTo
-      : isOnboarding
-        ? '/auth/onboarding'
-        : '/connect';
+  const returnTo = isSafeInternalPath(rawReturnTo)
+    ? rawReturnTo
+    : isOnboarding
+      ? '/auth/onboarding'
+      : '/connect';
 
   const { data, isLoading } = useSWR<{ data?: Invitation[] } | Invitation[]>(
     '/invitations/pending',
