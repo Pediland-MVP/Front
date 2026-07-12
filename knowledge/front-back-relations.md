@@ -54,6 +54,7 @@ These `ERROR_CODES` translation keys live in `apps/dashboard/src/messages/fa/Err
 | Frontend | Backend Endpoint | Notes |
 |---|---|---|
 | `apps/dashboard/src/app/(Console)/automations/*` | `GET /content-cycles` | Returns the user's automation list. **As of per-page subscription binding**, each automation now includes a per-page subscription context so the UI can warn when an automation's assigned page has no subscription. |
+| `apps/dashboard/src/hooks/useAutomationDefaults.ts` | `GET /contentCycle/automation-defaults` | Returns this workspace's remembered automation default texts (`followMessage`, `followCheckMessage`, `commentStartText`, `commentStartTitle`, `commentTexts`), each `null` if never saved. Used by `AutomationForm.tsx`, `JustFollowers.tsx`, `CommentReplies.tsx` to prefill new automations, falling back to the original i18n/hardcoded defaults when null. |
 
 ---
 
