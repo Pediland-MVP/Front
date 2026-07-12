@@ -12,7 +12,7 @@ import { useMemo, useState } from 'react';
 
 // TODO: Refactor Types & Schemas
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
-import { hasOnlyFreeCredit } from '@/utils/subscription';
+import { hasOnlyFreeCredit, getRemainingDays } from '@/utils/subscription';
 
 import {
   ArrowsClockwiseIcon,
@@ -153,32 +153,6 @@ export const UserDetailsCard = () => {
                 </span>
               </div> */}
 
-            {!hasOnlyFreeCredit(subscriptions) && (
-              <div className="mb-1 flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <span className="text-muted-foreground">{t('remain')}:</span>
-                  <span
-                    className={cn(
-                      'text-primary',
-                      !hasActiveSubscription && 'text-muted-foreground',
-                    )}
-                  >
-                    {currentSubscription?.type === 'credit'
-                      ? `${currentSubscription?.credit} ${t('message')}`
-                      : `${totalRemainingDays} ${t('day')}`}
-                  </span>
-                </div>
-                <Button
-                  size="sm"
-                  className="gap- h-auto"
-                  onClick={() => router.push('/settings/subscription')}
-                >
-                  {t('renewal')}
-                  {/* {hasActiveSubscription ? "جـزئـیـات" : "خرید اشتراک"} */}
-                </Button>
-              </div>
-            )}
-
             <div className="mb-1 flex items-center gap-1">
               <span className="text-muted-foreground">
                 {userData?.mobile ? t('mobile') : t('email')}:
@@ -259,31 +233,54 @@ export const UserDetailsCard = () => {
             )}
 
             <div className="mb-2 flex flex-col gap-1">
-              {sortedInstagrams.map((ig) => (
-                <div key={ig.id} className="flex items-center gap-1">
-                  <span
-                    className={cn(
-                      'text-muted-foreground',
-                      !ig.isIgTokenValid && 'text-destructive',
+              {sortedInstagrams.map((ig) => {
+                const pageSubscription = subscriptions?.find(
+                  (sub) =>
+                    sub.instagramId === ig.id && sub.status === SubscriptionStatusEnum.ACTIVE,
+                );
+
+                const reservedSubs =
+                  subscriptions?.filter(
+                    (sub) =>
+                      sub.instagramId === ig.id && sub.status === SubscriptionStatusEnum.RESERVED,
+                  ) || [];
+
+                const totalReservedDays = reservedSubs.reduce(
+                  (sum, sub) => sum + (sub.planDuration?.durationDays ?? 0),
+                  0,
+                );
+
+                const remainingDays = pageSubscription
+                  ? getRemainingDays(pageSubscription.expire)
+                  : 0;
+                const totalDays = remainingDays + totalReservedDays;
+
+                return (
+                  <div key={ig.id} className="flex items-center gap-1">
+                    <span
+                      className={cn(
+                        'text-muted-foreground shrink-0',
+                        !ig.isIgTokenValid && 'text-destructive',
+                      )}
+                    >
+                      {t('remainingDaysCount', { count: totalDays })}
+                    </span>
+                    <span
+                      className={cn(
+                        'min-w-0 flex-1 truncate font-semibold tracking-wider',
+                        !ig.isIgTokenValid && 'text-destructive',
+                      )}
+                    >
+                      {ig.username}
+                    </span>
+                    {ig.isIgTokenValid ? (
+                      <PlugsConnectedIcon size={20} weight="duotone" className="text-green-600" />
+                    ) : (
+                      <PlugsIcon size={20} weight="duotone" className="text-destructive" />
                     )}
-                  >
-                    {t('instagram')}:
-                  </span>
-                  <span
-                    className={cn(
-                      'line-clamp-1 flex-1 font-semibold tracking-wider',
-                      !ig.isIgTokenValid && 'text-destructive',
-                    )}
-                  >
-                    {ig.username}
-                  </span>
-                  {ig.isIgTokenValid ? (
-                    <PlugsConnectedIcon size={20} weight="duotone" className="text-green-600" />
-                  ) : (
-                    <PlugsIcon size={20} weight="duotone" className="text-destructive" />
-                  )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
 
             {!hasOnlyFreeCredit(subscriptions) && (

@@ -17,6 +17,7 @@
     "CITY_NOT_FOUND": "شهر پیدا نشد",
     "COMMENT_NOT_FOUND": "کامنت پیدا نشد",
     "CONDITION_IS_ALREADY_EXIST": "شرطی که انتخاب کردید قبلا در اتومیشن دیگری استفاده شده است",
+    "NO_CONDITION_ALREADY_EXISTS_FOR_POST": "یک اتومیشن بدون شرط قبلاً برای این پست ایجاد شده است",
     "CONNECTION_ERROR": "اتصال به اینترنت برقرار نشد",
     "CONSENT_TEXT_REQUIRED": "متن رضایت الزامی است",
     "CONTENT_AUDIO_REQUIRED": "صدای محتوا الزامی است",

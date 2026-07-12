@@ -7,6 +7,7 @@ import { Alert, AlertDescription, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { getActiveCreditSubscription, getRemainingDays } from '@/utils/subscription';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
 interface PageCoverageBadgeProps {
   instagramId: string;
@@ -20,41 +21,47 @@ export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
   const { subscriptions } = useSubscriptionStore();
 
   const pageSubscription = subscriptions?.find(
-    (sub) => sub.instagramId === instagramId && sub.status === 'active',
+    (sub) => sub.instagramId === instagramId && sub.status === SubscriptionStatusEnum.ACTIVE,
+  );
+
+  const reservedSubs =
+    subscriptions?.filter(
+      (sub) => sub.instagramId === instagramId && sub.status === SubscriptionStatusEnum.RESERVED,
+    ) || [];
+
+  const totalReservedDays = reservedSubs.reduce(
+    (sum, sub) => sum + (sub.planDuration?.durationDays ?? 0),
+    0,
   );
 
   const buyAdditionalRow = (
-    <div className="mt-1.5 flex items-center justify-between gap-2">
-      <span className="text-muted-foreground min-w-0 flex-1 truncate text-[11px]">
-        {t('buy_additional_hint')}
-      </span>
-      <Button
-        size="sm"
-        variant="outline"
-        className="h-7 shrink-0 px-2 text-xs"
-        onClick={() => router.push(`/settings/subscription?instagramId=${instagramId}`)}
-      >
-        {t('buy_additional_cta')}
-      </Button>
-    </div>
+    <Button
+      size="sm"
+      variant="outline"
+      className="mt-1.5 h-7 w-full text-xs"
+      onClick={() => router.push(`/settings/subscription?instagramId=${instagramId}`)}
+    >
+      {t('buy_additional_cta')}
+    </Button>
   );
 
   if (pageSubscription) {
     const remainingDays = getRemainingDays(pageSubscription.expire);
-    const isExpiringSoon = remainingDays < EXPIRING_SOON_THRESHOLD_DAYS;
+    const totalDays = remainingDays + totalReservedDays;
+    const isExpiringSoon = totalDays < EXPIRING_SOON_THRESHOLD_DAYS;
 
     return (
       <div className="mt-2">
         <div
           className={cn(
-            'flex items-center gap-2 rounded-md border px-2.5 py-2',
+            'flex items-center gap-2 rounded-md border p-1.5 ps-1.5 pe-2.5',
             isExpiringSoon ? 'border-red-600/20 bg-red-50' : 'border-green-600/20 bg-green-50',
           )}
         >
           {isExpiringSoon ? (
-            <WarningCircleIcon size={18} weight="fill" className="shrink-0 text-red-600" />
+            <WarningCircleIcon size={18} weight="fill" className="ms-1 shrink-0 text-red-600" />
           ) : (
-            <SealCheckIcon size={18} weight="fill" className="shrink-0 text-green-600" />
+            <SealCheckIcon size={18} weight="fill" className="ms-1 shrink-0 text-green-600" />
           )}
           <span
             className={cn(
@@ -62,18 +69,17 @@ export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
               isExpiringSoon ? 'text-red-800' : 'text-green-800',
             )}
           >
-            {t('page_covered_by_plan', { plan: pageSubscription.planDuration.name })}
+            {t('page_days_left', { days: totalDays })}
           </span>
-          <span
-            className={cn(
-              'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium',
-              isExpiringSoon ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700',
-            )}
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 shrink-0 border-slate-200 bg-white px-2.5 text-xs text-slate-700 hover:bg-slate-50"
+            onClick={() => router.push(`/settings/subscription?instagramId=${instagramId}`)}
           >
-            {t('page_days_left', { days: remainingDays })}
-          </span>
+            {t('buy_additional_cta')}
+          </Button>
         </div>
-        {buyAdditionalRow}
       </div>
     );
   }
@@ -90,6 +96,10 @@ export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
         {buyAdditionalRow}
       </div>
     );
+  }
+
+  if (reservedSubs.length > 0) {
+    return <div className="mt-2">{buyAdditionalRow}</div>;
   }
 
   return null;

@@ -33,21 +33,10 @@ export function InstagramFilter({ selectedIds, onChange }: InstagramFilterProps)
     }
   }, [accounts]);
 
-  if (isLoading || !accounts || accounts.length === 0) return null;
-
-  // Single account: non-interactive display
-  if (accounts.length === 1) {
-    const acc = accounts[0];
-    return (
-      <div className="flex w-fit items-center gap-2.5 rounded-xl border border-violet-200 bg-white px-4 py-2 shadow-sm">
-        <AccountAvatar account={acc} size={28} />
-        <div className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold text-gray-800">{acc.name}</span>
-          <span className="text-xs text-gray-400">@{acc.username ?? ''}</span>
-        </div>
-      </div>
-    );
-  }
+  // Hide the filter entirely when the workspace has 0 or 1 Instagram account.
+  // The auto-select effect above still runs, so the single account stays selected
+  // and each page keeps loading its data — just without any filter UI.
+  if (isLoading || !accounts || accounts.length <= 1) return null;
 
   const toggle = (id: string) => {
     if (selectedIds.includes(id)) {

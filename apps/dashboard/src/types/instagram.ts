@@ -21,6 +21,7 @@ export namespace InstagramNamespace {
     profilePictureUrl: string | null;
     isIgTokenValid: boolean;
     isPromotion: boolean;
+    followersCount?: number;
   }
 
   export interface Page {

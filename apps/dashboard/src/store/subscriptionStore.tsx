@@ -119,7 +119,7 @@ export function useSubscriptionData() {
 
   const { isAuthenticated } = useUser();
 
-  const subscriptionApiUrl = `${API_URL}/subscriptions?page=1&limit=5&status=active,reserved,expired`;
+  const subscriptionApiUrl = `${API_URL}/subscriptions?page=1&limit=100&status=active,reserved,expired`;
   const { data: subscriptionsData, isLoading: isSubscriptionsLoading } =
     useSWRImmutable<SubscriptionNamespace.GET.Subscriptions>(
       isAuthenticated ? subscriptionApiUrl : null,

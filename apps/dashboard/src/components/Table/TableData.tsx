@@ -45,6 +45,7 @@ interface DataTableProps<TData, TValue> {
   serverSorting?: boolean; // Whether sorting is controlled externally
   onSortingChange?: (sorting: SortingState) => void; // External sorting state update
   sortingState?: SortingState; // External sorting state
+  emptyMessage?: string; // Optional override for the empty-state text (defaults to DataTable.noResults)
 }
 
 // Safe wrapper for rendering table cells and headers
@@ -78,6 +79,7 @@ export function DataTable<TData, TValue>({
   serverSorting,
   onSortingChange,
   sortingState,
+  emptyMessage,
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations('DataTable');
 
@@ -172,7 +174,7 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <Table dir="rtl">
+    <Table dir="rtl" className="h-full">
       <colgroup>
         {table
           .getHeaderGroups()
@@ -238,9 +240,13 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-14">
-                <div className="text-muted-foreground px-2">{t('noResults')}</div>
+            <TableRow className="h-full hover:bg-inherit">
+              <TableCell colSpan={columns.length} className="h-full">
+                <div className="flex h-full min-h-40 items-center justify-center">
+                  <span className="text-muted-foreground px-2">
+                    {emptyMessage ?? t('noResults')}
+                  </span>
+                </div>
               </TableCell>
             </TableRow>
           )}

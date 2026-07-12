@@ -5,6 +5,7 @@ import { toContact } from '@/lib/mappers/contact';
 import type { PageMeta, Paginated } from '@/types/api';
 import type { ContactWire } from '@/types/contact';
 import { Table } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -15,6 +16,7 @@ import { DataTable } from '../Table/TableData';
 import { TablePagination } from '../Table/TablePagination';
 
 export const ContactsList = ({ search }: { search: string }) => {
+  const t = useTranslations('Contacts.List');
   const { can } = usePermissions();
   const hasViewPermission = can('lead:view');
   // Dialog
@@ -86,7 +88,7 @@ export const ContactsList = ({ search }: { search: string }) => {
   const blockControls = isLoading || !!error;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-4">
       <InstagramFilter selectedIds={selectedInstagramIds} onChange={setSelectedInstagramIds} />
       <ContactDetailsDialog open={open} setOpen={setOpen} contactId={contactId} />
 
@@ -100,6 +102,7 @@ export const ContactsList = ({ search }: { search: string }) => {
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
         tableInstanceRef={setTableInstance}
+        emptyMessage={t('no_contacts')}
       />
 
       <TablePagination
