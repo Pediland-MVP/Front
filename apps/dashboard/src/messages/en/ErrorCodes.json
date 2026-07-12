@@ -109,6 +109,8 @@
     "WORKSPACE_TRANSFER_NOT_OWNER": "Only the workspace owner can transfer ownership.",
     "OWNER_CHANGED": "The workspace ownership has changed since the request was made.",
     "OWNER_NO_OTP_CHANNEL": "You have no mobile number or email to receive the code.",
-    "INVALID_OTP": "The code entered is incorrect."
+    "INVALID_OTP": "The code entered is incorrect.",
+    "OTP_RESEND_COOLDOWN": "Please wait a moment before requesting a new code.",
+    "OTP_SEND_FAILED": "Could not send the verification code. Please try again."
   }
 }

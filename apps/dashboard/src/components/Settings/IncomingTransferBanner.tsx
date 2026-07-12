@@ -88,10 +88,16 @@ export function IncomingTransferBanner() {
                 <AlertDialogDescription>{t('accept_confirm_description')}</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogAction onClick={() => act(transfer, 'accept')}>
+                <AlertDialogAction
+                  disabled={busyId === transfer.id}
+                  onClick={() => act(transfer, 'accept')}
+                >
                   {t('accept')}
                 </AlertDialogAction>
-                <AlertDialogCancel onClick={() => setConfirmId(null)}>
+                <AlertDialogCancel
+                  disabled={busyId === transfer.id}
+                  onClick={() => setConfirmId(null)}
+                >
                   {t('cancel')}
                 </AlertDialogCancel>
               </AlertDialogFooter>

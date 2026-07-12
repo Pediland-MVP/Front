@@ -48,6 +48,10 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
     mobile and/or email) — from `activeTransfer.toUser` on resume, or the typed
     identifier on a fresh initiate. Step `otp` is a 5-digit `InputOTP` that auto-submits
     and toasts SMS-vs-email by the returned `channel`. Errors via `t_ec(...)`.
+  - The `otp` step also has a **resend** button (`POST .../:transferId/resend-otp`) with a
+    **60s countdown** (`resend_in {seconds}` → `resend_otp`) mirroring the backend cooldown.
+    On expiry the confirm call returns `OTP_EXPIRED` ("code expired — resend") instead of the
+    misleading `INVALID_OTP`; a too-soon resend returns `OTP_RESEND_COOLDOWN` (429).
 - **`components/Settings/IncomingTransferBanner.tsx`** — recipient flow. Renders nothing
   when there are no incoming transfers; otherwise one card per transfer with **Accept**
   (behind an `AlertDialog` confirm → `window.location.reload()` so the whole app re-reads
@@ -58,7 +62,7 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
   `pending_acceptance` → "sent to {name}, awaiting acceptance") and a **Cancel** button
   (behind an `AlertDialog` confirm) that calls `POST .../:transferId/cancel`, then
   revalidates. This closes the abandon/expire dead-end — an owner who mistypes or closes
-  the OTP step can cancel and retry immediately instead of waiting out the 48h expiry.
+  the OTP step can cancel and retry immediately instead of waiting out the 72h expiry.
 - **`app/(Console)/workspace/page.tsx`** — renders `<IncomingTransferBanner />` at the top;
   adds an **owner-only** transfer button (gate is `activeWorkspace.ownerId === userId`
   only — unlike delete, transfer **is** allowed for personal workspaces); renders
@@ -97,9 +101,37 @@ inputs follow the Persian-first digit-safe convention (`onInput={onInputP2EHandl
 ## Notes / follow-ups
 
 - The owner **cancel** affordance (`PendingTransferNotice`) was added after final review
-  flagged the abandon/expire dead-end — an owner can now cancel a pending transfer in-app
-  and retry immediately. (The OTP itself still expires after 10 min while the transfer row
-  lives 48h; cancelling is the way to restart after an OTP expiry, since re-initiating a
-  second live transfer returns `TRANSFER_ALREADY_ACTIVE`.)
-- No OTP **resend** endpoint yet — after a 10-min OTP expiry the owner cancels and
-  re-initiates rather than resending. Possible future refinement.
+  flagged the abandon/expire dead-end — an owner can also cancel a pending transfer in-app
+  and start over. (The OTP expires after 10 min while the transfer row lives 72h.)
+- **OTP resend** (added 2026-07-12) closes the primary dead-end: while a `pending_otp`
+  transfer is alive, the owner refreshes the code in-place via the resend button instead of
+  cancelling + re-initiating. 60s cooldown, `OTP_EXPIRED` vs `INVALID_OTP` messaging. Cancel
+  remains the escape hatch for "wrong recipient" / start-over.
+- **Connect-flow entry point** (added 2026-07-12): a recipient who is registered and
+  verified but hasn't connected Instagram yet (State B, locked on `/connect`) previously had
+  no way to see an incoming ownership-transfer request — `IncomingTransferBanner` only
+  renders inside `/workspace`, which they can't reach. Mirrors the existing pending-invitation
+  picker pattern exactly:
+  - New page `app/(Auth)/auth/onboarding/transfer/page.tsx` — lists incoming transfers
+    (`useIncomingTransfers`) with the same Accept (`AlertDialog` confirm →
+    `window.location.href = '/'` for a full re-evaluation) / Reject actions as
+    `IncomingTransferBanner`, plus a Skip button that sets
+    `sessionStorage['ownershipTransferDismissed'] = '1'` and returns to `?returnTo`
+    (defaults to `/connect`).
+  - `components/Providers/AuthProvider.tsx` — added a second SWR fetch
+    (`/ownership-transfers/incoming`, connect-flow-only, gated the same way as the
+    invitations fetch) and a `connectFlowTransferDest` alongside the existing
+    `connectFlowPickerDest`. Combined into `connectFlowPendingDest =
+    connectFlowPickerDest ?? connectFlowTransferDest` — **pending invitations still take
+    priority** over a pending transfer; a connect-flow user is bounced to
+    `/auth/onboarding/transfer` only once there are no more pending invitations to review.
+    Every place that previously redirected a connect-flow user straight to `/connect` now
+    redirects to `connectFlowPendingDest ?? '/connect'` instead.
+  - i18n: new `Auth.OwnershipTransfer` namespace (`title`, `description`, `no_transfers`,
+    `continue`) in `messages/fa/Auth.json` + `en/Auth.json`; the page reuses
+    `Settings.OwnershipTransfer` for the per-card accept/reject copy so there's a single
+    source of truth for that wording.
+  - No backend change needed — `GET /ownership-transfers/incoming` and the
+    accept/reject endpoints were already workspace-context-free (`AuthGuard('jwt') +
+    UserVerifyGuard` only, no workspace permission guard), so they work identically for a
+    user with no active workspace selected.
