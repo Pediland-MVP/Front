@@ -30,8 +30,15 @@ export default function OnboardingTransferPage() {
   const { transfers, isLoading, mutate } = useIncomingTransfers();
 
   // returnTo is set by AuthProvider so Skip/accept sends the user back to
-  // /connect rather than some other page they weren't actually on.
-  const returnTo = searchParams.get('returnTo') ?? '/connect';
+  // /connect rather than some other page they weren't actually on. It comes
+  // from the URL query string, so only accept a same-origin relative path —
+  // otherwise a crafted link (?returnTo=https://evil.example) could redirect
+  // the user off-site.
+  const rawReturnTo = searchParams.get('returnTo');
+  const returnTo =
+    rawReturnTo && rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//')
+      ? rawReturnTo
+      : '/connect';
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);

@@ -33,8 +33,17 @@ export default function OnboardingInvitationsPage() {
   const { mutate: globalMutate } = useSWRConfig();
 
   // returnTo is set by AuthProvider when routing a connect-flow (State B) user here
-  // so that Skip sends them back to /connect rather than /auth/onboarding.
-  const returnTo = searchParams.get('returnTo') ?? (isOnboarding ? '/auth/onboarding' : '/connect');
+  // so that Skip sends them back to /connect rather than /auth/onboarding. It comes
+  // from the URL query string, so only accept a same-origin relative path —
+  // otherwise a crafted link (?returnTo=https://evil.example) could redirect
+  // the user off-site.
+  const rawReturnTo = searchParams.get('returnTo');
+  const returnTo =
+    rawReturnTo && rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//')
+      ? rawReturnTo
+      : isOnboarding
+        ? '/auth/onboarding'
+        : '/connect';
 
   const { data, isLoading } = useSWR<{ data?: Invitation[] } | Invitation[]>(
     '/invitations/pending',

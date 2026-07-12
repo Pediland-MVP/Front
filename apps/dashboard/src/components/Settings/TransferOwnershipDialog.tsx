@@ -127,10 +127,14 @@ export function TransferOwnershipDialog({ isOpen, onClose, workspaceId, onComple
   useEffect(() => {
     if (!isOpen || !activeTransfer) return;
     if (activeTransfer.toUser) {
+      // activeTransfer.toUser carries the matched user's full profile, not
+      // just the channel the owner typed to initiate — mask both before
+      // display so resuming the dialog can't be used to read out a contact
+      // detail (e.g. a mobile number) the owner never actually entered.
       setRecipient({
         name: `${activeTransfer.toUser.firstname} ${activeTransfer.toUser.lastname}`.trim(),
-        mobile: activeTransfer.toUser.mobile,
-        email: activeTransfer.toUser.email ?? undefined,
+        mobile: activeTransfer.toUser.mobile ? maskMobile(activeTransfer.toUser.mobile) : undefined,
+        email: activeTransfer.toUser.email ? maskEmail(activeTransfer.toUser.email) : undefined,
       });
     }
     if (activeTransfer.status === 'pending_otp') {
