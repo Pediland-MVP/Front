@@ -316,7 +316,8 @@
       "status": "وضعیت",
       "submittedInstagramFollowersCount": "فالوور اعلام‌شده",
       "followersCount": "فالوور اینستاگرام",
-      "workspaces": "تعداد فضای کاری"
+      "workspaces": "تعداد فضای کاری",
+      "failedPayments": "پرداخت‌های ناموفق"
     },
     "operators": {
       "gt": "بزرگ‌تر از",
