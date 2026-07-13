@@ -47,6 +47,7 @@ import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 
 type AutomationFormProps = {
   id?: string;
+  copyFromId?: string;
 };
 
 /**
@@ -54,7 +55,7 @@ type AutomationFormProps = {
  * @param {id} Object This param is optional and specify the component is for Update or Create`
  * @returns
  */
-export const AutomationForm = ({ id }: AutomationFormProps) => {
+export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
   useI18nZodErrors();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -67,7 +68,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
   const isUUID = (s?: string) =>
     !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
-  const key = isUUID(id) ? `/contentCycle/${id}` : null;
+  const sourceId = id ?? copyFromId;
+  const key = isUUID(sourceId) ? `/contentCycle/${sourceId}` : null;
 
   const {
     data: automation,
@@ -75,7 +77,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     error: automationError,
     mutate: automationMutate,
   } = useSWRImmutable(key, {
-    revalidateOnMount: !!id,
+    revalidateOnMount: !!sourceId,
   });
 
   const form = useForm<AutomationFormType>({
@@ -226,7 +228,11 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       isReplyCommentEnabled: !!automation.commentTexts?.length,
       isCommentContentTargetEnabled: !!automation.instagramPost,
     });
-  }, [automation, form]);
+
+    if (copyFromId) {
+      toast.success(t('Toast.copied'));
+    }
+  }, [automation, form, copyFromId, t]);
 
   const onSubmit = async (values: AutomationFormType) => {
     let haveError: boolean = false;
