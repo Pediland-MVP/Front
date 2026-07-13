@@ -2,20 +2,34 @@
 
 import { useTranslations } from 'next-intl';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { LayoutSettings } from '@/components/Layout/LayoutSettings';
 import { ChoosePlan } from '@/components/Settings/ChoosePlan';
 import { SubscriptionsDetails } from '@/components/Settings/SubscriptionsDetails';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 export default function SubscriptionPage() {
   const t = useTranslations('Subscription');
   const t_ec = useTranslations('ERROR_CODES');
   const { can, isLoading } = usePermissions();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const instagramId = searchParams.get('instagramId') ?? undefined;
+  const isWebView = useIsWebView();
+  // useIsWebView() defaults to `true` (fail-closed) until its own effect resolves — without this
+  // gate, a real browser would briefly evaluate the block below before the check corrects itself.
+  const [hasCheckedWebView, setHasCheckedWebView] = useState(false);
+  useEffect(() => setHasCheckedWebView(true), []);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (hasCheckedWebView && isWebView) {
+      router.replace('/');
+    }
+  }, [hasCheckedWebView, isWebView, router]);
+
+  if (isLoading || !hasCheckedWebView || isWebView) {
     return (
       <LayoutSettings className="_subscription-page">
         <div className="flex h-[200px] items-center justify-center">

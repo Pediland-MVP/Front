@@ -39,3 +39,10 @@ export function hasOnlyFreeCredit(subs?: Subscription[]): boolean {
     Boolean(getActiveCreditSubscription(subs)) && getActiveNonCreditSubscriptions(subs).length === 0
   );
 }
+
+// True whenever any active credit-type subscription exists, regardless of a coexisting paid sub —
+// broader than hasOnlyFreeCredit; used to hide credit-specific display (not whole components) for
+// the Android WebView app, since a coexisting paid sub still has legitimate non-credit info to show.
+export function hasActiveCreditSubscription(subs?: Subscription[]): boolean {
+  return Boolean(getActiveCreditSubscription(subs));
+}
