@@ -150,7 +150,8 @@ function SelectedAccounts({
 
   // A single selected account gets a plain, larger-avatar treatment (no pill
   // background needed when there's nothing to visually group); two or more get
-  // wrapped pill chips so they read as a set. Same loop either way.
+  // wrapped pill chips so they read as a set. Same loop either way — the avatar
+  // stays a flex sibling of the text so truncation only ever applies to the text.
   const isSingle = accounts.length === 1;
 
   return (
@@ -161,13 +162,16 @@ function SelectedAccounts({
         <span
           key={account.id}
           className={cn(
-            isSingle
-              ? 'truncate font-medium text-gray-800'
-              : 'inline-flex items-center gap-1 rounded-full bg-violet-50 py-0.5 ps-0.5 pe-2 text-xs font-medium text-violet-700',
+            'flex min-w-0 items-center gap-1',
+            isSingle && 'gap-2',
+            !isSingle &&
+              'rounded-full bg-violet-50 py-0.5 ps-0.5 pe-2 text-xs font-medium text-violet-700',
           )}
         >
-          <AccountAvatar account={account} size={isSingle ? 24 : 18} />@
-          {account.username ?? account.name}
+          <AccountAvatar account={account} size={isSingle ? 24 : 18} />
+          <span className={cn(isSingle && 'truncate font-medium text-gray-800')}>
+            @{account.username ?? account.name}
+          </span>
         </span>
       ))}
     </span>

@@ -79,6 +79,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
       const instagramIds = getValues('instagramIds') ?? [];
       if (instagramIds.length > 1) {
         toast.error(t_err('specific_post_requires_single_instagram'));
+        setValue('isCommentContentTargetEnabled', false);
       } else {
         setValue('isCommentContentTargetEnabled', true);
       }
