@@ -200,7 +200,8 @@
     }
   },
   "customErrors": {
-    "notFound": "صفحه مورد نظر یافت نشد"
+    "notFound": "صفحه مورد نظر یافت نشد",
+    "postScopeSingleInstagram": "برای هدف‌گذاری یک پست خاص، فقط یک اکانت اینستاگرام را انتخاب کنید"
   },
   "form": {
     "startDate": {
@@ -293,6 +294,9 @@
   },
   "Automations": {
     "instagram_account": "اکانت اینستاگرام",
+    "select_instagrams": "انتخاب پیج‌ها",
+    "instagram_locked_for_post_target": "چون این اتوماسیون برای یک پست خاص تنظیم شده، فقط همین یک پیج قابل انتخاب است",
+    "select_account_placeholder": "انتخاب اکانت...",
     "add_automation": "ایجاد پیام خودکار",
     "add_title": "جزئیات پیام",
     "add": "افزودن",
@@ -355,7 +359,8 @@
       "with": "با",
       "word_or_phrase": "نوع شرط: ",
       "Errors": {
-        "required": "مقدار شرط را وارد کنید"
+        "required": "مقدار شرط را وارد کنید",
+        "specific_post_requires_single_instagram": "برای هدف‌گذاری یک پست خاص، فقط یک اکانت اینستاگرام را انتخاب کنید"
       },
       "Help": {
         "title": "مشخص کردن شرط برای فعال سازی اتوماسیون",
@@ -610,7 +615,8 @@
       "note": "ارسال پیام در دایرکت محدودیت ندارد. اما جواب کامنت در دایرکت ۷۵۰ عدد و پاسخ به کامنت ۱۰۰ عدد در ساعت ارسال میشود و بقیه به‌صورت خودکار در ساعت‌های بعدی ارسال می‌گردد.",
       "Errors": {
         "selection_required": "پست مورد نظر خود را انتخاب کنید.",
-        "targetpost_required_for_noconition": "وقتی نوع شرط “هرچیزی کامنت شود” باشد، حتما باید یک پست خاص را انتخاب کنید"
+        "targetpost_required_for_noconition": "وقتی نوع شرط “هرچیزی کامنت شود” باشد، حتما باید یک پست خاص را انتخاب کنید",
+        "specific_post_requires_single_instagram": "برای هدف‌گذاری یک پست خاص، فقط یک اکانت اینستاگرام را انتخاب کنید"
       }
     },
     "InstagramPostSelectDialog": {
@@ -734,7 +740,8 @@
       "delete": "حذف",
       "direct": "دایرکت",
       "comment": "کامنت",
-      "specified_post": "پست خاص"
+      "specified_post": "پست خاص",
+      "no_instagram_assigned": "بدون اینستاگرام متصل"
     },
     "ContentPromotionDialog": {
       "title": "ارتقا حساب کاربری",
@@ -1816,6 +1823,9 @@
     "ORDER_CARD_TO_CARD_NOT_UPLOADED": "رسید کارت به کارت آپلود نشده است",
     "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام یافت نشد",
     "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
+  },
+  "ERROR_CODES": {
+    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "این اتوماسیون به یک پست خاص متصل است و فقط می‌تواند یک پیج داشته باشد"
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",

@@ -58,8 +58,24 @@ export const InstagramPostSelectDialog = ({
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
+    // A specific post always belongs to exactly one Instagram account. This dialog
+    // is only reachable when the form has locked the selection down to one
+    // (TargetPostComment.tsx / Conditions.tsx / InstagramSelectField.tsx enforce
+    // that), but don't just grab instagramIds[0] and trust the invariant silently —
+    // if it's ever violated, fall back to the account-agnostic endpoint rather than
+    // fetching an arbitrary, possibly-wrong account's posts.
+    const selectedInstagramIds = getValues('instagramIds') ?? [];
+    const instagramId = selectedInstagramIds.length === 1 ? selectedInstagramIds[0] : undefined;
+    const params = new URLSearchParams();
+    if (afterCursor) {
+      params.set('after', afterCursor);
+    }
+    if (instagramId) {
+      params.set('instagramId', instagramId);
+    }
+    const queryString = params.toString();
     await api
-      .get(afterCursor ? `${API_URL}/posts/pure?after=${afterCursor}` : `${API_URL}/posts/pure`)
+      .get(`${API_URL}/posts/pure${queryString ? `?${queryString}` : ''}`)
       .then(async (res) => {
         setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
         setHasMore(res.data.media.data.length === PAGE_SIZE);

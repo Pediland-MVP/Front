@@ -120,7 +120,8 @@
     }
   },
   "customErrors": {
-    "notFound": "Page not found."
+    "notFound": "Page not found.",
+    "postScopeSingleInstagram": "To target a specific post, select only one Instagram account"
   },
   "Components": {
     "LogoText": {
@@ -396,6 +397,9 @@
   },
   "Automations": {
     "instagram_account": "Instagram Account",
+    "select_instagrams": "Select Pages",
+    "instagram_locked_for_post_target": "This automation targets a specific post, so only this one account can be selected",
+    "select_account_placeholder": "Select account...",
     "add_automation": "Create Automation",
     "add_title": "Message Details",
     "add": "Add",
@@ -455,7 +459,8 @@
       "with": "with",
       "word_or_phrase": "a word or phrase",
       "Errors": {
-        "required": "Enter a value for the condition"
+        "required": "Enter a value for the condition",
+        "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account"
       },
       "Help": {
         "title": "Define Conditions for Automation",
@@ -601,7 +606,8 @@
       "title": "Limit Comments to a Specific Post",
       "note": "According to Instagram rules, up to 750 DM comment replies are allowed per hour; extras will be queued.",
       "Errors": {
-        "selection_required": "Select a post."
+        "selection_required": "Select a post.",
+        "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account."
       }
     },
     "InstagramPostSelectDialog": {
@@ -725,7 +731,8 @@
       "delete": "Delete",
       "direct": "Direct",
       "comment": "Comment",
-      "specified_post": "Specific Post"
+      "specified_post": "Specific Post",
+      "no_instagram_assigned": "No Instagram assigned"
     },
     "ContentPromotionDialog": {
       "title": "Upgrade Account",
@@ -1825,6 +1832,7 @@
     "ORDER_PENDING_NOT_FOUND": "Pending order not found",
     "SHOP_NOT_FOUND": "The store could not be found",
     "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "Content must have at least one product",
+    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "This automation is linked to a specific post and can only have one page",
     "ERROR_CODES": "Unknown error",
     "ERROR_CODES_DESCRIPTION": "Please try again later",
     "CHECK_CONNECTION": "Check your connection"
