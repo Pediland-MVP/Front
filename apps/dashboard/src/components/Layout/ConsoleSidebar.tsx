@@ -9,6 +9,7 @@ import {
   AddressBookIcon,
   BriefcaseIcon,
   CubeIcon,
+  DownloadSimpleIcon,
   GraduationCap,
   HouseIcon,
   InstagramLogoIcon,
@@ -116,6 +117,12 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       title: t('settings'),
       url: '/settings',
       icon: SlidersIcon,
+      isActive: true,
+    },
+    {
+      title: t('installApp'),
+      url: '/install',
+      icon: DownloadSimpleIcon,
       isActive: true,
     },
     {
