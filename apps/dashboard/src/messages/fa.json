@@ -736,7 +736,8 @@
       "delete": "حذف",
       "direct": "دایرکت",
       "comment": "کامنت",
-      "specified_post": "پست خاص"
+      "specified_post": "پست خاص",
+      "no_instagram_assigned": "بدون اینستاگرام متصل"
     },
     "ContentPromotionDialog": {
       "title": "ارتقا حساب کاربری",

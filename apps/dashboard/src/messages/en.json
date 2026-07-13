@@ -727,7 +727,8 @@
       "delete": "Delete",
       "direct": "Direct",
       "comment": "Comment",
-      "specified_post": "Specific Post"
+      "specified_post": "Specific Post",
+      "no_instagram_assigned": "No Instagram assigned"
     },
     "ContentPromotionDialog": {
       "title": "Upgrade Account",

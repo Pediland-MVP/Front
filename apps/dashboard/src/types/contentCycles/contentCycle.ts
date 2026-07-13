@@ -21,6 +21,19 @@ export interface IContentCycle {
   reminders: Content[];
   reminderTime: number;
   getUserData: GetUserData;
+  instagramLinks: InstagramLink[];
+}
+
+interface InstagramLink {
+  instagramId: string;
+  instagram:
+    | {
+        id: string;
+        username: string | null | undefined;
+        name: string | null | undefined;
+      }
+    | null
+    | undefined;
 }
 
 interface Condition {
