@@ -11,7 +11,6 @@ import { OverallStats } from '@/types/stats';
 
 import { CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
-import { LoaderPulse } from '@/components/ui-custom/LoaderPulse';
 import {
   Select,
   SelectContent,
@@ -21,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { PlusCircleIcon } from '@phosphor-icons/react';
 import { ItemsStatisticCard } from './ItemsStatisticCard';
+import { DashboardStatsSkeleton } from './DashboardStats.skeleton';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -33,7 +33,7 @@ interface HomeItems {
 
 export const DashboardStats = () => {
   const t = useTranslations('Console.Dashboard');
-  const { can } = usePermissions();
+  const { can, isLoading: isPermissionsLoading } = usePermissions();
   const { user } = useUser();
 
   const instagrams = user?.instagrams ?? [];
@@ -66,38 +66,46 @@ export const DashboardStats = () => {
   const homeItems: HomeItems[] = [
     {
       title: t('automation'),
-      total: isStatsLoading ? <LoaderPulse /> : stats?.contentCycles?.count,
+      total: stats?.contentCycles?.count,
       icon: 'Lightning',
       link: '/automations',
     },
     {
       title: t('leads'),
-      total: isStatsLoading ? <LoaderPulse /> : stats?.leads?.count,
+      total: stats?.leads?.count,
       icon: 'AddressBook',
       link: '/contacts',
     },
     {
       title: isAccountView ? `${t('products')} *` : t('products'),
-      total: isStatsLoading ? <LoaderPulse /> : stats?.products?.count,
+      total: stats?.products?.count,
       icon: 'Cube',
       link: '/products',
     },
     {
       title: t('orders'),
-      total: isStatsLoading ? <LoaderPulse /> : stats?.sales?.count,
+      total: stats?.sales?.count,
       icon: 'ShoppingBag',
       link: '/orders',
     },
     {
       title: t('sales'),
-      total: isStatsLoading ? <LoaderPulse /> : rlsPriceFormat(stats?.sales?.total),
+      total: rlsPriceFormat(stats?.sales?.total),
       icon: 'Coins',
       link: '/orders',
     },
   ];
 
+  if (isPermissionsLoading) {
+    return <DashboardStatsSkeleton />;
+  }
+
   if (!canViewAnalytics) {
     return null;
+  }
+
+  if (isStatsLoading) {
+    return <DashboardStatsSkeleton />;
   }
 
   return (

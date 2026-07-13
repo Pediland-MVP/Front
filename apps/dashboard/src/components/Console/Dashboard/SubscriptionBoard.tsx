@@ -17,6 +17,7 @@ import { Alert, AlertTitle, Button, CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import { PlugsConnectedIcon, PlugsIcon } from '@phosphor-icons/react/dist/ssr';
 import { ProgressRadial } from '../ProgressRadial';
+import { SubscriptionBoardSkeleton } from './SubscriptionBoard.skeleton';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
@@ -72,7 +73,9 @@ export const SubscriptionBoard = () => {
 
   const instagramValid = user?.instagrams?.[0]?.isIgTokenValid;
 
-  if (isSubscriptionsLoading || hasOnlyFreeCredit(subscriptions)) return null;
+  if (isSubscriptionsLoading) return <SubscriptionBoardSkeleton />;
+
+  if (hasOnlyFreeCredit(subscriptions)) return null;
 
   // WebView never shows credit-type info, even mixed with a paid sub — but the rest of the board
   // (Instagram connection list, paid remaining days) must still render, so this only affects the radial.
