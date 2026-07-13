@@ -397,7 +397,7 @@ function LearnContent() {
 
           <h1 className="flex items-center gap-2.5 text-lg font-black text-slate-800 md:text-2xl">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-2xs md:h-10 md:w-10 md:rounded-xl">
-              <BookOpenIcon className="h-4.5 w-4.5 md:h-5 md:w-5 lg:h-6 lg:w-6" weight="duotone" />
+              <BookOpenIcon className="h-5 w-5 md:h-6 md:w-6" weight="duotone" />
             </div>
             <span className="pt-[1px] leading-normal">{t('title') || 'مرکز راهنما و آموزش'}</span>
           </h1>
