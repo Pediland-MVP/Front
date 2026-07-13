@@ -44,6 +44,27 @@ Reshaped the automation form, schema, and card around `instagramIds: string[]` /
 - Each of the 7 commits was independently reviewed and approved against the backend's actual reshaped `contentCycle` request/response shapes (verified against `Back`'s `ContentCycleController`/`ContentCycleService`, not just assumed).
 - **NOT yet done — manual end-to-end smoke test.** No interactive browser session was available during implementation. Before release: run `core` + `dashboard` together locally with a workspace that has 2+ connected Instagram pages, create an automation with multiple pages selected, verify the card shows all usernames joined; edit it down to 0 pages, verify the card falls back to "no instagram assigned" and the automation still exists (dormant, not deleted, matching the backend's disconnect-keeps-automation behavior); try enabling "target specific post" with 2+ pages selected and confirm the toast blocks it; disconnect a linked page from Settings and confirm the automation survives as dormant. See `Back/knowledge/updates/2026-07-12-automationWorkspaceOwnership.update.md` for the backend-side verification (119 core + 38 admin unit tests, migration up/down).
 
+### Task 22 — end-to-end verification (2026-07-13)
+
+- `pnpm --filter front exec tsc --noEmit` → 177 pre-existing errors project-wide, none
+  caused by or worsened by this feature. The 4 that keyword-matched "instagram"/
+  "contentcycle" were individually checked via `git blame` and confirmed pre-existing/
+  unrelated (a stale `likeDirect` field name in `LikeDirect.tsx`, a `bordered`/
+  `no-border` prop typo, a missing `LoadingLogo` barrel export, and an unrelated `Lead`
+  mapper gap in `contact.ts`) — none touch `instagramIds`/`instagramLinks`. Clean w.r.t.
+  this feature.
+- **Manual smoke test: still NOT performed, and this time for a concrete, verifiable
+  reason** — `apps/core` (the backend `dashboard` talks to) currently fails to build
+  (`npx nest build` in `Back/worktrees/automation-ownership/apps/core` → 11 errors). The
+  root cause is unrelated to this frontend work: 3 backend files
+  (`contentCycleContent.service.ts`, `contentCycleVitrin.service.ts`,
+  `vitrins.service.ts`) still query `ContentCycle` via a relation (`instagram`) that the
+  backend's own Task 2 removed. See
+  `Back/knowledge/updates/2026-07-12-automationWorkspaceOwnership.update.md`'s Task 22
+  entry and `Back/.superpowers/sdd/task-22-report.md` for the full finding. Until that
+  backend regression is fixed, no one can run `core` to smoke-test any dashboard flow,
+  automation-related or not.
+
 ## Pre-Existing Gap Noticed (Not Part of This Change)
 
 `fa.json`'s `ERROR_CODES` namespace was nearly empty before this change (this feature's key is effectively the first real entry) versus `en.json`'s ~40 existing entries — a pre-existing i18n backfill gap, unrelated to and out of scope for this feature.
