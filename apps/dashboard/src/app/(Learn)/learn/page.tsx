@@ -253,9 +253,9 @@ function LearnContent() {
   const handleCategoryClick = (catId: string) => {
     setCurrentPage(1);
     if (catId === 'all') {
-      router.push('/learn');
+      router.push(pathname);
     } else {
-      router.push(`/learn?category=${catId}`);
+      router.push(`${pathname}?category=${catId}`);
     }
   };
 
@@ -374,7 +374,7 @@ function LearnContent() {
       }}
       dir="rtl"
     >
-      {pathname === '/learn' && (
+      {!pathname.includes('/help') && (
         <div className="z-10 mb-4 flex w-full justify-end md:mb-6">
           <Button
             variant="ghost"
