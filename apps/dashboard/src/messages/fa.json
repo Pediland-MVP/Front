@@ -293,6 +293,8 @@
   },
   "Automations": {
     "instagram_account": "اکانت اینستاگرام",
+    "select_instagrams": "انتخاب پیج‌ها",
+    "select_at_least_one_instagram": "حداقل یک اکانت اینستاگرام انتخاب کنید",
     "select_account_placeholder": "انتخاب اکانت...",
     "add_automation": "ایجاد پیام خودکار",
     "add_title": "جزئیات پیام",
@@ -1819,6 +1821,9 @@
     "ORDER_CARD_TO_CARD_NOT_UPLOADED": "رسید کارت به کارت آپلود نشده است",
     "LEAD_INSTAGRAM_NOT_FOUND": "اینستاگرام یافت نشد",
     "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
+  },
+  "ERROR_CODES": {
+    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "این اتوماسیون به یک پست خاص متصل است و فقط می‌تواند یک پیج داشته باشد"
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",

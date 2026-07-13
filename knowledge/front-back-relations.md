@@ -51,10 +51,18 @@ These `ERROR_CODES` translation keys live in `apps/dashboard/src/messages/fa/Err
 
 ## Automations (Content Cycles)
 
+Automations are now workspace-owned and can target **multiple** Instagram accounts at once
+(`instagramIds[]`), reconciled server-side via a join table (`instagramLinks`).
+
 | Frontend | Backend Endpoint | Notes |
 |---|---|---|
-| `apps/dashboard/src/app/(Console)/automations/*` | `GET /content-cycles` | Returns the user's automation list. **As of per-page subscription binding**, each automation now includes a per-page subscription context so the UI can warn when an automation's assigned page has no subscription. |
-| `apps/dashboard/src/hooks/useAutomationDefaults.ts` | `GET /contentCycle/automation-defaults` | Returns this workspace's remembered automation default texts (`followMessage`, `followCheckMessage`, `commentStartText`, `commentStartTitle`, `commentTexts`), each `null` if never saved. Used by `AutomationForm.tsx`, `JustFollowers.tsx`, `CommentReplies.tsx` to prefill new automations, falling back to the original i18n/hardcoded defaults when null. |
+| `AutomationsCardList.tsx` (`apps/dashboard/src/app/(Console)/automations`) | `GET /contentCycle?page=&limit=&isDirect=&isComment=&haveInstagramPost=&instagramIds=` | List, filtered by zero-or-more `instagramIds` (repeated query param). Each item includes a per-page subscription context so the UI can warn when an automation's assigned page has no subscription. |
+| create — `AutomationForm.tsx` | `POST /contentCycle` (body `instagramIds: string[]`) | Creates an automation owned by the workspace, linked to the given Instagram accounts. |
+| edit — `AutomationForm.tsx` | `PATCH /contentCycle/:contentCycleId` (body `instagramIds: string[]`) | Reconciles `instagramLinks` (adds/removes) to match the submitted set. |
+| edit prefill — `AutomationForm.tsx` | `GET /contentCycle/:contentCycleId` | Returns the automation including `instagramLinks[].instagramId`, used to preselect the multi-select field. |
+| delete — `AutomationsCardList.tsx` | `DELETE /contentCycle/:contentCycleId` | Deletes one automation; other automations on shared Instagram accounts are unaffected. |
+| defaults — `apps/dashboard/src/hooks/useAutomationDefaults.ts` | `GET /contentCycle/automation-defaults` | Returns this workspace's remembered automation default texts (`followMessage`, `followCheckMessage`, `commentStartText`, `commentStartTitle`, `commentTexts`), each `null` if never saved — workspace-scoped, no `instagramId` param. Used by `AutomationForm.tsx`, `JustFollowers.tsx`, `CommentReplies.tsx` to prefill new automations, falling back to the original i18n/hardcoded defaults when null. |
+| post picker — `InstagramPostSelectDialog.tsx` (`components/Automations/Form`) | `GET /posts/pure?instagramId=` | Single-Instagram scoped: uses the *first* entry of the selected `instagramIds`. Post-scoped automations (`haveInstagramPost`) are constrained to exactly one Instagram account (`POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM`). |
 
 ---
 

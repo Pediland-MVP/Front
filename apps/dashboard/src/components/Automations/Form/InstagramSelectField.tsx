@@ -51,7 +51,7 @@ export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
         return (
           <FormItem>
             <FormLabel className="text-sm font-medium text-gray-700">
-              {t('instagram_account')}
+              {t('select_instagrams')}
             </FormLabel>
             <FormControl>
               <Popover open={open && !disabled} onOpenChange={disabled ? undefined : setOpen}>

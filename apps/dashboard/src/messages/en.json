@@ -396,6 +396,8 @@
   },
   "Automations": {
     "instagram_account": "Instagram Account",
+    "select_instagrams": "Select Pages",
+    "select_at_least_one_instagram": "Select at least one Instagram account",
     "select_account_placeholder": "Select account...",
     "add_automation": "Create Automation",
     "add_title": "Message Details",
@@ -1828,6 +1830,7 @@
     "ORDER_PENDING_NOT_FOUND": "Pending order not found",
     "SHOP_NOT_FOUND": "The store could not be found",
     "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "Content must have at least one product",
+    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "This automation is linked to a specific post and can only have one page",
     "ERROR_CODES": "Unknown error",
     "ERROR_CODES_DESCRIPTION": "Please try again later",
     "CHECK_CONNECTION": "Check your connection"
