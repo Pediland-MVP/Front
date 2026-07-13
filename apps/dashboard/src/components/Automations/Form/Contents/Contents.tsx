@@ -228,21 +228,21 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
         {arrayErrorMsg && <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>}
 
         {!isChoosingType && (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center gap-2">
             <Button
               variant="default"
               type="button"
-              className="bg-primary w-11/12 text-white"
+              className="bg-primary flex-1 text-white"
               disabled={isChoosingType}
               onClick={() => setIsChoosingType(true)}
             >
               <PlusCircleIcon />
               {t('add_content')}
             </Button>
-            <div className="relative w-1/12">
+            <div className="flex shrink-0 items-center justify-center">
               <HelpMeDialog
                 helpId="automation_contents"
-                position="center"
+                noAbsolute
                 title={t('Help.title')}
                 description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
