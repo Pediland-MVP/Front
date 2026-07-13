@@ -7,7 +7,7 @@ import { memo } from 'react';
 
 import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
 import { CrosshairIcon, InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
-import { CircleXIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';
+import { CircleXIcon, CopyIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';
 import { CardImage } from '../Global/CardImage';
 import { usePermissions } from '@/hooks/usePermissions';
 
@@ -113,6 +113,19 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
           >
             <PencilIcon className="text-green-600" />
             {t('edit')}
+          </Button>
+        )}
+
+        {can('automation:create') && (
+          <Button
+            className="text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-blue-100 hover:text-blue-800"
+            variant="ghost"
+            type="button"
+            size="sm"
+            onClick={() => router.push(`/automations/add?copyFrom=${item.id}`)}
+          >
+            <CopyIcon className="text-blue-600" />
+            {t('copy')}
           </Button>
         )}
 
