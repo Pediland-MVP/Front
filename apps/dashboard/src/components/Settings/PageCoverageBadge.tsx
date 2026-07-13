@@ -6,8 +6,9 @@ import { SealCheckIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr
 import { Alert, AlertDescription, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { getActiveCreditSubscription, getRemainingDays } from '@/utils/subscription';
+import { hasActiveCreditSubscription, getRemainingDays } from '@/utils/subscription';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 interface PageCoverageBadgeProps {
   instagramId: string;
@@ -18,6 +19,7 @@ const EXPIRING_SOON_THRESHOLD_DAYS = 7;
 export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
   const t = useTranslations('Settings.Accounts');
   const router = useRouter();
+  const isWebView = useIsWebView();
   const { subscriptions } = useSubscriptionStore();
 
   const pageSubscription = subscriptions?.find(
@@ -71,20 +73,22 @@ export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
           >
             {t('page_days_left', { days: totalDays })}
           </span>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 shrink-0 border-slate-200 bg-white px-2.5 text-xs text-slate-700 hover:bg-slate-50"
-            onClick={() => router.push(`/settings/subscription?instagramId=${instagramId}`)}
-          >
-            {t('buy_additional_cta')}
-          </Button>
+          {!isWebView && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 shrink-0 border-slate-200 bg-white px-2.5 text-xs text-slate-700 hover:bg-slate-50"
+              onClick={() => router.push(`/settings/subscription?instagramId=${instagramId}`)}
+            >
+              {t('buy_additional_cta')}
+            </Button>
+          )}
         </div>
       </div>
     );
   }
 
-  if (getActiveCreditSubscription(subscriptions)) {
+  if (!isWebView && hasActiveCreditSubscription(subscriptions)) {
     return (
       <div className="mt-2">
         <Alert
@@ -98,7 +102,7 @@ export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
     );
   }
 
-  if (reservedSubs.length > 0) {
+  if (!isWebView && reservedSubs.length > 0) {
     return <div className="mt-2">{buyAdditionalRow}</div>;
   }
 

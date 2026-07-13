@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 import { hasOnlyFreeCredit } from '@/utils/subscription';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 import { Alert, AlertTitle, Button, CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
@@ -26,6 +27,7 @@ export const SubscriptionBoard = () => {
   const router = useRouter();
   const { user } = useUser();
   const [isMobile, setIsMobile] = useState(false);
+  const isWebView = useIsWebView();
 
   const {
     subscriptions,
@@ -72,6 +74,10 @@ export const SubscriptionBoard = () => {
 
   if (isSubscriptionsLoading || hasOnlyFreeCredit(subscriptions)) return null;
 
+  // WebView never shows credit-type info, even mixed with a paid sub — but the rest of the board
+  // (Instagram connection list, paid remaining days) must still render, so this only affects the radial.
+  const showCreditRadial = !isWebView && currentSubscription?.type === 'credit';
+
   return (
     <CardSimple>
       <CardContent className="p-3 md:p-5">
@@ -82,13 +88,13 @@ export const SubscriptionBoard = () => {
                 percentage={
                   isSubscriptionsLoading
                     ? 0
-                    : currentSubscription?.type === 'credit'
+                    : showCreditRadial
                       ? (currentSubscription?.credit ?? 0)
                       : totalRemainingDays
                 }
                 size={isMobile ? 85 : 95}
                 strokeWidth={isMobile ? 8 : 9}
-                type={currentSubscription?.type === 'credit' ? 'credit' : 'days'}
+                type={showCreditRadial ? 'credit' : 'days'}
                 totalDays={totalPurchasedDays}
               />
             </div>
@@ -186,7 +192,8 @@ export const SubscriptionBoard = () => {
             )}
 
             {instagramValid
-              ? can('billing:view') && (
+              ? can('billing:view') &&
+                !isWebView && (
                   <Button
                     size="md"
                     className="w-full"

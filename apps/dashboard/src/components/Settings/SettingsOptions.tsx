@@ -15,10 +15,12 @@ import {
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 export const SettingsOptions = () => {
   const t = useTranslations('Settings.Navigation');
   const { can } = usePermissions();
+  const isWebView = useIsWebView();
 
   const { subscriptions } = useSubscriptionStore();
 
@@ -30,7 +32,7 @@ export const SettingsOptions = () => {
       url: '/settings/instagram',
       icon: InstagramLogoIcon,
     },
-    ...(!hasOnlyFreeCredit(subscriptions) && canViewBilling
+    ...(!isWebView && !hasOnlyFreeCredit(subscriptions) && canViewBilling
       ? [
           {
             title: t('upgrade_plan'),
