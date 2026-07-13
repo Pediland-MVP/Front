@@ -535,9 +535,10 @@ function LearnContent() {
   }
 
   // 3. Categories List Mode (Categories Paginated, each showing up to 3 previews)
+  const categoriesWithGuides = categories.filter((cat: any) => cat.guides && cat.guides.length > 0);
   const categoriesPerPage = 3;
-  const totalCategoriesPages = Math.ceil(categories.length / categoriesPerPage);
-  const paginatedCategories = categories.slice(
+  const totalCategoriesPages = Math.ceil(categoriesWithGuides.length / categoriesPerPage);
+  const paginatedCategories = categoriesWithGuides.slice(
     (currentPage - 1) * categoriesPerPage,
     currentPage * categoriesPerPage,
   );
@@ -604,7 +605,7 @@ function LearnContent() {
 
       <div className="z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6">
         {/* Category Navigation Tabs (X-Scrollable) */}
-        {categories.length > 0 && (
+        {categoriesWithGuides.length > 0 && (
           <div className="scrollbar-none flex max-w-full items-center gap-2 overflow-x-auto border-b border-slate-200/50 pb-3 select-none">
             <button
               onClick={() => handleCategoryClick('all')}
@@ -612,7 +613,7 @@ function LearnContent() {
             >
               همه آموزش‌ها
             </button>
-            {categories.map((cat: any) => (
+            {categoriesWithGuides.map((cat: any) => (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryClick(String(cat.id))}
@@ -625,7 +626,7 @@ function LearnContent() {
         )}
 
         {/* Content Section (Categories lists with arrows for pagination) */}
-        {categories.length === 0 ? (
+        {categoriesWithGuides.length === 0 ? (
           <div className="shadow-3xs rounded-3xl border border-dashed border-slate-200 bg-white/70 py-20 text-center text-slate-400 backdrop-blur-xs">
             هیچ مطلبی یافت نشد.
           </div>
