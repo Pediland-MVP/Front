@@ -22,6 +22,7 @@ import {
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { XCircleIcon } from '@phosphor-icons/react';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
+import { toast } from 'sonner';
 
 type ConditionsProps = {
   control: Control<AutomationFormType>;
@@ -69,7 +70,18 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
     if (newType === ConditionTypesEnum.NO_CONDITION) {
       setValue('isComment', true);
       setValue('isDirect', false);
-      setValue('isCommentContentTargetEnabled', true);
+
+      // Post-scoped automations must target exactly one Instagram account (a post
+      // belongs to one account, and the schema can't tell "wrong account" apart from
+      // "right account" once instagramIds.length is back down to 1 after a swap — see
+      // InstagramSelectField.tsx). Only auto-enable post-targeting when that still holds;
+      // otherwise leave it off and tell the user why, matching TargetPostComment.tsx's guard.
+      const instagramIds = getValues('instagramIds') ?? [];
+      if (instagramIds.length > 1) {
+        toast.error(t_err('specific_post_requires_single_instagram'));
+      } else {
+        setValue('isCommentContentTargetEnabled', true);
+      }
 
       // remove conditions when switching to no-condition
       setValue('conditions', []);

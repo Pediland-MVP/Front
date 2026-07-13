@@ -6,7 +6,7 @@ import {
 } from '@/constants/automationContent.enum';
 import useUser from '@/hooks/useUser';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { WizardVideoLinks } from '../../wizardVideoLinks.conf';
 import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
@@ -62,8 +62,10 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   } = useFormContext<AutomationFormType>();
 
   const selectedInstagramIds: string[] = useWatch({ control, name: 'instagramIds' }) ?? [];
-  const isPromotion = selectedInstagramIds.some(
-    (sid) => user?.instagrams?.find((i) => i.id === sid)?.isPromotion,
+  const isPromotion = useMemo(
+    () =>
+      selectedInstagramIds.some((sid) => user?.instagrams?.find((i) => i.id === sid)?.isPromotion),
+    [selectedInstagramIds, user?.instagrams],
   );
 
   const [isChoosingType, setIsChoosingType] = useState(

@@ -120,7 +120,8 @@
     }
   },
   "customErrors": {
-    "notFound": "Page not found."
+    "notFound": "Page not found.",
+    "postScopeSingleInstagram": "To target a specific post, select only one Instagram account"
   },
   "Components": {
     "LogoText": {
@@ -397,7 +398,7 @@
   "Automations": {
     "instagram_account": "Instagram Account",
     "select_instagrams": "Select Pages",
-    "select_at_least_one_instagram": "Select at least one Instagram account",
+    "instagram_locked_for_post_target": "This automation targets a specific post, so only this one account can be selected",
     "select_account_placeholder": "Select account...",
     "add_automation": "Create Automation",
     "add_title": "Message Details",
@@ -458,7 +459,8 @@
       "with": "with",
       "word_or_phrase": "a word or phrase",
       "Errors": {
-        "required": "Enter a value for the condition"
+        "required": "Enter a value for the condition",
+        "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account"
       },
       "Help": {
         "title": "Define Conditions for Automation",

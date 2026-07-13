@@ -58,7 +58,14 @@ export const InstagramPostSelectDialog = ({
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
-    const instagramId = getValues('instagramIds')?.[0];
+    // A specific post always belongs to exactly one Instagram account. This dialog
+    // is only reachable when the form has locked the selection down to one
+    // (TargetPostComment.tsx / Conditions.tsx / InstagramSelectField.tsx enforce
+    // that), but don't just grab instagramIds[0] and trust the invariant silently —
+    // if it's ever violated, fall back to the account-agnostic endpoint rather than
+    // fetching an arbitrary, possibly-wrong account's posts.
+    const selectedInstagramIds = getValues('instagramIds') ?? [];
+    const instagramId = selectedInstagramIds.length === 1 ? selectedInstagramIds[0] : undefined;
     const params = new URLSearchParams();
     if (afterCursor) {
       params.set('after', afterCursor);

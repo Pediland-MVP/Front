@@ -2,12 +2,13 @@
 
 import { fetcher } from '@/hooks/swr/api-client';
 import { cn } from '@/lib/utils';
+import { toggleInstagramSelection } from '@/lib/instagramMultiSelect';
 import { InstagramNamespace } from '@/types/instagram';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import useSWRImmutable from 'swr/immutable';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -16,10 +17,19 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 import { IResponseMessage } from '@/types/responseMessage';
 
-export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
+export function InstagramSelectField() {
   const [open, setOpen] = useState(false);
   const t = useTranslations('Automations');
   const { control } = useFormContext();
+
+  // While a specific post is targeted, the automation is locked to the single
+  // Instagram account that post belongs to — changing the selection here (even
+  // swapping one account for another while staying at one selected) would leave
+  // `instagramPost` pointing at a media item from an account that's no longer
+  // selected, and no schema check catches that mismatch. Lock the picker instead
+  // of trying to validate every possible mutation after the fact.
+  const isPostTargetEnabled = useWatch({ control, name: 'isCommentContentTargetEnabled' });
+  const disabled = !!isPostTargetEnabled;
 
   const { data: response, isLoading } = useSWRImmutable<
     IResponseMessage<InstagramNamespace.Account[]>
@@ -37,13 +47,7 @@ export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
         const selectedIds: string[] = Array.isArray(field.value) ? field.value : [];
 
         const toggle = (id: string) => {
-          if (selectedIds.includes(id)) {
-            // Never allow deselecting the last remaining selected account.
-            if (selectedIds.length === 1) return;
-            field.onChange(selectedIds.filter((s) => s !== id));
-          } else {
-            field.onChange([...selectedIds, id]);
-          }
+          field.onChange(toggleInstagramSelection(selectedIds, id));
         };
 
         const selectedAccounts = accounts.filter((a) => selectedIds.includes(a.id));
@@ -118,6 +122,11 @@ export function InstagramSelectField({ disabled }: { disabled?: boolean }) {
                 </PopoverContent>
               </Popover>
             </FormControl>
+            {isPostTargetEnabled && (
+              <p className="text-muted-foreground text-[13px]">
+                {t('instagram_locked_for_post_target')}
+              </p>
+            )}
             <FormMessage />
           </FormItem>
         );
@@ -139,26 +148,26 @@ function SelectedAccounts({
     );
   }
 
-  if (accounts.length === 1) {
-    const account = accounts[0];
-    return (
-      <span className="flex min-w-0 items-center gap-2">
-        <AccountAvatar account={account} size={24} />
-        <span className="truncate font-medium text-gray-800">
-          @{account.username ?? account.name}
-        </span>
-      </span>
-    );
-  }
+  // A single selected account gets a plain, larger-avatar treatment (no pill
+  // background needed when there's nothing to visually group); two or more get
+  // wrapped pill chips so they read as a set. Same loop either way.
+  const isSingle = accounts.length === 1;
 
   return (
-    <span className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+    <span
+      className={cn('flex min-w-0 items-center gap-2', !isSingle && 'flex-1 flex-wrap gap-1.5')}
+    >
       {accounts.map((account) => (
         <span
           key={account.id}
-          className="inline-flex items-center gap-1 rounded-full bg-violet-50 py-0.5 ps-0.5 pe-2 text-xs font-medium text-violet-700"
+          className={cn(
+            isSingle
+              ? 'truncate font-medium text-gray-800'
+              : 'inline-flex items-center gap-1 rounded-full bg-violet-50 py-0.5 ps-0.5 pe-2 text-xs font-medium text-violet-700',
+          )}
         >
-          <AccountAvatar account={account} size={18} />@{account.username ?? account.name}
+          <AccountAvatar account={account} size={isSingle ? 24 : 18} />@
+          {account.username ?? account.name}
         </span>
       ))}
     </span>
