@@ -23,7 +23,8 @@
     "plans": "پلن‌ها",
     "settings": "تنظیمات",
     "labels": "برچسب‌ها",
-    "tasks": "تسک‌ها"
+    "tasks": "تسک‌ها",
+    "helpGuides": "مدیریت راهنماها"
   },
   "Dashboard": {
     "title": "آمار کلی پلتفرم",
@@ -140,7 +141,10 @@
     "LABEL_NAME_EXISTS": "برچسبی با این نام از قبل وجود دارد",
     "INVALID_LABEL_RULE": "قانون برچسب نامعتبر است",
     "INVALID_LABEL_SCHEDULE": "زمان‌بندی برچسب نامعتبر است",
-    "LABEL_NOT_FOUND": "برچسب پیدا نشد"
+    "LABEL_NOT_FOUND": "برچسب پیدا نشد",
+    "GUIDE_NOT_FOUND": "راهنما یافت نشد",
+    "CATEGORY_NOT_FOUND": "دسته‌بندی یافت نشد",
+    "HELP_ID_ALREADY_ASSIGNED": "این شناسه راهنما قبلاً به مقاله دیگری اختصاص داده شده است"
   },
   "Workspaces": {
     "title": "کسب‌وکارها",

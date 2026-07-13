@@ -39,6 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...(user?.role !== 'kam' ? [{ title: t('webhooks'), url: '/webhooks' }] : []),
       { title: t('aiAgent'), url: '/aiagent' },
       ...(user?.role !== 'kam' ? [{ title: t('settings'), url: '/settings' }] : []),
+      ...(user?.role !== 'kam' ? [{ title: t('helpGuides'), url: '/guides' }] : []),
     ];
 
     return [

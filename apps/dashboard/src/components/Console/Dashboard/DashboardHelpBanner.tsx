@@ -38,6 +38,7 @@ export const DashboardHelpBanner = () => {
           </div>
           <div className="flex w-2/12 flex-col items-center gap-1">
             <HelpMeDialog
+              helpId="dashboard_general_help"
               title={t('how_to_connect')}
               videoSrc="https://befroosh.s3.ir-thr-at1.arvanstorage.ir/learn%2F828c43efc1b5fc5d5807dc1ca2da790a67648285-480p.mp4?versionId="
               videoPoster="/images/photo_2025-02-26_22-00-50.jpg"

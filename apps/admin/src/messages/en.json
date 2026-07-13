@@ -15,7 +15,8 @@
     "guides": "Guides",
     "chats": "Chats",
     "befroosh": "Befroosh",
-    "adminPortal": "[Admin Portal]"
+    "adminPortal": "[Admin Portal]",
+    "helpGuides": "Manage Guides"
   },
   "NavUser": {
     "loading": "Loading...",

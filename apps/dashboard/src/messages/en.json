@@ -94,7 +94,8 @@
   "Helpme": {
     "close": "Close",
     "help": "Help",
-    "browserDosntSupport": "Please update your browser to use these features."
+    "browserDosntSupport": "Please update your browser to use these features.",
+    "triggerText": "(help)"
   },
   "form": {
     "startDate": {

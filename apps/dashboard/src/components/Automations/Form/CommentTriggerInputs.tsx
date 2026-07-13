@@ -57,6 +57,7 @@ export const CommentTriggerInputs = () => {
               <div className="relative">
                 <FormLabel>{t('start_request_message')}</FormLabel>
                 <HelpMeDialog
+                  helpId="automation_comment_triggers"
                   title={t('Help.title')}
                   description={t('Help.description')}
                   videoSrc={WizardVideoLinks.Automations.Hints.CommentConsent.video}
