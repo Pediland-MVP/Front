@@ -134,7 +134,37 @@ function Pagination({
 }) {
   if (totalPages <= 1) return null;
 
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  // Generate pagination items
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+
+    // Always show first page
+    pages.push(1);
+
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (start > 2) {
+      pages.push('...');
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (end < totalPages - 1) {
+      pages.push('...');
+    }
+
+    // Always show last page
+    if (totalPages > 1) {
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  const pageNumbers = getPageNumbers();
 
   return (
     <div className="mt-8 flex items-center justify-center gap-1.5" dir="rtl">
@@ -148,21 +178,35 @@ function Pagination({
         <CaretRightIcon size={16} />
       </Button>
 
-      {pages.map((page) => (
-        <Button
-          key={page}
-          variant={currentPage === page ? 'default' : 'ghost'}
-          onClick={() => onPageChange(page)}
-          className={cn(
-            'shadow-3xs h-10 w-10 cursor-pointer rounded-xl text-sm font-bold',
-            currentPage === page
-              ? 'border border-slate-900 bg-slate-900 text-white'
-              : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
-          )}
-        >
-          {page}
-        </Button>
-      ))}
+      {pageNumbers.map((page, index) => {
+        if (page === '...') {
+          return (
+            <span
+              key={`ellipsis-${index}`}
+              className="px-2 text-sm font-bold text-slate-400 select-none"
+            >
+              ...
+            </span>
+          );
+        }
+
+        const pageNum = page as number;
+        return (
+          <Button
+            key={pageNum}
+            variant={currentPage === pageNum ? 'default' : 'ghost'}
+            onClick={() => onPageChange(pageNum)}
+            className={cn(
+              'shadow-3xs h-10 w-10 cursor-pointer rounded-xl text-sm font-bold',
+              currentPage === pageNum
+                ? 'border border-slate-900 bg-slate-900 text-white'
+                : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
+            )}
+          >
+            {pageNum}
+          </Button>
+        );
+      })}
 
       <Button
         variant="ghost"
