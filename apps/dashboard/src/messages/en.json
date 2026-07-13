@@ -1982,6 +1982,17 @@
     "telegram": "Telegram",
     "enter_panel": "Enter Panel"
   },
+  "Install": {
+    "title": "Install the Befroosh App",
+    "description": "Install the Befroosh app on your phone for faster access",
+    "android_title": "Download for Android",
+    "android_cafebazaar": "Cafe Bazaar",
+    "android_googleplay": "Google Play",
+    "ios_title": "Install on iPhone (via Safari)",
+    "ios_step1": "Tap the Share icon in Safari's toolbar",
+    "ios_step2": "Choose \"Add to Home Screen\"",
+    "ios_step3": "Tap \"Add\" — the Befroosh icon is added to your home screen"
+  },
   "Permissions": {
     "_modules": {
       "product": "Products",

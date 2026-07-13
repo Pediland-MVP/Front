@@ -47,6 +47,7 @@
       "description": "Smart Assistant",
       "directs": "Direct Messages",
       "instagramConnections": "Instagram Connections",
+      "installApp": "Install App",
       "logout": "Logout",
       "name": "Befroosh",
       "ordersList": "Orders",
