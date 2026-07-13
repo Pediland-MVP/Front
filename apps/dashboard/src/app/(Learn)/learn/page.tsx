@@ -365,13 +365,7 @@ function LearnContent() {
 
   return (
     <div
-      className="scrollbar-thin relative flex h-full flex-col overflow-y-auto rounded-t-3xl bg-slate-50/50 p-5 select-none md:h-[calc(100vh-88px)] md:rounded-t-none md:p-8"
-      style={{
-        backgroundImage:
-          'radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent 450px), radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.04), transparent 400px), radial-gradient(#cbd5e1 1px, transparent 1px)',
-        backgroundSize: '100% 100%, 100% 100%, 20px 20px',
-        backgroundColor: '#f8fafc',
-      }}
+      className="scrollbar-thin relative flex h-full flex-col overflow-y-auto rounded-t-3xl bg-linear-to-t from-white/85 to-white p-5 select-none md:h-[calc(100vh-88px)] md:rounded-t-none md:p-8"
       dir="rtl"
     >
       {!pathname.includes('/help') && (
