@@ -58,8 +58,17 @@ export const InstagramPostSelectDialog = ({
 
   const fetchPosts = async (afterCursor: string | null = null) => {
     setIsLoading(true);
+    const instagramId = getValues('instagramIds')?.[0];
+    const params = new URLSearchParams();
+    if (afterCursor) {
+      params.set('after', afterCursor);
+    }
+    if (instagramId) {
+      params.set('instagramId', instagramId);
+    }
+    const queryString = params.toString();
     await api
-      .get(afterCursor ? `${API_URL}/posts/pure?after=${afterCursor}` : `${API_URL}/posts/pure`)
+      .get(`${API_URL}/posts/pure${queryString ? `?${queryString}` : ''}`)
       .then(async (res) => {
         setPosts((prevPosts) => [...prevPosts, ...res.data.media.data]);
         setHasMore(res.data.media.data.length === PAGE_SIZE);

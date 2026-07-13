@@ -31,6 +31,11 @@ export const TargetPostComment = () => {
       }
       setValue('instagramPost', null);
     } else {
+      const instagramIds = getValues('instagramIds') ?? [];
+      if (instagramIds.length > 1) {
+        toast.error(t_err('specific_post_requires_single_instagram'));
+        return;
+      }
       setValue('isDirect', false);
     }
     setValue('isCommentContentTargetEnabled', value);

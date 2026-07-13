@@ -602,7 +602,8 @@
       "title": "Limit Comments to a Specific Post",
       "note": "According to Instagram rules, up to 750 DM comment replies are allowed per hour; extras will be queued.",
       "Errors": {
-        "selection_required": "Select a post."
+        "selection_required": "Select a post.",
+        "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account."
       }
     },
     "InstagramPostSelectDialog": {
