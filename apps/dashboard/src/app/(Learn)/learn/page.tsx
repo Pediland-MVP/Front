@@ -396,10 +396,10 @@ function LearnContent() {
           <div className="pointer-events-none absolute -bottom-16 -left-16 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl" />
 
           <h1 className="flex items-center gap-3 text-2xl font-black text-slate-800 md:text-3xl">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-2xs">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-2xs">
               <BookOpenIcon className="h-6 w-6" weight="duotone" />
             </div>
-            {t('title') || 'مرکز راهنما و آموزش'}
+            <span className="leading-none">{t('title') || 'مرکز راهنما و آموزش'}</span>
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed font-medium text-slate-500 md:text-base">
             {t('subtitle') ||
