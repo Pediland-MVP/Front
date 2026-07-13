@@ -238,16 +238,16 @@ export const HelpMeDialog = ({
         {children ? (
           children
         ) : (
-          <div
+          <span
             className={cn(
               noAbsolute ? '' : getPositionClasses(position),
               className,
-              'shadow-3xs cursor-pointer rounded-lg border border-blue-100/40 bg-blue-50/60 px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-blue-600 duration-100 select-none hover:scale-105 hover:text-blue-800 hover:underline',
+              'mx-0.5 inline-block cursor-pointer text-[10px] font-bold whitespace-nowrap text-blue-500 transition-colors select-none hover:text-blue-700 hover:underline md:text-[11px]',
             )}
             dir="rtl"
           >
             {t('triggerText') || '(راهنما)'}
-          </div>
+          </span>
         )}
       </DialogTrigger>
 
