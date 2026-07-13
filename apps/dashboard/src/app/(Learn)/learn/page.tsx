@@ -391,17 +391,17 @@ function LearnContent() {
 
       {/* Header Banner - PERSISTENT, hidden when search or category is active */}
       {!isSearchActive && !categoryIdParam && (
-        <div className="relative z-10 mx-auto mb-6 w-full max-w-6xl overflow-hidden rounded-3xl border border-slate-200/60 bg-white/70 p-6 text-right shadow-[0_8px_30px_rgb(0,0,0,0.02)] backdrop-blur-md md:p-8">
+        <div className="relative z-10 mx-auto mb-4 w-full max-w-6xl overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 p-5 text-right shadow-[0_8px_30px_rgb(0,0,0,0.02)] backdrop-blur-md md:p-8">
           <div className="pointer-events-none absolute -top-16 -right-16 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-16 -left-16 h-32 w-32 rounded-full bg-indigo-500/10 blur-2xl" />
 
-          <h1 className="flex items-center gap-3 text-2xl font-black text-slate-800 md:text-3xl">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-2xs">
-              <BookOpenIcon className="h-6 w-6" weight="duotone" />
+          <h1 className="flex items-center gap-2.5 text-lg font-black text-slate-800 md:text-2xl">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-600 shadow-2xs md:h-10 md:w-10 md:rounded-xl">
+              <BookOpenIcon className="h-4.5 w-4.5 md:h-5 md:w-5 lg:h-6 lg:w-6" weight="duotone" />
             </div>
-            <span className="leading-none">{t('title') || 'مرکز راهنما و آموزش'}</span>
+            <span className="pt-[1px] leading-normal">{t('title') || 'مرکز راهنما و آموزش'}</span>
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed font-medium text-slate-500 md:text-base">
+          <p className="mt-2.5 max-w-3xl text-[11px] leading-relaxed font-medium text-slate-500 md:text-sm">
             {t('subtitle') ||
               'پاسخ سوالات شما، راهنماهای گام‌به‌گام و ویدیوهای کوتاه آموزشی اتصال ربات و هوشمندسازی اینستاگرام.'}
           </p>
