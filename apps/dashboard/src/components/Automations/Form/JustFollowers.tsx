@@ -61,6 +61,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
           <FormItem className="flex flex-col justify-start gap-y-2">
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
+                helpId="automation_just_followers"
                 title={t('Help.title')}
                 description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.JustFollowers.video}

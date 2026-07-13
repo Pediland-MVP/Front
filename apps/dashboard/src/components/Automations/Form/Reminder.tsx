@@ -61,6 +61,7 @@ export const Reminder = () => {
         <FormItem className="flex flex-col justify-start gap-y-3 rounded-xl border bg-white p-4 shadow-sm">
           <div className="relative flex items-center gap-x-2">
             <HelpMeDialog
+              helpId="automation_reminders"
               title={t('Help.title')}
               description={t('Help.description')}
               videoSrc={WizardVideoLinks.Automations.Hints.Reminders.video}

@@ -142,6 +142,7 @@ export const Conditions = ({ control, getValues }: ConditionsProps) => {
 
         <HelpMeDialog
           position="left"
+          helpId="automation_conditions"
           title={t('Help.title')}
           description={t('Help.description')}
           videoSrc={WizardVideoLinks.Automations.Hints.Conditions.video}

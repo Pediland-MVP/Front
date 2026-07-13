@@ -96,6 +96,7 @@ export const Triggers = ({ control, getValues }: TriggersProps) => {
         <HelpMeDialog
           position="top-left"
           className="top-0 left-0"
+          helpId="automation_triggers"
           title={t('Help.title')}
           description={t('Help.description')}
           videoSrc={WizardVideoLinks.Automations.Hints.Triggers.video}

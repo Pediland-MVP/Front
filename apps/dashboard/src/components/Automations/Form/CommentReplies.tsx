@@ -72,6 +72,7 @@ export const CommentReplies = () => {
           <FormItem>
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
+                helpId="automation_comment_replies"
                 title={t('Help.title')}
                 description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.CommentReplies.video}

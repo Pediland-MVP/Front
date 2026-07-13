@@ -1,8 +1,11 @@
+// src/components/Global/HelpMeDialog.tsx
 'use client';
 
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { ReactNode, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
+import useSWR from 'swr';
+import { fetcher } from '@/hooks/swr/api-client';
 
 import {
   Button,
@@ -14,9 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui';
-import { InfoIcon, MonitorPlayIcon } from '@phosphor-icons/react';
-import { VideoComp } from './VideoComp';
-import { QuestionIcon } from '@phosphor-icons/react/dist/ssr';
+import { MonitorPlayIcon, X } from 'lucide-react';
 
 type Position =
   | 'left'
@@ -42,6 +43,7 @@ interface HelpDialogProps {
   className?: string;
   noAbsolute?: boolean;
   children?: ReactNode;
+  helpId?: string;
 }
 
 const getPositionClasses = (position: Position, noAbsolute: boolean = false): string => {
@@ -68,6 +70,143 @@ const getPositionClasses = (position: Position, noAbsolute: boolean = false): st
   return '';
 };
 
+// Auto-detecting video player aspect ratio
+export const AutoAspectPlayer = ({
+  src,
+  poster,
+  labelClose,
+}: {
+  src: string;
+  poster?: string;
+  labelClose?: string;
+}) => {
+  const [aspect, setAspect] = useState<'video' | 'square' | 'vertical'>('video');
+
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    const video = e.currentTarget;
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+    const ratio = width / height;
+
+    if (ratio < 0.75) {
+      setAspect('vertical'); // Reel size 9:16
+    } else if (ratio >= 0.75 && ratio <= 1.25) {
+      setAspect('square'); // Square size 1:1
+    } else {
+      setAspect('video'); // Youtube size 16:9
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        'relative mx-auto my-4 flex w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200/50 bg-slate-950 shadow-md transition-all duration-300',
+        aspect === 'vertical' && 'aspect-[9/16] h-[550px] max-w-[340px] md:h-[600px]',
+        aspect === 'square' && 'aspect-square max-w-[360px] md:h-[360px]',
+        aspect === 'video' && 'aspect-video max-h-[380px] w-full',
+      )}
+    >
+      <video
+        src={src}
+        poster={poster}
+        controls
+        preload="metadata"
+        className="h-full w-full object-contain"
+        onLoadedMetadata={handleLoadedMetadata}
+      />
+    </div>
+  );
+};
+
+// Helper for parsing simple Markdown to HTML inside popovers
+function parseMarkdownToHtml(markdown: string): string {
+  if (!markdown) return '';
+  let html = markdown;
+
+  // Escape HTML tags to prevent XSS (except allowed span tags for colors)
+  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Restore allowed span tags for colors (like <span style="color: ...">...</span>)
+  html = html.replace(
+    /&lt;span\s+style=&quot;color:\s*(#[0-9a-fA-F]{3,6}|[a-zA-Z]+);?&quot;&gt;([\s\S]*?)&lt;\/span&gt;/gi,
+    (match, color, content) => {
+      return `<span style="color: ${color}">${content}</span>`;
+    },
+  );
+
+  // Headers
+  html = html.replace(
+    /^# (.*?)$/gm,
+    '<h1 class="text-base md:text-lg font-black my-4 text-slate-800 border-b pb-1.5 border-slate-100">$1</h1>',
+  );
+  html = html.replace(
+    /^## (.*?)$/gm,
+    '<h2 class="text-sm md:text-base font-bold my-3 text-slate-800">$1</h2>',
+  );
+
+  // Bold / Italic
+  html = html.replace(
+    /\*\*(.*?)\*\*/g,
+    '<strong class="font-extrabold text-slate-900">$1</strong>',
+  );
+  html = html.replace(/\*(.*?)\*/g, '<em class="italic text-slate-800">$1</em>');
+
+  // Code block
+  html = html.replace(
+    /```([\s\S]*?)```/g,
+    '<pre class="bg-slate-900 text-slate-100 p-3 rounded-lg font-mono text-xs overflow-auto my-3" dir="ltr">$1</pre>',
+  );
+
+  // Inline code
+  html = html.replace(
+    /`(.*?)`/g,
+    '<code class="bg-slate-100 text-pink-600 px-1 rounded font-mono text-xs">$1</code>',
+  );
+
+  // Blockquote
+  html = html.replace(
+    /^&gt; (.*?)$/gm,
+    '<blockquote class="border-r-4 border-blue-500 pr-3 pl-1 py-1 bg-slate-50 rounded-l-md my-3 italic text-slate-600">$1</blockquote>',
+  );
+
+  // Controlled Image sizes
+  html = html.replace(
+    /!\[(.*?)\]\((.*?)\)/g,
+    '<img src="$2" alt="$1" class="rounded-xl max-w-full md:max-w-sm mx-auto block my-5 shadow-sm border border-slate-200/50 object-contain hover:scale-[1.01] duration-300 transition-transform" />',
+  );
+
+  // Links
+  html = html.replace(
+    /\[(.*?)\]\((.*?)\)/g,
+    '<a href="$2" target="_blank" class="text-blue-600 hover:underline font-semibold">$1</a>',
+  );
+
+  // Lists
+  html = html.replace(
+    /^\s*-\s+(.*?)$/gm,
+    '<li class="list-disc list-inside mr-3 my-1 text-slate-700">$1</li>',
+  );
+
+  // Paragraph lines
+  const lines = html.split('\n');
+  const processedLines = lines.map((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return '';
+    if (
+      trimmed.startsWith('<h') ||
+      trimmed.startsWith('<li') ||
+      trimmed.startsWith('<blockquote') ||
+      trimmed.startsWith('<p') ||
+      trimmed.startsWith('<img')
+    ) {
+      return line;
+    }
+    return `<p class="my-2 leading-relaxed text-slate-600 text-xs md:text-sm">${line}</p>`;
+  });
+
+  return processedLines.join('\n');
+}
+
 export const HelpMeDialog = ({
   title,
   description,
@@ -77,9 +216,21 @@ export const HelpMeDialog = ({
   className,
   noAbsolute = false,
   children,
+  helpId,
 }: HelpDialogProps) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations('Helpme');
+
+  // Fetch dynamic guide if helpId is supplied
+  const { data: guideRes } = useSWR(helpId ? `/guides/${helpId}` : null, fetcher);
+  const dynamicGuide = guideRes?.data;
+
+  // Resolve values (fallback to hardcoded props if backend guide doesn't exist)
+  const resolvedTitle = dynamicGuide?.title || title;
+  const resolvedDescription = dynamicGuide?.description || description;
+  const resolvedVideoSrc = dynamicGuide?.videoUrl || videoSrc;
+  const resolvedVideoPoster = dynamicGuide?.coverImage || videoPoster;
+  const resolvedContent = dynamicGuide?.content || '';
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -91,45 +242,51 @@ export const HelpMeDialog = ({
             className={cn(
               noAbsolute ? '' : getPositionClasses(position),
               className,
-              'cursor-pointer duration-100 hover:scale-110',
+              'shadow-3xs cursor-pointer rounded-lg border border-blue-100/40 bg-blue-50/60 px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-blue-600 duration-100 select-none hover:scale-105 hover:text-blue-800 hover:underline',
             )}
+            dir="rtl"
           >
-            <QuestionIcon size={20} weight="duotone" className="text-gray-500" />
-            <span className="sr-only">{t('help')}</span>
+            {t('triggerText') || '(راهنما)'}
           </div>
         )}
       </DialogTrigger>
 
-      <DialogContent className="flex min-h-full max-w-full flex-col overflow-auto rounded-none p-5 md:p-10">
-        <DialogHeader>
-          <DialogTitle className="text-primary flex justify-center gap-2 text-right text-base font-semibold">
-            <MonitorPlayIcon size={22} /> {title}
-          </DialogTitle>
-          {description && (
-            <DialogDescription className="text-muted-foreground text-right text-[13px] md:mx-auto md:w-1/3 md:text-center">
-              {description}
-            </DialogDescription>
-          )}
-        </DialogHeader>
-
-        <div className="flex w-full flex-1 items-center justify-center">
-          <VideoComp
-            shape="vertical"
-            src={videoSrc}
-            poster={videoPoster}
-            autoPlay
-            loop
-            // controls
-            className="h-[800px] w-full object-cover"
-            preload="metadata"
-          >
-            {t('browserDosntSupport')}
-          </VideoComp>
+      <DialogContent
+        className="max-h-[92vh] max-w-2xl overflow-y-auto rounded-2xl border-slate-200/80 bg-white p-0 shadow-2xl"
+        dir="rtl"
+      >
+        {/* Custom Header */}
+        <div className="relative flex items-start justify-between rounded-t-2xl border-b border-slate-100 bg-slate-50/50 p-5 md:p-6">
+          <div className="flex flex-col gap-1 pl-6 text-right">
+            <DialogTitle className="flex items-center justify-start gap-2 text-base font-black text-slate-800">
+              <MonitorPlayIcon size={22} className="text-blue-600" /> {resolvedTitle}
+            </DialogTitle>
+            {resolvedDescription && (
+              <DialogDescription className="mt-0.5 text-right text-xs leading-relaxed font-medium text-slate-400">
+                {resolvedDescription}
+              </DialogDescription>
+            )}
+          </div>
         </div>
 
-        <DialogFooter>
-          <Button onClick={() => setOpen(false)} className="mx-auto w-[260px]">
-            {t('close')}
+        {/* Content Body */}
+        <div className="flex flex-col gap-4 p-5 md:p-6">
+          {resolvedVideoSrc && (
+            <AutoAspectPlayer src={resolvedVideoSrc} poster={resolvedVideoPoster} />
+          )}
+
+          {resolvedContent && (
+            <div
+              className="max-h-[300px] w-full overflow-y-auto rounded-2xl border border-slate-100/80 bg-slate-50/60 p-5 text-right"
+              dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(resolvedContent) }}
+            />
+          )}
+        </div>
+
+        {/* Custom Footer */}
+        <DialogFooter className="flex justify-end gap-2 rounded-b-2xl border-t border-slate-100 bg-slate-50/50 p-4">
+          <Button onClick={() => setOpen(false)} className="w-[120px] font-bold">
+            {t('close') || 'بستن'}
           </Button>
         </DialogFooter>
       </DialogContent>

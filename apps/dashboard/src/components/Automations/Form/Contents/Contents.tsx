@@ -241,6 +241,7 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
             </Button>
             <div className="relative w-1/12">
               <HelpMeDialog
+                helpId="automation_contents"
                 position="center"
                 title={t('Help.title')}
                 description={t('Help.description')}
