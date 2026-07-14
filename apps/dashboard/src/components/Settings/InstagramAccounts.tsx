@@ -22,10 +22,10 @@ import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
 import { usePermissions } from '@/hooks/usePermissions';
 import { PagePromotionAlert } from './PagePromotionAlert';
 import { PageCoverageBadge } from './PageCoverageBadge';
+import { InstagramReconnectDialog } from './InstagramReconnectDialog';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
-const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 interface InstagramAccountsProps {
   onCountChange?: (count: number) => void;
@@ -39,6 +39,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+  const [reconnectTarget, setReconnectTarget] = useState<InstagramNamespace.Account | null>(null);
 
   const canView = can('instagram:view');
   const canManage = can('instagram:manage');
@@ -122,8 +123,8 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
   }
 
   // Always show the full list — valid and invalid pages alike. Invalid cards render
-  // with their own red state, and the reconnect banner (InstagramInvalidDialog) shows
-  // below the list whenever any page is disconnected.
+  // with their own red state; clicking "reconnect" on any card opens
+  // InstagramReconnectDialog with the connect instructions for that account.
   return (
     <>
       <DeleteConfirmationDialog
@@ -226,11 +227,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
                 type="button"
                 size="sm"
                 disabled={!canManage}
-                onClick={() => {
-                  router.push(
-                    `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
-                  );
-                }}
+                onClick={() => setReconnectTarget(instagram)}
               >
                 <Plug2Icon
                   className={cn('text-secondary', !instagram.isIgTokenValid && 'text-white')}
@@ -253,6 +250,13 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
           </Card>
         ))}
       </div>
+
+      <InstagramReconnectDialog
+        account={reconnectTarget}
+        onOpenChange={(open) => {
+          if (!open) setReconnectTarget(null);
+        }}
+      />
     </>
   );
 };

@@ -7,7 +7,6 @@ import { PlusIcon } from 'lucide-react';
 import { InstagramLogoIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
 
 import { InstagramAccounts } from '@/components/Settings/InstagramAccounts';
-import { InstagramInvalidDialog } from '@/components/Console/InstagramInvalidDialog';
 import { Button } from '@/components/ui';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -86,7 +85,6 @@ export default function Page() {
             <Suspense>
               <div className="flex w-full flex-col items-start justify-center gap-3">
                 <InstagramAccounts onCountChange={setAccountCount} />
-                <InstagramInvalidDialog />
               </div>
             </Suspense>
           </>
