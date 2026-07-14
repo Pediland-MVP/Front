@@ -110,6 +110,9 @@
     "WORKSPACE_DELETE_NOT_OWNER": "فقط مالک فضای کاری می‌تواند آن را حذف کند",
     "MEMBER_NOT_FOUND": "عضو پیدا نشد",
     "CANNOT_REMOVE_OWNER": "حذف مالک فضای کاری امکان‌پذیر نیست",
+    "WORKSPACE_CATEGORY_NOT_FOUND": "دسته‌بندی یافت نشد",
+    "WORKSPACE_CATEGORY_IN_USE": "این دسته‌بندی هنوز برای برخی فضاهای کاری استفاده می‌شود",
+    "WORKSPACE_CATEGORY_NAME_ALREADY_EXISTS": "دسته‌بندی با این نام از قبل وجود دارد",
 
     "UNKNOWN_PERMISSION_SLUG": "دسترسی نامعتبر است",
     "CANNOT_GRANT_PERMISSIONS_YOU_DO_NOT_HAVE": "دسترسی‌هایی که خودتان ندارید را نمی‌توانید اعطا کنید",
