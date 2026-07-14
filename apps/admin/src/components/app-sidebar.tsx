@@ -20,6 +20,7 @@ import {
   ChatDotsIcon,
   UserGearIcon,
   BuildingsIcon,
+  TagIcon,
   SlidersHorizontalIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
@@ -52,6 +53,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('workspaces'),
         url: '/workspaces',
         icon: BuildingsIcon,
+      },
+      {
+        title: t('workspaceCategories'),
+        url: '/workspace-categories',
+        icon: TagIcon,
       },
       {
         title: t('myCustomers'),

@@ -20,6 +20,7 @@
     "adminPortal": "[پورتال مدیریت]",
     "admins": "مدیریت ادمین‌ها",
     "workspaces": "کسب‌وکارها",
+    "workspaceCategories": "دسته‌بندی فضاهای کاری",
     "plans": "پلن‌ها",
     "settings": "تنظیمات",
     "labels": "برچسب‌ها",
@@ -144,7 +145,10 @@
     "LABEL_NOT_FOUND": "برچسب پیدا نشد",
     "GUIDE_NOT_FOUND": "راهنما یافت نشد",
     "CATEGORY_NOT_FOUND": "دسته‌بندی یافت نشد",
-    "HELP_ID_ALREADY_ASSIGNED": "این شناسه راهنما قبلاً به مقاله دیگری اختصاص داده شده است"
+    "HELP_ID_ALREADY_ASSIGNED": "این شناسه راهنما قبلاً به مقاله دیگری اختصاص داده شده است",
+    "WORKSPACE_CATEGORY_NOT_FOUND": "دسته‌بندی یافت نشد",
+    "WORKSPACE_CATEGORY_IN_USE": "این دسته‌بندی هنوز برای برخی فضاهای کاری استفاده می‌شود",
+    "WORKSPACE_CATEGORY_NAME_ALREADY_EXISTS": "دسته‌بندی با این نام از قبل وجود دارد"
   },
   "Workspaces": {
     "title": "کسب‌وکارها",
@@ -186,6 +190,27 @@
     "mobile": "موبایل",
     "noPermissions": "بدون دسترسی",
     "notFound": "کسب‌وکار یافت نشد"
+  },
+  "WorkspaceCategories": {
+    "title": "دسته‌بندی فضاهای کاری",
+    "search": "جستجو بر اساس نام...",
+    "nameEn": "نام انگلیسی",
+    "nameFa": "نام فارسی",
+    "workspaceCount": "تعداد فضاهای کاری",
+    "createDate": "تاریخ ایجاد",
+    "addCategory": "افزودن دسته‌بندی",
+    "editCategory": "ویرایش دسته‌بندی",
+    "nameEnPlaceholder": "e.g. Fashion",
+    "nameFaPlaceholder": "مثال: مد و پوشاک",
+    "save": "ذخیره",
+    "cancel": "انصراف",
+    "saving": "در حال ذخیره...",
+    "createSuccess": "دسته‌بندی با موفقیت ایجاد شد",
+    "updateSuccess": "دسته‌بندی با موفقیت ویرایش شد",
+    "deleteConfirm": "آیا از حذف این دسته‌بندی اطمینان دارید؟",
+    "deleteSuccess": "دسته‌بندی با موفقیت حذف شد",
+    "edit": "ویرایش",
+    "delete": "حذف"
   },
   "Webhooks": {
     "title": "وب‌هوک‌ها",
