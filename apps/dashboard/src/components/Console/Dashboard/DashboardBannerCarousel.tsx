@@ -17,6 +17,21 @@ import { useActiveBanners, ActiveBanner } from '@/hooks/useActiveBanners';
 
 const AUTOPLAY_INTERVAL_MS = 5000;
 
+// Defense in depth: banner button URLs are admin-authored data, not static UI
+// copy, so a stored javascript:/data: URL (bad-faith admin, compromised
+// account, or a direct API call bypassing the admin form's validation) must
+// never reach an href — the admin-side zod schema already restricts the
+// scheme, this is the last line of defense on the render side.
+const ALLOWED_URL_PROTOCOLS = new Set(['http:', 'https:', 'mailto:']);
+
+function safeHref(url: string): string {
+  try {
+    return ALLOWED_URL_PROTOCOLS.has(new URL(url).protocol) ? url : '#';
+  } catch {
+    return '#';
+  }
+}
+
 function shuffle<T>(items: T[]): T[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
@@ -69,10 +84,11 @@ function BannerSlide({ banner, locale }: { banner: ActiveBanner; locale: string 
             {banner.buttons.map((button) => {
               const label = locale === 'fa' ? button.textFa : button.textEn;
               const className = 'rounded-md border px-3 py-1.5 text-xs font-semibold md:text-sm';
+              const href = safeHref(button.url);
               return button.isExternal ? (
                 <a
                   key={button.id}
-                  href={button.url}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
                   referrerPolicy="no-referrer"
@@ -84,7 +100,7 @@ function BannerSlide({ banner, locale }: { banner: ActiveBanner; locale: string 
               ) : (
                 <Link
                   key={button.id}
-                  href={button.url}
+                  href={href}
                   className={className}
                   style={{ borderColor: banner.color, color: banner.color }}
                 >

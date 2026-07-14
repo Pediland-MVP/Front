@@ -31,10 +31,24 @@ import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
 import api from '@/hooks/swr/api-client';
 import { useBannerColumns, BannerRow, BannerCategoryRow } from './columns';
 
+const ALLOWED_URL_PROTOCOLS = new Set(['http:', 'https:', 'mailto:']);
+
 const ButtonSchema = z.object({
   textEn: z.string().min(1).max(100),
   textFa: z.string().min(1).max(100),
-  url: z.string().url(),
+  url: z
+    .string()
+    .url()
+    .refine(
+      (value) => {
+        try {
+          return ALLOWED_URL_PROTOCOLS.has(new URL(value).protocol);
+        } catch {
+          return false;
+        }
+      },
+      { message: 'فقط لینک‌های http، https یا mailto مجاز است' },
+    ),
 });
 
 const FormSchema = z.object({
