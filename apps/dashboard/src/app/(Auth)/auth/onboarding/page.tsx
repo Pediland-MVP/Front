@@ -17,9 +17,15 @@ import {
   FormItem,
   FormMessage,
   Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Switch,
 } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
 import { UserCirclePlusIcon } from '@phosphor-icons/react';
 import SupportButton from '../supportButton';
 import { CustomersSlider } from './customersSlider';
@@ -38,6 +44,7 @@ export default function OnboardingPage() {
   const [showReferralCode, setShowReferralCode] = useState(false);
   const logout = useLogout();
   const { mutate: mutateUser } = useUser();
+  const { categories } = useWorkspaceCategories();
 
   const formSchema = useMemo(
     () =>
@@ -45,6 +52,7 @@ export default function OnboardingPage() {
         firstname: z.string().min(3, t_err('first_name_length', { length: 3 })),
         lastname: z.string().min(3, t_err('last_name_length', { length: 3 })),
         submittedInstagramUsername: z.string().min(3, t_err('instagram_id_length', { length: 3 })),
+        categoryId: z.string().min(1, t_err('category_required')),
         referralCode: showReferralCode
           ? z.string().min(1, t_err('referral_code_required'))
           : z.string().optional(),
@@ -59,6 +67,7 @@ export default function OnboardingPage() {
       firstname: '',
       lastname: '',
       submittedInstagramUsername: '',
+      categoryId: '',
       referralCode: '',
     },
   });
@@ -161,6 +170,29 @@ export default function OnboardingPage() {
                         className="text-center"
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder={t('category_placeholder')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.nameFa}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -1287,7 +1287,13 @@
       "delete_confirm": "حذف فضای کاری",
       "delete_success": "فضای کاری با موفقیت حذف شد",
       "deleting": "در حال حذف...",
-      "transfer_ownership_button": "انتقال مالکیت"
+      "transfer_ownership_button": "انتقال مالکیت",
+      "category": "دسته‌بندی",
+      "category_placeholder": "دسته‌بندی را انتخاب کنید",
+      "category_dialog_title": "دسته‌بندی فضای کاری را مشخص کنید",
+      "category_dialog_description": "برای ادامه استفاده از این فضای کاری، لطفاً یک دسته‌بندی برای آن انتخاب کنید.",
+      "category_dialog_confirm": "ثبت دسته‌بندی",
+      "category_dialog_error": "خطا در ثبت دسته‌بندی. دوباره تلاش کنید."
     },
     "OwnershipTransfer": {
       "title": "انتقال مالکیت فضای کاری",

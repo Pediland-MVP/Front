@@ -12,6 +12,7 @@ import { SiteProvider } from '@/components/Providers/SiteProvider';
 import { Metadata } from 'next';
 import InstagramInvalidRedirector from '@/components/Console/InstagramInvalidRedirector';
 import WorkspaceSessionGuard from '@/components/Console/WorkspaceSessionGuard';
+import WorkspaceCategoryGuard from '@/components/Console/WorkspaceCategoryGuard';
 
 export const metadata: Metadata = {
   title: {
@@ -37,6 +38,7 @@ export default async function ConsoleLayout({
               <ConsoleProvider>
                 <InstagramInvalidRedirector />
                 <WorkspaceSessionGuard />
+                <WorkspaceCategoryGuard />
 
                 {children}
 

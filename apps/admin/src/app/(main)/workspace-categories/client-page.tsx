@@ -6,45 +6,37 @@ import { useDebounce } from 'use-debounce';
 import { fetcher } from '@/hooks/swr/api-client';
 import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
-import WorkspaceTable from './workspace-table';
+import WorkspaceCategoriesTable from './workspace-categories-table';
 
-export default function WorkspacesPageClient() {
+export default function WorkspaceCategoriesPageClient() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState('');
-  const [type, setType] = useState('');
-  const [categoryId, setCategoryId] = useState('');
   const [debouncedSearch] = useDebounce(search, 750);
 
   const searchQuery = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : '';
-  const typeQuery = type ? `&type=${type}` : '';
-  const categoryQuery = categoryId ? `&categoryId=${categoryId}` : '';
 
-  const { data, isLoading, isValidating, error } = useSWR(
-    `/workspaces?limit=${limit}&page=${page}${searchQuery}${typeQuery}${categoryQuery}`,
+  const { data, isLoading, isValidating, error, mutate } = useSWR(
+    `/workspace-categories?limit=${limit}&page=${page}${searchQuery}`,
     fetcher,
     { keepPreviousData: true },
   );
-
-  const workspaces = data?.items || [];
-  const meta = data?.meta;
 
   if (!data && isLoading) return <Loading />;
   if (error) return <FetchError />;
 
   return (
-    <WorkspaceTable
+    <WorkspaceCategoriesTable
       isRefetching={isValidating && !!data}
-      workspaces={workspaces}
-      meta={meta}
+      categories={data?.items ?? []}
+      totalCount={data?.meta?.totalItems ?? 0}
+      page={page}
+      limit={limit}
       onPageChange={setPage}
       onLimitChange={setLimit}
       search={search}
       onSearchChange={setSearch}
-      type={type}
-      onTypeChange={setType}
-      categoryId={categoryId}
-      onCategoryChange={setCategoryId}
+      mutate={mutate}
     />
   );
 }

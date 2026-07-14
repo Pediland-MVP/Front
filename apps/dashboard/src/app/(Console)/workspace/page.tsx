@@ -15,6 +15,7 @@ import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherD
 import { useInvitations } from '@/hooks/useInvitations';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
 import api from '@/hooks/swr/api-client';
 import { toast } from 'sonner';
 import { mutate as globalMutate } from 'swr';
@@ -32,6 +33,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui';
 
 export default function WorkspacePage() {
@@ -44,10 +50,12 @@ export default function WorkspacePage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createWorkspaceName, setCreateWorkspaceName] = useState('');
+  const [createWorkspaceCategoryId, setCreateWorkspaceCategoryId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isTransferOpen, setIsTransferOpen] = useState(false);
+  const { categories } = useWorkspaceCategories();
 
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
 
@@ -65,15 +73,19 @@ export default function WorkspacePage() {
     : tWorkspace('title').substring(0, 2).toUpperCase();
 
   const handleCreateWorkspace = async () => {
-    if (!createWorkspaceName.trim()) return;
+    if (!createWorkspaceName.trim() || !createWorkspaceCategoryId) return;
     setIsCreating(true);
     try {
-      const response = await api.post('/workspaces', { name: createWorkspaceName.trim() });
+      const response = await api.post('/workspaces', {
+        name: createWorkspaceName.trim(),
+        categoryId: createWorkspaceCategoryId,
+      });
       const newWs = response?.data?.data || response?.data || response;
       toast.success(tWorkspace('create_success'));
 
       setIsCreateOpen(false);
       setCreateWorkspaceName('');
+      setCreateWorkspaceCategoryId('');
 
       if (newWs && newWs.id) {
         await changeWorkspace(newWs.id);
@@ -168,12 +180,34 @@ export default function WorkspacePage() {
                       autoFocus
                     />
                   </div>
+                  <div className="space-y-2 text-right">
+                    <label className="block pr-1 text-sm font-medium text-gray-700">
+                      {tWorkspace('category')}
+                    </label>
+                    <Select
+                      value={createWorkspaceCategoryId}
+                      onValueChange={setCreateWorkspaceCategoryId}
+                      disabled={isCreating}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={tWorkspace('category_placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.nameFa}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="mt-2 flex justify-end gap-2">
                     <Button
                       variant="outline"
                       onClick={() => {
                         setIsCreateOpen(false);
                         setCreateWorkspaceName('');
+                        setCreateWorkspaceCategoryId('');
                       }}
                       disabled={isCreating}
                       className="rounded-xl"
@@ -182,7 +216,9 @@ export default function WorkspacePage() {
                     </Button>
                     <Button
                       onClick={handleCreateWorkspace}
-                      disabled={isCreating || !createWorkspaceName.trim()}
+                      disabled={
+                        isCreating || !createWorkspaceName.trim() || !createWorkspaceCategoryId
+                      }
                       className="min-w-[80px] rounded-xl"
                     >
                       {isCreating ? tWorkspace('creating') : tWorkspace('create')}

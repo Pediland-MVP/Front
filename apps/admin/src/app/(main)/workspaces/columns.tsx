@@ -52,6 +52,18 @@ export function useWorkspaceColumns(): ColumnDef<WorkspaceRow>[] {
       ),
     },
     {
+      id: 'category',
+      header: t('category'),
+      cell: ({ row }) => {
+        const category = row.original.category;
+        return category ? (
+          <span>{category.nameFa}</span>
+        ) : (
+          <span className="text-muted-foreground text-xs">{t('noCategory')}</span>
+        );
+      },
+    },
+    {
       accessorKey: 'subscriptionStatus',
       header: t('subscriptionStatus'),
       cell: ({ row }) => {
