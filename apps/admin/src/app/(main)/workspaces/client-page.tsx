@@ -13,13 +13,15 @@ export default function WorkspacesPageClient() {
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [debouncedSearch] = useDebounce(search, 750);
 
   const searchQuery = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : '';
   const typeQuery = type ? `&type=${type}` : '';
+  const categoryQuery = categoryId ? `&categoryId=${categoryId}` : '';
 
   const { data, isLoading, isValidating, error } = useSWR(
-    `/workspaces?limit=${limit}&page=${page}${searchQuery}${typeQuery}`,
+    `/workspaces?limit=${limit}&page=${page}${searchQuery}${typeQuery}${categoryQuery}`,
     fetcher,
     { keepPreviousData: true },
   );
@@ -41,6 +43,8 @@ export default function WorkspacesPageClient() {
       onSearchChange={setSearch}
       type={type}
       onTypeChange={setType}
+      categoryId={categoryId}
+      onCategoryChange={setCategoryId}
     />
   );
 }
