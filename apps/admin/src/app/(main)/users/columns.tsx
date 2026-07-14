@@ -69,6 +69,24 @@ export function columns(
       },
     },
     {
+      id: 'fullName',
+      accessorFn: (row) => `${row.firstname} ${row.lastname}`,
+      header: 'نام و نام خانوادگی',
+      cell: ({ row }) => {
+        const fullName = row.getValue('fullName') as string;
+        const id = row.original.id;
+
+        return (
+          <Link
+            href={`/users/${id}`}
+            className="text-primary hover:text-secondary underline-offset-4 hover:underline"
+          >
+            {fullName}
+          </Link>
+        );
+      },
+    },
+    {
       id: 'isIgTokenValid',
       accessorFn: (row) => (!!row.instagrams?.[0]?.isIgTokenValid ? 'متصل' : 'قطع'),
       header: 'وضعیت اتصال',
@@ -176,24 +194,6 @@ export function columns(
             <span className="text-muted-foreground text-xs">ندارد</span>
           ),
         header: 'دسته‌بندی',
-      },
-      {
-        id: 'fullName',
-        accessorFn: (row) => `${row.firstname} ${row.lastname}`,
-        header: 'نام و نام خانوادگی',
-        cell: ({ row }) => {
-          const fullName = row.getValue('fullName') as string;
-          const id = row.original.id;
-
-          return (
-            <Link
-              href={`/users/${id}`}
-              className="text-primary hover:text-secondary underline-offset-4 hover:underline"
-            >
-              {fullName}
-            </Link>
-          );
-        },
       },
       {
         id: 'followsCount',
