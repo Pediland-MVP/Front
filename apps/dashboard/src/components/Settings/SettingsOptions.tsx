@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import {
   CreditCardIcon,
   CrownSimpleIcon,
+  DevicesIcon,
   InstagramLogoIcon,
   PasswordIcon,
   UserCircleIcon,
@@ -59,6 +60,11 @@ export const SettingsOptions = () => {
       title: t('password'),
       url: '/settings/password',
       icon: PasswordIcon,
+    },
+    {
+      title: t('account_sessions'),
+      url: '/settings/account-session-management',
+      icon: DevicesIcon,
     },
   ];
 

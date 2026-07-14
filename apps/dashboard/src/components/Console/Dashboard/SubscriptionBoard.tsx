@@ -106,8 +106,10 @@ export const SubscriptionBoard = () => {
                 {user?.firstname} {user?.lastname}، {t('welcome')}!
               </div>
               <div className="mb-1 flex items-center gap-1">
-                <span className="text-muted-foreground">{t('mobile')}:</span>
-                <span className="font-semibold tracking-wider">{user?.mobile}</span>
+                <span className="text-muted-foreground">
+                  {user?.email ? t('email') : t('mobile')}:
+                </span>
+                <span className="font-semibold tracking-wider">{user?.email || user?.mobile}</span>
               </div>
               {currentWorkspace && (
                 <div className="mb-1 flex items-center gap-1">

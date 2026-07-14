@@ -4,7 +4,7 @@ import { Button } from '@/components/ui';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
 
 type ChooseAutomationTypeProps = {
@@ -13,12 +13,9 @@ type ChooseAutomationTypeProps = {
   onSelect: (option: ContentTypeOption) => any;
 };
 
-export function ChooseAutomationType({
-  open,
-  onOpenChange,
-  onSelect,
-}: ChooseAutomationTypeProps) {
+export function ChooseAutomationType({ open, onOpenChange, onSelect }: ChooseAutomationTypeProps) {
   const t_contentTypes = useTranslations('Automations.Contents.Types');
+  const locale = useLocale();
   const isMobile = useMediaQuery('only screen and (max-width : 768px)');
 
   const handleSelect = (option: ContentTypeOption) => {
@@ -39,11 +36,13 @@ export function ChooseAutomationType({
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-900">
             {option.icon}
           </span>
-          <span className="flex flex-col items-start gap-0.5">
-            <span className="text-sm font-medium">
+          <span className="flex min-w-0 flex-col items-start gap-0.5">
+            <span className="text-sm font-medium whitespace-nowrap">
               {t_contentTypes(`buttons.titles.${option.value}`)}
             </span>
-            <span className="text-muted-foreground text-xs font-normal">
+            <span
+              className={`text-muted-foreground w-full text-xs font-normal whitespace-normal ${locale === 'fa' ? 'text-right' : 'text-left'}`}
+            >
               {t_contentTypes(`buttons.descriptions.${option.value}`)}
             </span>
           </span>

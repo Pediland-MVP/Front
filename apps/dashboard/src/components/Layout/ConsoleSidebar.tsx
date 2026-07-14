@@ -119,12 +119,16 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       icon: SlidersIcon,
       isActive: true,
     },
-    {
-      title: t('installApp'),
-      url: '/install',
-      icon: DownloadSimpleIcon,
-      isActive: true,
-    },
+    ...(isMobile
+      ? [
+          {
+            title: t('installApp'),
+            url: '/install',
+            icon: DownloadSimpleIcon,
+            isActive: true,
+          },
+        ]
+      : []),
     {
       title: t('learn'),
       url: '/help/learn',
