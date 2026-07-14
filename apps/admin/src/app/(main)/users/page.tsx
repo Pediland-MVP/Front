@@ -1,4 +1,4 @@
-// src/app/customers/page.tsx
+// src/app/users/page.tsx
 
 import CustomersPageClient from './client-page';
 

@@ -1,4 +1,4 @@
-// src/app/customers/[id]/page.tsx
+// src/app/users/[id]/page.tsx
 'use client';
 
 import api, { fetcher } from '@/hooks/swr/api-client';
@@ -208,7 +208,7 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
     try {
       await api.delete(`/users/${id}/deleteFlag`);
       setIsDeleteUserDialogOpen(false);
-      router.push('/customers');
+      router.push('/users');
       toast.success('کاربر با موفقیت حذف شد.');
     } catch (error) {
       console.error(error);

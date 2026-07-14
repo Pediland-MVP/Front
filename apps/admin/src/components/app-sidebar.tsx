@@ -61,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: t('myCustomers'),
-        url: '/customers',
+        url: '/users',
         icon: UsersIcon,
       },
       {

@@ -94,7 +94,7 @@ export function taskColumns({
         const { id, firstname, lastname } = row.original.user;
         return (
           <Link
-            href={`/customers/${id}`}
+            href={`/users/${id}`}
             className="text-primary hover:text-secondary underline-offset-4 hover:underline"
           >
             {`${firstname} ${lastname}`.trim()}

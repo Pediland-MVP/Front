@@ -35,7 +35,7 @@ export const paymentColumns: ColumnDef<Payment>[] = [
       if (!owner) return <span>-</span>;
       return (
         <Link
-          href={`/customers/${owner.id}`}
+          href={`/users/${owner.id}`}
           className="text-primary hover:text-secondary underline-offset-4 hover:underline"
         >
           {fullName || '-'}

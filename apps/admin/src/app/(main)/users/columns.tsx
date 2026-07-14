@@ -62,7 +62,7 @@ export function columns(
       cell: ({ row }) => {
         const status = row.getValue('status') as UserStatus;
         return (
-          <Link href={`/customers/${row.original.id}`}>
+          <Link href={`/users/${row.original.id}`}>
             <StatusBadge status={status} />
           </Link>
         );
@@ -187,7 +187,7 @@ export function columns(
 
           return (
             <Link
-              href={`/customers/${id}`}
+              href={`/users/${id}`}
               className="text-primary hover:text-secondary underline-offset-4 hover:underline"
             >
               {fullName}

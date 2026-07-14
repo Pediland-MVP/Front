@@ -1,4 +1,4 @@
-// src/app/(main)/customers/customer-table.tsx
+// src/app/(main)/users/customer-table.tsx
 'use client';
 
 import { Customer } from '@/types/customer';

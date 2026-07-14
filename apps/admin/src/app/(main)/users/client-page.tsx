@@ -1,4 +1,4 @@
-// src/app/(main)/customers/client-page.tsx
+// src/app/(main)/users/client-page.tsx
 'use client';
 
 import { fetcher } from '@/hooks/swr/api-client';

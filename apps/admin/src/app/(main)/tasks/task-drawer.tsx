@@ -65,7 +65,7 @@ export function TaskDrawer({
 
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <Link
-                    href={`/customers/${task.user.id}`}
+                    href={`/users/${task.user.id}`}
                     className="text-primary truncate text-sm font-semibold underline-offset-4 hover:underline"
                   >
                     {fullName || '—'}
