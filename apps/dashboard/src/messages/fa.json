@@ -1260,7 +1260,9 @@
       "delete_confirm": "حذف فضای کاری",
       "delete_success": "فضای کاری با موفقیت حذف شد",
       "deleting": "در حال حذف...",
-      "transfer_ownership_button": "انتقال مالکیت"
+      "transfer_ownership_button": "انتقال مالکیت",
+      "category": "دسته‌بندی",
+      "category_placeholder": "دسته‌بندی را انتخاب کنید"
     },
     "OwnershipTransfer": {
       "title": "انتقال مالکیت فضای کاری",
