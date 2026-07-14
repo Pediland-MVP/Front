@@ -66,13 +66,29 @@ interface BannersTableProps {
 }
 
 const emptyDefaults: FormValues = {
-  titleEn: '', titleFa: '', descriptionEn: '', descriptionFa: '', color: '#1F6F43',
-  isActive: true, order: 0, categoryIds: [], buttons: [],
+  titleEn: '',
+  titleFa: '',
+  descriptionEn: '',
+  descriptionFa: '',
+  color: '#1F6F43',
+  isActive: true,
+  order: 0,
+  categoryIds: [],
+  buttons: [],
 };
 
 export default function BannersTable({
-  isRefetching, banners, categories, totalCount, page, limit,
-  onPageChange, onLimitChange, search, onSearchChange, mutate,
+  isRefetching,
+  banners,
+  categories,
+  totalCount,
+  page,
+  limit,
+  onPageChange,
+  onLimitChange,
+  search,
+  onSearchChange,
+  mutate,
 }: BannersTableProps) {
   const t = useTranslations('Banners');
   const t_ec = useTranslations('ERROR_CODES');
@@ -82,7 +98,10 @@ export default function BannersTable({
   const [tableInstance, setTableInstance] = useState<Table<BannerRow> | null>(null);
   const { onFocus } = useSelectOnFocus();
 
-  const form = useForm<FormValues>({ resolver: zodResolver(FormSchema), defaultValues: emptyDefaults });
+  const form = useForm<FormValues>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: emptyDefaults,
+  });
   const { fields, append, remove } = useFieldArray({ control: form.control, name: 'buttons' });
 
   const openCreate = () => {
@@ -94,9 +113,13 @@ export default function BannersTable({
   const openEdit = (row: BannerRow) => {
     setEditing(row);
     form.reset({
-      titleEn: row.titleEn, titleFa: row.titleFa,
-      descriptionEn: row.descriptionEn, descriptionFa: row.descriptionFa,
-      color: row.color, isActive: row.isActive, order: row.order,
+      titleEn: row.titleEn,
+      titleFa: row.titleFa,
+      descriptionEn: row.descriptionEn,
+      descriptionFa: row.descriptionFa,
+      color: row.color,
+      isActive: row.isActive,
+      order: row.order,
       categoryIds: row.categories.map((c) => c.id),
       buttons: row.buttons.map((b) => ({ textEn: b.textEn, textFa: b.textFa, url: b.url })),
     });
@@ -179,75 +202,122 @@ export default function BannersTable({
         {tableInstance && <DataTablePagination table={tableInstance} totalCount={totalCount} />}
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-lg overflow-y-auto" style={{ maxHeight: '90vh' }} dir="rtl">
+          <DialogContent
+            className="max-w-lg overflow-y-auto"
+            style={{ maxHeight: '90vh' }}
+            dir="rtl"
+          >
             <DialogHeader>
               <DialogTitle>{editing ? t('editBanner') : t('addBanner')}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <FormField control={form.control} name="titleFa" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('titleFa')}</FormLabel>
-                    <FormControl><Input {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="titleEn" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('titleEn')}</FormLabel>
-                    <FormControl><Input dir="ltr" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="descriptionFa" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('descriptionFa')}</FormLabel>
-                    <FormControl><Textarea {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="descriptionEn" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('descriptionEn')}</FormLabel>
-                    <FormControl><Textarea dir="ltr" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="color" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('color')}</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center gap-2">
-                        <input type="color" value={field.value} onChange={field.onChange} className="h-9 w-12 rounded border" />
+                <FormField
+                  control={form.control}
+                  name="titleFa"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('titleFa')}</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="titleEn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('titleEn')}</FormLabel>
+                      <FormControl>
                         <Input dir="ltr" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="order" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('order')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        onInput={onInputP2EHandler}
-                        onFocus={onFocus}
-                        placeholder="۰"
-                        value={field.value ? formatNumber(field.value) : ''}
-                        onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="isActive" render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
-                    <FormLabel>{t('isActive')}</FormLabel>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                  </FormItem>
-                )} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="descriptionFa"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('descriptionFa')}</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="descriptionEn"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('descriptionEn')}</FormLabel>
+                      <FormControl>
+                        <Textarea dir="ltr" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('color')}</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={field.value}
+                            onChange={field.onChange}
+                            className="h-9 w-12 rounded border"
+                          />
+                          <Input dir="ltr" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="order"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('order')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          onInput={onInputP2EHandler}
+                          onFocus={onFocus}
+                          placeholder="۰"
+                          value={formatNumber(field.value)}
+                          onChange={(e) =>
+                            field.onChange(e.target.value === '' ? 0 : +e.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between">
+                      <FormLabel>{t('isActive')}</FormLabel>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
                 <div>
                   <FormLabel>{t('categories')}</FormLabel>
@@ -280,14 +350,32 @@ export default function BannersTable({
                     {fields.map((field, index) => (
                       <div key={field.id} className="flex flex-col gap-2 rounded-md border p-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-xs">{t('button')} {index + 1}</span>
-                          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                          <span className="text-muted-foreground text-xs">
+                            {t('button')} {index + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => remove(index)}
+                          >
                             <Trash className="h-4 w-4" />
                           </Button>
                         </div>
-                        <Input placeholder={t('buttonTextFa')} {...form.register(`buttons.${index}.textFa`)} />
-                        <Input dir="ltr" placeholder={t('buttonTextEn')} {...form.register(`buttons.${index}.textEn`)} />
-                        <Input dir="ltr" placeholder="https://..." {...form.register(`buttons.${index}.url`)} />
+                        <Input
+                          placeholder={t('buttonTextFa')}
+                          {...form.register(`buttons.${index}.textFa`)}
+                        />
+                        <Input
+                          dir="ltr"
+                          placeholder={t('buttonTextEn')}
+                          {...form.register(`buttons.${index}.textEn`)}
+                        />
+                        <Input
+                          dir="ltr"
+                          placeholder="https://..."
+                          {...form.register(`buttons.${index}.url`)}
+                        />
                       </div>
                     ))}
                     <Button
@@ -302,8 +390,12 @@ export default function BannersTable({
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t('cancel')}</Button>
-                  <Button type="submit" disabled={isSubmitting}>{isSubmitting ? t('saving') : t('save')}</Button>
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    {t('cancel')}
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? t('saving') : t('save')}
+                  </Button>
                 </div>
               </form>
             </Form>
