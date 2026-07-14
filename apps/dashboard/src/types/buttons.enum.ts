@@ -1,6 +1,1 @@
-export enum ButtonTypeEnum {
-  START_AUTOMATION = 'startAutomation',
-  TEXT = 'text',
-  URL = 'url',
-  CONSENT = 'CONSENT',
-}
+export * from '@/components/automation-builder/types/buttons.enum';

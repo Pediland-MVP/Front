@@ -25,6 +25,8 @@
       "@/components/ui/*": ["../../../packages/ui/src/components/ui/*"],
       "@/components/ui-custom/*": ["../../../packages/ui/src/components/ui-custom/*"],
       "@/lib/utils": ["../../../packages/ui/src/lib/utils.ts"],
+      "@/components/automation-builder": ["../../../packages/ui/src/automation-builder/index.ts"],
+      "@/components/automation-builder/*": ["../../../packages/ui/src/automation-builder/*"],
       "@components/*": ["./components/*"]
     },
     "plugins": [
