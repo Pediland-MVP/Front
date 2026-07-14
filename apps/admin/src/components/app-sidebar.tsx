@@ -24,6 +24,7 @@ import {
   SlidersHorizontalIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
+  MegaphoneIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -58,6 +59,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('workspaceCategories'),
         url: '/workspace-categories',
         icon: TagIcon,
+      },
+      {
+        title: t('banners'),
+        url: '/banners',
+        icon: MegaphoneIcon,
       },
       {
         title: t('myCustomers'),
