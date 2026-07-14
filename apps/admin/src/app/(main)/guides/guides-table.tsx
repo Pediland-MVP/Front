@@ -48,14 +48,12 @@ import {
 } from '@/components/ui/select';
 import api from '@/hooks/swr/api-client';
 import { onInputP2EHandler } from '@/lib/p2eNumber';
+import { escapeMarkdownHtml, sanitizeUrl } from '@befroosh/ui/lib/markdown';
 
 // Helper for parsing simple Markdown to HTML for preview
 export function parseMarkdownToHtml(markdown: string): string {
   if (!markdown) return '';
-  let html = markdown;
-
-  // Escape HTML tags to prevent XSS (except allowed span tags for colors)
-  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  let html = escapeMarkdownHtml(markdown);
 
   // Restore allowed span tags for colors (like <span style="color: ...">...</span>)
   html = html.replace(
@@ -97,13 +95,15 @@ export function parseMarkdownToHtml(markdown: string): string {
   // Images
   html = html.replace(
     /!\[(.*?)\]\((.*?)\)/g,
-    '<img src="$2" alt="$1" class="rounded-lg max-w-full my-4 shadow-sm border border-slate-100" />',
+    (_match, alt, url) =>
+      `<img src="${sanitizeUrl(url)}" alt="${alt}" class="rounded-lg max-w-full my-4 shadow-sm border border-slate-100" />`,
   );
 
   // Links
   html = html.replace(
     /\[(.*?)\]\((.*?)\)/g,
-    '<a href="$2" target="_blank" class="text-blue-600 hover:underline hover:text-blue-800 font-medium">$1</a>',
+    (_match, text, url) =>
+      `<a href="${sanitizeUrl(url)}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline hover:text-blue-800 font-medium">${text}</a>`,
   );
 
   // Lists

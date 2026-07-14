@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import React, { ReactNode, useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '@/hooks/swr/api-client';
+import { escapeMarkdownHtml, sanitizeUrl } from '@befroosh/ui/lib/markdown';
 
 import {
   Button,
@@ -121,15 +122,12 @@ export const AutoAspectPlayer = ({
 // Helper for parsing simple Markdown to HTML inside popovers
 function parseMarkdownToHtml(markdown: string): string {
   if (!markdown) return '';
-  let html = markdown;
-
-  // Escape HTML tags to prevent XSS (except allowed span tags for colors)
-  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  let html = escapeMarkdownHtml(markdown);
 
   // Restore allowed span tags for colors (like <span style="color: ...">...</span>)
   html = html.replace(
     /&lt;span\s+style=&quot;color:\s*(#[0-9a-fA-F]{3,6}|[a-zA-Z]+);?&quot;&gt;([\s\S]*?)&lt;\/span&gt;/gi,
-    (match, color, content) => {
+    (_match, color, content) => {
       return `<span style="color: ${color}">${content}</span>`;
     },
   );
@@ -172,13 +170,15 @@ function parseMarkdownToHtml(markdown: string): string {
   // Controlled Image sizes
   html = html.replace(
     /!\[(.*?)\]\((.*?)\)/g,
-    '<img src="$2" alt="$1" class="rounded-xl max-w-full md:max-w-sm mx-auto block my-5 shadow-sm border border-slate-200/50 object-contain hover:scale-[1.01] duration-300 transition-transform" />',
+    (_match, alt, url) =>
+      `<img src="${sanitizeUrl(url)}" alt="${alt}" class="rounded-xl max-w-full md:max-w-sm mx-auto block my-5 shadow-sm border border-slate-200/50 object-contain hover:scale-[1.01] duration-300 transition-transform" />`,
   );
 
   // Links
   html = html.replace(
     /\[(.*?)\]\((.*?)\)/g,
-    '<a href="$2" target="_blank" class="text-blue-600 hover:underline font-semibold">$1</a>',
+    (_match, text, url) =>
+      `<a href="${sanitizeUrl(url)}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">${text}</a>`,
   );
 
   // Lists
