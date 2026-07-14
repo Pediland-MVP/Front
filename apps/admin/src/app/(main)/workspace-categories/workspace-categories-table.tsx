@@ -89,7 +89,7 @@ export default function WorkspaceCategoriesTable({
       mutate();
     } catch (err: any) {
       const code = err?.response?.data?.code;
-      toast.error(t_ec(code) || t('deleteConfirm'));
+      toast.error(t_ec(code) || t('toastError'));
     }
   };
 
@@ -109,7 +109,7 @@ export default function WorkspaceCategoriesTable({
       mutate();
     } catch (err: any) {
       const code = err?.response?.data?.code;
-      toast.error(t_ec(code) || t('save'));
+      toast.error(t_ec(code) || t('toastError'));
     } finally {
       setIsSubmitting(false);
     }
