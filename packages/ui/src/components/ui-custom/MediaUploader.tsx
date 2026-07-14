@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { AudioRecorderWithVisualizer } from './AudioRecorder';
-import { AutomationContentTypesEnum } from '@/constants/automationContent.enum';
+import { AutomationContentTypesEnum } from '@/automation-builder/constants/automationContent.enum';
 import { CheckCircleIcon, CheckIcon } from '@phosphor-icons/react/dist/ssr';
 
 export const MediaUploader = ({

@@ -12,7 +12,8 @@
     ".": "./src/index.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/markdown": "./src/lib/markdown.ts",
-    "./hooks/use-media-query": "./src/hooks/use-media-query.ts"
+    "./hooks/use-media-query": "./src/hooks/use-media-query.ts",
+    "./types/fileUploader": "./src/types/fileUploader.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

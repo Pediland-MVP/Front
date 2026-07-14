@@ -27,6 +27,8 @@
       "@/lib/utils": ["../../../packages/ui/src/lib/utils.ts"],
       "@/components/automation-builder": ["../../../packages/ui/src/automation-builder/index.ts"],
       "@/components/automation-builder/*": ["../../../packages/ui/src/automation-builder/*"],
+      "@/automation-builder": ["../../../packages/ui/src/automation-builder/index.ts"],
+      "@/automation-builder/*": ["../../../packages/ui/src/automation-builder/*"],
       "@components/*": ["./components/*"]
     },
     "plugins": [
