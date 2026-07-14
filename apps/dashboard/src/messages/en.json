@@ -743,6 +743,15 @@
         "upgrade": "Upgrade Subscription"
       }
     },
+    "FreeQuotaWarningDialog": {
+      "title": "Free Automations Used Up",
+      "description": "You've used all of your free automations. Adding a new automation will turn on promotion mode for this page.",
+      "usageLabel": "{used} of {limit} free automations used",
+      "buttons": {
+        "cancel": "Cancel",
+        "confirm": "Continue and add automation"
+      }
+    },
     "SetupWarning": {
       "subscriptionWarningText": "You are using the automation demo. Please purchase a subscription first.",
       "instagramWarningText": "You are using the automation demo. Please connect your Instagram first."

@@ -5,13 +5,15 @@ import {
   AutomationContentTypesEnum,
 } from '@/constants/automationContent.enum';
 import { ButtonTypeEnum } from '@/types/buttons.enum';
-import api from '@/hooks/swr/api-client';
+import api, { fetcher } from '@/hooks/swr/api-client';
 import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { useI18nZodErrors } from '@/hooks/useI18nZodErrors';
 import useUser from '@/hooks/useUser';
 import { cn } from '@/lib/utils';
 import { AutomationFormSchema, type AutomationFormType } from '@/schemas/automationForm';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
+import type { IResponseMessage } from '@/types/responseMessage';
+import { InstagramNamespace } from '@/types/instagram';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
@@ -29,6 +31,7 @@ import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { ConnectInstagramAlert } from './ConnectInstagramAlert';
+import { FreeQuotaWarningDialog } from './FreeQuotaWarningDialog';
 import {
   CommentReplies,
   CommentTriggerInputs,
@@ -79,6 +82,48 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
   } = useSWRImmutable(key, {
     revalidateOnMount: !!sourceId,
   });
+
+  // Same SWR key InstagramSelectField uses — dedupes, no extra request. Carries each
+  // page's `automationCount` (live) + `freeAutomationLimit`, used below to warn before
+  // the automation that would push a page over its free quota.
+  const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+  const { data: accountsResponse } = useSWRImmutable<
+    IResponseMessage<InstagramNamespace.Account[]>
+  >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
+  const accounts = accountsResponse?.data;
+
+  const [pendingSubmitValues, setPendingSubmitValues] = useState<AutomationFormType | null>(null);
+  const [freeQuotaWarning, setFreeQuotaWarning] = useState<{
+    usedCount: number;
+    limit: number;
+  } | null>(null);
+
+  /**
+   * Only meaningful for a brand-new automation (`id` unset) on a page that hasn't
+   * crossed its free quota yet — once `freeAutomationQuotaExceeded` is already true,
+   * adding another automation doesn't change anything, so no warning is shown. Checked
+   * against `freeAutomationQuotaExceeded`, not `isPromotion` — a page can be over quota
+   * but not promoted if it has active subscription coverage, and this warning is
+   * specifically about the free-quota boundary, not the (separate) subscription state.
+   * Uses the live `automationCount` (not the internal never-decreasing counter), so it
+   * only fires exactly on the automation that would cross the boundary.
+   */
+  const getFreeQuotaWarning = (
+    instagramIds: string[],
+  ): { usedCount: number; limit: number } | null => {
+    if (!accounts) return null;
+    for (const instagramId of instagramIds) {
+      const account = accounts.find((a) => a.id === instagramId);
+      if (!account) continue;
+      if (
+        !account.freeAutomationQuotaExceeded &&
+        account.automationCount >= account.freeAutomationLimit
+      ) {
+        return { usedCount: account.automationCount, limit: account.freeAutomationLimit };
+      }
+    }
+    return null;
+  };
 
   const form = useForm<AutomationFormType>({
     resolver: zodResolver(AutomationFormSchema),
@@ -331,6 +376,21 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
       return;
     }
 
+    // Only for brand-new automations: if this would be the automation that pushes a
+    // selected page over its free quota, pause and confirm before submitting.
+    if (!id) {
+      const warning = getFreeQuotaWarning(values.instagramIds);
+      if (warning) {
+        setPendingSubmitValues(values);
+        setFreeQuotaWarning(warning);
+        return;
+      }
+    }
+
+    await submitAutomation(values);
+  };
+
+  const submitAutomation = async (values: AutomationFormType) => {
     if (!values.commentStartText) {
       values.commentStartText = automationDefaults?.commentStartText || t('comment_start_text');
     }
@@ -453,6 +513,22 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
 
         {automationError && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
       </div>
+
+      {freeQuotaWarning && (
+        <FreeQuotaWarningDialog
+          isOpen={!!freeQuotaWarning}
+          usedCount={freeQuotaWarning.usedCount}
+          limit={freeQuotaWarning.limit}
+          onClose={() => {
+            setFreeQuotaWarning(null);
+            setPendingSubmitValues(null);
+          }}
+          onConfirm={() => {
+            setFreeQuotaWarning(null);
+            if (pendingSubmitValues) submitAutomation(pendingSubmitValues);
+          }}
+        />
+      )}
     </FormProvider>
   );
 };
