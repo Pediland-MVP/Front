@@ -128,6 +128,8 @@ export const DashboardBannerCarousel = () => {
       className="mb-5"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onTouchStart={() => setIsHovering(true)}
+      onTouchEnd={() => setIsHovering(false)}
     >
       <StableCarousel setApi={(api) => (apiRef.current = api)}>
         <StableCarouselContent>
