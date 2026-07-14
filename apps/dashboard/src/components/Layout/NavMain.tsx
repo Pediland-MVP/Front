@@ -1,8 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Icon } from '@phosphor-icons/react';
-import Link from 'next/link';
+import { CircleNotchIcon, Icon } from '@phosphor-icons/react';
+import Link, { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
@@ -21,6 +21,12 @@ import {
   useSidebar,
 } from '../ui';
 import { CaretLeftIcon } from '@phosphor-icons/react';
+
+const NavItemIcon = ({ icon: ItemIcon }: { icon: Icon }) => {
+  const { pending } = useLinkStatus();
+  if (pending) return <CircleNotchIcon size={24} weight="duotone" className="animate-spin" />;
+  return <ItemIcon size={24} weight="duotone" />;
+};
 
 interface NavMainProps {
   items: {
@@ -101,7 +107,7 @@ export const NavMain = ({ items }: NavMainProps) => {
                   >
                     <Link href={item.url} target={item.external ? '_blank' : '_self'}>
                       <div className="relative">
-                        <item.icon size={24} weight="duotone" />
+                        <NavItemIcon icon={item.icon} />
                         {item.badge && item.badge > 0 ? (
                           <span className="absolute -start-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-500" />
                         ) : null}

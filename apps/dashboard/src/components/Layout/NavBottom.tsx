@@ -1,13 +1,15 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import Link, { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactElement } from 'react';
 import { useTranslations } from 'next-intl';
 
 import {
+  CircleNotchIcon,
   HouseIcon,
+  Icon,
   IconProps,
   LightningIcon,
   PlusCircleIcon,
@@ -29,6 +31,20 @@ export interface NavItem {
   onClick?: () => void;
   isMain?: boolean;
 }
+
+const NavItemIcon = ({
+  icon: ItemIcon,
+  size,
+  className,
+}: {
+  icon: Icon;
+  size: number;
+  className?: string;
+}) => {
+  const { pending } = useLinkStatus();
+  if (pending) return <CircleNotchIcon size={size} className={cn('animate-spin', className)} />;
+  return <ItemIcon weight="duotone" size={size} className={className} />;
+};
 
 export const NavBottom = () => {
   const pathname = usePathname();
@@ -107,8 +123,8 @@ export const NavBottom = () => {
               href={item.href}
               className="flex flex-col items-center justify-center"
             >
-              <item.icon
-                weight="duotone"
+              <NavItemIcon
+                icon={item.icon}
                 size={iconSize}
                 className={cn('text-muted-foreground', isActive && 'text-primary')}
               />
