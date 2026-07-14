@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import Link, { useLinkStatus } from 'next/link';
 import useSWRImmutable from 'swr/immutable';
 import { usePermissions } from '@/hooks/usePermissions';
 import useUser from '@/hooks/useUser';
@@ -18,9 +18,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PlusCircleIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon, PlusCircleIcon } from '@phosphor-icons/react';
 import { ItemsStatisticCard } from './ItemsStatisticCard';
 import { DashboardStatsSkeleton } from './DashboardStats.skeleton';
+
+const AddAutomationIcon = () => {
+  const { pending } = useLinkStatus();
+  if (pending) {
+    return (
+      <CircleNotchIcon
+        weight="duotone"
+        className="text-secondary mx-auto size-6 animate-spin md:size-8"
+      />
+    );
+  }
+  return <PlusCircleIcon weight="duotone" className="text-secondary mx-auto size-6 md:size-8" />;
+};
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
@@ -133,10 +146,7 @@ export const DashboardStats = () => {
           <Link href="/automations/add">
             <CardSimple className="group h-full border-blue-200 bg-blue-50/50 duration-300">
               <CardContent className="flex flex-1 flex-col items-center justify-center gap-1 p-3 pb-2 md:py-4">
-                <PlusCircleIcon
-                  weight="duotone"
-                  className="text-secondary mx-auto size-6 md:size-8"
-                />
+                <AddAutomationIcon />
                 <div className="text-secondary/90 p-1 text-center text-sm leading-relaxed font-semibold">
                   {t('add')}
                   <br />
