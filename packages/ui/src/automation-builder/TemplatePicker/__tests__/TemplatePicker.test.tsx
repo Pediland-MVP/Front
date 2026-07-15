@@ -65,4 +65,23 @@ describe('TemplatePicker', () => {
     );
     expect(screen.getByText('قالبی یافت نشد')).toBeInTheDocument();
   });
+
+  it('renders footerSlot inside the dialog content, not detached from it', () => {
+    render(
+      <TemplatePicker
+        open
+        onOpenChange={vi.fn()}
+        templates={templates}
+        search=""
+        onSearchChange={vi.fn()}
+        onSelect={vi.fn()}
+        searchPlaceholder="جستجو"
+        emptyLabel="قالبی یافت نشد"
+        footerSlot={<button type="button">شروع از ابتدا</button>}
+      />,
+    );
+    const footerButton = screen.getByText('شروع از ابتدا');
+    const dialogContent = screen.getByRole('dialog');
+    expect(dialogContent).toContainElement(footerButton);
+  });
 });

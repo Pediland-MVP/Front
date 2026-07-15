@@ -289,7 +289,6 @@
   },
   "Automations": {
     "TemplatePicker": {
-      "title": "قالب اتوماسیون را انتخاب کنید",
       "searchPlaceholder": "جستجوی قالب",
       "empty": "قالبی یافت نشد",
       "startFromScratch": "شروع از ابتدا"

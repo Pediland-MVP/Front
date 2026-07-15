@@ -35,25 +35,23 @@ export function CreateAutomationTemplateDialog({
   );
 
   return (
-    <>
-      <TemplatePicker
-        open={open}
-        onOpenChange={onOpenChange}
-        templates={data?.items ?? []}
-        isLoading={isLoading}
-        search={search}
-        onSearchChange={setSearch}
-        onSelect={(template) => router.push(`/automations/add?templateId=${template.id}`)}
-        searchPlaceholder={t('searchPlaceholder')}
-        emptyLabel={t('empty')}
-      />
-      {open && (
+    <TemplatePicker
+      open={open}
+      onOpenChange={onOpenChange}
+      templates={data?.items ?? []}
+      isLoading={isLoading}
+      search={search}
+      onSearchChange={setSearch}
+      onSelect={(template) => router.push(`/automations/add?templateId=${template.id}`)}
+      searchPlaceholder={t('searchPlaceholder')}
+      emptyLabel={t('empty')}
+      footerSlot={
         <div className="mt-2 flex justify-center">
           <Button variant="ghost" type="button" onClick={() => router.push('/automations/add')}>
             {t('startFromScratch')}
           </Button>
         </div>
-      )}
-    </>
+      }
+    />
   );
 }

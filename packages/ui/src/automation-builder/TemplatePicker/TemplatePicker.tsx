@@ -24,6 +24,8 @@ export interface TemplatePickerProps {
   onSelect: (template: TemplateSummary) => void;
   searchPlaceholder: string;
   emptyLabel: string;
+  /** Optional extra actions rendered inside the modal, below the template grid (e.g. a "start from scratch" button). */
+  footerSlot?: React.ReactNode;
 }
 
 export function TemplatePicker({
@@ -36,6 +38,7 @@ export function TemplatePicker({
   onSelect,
   searchPlaceholder,
   emptyLabel,
+  footerSlot,
 }: TemplatePickerProps) {
   const isMobile = useMediaQuery('only screen and (max-width : 768px)');
 
@@ -62,6 +65,7 @@ export function TemplatePicker({
           ))}
         </div>
       )}
+      {footerSlot}
     </div>
   );
 
