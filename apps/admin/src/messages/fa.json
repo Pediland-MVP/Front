@@ -211,7 +211,25 @@
     "disconnected": "قطع",
     "workspace": "ورک‌اسپیس",
     "owner": "مالک",
-    "labels": "برچسب‌ها"
+    "labels": "برچسب‌ها",
+    "detailTitle": "پروفایل اینستاگرام",
+    "notFound": "اینستاگرام یافت نشد."
+  },
+  "AutomationErrors": {
+    "title": "خطاهای اتوماسیون اینستاگرام",
+    "queue": "صف",
+    "instagramColumn": "اینستاگرام",
+    "unknownAccount": "حساب نامشخص",
+    "titleColumn": "عنوان",
+    "descriptionColumn": "توضیحات",
+    "failedAt": "زمان خطا",
+    "details": "جزئیات",
+    "detailsDrawerTitle": "جزئیات خطا",
+    "code": "کد",
+    "subcode": "زیرکد",
+    "attempts": "تعداد تلاش",
+    "payload": "بار داده",
+    "noResults": "خطایی یافت نشد."
   },
   "WorkspaceCategories": {
     "title": "دسته‌بندی فضاهای کاری",
