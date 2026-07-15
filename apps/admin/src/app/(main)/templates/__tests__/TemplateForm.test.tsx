@@ -11,8 +11,12 @@ vi.mock('@/hooks/swr/api-client', () => ({
   },
   fetcher: vi.fn(),
 }));
+// Controllable (like `swr/immutable` below) rather than a fixed factory value, so the
+// edit-mode race test can simulate `/workspace-categories` resolving AFTER the template —
+// the two fetches are independent and can resolve in either order (see TemplateForm.tsx).
+const { useSWRMock } = vi.hoisted(() => ({ useSWRMock: vi.fn() }));
 vi.mock('swr', () => ({
-  default: () => ({ data: { items: [{ id: 'c1', nameFa: 'فروشگاهی' }] }, isLoading: false }),
+  default: useSWRMock,
 }));
 
 // `swr/immutable` backs both the create-mode (`data: undefined`) and edit-mode (a real
@@ -61,6 +65,12 @@ beforeAll(() => {
 beforeEach(() => {
   // Default (create-mode): no template loaded yet.
   useSWRImmutableMock.mockReturnValue({ data: undefined, isLoading: false, error: undefined });
+  // Default: categories already loaded — matches every existing test's expectations. Tests
+  // that specifically need to simulate the categories-not-loaded-yet race override this.
+  useSWRMock.mockReturnValue({
+    data: { items: [{ id: 'c1', nameFa: 'فروشگاهی' }] },
+    isLoading: false,
+  });
 });
 
 import TemplateForm from '../TemplateForm';
@@ -248,5 +258,54 @@ describe('TemplateForm (admin edit)', () => {
         }),
       ),
     );
+  });
+
+  it('does not clobber an in-progress templateTitle edit when categories resolve late (the race from the review)', async () => {
+    // Simulate `template` resolving BEFORE `/workspace-categories` — the two fetches are
+    // independent (`useSWRImmutable('/templates/:id')` vs `useSWR('/workspace-categories...')`)
+    // and can resolve in either order. With categories not loaded yet, the category label
+    // falls back to the raw id (`transformTemplateToFormValues`'s fallback).
+    useSWRMock.mockReturnValue({ data: undefined, isLoading: true });
+
+    const { rerender } = render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <TemplateForm id="t1" />
+      </NextIntlClientProvider>,
+    );
+
+    // Full prefill (effect 1) has run: templateTitle is populated, and the category badge
+    // shows the raw id fallback ("c1") since categories haven't loaded yet.
+    await waitFor(() =>
+      expect(screen.getByLabelText('عنوان')).toHaveValue(mockTemplate.templateTitle),
+    );
+    expect(screen.getByText('c1')).toBeInTheDocument();
+
+    // The admin starts editing the title before categories have resolved.
+    const editedTitle = 'عنوان ویرایش شده توسط ادمین';
+    fireEvent.change(screen.getByLabelText('عنوان'), { target: { value: editedTitle } });
+    expect(screen.getByLabelText('عنوان')).toHaveValue(editedTitle);
+
+    // `/workspace-categories` now resolves. Re-render with the same props so the mocked
+    // `useSWR` is re-invoked and picks up the new (resolved) return value — this is the
+    // same "hook value changed" transition a real SWR revalidation causes.
+    useSWRMock.mockReturnValue({
+      data: { items: [{ id: 'c1', nameFa: 'فروشگاهی' }] },
+      isLoading: false,
+    });
+    rerender(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <TemplateForm id="t1" />
+      </NextIntlClientProvider>,
+    );
+
+    // The label backfill (effect 2) should swap the category badge's raw-id fallback for the
+    // real `nameFa` label...
+    await waitFor(() => expect(screen.getByText('فروشگاهی')).toBeInTheDocument());
+    expect(screen.queryByText('c1')).not.toBeInTheDocument();
+
+    // ...WITHOUT reverting the admin's in-progress title edit back to the loaded template's
+    // original title (the bug: a second full `metaForm.reset(meta)` used to clobber this).
+    expect(screen.getByLabelText('عنوان')).toHaveValue(editedTitle);
+    expect(screen.getByLabelText('توضیحات')).toHaveValue(mockTemplate.templateDescription);
   });
 });

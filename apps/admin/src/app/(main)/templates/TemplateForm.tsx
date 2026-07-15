@@ -213,16 +213,51 @@ export default function TemplateForm({ id }: TemplateFormProps) {
   // re-runs when the actual set of loaded category ids changes, not on every unrelated render.
   const categoryOptionsKey = categoryOptions.map((option) => option.value).join(',');
 
+  // Full prefill — runs exactly once per loaded template. Gated ONLY on `template` (NOT on
+  // `categoryOptionsKey`): `template` (`useSWRImmutable`) and the category options
+  // (a separate `useSWR`) are independent fetches that can resolve in either order. If this
+  // effect also re-ran on `categoryOptionsKey` changing, a second `metaForm.reset(meta)`
+  // would silently overwrite any edit the admin made to templateTitle/templateDescription/
+  // appliesToAllCategories in the window between the two fetches resolving (see the
+  // label-backfill effect below for how the late-arriving category labels get applied
+  // instead, without a second full reset).
   useEffect(() => {
     if (!template) return;
     const { meta } = transformTemplateToFormValues(template, categoryOptions);
     metaForm.reset(meta);
     setThumbnailPreviewUrl(template.templateImage?.url ?? null);
-    // `metaForm` is a stable react-hook-form instance; re-run when the fetched template
-    // changes, or when `categoryOptions` finishes loading (it's fetched separately, so it
-    // can arrive after `template` and needs to backfill `categoryIds` labels).
+    // `metaForm` is a stable react-hook-form instance; `categoryOptions` is intentionally
+    // excluded — see the comment above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [template, categoryOptionsKey]);
+  }, [template]);
+
+  // Label backfill — reacts ONLY to `categoryOptions` finishing loading (`categoryOptionsKey`
+  // changes at most once, since it comes from a plain non-paginated `useSWR` fetch). Re-reads
+  // the form's CURRENT values via `getValues` (rather than depending on them) and only ever
+  // calls `setValue('categoryIds', ...)` — never `reset` — so it can never clobber
+  // templateTitle/templateDescription/appliesToAllCategories or any other field the admin may
+  // be mid-edit on. It's also a no-op (no `setValue` call) when nothing actually changed, so
+  // it doesn't cause an extra render on top of the one `categoryOptionsKey` itself already
+  // caused.
+  useEffect(() => {
+    if (!template) return;
+    const { appliesToAllCategories, categoryIds } = metaForm.getValues();
+    if (appliesToAllCategories || !categoryIds.length) return;
+
+    const relabeledCategoryIds = categoryIds.map(
+      (option) => categoryOptions.find((candidate) => candidate.value === option.value) ?? option,
+    );
+    const labelsChanged = relabeledCategoryIds.some(
+      (option, index) => option.label !== categoryIds[index].label,
+    );
+    if (!labelsChanged) return;
+
+    metaForm.setValue('categoryIds', relabeledCategoryIds);
+    // `metaForm`/`categoryOptions` are read via `getValues`/closure on purpose — see the
+    // comment above; only `categoryOptionsKey` (and `template`'s presence) should retrigger
+    // this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryOptionsKey, template]);
 
   const appliesToAll = metaForm.watch('appliesToAllCategories');
 
