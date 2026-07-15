@@ -29,6 +29,7 @@ export function AutomationBuilder({
   headerSlot,
   helpSlots,
   beforeSubmit,
+  onInvalid,
   hasInstagram,
   isPromotion,
   commentRepliesSlot,
@@ -61,7 +62,10 @@ export function AutomationBuilder({
 
   const handleSubmit = async (values: AutomationFormType) => {
     if (beforeSubmit) {
-      const shouldProceed = await beforeSubmit(values);
+      const shouldProceed = await beforeSubmit(values, {
+        setError: form.setError,
+        setFocus: form.setFocus,
+      });
       if (!shouldProceed) return;
     }
     setInternalSubmitting(true);
@@ -74,7 +78,7 @@ export function AutomationBuilder({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-3.5">
+      <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="grid gap-3.5">
         {headerSlot}
 
         <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">

@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AutomationBuilder } from '../AutomationBuilder';
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
 import type { AutomationFormType } from '../schemas/automationForm';
+import type { AutomationBuilderFormHelpers } from '../AutomationBuilder.types';
 
 // Conditions/Triggers/Contents/ChooseAutomationType all call `useTranslations(...)`.
 // Without a `NextIntlClientProvider` this throws "No intl context found" — stub it to
@@ -147,5 +148,59 @@ describe('AutomationBuilder (shared, mode=template)', () => {
       />,
     );
     expect(container.querySelector('._just-followers')).toBeInTheDocument();
+  });
+
+  it('calls onInvalid (not onSubmit) when the internal zodResolver rejects the submit', async () => {
+    const onSubmit = vi.fn();
+    const onInvalid = vi.fn();
+    render(
+      <AutomationBuilder
+        mode="template"
+        apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        // Deliberately missing `instagramIds`/`contents` — required by
+        // `AutomationFormSchema` — so `zodResolver` rejects the submit and
+        // `form.handleSubmit`'s "onInvalid" branch (this component's `onInvalid` prop)
+        // fires instead of `handleSubmit`/`onSubmit`.
+        initialValue={{ isDirect: true, isComment: false }}
+        onSubmit={onSubmit}
+        onInvalid={onInvalid}
+        submitLabel="ذخیره"
+        cancelLabel="انصراف"
+      />,
+    );
+    fireEvent.click(screen.getByText('ذخیره'));
+    await waitFor(() => expect(onInvalid).toHaveBeenCalled());
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("passes working setError/setFocus form helpers as beforeSubmit's second argument", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    let receivedHelpers: AutomationBuilderFormHelpers | undefined;
+    const beforeSubmit = vi.fn(
+      (_values: AutomationFormType, formHelpers: AutomationBuilderFormHelpers) => {
+        receivedHelpers = formHelpers;
+        // Exercise both helpers for real — a thrown error here would fail the test,
+        // proving they're bound to the live form instance (not stubs).
+        formHelpers.setError('commentStartText', { message: 'required' });
+        formHelpers.setFocus('commentStartText');
+        return true;
+      },
+    );
+    render(
+      <AutomationBuilder
+        mode="template"
+        apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        initialValue={validInitialValue}
+        onSubmit={onSubmit}
+        beforeSubmit={beforeSubmit}
+        submitLabel="ذخیره"
+        cancelLabel="انصراف"
+      />,
+    );
+    fireEvent.click(screen.getByText('ذخیره'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(receivedHelpers).toBeDefined();
+    expect(typeof receivedHelpers?.setError).toBe('function');
+    expect(typeof receivedHelpers?.setFocus).toBe('function');
   });
 });

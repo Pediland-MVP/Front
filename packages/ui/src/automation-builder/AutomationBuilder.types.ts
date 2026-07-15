@@ -1,5 +1,15 @@
+import type { FieldErrors, UseFormSetError, UseFormSetFocus } from 'react-hook-form';
 import type { AutomationBuilderApiClient } from './types/apiClient';
 import type { AutomationFormType } from './schemas/automationForm';
+
+/** Handed to `beforeSubmit` as its second argument so a caller-side cross-field check
+ * (one not expressible in `AutomationFormSchema` itself) can still highlight/focus the
+ * offending field, the same way `form.setError`/`form.setFocus` did in the pre-refactor
+ * dashboard `AutomationForm`'s own inline `onSubmit`. */
+export interface AutomationBuilderFormHelpers {
+  setError: UseFormSetError<AutomationFormType>;
+  setFocus: UseFormSetFocus<AutomationFormType>;
+}
 
 export type AutomationBuilderMode = 'automation' | 'template';
 
@@ -37,8 +47,18 @@ export interface AutomationBuilderProps {
    * hardcoded dialogs each Form section used to render internally. */
   helpSlots?: Partial<Record<AutomationBuilderHelpSlotKey, React.ReactNode>>;
   /** Runs after schema validation succeeds but before `onSubmit` — return/resolve `false`
-   * to abort (e.g. the dashboard's free-quota warning dialog intercepting submission). */
-  beforeSubmit?: (values: AutomationFormType) => Promise<boolean> | boolean;
+   * to abort (e.g. the dashboard's free-quota warning dialog intercepting submission).
+   * The second argument exposes `setError`/`setFocus` on the internal form instance, so a
+   * cross-field check done here (not expressible in `AutomationFormSchema`) can still
+   * highlight and scroll to the offending field before aborting. */
+  beforeSubmit?: (
+    values: AutomationFormType,
+    formHelpers: AutomationBuilderFormHelpers,
+  ) => Promise<boolean> | boolean;
+  /** Runs when `AutomationBuilder`'s internal `zodResolver` validation fails on submit
+   * (the `form.handleSubmit` "onInvalid" callback) — e.g. to show a generic "please fix
+   * the form" toast when the failing field isn't visible above the fold. */
+  onInvalid?: (errors: FieldErrors<AutomationFormType>) => void;
   /** Whether the current workspace/user already has a connected Instagram account. Passed
    * down to `JustFollowers` (drives its follow-message default). The caller computes this
    * (it used to be read internally via a dashboard-only `useUser()` hook) so this

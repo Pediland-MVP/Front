@@ -14,6 +14,7 @@ import {
   AutomationContentTypesEnum,
   ButtonTypeEnum,
   ValidationTypeEnum,
+  type AutomationBuilderFormHelpers,
   type AutomationFormType,
 } from '@/automation-builder';
 import api, { fetcher } from '@/hooks/swr/api-client';
@@ -348,7 +349,10 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
    * itself, so it isn't repeated here). Returning `false` aborts the submission —
    * `AutomationBuilder` never calls `onSubmit` in that case.
    */
-  const handleBeforeSubmit = async (values: AutomationFormType): Promise<boolean> => {
+  const handleBeforeSubmit = async (
+    values: AutomationFormType,
+    { setError, setFocus }: AutomationBuilderFormHelpers,
+  ): Promise<boolean> => {
     let haveError = false;
 
     const firstType = values.contents[0]?.type;
@@ -372,6 +376,13 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
       !values.justFollowers &&
       !values.commentStartText
     ) {
+      // Restores the pre-refactor `AutomationForm`'s own inline `onSubmit` behavior: highlight
+      // + scroll to the field, not just a toast, since this is a cross-field business rule
+      // that `AutomationFormSchema` itself doesn't (and can't cheaply) express.
+      setError('commentStartText', {
+        message: 'در حالت کامنت، پیام درخواست شروع ضروری است',
+      });
+      setFocus('commentStartText');
       toast.error('در حالت کامنت، پیام درخواست شروع ضروری است');
       haveError = true;
     }
@@ -435,6 +446,17 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     return true;
   };
 
+  /**
+   * `AutomationBuilder`'s internal `form.handleSubmit`'s "onInvalid" callback — fires when
+   * the shared `zodResolver` rejects the submit. Restores the generic "please fix the
+   * form" toast the pre-refactor `AutomationForm`'s own `form.handleSubmit(onSubmit, (e) =>
+   * ...)` second argument showed, for the case where the failing field isn't visible
+   * above the fold and no per-field message is on screen yet.
+   */
+  const handleInvalid = () => {
+    toast.error(t('form_errors'));
+  };
+
   const resolveFreeQuotaPromise = (proceed: boolean) => {
     setFreeQuotaWarning(null);
     freeQuotaResolveRef.current?.(proceed);
@@ -481,6 +503,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
           isSubmitting={isSubmitting}
           onSubmit={submitAutomation}
           beforeSubmit={handleBeforeSubmit}
+          onInvalid={handleInvalid}
           submitLabel={id ? t('save_changes') : t('add_automation')}
           cancelLabel={t('cancel')}
           onCancel={() => router.back()}
