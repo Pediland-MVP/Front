@@ -251,10 +251,20 @@ export const Contents = ({
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
-            <p className="font-bold text-gray-500">هنوز محتوایی اضافه نشده‌است</p>
-            {/* <p className="text-center text-sm">
-              روی دکمه "افزودن محتوا" کلیک کنید و نوع محتوای خود را انتخاب کنید
-            </p> */}
+            <p className="font-bold text-gray-500">{t('no_content_title')}</p>
+            <p className="text-muted-foreground mt-1 text-center text-sm">
+              {t('no_content_description')}
+            </p>
+
+            <Button
+              variant="default"
+              type="button"
+              className="bg-primary mt-4 w-64 text-white"
+              onClick={() => setIsChoosingType(true)}
+            >
+              <PlusCircleIcon />
+              {t('add_step')}
+            </Button>
           </div>
         )}
         {contents.length > 0 && (
@@ -329,16 +339,20 @@ export const Contents = ({
 
         {!isChoosingType && (
           <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="default"
-              type="button"
-              className="bg-primary flex-1 text-white"
-              disabled={isChoosingType}
-              onClick={() => setIsChoosingType(true)}
-            >
-              <PlusCircleIcon />
-              {t('add_content')}
-            </Button>
+            {/* Empty state renders its own "add step" CTA above, so only show the
+                inline add-content button once there's at least one step. */}
+            {contents.length > 0 && (
+              <Button
+                variant="default"
+                type="button"
+                className="bg-primary flex-1 text-white"
+                disabled={isChoosingType}
+                onClick={() => setIsChoosingType(true)}
+              >
+                <PlusCircleIcon />
+                {t('add_content')}
+              </Button>
+            )}
             <div className="flex shrink-0 items-center justify-center">{helpSlot}</div>
           </div>
         )}

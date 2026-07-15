@@ -24,6 +24,7 @@ import {
   SlidersHorizontalIcon,
   BookmarksSimpleIcon,
   ClipboardTextIcon,
+  InstagramLogoIcon,
   MegaphoneIcon,
   FileTextIcon,
 } from '@phosphor-icons/react/dist/ssr';
@@ -55,6 +56,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('workspaces'),
         url: '/workspaces',
         icon: BuildingsIcon,
+      },
+      {
+        title: t('instagrams'),
+        url: '/instagrams',
+        icon: InstagramLogoIcon,
       },
       {
         title: t('workspaceCategories'),

@@ -8,7 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Pencil, Trash } from 'lucide-react';
 
 export type BannerCategoryRow = { id: string; nameEn: string; nameFa: string };
-export type BannerButtonRow = { id: string; textEn: string; textFa: string; url: string; order: number };
+export type BannerButtonRow = {
+  id: string;
+  textEn: string;
+  textFa: string;
+  url: string;
+  order: number;
+};
 export type BannerRow = {
   id: string;
   titleEn: string;

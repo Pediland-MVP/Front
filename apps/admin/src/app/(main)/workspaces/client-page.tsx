@@ -7,27 +7,37 @@ import { fetcher } from '@/hooks/swr/api-client';
 import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
 import WorkspaceTable from './workspace-table';
+import { useLabelsList } from '../labels/use-labels';
 
 export default function WorkspacesPageClient() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
+  const [labelId, setLabelId] = useState<string | undefined>(undefined);
   const [categoryId, setCategoryId] = useState('');
   const [debouncedSearch] = useDebounce(search, 750);
 
   const searchQuery = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : '';
   const typeQuery = type ? `&type=${type}` : '';
+  const labelIdQuery = labelId ? `&labelId=${labelId}` : '';
   const categoryQuery = categoryId ? `&categoryId=${categoryId}` : '';
 
+  const { data: labelsData } = useLabelsList({ page: 1, limit: 100 });
+
   const { data, isLoading, isValidating, error } = useSWR(
-    `/workspaces?limit=${limit}&page=${page}${searchQuery}${typeQuery}${categoryQuery}`,
+    `/workspaces?limit=${limit}&page=${page}${searchQuery}${typeQuery}${labelIdQuery}${categoryQuery}`,
     fetcher,
     { keepPreviousData: true },
   );
 
   const workspaces = data?.items || [];
   const meta = data?.meta;
+
+  const handleLabelIdChange = (v: string | undefined) => {
+    setPage(1);
+    setLabelId(v);
+  };
 
   if (!data && isLoading) return <Loading />;
   if (error) return <FetchError />;
@@ -43,6 +53,9 @@ export default function WorkspacesPageClient() {
       onSearchChange={setSearch}
       type={type}
       onTypeChange={setType}
+      labelId={labelId}
+      onLabelIdChange={handleLabelIdChange}
+      labelsItems={(labelsData?.items ?? []).filter((l) => l.targetTypes?.includes('workspace'))}
       categoryId={categoryId}
       onCategoryChange={setCategoryId}
     />

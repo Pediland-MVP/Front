@@ -8,11 +8,13 @@ import type { AutomationBuilderMode } from '../../AutomationBuilder.types';
 
 // Contents/ChooseAutomationType render many `useTranslations(...)` calls. Without a
 // `NextIntlClientProvider` this throws "No intl context found" (same issue MediaContent's
-// test hit) — stub it to echo the key back, except for the one key this test actually
-// asserts on ("add_content"), which we resolve to its real Persian copy so the test can
-// find the button the same way the brief's test does.
+// test hit) — stub it to echo the key back, except for the two keys this test finds the
+// add button by, which we resolve to their real Persian copy. With an empty `contents`
+// array the empty-state CTA (`add_step`) is what opens the type chooser; the inline
+// `add_content` button only renders once there's at least one step.
 vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => (key === 'add_content' ? 'افزودن محتوا' : key),
+  useTranslations: () => (key: string) =>
+    key === 'add_content' ? 'افزودن محتوا' : key === 'add_step' ? 'افزودن مرحله' : key,
   useLocale: () => 'fa',
 }));
 
@@ -63,7 +65,7 @@ describe('Contents (shared, mode=automation)', () => {
 
   it('opens the ChooseAutomationType picker on add-content click', () => {
     render(<Wrapper />);
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
     expect(screen.getAllByRole('button').length).toBeGreaterThan(1);
   });
 });
@@ -73,7 +75,7 @@ describe('Contents — "template" content-type option (Task 27)', () => {
     const get = vi.fn().mockResolvedValue({ data: { items: [] } });
     render(<Wrapper apiClient={{ upload: vi.fn(), get }} />);
 
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
     // Under the next-intl mock above, `t_contentTypes(\`buttons.titles.${value}\`)` echoes
     // its key back verbatim.
     const templateOption = screen.getByText('buttons.titles.template');
@@ -94,7 +96,7 @@ describe('Contents — "template" content-type option (Task 27)', () => {
     const get = vi.fn();
     render(<Wrapper apiClient={{ upload: vi.fn(), get }} builderMode="template" />);
 
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.queryByText('buttons.titles.template')).not.toBeInTheDocument();
     // Sanity check: the other options are still there — this isn't an empty list.
@@ -110,7 +112,7 @@ describe('Contents — "template" content-type option (Task 27)', () => {
       <Wrapper apiClient={{ upload: vi.fn(), get }} mode={AutomationContentModeEnum.REMINDER} />,
     );
 
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.queryByText('buttons.titles.template')).not.toBeInTheDocument();
     // Sanity check: the other options are still there — this isn't an empty list.
@@ -122,7 +124,7 @@ describe('Contents — "template" content-type option (Task 27)', () => {
   it('still shows the "template" option for mode=AUTOMATION with builderMode="automation" (unchanged behavior)', () => {
     render(<Wrapper mode={AutomationContentModeEnum.AUTOMATION} builderMode="automation" />);
 
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.getByText('buttons.titles.template')).toBeInTheDocument();
   });
@@ -132,7 +134,7 @@ describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gatin
   it('hides "INSTAGRAM_POST" when builderMode="template" (backend TemplateContentDto rejects it — a template has no Instagram/workspace context)', () => {
     render(<Wrapper builderMode="template" />);
 
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.queryByText('buttons.titles.instagram_post')).not.toBeInTheDocument();
     // PRODUCT stays available in template mode — the backend DTO does allow it.
@@ -142,7 +144,7 @@ describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gatin
   it('still shows "INSTAGRAM_POST" for builderMode="automation" (unchanged behavior)', () => {
     render(<Wrapper builderMode="automation" />);
 
-    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.getByText('buttons.titles.instagram_post')).toBeInTheDocument();
   });

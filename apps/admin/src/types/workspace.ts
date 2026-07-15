@@ -1,4 +1,5 @@
 import { SubscriptionStatusEnum } from '@/types/subscription';
+import { AssignedLabel } from '@/types/label';
 
 export type WorkspaceListSubscriptionStatus = 'active' | 'expired' | 'none';
 
@@ -23,6 +24,7 @@ export type WorkspaceRow = {
   subscriptionStatus: WorkspaceListSubscriptionStatus;
   category: WorkspaceCategoryRef | null;
   createDate: string;
+  labels?: AssignedLabel[];
 };
 
 export type WorkspaceMemberPermission = {

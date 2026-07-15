@@ -26,6 +26,7 @@
     "settings": "تنظیمات",
     "labels": "برچسب‌ها",
     "tasks": "تسک‌ها",
+    "instagrams": "اینستاگرام‌ها",
     "helpGuides": "مدیریت راهنماها",
     "templates": "قالب‌ها"
   },
@@ -145,6 +146,7 @@
     "INVALID_LABEL_RULE": "قانون برچسب نامعتبر است",
     "INVALID_LABEL_SCHEDULE": "زمان‌بندی برچسب نامعتبر است",
     "LABEL_NOT_FOUND": "برچسب پیدا نشد",
+    "LABEL_TARGET_FIELD_MISMATCH": "یکی از فیلدهای انتخاب‌شده با هدف انتخاب‌شده سازگار نیست",
     "GUIDE_NOT_FOUND": "راهنما یافت نشد",
     "CATEGORY_NOT_FOUND": "دسته‌بندی یافت نشد",
     "HELP_ID_ALREADY_ASSIGNED": "این شناسه راهنما قبلاً به مقاله دیگری اختصاص داده شده است",
@@ -198,7 +200,21 @@
     "joinedAt": "تاریخ عضویت",
     "mobile": "موبایل",
     "noPermissions": "بدون دسترسی",
-    "notFound": "کسب‌وکار یافت نشد"
+    "notFound": "کسب‌وکار یافت نشد",
+    "labels": "برچسب‌ها"
+  },
+  "Instagrams": {
+    "title": "اینستاگرام‌ها",
+    "search": "جستجو بر اساس نام کاربری یا نام...",
+    "username": "نام کاربری",
+    "name": "نام",
+    "followers": "دنبال‌کننده",
+    "connection": "وضعیت اتصال",
+    "connected": "متصل",
+    "disconnected": "قطع",
+    "workspace": "ورک‌اسپیس",
+    "owner": "مالک",
+    "labels": "برچسب‌ها"
   },
   "WorkspaceCategories": {
     "title": "دسته‌بندی فضاهای کاری",
@@ -353,7 +369,8 @@
     "editTitle": "ویرایش برچسب",
     "colName": "نام",
     "colSchedule": "زمان‌بندی",
-    "colMatched": "تعداد کاربران",
+    "colMatched": "تعداد مطابقت",
+    "colTargets": "هدف‌ها",
     "colLastRun": "آخرین اجرا",
     "colActive": "فعال",
     "colActions": "عملیات",
@@ -400,6 +417,15 @@
     "toastError": "خطایی رخ داد",
     "validationNameRequired": "نام الزامی است",
     "validationRuleEmpty": "حداقل یک شرط لازم است",
+    "validationTargetEmpty": "حداقل یک مورد (کاربر/ورک‌اسپیس/اینستاگرام) را انتخاب کنید",
+    "targetSelectorLabel": "این برچسب روی چه مواردی اعمال شود؟",
+    "targetTypes": {
+      "user": "کاربر",
+      "workspace": "ورک‌اسپیس",
+      "instagram": "اینستاگرام",
+      "all": "همه"
+    },
+    "previewPerTarget": "{target}: {count}",
     "fieldNames": {
       "sessions": "سشن‌ها",
       "leads": "لیدها",
@@ -419,6 +445,11 @@
       "followersCount": "فالوور اینستاگرام",
       "workspaces": "تعداد فضای کاری",
       "failedPayments": "پرداخت‌های ناموفق"
+    },
+    "targetBadges": {
+      "user": "ک",
+      "workspace": "و",
+      "instagram": "ا"
     },
     "operators": {
       "gt": "بزرگ‌تر از",
@@ -702,7 +733,10 @@
       }
     },
     "Contents": {
-      "add_content": "افزودن محتوای دیگر",
+      "add_content": "افزودن مرحله",
+      "add_step": "افزودن مرحله",
+      "no_content_title": "اولین مرحله اتوماسیون را اضافه کنید",
+      "no_content_description": "از بین گزینه‌های مختلف انتخاب کنید و با پیام‌ها، فرم‌ها، دکمه‌ها و سایر قابلیت‌ها اتوماسیون خود را بسازید.",
       "consent": "کسب اجازه برای پیام بعدی",
       "consent_message": "بریم بعدی؟",
       "consent_tooltip": "برای فعال سازی این قابلیت حداقل باید دو پیام بسازی",

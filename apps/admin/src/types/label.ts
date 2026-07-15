@@ -5,7 +5,7 @@
 // Back/apps/admin/src/users/users.service.ts
 export interface AssignedLabel {
   labelId: string;
-  assignedAt: string;
+  assignedAt?: string;
   label: {
     id: string;
     name: string;

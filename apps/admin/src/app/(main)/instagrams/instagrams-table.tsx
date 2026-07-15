@@ -2,67 +2,64 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import useSWR from 'swr';
-import { fetcher } from '@/hooks/swr/api-client';
-import { WorkspaceRow } from '@/types/workspace';
+import { InstagramRow } from '@/types/instagram';
 import { PageMeta } from '@/types/meta';
+import { User } from '@/types/user';
 import { LayoutTable } from '@/components/layout/LayoutTable';
 import { DataTable } from '@/components/table/data-table';
 import { DataTablePagination } from '@/components/table/pagination';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Table } from '@tanstack/react-table';
-import { useWorkspaceColumns } from './columns';
+import { FilterIgToken } from '@/components/table/filter-ig-token';
 import { FilterLabel } from '@/components/table/filter-label';
+import { FilterAdmin } from '@/components/table/filter-admin';
+import { Table } from '@tanstack/react-table';
 import { LabelListItem } from '../labels/types';
+import { useInstagramColumns } from './columns';
 
-export default function WorkspaceTable({
+export default function InstagramsTable({
   isRefetching,
-  workspaces,
+  instagrams,
   meta,
   onPageChange,
   onLimitChange,
   search,
   onSearchChange,
-  type,
-  onTypeChange,
+  isIgTokenValid,
+  onIgTokenValidChange,
   labelId,
   onLabelIdChange,
   labelsItems,
-  categoryId,
-  onCategoryChange,
+  admin,
+  onAdminChange,
+  kams,
+  showAdminFilter,
 }: {
   isRefetching?: boolean;
-  workspaces: WorkspaceRow[];
+  instagrams: InstagramRow[];
   meta: PageMeta;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   search: string;
   onSearchChange: (search: string) => void;
-  type: string;
-  onTypeChange: (type: string) => void;
+  isIgTokenValid: string;
+  onIgTokenValidChange: (value: string) => void;
   labelId: string | undefined;
   onLabelIdChange: (labelId: string | undefined) => void;
   labelsItems: LabelListItem[];
-  categoryId: string;
-  onCategoryChange: (categoryId: string) => void;
+  admin: string;
+  onAdminChange: (value: string) => void;
+  kams: User[];
+  showAdminFilter: boolean;
 }) {
-  const t = useTranslations('Workspaces');
-  const [tableInstance, setTableInstance] = useState<Table<WorkspaceRow> | null>(null);
+  const t = useTranslations('Instagrams');
+  const [tableInstance, setTableInstance] = useState<Table<InstagramRow> | null>(null);
   const [tempSearch, setTempSearch] = useState(search);
-  const columns = useWorkspaceColumns();
-  const { data: categoriesData } = useSWR('/workspace-categories?limit=100', fetcher);
-  const categories = categoriesData?.items ?? [];
+  const columns = useInstagramColumns();
 
   return (
     <LayoutTable isRefetching={isRefetching}>
       <div className="flex flex-1 flex-col gap-2 overflow-hidden p-4">
+        <h1 className="text-lg font-semibold">{t('title')}</h1>
         <div className="flex flex-wrap items-center gap-1.5">
           <Input
             type="search"
@@ -82,43 +79,16 @@ export default function WorkspaceTable({
             className="h-9 flex-1 text-[13px] md:max-w-[220px]"
           />
 
-          <Select
-            value={type || 'all'}
-            onValueChange={(value) => onTypeChange(value === 'all' ? '' : value)}
-          >
-            <SelectTrigger className="h-9 w-[140px] text-[13px]">
-              <SelectValue placeholder={t('filterType')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('all')}</SelectItem>
-              <SelectItem value="personal">{t('personal')}</SelectItem>
-              <SelectItem value="team">{t('team')}</SelectItem>
-            </SelectContent>
-          </Select>
-
+          <FilterIgToken size="sm" value={isIgTokenValid} onChange={onIgTokenValidChange} />
           <FilterLabel size="sm" value={labelId} onChange={onLabelIdChange} items={labelsItems} />
-
-          <Select
-            value={categoryId || 'all'}
-            onValueChange={(value) => onCategoryChange(value === 'all' ? '' : value)}
-          >
-            <SelectTrigger className="h-9 w-[160px] text-[13px]">
-              <SelectValue placeholder={t('filterCategory')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('all')}</SelectItem>
-              {categories.map((c: { id: string; nameFa: string }) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.nameFa}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {showAdminFilter && (
+            <FilterAdmin size="sm" data={kams} value={admin} onChange={onAdminChange} />
+          )}
         </div>
 
         <DataTable
           columns={columns}
-          data={workspaces}
+          data={instagrams}
           tableInstanceRef={setTableInstance}
           page={meta.currentPage}
           limit={meta.itemsPerPage}

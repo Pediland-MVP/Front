@@ -23,7 +23,6 @@ import {
   Input,
 } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
-import { TelegramOtpAlert } from '@/components/ui-custom/TelegramOtpAlert';
 import { MoveLeftIcon } from 'lucide-react';
 import SupportButton from './supportButton';
 
@@ -159,8 +158,6 @@ export default function AuthPage() {
             </ButtonLoading>
           </form>
         </Form>
-
-        <TelegramOtpAlert phone={form.watch('mobile') || undefined} />
 
         <div className="flex items-center gap-3">
           <hr className="border-muted flex-1" />

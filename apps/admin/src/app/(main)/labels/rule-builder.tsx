@@ -96,7 +96,12 @@ function LeafEditor({
         <SelectContent>
           {fields.map((f) => (
             <SelectItem key={f.field} value={f.field}>
-              {t(`fieldNames.${f.field}`)}
+              <span className="flex items-center gap-1">
+                <span>{t(`fieldNames.${f.field}`)}</span>
+                <span className="text-muted-foreground text-[10px]">
+                  ({f.targets.map((tt) => t(`targetBadges.${tt}`)).join('،')})
+                </span>
+              </span>
             </SelectItem>
           ))}
         </SelectContent>

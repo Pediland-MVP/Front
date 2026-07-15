@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import useSWR from 'swr';
@@ -11,12 +11,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ArrowsClockwiseIcon } from '@phosphor-icons/react';
 import { useLabelFields } from './use-labels';
 import { ScheduleControl, ScheduleValue } from './schedule-control';
 import { RuleBuilder } from './rule-builder';
-import { ConditionGroup, emptyGroup, Label as LabelType, CreateLabelPayload } from './types';
+import {
+  ConditionGroup,
+  emptyGroup,
+  Label as LabelType,
+  CreateLabelPayload,
+  LABEL_TARGET_TYPES,
+  LabelTargetType,
+} from './types';
+import { collectFields, reconcileTargets, targetsForFields } from './labelTargets';
 
 const SWATCHES = ['#16a34a', '#dc2626', '#d97706', '#2563eb', '#7c3aed', '#0891b2', '#475569'];
 
@@ -50,31 +59,24 @@ export function LabelFormDialog({
     intervalMinutes: 1440,
   });
   const [rule, setRule] = useState<ConditionGroup>(emptyGroup());
+  const [targetTypes, setTargetTypes] = useState<LabelTargetType[]>(['user']);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    if (isEdit) {
-      if (detail?.data) {
-        const d = detail.data;
-        setName(d.name);
-        setColor(d.color ?? SWATCHES[0]);
-        setDescription(d.description ?? '');
-        setIsActive(d.isActive);
-        setSchedule({
-          scheduleType: d.scheduleType,
-          intervalMinutes: d.intervalMinutes ?? undefined,
-          dailyAtHour: d.dailyAtHour ?? undefined,
-        });
-        setRule(d.rule ?? emptyGroup());
-      } else {
-        setName('');
-        setColor(SWATCHES[0]);
-        setDescription('');
-        setIsActive(true);
-        setSchedule({ scheduleType: 'interval', intervalMinutes: 1440 });
-        setRule(emptyGroup());
-      }
+    if (isEdit && detail?.data) {
+      const d = detail.data;
+      setName(d.name);
+      setColor(d.color ?? SWATCHES[0]);
+      setDescription(d.description ?? '');
+      setIsActive(d.isActive);
+      setSchedule({
+        scheduleType: d.scheduleType,
+        intervalMinutes: d.intervalMinutes ?? undefined,
+        dailyAtHour: d.dailyAtHour ?? undefined,
+      });
+      setRule(d.rule ?? emptyGroup());
+      setTargetTypes(d.targetTypes?.length ? d.targetTypes : ['user']);
     } else {
       setName('');
       setColor(SWATCHES[0]);
@@ -82,35 +84,63 @@ export function LabelFormDialog({
       setIsActive(true);
       setSchedule({ scheduleType: 'interval', intervalMinutes: 1440 });
       setRule(emptyGroup());
+      setTargetTypes(['user']);
     }
   }, [open, isEdit, labelId, detail]);
 
-  // Live preview (debounced) — counts matching users for the current draft rule.
+  // Fields used by the current rule, and the targets they jointly allow.
+  const usedFields = useMemo(() => collectFields(rule), [rule]);
+  const allowedTargets = useMemo(() => targetsForFields(usedFields, fields), [usedFields, fields]);
+
+  // The little engine: when the field set changes, auto-untick any selected
+  // target it no longer supports. Bail if nothing actually changed (avoids loops).
+  useEffect(() => {
+    setTargetTypes((prev) => {
+      const next = reconcileTargets(prev, usedFields, fields);
+      return next.length === prev.length && next.every((x, i) => x === prev[i]) ? prev : next;
+    });
+  }, [usedFields, fields]);
+
+  const toggleTarget = (target: LabelTargetType) =>
+    setTargetTypes((prev) =>
+      prev.includes(target)
+        ? prev.filter((x) => x !== target)
+        : LABEL_TARGET_TYPES.filter((t2) => prev.includes(t2) || t2 === target),
+    );
+  const selectAllTargets = () => setTargetTypes(allowedTargets);
+
+  // Live preview (debounced) — per-target match counts for the current draft.
   const [debouncedRule] = useDebounce(rule, 800);
-  const [previewCount, setPreviewCount] = useState<number | null>(null);
+  const [previewCounts, setPreviewCounts] = useState<Partial<
+    Record<LabelTargetType, number>
+  > | null>(null);
   const [previewing, setPreviewing] = useState(false);
   useEffect(() => {
-    if (!open || debouncedRule.conditions.length === 0) {
-      setPreviewCount(null);
+    if (!open || debouncedRule.conditions.length === 0 || targetTypes.length === 0) {
+      setPreviewCounts(null);
       return;
     }
     let cancelled = false;
     setPreviewing(true);
     api
-      .post<{ data: { count: number } }>('/labels/preview', { rule: debouncedRule })
-      .then((r) => !cancelled && setPreviewCount(r.data.data.count))
-      .catch(() => !cancelled && setPreviewCount(null))
+      .post<{ data: { counts: Partial<Record<LabelTargetType, number>> } }>('/labels/preview', {
+        rule: debouncedRule,
+        targetTypes,
+      })
+      .then((r) => !cancelled && setPreviewCounts(r.data.data.counts))
+      .catch(() => !cancelled && setPreviewCounts(null))
       .finally(() => !cancelled && setPreviewing(false));
     return () => {
       cancelled = true;
     };
-  }, [debouncedRule, open]);
+  }, [debouncedRule, open, targetTypes]);
 
   const buildPayload = (): CreateLabelPayload => ({
     name: name.trim(),
     color,
     description: description.trim() || undefined,
     rule,
+    targetTypes,
     scheduleType: schedule.scheduleType,
     intervalMinutes: schedule.scheduleType === 'interval' ? schedule.intervalMinutes : undefined,
     dailyAtHour: schedule.scheduleType === 'daily' ? schedule.dailyAtHour : undefined,
@@ -120,6 +150,7 @@ export function LabelFormDialog({
   const submit = async () => {
     if (!name.trim()) return toast.error(t('validationNameRequired'));
     if (rule.conditions.length === 0) return toast.error(t('validationRuleEmpty'));
+    if (targetTypes.length === 0) return toast.error(t('validationTargetEmpty'));
     setSubmitting(true);
     try {
       if (isEdit) {
@@ -189,6 +220,31 @@ export function LabelFormDialog({
             <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
 
+          <div className="space-y-2">
+            <Label>{t('targetSelectorLabel')}</Label>
+            <div className="flex flex-wrap items-center gap-4">
+              {LABEL_TARGET_TYPES.map((target) => {
+                const disabled = !allowedTargets.includes(target);
+                return (
+                  <label
+                    key={target}
+                    className={`flex cursor-pointer items-center gap-2 ${disabled ? 'cursor-not-allowed opacity-40' : ''}`}
+                  >
+                    <Checkbox
+                      checked={targetTypes.includes(target)}
+                      disabled={disabled}
+                      onCheckedChange={() => toggleTarget(target)}
+                    />
+                    <span>{t(`targetTypes.${target}`)}</span>
+                  </label>
+                );
+              })}
+              <Button type="button" size="sm" variant="outline" onClick={selectAllTargets}>
+                {t('targetTypes.all')}
+              </Button>
+            </div>
+          </div>
+
           <ScheduleControl value={schedule} onChange={setSchedule} />
 
           <div className="space-y-2">
@@ -197,8 +253,15 @@ export function LabelFormDialog({
             <p className="text-muted-foreground text-sm">
               {previewing
                 ? t('previewLoading')
-                : previewCount !== null
-                  ? t('preview', { count: previewCount })
+                : previewCounts
+                  ? LABEL_TARGET_TYPES.filter((tt) => previewCounts[tt] != null)
+                      .map((tt) =>
+                        t('previewPerTarget', {
+                          target: t(`targetTypes.${tt}`),
+                          count: previewCounts[tt] ?? 0,
+                        }),
+                      )
+                      .join(' · ')
                   : ''}
             </p>
           </div>

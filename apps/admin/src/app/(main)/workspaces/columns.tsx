@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { SubscriptionStatusBadge } from '@/components/table/subscription-status-badge';
 import { SubscriptionStatusEnum } from '@/types/subscription';
 import { WorkspaceRow } from '@/types/workspace';
+import { LabelChips } from '@/components/table/label-chips';
 
 export function useWorkspaceColumns(): ColumnDef<WorkspaceRow>[] {
   const t = useTranslations('Workspaces');
@@ -79,6 +80,11 @@ export function useWorkspaceColumns(): ColumnDef<WorkspaceRow>[] {
           />
         );
       },
+    },
+    {
+      id: 'labels',
+      header: t('labels'),
+      cell: ({ row }) => <LabelChips labels={row.original.labels} />,
     },
     {
       accessorKey: 'createDate',
