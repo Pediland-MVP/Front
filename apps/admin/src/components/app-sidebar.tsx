@@ -26,6 +26,7 @@ import {
   ClipboardTextIcon,
   InstagramLogoIcon,
   MegaphoneIcon,
+  WarningCircleIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -61,6 +62,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '/instagrams',
         icon: InstagramLogoIcon,
       },
+      ...(user?.role !== 'kam'
+        ? [{ title: t('automationErrors'), url: '/automation-errors', icon: WarningCircleIcon }]
+        : []),
       {
         title: t('workspaceCategories'),
         url: '/workspace-categories',
