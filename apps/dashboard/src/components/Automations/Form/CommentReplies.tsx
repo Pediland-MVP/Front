@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
+import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { WizardVideoLinks } from '../wizardVideoLinks.conf';
 
 import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
@@ -24,17 +25,19 @@ import { PlusCircleIcon, TextboxIcon, TrashSimpleIcon } from '@phosphor-icons/re
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();
+  const { defaults } = useAutomationDefaults();
   const t = useTranslations('Automations.CommentReplies');
 
   const onIsReplyCommentEnabled = (isActive: boolean) => {
     setValue('isReplyCommentEnabled', isActive);
 
     if (isActive) {
-      setValue('commentTexts', [
-        'به دایرکت شما ارسال شد ✅',
-        'دایرکتتون رو چک کنید لطفا 🙏',
-        'براتون ارسال شد ❤️',
-      ]);
+      setValue(
+        'commentTexts',
+        defaults?.commentTexts?.length
+          ? defaults.commentTexts
+          : ['به دایرکت شما ارسال شد ✅', 'دایرکتتون رو چک کنید لطفا 🙏', 'براتون ارسال شد ❤️'],
+      );
 
       // Clear any existing errors for commentTexts fields
       clearErrors('commentTexts');
@@ -69,6 +72,7 @@ export const CommentReplies = () => {
           <FormItem>
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
+                helpId="automation_comment_replies"
                 title={t('Help.title')}
                 description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.CommentReplies.video}

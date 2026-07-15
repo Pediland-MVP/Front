@@ -18,7 +18,8 @@ import {
 } from '@/components/ui';
 import { CrownIcon, LogOutIcon, UserRoundPenIcon } from 'lucide-react';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 interface UserDropdownMenuProps {
   children: React.ReactNode;
@@ -30,12 +31,9 @@ export const UserDropdownMenu = ({ children, size = 'md' }: UserDropdownMenuProp
   const { isMobile, setOpenMobile } = useSidebar();
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
   const logout = useLogout();
+  const isWebView = useIsWebView();
 
   const { subscriptions } = useSubscriptionStore();
-
-  const activeSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-  );
 
   const t = useTranslations('Console.Sidebar');
 
@@ -71,7 +69,7 @@ export const UserDropdownMenu = ({ children, size = 'md' }: UserDropdownMenuProp
         align="start"
         sideOffset={4}
       >
-        {activeSubscription?.type !== 'credit' && (
+        {!isWebView && !hasOnlyFreeCredit(subscriptions) && (
           <>
             <DropdownMenuGroup>
               <DropdownMenuItem

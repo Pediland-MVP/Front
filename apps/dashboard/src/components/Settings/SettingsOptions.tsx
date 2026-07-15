@@ -8,23 +8,22 @@ import { usePathname } from 'next/navigation';
 import {
   CreditCardIcon,
   CrownSimpleIcon,
+  DevicesIcon,
   InstagramLogoIcon,
   PasswordIcon,
   UserCircleIcon,
 } from '@phosphor-icons/react';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 export const SettingsOptions = () => {
   const t = useTranslations('Settings.Navigation');
   const { can } = usePermissions();
+  const isWebView = useIsWebView();
 
   const { subscriptions } = useSubscriptionStore();
-
-  const activeSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
-  );
 
   const canViewBilling = can('billing:view');
 
@@ -34,7 +33,7 @@ export const SettingsOptions = () => {
       url: '/settings/instagram',
       icon: InstagramLogoIcon,
     },
-    ...(activeSubscription?.type !== 'credit' && canViewBilling
+    ...(!isWebView && !hasOnlyFreeCredit(subscriptions) && canViewBilling
       ? [
           {
             title: t('upgrade_plan'),
@@ -61,6 +60,11 @@ export const SettingsOptions = () => {
       title: t('password'),
       url: '/settings/password',
       icon: PasswordIcon,
+    },
+    {
+      title: t('account_sessions'),
+      url: '/settings/account-session-management',
+      icon: DevicesIcon,
     },
   ];
 

@@ -36,6 +36,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 // ─── Recommended-date button config ───────────────────────────────────────────
 const RECOMMENDED_DATES = [
@@ -87,6 +94,8 @@ export function TaskManagementPanel(props: {
   const [assignAdminId, setAssignAdminId] = useState<string>('');
   const [note, setNote] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  const [doneTarget, setDoneTarget] = useState<string | null>(null);
+  const [doneNote, setDoneNote] = useState<string>('');
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const handleAdd = async () => {
@@ -126,15 +135,41 @@ export function TaskManagementPanel(props: {
     }
   };
 
-  const handleStatusChange = async (actionId: string, checked: boolean) => {
-    const newStatus = checked ? 'done' : 'todo';
+  const setTodo = async (actionId: string) => {
     try {
-      await api.post(`/actions/status/${actionId}`, { status: newStatus });
+      await api.post(`/actions/status/${actionId}`, { status: 'todo' });
       await mutate();
       onChanged?.();
       toast.success(tt('statusUpdated'));
     } catch {
       toast.error(tt('statusError'));
+    }
+  };
+
+  const handleStatusChange = (actionId: string, checked: boolean) => {
+    if (checked) {
+      setDoneNote('');
+      setDoneTarget(actionId);
+    } else {
+      void setTodo(actionId);
+    }
+  };
+
+  const confirmDone = async () => {
+    if (!doneTarget) return;
+    try {
+      await api.post(`/actions/status/${doneTarget}`, {
+        status: 'done',
+        ...(doneNote.trim() ? { doneNote: doneNote.trim() } : {}),
+      });
+      await mutate();
+      onChanged?.();
+      toast.success(tt('statusUpdated'));
+    } catch {
+      toast.error(tt('statusError'));
+    } finally {
+      setDoneTarget(null);
+      setDoneNote('');
     }
   };
 
@@ -166,7 +201,7 @@ export function TaskManagementPanel(props: {
   const sortedActions = useMemo(() => {
     const items = (actions?.items as Action[] | undefined) ?? [];
     return [...items].sort(
-      (a, b) => new Date(a.actionDate).getTime() - new Date(b.actionDate).getTime(),
+      (a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime(),
     );
   }, [actions]);
 
@@ -195,7 +230,7 @@ export function TaskManagementPanel(props: {
                       : 'border-slate-200 border-s-blue-500 bg-white',
                   )}
                 >
-                  {/* Header: type + responsible admin */}
+                  {/* Header: type + creator / assignee */}
                   <div className="mb-1.5 flex items-center justify-between gap-3 text-[11px] font-bold text-slate-500">
                     <span className="flex items-center gap-1">
                       {TYPE_ICONS[action.type]}
@@ -205,7 +240,18 @@ export function TaskManagementPanel(props: {
                           : tType('unknown')}
                       </span>
                     </span>
-                    <span className="truncate">{`${action.admin.firstname} ${action.admin.lastname}`}</span>
+                    <span className="flex min-w-0 flex-col items-end gap-0.5">
+                      <span className="truncate">
+                        {t('createdBy')}:{' '}
+                        {(() => {
+                          const who = action.createdByAdmin ?? action.admin;
+                          return `${who.firstname} ${who.lastname}`;
+                        })()}
+                      </span>
+                      <span className="truncate font-medium text-slate-400">
+                        {t('assignedTo')}: {`${action.admin.firstname} ${action.admin.lastname}`}
+                      </span>
+                    </span>
                   </div>
 
                   {/* Description */}
@@ -245,6 +291,27 @@ export function TaskManagementPanel(props: {
                       )}
                     </div>
                   </div>
+
+                  {isDone && (
+                    <div className="mt-2 space-y-0.5 border-t border-slate-100 pt-1.5 text-[11px] text-slate-500">
+                      {action.doneDate && (
+                        <div>
+                          {t('doneDateLabel')}: {formatTaskDate(action.doneDate)}
+                        </div>
+                      )}
+                      {action.doneByAdmin && (
+                        <div>
+                          {t('doneBy')}: {action.doneByAdmin.firstname}{' '}
+                          {action.doneByAdmin.lastname}
+                        </div>
+                      )}
+                      {action.doneNote && (
+                        <div className="whitespace-pre-wrap">
+                          {t('doneNoteShown')}: {action.doneNote}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -352,6 +419,48 @@ export function TaskManagementPanel(props: {
           </Button>
         </div>
       </div>
+
+      <Dialog
+        open={doneTarget !== null}
+        onOpenChange={(o) => {
+          if (!o) {
+            setDoneTarget(null);
+            setDoneNote('');
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('markDoneTitle')}</DialogTitle>
+          </DialogHeader>
+          <label className="text-xs font-semibold text-slate-600">{t('doneNoteLabel')}</label>
+          <Textarea
+            className="min-h-20 resize-none rounded-xl border border-slate-200 px-3 py-2 text-xs"
+            placeholder={t('doneNotePlaceholder')}
+            value={doneNote}
+            onChange={(e) => setDoneNote(e.target.value)}
+          />
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setDoneTarget(null);
+                setDoneNote('');
+              }}
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              type="button"
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              onClick={confirmDone}
+            >
+              {t('confirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

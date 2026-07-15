@@ -5,12 +5,15 @@ import {
   AutomationContentTypesEnum,
 } from '@/constants/automationContent.enum';
 import { ButtonTypeEnum } from '@/types/buttons.enum';
-import api from '@/hooks/swr/api-client';
+import api, { fetcher } from '@/hooks/swr/api-client';
+import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { useI18nZodErrors } from '@/hooks/useI18nZodErrors';
 import useUser from '@/hooks/useUser';
 import { cn } from '@/lib/utils';
 import { AutomationFormSchema, type AutomationFormType } from '@/schemas/automationForm';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
+import type { IResponseMessage } from '@/types/responseMessage';
+import { InstagramNamespace } from '@/types/instagram';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
@@ -28,9 +31,9 @@ import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { ConnectInstagramAlert } from './ConnectInstagramAlert';
+import { FreeQuotaWarningDialog } from './FreeQuotaWarningDialog';
 import {
   CommentReplies,
-  CommentTriggerInputs,
   Conditions,
   ConditionTypesEnum,
   Contents,
@@ -46,6 +49,7 @@ import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 
 type AutomationFormProps = {
   id?: string;
+  copyFromId?: string;
 };
 
 /**
@@ -53,7 +57,7 @@ type AutomationFormProps = {
  * @param {id} Object This param is optional and specify the component is for Update or Create`
  * @returns
  */
-export const AutomationForm = ({ id }: AutomationFormProps) => {
+export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
   useI18nZodErrors();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -66,7 +70,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
   const isUUID = (s?: string) =>
     !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
-  const key = isUUID(id) ? `/contentCycle/${id}` : null;
+  const sourceId = id ?? copyFromId;
+  const key = isUUID(sourceId) ? `/contentCycle/${sourceId}` : null;
 
   const {
     data: automation,
@@ -74,15 +79,57 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     error: automationError,
     mutate: automationMutate,
   } = useSWRImmutable(key, {
-    revalidateOnMount: !!id,
+    revalidateOnMount: !!sourceId,
   });
+
+  // Same SWR key InstagramSelectField uses — dedupes, no extra request. Carries each
+  // page's `automationCount` (live) + `freeAutomationLimit`, used below to warn before
+  // the automation that would push a page over its free quota.
+  const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
+  const { data: accountsResponse } = useSWRImmutable<
+    IResponseMessage<InstagramNamespace.Account[]>
+  >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
+  const accounts = accountsResponse?.data;
+
+  const [pendingSubmitValues, setPendingSubmitValues] = useState<AutomationFormType | null>(null);
+  const [freeQuotaWarning, setFreeQuotaWarning] = useState<{
+    usedCount: number;
+    limit: number;
+  } | null>(null);
+
+  /**
+   * Only meaningful for a brand-new automation (`id` unset) on a page that hasn't
+   * crossed its free quota yet — once `freeAutomationQuotaExceeded` is already true,
+   * adding another automation doesn't change anything, so no warning is shown. Checked
+   * against `freeAutomationQuotaExceeded`, not `isPromotion` — a page can be over quota
+   * but not promoted if it has active subscription coverage, and this warning is
+   * specifically about the free-quota boundary, not the (separate) subscription state.
+   * Uses the live `automationCount` (not the internal never-decreasing counter), so it
+   * only fires exactly on the automation that would cross the boundary.
+   */
+  const getFreeQuotaWarning = (
+    instagramIds: string[],
+  ): { usedCount: number; limit: number } | null => {
+    if (!accounts) return null;
+    for (const instagramId of instagramIds) {
+      const account = accounts.find((a) => a.id === instagramId);
+      if (!account) continue;
+      if (
+        !account.freeAutomationQuotaExceeded &&
+        account.automationCount >= account.freeAutomationLimit
+      ) {
+        return { usedCount: account.automationCount, limit: account.freeAutomationLimit };
+      }
+    }
+    return null;
+  };
 
   const form = useForm<AutomationFormType>({
     resolver: zodResolver(AutomationFormSchema),
     mode: 'onSubmit',
     reValidateMode: 'onChange',
     defaultValues: {
-      instagramId: filterSelectedIds[0] ?? '',
+      instagramIds: filterSelectedIds.length ? filterSelectedIds : [],
       conditionType: ConditionTypesEnum.EQUAL,
       isNoCondition: false,
       commentStartText: t('comment_start_text'),
@@ -99,6 +146,23 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       reminders: [],
     },
   });
+
+  const { defaults: automationDefaults } = useAutomationDefaults(!id);
+
+  useEffect(() => {
+    if (id || !automationDefaults) return;
+
+    const dirty = form.formState.dirtyFields;
+    if (automationDefaults.commentStartText && !dirty.commentStartText) {
+      form.setValue('commentStartText', automationDefaults.commentStartText);
+    }
+    if (automationDefaults.commentStartTitle && !dirty.commentStartTitle) {
+      form.setValue('commentStartTitle', automationDefaults.commentStartTitle);
+    }
+    if (automationDefaults.followCheckMessage && !dirty.followCheckMessage) {
+      form.setValue('followCheckMessage', automationDefaults.followCheckMessage);
+    }
+  }, [automationDefaults, id]);
 
   useEffect(() => {
     if (!automation) {
@@ -199,6 +263,8 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
     };
     form.reset({
       ...transformedAutomation,
+      instagramIds:
+        automation.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
       ...(transformedAutomation.reminders?.length > 0 && {
         isRemindersEnabled: true,
       }),
@@ -206,7 +272,11 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       isReplyCommentEnabled: !!automation.commentTexts?.length,
       isCommentContentTargetEnabled: !!automation.instagramPost,
     });
-  }, [automation, form]);
+
+    if (copyFromId) {
+      toast.success(t('Toast.copied'));
+    }
+  }, [automation, form, copyFromId, t]);
 
   const onSubmit = async (values: AutomationFormType) => {
     let haveError: boolean = false;
@@ -305,28 +375,42 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
       return;
     }
 
+    // Only for brand-new automations: if this would be the automation that pushes a
+    // selected page over its free quota, pause and confirm before submitting.
+    if (!id) {
+      const warning = getFreeQuotaWarning(values.instagramIds);
+      if (warning) {
+        setPendingSubmitValues(values);
+        setFreeQuotaWarning(warning);
+        return;
+      }
+    }
+
+    await submitAutomation(values);
+  };
+
+  const submitAutomation = async (values: AutomationFormType) => {
     if (!values.commentStartText) {
-      values.commentStartText = t('comment_start_text');
+      values.commentStartText = automationDefaults?.commentStartText || t('comment_start_text');
     }
 
     if (!values.commentStartTitle) {
-      values.commentStartTitle = t('comment_start_title');
+      values.commentStartTitle = automationDefaults?.commentStartTitle || t('comment_start_title');
     }
 
     if (!values.followCheckMessage) {
-      values.followCheckMessage = t('follow_check_message');
+      values.followCheckMessage =
+        automationDefaults?.followCheckMessage || t('follow_check_message');
     }
 
     setIsSubmitting(true);
 
     console.log('Submited values', JSON.stringify(values, undefined, ' '));
 
-    const { instagramId, ...payload } = values;
-
     await api({
       method: id ? 'PATCH' : 'POST',
-      url: id ? `/contentCycle/${instagramId}/${id}` : `/contentCycle?instagramId=${instagramId}`,
-      data: payload,
+      url: id ? `/contentCycle/${id}` : `/contentCycle`,
+      data: values,
     })
       .then((res) => {
         toast.success(id ? t('Toast.updated') : t('Toast.created'));
@@ -382,10 +466,11 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 className="grid gap-3.5"
               >
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <InstagramSelectField disabled={!!id} />
+                  <InstagramSelectField />
                   <SeperateLine />
 
                   <Conditions control={form.control} getValues={form.getValues} />
+                  <JustFollowers control={form.control} getValues={form.getValues} />
                   <SeperateLine />
 
                   <Triggers control={form.control} getValues={form.getValues} />
@@ -397,11 +482,7 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
                 </div>
 
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <JustFollowers control={form.control} getValues={form.getValues} />
-
                   <CommentReplies />
-
-                  <CommentTriggerInputs />
 
                   <CommentLimitAlert />
                 </div>
@@ -428,6 +509,22 @@ export const AutomationForm = ({ id }: AutomationFormProps) => {
 
         {automationError && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
       </div>
+
+      {freeQuotaWarning && (
+        <FreeQuotaWarningDialog
+          isOpen={!!freeQuotaWarning}
+          usedCount={freeQuotaWarning.usedCount}
+          limit={freeQuotaWarning.limit}
+          onClose={() => {
+            setFreeQuotaWarning(null);
+            setPendingSubmitValues(null);
+          }}
+          onConfirm={() => {
+            setFreeQuotaWarning(null);
+            if (pendingSubmitValues) submitAutomation(pendingSubmitValues);
+          }}
+        />
+      )}
     </FormProvider>
   );
 };

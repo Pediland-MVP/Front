@@ -6,7 +6,7 @@ import {
 } from '@/constants/automationContent.enum';
 import useUser from '@/hooks/useUser';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { WizardVideoLinks } from '../../wizardVideoLinks.conf';
 import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
@@ -41,6 +41,7 @@ import { ValidationTypeEnum } from '@/types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
 import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
 import { ChooseAutomationType } from './ChooseAutomationType';
+import { StartAutomationMessage } from './StartAutomationMessage';
 import z from 'zod';
 
 type ContentsProps = {
@@ -54,8 +55,6 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   const t_err = useTranslations('Automations.Contents.Errors');
   const { user } = useUser();
 
-  const isPromotion = user?.instagrams?.[0]?.isPromotion;
-
   const {
     control,
     trigger,
@@ -63,9 +62,14 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
     formState: { errors },
   } = useFormContext<AutomationFormType>();
 
-  const [isChoosingType, setIsChoosingType] = useState(
-    !!automationId || mode === AutomationContentModeEnum.REMINDER ? false : true,
+  const selectedInstagramIds: string[] = useWatch({ control, name: 'instagramIds' }) ?? [];
+  const isPromotion = useMemo(
+    () =>
+      selectedInstagramIds.some((sid) => user?.instagrams?.find((i) => i.id === sid)?.isPromotion),
+    [selectedInstagramIds, user?.instagrams],
   );
+
+  const [isChoosingType, setIsChoosingType] = useState(false);
 
   const arrayName =
     mode === AutomationContentModeEnum.REMINDER ? 'reminders' : ('contents' as const);
@@ -158,26 +162,33 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
       }),
     });
     console.log('After array: ', contents);
-    setIsChoosingType(false);
     clearErrors(arrayName);
   };
 
-  const onContentDeleted = (index: any) => {
-    if (index === 0) {
-      setIsChoosingType(true);
-    }
-  };
+  const onContentDeleted = () => {};
 
   return (
     <ContentsContext.Provider value={{ contents, updateContents, removeContents }}>
       <div className="_content-item flex flex-col gap-3">
+        {mode === AutomationContentModeEnum.AUTOMATION && <StartAutomationMessage />}
+
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
-            <p className="font-bold text-gray-500">هنوز محتوایی اضافه نشده‌است</p>
-            {/* <p className="text-center text-sm">
-              روی دکمه "افزودن محتوا" کلیک کنید و نوع محتوای خود را انتخاب کنید
-            </p> */}
+            <p className="font-bold text-gray-500">{t('no_content_title')}</p>
+            <p className="text-muted-foreground mt-1 text-center text-sm">
+              {t('no_content_description')}
+            </p>
+
+            <Button
+              variant="default"
+              type="button"
+              className="bg-primary mt-4 w-64 text-white"
+              onClick={() => setIsChoosingType(true)}
+            >
+              <PlusCircleIcon />
+              {t('add_step')}
+            </Button>
           </div>
         )}
         {contents.length > 0 && (
@@ -221,25 +232,32 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
           )}
         </SortableContext>
 
-        {isChoosingType && <ChooseAutomationType onSelect={selectAutomationTypeHandler} />}
+        <ChooseAutomationType
+          open={isChoosingType}
+          onOpenChange={setIsChoosingType}
+          onSelect={selectAutomationTypeHandler}
+        />
 
         {arrayErrorMsg && <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>}
 
-        {contents.length > 0 && !isChoosingType && (
-          <div className="flex items-center justify-center">
-            <Button
-              variant="default"
-              type="button"
-              className="bg-primary w-11/12 text-white"
-              disabled={isChoosingType}
-              onClick={() => setIsChoosingType(true)}
-            >
-              <PlusCircleIcon />
-              {t('add_content')}
-            </Button>
-            <div className="relative w-1/12">
+        {!isChoosingType && (
+          <div className="flex items-center justify-center gap-2">
+            {contents.length > 0 && (
+              <Button
+                variant="default"
+                type="button"
+                className="bg-primary flex-1 text-white"
+                disabled={isChoosingType}
+                onClick={() => setIsChoosingType(true)}
+              >
+                <PlusCircleIcon />
+                {t('add_content')}
+              </Button>
+            )}
+            <div className="flex shrink-0 items-center justify-center">
               <HelpMeDialog
-                position="center"
+                helpId="automation_contents"
+                noAbsolute
                 title={t('Help.title')}
                 description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}

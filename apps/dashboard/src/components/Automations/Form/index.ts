@@ -1,6 +1,5 @@
 export * from './CommentReplies';
 export * from './InstagramSelectField';
-export * from './CommentTriggerInputs';
 export * from './Conditions';
 export * from './Contents';
 export * from './JustFollowers';

@@ -10,11 +10,14 @@ import { useEffect, useMemo, useState } from 'react';
 // TODO: Should Refactor
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
+import { useIsWebView } from '@/hooks/useIsWebView';
 
 import { Alert, AlertTitle, Button, CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import { PlugsConnectedIcon, PlugsIcon } from '@phosphor-icons/react/dist/ssr';
 import { ProgressRadial } from '../ProgressRadial';
+import { SubscriptionBoardSkeleton } from './SubscriptionBoard.skeleton';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
@@ -25,6 +28,7 @@ export const SubscriptionBoard = () => {
   const router = useRouter();
   const { user } = useUser();
   const [isMobile, setIsMobile] = useState(false);
+  const isWebView = useIsWebView();
 
   const {
     subscriptions,
@@ -69,7 +73,13 @@ export const SubscriptionBoard = () => {
 
   const instagramValid = user?.instagrams?.[0]?.isIgTokenValid;
 
-  if (isSubscriptionsLoading || activeSubscription?.type === 'credit') return null;
+  if (isSubscriptionsLoading) return <SubscriptionBoardSkeleton />;
+
+  if (hasOnlyFreeCredit(subscriptions)) return null;
+
+  // WebView never shows credit-type info, even mixed with a paid sub — but the rest of the board
+  // (Instagram connection list, paid remaining days) must still render, so this only affects the radial.
+  const showCreditRadial = !isWebView && currentSubscription?.type === 'credit';
 
   return (
     <CardSimple>
@@ -81,13 +91,13 @@ export const SubscriptionBoard = () => {
                 percentage={
                   isSubscriptionsLoading
                     ? 0
-                    : currentSubscription?.type === 'credit'
-                      ? currentSubscription?.credit
+                    : showCreditRadial
+                      ? (currentSubscription?.credit ?? 0)
                       : totalRemainingDays
                 }
                 size={isMobile ? 85 : 95}
                 strokeWidth={isMobile ? 8 : 9}
-                type={currentSubscription?.type === 'credit' ? 'credit' : 'days'}
+                type={showCreditRadial ? 'credit' : 'days'}
                 totalDays={totalPurchasedDays}
               />
             </div>
@@ -96,8 +106,10 @@ export const SubscriptionBoard = () => {
                 {user?.firstname} {user?.lastname}، {t('welcome')}!
               </div>
               <div className="mb-1 flex items-center gap-1">
-                <span className="text-muted-foreground">{t('mobile')}:</span>
-                <span className="font-semibold tracking-wider">{user?.mobile}</span>
+                <span className="text-muted-foreground">
+                  {user?.email ? t('email') : t('mobile')}:
+                </span>
+                <span className="font-semibold tracking-wider">{user?.email || user?.mobile}</span>
               </div>
               {currentWorkspace && (
                 <div className="mb-1 flex items-center gap-1">
@@ -185,7 +197,8 @@ export const SubscriptionBoard = () => {
             )}
 
             {instagramValid
-              ? can('billing:view') && (
+              ? can('billing:view') &&
+                !isWebView && (
                   <Button
                     size="md"
                     className="w-full"

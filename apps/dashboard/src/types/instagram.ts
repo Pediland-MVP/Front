@@ -20,6 +20,18 @@ export namespace InstagramNamespace {
     profileUrl: string;
     profilePictureUrl: string | null;
     isIgTokenValid: boolean;
+    isPromotion: boolean;
+    followersCount?: number;
+    /** Live count of automations currently linked to this page (not the internal
+     * never-decreasing counter — this goes back down if an automation is deleted). */
+    automationCount: number;
+    /** Configured free-automation limit (admin-settable, default 2) — same for every account. */
+    freeAutomationLimit: number;
+    /** One-way sticky flag: whether this page has ever crossed its free automation quota.
+     * NOT the same as `isPromotion` — a page can be over quota but still not promoted if
+     * it has active subscription coverage. Use this (not `isPromotion`) to decide whether
+     * to show the free-quota warning dialog. */
+    freeAutomationQuotaExceeded: boolean;
   }
 
   export interface Page {

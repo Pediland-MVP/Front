@@ -16,7 +16,20 @@ export const AutomationSchema = z.object({
   reminderTime: z.string().optional().nullable(),
   isRemindersEnabled: z.boolean(),
   commentTexts: z.array(z.string()),
-  instagramId: z.string(),
+  instagramLinks: z
+    .array(
+      z.object({
+        instagramId: z.string(),
+        instagram: z
+          .object({
+            id: z.string(),
+            username: z.string().nullish(),
+            name: z.string().nullish(),
+          })
+          .nullish(),
+      }),
+    )
+    .default([]),
   instagramPost: z
     .object({
       mediaUrl: z.string().optional().nullable(),

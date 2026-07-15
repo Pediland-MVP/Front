@@ -44,6 +44,7 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
 
   const t_err = useTranslations('Automations.Contents.Media.Errors');
   const t_fileUploader = useTranslations('Automations.Contents.Media.FileUploader');
+  const t_ec = useTranslations('ERROR_CODES');
 
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -136,8 +137,11 @@ export const MediaContent = ({ index, mode, type, appendContents, content }: Med
             },
           );
         })
-        .catch((err: AxiosError) => {
-          if (err.status === 400) {
+        .catch((err: AxiosError<{ code?: string }>) => {
+          const code = err.response?.data?.code;
+          if (code) {
+            toast.error(t_ec(code));
+          } else if (err.status === 400) {
             toast.error(
               `${t_fileUploader(`Limits.${type}.text`)}. ${t_fileUploader(`Limits.${type}.formats`)}`,
             );

@@ -137,7 +137,7 @@ export function ExcelExportSessionsDrawer({
     padding: '8px 12px',
     borderRadius: '6px',
     border: '1px solid hsl(var(--input))',
-    fontSize: '14px',
+    fontSize: '16px',
     backgroundColor: 'transparent',
     color: 'hsl(var(--foreground))',
   };

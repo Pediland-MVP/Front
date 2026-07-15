@@ -9,6 +9,12 @@ export type WorkspaceOwner = {
   mobile: string | null;
 };
 
+export type WorkspaceCategoryRef = {
+  id: string;
+  nameEn: string;
+  nameFa: string;
+};
+
 export type WorkspaceRow = {
   id: string;
   name: string;
@@ -16,6 +22,7 @@ export type WorkspaceRow = {
   owner: WorkspaceOwner;
   membersCount: number;
   subscriptionStatus: WorkspaceListSubscriptionStatus;
+  category: WorkspaceCategoryRef | null;
   createDate: string;
   labels?: AssignedLabel[];
 };
@@ -60,6 +67,7 @@ export type WorkspaceDetail = {
     isPersonal: boolean;
     createDate: string;
     owner: WorkspaceOwner;
+    category: WorkspaceCategoryRef | null;
   };
   members: WorkspaceMember[];
   subscription: WorkspaceSubscription | null;

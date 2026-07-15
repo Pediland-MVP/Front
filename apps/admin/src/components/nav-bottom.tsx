@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { CreditCardIcon, GiftIcon, PlantIcon, SignOutIcon, UsersIcon } from '@phosphor-icons/react';
 
 const navItems = [
-  { href: '/customers', icon: UsersIcon, labelKey: 'customers' as const },
+  { href: '/users', icon: UsersIcon, labelKey: 'customers' as const },
   { href: '/leads', icon: PlantIcon, labelKey: 'leads' as const },
   { href: '/subscriptions', icon: CreditCardIcon, labelKey: 'subscriptions' as const },
   { href: '/referral-codes', icon: GiftIcon, labelKey: 'referralCodes' as const },

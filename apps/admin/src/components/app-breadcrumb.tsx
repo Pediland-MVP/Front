@@ -23,7 +23,7 @@ export function AppBreadcrumb() {
   const segmentLabel = (seg: string): string => {
     if (isUUID(seg)) return 'جزئیات';
     const map: Record<string, string> = {
-      customers: t('myCustomers'),
+      users: t('myCustomers'),
       leads: t('myLeads'),
       subscriptions: t('subscriptions'),
       'referral-codes': t('referralCodes'),

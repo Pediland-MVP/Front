@@ -1,6 +1,6 @@
 'use client';
 
-import { DashboardHelpBanner } from '@/components/Console/Dashboard/DashboardHelpBanner';
+import { DashboardBannerCarousel } from '@/components/Console/Dashboard/DashboardBannerCarousel';
 import { DashboardInstagramBanner } from '@/components/Console/Dashboard/DashboardInstagramBanner';
 import { DashboardStats } from '@/components/Console/Dashboard/DashboardStats';
 import { DashboardTelegramBanner } from '@/components/Console/Dashboard/DashboardTelegramBanner';
@@ -14,7 +14,7 @@ export default function DashboardPage() {
   return (
     <LayoutPage className="px-3">
       <div className="_dashboard-page space-y-5 md:pt-4">
-        <DashboardHelpBanner />
+        <DashboardBannerCarousel />
         <SubscriptionBoard />
 
         <DashboardStats />

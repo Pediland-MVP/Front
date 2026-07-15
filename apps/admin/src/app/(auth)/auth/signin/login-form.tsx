@@ -47,7 +47,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       await signIn(values);
       await mutate('/auth/me'); // ✅ همین‌جا
       toast.success('ورود با موفقیت انجام شد.');
-      router.push('/customers');
+      router.push('/users');
     } catch (err) {
       console.log(err);
       toast.error('نام کاربری یا رمز عبور اشتباه است.');

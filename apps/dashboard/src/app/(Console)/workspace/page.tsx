@@ -8,12 +8,17 @@ import { Pencil, Plus } from 'lucide-react';
 import { WorkspaceForm } from '@/components/Settings/WorkspaceForm';
 import { TeamManager } from '@/components/Settings/TeamManager';
 import { WorkspaceDeleteDialog } from '@/components/Settings/WorkspaceDeleteDialog';
+import { TransferOwnershipDialog } from '@/components/Settings/TransferOwnershipDialog';
+import { IncomingTransferBanner } from '@/components/Settings/IncomingTransferBanner';
+import { PendingTransferNotice } from '@/components/Settings/PendingTransferNotice';
 import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherDialog';
 import { useInvitations } from '@/hooks/useInvitations';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
 import api from '@/hooks/swr/api-client';
 import { toast } from 'sonner';
+import { mutate as globalMutate } from 'swr';
 import {
   Avatar,
   AvatarFallback,
@@ -28,6 +33,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui';
 
 export default function WorkspacePage() {
@@ -40,9 +50,12 @@ export default function WorkspacePage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createWorkspaceName, setCreateWorkspaceName] = useState('');
+  const [createWorkspaceCategoryId, setCreateWorkspaceCategoryId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
+  const { categories } = useWorkspaceCategories();
 
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
 
@@ -60,15 +73,19 @@ export default function WorkspacePage() {
     : tWorkspace('title').substring(0, 2).toUpperCase();
 
   const handleCreateWorkspace = async () => {
-    if (!createWorkspaceName.trim()) return;
+    if (!createWorkspaceName.trim() || !createWorkspaceCategoryId) return;
     setIsCreating(true);
     try {
-      const response = await api.post('/workspaces', { name: createWorkspaceName.trim() });
+      const response = await api.post('/workspaces', {
+        name: createWorkspaceName.trim(),
+        categoryId: createWorkspaceCategoryId,
+      });
       const newWs = response?.data?.data || response?.data || response;
       toast.success(tWorkspace('create_success'));
 
       setIsCreateOpen(false);
       setCreateWorkspaceName('');
+      setCreateWorkspaceCategoryId('');
 
       if (newWs && newWs.id) {
         await changeWorkspace(newWs.id);
@@ -105,6 +122,8 @@ export default function WorkspacePage() {
   return (
     <div className="_workspace-page flex-1 overflow-y-auto rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
       <div className="animate-in fade-in flex h-full flex-col space-y-6 px-4 py-5 duration-300">
+        <IncomingTransferBanner />
+
         {/* Invitation Banner */}
         {!isInvitationsLoading && pendingCount > 0 && (
           <Link
@@ -161,12 +180,34 @@ export default function WorkspacePage() {
                       autoFocus
                     />
                   </div>
+                  <div className="space-y-2 text-right">
+                    <label className="block pr-1 text-sm font-medium text-gray-700">
+                      {tWorkspace('category')}
+                    </label>
+                    <Select
+                      value={createWorkspaceCategoryId}
+                      onValueChange={setCreateWorkspaceCategoryId}
+                      disabled={isCreating}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={tWorkspace('category_placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.nameFa}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="mt-2 flex justify-end gap-2">
                     <Button
                       variant="outline"
                       onClick={() => {
                         setIsCreateOpen(false);
                         setCreateWorkspaceName('');
+                        setCreateWorkspaceCategoryId('');
                       }}
                       disabled={isCreating}
                       className="rounded-xl"
@@ -175,7 +216,9 @@ export default function WorkspacePage() {
                     </Button>
                     <Button
                       onClick={handleCreateWorkspace}
-                      disabled={isCreating || !createWorkspaceName.trim()}
+                      disabled={
+                        isCreating || !createWorkspaceName.trim() || !createWorkspaceCategoryId
+                      }
                       className="min-w-[80px] rounded-xl"
                     >
                       {isCreating ? tWorkspace('creating') : tWorkspace('create')}
@@ -240,6 +283,21 @@ export default function WorkspacePage() {
               <p className="text-muted-foreground mt-1 max-w-sm text-xs">
                 {tWorkspace('card_description')}
               </p>
+
+              {activeWorkspace && activeWorkspace.ownerId === userId && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => setIsTransferOpen(true)}
+                >
+                  {tWorkspace('transfer_ownership_button')}
+                </Button>
+              )}
+
+              {activeWorkspace && activeWorkspace.ownerId === userId && (
+                <PendingTransferNotice workspaceId={activeWorkspace.id} onChange={() => mutate()} />
+              )}
             </div>
           )}
 
@@ -268,6 +326,18 @@ export default function WorkspacePage() {
         onConfirm={handleDeleteWorkspace}
         isDeleting={isDeleting}
       />
+
+      {activeWorkspace && (
+        <TransferOwnershipDialog
+          isOpen={isTransferOpen}
+          onClose={() => setIsTransferOpen(false)}
+          workspaceId={activeWorkspace.id}
+          onCompleted={() => {
+            mutate();
+            globalMutate(`/workspaces/${activeWorkspace.id}/ownership-transfer/active`);
+          }}
+        />
+      )}
     </div>
   );
 }

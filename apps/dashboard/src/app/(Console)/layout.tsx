@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Toaster } from 'sonner';
 
-import { InstagramInvalidDialog } from '@/components/Console/InstagramInvalidDialog';
 import { ConsoleProvider } from '@/components/Layout/ConsoleProvider';
 import { NavBottom } from '@/components/Layout/NavBottom';
 import { ZodErrorsMapProvider } from '@/components/Layout/ZodErrorsMapProvider';
@@ -12,6 +11,8 @@ import { AuthProvider } from '@/components/Providers/AuthProvider';
 import { SiteProvider } from '@/components/Providers/SiteProvider';
 import { Metadata } from 'next';
 import InstagramInvalidRedirector from '@/components/Console/InstagramInvalidRedirector';
+import WorkspaceSessionGuard from '@/components/Console/WorkspaceSessionGuard';
+import WorkspaceCategoryGuard from '@/components/Console/WorkspaceCategoryGuard';
 
 export const metadata: Metadata = {
   title: {
@@ -36,6 +37,8 @@ export default async function ConsoleLayout({
             <SiteProvider>
               <ConsoleProvider>
                 <InstagramInvalidRedirector />
+                <WorkspaceSessionGuard />
+                <WorkspaceCategoryGuard />
 
                 {children}
 

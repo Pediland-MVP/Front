@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import useSWR from 'swr';
+import { fetcher } from '@/hooks/swr/api-client';
 import { WorkspaceRow } from '@/types/workspace';
 import { PageMeta } from '@/types/meta';
 import { LayoutTable } from '@/components/layout/LayoutTable';
@@ -33,6 +35,8 @@ export default function WorkspaceTable({
   labelId,
   onLabelIdChange,
   labelsItems,
+  categoryId,
+  onCategoryChange,
 }: {
   isRefetching?: boolean;
   workspaces: WorkspaceRow[];
@@ -46,11 +50,15 @@ export default function WorkspaceTable({
   labelId: string | undefined;
   onLabelIdChange: (labelId: string | undefined) => void;
   labelsItems: LabelListItem[];
+  categoryId: string;
+  onCategoryChange: (categoryId: string) => void;
 }) {
   const t = useTranslations('Workspaces');
   const [tableInstance, setTableInstance] = useState<Table<WorkspaceRow> | null>(null);
   const [tempSearch, setTempSearch] = useState(search);
   const columns = useWorkspaceColumns();
+  const { data: categoriesData } = useSWR('/workspace-categories?limit=100', fetcher);
+  const categories = categoriesData?.items ?? [];
 
   return (
     <LayoutTable isRefetching={isRefetching}>
@@ -89,6 +97,23 @@ export default function WorkspaceTable({
           </Select>
 
           <FilterLabel size="sm" value={labelId} onChange={onLabelIdChange} items={labelsItems} />
+
+          <Select
+            value={categoryId || 'all'}
+            onValueChange={(value) => onCategoryChange(value === 'all' ? '' : value)}
+          >
+            <SelectTrigger className="h-9 w-[160px] text-[13px]">
+              <SelectValue placeholder={t('filterCategory')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('all')}</SelectItem>
+              {categories.map((c: { id: string; nameFa: string }) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.nameFa}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <DataTable

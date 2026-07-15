@@ -142,7 +142,10 @@ export const ContentItemConditionSchema = z.object({
 
 export const AutomationFormSchema = z
   .object({
-    instagramId: z.string().uuid(),
+    // No custom message here: zod's global error map (utils/zodErrorMap.ts) ignores
+    // `message`/`params` for `too_small` issues and always shows the generic
+    // `zod.errors.too_small.array.inclusive` translation instead.
+    instagramIds: z.array(z.string().uuid()).min(1),
     conditionType: z.enum(['EQUAL', 'INCLUDE', 'noCondition']),
     isDirect: z.boolean(),
     isComment: z.boolean(),
@@ -326,6 +329,19 @@ export const AutomationFormSchema = z
         path: ['instagramPost'],
         code: 'custom',
         message: 'required',
+      });
+    }
+
+    // برای هدف‌گذاری پست خاص، فقط یک اکانت اینستاگرام باید انتخاب شده باشد
+    if (data.isCommentContentTargetEnabled && (data.instagramIds?.length ?? 0) > 1) {
+      ctx.addIssue({
+        path: ['instagramIds'],
+        code: 'custom',
+        // `message` alone is never shown for ZodIssueCode.custom — the global error
+        // map (utils/zodErrorMap.ts) only reads `params.i18n` and looks it up under
+        // the `customErrors` namespace.
+        message: 'برای هدف‌گذاری یک پست خاص، فقط یک اکانت اینستاگرام را انتخاب کنید',
+        params: { i18n: 'postScopeSingleInstagram' },
       });
     }
 

@@ -65,13 +65,11 @@
   },
   "Connect": {
     "befroosh_meta_partner": "<bold>Befroosh, a Meta Business Partner</bold> <span>(the parent company of Instagram)</span> is based in UAE, and all intelligent Befroosh Direct Messages are sent through Instagram's official APIs.",
-    "cancel": "Cancel",
     "connect_account": "Connect Account",
     "connecting_account": "Connecting your account...",
     "connecting_description": "You will be redirected to Instagram's official website in a few moments to log in and grant access to your selected account.",
     "connecting_title": "Redirecting to Instagram",
     "copy_manual": "Copy Link",
-    "edit_instagram_username": "Edit Instagram Username",
     "how_to_connect_button": "Go to Instagram Login",
     "how_to_connect_description": "To connect your account, your password is entered directly on Instagram's official website. Befroosh never has access to your password, and the connection is fully secure and under your control.",
     "how_to_connect_list_1": "First, turn on your VPN.",
@@ -81,20 +79,18 @@
     "how_to_connect_title": "IG Account Connection Guide",
     "how_to_connect": "How to Connect",
     "instagram": "Instagram:",
-    "instagram_username_placeholder": "Enter Instagram username",
     "mobile": "Mobile:",
-    "save": "Save",
     "support": "Support",
     "title1": "To use Befroosh services,",
     "title2": "please connect your Instagram account first.",
-    "username_updated": "Username updated successfully",
     "back_to_home": "Back to Home",
     "instagram_limit": "You have reached the maximum limit of 5 Instagram accounts"
   },
   "Helpme": {
     "close": "Close",
     "help": "Help",
-    "browserDosntSupport": "Please update your browser to use these features."
+    "browserDosntSupport": "Please update your browser to use these features.",
+    "triggerText": "(help)"
   },
   "form": {
     "startDate": {
@@ -120,7 +116,8 @@
     }
   },
   "customErrors": {
-    "notFound": "Page not found."
+    "notFound": "Page not found.",
+    "postScopeSingleInstagram": "To target a specific post, select only one Instagram account"
   },
   "Components": {
     "LogoText": {
@@ -268,7 +265,8 @@
       "userName": "User Name",
       "instagramId": "Instagram ID",
       "messageCount": "Message Count",
-      "actions": "Actions"
+      "actions": "Actions",
+      "no_contacts": "No contacts found."
     },
     "Pagination": {
       "itemsCount": "Items Count",
@@ -395,6 +393,9 @@
   },
   "Automations": {
     "instagram_account": "Instagram Account",
+    "select_instagrams": "Select Pages",
+    "instagram_locked_for_post_target": "This automation targets a specific post, so only this one account can be selected",
+    "select_account_placeholder": "Select account...",
     "add_automation": "Create Automation",
     "add_title": "Message Details",
     "add": "Add",
@@ -454,7 +455,8 @@
       "with": "with",
       "word_or_phrase": "a word or phrase",
       "Errors": {
-        "required": "Enter a value for the condition"
+        "required": "Enter a value for the condition",
+        "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account"
       },
       "Help": {
         "title": "Define Conditions for Automation",
@@ -462,7 +464,10 @@
       }
     },
     "Contents": {
-      "add_content": "Add Content",
+      "add_content": "Add Step",
+      "add_step": "Add Step",
+      "no_content_title": "Add the first step of your automation",
+      "no_content_description": "Choose from the various options and build your automation with messages, forms, buttons, and other features.",
       "consent": "Ask Permission for Next Message",
       "consent_message": "Shall we go to the next one?",
       "consent_tooltip": "You need at least two messages to enable this feature.",
@@ -598,9 +603,10 @@
     },
     "TargetPostComment": {
       "title": "Limit Comments to a Specific Post",
-      "note": "According to Instagram rules, up to 750 DM comment replies are allowed per hour; extras will be queued.",
+      "note": "According to Instagram's rules, there is no limit on sending direct messages. However, for users who enter the conversation through a comment, Instagram allows up to 750 direct messages and 100 comment replies to be sent per hour. Any remaining messages will be sent automatically in the following hours.",
       "Errors": {
-        "selection_required": "Select a post."
+        "selection_required": "Select a post.",
+        "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account."
       }
     },
     "InstagramPostSelectDialog": {
@@ -615,7 +621,7 @@
       "add_comment": "Add Phrase",
       "is_enabled": {
         "label": "Reply to Comment After Sending DM",
-        "description": "After the automated DM is sent, one of the following phrases will be randomly used as a comment reply."
+        "description": "The user's comment is replied to automatically. The reply text is chosen at random from the messages below and can be edited."
       },
       "comment_placeholder": "Example: Please tap Start to begin",
       "Help": {
@@ -665,6 +671,8 @@
       "comment_start_title": "Start Button Text",
       "comment_start_text": "To receive the message, please tap the Receive Message button 🌟",
       "start_request_message": "Start Request Message",
+      "message_text": "Message Text",
+      "system_description": "This step is added automatically due to Instagram's rules. If a user enters the conversation through a comment, this message is sent to them first. Once they tap the button, the automation runs. If a user sends a direct message instead, this step is not shown and the automation starts from its first step.",
       "Help": {
         "title": "Start Request Message",
         "description": "This section activates when your automation works on comments and includes at least two messages."
@@ -673,7 +681,7 @@
     "JustFollowers": {
       "title": "Send Only If User Follows the Page",
       "message_text": "Message Text",
-      "follow_message": "To receive the message, you need to follow our page 🌟\n {username}",
+      "follow_message": "To receive the message, you need to follow our page 🌟",
       "follow_check_message": "Followed ✅",
       "helper": "If enabled, automation will only run if the user follows your page; otherwise the message below is shown.",
       "placeholder": "Example: Please follow our page to continue",
@@ -724,7 +732,8 @@
       "delete": "Delete",
       "direct": "Direct",
       "comment": "Comment",
-      "specified_post": "Specific Post"
+      "specified_post": "Specific Post",
+      "no_instagram_assigned": "No Instagram assigned"
     },
     "ContentPromotionDialog": {
       "title": "Upgrade Account",
@@ -732,6 +741,15 @@
       "buttons": {
         "close": "Got it",
         "upgrade": "Upgrade Subscription"
+      }
+    },
+    "FreeQuotaWarningDialog": {
+      "title": "Free Automations Used Up",
+      "description": "You've used all of your free automations. Adding a new automation will turn on promotion mode for this page.",
+      "usageLabel": "{used} of {limit} free automations used",
+      "buttons": {
+        "cancel": "Cancel",
+        "confirm": "Continue and add automation"
       }
     },
     "SetupWarning": {
@@ -771,6 +789,9 @@
   "Subscription": {
     "title": "Subscription Management",
     "no_active_subscription": "There is no active subscription.",
+    "page_coverage_title": "Covered pages",
+    "unassigned_active_subscription": "This subscription hasn't been assigned to a page yet",
+    "covered_page": "Page",
     "plan_title": "Choose the right subscription plan for your page",
     "package_title": "Choose the right subscription plan for your page",
     "subscription": "Subscription",
@@ -781,6 +802,13 @@
     "day": "day",
     "reserve_subscription": "Reserve Subscription",
     "buy_subscription": "Buy Subscription",
+    "choose_page_title": "Which page is this subscription for?",
+    "choose_page_description": "Matching plans are shown based on that page's follower count.",
+    "no_pages_connected": "You haven't connected any Instagram page yet.",
+    "connect_page_cta": "Add a page",
+    "renewal_will_queue_notice": "This page already has an active subscription. The new one will be queued and will activate automatically once the current one ends.",
+    "no_plan_for_followers": "No matching plan was found for this page's follower count. Please contact support.",
+    "back": "Back",
     "subscriptionStatus": "Here you can view your active and reserved subscriptions.",
     "selectPlan": "Select your plan",
     "activeSubscription": "Active Subscription",
@@ -1192,7 +1220,55 @@
       "name": "Workspace Name",
       "save": "Save Changes",
       "success": "Workspace updated successfully.",
-      "error": "Error updating workspace."
+      "error": "Error updating workspace.",
+      "transfer_ownership_button": "Transfer Ownership"
+    },
+    "OwnershipTransfer": {
+      "title": "Transfer Workspace Ownership",
+      "warning_description": "This will transfer ownership of this workspace and all its data to another user. It has no effect on your other workspaces.",
+      "target_mobile": "Target user's mobile number",
+      "target_mobile_confirm": "Repeat mobile number",
+      "invalid_mobile": "Invalid mobile number",
+      "mobile_mismatch": "The two mobile numbers do not match",
+      "transfer_and_leave": "Transfer and leave",
+      "transfer_only": "Transfer ownership only",
+      "stay_warning_title": "Are you sure?",
+      "stay_warning_description": "You will stay in this workspace, but as a manager with full access, not the owner. The new owner will have full control.",
+      "stay_confirm": "Yes, transfer only",
+      "otp_title": "Verification Code",
+      "otp_description": "Enter the verification code that was sent to you.",
+      "otp_sent_to": "The code was sent to:",
+      "otp_sent_sms": "Verification code sent via SMS",
+      "otp_sent_email": "Verification code sent via email",
+      "resend_otp": "Resend code",
+      "resend_in": "Resend in {seconds}s",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "request_sent": "Transfer request sent. Waiting for the target user to accept.",
+      "initiate_error": "Error starting the transfer",
+      "confirm_error": "Error confirming the code",
+      "incoming_text": "{name} wants to transfer ownership of the workspace \"{workspace}\" to you.",
+      "accept": "Accept",
+      "reject": "Reject",
+      "accept_confirm_title": "Accept Ownership",
+      "accept_confirm_description": "By accepting, you will become the owner of this workspace and all its data.",
+      "accept_success": "Ownership transferred successfully",
+      "reject_success": "Request rejected",
+      "action_error": "Error performing the action",
+      "pending_notice_otp": "You have an open transfer request waiting for a verification code.",
+      "pending_notice_acceptance": "A transfer request was sent to {name} and is waiting for acceptance.",
+      "cancel_pending": "Cancel transfer request",
+      "cancel_confirm_title": "Cancel Ownership Transfer",
+      "cancel_confirm_description": "The current transfer request will be canceled. You can try again later.",
+      "cancel_success": "Transfer request canceled",
+      "cancel_error": "Error canceling the request",
+      "target_identifier": "Recipient's email or mobile number",
+      "target_identifier_confirm": "Repeat email or mobile number",
+      "invalid_identifier": "Invalid email or mobile number",
+      "identifier_mismatch": "The two values do not match",
+      "recipient_label": "Transfer to",
+      "awaiting_acceptance_notice": "The transfer request was sent to {name} and is awaiting the recipient's acceptance.",
+      "close": "Close"
     },
     "Invitations": {
       "title": "My Invitations",
@@ -1291,7 +1367,17 @@
       },
       "instagramConnected": "Your Instagram account was successfully added.",
       "instagramConnectionError": "Failed to connect to Instagram.",
-      "limitReached": "Maximum of 5 Instagram accounts can be connected"
+      "limitReached": "Maximum of 5 Instagram accounts can be connected",
+      "page_promotion_alert": "This page has no active subscription; the Befroosh promotion is appended to automated messages.",
+      "page_promotion_cta": "Buy a plan for this page",
+      "page_covered_by_plan": "Remaining credit",
+      "page_days_left": "{days} days left",
+      "page_covered_by_credit": "This page is currently using the workspace's free credit",
+      "buy_additional_cta": "Buy subscription",
+      "buy_additional_hint": "Activates automatically once the current plan ends",
+      "reserved_plan_info": "Reserved: {plan} plan ({days} days)",
+      "reserved_plans_count": "Reserves: {days} days",
+      "followers_count": "{count} followers"
     },
     "BankDetails": {
       "description": "Fill in the information below to enable the Card-to-Card payment method.",
@@ -1748,6 +1834,7 @@
     "FILE_NOT_FOUND": "The file could not be found",
     "CONDITION_EXISTS": "Condition is available",
     "CONDITION_IS_ALREADY_EXIST": "The condition you selected has already been used in another automation",
+    "NO_CONDITION_ALREADY_EXISTS_FOR_POST": "A no-condition automation already exists for this post",
     "CONSENT_TEXT_REQUIRED": "The text of satisfaction is required",
     "USER_DATA_TEXT_REQUIRED": "User data text is required",
     "REMINDER_TIME_REQUIRED": "Reminder time is required.",
@@ -1755,6 +1842,7 @@
     "ORDER_PENDING_NOT_FOUND": "Pending order not found",
     "SHOP_NOT_FOUND": "The store could not be found",
     "CONTENT_SHOULD_HAVE_AT_LEAST_ONE_PRODUCT": "Content must have at least one product",
+    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "This automation is linked to a specific post and can only have one page",
     "ERROR_CODES": "Unknown error",
     "ERROR_CODES_DESCRIPTION": "Please try again later",
     "CHECK_CONNECTION": "Check your connection"
@@ -1903,6 +1991,17 @@
     "email": "Email",
     "telegram": "Telegram",
     "enter_panel": "Enter Panel"
+  },
+  "Install": {
+    "title": "Install the Befroosh App",
+    "description": "Install the Befroosh app on your phone for faster access",
+    "android_title": "Download for Android",
+    "android_cafebazaar": "Cafe Bazaar",
+    "android_googleplay": "Google Play",
+    "ios_title": "Install on iPhone (via Safari)",
+    "ios_step1": "Tap the Share icon in Safari's toolbar",
+    "ios_step2": "Choose \"Add to Home Screen\"",
+    "ios_step3": "Tap \"Add\" — the Befroosh icon is added to your home screen"
   },
   "Permissions": {
     "_modules": {

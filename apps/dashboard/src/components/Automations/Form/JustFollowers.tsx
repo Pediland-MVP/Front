@@ -1,6 +1,7 @@
 'use client';
 
 import useUser from '@/hooks/useUser';
+import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { AutomationFormType } from '@/schemas/automationForm';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
@@ -29,6 +30,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
   const { setValue, watch, clearErrors } = useFormContext<AutomationFormType>();
 
   const { user, hasInstagram } = useUser();
+  const { defaults } = useAutomationDefaults();
 
   useEffect(() => {
     if (!user) return;
@@ -36,15 +38,10 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
     if (watch('justFollowers')) {
       // Set default values when enabling
       if (!watch('followMessage') && hasInstagram) {
-        setValue(
-          'followMessage',
-          t('follow_message', {
-            username: `@${user?.instagrams[0].username}`,
-          }),
-        );
+        setValue('followMessage', defaults?.followMessage || t('follow_message'));
       }
       if (!watch('followCheckMessage')) {
-        setValue('followCheckMessage', t('follow_check_message'));
+        setValue('followCheckMessage', defaults?.followCheckMessage || t('follow_check_message'));
       }
     } else {
       // Reset values and clear errors when disabling
@@ -53,7 +50,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
       clearErrors('followMessage');
       clearErrors('followCheckMessage');
     }
-  }, [watch('justFollowers')]);
+  }, [watch('justFollowers'), defaults]);
 
   return (
     <div className="_just-followers space-y-2">
@@ -64,6 +61,7 @@ export const JustFollowers = ({ control, getValues }: JustFollowersProps) => {
           <FormItem className="flex flex-col justify-start gap-y-2">
             <div className="relative flex items-center gap-x-2">
               <HelpMeDialog
+                helpId="automation_just_followers"
                 title={t('Help.title')}
                 description={t('Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.JustFollowers.video}

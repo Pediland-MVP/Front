@@ -35,6 +35,7 @@ import { TasksBulkAssign } from './tasks-bulk-assign';
 
 // Types
 import type { TaskListItem, TasksStats } from '@/types/task';
+import type { SmsData } from '@/types/sms';
 import type { PageMeta } from '@/types/meta';
 import type { User } from '@/types/user';
 import type { LabelListItem } from '@/app/(main)/labels/types';
@@ -115,6 +116,9 @@ export interface TasksTableProps {
   labelId: string | undefined;
   onLabelIdChange: (id: string | undefined) => void;
 
+  // SMS
+  openSmsDialog?: (data: SmsData) => void;
+
   // Mutations
   mutateTasks?: () => void;
 }
@@ -144,6 +148,7 @@ export function TasksTable({
   onAdminIdChange,
   labelId,
   onLabelIdChange,
+  openSmsDialog,
   mutateTasks,
 }: TasksTableProps) {
   const t = useTranslations('Tasks');
@@ -200,6 +205,7 @@ export function TasksTable({
   const cols = taskColumns({
     role,
     onManage: setDrawerTask,
+    openSmsDialog,
     t: (key: string) => t(key as Parameters<typeof t>[0]),
   });
 

@@ -4,21 +4,29 @@ import { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 
 import { TaskListItem } from '@/types/task';
+import { SmsData } from '@/types/sms';
 import { formatTaskDate } from '@/lib/task-datetime';
 import { toAssignedLabels } from './to-assigned-labels';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ContactOptions } from '@/components/table/contact-options';
 import { LabelChips } from '@/components/table/label-chips';
 
 interface TaskColumnsOpts {
   role: string;
   onManage: (task: TaskListItem) => void;
+  openSmsDialog?: (data: SmsData) => void;
   t: (key: string) => string;
 }
 
-export function taskColumns({ role, onManage, t }: TaskColumnsOpts): ColumnDef<TaskListItem>[] {
+export function taskColumns({
+  role,
+  onManage,
+  openSmsDialog,
+  t,
+}: TaskColumnsOpts): ColumnDef<TaskListItem>[] {
   const cols: ColumnDef<TaskListItem>[] = [
     // ── 2. actions ───────────────────────────────────────────────────────────
     {
@@ -29,6 +37,20 @@ export function taskColumns({ role, onManage, t }: TaskColumnsOpts): ColumnDef<T
           {t('manage')}
         </Button>
       ),
+    },
+
+    // ── 2b. status ───────────────────────────────────────────────────────────
+    {
+      id: 'status',
+      header: t('columns.status'),
+      cell: ({ row }) => {
+        const isDone = row.original.status === 'done';
+        return (
+          <Badge variant={isDone ? 'success' : 'secondary'}>
+            {t(isDone ? 'filters.done' : 'filters.todo')}
+          </Badge>
+        );
+      },
     },
 
     // ── 3. admin (super-admin only) ──────────────────────────────────────────
@@ -72,7 +94,7 @@ export function taskColumns({ role, onManage, t }: TaskColumnsOpts): ColumnDef<T
         const { id, firstname, lastname } = row.original.user;
         return (
           <Link
-            href={`/customers/${id}`}
+            href={`/users/${id}`}
             className="text-primary hover:text-secondary underline-offset-4 hover:underline"
           >
             {`${firstname} ${lastname}`.trim()}
@@ -113,6 +135,7 @@ export function taskColumns({ role, onManage, t }: TaskColumnsOpts): ColumnDef<T
             leadId={id}
             mobile={mobile}
             fullName={`${firstname} ${lastname}`.trim()}
+            openSmsDialog={openSmsDialog}
           />
         );
       },

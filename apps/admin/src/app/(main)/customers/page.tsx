@@ -1,7 +1,0 @@
-// src/app/customers/page.tsx
-
-import CustomersPageClient from './client-page';
-
-export default function CrmPage() {
-  return <CustomersPageClient />;
-}

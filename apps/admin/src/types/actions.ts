@@ -1,5 +1,16 @@
 // src/types/actions.ts
 
+type AdminRef = {
+  id: string;
+  createDate: string;
+  updateDate: string;
+  deleteDate: string;
+  firstname: string;
+  lastname: string;
+  role: string;
+  username: string;
+};
+
 export type Action = {
   id: string;
   createDate: string;
@@ -10,14 +21,8 @@ export type Action = {
   description: string;
   status: string;
   doneDate?: string | null;
-  admin: {
-    id: string;
-    createDate: string;
-    updateDate: string;
-    deleteDate: string;
-    firstname: string;
-    lastname: string;
-    role: string;
-    username: string;
-  };
+  doneNote?: string | null;
+  admin: AdminRef;
+  createdByAdmin?: AdminRef | null;
+  doneByAdmin?: AdminRef | null;
 };

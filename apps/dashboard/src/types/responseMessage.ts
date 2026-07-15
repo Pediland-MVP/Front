@@ -3,7 +3,8 @@ export type RES_CODES =
   | 'PAID_BY_GATEWAY'
   | 'PAYMENT_LINK_GENERATED'
   | 'ORDER_CREATED'
-  | 'CONTACT_UPDATED';
+  | 'CONTACT_UPDATED'
+  | 'AUTOMATION_DEFAULTS_FETCHED';
 
 export interface IResponseMessage<T = undefined> {
   message: 'Created' | 'OK' | 'Updated' | (string & {});
