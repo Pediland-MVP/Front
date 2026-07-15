@@ -45,6 +45,20 @@ export default defineConfig({
         replacement: path.resolve(dirname, '../../packages/ui/src/automation-builder') + '/$1',
       },
       { find: /^@\/(.*)/, replacement: path.resolve(dirname, './src') + '/$1' },
+      // `packages/ui` (a workspace package, not a Next.js app) doesn't declare `next` as a
+      // dependency, so pnpm's strict resolution means `next/image`/`next/link` 404 when
+      // vitest loads its files (e.g. `InstagramPostSelectDialog.tsx`, rendered by the
+      // shared `AutomationBuilder`) — even though the admin app itself has a real `next`.
+      // Reuse the same stubs `packages/ui`'s own vitest.config.ts and the dashboard's
+      // vitest.config.ts already use for this, rather than duplicating them.
+      {
+        find: 'next/image',
+        replacement: path.resolve(dirname, '../../packages/ui/test/stubs/next-image.tsx'),
+      },
+      {
+        find: 'next/link',
+        replacement: path.resolve(dirname, '../../packages/ui/test/stubs/next-link.tsx'),
+      },
     ],
   },
   test: {
