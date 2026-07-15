@@ -228,7 +228,7 @@
     "code": "کد",
     "subcode": "زیرکد",
     "attempts": "تعداد تلاش",
-    "jobId": "شناسه صف",
+    "jobId": "شناسه کار",
     "payload": "بار داده"
   },
   "WorkspaceCategories": {
