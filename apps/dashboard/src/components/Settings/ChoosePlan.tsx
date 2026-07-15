@@ -201,18 +201,18 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
 
   const labelClass = 'text-muted-foreground text-sm font-medium';
 
-  // Durations sorted by days descending (longest first)
+  // Durations sorted by days ascending (shortest first)
   const sortedDurations = useMemo(() => {
-    return [...(currentPlan?.durations ?? [])].sort((a, b) => b.durationDays - a.durationDays);
+    return [...(currentPlan?.durations ?? [])].sort((a, b) => a.durationDays - b.durationDays);
   }, [currentPlan]);
 
   // Recommended duration id is the longest duration (highest value)
-  const recommendedDurationId = sortedDurations[0]?.id;
+  const recommendedDurationId = sortedDurations[sortedDurations.length - 1]?.id;
 
   // Monthly base price (usually from the shortest duration card)
   const monthlyBaselinePrice = useMemo(() => {
     if (!sortedDurations.length) return null;
-    const shortest = sortedDurations[sortedDurations.length - 1];
+    const shortest = sortedDurations[0];
     const basePrice =
       Number(shortest.discountPrice) > 0 ? Number(shortest.discountPrice) : Number(shortest.price);
     const months =

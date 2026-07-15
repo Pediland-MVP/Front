@@ -464,7 +464,10 @@
       }
     },
     "Contents": {
-      "add_content": "Add Content",
+      "add_content": "Add Step",
+      "add_step": "Add Step",
+      "no_content_title": "Add the first step of your automation",
+      "no_content_description": "Choose from the various options and build your automation with messages, forms, buttons, and other features.",
       "consent": "Ask Permission for Next Message",
       "consent_message": "Shall we go to the next one?",
       "consent_tooltip": "You need at least two messages to enable this feature.",
@@ -600,7 +603,7 @@
     },
     "TargetPostComment": {
       "title": "Limit Comments to a Specific Post",
-      "note": "According to Instagram rules, up to 750 DM comment replies are allowed per hour; extras will be queued.",
+      "note": "According to Instagram's rules, there is no limit on sending direct messages. However, for users who enter the conversation through a comment, Instagram allows up to 750 direct messages and 100 comment replies to be sent per hour. Any remaining messages will be sent automatically in the following hours.",
       "Errors": {
         "selection_required": "Select a post.",
         "specific_post_requires_single_instagram": "To target a specific post, select only one Instagram account."
@@ -618,7 +621,7 @@
       "add_comment": "Add Phrase",
       "is_enabled": {
         "label": "Reply to Comment After Sending DM",
-        "description": "After the automated DM is sent, one of the following phrases will be randomly used as a comment reply."
+        "description": "The user's comment is replied to automatically. The reply text is chosen at random from the messages below and can be edited."
       },
       "comment_placeholder": "Example: Please tap Start to begin",
       "Help": {
@@ -668,6 +671,8 @@
       "comment_start_title": "Start Button Text",
       "comment_start_text": "To receive the message, please tap the Receive Message button 🌟",
       "start_request_message": "Start Request Message",
+      "message_text": "Message Text",
+      "system_description": "This step is added automatically due to Instagram's rules. If a user enters the conversation through a comment, this message is sent to them first. Once they tap the button, the automation runs. If a user sends a direct message instead, this step is not shown and the automation starts from its first step.",
       "Help": {
         "title": "Start Request Message",
         "description": "This section activates when your automation works on comments and includes at least two messages."

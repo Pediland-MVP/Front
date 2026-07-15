@@ -34,7 +34,6 @@ import { ConnectInstagramAlert } from './ConnectInstagramAlert';
 import { FreeQuotaWarningDialog } from './FreeQuotaWarningDialog';
 import {
   CommentReplies,
-  CommentTriggerInputs,
   Conditions,
   ConditionTypesEnum,
   Contents,
@@ -471,6 +470,7 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
                   <SeperateLine />
 
                   <Conditions control={form.control} getValues={form.getValues} />
+                  <JustFollowers control={form.control} getValues={form.getValues} />
                   <SeperateLine />
 
                   <Triggers control={form.control} getValues={form.getValues} />
@@ -482,11 +482,7 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
                 </div>
 
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <JustFollowers control={form.control} getValues={form.getValues} />
-
                   <CommentReplies />
-
-                  <CommentTriggerInputs />
 
                   <CommentLimitAlert />
                 </div>

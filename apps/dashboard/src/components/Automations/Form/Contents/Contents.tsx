@@ -41,6 +41,7 @@ import { ValidationTypeEnum } from '@/types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
 import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
 import { ChooseAutomationType } from './ChooseAutomationType';
+import { StartAutomationMessage } from './StartAutomationMessage';
 import z from 'zod';
 
 type ContentsProps = {
@@ -169,13 +170,25 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
   return (
     <ContentsContext.Provider value={{ contents, updateContents, removeContents }}>
       <div className="_content-item flex flex-col gap-3">
+        {mode === AutomationContentModeEnum.AUTOMATION && <StartAutomationMessage />}
+
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
-            <p className="font-bold text-gray-500">هنوز محتوایی اضافه نشده‌است</p>
-            {/* <p className="text-center text-sm">
-              روی دکمه "افزودن محتوا" کلیک کنید و نوع محتوای خود را انتخاب کنید
-            </p> */}
+            <p className="font-bold text-gray-500">{t('no_content_title')}</p>
+            <p className="text-muted-foreground mt-1 text-center text-sm">
+              {t('no_content_description')}
+            </p>
+
+            <Button
+              variant="default"
+              type="button"
+              className="bg-primary mt-4 w-64 text-white"
+              onClick={() => setIsChoosingType(true)}
+            >
+              <PlusCircleIcon />
+              {t('add_step')}
+            </Button>
           </div>
         )}
         {contents.length > 0 && (
@@ -229,16 +242,18 @@ export const Contents = ({ mode, automationId }: ContentsProps) => {
 
         {!isChoosingType && (
           <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="default"
-              type="button"
-              className="bg-primary flex-1 text-white"
-              disabled={isChoosingType}
-              onClick={() => setIsChoosingType(true)}
-            >
-              <PlusCircleIcon />
-              {t('add_content')}
-            </Button>
+            {contents.length > 0 && (
+              <Button
+                variant="default"
+                type="button"
+                className="bg-primary flex-1 text-white"
+                disabled={isChoosingType}
+                onClick={() => setIsChoosingType(true)}
+              >
+                <PlusCircleIcon />
+                {t('add_content')}
+              </Button>
+            )}
             <div className="flex shrink-0 items-center justify-center">
               <HelpMeDialog
                 helpId="automation_contents"
