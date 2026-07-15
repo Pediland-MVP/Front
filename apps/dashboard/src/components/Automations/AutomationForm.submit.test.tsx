@@ -6,16 +6,19 @@ vi.mock('@/hooks/useUser', () => ({
   default: () => ({ user: null, hasInstagram: true, isLoading: false }),
 }));
 
-// Mirrors the REAL `GET /templates/:id` response shape: templates don't load or
-// synthesize `reminders`/`instagramLinks`/`instagramPost` (`ContentCycleService
-// .readOneTemplateById` on the backend only loads `contents`/`conditions`, plus the
-// plain `isDirect`/`isComment`/`isNoCondition` columns) — so a template source never
-// carries those three keys, unlike a full `GET /contentCycle/:id` (copyFromId) read.
-// This exact shape is what exposed a real regression while writing this test: without
-// a `?? []` fallback in `AutomationForm.tsx`'s `initialValue` memo, `reminders` came
-// through as `undefined`, which silently failed `AutomationFormSchema` (it requires
-// `reminders` as a non-optional array) and blocked every template-prefilled submit —
-// see the fix in `AutomationForm.tsx` and the task-28 report for detail.
+// Mirrors the REAL `GET /templates/:id` response shape: the backend template endpoint
+// (`ContentCycleService.readOneTemplateById`) only loads `contents`/`conditions` plus
+// `isDirect`/`isComment`/`isNoCondition` columns — it does NOT synthesize or return
+// `reminders`/`instagramLinks`/`instagramPost`. HOWEVER, this mock DELIBERATELY includes
+// `instagramLinks` (line 25) as a TEST SHIM ONLY — it is NOT a faithful mirror of the real
+// API response. The shim exists solely to satisfy `AutomationFormSchema`'s `instagramIds.min(1)`
+// validation without driving the real InstagramSelectField during this unit test. The real
+// `GET /contentCycle/:id` (copyFromId) read would carry all three keys.
+// This exact shape exposed a real regression while writing this test: without a `?? []`
+// fallback in `AutomationForm.tsx`'s `initialValue` memo, `reminders` came through as
+// `undefined`, which silently failed `AutomationFormSchema` (it requires `reminders` as
+// non-optional array) and blocked every template-prefilled submit — see the fix in
+// `AutomationForm.tsx` and the task-28 report for detail.
 const templateSource = {
   isDirect: true,
   isComment: false,
@@ -100,5 +103,12 @@ describe('AutomationForm submit target regression', () => {
     const [config] = post.mock.calls[0];
     expect(config.url).toBe('/contentCycle');
     expect(config.method).toBe('POST');
+
+    // Regression: ensure the submit NEVER targets /templates (the bug was it would POST
+    // to /templates instead of /contentCycle). Verify no call in the spy's history has
+    // url: '/templates'.
+    expect(post.mock.calls).not.toContainEqual(
+      expect.arrayContaining([expect.objectContaining({ url: '/templates' })]),
+    );
   });
 });
