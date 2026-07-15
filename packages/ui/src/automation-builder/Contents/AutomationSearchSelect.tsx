@@ -72,13 +72,6 @@ export function AutomationSearchSelect({
   const [search, setSearch] = React.useState('');
   const debouncedSearch = useDebounce(search, 300);
 
-  React.useEffect(() => {
-    console.log(
-      'AutomationSearchSelect Props',
-      JSON.stringify({ value, initialData }, undefined, ' '),
-    );
-  }, []);
-
   const displayLabel = React.useMemo(() => {
     if (title) return title;
     if (value && initialData?.id === value) {

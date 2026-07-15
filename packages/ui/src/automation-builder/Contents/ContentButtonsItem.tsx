@@ -93,8 +93,6 @@ export const ButtonContentItem = ({
   const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : contentType === 'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
   const fieldPath = fieldNameOverride ?? defaultFieldName;
 
-  console.log('FieldPath on ButtonContentItem', fieldPath);
-
   const selectedType = useWatch({
     name: `${fieldPath}.${index}.postbackPayloadType` as any,
     control,

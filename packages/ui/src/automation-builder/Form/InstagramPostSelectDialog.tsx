@@ -82,7 +82,7 @@ export const InstagramPostSelectDialog = ({
         setAfter(res.data.media.paging.cursors.after || null);
       })
       .catch((e: unknown) => {
-        console.log(e);
+        console.error(e);
       })
       .finally(() => {
         setIsLoading(false);

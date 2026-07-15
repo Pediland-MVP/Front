@@ -186,9 +186,18 @@ export const Contents = ({
   const showTemplateInsert =
     builderMode === 'automation' && mode === AutomationContentModeEnum.AUTOMATION;
 
-  const contentTypeOptionsForMode = showTemplateInsert
-    ? contentTypeOptions
-    : contentTypeOptions.filter((option) => option.value !== 'template');
+  // Also hide `INSTAGRAM_POST` in `builderMode === 'template'`: a template has no
+  // workspace/Instagram context (see `TEMPLATE_PLACEHOLDER_INSTAGRAM_ID` in the admin's
+  // `TemplateForm.tsx`), and the backend's `TemplateContentDto` rejects that content type
+  // outright — offering it here would just be a guaranteed-fail submit for the admin.
+  // `PRODUCT` stays available in template mode; the backend DTO does allow it.
+  const contentTypeOptionsForMode = contentTypeOptions.filter((option) => {
+    if (!showTemplateInsert && option.value === 'template') return false;
+    if (builderMode === 'template' && option.value === AutomationContentTypesEnum.INSTAGRAM_POST) {
+      return false;
+    }
+    return true;
+  });
 
   const selectAutomationTypeHandler = (option: ContentTypeOption) => {
     if (option.value === 'template') {
@@ -196,7 +205,6 @@ export const Contents = ({
       return;
     }
 
-    console.log(`Selected Type: ${option.value} previous array: `, contents);
     appendContents({
       type: option.value === 'media' ? AutomationContentTypesEnum.IMAGE : option.value,
       ...(mode === AutomationContentModeEnum.AUTOMATION && {
@@ -232,7 +240,6 @@ export const Contents = ({
         delayUnit: 'hour',
       }),
     });
-    console.log('After array: ', contents);
     clearErrors(arrayName);
   };
 

@@ -129,11 +129,6 @@ function VitrinItemCard({
         },
       );
 
-      console.log(
-        'Image uploaded',
-        JSON.stringify({ itemBasePath, imageId, imageUrl, vitrin }, undefined, ' '),
-      );
-
       onUpdate(vitrinIndex, {
         ...(vitrin ?? {}),
         imageUrl,
@@ -265,15 +260,6 @@ export default function VitrinContent({ index, mode, control, apiClient }: Vitri
     keyName: '_xid',
   });
 
-  const vitrins = useWatch({
-    control,
-    name: `${baseFieldName}.${index}.vitrins`,
-  });
-
-  useEffect(() => {
-    console.log(JSON.stringify(vitrins, undefined, ' '));
-  }, [vitrins]);
-
   // در بالای کامپوننت VitrinContent اضافه کن
   const { getValues, setValue } = useFormContext<z.infer<typeof AutomationFormSchema>>();
 
@@ -291,11 +277,6 @@ export default function VitrinContent({ index, mode, control, apiClient }: Vitri
   }, [errors, baseFieldName, index]);
 
   const handleAppend = () => {
-    console.log('=== handleAppend START ===', {
-      currentLength: fields.length,
-      currentIndex,
-    });
-
     const fieldPath: `contents.${number}.vitrins` | `reminders.${number}.vitrins` =
       `${baseFieldName}.${index}.vitrins`;
 
@@ -320,8 +301,6 @@ export default function VitrinContent({ index, mode, control, apiClient }: Vitri
 
     // به آخرین آیتم برو
     setCurrentIndex(newVitrins.length - 1);
-
-    console.log('=== handleAppend END - new length:', newVitrins.length);
   };
   useEffect(() => {
     if (fields.length > 0) {

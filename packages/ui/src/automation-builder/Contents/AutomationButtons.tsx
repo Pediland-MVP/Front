@@ -99,9 +99,6 @@ export const AutomationButtons = ({
         >
           <div className="flex w-full flex-col items-center justify-center gap-y-3">
             {fields.map((button, index) => {
-              console.log('Buttons inside sortable', button);
-
-              // return JSON.stringify(button)
               return (
                 <ButtonContentItem
                   key={button._xid}

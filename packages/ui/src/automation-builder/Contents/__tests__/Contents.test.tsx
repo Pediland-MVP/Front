@@ -127,3 +127,23 @@ describe('Contents — "template" content-type option (Task 27)', () => {
     expect(screen.getByText('buttons.titles.template')).toBeInTheDocument();
   });
 });
+
+describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gating)', () => {
+  it('hides "INSTAGRAM_POST" when builderMode="template" (backend TemplateContentDto rejects it — a template has no Instagram/workspace context)', () => {
+    render(<Wrapper builderMode="template" />);
+
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+
+    expect(screen.queryByText('buttons.titles.instagram_post')).not.toBeInTheDocument();
+    // PRODUCT stays available in template mode — the backend DTO does allow it.
+    expect(screen.getByText('buttons.titles.product')).toBeInTheDocument();
+  });
+
+  it('still shows "INSTAGRAM_POST" for builderMode="automation" (unchanged behavior)', () => {
+    render(<Wrapper builderMode="automation" />);
+
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+
+    expect(screen.getByText('buttons.titles.instagram_post')).toBeInTheDocument();
+  });
+});

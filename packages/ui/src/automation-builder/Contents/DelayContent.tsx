@@ -14,7 +14,6 @@ import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationFormType } from '../schemas/automationForm';
 import p2eNumbers from '../utils/p2eNumber';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 type DelayContentProps = {
@@ -37,7 +36,7 @@ export function DelayContent({ index }: DelayContentProps) {
   const delayMsNameKey: `contents.${number}.delayMs` = `contents.${index}.delayMs`;
   const delayUnitNameKey: `contents.${number}.delayUnit` = `contents.${index}.delayUnit`;
 
-  const { control, watch, setValue, getValues } = useFormContext<AutomationFormType>();
+  const { control, setValue, getValues } = useFormContext<AutomationFormType>();
   const t = useTranslations('Automations.Contents.Delay');
 
   const delayUnit = useWatch({
@@ -46,19 +45,12 @@ export function DelayContent({ index }: DelayContentProps) {
   });
 
   const delayMsChangeHandler = (timeMs: number) => {
-    console.log('delayMsChangeHandler', index);
     setValue(delayMsNameKey, timeMs * timeUnits[delayUnit].zarib);
   };
-
-  useEffect(() => {
-    const { delayMs, id } = watch(`contents.${index}`);
-    console.log(JSON.stringify({ delayMs, index, id }, undefined, ' '));
-  }, [watch(`contents.${index}`)]);
 
   // Preventing from words
   // Converting p2e number
   const delayMsInputHandler = (e: React.FormEvent<HTMLInputElement>) => {
-    console.log('delayMsInputHandler', index);
     if (Number.isNaN(+e.currentTarget.value)) {
       const arrayOfWords = e.currentTarget.value.split('');
       arrayOfWords.pop();
@@ -69,7 +61,6 @@ export function DelayContent({ index }: DelayContentProps) {
 
   // Prevent from being under 1
   const delayUnitChangeHandler = (value: string) => {
-    console.log('delayUnitChangeHandler', index);
     const delayMsAfterChange = getValues(delayMsNameKey) / timeUnits[value]?.zarib;
     if (delayMsAfterChange < 1) {
       setValue(delayMsNameKey, timeUnits[value].zarib);

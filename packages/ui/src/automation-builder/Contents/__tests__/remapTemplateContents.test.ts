@@ -109,6 +109,35 @@ describe('remapTemplateContents', () => {
     expect(vitrin.images).toBeUndefined();
   });
 
+  it("normalizes a vitrin's OWN buttons (v.buttons, not the vitrins array's) the same way as buttonTemplate.buttons", () => {
+    // Regression guard for the dashboard's `AutomationForm.tsx` copy-paste bug (Finding 5,
+    // final-review polish pass): that transform read `content.vitrins.buttons` — `.buttons`
+    // off the ARRAY, always `undefined` — instead of each vitrin item's own `v.buttons`, so
+    // vitrin buttons were never re-normalized on prefill. This module's own `remapVitrin`
+    // has always used `vitrin.buttons` correctly; this test locks that in.
+    const raw = [
+      {
+        id: 'server-id-7',
+        type: AutomationContentTypesEnum.VITRIN,
+        vitrins: [
+          {
+            id: 'vitrin-id-2',
+            title: 'کالای من',
+            description: 'توضیح',
+            images: [{ id: 13, url: 'https://example.com/b.png' }],
+            buttons: [{ postbackPayloadType: 'TEXT', title: 'باشه', priority: 1 }],
+          },
+        ],
+      },
+    ];
+    const result = remapTemplateContents(raw);
+    const vitrinButton = result[0].vitrins[0].buttons[0];
+    expect(vitrinButton.title).toBe('باشه');
+    // Normalized to the frontend `ButtonTypeEnum` (lowercase 'text'), not left as the raw
+    // uppercase 'TEXT' the backend sent.
+    expect(vitrinButton.postbackPayloadType).toBe('text');
+  });
+
   it('scrubs workspace-scoped product refs from a PRODUCT content item instead of carrying them over', () => {
     const raw = [
       {

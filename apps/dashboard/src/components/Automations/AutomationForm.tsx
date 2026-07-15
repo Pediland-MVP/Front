@@ -233,10 +233,10 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     if (content.vitrins?.length) {
       content.vitrins = content.vitrins.map((v: any) => ({
         ...v,
-        imageId: v.images[0]?.id,
-        imageUrl: v.images[0]?.url,
-        ...(content.vitrins.buttons?.length && {
-          buttons: transformButtons(content.vitrins.buttons),
+        imageId: v.images?.[0]?.id,
+        imageUrl: v.images?.[0]?.url,
+        ...(v.buttons?.length && {
+          buttons: transformButtons(v.buttons),
         }),
       }));
     }

@@ -27,7 +27,6 @@ import { QuestionContent } from './QuestionContent';
 import { ContentItemSchema } from '../schemas/automationForm';
 import { z } from 'zod';
 import VitrinContent from './VitrinContent';
-import { useEffect } from 'react';
 import { DelayContent } from './DelayContent';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 
@@ -108,18 +107,8 @@ export const ContentItem = ({
   content: z.infer<typeof ContentItemSchema>;
   apiClient: AutomationBuilderApiClient;
 }) => {
-  const {
-    control,
-    getValues,
-    formState: { errors },
-    setValue,
-    clearErrors,
-    trigger,
-  } = useFormContext<AutomationFormType>();
-
-  useEffect(() => {
-    console.log('Errors of AutomationForm', JSON.stringify(errors, undefined, ' '));
-  }, [errors]);
+  const { control, getValues, setValue, clearErrors, trigger } =
+    useFormContext<AutomationFormType>();
 
   const t = useTranslations('Automations.Contents');
   const t_contentTypes = useTranslations('Automations.Contents.Types');

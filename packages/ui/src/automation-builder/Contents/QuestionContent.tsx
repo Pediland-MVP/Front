@@ -66,7 +66,6 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
 
   // Update error message when validation type changes
   const handleValidationTypeChange = (value: ValidationTypeEnum) => {
-    console.log('value', value, fields);
     if (value === ValidationTypeEnum.Selectbox) {
       if (!fields.length) {
         append({
