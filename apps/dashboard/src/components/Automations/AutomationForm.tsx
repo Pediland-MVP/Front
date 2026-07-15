@@ -264,7 +264,16 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
       const transformedAutomation = {
         ...source,
         contents: source.contents?.map(transformContent),
-        reminders: source.reminders?.map(transformContent),
+        // `?? []`: the copyFromId source (`GET /contentCycle/:id`) always synthesizes
+        // `reminders` as an array, but the templateId source (`GET /templates/:id`)
+        // omits the field entirely (templates don't load/synthesize reminders — see
+        // `ContentCycleService.readOneTemplateById`). Without this fallback,
+        // `reminders` ends up `undefined` here and that `undefined` — being an
+        // explicit own key on this object — overrides `AutomationBuilder`'s own
+        // `reminders: []` default when spread into `initialValue` below, which then
+        // fails `AutomationFormSchema`'s (non-optional) `reminders: z.array(...)`
+        // check and silently blocks every template-prefilled submit.
+        reminders: source.reminders?.map(transformContent) ?? [],
         conditionType: source.isNoCondition ? 'noCondition' : source.conditions?.[0]?.type,
       };
 
