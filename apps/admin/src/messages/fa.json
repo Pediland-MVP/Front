@@ -219,6 +219,19 @@
     "delete": "حذف",
     "toastError": "خطایی رخ داد"
   },
+  "Templates": {
+    "title": "قالب‌های اتوماسیون",
+    "search": "جستجوی قالب",
+    "addTemplate": "افزودن قالب",
+    "thumbnail": "تصویر",
+    "templateTitle": "عنوان",
+    "templateDescription": "توضیحات",
+    "categories": "دسته‌بندی‌ها",
+    "allCategories": "همه دسته‌بندی‌ها",
+    "deleteConfirm": "این قالب حذف شود؟",
+    "deleteSuccess": "قالب حذف شد",
+    "toastError": "خطایی رخ داد"
+  },
   "Banners": {
     "search": "جستجو بر اساس عنوان...",
     "titleFa": "عنوان فارسی",
