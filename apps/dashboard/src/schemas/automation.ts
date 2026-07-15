@@ -10,6 +10,8 @@ export const AutomationSchema = z.object({
   isComment: z.boolean(),
   commentStartText: z.string(),
   commentStartTitle: z.string(),
+  title: z.string().nullable().optional(),
+  enabled: z.boolean(),
   justFollowers: z.boolean(),
   followCheckMessage: z.string(),
   followMessage: z.string().optional().nullable(),
