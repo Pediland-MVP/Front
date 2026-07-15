@@ -11,9 +11,18 @@ type ChooseAutomationTypeProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (option: ContentTypeOption) => any;
+  /** Defaults to the full `contentTypeOptions` list. `Contents.tsx` passes a filtered
+   * list (dropping the `'template'` entry) when rendered in `mode="template"` — a
+   * template can't embed another template. */
+  options?: ContentTypeOption[];
 };
 
-export function ChooseAutomationType({ open, onOpenChange, onSelect }: ChooseAutomationTypeProps) {
+export function ChooseAutomationType({
+  open,
+  onOpenChange,
+  onSelect,
+  options = contentTypeOptions,
+}: ChooseAutomationTypeProps) {
   const t_contentTypes = useTranslations('Automations.Contents.Types');
   const locale = useLocale();
   const isMobile = useMediaQuery('only screen and (max-width : 768px)');
@@ -25,7 +34,7 @@ export function ChooseAutomationType({ open, onOpenChange, onSelect }: ChooseAut
 
   const rows = (
     <div className="flex w-full flex-col gap-1" dir="rtl">
-      {contentTypeOptions.map((option) => (
+      {options.map((option) => (
         <Button
           key={option.value}
           type="button"

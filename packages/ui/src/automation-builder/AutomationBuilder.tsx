@@ -102,6 +102,7 @@ export function AutomationBuilder({
             apiClient={apiClient}
             isPromotion={isPromotion}
             helpSlot={helpSlots?.contents}
+            builderMode={mode}
           />
         </div>
 

@@ -7,7 +7,12 @@ import {
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import useSWR from 'swr';
 import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
+import { TemplatePicker, type TemplateSummary } from '../TemplatePicker/TemplatePicker';
+import { remapTemplateContents } from './remapTemplateContents';
+import { useDebounce } from '../../hooks/useDebounce';
+import type { AutomationBuilderMode } from '../AutomationBuilder.types';
 // TODO: Refactor Types & Schemas
 import type { AutomationFormType, ContentItemSchema } from '../schemas/automationForm';
 import type { UploadedFile } from '@/types/fileUploader';
@@ -52,7 +57,21 @@ type ContentsProps = {
   /** Rendered next to the "add content" button. Replaces the dashboard-only
    * `HelpMeDialog` that used to be hardcoded here. */
   helpSlot?: React.ReactNode;
+  /** The top-level `AutomationBuilder`'s own `mode` (`'automation'` | `'template'`),
+   * passed down so the `'template'` content-type option (Task 27 — insert an existing
+   * template's content steps into this automation) can be hidden in `mode="template"`: a
+   * template can't embed another template. Defaults to `'automation'` for callers that
+   * render `Contents` directly outside `AutomationBuilder` (e.g. the dashboard's own
+   * `Form/Reminder.tsx`), which are never in template mode. */
+  builderMode?: AutomationBuilderMode;
 };
+
+// `GET /templates?search=` (core's `readTemplates`) returns a `PaginatedResult` body —
+// `{ items, meta }` — same shape `CreateAutomationTemplateDialog.tsx` (Task 25/26)
+// already consumes.
+interface ReadTemplatesResponse {
+  items: TemplateSummary[];
+}
 
 export const Contents = ({
   mode,
@@ -60,10 +79,12 @@ export const Contents = ({
   apiClient,
   isPromotion,
   helpSlot,
+  builderMode = 'automation',
 }: ContentsProps) => {
   const t = useTranslations('Automations.Contents');
   const t_contentTypes = useTranslations('Automations.Contents.Types');
   const t_err = useTranslations('Automations.Contents.Errors');
+  const t_templatePicker = useTranslations('Automations.TemplatePicker');
 
   const {
     control,
@@ -127,7 +148,46 @@ export const Contents = ({
   const arrayErrorMsg = arrayErrors?.root?.message ?? arrayErrors?.message;
   const arrayErrorType = arrayErrors?.root?.type ?? arrayErrors?.type;
 
+  // `'template'` content-type option (Task 27): opens the shared `TemplatePicker`,
+  // pulls ONLY `contents[]` from the chosen template (never its triggers/conditions),
+  // and appends the remapped items to the end of THIS form's own `contents`/`reminders`
+  // array — no navigation, no touching triggers.
+  const [isPickingTemplate, setIsPickingTemplate] = useState(false);
+  const [templateSearch, setTemplateSearch] = useState('');
+  const debouncedTemplateSearch = useDebounce(templateSearch, 400);
+  const [isInsertingTemplate, setIsInsertingTemplate] = useState(false);
+
+  const { data: templatesResponse, isLoading: isTemplatesLoading } = useSWR<ReadTemplatesResponse>(
+    isPickingTemplate ? `/templates?search=${encodeURIComponent(debouncedTemplateSearch)}` : null,
+    (url: string) => apiClient.get(url).then((res) => res.data),
+  );
+
+  const insertTemplateHandler = async (template: TemplateSummary) => {
+    setIsInsertingTemplate(true);
+    try {
+      const detail = await apiClient
+        .get(`/templates/${template.id}`)
+        .then((res) => res.data as { contents?: any[] });
+      appendContents(remapTemplateContents(detail.contents ?? []));
+      setIsPickingTemplate(false);
+      setTemplateSearch('');
+      clearErrors(arrayName);
+    } finally {
+      setIsInsertingTemplate(false);
+    }
+  };
+
+  const contentTypeOptionsForMode =
+    builderMode === 'template'
+      ? contentTypeOptions.filter((option) => option.value !== 'template')
+      : contentTypeOptions;
+
   const selectAutomationTypeHandler = (option: ContentTypeOption) => {
+    if (option.value === 'template') {
+      setIsPickingTemplate(true);
+      return;
+    }
+
     console.log(`Selected Type: ${option.value} previous array: `, contents);
     appendContents({
       type: option.value === 'media' ? AutomationContentTypesEnum.IMAGE : option.value,
@@ -228,7 +288,26 @@ export const Contents = ({
           open={isChoosingType}
           onOpenChange={setIsChoosingType}
           onSelect={selectAutomationTypeHandler}
+          options={contentTypeOptionsForMode}
         />
+
+        {/* Only ever mounted outside `mode="template"` — the `'template'` option that
+            drives `isPickingTemplate` is filtered out of `contentTypeOptionsForMode`
+            above in that mode, so this branch also protects `t_templatePicker(...)`
+            from resolving against a namespace the admin app's messages don't declare. */}
+        {builderMode !== 'template' && (
+          <TemplatePicker
+            open={isPickingTemplate}
+            onOpenChange={setIsPickingTemplate}
+            templates={templatesResponse?.items ?? []}
+            isLoading={isTemplatesLoading || isInsertingTemplate}
+            search={templateSearch}
+            onSearchChange={setTemplateSearch}
+            onSelect={insertTemplateHandler}
+            searchPlaceholder={t_templatePicker('searchPlaceholder')}
+            emptyLabel={t_templatePicker('empty')}
+          />
+        )}
 
         {arrayErrorMsg && <ErrorMessage>{t_err(arrayErrorType) ?? arrayErrorMsg}</ErrorMessage>}
 
