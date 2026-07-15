@@ -13,7 +13,6 @@ import {
   AutomationBuilder,
   AutomationContentTypesEnum,
   ButtonTypeEnum,
-  ValidationTypeEnum,
   type AutomationBuilderFormHelpers,
   type AutomationFormType,
 } from '@/automation-builder';
@@ -213,10 +212,6 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
         ...content.buttonTemplate,
       };
       const buttons = transformButtons(content.buttonTemplate.buttons);
-
-      if (content.validationType === ValidationTypeEnum.Selectbox) {
-        content.valdationType = ValidationTypeEnum.Text;
-      }
 
       // Sort buttons: if priority exists, use it. Otherwise maintain order (or use ID).
       // Assuming lighter priority value means earlier in the list (1, 2, 3...)
