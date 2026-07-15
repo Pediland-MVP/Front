@@ -748,7 +748,8 @@
       "direct": "دایرکت",
       "comment": "کامنت",
       "specified_post": "پست خاص",
-      "no_instagram_assigned": "بدون اینستاگرام متصل"
+      "no_instagram_assigned": "بدون اینستاگرام متصل",
+      "disabled_badge": "غیرفعال"
     },
     "ContentPromotionDialog": {
       "title": "ارتقا حساب کاربری",
