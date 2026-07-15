@@ -246,7 +246,7 @@ export const Contents = ({
   const onContentDeleted = () => {};
 
   return (
-    <ContentsContext.Provider value={{ contents, updateContents, removeContents }}>
+    <ContentsContext.Provider value={{ contents, updateContents, removeContents, builderMode }}>
       <div className="_content-item flex flex-col gap-3">
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">

@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { Control, useFormContext, useWatch } from 'react-hook-form';
 
 import { AutomationSearchSelect } from './AutomationSearchSelect';
+import { useContentsContext } from './ContentsContext';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 import {
   Button,
@@ -86,6 +87,14 @@ export const ButtonContentItem = ({
   apiClient,
 }: ButtonContentItemProps) => {
   const form = useFormContext<AutomationFormType>();
+  const { builderMode } = useContentsContext();
+
+  // Templates (admin builder) can't offer a "start automation" button: there is no
+  // workspace automation to target, and the id would dangle once a user creates an
+  // automation from the template. Hide it from the type picker in template mode.
+  const isButtonTypeAllowed = (buttonType: ButtonTypeEnum) =>
+    !!contentTypePayloadType[contentType][buttonType] &&
+    !(builderMode === 'template' && buttonType === ButtonTypeEnum.START_AUTOMATION);
 
   // ── محاسبه مسیر پویا (اینجا فیکس اصلی است) ──
   type DefaultFieldNameType =
@@ -164,7 +173,7 @@ export const ButtonContentItem = ({
             name={`${fieldPath}.${index}.postbackPayloadType` as any}
             render={({ field: typeField, fieldState: { error } }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
-                {Object.keys(contentTypePayloadType[contentType]).length > 1 && (
+                {Object.values(ButtonTypeEnum).filter(isButtonTypeAllowed).length > 1 && (
                   <Select value={typeField.value ?? ''} onValueChange={typeField.onChange}>
                     <SelectTrigger className="gap-1 pr-2 pl-1.5">
                       <SelectValue placeholder={t('button_type')} />
@@ -172,7 +181,7 @@ export const ButtonContentItem = ({
                     <SelectContent>
                       <SelectGroup>
                         {Object.values(ButtonTypeEnum).map((buttonType) => {
-                          return contentTypePayloadType[contentType][buttonType] ? (
+                          return isButtonTypeAllowed(buttonType) ? (
                             <SelectItem key={buttonType} value={buttonType}>
                               {t(`${buttonType}.label`)}
                             </SelectItem>
