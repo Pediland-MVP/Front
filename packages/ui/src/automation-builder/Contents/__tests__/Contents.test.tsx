@@ -36,15 +36,17 @@ beforeAll(() => {
 function Wrapper({
   apiClient,
   builderMode,
+  mode,
 }: {
   apiClient?: AutomationBuilderApiClient;
   builderMode?: AutomationBuilderMode;
+  mode?: AutomationContentModeEnum;
 }) {
-  const form = useForm({ defaultValues: { contents: [] } });
+  const form = useForm({ defaultValues: { contents: [], reminders: [] } });
   return (
     <FormProvider {...form}>
       <Contents
-        mode={AutomationContentModeEnum.AUTOMATION}
+        mode={mode ?? AutomationContentModeEnum.AUTOMATION}
         apiClient={apiClient ?? { upload: vi.fn(), get: vi.fn() }}
         helpSlot={<span data-testid="help-slot">help</span>}
         builderMode={builderMode}
@@ -100,5 +102,28 @@ describe('Contents — "template" content-type option (Task 27)', () => {
     // Never renders the TemplatePicker (and never calls `apiClient.get` for it either),
     // since `builderMode !== 'template'` gates its whole subtree in `Contents.tsx`.
     expect(get).not.toHaveBeenCalled();
+  });
+
+  it('hides the "template" option when mode=REMINDER, even though builderMode defaults to "automation" (Reminder.tsx never passes builderMode)', () => {
+    const get = vi.fn();
+    render(
+      <Wrapper apiClient={{ upload: vi.fn(), get }} mode={AutomationContentModeEnum.REMINDER} />,
+    );
+
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+
+    expect(screen.queryByText('buttons.titles.template')).not.toBeInTheDocument();
+    // Sanity check: the other options are still there — this isn't an empty list.
+    expect(screen.getByText('buttons.titles.text')).toBeInTheDocument();
+    // Never renders the TemplatePicker.
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it('still shows the "template" option for mode=AUTOMATION with builderMode="automation" (unchanged behavior)', () => {
+    render(<Wrapper mode={AutomationContentModeEnum.AUTOMATION} builderMode="automation" />);
+
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+
+    expect(screen.getByText('buttons.titles.template')).toBeInTheDocument();
   });
 });

@@ -108,4 +108,43 @@ describe('remapTemplateContents', () => {
     expect(vitrin.contentId).toBeUndefined();
     expect(vitrin.images).toBeUndefined();
   });
+
+  it('scrubs workspace-scoped product refs from a PRODUCT content item instead of carrying them over', () => {
+    const raw = [
+      {
+        id: 'server-id-6',
+        type: AutomationContentTypesEnum.PRODUCT,
+        productIds: ['product-a', 'product-b'],
+        products: [{ id: 'product-a', images: [{ url: 'https://example.com/p.png' }] }],
+        contentProducts: [{ id: 'cp-1', productId: 'product-a' }],
+      },
+    ];
+    const result = remapTemplateContents(raw);
+    // The item is KEPT (a bulk-insert convenience can transfer the step, just not the
+    // workspace-specific product picks) but with every product ref stripped — it renders
+    // as the same empty "pick a product" shell a freshly-added PRODUCT content starts in.
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe(AutomationContentTypesEnum.PRODUCT);
+    expect(result[0].products).toBeUndefined();
+    expect(result[0].productIds).toBeUndefined();
+    expect(result[0].contentProducts).toBeUndefined();
+  });
+
+  it('defensively scrubs account-scoped instagramPost refs (even though templates cannot contain INSTAGRAM_POST content today)', () => {
+    const raw = [
+      {
+        id: 'server-id-7',
+        type: AutomationContentTypesEnum.TEXT,
+        text: 'سلام!',
+        instagramPost: { mediaId: 'media-123', mediaUrl: 'https://example.com/m.jpg' },
+        instagramPostId: 'ig-post-1',
+        mediaId: 'media-123',
+      },
+    ];
+    const result = remapTemplateContents(raw);
+    expect(result[0].text).toBe('سلام!');
+    expect(result[0].instagramPost).toBeUndefined();
+    expect(result[0].instagramPostId).toBeUndefined();
+    expect(result[0].mediaId).toBeUndefined();
+  });
 });

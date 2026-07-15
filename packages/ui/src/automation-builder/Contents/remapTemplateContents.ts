@@ -98,7 +98,12 @@ function remapVitrin(raw: any): any {
  * from `delayMs`, vitrin `imageId`/`imageUrl` from `images[0]`, button
  * `postbackPayloadType` normalization — so an appended item validates against the shared
  * `ContentItemSchema` exactly like a freshly hand-added content item, and carries no
- * residual pointer back to the source template/automation it was copied from.
+ * residual pointer back to the source template/automation it was copied from. Also
+ * strips workspace-/account-scoped reference data (`products`/`productIds`/
+ * `contentProducts`, `instagramPost`/`instagramPostId`/`mediaId`) that would otherwise
+ * point at products/media belonging to the template's original workspace rather than the
+ * destination automation's — see the strip in the main map body below for why this is
+ * safe (PRODUCT items keep rendering as an empty "pick products" shell).
  *
  * Pure function: no network calls, no side effects — independently unit-testable (see
  * `__tests__/remapTemplateContents.test.ts`).
@@ -112,6 +117,28 @@ export function remapTemplateContents(rawContents: any[]): any[] {
       deleteDate: _deleteDate,
       contentCycleId: _contentCycleId,
       contentCycle: _contentCycle,
+      // Workspace-scoped product refs (Task 27 finding 2): the template's `products` /
+      // `productIds` / `contentProducts` point at products that belong to the WORKSPACE
+      // the template was created under, not necessarily the destination automation's
+      // workspace — carrying them over would render broken/dangling product cards.
+      // `ContentItemSchema`'s PRODUCT branch only requires `products` to contain an item
+      // with an `.id` (see automationForm.ts's superRefine) — it does NOT require the
+      // array to be non-empty on mount, and `ProductContent.tsx` already self-heals an
+      // empty/absent `products` array into one empty "pick a product" placeholder slot
+      // (the exact same state a freshly-added PRODUCT content starts in). So it's safe —
+      // and correct — to just strip the refs and keep the item as an empty "pick
+      // products" shell for the user to fill in, rather than dropping the item entirely.
+      products: _products,
+      productIds: _productIds,
+      contentProducts: _contentProducts,
+      // Account-scoped Instagram post ref. Templates can't actually contain
+      // INSTAGRAM_POST content (see the backend's `TemplateContentDto`, which excludes
+      // it), so this never fires today — kept as a defensive strip in case that ever
+      // changes, since an `instagramPost`/`mediaId` also can't survive a cross-workspace
+      // (cross-Instagram-account) copy.
+      instagramPost: _instagramPost,
+      instagramPostId: _instagramPostId,
+      mediaId: _mediaId,
       ...rest
     } = raw ?? {};
     const content: any = { ...rest };

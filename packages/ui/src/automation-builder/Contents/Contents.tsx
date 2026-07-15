@@ -177,10 +177,18 @@ export const Contents = ({
     }
   };
 
-  const contentTypeOptionsForMode =
-    builderMode === 'template'
-      ? contentTypeOptions.filter((option) => option.value !== 'template')
-      : contentTypeOptions;
+  // The "insert template contents" convenience only makes sense in an automation's MAIN
+  // content list. Hide it when:
+  //  - builderMode === 'template' (a template can't embed another template), or
+  //  - mode === REMINDER (a template's content graph — including a DELAY step that writes
+  //    to `contents.N.delayMs`/`delayUnit` — doesn't fit the `reminders` array, which has no
+  //    delay/consent fields; inserting one would silently drop data).
+  const showTemplateInsert =
+    builderMode === 'automation' && mode === AutomationContentModeEnum.AUTOMATION;
+
+  const contentTypeOptionsForMode = showTemplateInsert
+    ? contentTypeOptions
+    : contentTypeOptions.filter((option) => option.value !== 'template');
 
   const selectAutomationTypeHandler = (option: ContentTypeOption) => {
     if (option.value === 'template') {
@@ -291,11 +299,12 @@ export const Contents = ({
           options={contentTypeOptionsForMode}
         />
 
-        {/* Only ever mounted outside `mode="template"` — the `'template'` option that
+        {/* Only ever mounted when `showTemplateInsert` — the `'template'` option that
             drives `isPickingTemplate` is filtered out of `contentTypeOptionsForMode`
-            above in that mode, so this branch also protects `t_templatePicker(...)`
-            from resolving against a namespace the admin app's messages don't declare. */}
-        {builderMode !== 'template' && (
+            whenever this is false, so this branch also protects `t_templatePicker(...)`
+            from resolving against a namespace the admin app's messages don't declare,
+            and keeps it out of REMINDER mode (see `showTemplateInsert` above). */}
+        {showTemplateInsert && (
           <TemplatePicker
             open={isPickingTemplate}
             onOpenChange={setIsPickingTemplate}
