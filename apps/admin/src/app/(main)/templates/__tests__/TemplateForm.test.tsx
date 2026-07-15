@@ -33,6 +33,23 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
+// Spy on the real `sonner` toast so `handleInvalid`'s generic "please fix the form" toast
+// (Finding 3 fix — an `onInvalid` prop wired to `AutomationBuilder`'s internal
+// `form.handleSubmit`'s second argument, mirroring the dashboard's own
+// `AutomationForm.tsx`) is observable without mocking away the rest of the module (other
+// toasts, e.g. `createSuccess`/`updateSuccess`, aren't exercised by this file).
+// `vi.mock` factories are hoisted above imports, so the spy must be created via
+// `vi.hoisted` rather than a plain top-level `const` (which would still be in the
+// temporal-dead-zone when the hoisted factory runs).
+const { toastErrorSpy } = vi.hoisted(() => ({ toastErrorSpy: vi.fn() }));
+vi.mock('sonner', async () => {
+  const actual = await vi.importActual<typeof import('sonner')>('sonner');
+  return {
+    ...actual,
+    toast: { ...actual.toast, error: toastErrorSpy, success: vi.fn() },
+  };
+});
+
 // ChooseAutomationType (rendered inside the shared Contents section) uses `useMediaQuery`,
 // which calls `matchMedia` — jsdom doesn't implement it. Radix's `Switch` (Triggers/
 // TargetPostComment, and this form's own "applies to all categories" toggle) measures
@@ -117,6 +134,23 @@ describe('TemplateForm (admin create)', () => {
       expect(screen.getByText(messages.Templates.templateDescriptionRequired)).toBeInTheDocument();
     });
     expect(api.post).not.toHaveBeenCalled();
+  });
+
+  it('shows the generic form-errors toast (Finding 3 fix: onInvalid wired to AutomationBuilder) when submitting a contentless template', async () => {
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <TemplateForm />
+      </NextIntlClientProvider>,
+    );
+
+    // Brand-new template starts with `contents: []` — `AutomationFormSchema`'s
+    // `contents.min(1)` rejects it, so this submit never reaches `onSubmitTemplate`; it
+    // only exercises `form.handleSubmit`'s "onInvalid" branch, i.e. the new `onInvalid` prop.
+    fireEvent.click(screen.getByText('ذخیره'));
+
+    await waitFor(() =>
+      expect(toastErrorSpy).toHaveBeenCalledWith(messages.Automations.form_errors),
+    );
   });
 
   it('cannot save a contentless template (Fix 1): only submits once real content has been authored', async () => {

@@ -1148,5 +1148,166 @@
         "buttons_error": "لطفا اطلاعات دکمه‌ها را کامل کنید."
       }
     }
+  },
+  "zod": {
+    "errors": {
+      "MISSING_MESSAGE": "متن پیام الزامی است",
+      "invalid_type": "مقدار مورد انتظار {expected} بود، اما {received} دریافت شد",
+      "invalid_type_received_undefined": "ضروری است",
+      "invalid_literal": "مقدار وارد شده نامعتبر است، مقدار مورد انتظار {expected} بود",
+      "unrecognized_keys": "کلید(های) ناشناخته در شیء: {keys}",
+      "invalid_union": "ورودی نامعتبر",
+      "invalid_union_discriminator": "مقدار متمایزکننده نامعتبر. مقادیر مورد انتظار {options}",
+      "invalid_enum_value": "مقدار شمارشی نامعتبر. مقدار مورد انتظار {options} بود، اما {received} دریافت شد",
+      "invalid_arguments": "آرگومان‌های تابع نامعتبرند",
+      "invalid_return_type": "نوع مقدار بازگشتی تابع نامعتبر است",
+      "invalid_date": "تاریخ نامعتبر",
+      "custom": "ورودی نامعتبر",
+      "invalid_intersection_types": "نتایج تقاطع قابل ترکیب نیستند",
+      "not_multiple_of": "عدد باید مضربی از {multipleOf} باشد",
+      "not_finite": "عدد باید متناهی باشد",
+      "invalid_string": {
+        "email": "{validation} نامعتبر",
+        "emoji": "{validation} نامعتبر",
+        "url": "{validation} نامعتبر",
+        "uuid": "{validation} نامعتبر",
+        "ulid": "{validation} نامعتبر",
+        "ip": "{validation} نامعتبر",
+        "cuid": "{validation} نامعتبر",
+        "cuid2": "{validation} نامعتبر",
+        "regex": "مقدار وارد شده معتبر نیست.",
+        "datetime": "{validation} نامعتبر",
+        "startsWith": "ورودی نامعتبر: باید با \"{startsWith}\" شروع شود",
+        "endsWith": "ورودی نامعتبر: باید با \"{endsWith}\" تمام شود"
+      },
+      "too_small": {
+        "array": {
+          "exact": "باید دقیقا {minimum} عنصر داشته باشد",
+          "inclusive": "باید حداقل {minimum} عنصر داشته باشد",
+          "not_inclusive": "باید بیش از {minimum} عنصر داشته باشد"
+        },
+        "string": {
+          "exact": "باید دقیقا {minimum} کاراکتر داشته باشد.",
+          "inclusive": "باید حداقل {minimum} کاراکتر داشته باشد.",
+          "not_inclusive": "باید بیشتر از {minimum} کاراکتر داشته باشد."
+        },
+        "number": {
+          "exact": "باید دقیقا {minimum} باشد",
+          "inclusive": "باید بزرگ‌تر یا مساوی {minimum} باشد",
+          "not_inclusive": "باید بزرگ‌تر از {minimum} باشد"
+        },
+        "bigint": {
+          "exact": "باید دقیقا {minimum} باشد",
+          "inclusive": "باید بزرگ‌تر یا مساوی {minimum} باشد",
+          "not_inclusive": "باید بزرگ‌تر از {minimum} باشد"
+        },
+        "set": {
+          "exact": "ورودی نامعتبر",
+          "inclusive": "ورودی نامعتبر",
+          "not_inclusive": "ورودی نامعتبر"
+        },
+        "date": {
+          "exact": "تاریخ باید دقیقا {minimum, date, short} باشد",
+          "inclusive": "تاریخ باید بزرگ‌تر یا مساوی {minimum, date, short} باشد",
+          "not_inclusive": "تاریخ باید بزرگ‌تر از {minimum, date, short} باشد"
+        }
+      },
+      "too_big": {
+        "array": {
+          "exact": "باید دقیقا {maximum} عنصر داشته باشد",
+          "inclusive": "باید حداکثر {maximum} عنصر داشته باشد",
+          "not_inclusive": "باید کمتر از {maximum} عنصر داشته باشد"
+        },
+        "string": {
+          "exact": "باید دقیقا {maximum} کاراکتر داشته باشد",
+          "inclusive": "باید حداکثر {maximum} کاراکتر داشته باشد",
+          "not_inclusive": "باید کمتر از {maximum} کاراکتر داشته باشد"
+        },
+        "number": {
+          "exact": "باید دقیقا {maximum} باشد",
+          "inclusive": "باید کوچکتر یا مساوی {maximum} باشد",
+          "not_inclusive": "باید کمتر از {maximum} باشد"
+        },
+        "bigint": {
+          "exact": "باید دقیقا {maximum} باشد",
+          "inclusive": "باید کوچکتر یا مساوی {maximum} باشد",
+          "not_inclusive": "باید کمتر از {maximum} باشد"
+        },
+        "set": {
+          "exact": "ورودی نامعتبر",
+          "inclusive": "ورودی نامعتبر",
+          "not_inclusive": "ورودی نامعتبر"
+        },
+        "date": {
+          "exact": "تاریخ باید دقیقا {maximum, date, short} باشد",
+          "inclusive": "تاریخ باید کوچکتر یا مساوی {maximum, date, short} باشد",
+          "not_inclusive": "تاریخ باید کمتر از {maximum, date, short} باشد"
+        }
+      }
+    },
+    "validations": {
+      "email": "ایمیل",
+      "emoji": "ایموجی",
+      "url": "آدرس اینترنتی",
+      "uuid": "UUID",
+      "ulid": "ULID",
+      "ip": "آی‌پی",
+      "cuid": "CUID",
+      "cuid2": "CUID2",
+      "regex": "عبارت منظم",
+      "datetime": "تاریخ و زمان"
+    },
+    "types": {
+      "function": "تابع",
+      "number": "عدد",
+      "string": "رشته",
+      "nan": "NaN",
+      "integer": "عدد صحیح",
+      "float": "عدد اعشاری",
+      "boolean": "بولی",
+      "date": "تاریخ",
+      "bigint": "BigInt",
+      "undefined": "تعریف نشده",
+      "symbol": "نماد",
+      "null": "تهی",
+      "array": "آرایه",
+      "object": "شیء",
+      "unknown": "ناشناخته",
+      "promise": "وعده",
+      "void": "void",
+      "never": "never",
+      "map": "نقشه",
+      "set": "مجموعه",
+      "male": "مرد",
+      "female": "زن",
+      "other": "سایر"
+    }
+  },
+  "customErrors": {
+    "notFound": "صفحه مورد نظر یافت نشد",
+    "postScopeSingleInstagram": "برای هدف‌گذاری یک پست خاص، فقط یک اکانت اینستاگرام را انتخاب کنید"
+  },
+  "form": {
+    "startDate": {
+      "label": "تاریخ شروع",
+      "error": "تاریخ شروع الزامی است"
+    },
+    "endDate": {
+      "label": "تاریخ پایان",
+      "error": "تاریخ پایان الزامی است",
+      "refinementError": "تاریخ پایان باید بعد از تاریخ شروع باشد"
+    },
+    "email": {
+      "label": "ایمیل",
+      "placeholder": "your@email.com",
+      "description": "فایل اکسل به این آدرس ایمیل ارسال خواهد شد",
+      "error": "لطفا یک آدرس ایمیل معتبر وارد کنید"
+    },
+    "count": {
+      "label": "تعداد (اختیاری)",
+      "placeholder": "10000",
+      "description": "حداکثر تعداد سفارشات برای صادر کردن (حداکثر: 10,000)",
+      "error": "تعداد باید 10,000 یا کمتر باشد"
+    }
   }
 }

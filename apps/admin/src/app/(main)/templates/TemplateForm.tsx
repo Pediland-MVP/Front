@@ -21,6 +21,7 @@ import {
   AutomationBuilder,
   AutomationContentTypesEnum,
   ButtonTypeEnum,
+  useI18nZodErrors,
 } from '@/components/automation-builder';
 import type { AutomationFormType } from '@/components/automation-builder';
 import { templateAutomationApiClient } from '@/lib/templateAutomationApiClient';
@@ -169,8 +170,17 @@ function transformTemplateToFormValues(
 }
 
 export default function TemplateForm({ id }: TemplateFormProps) {
+  // Localizes `AutomationFormSchema`'s zod validation messages (Persian) — same shared
+  // hook the dashboard's own `AutomationForm.tsx` calls. See `useI18nZodErrors.ts` (in
+  // `packages/ui`) for why this must be the package's own hook rather than an
+  // admin-local copy.
+  useI18nZodErrors();
   const t = useTranslations('Templates');
   const t_ec = useTranslations('ERROR_CODES');
+  // Same generic "please fix the form" toast the dashboard's own `AutomationForm.tsx`
+  // shows via its `onInvalid` — reuses the identical `Automations.form_errors` key (already
+  // present in admin's fa.json) rather than adding a new, redundant Templates-namespace copy.
+  const t_automations = useTranslations('Automations');
   const router = useRouter();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -381,6 +391,14 @@ export default function TemplateForm({ id }: TemplateFormProps) {
     }
   };
 
+  // `AutomationBuilder`'s internal `form.handleSubmit`'s "onInvalid" callback — mirrors
+  // the dashboard's own `AutomationForm.tsx`'s `handleInvalid`, giving top-level feedback
+  // when the shared `zodResolver` rejects the submit (e.g. a failing field scrolled out of
+  // view), instead of the admin silently doing nothing.
+  const handleInvalid = () => {
+    toast.error(t_automations('form_errors'));
+  };
+
   if (id && isTemplateLoading && !template) return <Loading />;
   if (id && templateError) return <FetchError />;
 
@@ -392,6 +410,7 @@ export default function TemplateForm({ id }: TemplateFormProps) {
         initialValue={initialValue}
         isSubmitting={isSubmitting}
         onSubmit={onSubmitTemplate}
+        onInvalid={handleInvalid}
         onCancel={() => router.push('/templates')}
         submitLabel={isSubmitting ? t('saving') : t('save')}
         cancelLabel={t('cancel')}
