@@ -1,6 +1,8 @@
 export type AutomationErrorRow = {
   id: string;
   queue: 'sendMessage' | 'replyComment' | 'privateReply';
+  jobId: string;
+  attemptsMade: number;
   title: string;
   description: string;
   code?: number;

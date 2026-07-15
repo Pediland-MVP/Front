@@ -33,6 +33,8 @@ export function ErrorDetailsSheet({ error, open, onOpenChange }: ErrorDetailsShe
               {error.subcode !== undefined && (
                 <Badge variant="outline">{t('subcode')}: {error.subcode}</Badge>
               )}
+              <Badge variant="outline">{t('jobId')}: {error.jobId}</Badge>
+              <Badge variant="outline">{t('attempts')}: {error.attemptsMade}</Badge>
             </div>
 
             <div>

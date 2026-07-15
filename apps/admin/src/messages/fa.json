@@ -213,7 +213,6 @@
     "workspace": "ورک‌اسپیس",
     "owner": "مالک",
     "labels": "برچسب‌ها",
-    "detailTitle": "پروفایل اینستاگرام",
     "notFound": "اینستاگرام یافت نشد."
   },
   "AutomationErrors": {
@@ -229,8 +228,8 @@
     "code": "کد",
     "subcode": "زیرکد",
     "attempts": "تعداد تلاش",
-    "payload": "بار داده",
-    "noResults": "خطایی یافت نشد."
+    "jobId": "شناسه صف",
+    "payload": "بار داده"
   },
   "WorkspaceCategories": {
     "title": "دسته‌بندی فضاهای کاری",
