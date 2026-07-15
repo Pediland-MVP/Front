@@ -41,6 +41,7 @@ import {
   JustFollowers,
   Reminder,
   TargetPostComment,
+  TitleAndEnabled,
   Triggers,
 } from './Form';
 import { ValidationTypeEnum } from '@/types/validationType.enum';
@@ -143,6 +144,7 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
       isRemindersEnabled: false,
       isReplyCommentEnabled: false,
       justFollowers: false,
+      enabled: true,
       reminders: [],
     },
   });
@@ -485,6 +487,10 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
                   <CommentReplies />
 
                   <CommentLimitAlert />
+                </div>
+
+                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+                  <TitleAndEnabled control={form.control} />
                 </div>
 
                 <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">

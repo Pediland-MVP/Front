@@ -7,3 +7,4 @@ export * from './Reminder';
 export * from './TargetPostComment';
 export * from './Triggers';
 export * from './InstagramPostSelectDialog';
+export * from './TitleAndEnabled';
