@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { notFound } from 'next/navigation';
 import useSWR from 'swr';
 import { fetcher } from '@/hooks/swr/api-client';
+import { useAuth } from '@/hooks/use-auth';
 import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
 import { PageMeta } from '@/types/meta';
@@ -10,6 +12,7 @@ import { AutomationErrorRow } from '@/types/automationError';
 import AutomationErrorsTable from './automation-errors-table';
 
 export default function AutomationErrorsPageClient() {
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
 
@@ -21,7 +24,9 @@ export default function AutomationErrorsPageClient() {
   const errors = data?.items || [];
   const meta = data?.meta;
 
-  if (!data && isLoading) return <Loading />;
+  if (user && user.role === 'kam') notFound();
+
+  if ((!data && isLoading) || !user) return <Loading />;
   if (error) return <FetchError />;
   if (!meta) return null;
 

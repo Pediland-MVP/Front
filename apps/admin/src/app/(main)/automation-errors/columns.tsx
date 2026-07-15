@@ -3,6 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import dayjs from '@/lib/dayjs-jalali';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AutomationErrorRow } from '@/types/automationError';
@@ -46,7 +47,7 @@ export function useAutomationErrorColumns(
       header: t('failedAt'),
       cell: ({ row }) => (
         <span className="text-sm tabular-nums">
-          {new Date(row.original.failedAt).toLocaleString('fa-IR')}
+          {dayjs(row.original.failedAt).tz('Asia/Tehran').calendar('jalali').format('YYYY/MM/DD HH:mm')}
         </span>
       ),
     },

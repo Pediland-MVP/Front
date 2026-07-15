@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import dayjs from '@/lib/dayjs-jalali';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { AutomationErrorRow } from '@/types/automationError';
@@ -43,7 +44,8 @@ export function ErrorDetailsSheet({ error, open, onOpenChange }: ErrorDetailsShe
             </div>
 
             <div className="text-xs text-slate-400">
-              {t('failedAt')}: {new Date(error.failedAt).toLocaleString('fa-IR')}
+              {t('failedAt')}:{' '}
+              {dayjs(error.failedAt).tz('Asia/Tehran').calendar('jalali').format('YYYY/MM/DD HH:mm')}
             </div>
 
             <div>
