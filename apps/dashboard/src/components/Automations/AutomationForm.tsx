@@ -42,9 +42,10 @@ type AutomationFormProps = {
   id?: string;
   copyFromId?: string;
   /**
-   * Accepted for forward-compat with the admin "start an automation from a template" flow —
-   * not wired up here yet. Task 25 fetches the template by this id and prefills the form
-   * from it (via `initialValue`); this component only reserves the prop for now.
+   * Fetched via `GET /templates/:id` and prefills the form (`initialValue`), mirroring
+   * `copyFromId`'s `GET /contentCycle/:id` flow — see `templateKey` below. Unlike
+   * `copyFromId`, this path is silent (no toast): nothing is persisted until the user
+   * submits, so there's nothing to confirm "copied".
    */
   templateId?: string;
 };
@@ -78,7 +79,6 @@ function InstagramPromotionWatcher({
  * @param {id} Object This param is optional and specify the component is for Update or Create`
  * @returns
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for Task 25, see AutomationFormProps.templateId
 export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormProps) => {
   useI18nZodErrors();
   const router = useRouter();
@@ -93,17 +93,34 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   const isUUID = (s?: string) =>
     !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
-  const sourceId = id ?? copyFromId;
-  const key = isUUID(sourceId) ? `/contentCycle/${sourceId}` : null;
+  const automationSourceId = id ?? copyFromId;
+  const automationKey = isUUID(automationSourceId) ? `/contentCycle/${automationSourceId}` : null;
+  // Only consulted for a brand-new automation that isn't already sourced from `id`/`copyFromId` —
+  // those two take priority (mirrors the page-level guard: `?templateId=` is only meaningful on
+  // a fresh create).
+  const templateKey = !id && !copyFromId && isUUID(templateId) ? `/templates/${templateId}` : null;
 
   const {
     data: automation,
     isLoading: isAutomationLoading,
     error: automationError,
     mutate: automationMutate,
-  } = useSWRImmutable(key, {
-    revalidateOnMount: !!sourceId,
+  } = useSWRImmutable(automationKey, {
+    revalidateOnMount: !!automationKey,
   });
+
+  const {
+    data: templateData,
+    isLoading: isTemplateLoading,
+    error: templateError,
+  } = useSWRImmutable(templateKey, {
+    revalidateOnMount: !!templateKey,
+  });
+
+  // Same `contents`/`conditions` shape either way (both come off the `ContentCycle` entity),
+  // so the single `transformAutomation`-style `initialValue` memo below handles both sources
+  // unchanged.
+  const source = automation ?? templateData;
 
   // Same SWR key InstagramSelectField uses — dedupes, no extra request. Carries each
   // page's `automationCount` (live) + `freeAutomationLimit`, used below to warn before
@@ -243,24 +260,24 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   // (unlike the pre-refactor `form.reset(...)` call) it must already be correct by the time
   // `AutomationBuilder` first renders, not patched in afterwards.
   const initialValue = useMemo((): Partial<AutomationFormType> | undefined => {
-    if (automation) {
+    if (source) {
       const transformedAutomation = {
-        ...automation,
-        contents: automation.contents?.map(transformContent),
-        reminders: automation.reminders?.map(transformContent),
-        conditionType: automation.isNoCondition ? 'noCondition' : automation.conditions?.[0]?.type,
+        ...source,
+        contents: source.contents?.map(transformContent),
+        reminders: source.reminders?.map(transformContent),
+        conditionType: source.isNoCondition ? 'noCondition' : source.conditions?.[0]?.type,
       };
 
       return {
         ...transformedAutomation,
         instagramIds:
-          automation.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
+          source.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
         ...(transformedAutomation.reminders?.length > 0 && {
           isRemindersEnabled: true,
         }),
-        reminderTime: automation.reminderTime ? `${automation.reminderTime}` : undefined,
-        isReplyCommentEnabled: !!automation.commentTexts?.length,
-        isCommentContentTargetEnabled: !!automation.instagramPost,
+        reminderTime: source.reminderTime ? `${source.reminderTime}` : undefined,
+        isReplyCommentEnabled: !!source.commentTexts?.length,
+        isCommentContentTargetEnabled: !!source.instagramPost,
       };
     }
 
@@ -276,9 +293,13 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     // so recomputing on every keystroke elsewhere is both unnecessary and would (if it were
     // re-passed) fight the user's own edits.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [automation]);
+  }, [source]);
 
   useEffect(() => {
+    // Only the `copyFromId` path confirms with a toast — nothing is persisted yet for either
+    // path, but `copyFromId` is explicitly duplicating an existing automation (a copy "happened"
+    // from the user's perspective), while `templateId` is a fresh create silently seeded from a
+    // template; it gets no toast, per the design spec.
     if (automation && copyFromId) {
       toast.success(t('Toast.copied'));
     }
@@ -489,7 +510,8 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     position: 'left' as const,
   };
 
-  const isReady = !isAutomationLoading && !isLoading && !isAutomationDefaultsLoading;
+  const isReady =
+    !isAutomationLoading && !isTemplateLoading && !isLoading && !isAutomationDefaultsLoading;
 
   return (
     <div data-testid="automation-builder-root" className="_automation-form grid min-h-full gap-5">
@@ -538,7 +560,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
         />
       )}
 
-      {automationError && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
+      {(automationError || templateError) && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
 
       <FreeQuotaWarningDialog
         isOpen={!!freeQuotaWarning}
