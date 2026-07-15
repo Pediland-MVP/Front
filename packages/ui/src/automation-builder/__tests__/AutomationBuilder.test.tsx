@@ -68,7 +68,7 @@ const validInitialValue: Partial<AutomationFormType> = {
 describe('AutomationBuilder (shared, mode=template)', () => {
   it('renders headerSlot and calls onSubmit with form values when mode=template', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
-    render(
+    const { container } = render(
       <AutomationBuilder
         mode="template"
         apiClient={{ upload: vi.fn(), get: vi.fn() }}
@@ -80,8 +80,36 @@ describe('AutomationBuilder (shared, mode=template)', () => {
       />,
     );
     expect(screen.getByTestId('template-fields')).toBeInTheDocument();
+
+    // Mode-gating: `JustFollowers` (identified by its own `_just-followers` root
+    // class — a pre-existing, unique className in the production component, not
+    // added for this test) is one of the automation-only sections
+    // (JustFollowers/CommentTriggerInputs/CommentLimitAlert) that `AutomationBuilder`
+    // gates behind `mode === 'automation'`. In `mode="template"` it must not be
+    // mounted at all (not just visually hidden) — a regression like swapping the
+    // `&&` gate for `||`, or dropping it, would render it here.
+    expect(container.querySelector('._just-followers')).toBeNull();
+    // Meanwhile a shared section (`Contents`, rendered in both modes) must still be
+    // present — proving the gate excludes only the automation-only block, not
+    // everything after it.
+    expect(screen.getByDisplayValue('hello world')).toBeInTheDocument();
+
     fireEvent.click(screen.getByText('ذخیره'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+  });
+
+  it('does NOT render automation-only sections (JustFollowers/CommentTriggerInputs/CommentLimitAlert) when mode=template', () => {
+    const { container } = render(
+      <AutomationBuilder
+        mode="template"
+        apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        initialValue={validInitialValue}
+        onSubmit={vi.fn()}
+        submitLabel="ذخیره"
+        cancelLabel="انصراف"
+      />,
+    );
+    expect(container.querySelector('._just-followers')).toBeNull();
   });
 
   it('honors beforeSubmit returning false to abort submission (used by dashboard free-quota dialog)', async () => {
@@ -104,5 +132,20 @@ describe('AutomationBuilder (shared, mode=template)', () => {
     fireEvent.click(screen.getByText('ذخیره'));
     await waitFor(() => expect(beforeSubmit).toHaveBeenCalled());
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('renders automation-only sections (e.g. JustFollowers) when mode=automation', () => {
+    const { container } = render(
+      <AutomationBuilder
+        mode="automation"
+        // `JustFollowers` unconditionally calls `apiClient.get(...)` via useSWR on mount.
+        apiClient={{ upload: vi.fn(), get: vi.fn().mockResolvedValue({ data: {} }) }}
+        initialValue={validInitialValue}
+        onSubmit={vi.fn()}
+        submitLabel="ذخیره"
+        cancelLabel="انصراف"
+      />,
+    );
+    expect(container.querySelector('._just-followers')).toBeInTheDocument();
   });
 });
