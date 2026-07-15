@@ -288,6 +288,12 @@
     }
   },
   "Automations": {
+    "TemplatePicker": {
+      "title": "قالب اتوماسیون را انتخاب کنید",
+      "searchPlaceholder": "جستجوی قالب",
+      "empty": "قالبی یافت نشد",
+      "startFromScratch": "شروع از ابتدا"
+    },
     "instagram_account": "اکانت اینستاگرام",
     "select_instagrams": "انتخاب پیج‌ها",
     "instagram_locked_for_post_target": "چون این اتوماسیون برای یک پست خاص تنظیم شده، فقط همین یک پیج قابل انتخاب است",

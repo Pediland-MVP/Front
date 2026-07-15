@@ -2,10 +2,10 @@
 
 import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { AutomationsCardList } from '@/components/Automations/AutomationsCardList';
+import { CreateAutomationTemplateDialog } from '@/components/Automations/CreateAutomationTemplateDialog';
 import { LayoutCard } from '@/components/Layout/LayoutCard';
 import { Button } from '@/components/ui';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
@@ -14,11 +14,11 @@ import { CircleFadingPlusIcon } from 'lucide-react';
 import { usePermissions } from '@/hooks/usePermissions';
 
 export default function Page() {
-  const router = useRouter();
   const t = useTranslations('Automations');
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
   const [effectiveSearch, setEffectiveSearch] = useState<string>('');
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState<boolean>(false);
 
   const setTools = useHeaderFeatures((s) => s.setTools);
   const clearTools = useHeaderFeatures((s) => s.clearTools);
@@ -39,7 +39,7 @@ export default function Page() {
           <Button
             type="button"
             size="md"
-            onClick={() => router.push('/automations/add')}
+            onClick={() => setIsTemplateDialogOpen(true)}
             disabled={error}
           >
             {t('add')}
@@ -48,7 +48,7 @@ export default function Page() {
         )}
       </>
     );
-  }, [isSearchVisible, setIsSearchVisible, error, router, can]);
+  }, [isSearchVisible, setIsSearchVisible, error, can]);
 
   const HeaderTools = useMemo(
     () => (
@@ -78,6 +78,10 @@ export default function Page() {
   return (
     <LayoutCard className="_automation">
       <AutomationsCardList search={effectiveSearch} />
+      <CreateAutomationTemplateDialog
+        open={isTemplateDialogOpen}
+        onOpenChange={setIsTemplateDialogOpen}
+      />
     </LayoutCard>
   );
 }
