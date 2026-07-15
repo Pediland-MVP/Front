@@ -39,4 +39,19 @@ export interface AutomationBuilderProps {
   /** Runs after schema validation succeeds but before `onSubmit` — return/resolve `false`
    * to abort (e.g. the dashboard's free-quota warning dialog intercepting submission). */
   beforeSubmit?: (values: AutomationFormType) => Promise<boolean> | boolean;
+  /** Whether the current workspace/user already has a connected Instagram account. Passed
+   * down to `JustFollowers` (drives its follow-message default). The caller computes this
+   * (it used to be read internally via a dashboard-only `useUser()` hook) so this
+   * component stays app-agnostic. Irrelevant in `mode="template"` (JustFollowers isn't
+   * rendered there). */
+  hasInstagram?: boolean;
+  /** Whether the currently-selected Instagram account(s) are on a "promotion" plan. Passed
+   * down to `Contents` (drives its promotion-upsell banner). Same rationale as
+   * `hasInstagram`. */
+  isPromotion?: boolean;
+  /** Rendered inside the automation-only section, between `JustFollowers` and
+   * `CommentTriggerInputs` — the same position the dashboard-only `CommentReplies`
+   * component (workspace comment-reply defaults) occupied before the automation-builder
+   * move. Not rendered in `mode="template"`. */
+  commentRepliesSlot?: React.ReactNode;
 }

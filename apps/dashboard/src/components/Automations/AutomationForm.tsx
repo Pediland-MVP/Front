@@ -1,68 +1,89 @@
 'use client';
 
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
+import { AxiosError } from 'axios';
+
 import {
-  AutomationContentModeEnum,
+  AutomationBuilder,
   AutomationContentTypesEnum,
-} from '@/constants/automationContent.enum';
-import { ButtonTypeEnum } from '@/types/buttons.enum';
+  ButtonTypeEnum,
+  ValidationTypeEnum,
+  type AutomationFormType,
+} from '@/automation-builder';
 import api, { fetcher } from '@/hooks/swr/api-client';
 import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { useI18nZodErrors } from '@/hooks/useI18nZodErrors';
 import useUser from '@/hooks/useUser';
-import { cn } from '@/lib/utils';
-import { AutomationFormSchema, type AutomationFormType } from '@/schemas/automationForm';
+import { dashboardAutomationApiClient } from '@/lib/automationApiClient';
+import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 import { InstagramNamespace } from '@/types/instagram';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AxiosError } from 'axios';
-import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { mutate } from 'swr';
-import useSWRImmutable from 'swr/immutable';
 
-import { Button, Form } from '@/components/ui';
-import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
-import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
-import { SeperateLine } from '@/components/ui-custom/SeperateLine';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+
 import { ConnectInstagramAlert } from './ConnectInstagramAlert';
 import { FreeQuotaWarningDialog } from './FreeQuotaWarningDialog';
-import {
-  CommentReplies,
-  CommentTriggerInputs,
-  Conditions,
-  ConditionTypesEnum,
-  Contents,
-  InstagramSelectField,
-  JustFollowers,
-  Reminder,
-  TargetPostComment,
-  Triggers,
-} from './Form';
-import { ValidationTypeEnum } from '@/types/validationType.enum';
-import { CommentLimitAlert } from './Form/CommentLimitAlert';
-import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
+import { CommentReplies } from './Form/CommentReplies';
+import { InstagramSelectField } from './Form/InstagramSelectField';
+import { WizardVideoLinks } from './wizardVideoLinks.conf';
 
 type AutomationFormProps = {
   id?: string;
   copyFromId?: string;
+  /**
+   * Accepted for forward-compat with the admin "start an automation from a template" flow —
+   * not wired up here yet. Task 25 fetches the template by this id and prefills the form
+   * from it (via `initialValue`); this component only reserves the prop for now.
+   */
+  templateId?: string;
 };
+
+/**
+ * Reactively derives `isPromotion` (whether any currently-selected Instagram account is on
+ * a "promotion" plan) from live form state and hands it back to the parent. Rendered inside
+ * `AutomationBuilder`'s `headerSlot` — the only slot documented to run inside its
+ * `FormProvider` — since `AutomationBuilder` now owns the `react-hook-form` instance
+ * internally and this wrapper has no other way to read `instagramIds` as it changes.
+ */
+function InstagramPromotionWatcher({
+  accounts,
+  onChange,
+}: {
+  accounts?: InstagramNamespace.Account[];
+  onChange: (isPromotion: boolean) => void;
+}) {
+  const { control } = useFormContext<AutomationFormType>();
+  const selectedInstagramIds: string[] = useWatch({ control, name: 'instagramIds' }) ?? [];
+
+  useEffect(() => {
+    onChange(selectedInstagramIds.some((sid) => accounts?.find((a) => a.id === sid)?.isPromotion));
+  }, [selectedInstagramIds, accounts, onChange]);
+
+  return null;
+}
 
 /**
  *
  * @param {id} Object This param is optional and specify the component is for Update or Create`
  * @returns
  */
-export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for Task 25, see AutomationFormProps.templateId
+export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormProps) => {
   useI18nZodErrors();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { hasInstagram, isLoading } = useUser();
+  const [isPromotion, setIsPromotion] = useState(false);
   const t = useTranslations('Automations');
   const t_ec = useTranslations('ERROR_CODES');
   const t_err = useTranslations('Automations.Errors');
@@ -92,11 +113,14 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
   >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
   const accounts = accountsResponse?.data;
 
-  const [pendingSubmitValues, setPendingSubmitValues] = useState<AutomationFormType | null>(null);
   const [freeQuotaWarning, setFreeQuotaWarning] = useState<{
     usedCount: number;
     limit: number;
   } | null>(null);
+  // Resolver for the in-flight `beforeSubmit` promise while the free-quota dialog is open —
+  // `onConfirm`/`onClose` resolve it `true`/`false`, letting `AutomationBuilder` continue
+  // (or abort) the very submission that triggered the dialog.
+  const freeQuotaResolveRef = useRef<((proceed: boolean) => void) | null>(null);
 
   /**
    * Only meaningful for a brand-new automation (`id` unset) on a page that hasn't
@@ -125,270 +149,139 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
     return null;
   };
 
-  const form = useForm<AutomationFormType>({
-    resolver: zodResolver(AutomationFormSchema),
-    mode: 'onSubmit',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      instagramIds: filterSelectedIds.length ? filterSelectedIds : [],
-      conditionType: ConditionTypesEnum.EQUAL,
-      isNoCondition: false,
-      commentStartText: t('comment_start_text'),
-      commentStartTitle: t('comment_start_title'),
-      conditions: [{ type: 'EQUAL', value: '' }],
-      contents: [],
-      followCheckMessage: t('follow_check_message'),
-      isComment: false,
-      isCommentContentTargetEnabled: false,
-      isDirect: true,
-      isRemindersEnabled: false,
-      isReplyCommentEnabled: false,
-      justFollowers: false,
-      reminders: [],
-    },
-  });
+  const { defaults: automationDefaults, isLoading: isAutomationDefaultsLoading } =
+    useAutomationDefaults(!id);
 
-  const { defaults: automationDefaults } = useAutomationDefaults(!id);
+  const transformButtons = (buttons: any[]) => {
+    return buttons?.map((b: any) => {
+      const btn = { ...b };
 
-  useEffect(() => {
-    if (id || !automationDefaults) return;
+      // Normalize type
+      const typeToNormalize = btn.type || btn.postbackPayloadType;
 
-    const dirty = form.formState.dirtyFields;
-    if (automationDefaults.commentStartText && !dirty.commentStartText) {
-      form.setValue('commentStartText', automationDefaults.commentStartText);
-    }
-    if (automationDefaults.commentStartTitle && !dirty.commentStartTitle) {
-      form.setValue('commentStartTitle', automationDefaults.commentStartTitle);
-    }
-    if (automationDefaults.followCheckMessage && !dirty.followCheckMessage) {
-      form.setValue('followCheckMessage', automationDefaults.followCheckMessage);
-    }
-  }, [automationDefaults, id]);
-
-  useEffect(() => {
-    if (!automation) {
-      return;
-    }
-
-    const transformButtons = (buttons: any[]) => {
-      return buttons?.map((b: any) => {
-        const btn = { ...b };
-
-        // Normalize type
-        const typeToNormalize = btn.type || btn.postbackPayloadType;
-
-        if (typeToNormalize) {
-          const lowerType = typeToNormalize.toLowerCase();
-          if (lowerType === 'text' || lowerType === ButtonTypeEnum.TEXT) {
-            btn.type = ButtonTypeEnum.TEXT;
-            btn.postbackPayloadType = ButtonTypeEnum.TEXT;
-          } else if (lowerType === 'url' || lowerType === ButtonTypeEnum.URL) {
-            btn.type = ButtonTypeEnum.URL;
-            btn.postbackPayloadType = ButtonTypeEnum.URL;
-          } else if (
-            lowerType === 'contentcycle' ||
-            lowerType === 'automation' ||
-            typeToNormalize === 'AUTOMATION' ||
-            lowerType === ButtonTypeEnum.START_AUTOMATION.toLowerCase()
-          ) {
-            btn.type = ButtonTypeEnum.START_AUTOMATION;
-            btn.postbackPayloadType = ButtonTypeEnum.START_AUTOMATION;
-          }
+      if (typeToNormalize) {
+        const lowerType = typeToNormalize.toLowerCase();
+        if (lowerType === 'text' || lowerType === ButtonTypeEnum.TEXT) {
+          btn.type = ButtonTypeEnum.TEXT;
+          btn.postbackPayloadType = ButtonTypeEnum.TEXT;
+        } else if (lowerType === 'url' || lowerType === ButtonTypeEnum.URL) {
+          btn.type = ButtonTypeEnum.URL;
+          btn.postbackPayloadType = ButtonTypeEnum.URL;
+        } else if (
+          lowerType === 'contentcycle' ||
+          lowerType === 'automation' ||
+          typeToNormalize === 'AUTOMATION' ||
+          lowerType === ButtonTypeEnum.START_AUTOMATION.toLowerCase()
+        ) {
+          btn.type = ButtonTypeEnum.START_AUTOMATION;
+          btn.postbackPayloadType = ButtonTypeEnum.START_AUTOMATION;
         }
+      }
 
-        if (btn.type === ButtonTypeEnum.START_AUTOMATION && btn.destinationContentCycle) {
-          return {
-            ...btn,
-            destinationContentCycleId: btn.destinationContentCycle.id,
-          };
-        }
-        return btn;
-      });
-    };
-
-    const transformContent = (c: any) => {
-      const content = { ...c };
-      if (content.buttonTemplate?.buttons) {
-        content.buttonTemplate = {
-          ...content.buttonTemplate,
+      if (btn.type === ButtonTypeEnum.START_AUTOMATION && btn.destinationContentCycle) {
+        return {
+          ...btn,
+          destinationContentCycleId: btn.destinationContentCycle.id,
         };
-        const buttons = transformButtons(content.buttonTemplate.buttons);
-
-        if (content.validationType === ValidationTypeEnum.Selectbox) {
-          content.valdationType = ValidationTypeEnum.Text;
-        }
-
-        // Sort buttons: if priority exists, use it. Otherwise maintain order (or use ID).
-        // Assuming lighter priority value means earlier in the list (1, 2, 3...)
-        buttons?.sort((a: any, b: any) => {
-          const pA = a.priority ?? 9999;
-          const pB = b.priority ?? 9999;
-          if (pA !== pB) return pA - pB;
-          return 0;
-        });
-
-        content.buttonTemplate.buttons = buttons;
       }
-
-      if (content.vitrins?.length) {
-        content.vitrins = content.vitrins.map((v) => ({
-          ...v,
-          imageId: v.images[0]?.id,
-          imageUrl: v.images[0]?.url,
-          ...(content.vitrins.buttons?.length && {
-            buttons: transformButtons(content.vitrins.buttons),
-          }),
-        }));
-      }
-
-      if (content.type === AutomationContentTypesEnum.DELAY) {
-        if (content.delayMs >= 1000 * 60 * 60) {
-          content.delayUnit = 'hour';
-        } else if (content.delayMs >= 1000 * 60) {
-          content.delayUnit = 'min';
-        } else {
-          content.delayUnit = 'sec';
-        }
-      }
-
-      return content;
-    };
-
-    const transformedAutomation = {
-      ...automation,
-      contents: automation.contents?.map(transformContent),
-      reminders: automation.reminders?.map(transformContent),
-      conditionType: automation.isNoCondition
-        ? ConditionTypesEnum.NO_CONDITION
-        : automation.conditions?.[0]?.type,
-    };
-    form.reset({
-      ...transformedAutomation,
-      instagramIds:
-        automation.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
-      ...(transformedAutomation.reminders?.length > 0 && {
-        isRemindersEnabled: true,
-      }),
-      reminderTime: automation.reminderTime ? `${automation.reminderTime}` : undefined,
-      isReplyCommentEnabled: !!automation.commentTexts?.length,
-      isCommentContentTargetEnabled: !!automation.instagramPost,
+      return btn;
     });
+  };
 
-    if (copyFromId) {
+  const transformContent = (c: any) => {
+    const content = { ...c };
+    if (content.buttonTemplate?.buttons) {
+      content.buttonTemplate = {
+        ...content.buttonTemplate,
+      };
+      const buttons = transformButtons(content.buttonTemplate.buttons);
+
+      if (content.validationType === ValidationTypeEnum.Selectbox) {
+        content.valdationType = ValidationTypeEnum.Text;
+      }
+
+      // Sort buttons: if priority exists, use it. Otherwise maintain order (or use ID).
+      // Assuming lighter priority value means earlier in the list (1, 2, 3...)
+      buttons?.sort((a: any, b: any) => {
+        const pA = a.priority ?? 9999;
+        const pB = b.priority ?? 9999;
+        if (pA !== pB) return pA - pB;
+        return 0;
+      });
+
+      content.buttonTemplate.buttons = buttons;
+    }
+
+    if (content.vitrins?.length) {
+      content.vitrins = content.vitrins.map((v: any) => ({
+        ...v,
+        imageId: v.images[0]?.id,
+        imageUrl: v.images[0]?.url,
+        ...(content.vitrins.buttons?.length && {
+          buttons: transformButtons(content.vitrins.buttons),
+        }),
+      }));
+    }
+
+    if (content.type === AutomationContentTypesEnum.DELAY) {
+      if (content.delayMs >= 1000 * 60 * 60) {
+        content.delayUnit = 'hour';
+      } else if (content.delayMs >= 1000 * 60) {
+        content.delayUnit = 'min';
+      } else {
+        content.delayUnit = 'sec';
+      }
+    }
+
+    return content;
+  };
+
+  // Computed once the relevant data is ready (see the `isAutomationLoading`/`isLoading`/
+  // `isAutomationDefaultsLoading` gate below) and handed to `AutomationBuilder` as
+  // `initialValue` — it's only consumed by `AutomationBuilder`'s own `useForm` at mount, so
+  // (unlike the pre-refactor `form.reset(...)` call) it must already be correct by the time
+  // `AutomationBuilder` first renders, not patched in afterwards.
+  const initialValue = useMemo((): Partial<AutomationFormType> | undefined => {
+    if (automation) {
+      const transformedAutomation = {
+        ...automation,
+        contents: automation.contents?.map(transformContent),
+        reminders: automation.reminders?.map(transformContent),
+        conditionType: automation.isNoCondition ? 'noCondition' : automation.conditions?.[0]?.type,
+      };
+
+      return {
+        ...transformedAutomation,
+        instagramIds:
+          automation.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
+        ...(transformedAutomation.reminders?.length > 0 && {
+          isRemindersEnabled: true,
+        }),
+        reminderTime: automation.reminderTime ? `${automation.reminderTime}` : undefined,
+        isReplyCommentEnabled: !!automation.commentTexts?.length,
+        isCommentContentTargetEnabled: !!automation.instagramPost,
+      };
+    }
+
+    // Brand-new automation: seed the page filter's selection plus the workspace's
+    // remembered default texts (falls back to the same hardcoded copy the old form used).
+    return {
+      instagramIds: filterSelectedIds.length ? filterSelectedIds : [],
+      commentStartText: automationDefaults?.commentStartText || t('comment_start_text'),
+      commentStartTitle: automationDefaults?.commentStartTitle || t('comment_start_title'),
+      followCheckMessage: automationDefaults?.followCheckMessage || t('follow_check_message'),
+    };
+    // Only recomputed when the source data changes — `AutomationBuilder` reads this once,
+    // so recomputing on every keystroke elsewhere is both unnecessary and would (if it were
+    // re-passed) fight the user's own edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [automation]);
+
+  useEffect(() => {
+    if (automation && copyFromId) {
       toast.success(t('Toast.copied'));
     }
-  }, [automation, form, copyFromId, t]);
-
-  const onSubmit = async (values: AutomationFormType) => {
-    let haveError: boolean = false;
-
-    const firstType = values.contents[0]?.type;
-
-    // TotalDelays should be under 23 hours
-    let totalDelaysMs: number = 0;
-    let lastDelayContentIndex: number = null;
-    values.contents.forEach((c, index) => {
-      if (c.type === AutomationContentTypesEnum.DELAY) {
-        totalDelaysMs += c.delayMs;
-        lastDelayContentIndex = index;
-      }
-    });
-
-    if (totalDelaysMs > 1000 * 60 * 60 * 23) {
-      toast.error(t('Errors.totalDelayMsShouldBeUnder23Hour'));
-      haveError = true;
-    }
-
-    if (
-      values.isComment &&
-      (firstType === AutomationContentTypesEnum.PRODUCT || values.contents.length > 1) &&
-      !values.justFollowers &&
-      !values.commentStartText
-    ) {
-      form.setError('commentStartText', {
-        message: 'در حالت کامنت، پیام درخواست شروع ضروری است',
-      });
-      form.setFocus('commentStartText');
-      haveError = true;
-    }
-
-    if (values.justFollowers) {
-      if (!values.followMessage) {
-        form.setError('followMessage', {
-          message: 'متن درخواست فالو در این حالت اجباری است',
-        });
-        form.setFocus('followMessage');
-        haveError = true;
-      }
-      if (!values.followCheckMessage) {
-        form.setError('followCheckMessage', {
-          message: 'متن دکمه بررسی مجدد در این حالت اجباری است',
-        });
-        form.setFocus('followCheckMessage');
-        haveError = true;
-      }
-    }
-
-    for (const content of values.contents) {
-      if (content.type === AutomationContentTypesEnum.PRODUCT) {
-        content.productIds = [];
-        if (content.products) {
-          for (const product of content.products) {
-            if (product?.id) {
-              content.productIds.push(product.id);
-            }
-          }
-        }
-      }
-    }
-
-    for (const content of values.reminders) {
-      if (content.type === AutomationContentTypesEnum.PRODUCT) {
-        content.productIds = [];
-        if (content.products) {
-          for (const product of content.products) {
-            if (product?.id) {
-              content.productIds.push(product.id);
-            }
-          }
-        }
-      }
-    }
-
-    // Set Priority for buttons
-    const setButtonPriorities = (contentsList: typeof values.contents) => {
-      contentsList.forEach((content) => {
-        if (content.buttonTemplate?.buttons) {
-          content.buttonTemplate.buttons.forEach((btn, idx) => {
-            btn.priority = idx + 1;
-          });
-        }
-      });
-    };
-
-    setButtonPriorities(values.contents);
-    if (values.reminders) {
-      setButtonPriorities(values.reminders);
-    }
-
-    if (haveError) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Only for brand-new automations: if this would be the automation that pushes a
-    // selected page over its free quota, pause and confirm before submitting.
-    if (!id) {
-      const warning = getFreeQuotaWarning(values.instagramIds);
-      if (warning) {
-        setPendingSubmitValues(values);
-        setFreeQuotaWarning(warning);
-        return;
-      }
-    }
-
-    await submitAutomation(values);
-  };
+  }, [automation, copyFromId, t]);
 
   const submitAutomation = async (values: AutomationFormType) => {
     if (!values.commentStartText) {
@@ -406,14 +299,12 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
 
     setIsSubmitting(true);
 
-    console.log('Submited values', JSON.stringify(values, undefined, ' '));
-
     await api({
       method: id ? 'PATCH' : 'POST',
       url: id ? `/contentCycle/${id}` : `/contentCycle`,
       data: values,
     })
-      .then((res) => {
+      .then(() => {
         toast.success(id ? t('Toast.updated') : t('Toast.created'));
         router.push('/automations');
         mutate(mutateIncludeStringKey('/contentCycle'));
@@ -449,86 +340,190 @@ export const AutomationForm = ({ id, copyFromId }: AutomationFormProps) => {
       .then(() => setIsSubmitting(false));
   };
 
+  /**
+   * Runs after `AutomationBuilder`'s own zod validation succeeds, before `onSubmit`.
+   * Replicates the cross-field checks + payload normalization the pre-refactor
+   * `AutomationForm`'s own `onSubmit` used to do inline (the `followMessage`/
+   * `followCheckMessage`-when-`justFollowers` check moved into `AutomationFormSchema`
+   * itself, so it isn't repeated here). Returning `false` aborts the submission —
+   * `AutomationBuilder` never calls `onSubmit` in that case.
+   */
+  const handleBeforeSubmit = async (values: AutomationFormType): Promise<boolean> => {
+    let haveError = false;
+
+    const firstType = values.contents[0]?.type;
+
+    // TotalDelays should be under 23 hours
+    let totalDelaysMs = 0;
+    values.contents.forEach((c) => {
+      if (c.type === AutomationContentTypesEnum.DELAY) {
+        totalDelaysMs += c.delayMs ?? 0;
+      }
+    });
+
+    if (totalDelaysMs > 1000 * 60 * 60 * 23) {
+      toast.error(t('Errors.totalDelayMsShouldBeUnder23Hour'));
+      haveError = true;
+    }
+
+    if (
+      values.isComment &&
+      (firstType === AutomationContentTypesEnum.PRODUCT || values.contents.length > 1) &&
+      !values.justFollowers &&
+      !values.commentStartText
+    ) {
+      toast.error('در حالت کامنت، پیام درخواست شروع ضروری است');
+      haveError = true;
+    }
+
+    for (const content of values.contents) {
+      if (content.type === AutomationContentTypesEnum.PRODUCT) {
+        content.productIds = [];
+        if (content.products) {
+          for (const product of content.products) {
+            if (product?.id) {
+              content.productIds.push(product.id);
+            }
+          }
+        }
+      }
+    }
+
+    for (const content of values.reminders) {
+      if (content.type === AutomationContentTypesEnum.PRODUCT) {
+        content.productIds = [];
+        if (content.products) {
+          for (const product of content.products) {
+            if (product?.id) {
+              content.productIds.push(product.id);
+            }
+          }
+        }
+      }
+    }
+
+    // Set Priority for buttons
+    const setButtonPriorities = (contentsList: typeof values.contents) => {
+      contentsList.forEach((content) => {
+        if (content.buttonTemplate?.buttons) {
+          content.buttonTemplate.buttons.forEach((btn, idx) => {
+            (btn as { priority?: number }).priority = idx + 1;
+          });
+        }
+      });
+    };
+
+    setButtonPriorities(values.contents);
+    if (values.reminders) {
+      setButtonPriorities(values.reminders);
+    }
+
+    if (haveError) return false;
+
+    // Only for brand-new automations: if this would be the automation that pushes a
+    // selected page over its free quota, pause and confirm before submitting.
+    if (!id) {
+      const warning = getFreeQuotaWarning(values.instagramIds);
+      if (warning) {
+        setFreeQuotaWarning(warning);
+        return new Promise<boolean>((resolve) => {
+          freeQuotaResolveRef.current = resolve;
+        });
+      }
+    }
+
+    return true;
+  };
+
+  const resolveFreeQuotaPromise = (proceed: boolean) => {
+    setFreeQuotaWarning(null);
+    freeQuotaResolveRef.current?.(proceed);
+    freeQuotaResolveRef.current = null;
+  };
+
+  const triggersHelpProps = {
+    title: t('Triggers.Help.title'),
+    description: t('Triggers.Help.description'),
+    videoSrc: WizardVideoLinks.Automations.Hints.Triggers.video,
+    position: 'top-left' as const,
+    className: 'top-0 left-0',
+  };
+  const conditionsHelpProps = {
+    title: t('Conditions.Help.title'),
+    description: t('Conditions.Help.description'),
+    videoSrc: WizardVideoLinks.Automations.Hints.Conditions.video,
+    position: 'left' as const,
+  };
+  const justFollowersHelpProps = {
+    title: t('JustFollowers.Help.title'),
+    description: t('JustFollowers.Help.description'),
+    videoSrc: WizardVideoLinks.Automations.Hints.JustFollowers.video,
+    position: 'left' as const,
+  };
+  const commentTriggerHelpProps = {
+    title: t('CommentConsent.Help.title'),
+    description: t('CommentConsent.Help.description'),
+    videoSrc: WizardVideoLinks.Automations.Hints.CommentConsent.video,
+    position: 'left' as const,
+  };
+
+  const isReady = !isAutomationLoading && !isLoading && !isAutomationDefaultsLoading;
+
   return (
-    <FormProvider {...form}>
-      <div className={cn('_automation-form flex min-h-full flex-col gap-5')}>
-        {isAutomationLoading || isLoading ? (
-          <LoaderSpin />
-        ) : (
-          <>
-            {!hasInstagram && <ConnectInstagramAlert />}
+    <div data-testid="automation-builder-root" className="_automation-form grid min-h-full gap-5">
+      {!isReady && <LoaderSpin />}
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit, (e) => {
-                  console.log(e);
-                  toast.error(t('form_errors'));
-                })}
-                className="grid gap-3.5"
-              >
-                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <InstagramSelectField />
-                  <SeperateLine />
-
-                  <Conditions control={form.control} getValues={form.getValues} />
-                  <SeperateLine />
-
-                  <Triggers control={form.control} getValues={form.getValues} />
-                  <TargetPostComment />
-                </div>
-
-                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <Contents automationId={id} mode={AutomationContentModeEnum.AUTOMATION} />
-                </div>
-
-                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <JustFollowers control={form.control} getValues={form.getValues} />
-
-                  <CommentReplies />
-
-                  <CommentTriggerInputs />
-
-                  <CommentLimitAlert />
-                </div>
-
-                <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <ButtonLoading isLoading={isSubmitting} className="flex-1">
-                      {id ? t('save_changes') : t('add_automation')}
-                    </ButtonLoading>
-                    <Button
-                      variant="outline"
-                      type="button"
-                      className="flex-1"
-                      onClick={() => router.back()}
-                    >
-                      {t('cancel')}
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </Form>
-          </>
-        )}
-
-        {automationError && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
-      </div>
-
-      {freeQuotaWarning && (
-        <FreeQuotaWarningDialog
-          isOpen={!!freeQuotaWarning}
-          usedCount={freeQuotaWarning.usedCount}
-          limit={freeQuotaWarning.limit}
-          onClose={() => {
-            setFreeQuotaWarning(null);
-            setPendingSubmitValues(null);
-          }}
-          onConfirm={() => {
-            setFreeQuotaWarning(null);
-            if (pendingSubmitValues) submitAutomation(pendingSubmitValues);
+      {isReady && (
+        <AutomationBuilder
+          mode="automation"
+          apiClient={dashboardAutomationApiClient}
+          initialValue={initialValue}
+          isSubmitting={isSubmitting}
+          onSubmit={submitAutomation}
+          beforeSubmit={handleBeforeSubmit}
+          submitLabel={id ? t('save_changes') : t('add_automation')}
+          cancelLabel={t('cancel')}
+          onCancel={() => router.back()}
+          hasInstagram={hasInstagram}
+          isPromotion={isPromotion}
+          commentRepliesSlot={<CommentReplies />}
+          headerSlot={
+            <>
+              <InstagramPromotionWatcher accounts={accounts} onChange={setIsPromotion} />
+              {!hasInstagram && <ConnectInstagramAlert />}
+              <InstagramSelectField />
+            </>
+          }
+          helpSlots={{
+            triggers: <HelpMeDialog helpId="automation_triggers" {...triggersHelpProps} />,
+            conditions: <HelpMeDialog helpId="automation_conditions" {...conditionsHelpProps} />,
+            contents: (
+              <HelpMeDialog
+                helpId="automation_contents"
+                title={t('Contents.Help.title')}
+                description={t('Contents.Help.description')}
+                videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
+              />
+            ),
+            justFollowers: (
+              <HelpMeDialog helpId="automation_just_followers" {...justFollowersHelpProps} />
+            ),
+            commentTrigger: (
+              <HelpMeDialog helpId="automation_comment_triggers" {...commentTriggerHelpProps} />
+            ),
           }}
         />
       )}
-    </FormProvider>
+
+      {automationError && <ErrorMessage>{t_ec('LOAD_FAILED')}</ErrorMessage>}
+
+      <FreeQuotaWarningDialog
+        isOpen={!!freeQuotaWarning}
+        usedCount={freeQuotaWarning?.usedCount ?? 0}
+        limit={freeQuotaWarning?.limit ?? 0}
+        onClose={() => resolveFreeQuotaPromise(false)}
+        onConfirm={() => resolveFreeQuotaPromise(true)}
+      />
+    </div>
   );
 };

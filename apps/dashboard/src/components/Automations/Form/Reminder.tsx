@@ -24,6 +24,7 @@ import {
   Switch,
 } from '@/components/ui';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import { dashboardAutomationApiClient } from '@/lib/automationApiClient';
 import { Contents } from './Contents';
 
 export const Reminder = () => {
@@ -105,7 +106,10 @@ export const Reminder = () => {
                 )}
               ></FormField>
 
-              <Contents mode={AutomationContentModeEnum.REMINDER} />
+              <Contents
+                mode={AutomationContentModeEnum.REMINDER}
+                apiClient={dashboardAutomationApiClient}
+              />
             </>
           )}
         </FormItem>

@@ -29,6 +29,9 @@ export function AutomationBuilder({
   headerSlot,
   helpSlots,
   beforeSubmit,
+  hasInstagram,
+  isPromotion,
+  commentRepliesSlot,
 }: AutomationBuilderProps) {
   const [internalSubmitting, setInternalSubmitting] = useState(false);
 
@@ -93,6 +96,7 @@ export function AutomationBuilder({
           <Contents
             mode={AutomationContentModeEnum.AUTOMATION}
             apiClient={apiClient}
+            isPromotion={isPromotion}
             helpSlot={helpSlots?.contents}
           />
         </div>
@@ -103,8 +107,10 @@ export function AutomationBuilder({
               control={form.control}
               getValues={form.getValues}
               apiClient={apiClient}
+              hasInstagram={hasInstagram}
               helpSlot={helpSlots?.justFollowers}
             />
+            {commentRepliesSlot}
             <CommentTriggerInputs helpSlot={helpSlots?.commentTrigger} />
             <CommentLimitAlert />
           </div>
