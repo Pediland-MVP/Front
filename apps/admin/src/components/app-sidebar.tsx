@@ -25,6 +25,7 @@ import {
   BookmarksSimpleIcon,
   ClipboardTextIcon,
   MegaphoneIcon,
+  FileTextIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -64,6 +65,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: t('banners'),
         url: '/banners',
         icon: MegaphoneIcon,
+      },
+      {
+        title: t('templates'),
+        url: '/templates',
+        icon: FileTextIcon,
       },
       {
         title: t('myCustomers'),
