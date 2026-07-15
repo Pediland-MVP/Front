@@ -249,7 +249,10 @@
     "imageTooLarge": "حداکثر حجم تصویر مجاز ۳ مگابایت است",
     "thumbnailUploadSuccess": "تصویر با موفقیت آپلود شد",
     "thumbnailUploadFailed": "آپلود تصویر با خطا مواجه شد",
-    "defaultContentText": "متن پیام خود را اینجا وارد کنید"
+    "templateTitleRequired": "عنوان قالب الزامی است",
+    "templateTitleMaxLength": "عنوان قالب نباید بیشتر از ۱۵۰ کاراکتر باشد",
+    "templateDescriptionRequired": "توضیحات قالب الزامی است",
+    "templateDescriptionMaxLength": "توضیحات قالب نباید بیشتر از ۵۰۰ کاراکتر باشد"
   },
   "Banners": {
     "search": "جستجو بر اساس عنوان...",

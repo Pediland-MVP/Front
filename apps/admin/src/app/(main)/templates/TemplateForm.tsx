@@ -16,7 +16,12 @@ import { Switch } from '@/components/ui/switch';
 import MultipleSelector, { type Option } from '@/components/ui/multi-selector';
 import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
-import { AutomationBuilder, AutomationContentTypesEnum } from '@/components/automation-builder';
+import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
+import {
+  AutomationBuilder,
+  AutomationContentTypesEnum,
+  ButtonTypeEnum,
+} from '@/components/automation-builder';
 import type { AutomationFormType } from '@/components/automation-builder';
 import { templateAutomationApiClient } from '@/lib/templateAutomationApiClient';
 
@@ -47,6 +52,122 @@ interface TemplateFormProps {
   id?: string;
 }
 
+// Mirrors the dashboard's own `transformButtons` (`apps/dashboard/src/components/
+// Automations/AutomationForm.tsx`) — normalizes a raw `ButtonTemplateItem` row's
+// `type`/`postbackPayloadType` columns into the frontend `ButtonTypeEnum` the shared
+// `ButtonSchema` discriminates on. In practice the admin's `GET /templates/:id`
+// (`Back/apps/admin/src/templates/templates.service.ts#readOneTemplate`) already writes
+// `postbackPayloadType` with a frontend-compatible value at create/update time, but this
+// stays defensive (same as the dashboard) in case of legacy rows.
+function transformButtons(buttons: any[] | undefined | null) {
+  return buttons?.map((b: any) => {
+    const btn = { ...b };
+    const typeToNormalize = btn.postbackPayloadType || btn.type;
+
+    if (typeToNormalize) {
+      const lowerType = String(typeToNormalize).toLowerCase();
+      if (lowerType === 'text' || lowerType === ButtonTypeEnum.TEXT.toLowerCase()) {
+        btn.postbackPayloadType = ButtonTypeEnum.TEXT;
+      } else if (lowerType === 'url' || lowerType === ButtonTypeEnum.URL.toLowerCase()) {
+        btn.postbackPayloadType = ButtonTypeEnum.URL;
+      } else if (
+        lowerType === 'contentcycle' ||
+        lowerType === 'automation' ||
+        lowerType === ButtonTypeEnum.START_AUTOMATION.toLowerCase()
+      ) {
+        btn.postbackPayloadType = ButtonTypeEnum.START_AUTOMATION;
+      } else if (lowerType === ButtonTypeEnum.CONSENT.toLowerCase()) {
+        btn.postbackPayloadType = ButtonTypeEnum.CONSENT;
+      }
+    }
+
+    if (
+      btn.postbackPayloadType === ButtonTypeEnum.START_AUTOMATION &&
+      btn.destinationContentCycle
+    ) {
+      btn.destinationContentCycleId = btn.destinationContentCycle.id;
+    }
+
+    return btn;
+  });
+}
+
+// Mirrors the dashboard's own `transformContent` — maps a raw `ContentCycleContent` row
+// (vitrin images array -> single imageId/imageUrl, button normalization, delay unit) into
+// the shape `ContentItemSchema` expects. Note: fixes a pre-existing typo in the dashboard's
+// copy (it reads `content.vitrins.buttons` instead of `v.buttons` when mapping each vitrin
+// item), since this is a fresh adaptation, not a byte-for-byte copy.
+function transformContent(c: any) {
+  const content = { ...c };
+
+  if (content.buttonTemplate?.buttons) {
+    content.buttonTemplate = { ...content.buttonTemplate };
+    const buttons = transformButtons(content.buttonTemplate.buttons);
+    buttons?.sort((a: any, b: any) => (a.priority ?? 9999) - (b.priority ?? 9999));
+    content.buttonTemplate.buttons = buttons;
+  }
+
+  if (content.vitrins?.length) {
+    content.vitrins = content.vitrins.map((v: any) => ({
+      ...v,
+      imageId: v.images?.[0]?.id,
+      imageUrl: v.images?.[0]?.url,
+      ...(v.buttons?.length && { buttons: transformButtons(v.buttons) }),
+    }));
+  }
+
+  if (content.type === AutomationContentTypesEnum.DELAY) {
+    if (content.delayMs >= 1000 * 60 * 60) {
+      content.delayUnit = 'hour';
+    } else if (content.delayMs >= 1000 * 60) {
+      content.delayUnit = 'min';
+    } else {
+      content.delayUnit = 'sec';
+    }
+  }
+
+  return content;
+}
+
+// Maps the real `GET /templates/:id` response (a raw `ContentCycle` entity graph — see
+// the `readOneTemplate` note above) into both the shared `AutomationBuilder`'s
+// `initialValue` shape and this form's own `metaForm` values. `categoryOptions` (the
+// already-fetched `/workspace-categories` list) supplies the `{ value, label }` pairs for
+// `template.categoryIds` — the backend only returns raw ids (no nested category rows), so
+// a category missing from that list (not loaded yet, or since deleted) falls back to
+// showing its own id as the label rather than being dropped silently.
+function transformTemplateToFormValues(
+  template: any,
+  categoryOptions: Option[],
+): { initialValue: Partial<AutomationFormType>; meta: TemplateMetaValues } {
+  const categoryIds: string[] =
+    template.categoryIds ?? (template.categories ?? []).map((c: { id: string }) => c.id);
+
+  const initialValue: Partial<AutomationFormType> = {
+    ...template,
+    instagramIds: [TEMPLATE_PLACEHOLDER_INSTAGRAM_ID],
+    conditionType: template.isNoCondition
+      ? 'noCondition'
+      : (template.conditions?.[0]?.type ?? 'noCondition'),
+    contents: (template.contents ?? []).map(transformContent),
+  };
+
+  const meta: TemplateMetaValues = {
+    templateTitle: template.templateTitle ?? '',
+    templateDescription: template.templateDescription ?? '',
+    appliesToAllCategories: template.templateAppliesToAllCategories ?? false,
+    categoryIds: categoryIds.map(
+      (categoryId) =>
+        categoryOptions.find((option) => option.value === categoryId) ?? {
+          value: categoryId,
+          label: categoryId,
+        },
+    ),
+  };
+
+  return { initialValue, meta };
+}
+
 export default function TemplateForm({ id }: TemplateFormProps) {
   const t = useTranslations('Templates');
   const t_ec = useTranslations('ERROR_CODES');
@@ -57,14 +178,10 @@ export default function TemplateForm({ id }: TemplateFormProps) {
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState<string | null>(null);
   const [thumbnailUploading, setThumbnailUploading] = useState(false);
 
-  // NOTE (backend gap): the admin `TemplatesController` currently only exposes
-  // GET/POST /templates, PATCH/DELETE /templates/:id and the two upload routes — there is
-  // no `GET /templates/:id` single-detail route (see
-  // Back/apps/admin/src/templates/templates.controller.ts and
-  // Back/knowledge/admin/templates/templates.doc.md). Only core's read-only mirror
-  // (consumed by the dashboard) has one. This fetch is wired against the contract this
-  // task was scoped for; until Back adds the route, editing an existing template will 404
-  // and fall through to the `<FetchError />` branch below instead of loading real data.
+  // `GET /templates/:id` (`Back/apps/admin/src/templates/templates.service.ts#readOneTemplate`)
+  // returns the raw `ContentCycle` entity graph (contents + nested buttonTemplate/vitrins/
+  // quickReplies/file/conditions/templateImage) plus an added `categoryIds: string[]` — see
+  // `transformTemplateToFormValues` above for how that raw shape gets normalized.
   const {
     data: template,
     isLoading: isTemplateLoading,
@@ -90,22 +207,22 @@ export default function TemplateForm({ id }: TemplateFormProps) {
     },
   });
 
+  // `categoryOptions` is recomputed (new array reference) on every render of its own
+  // `useMemo` above, since `useSWR` hands back a fresh object on each revalidation — depend
+  // on this derived, primitive key instead of the array itself, so the effect below only
+  // re-runs when the actual set of loaded category ids changes, not on every unrelated render.
+  const categoryOptionsKey = categoryOptions.map((option) => option.value).join(',');
+
   useEffect(() => {
     if (!template) return;
-    metaForm.reset({
-      templateTitle: template.templateTitle ?? '',
-      templateDescription: template.templateDescription ?? '',
-      appliesToAllCategories: template.templateAppliesToAllCategories ?? false,
-      categoryIds: (template.categories ?? []).map((c: { id: string; nameFa: string }) => ({
-        value: c.id,
-        label: c.nameFa,
-      })),
-    });
+    const { meta } = transformTemplateToFormValues(template, categoryOptions);
+    metaForm.reset(meta);
     setThumbnailPreviewUrl(template.templateImage?.url ?? null);
-    // `metaForm` is a stable react-hook-form instance; only re-run when the fetched
-    // template itself changes.
+    // `metaForm` is a stable react-hook-form instance; re-run when the fetched template
+    // changes, or when `categoryOptions` finishes loading (it's fetched separately, so it
+    // can arrive after `template` and needs to backfill `categoryIds` labels).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [template]);
+  }, [template, categoryOptionsKey]);
 
   const appliesToAll = metaForm.watch('appliesToAllCategories');
 
@@ -159,29 +276,25 @@ export default function TemplateForm({ id }: TemplateFormProps) {
 
   const initialValue = useMemo((): Partial<AutomationFormType> | undefined => {
     if (template) {
-      return {
-        ...template,
-        instagramIds: [TEMPLATE_PLACEHOLDER_INSTAGRAM_ID],
-        conditionType: template.isNoCondition
-          ? 'noCondition'
-          : (template.conditions?.[0]?.type ?? 'noCondition'),
-      };
+      return transformTemplateToFormValues(template, categoryOptions).initialValue;
     }
 
     if (id) return undefined; // edit mode, template not loaded yet
 
-    // Brand-new template: seeded with a minimal-but-valid automation shape so the shared
-    // `AutomationFormSchema` (which unconditionally requires `instagramIds`/`contents`,
-    // see the `TEMPLATE_PLACEHOLDER_INSTAGRAM_ID` note above) doesn't block a save before
-    // the admin has touched the Conditions/Contents sections at all — mirrors a fresh
-    // automation's own sane defaults (direct-message trigger, no condition yet).
+    // Brand-new template: seeded only with the fields that are genuinely irrelevant to a
+    // template's real content (`instagramIds` is a fixed placeholder stripped server-side,
+    // see the `TEMPLATE_PLACEHOLDER_INSTAGRAM_ID` note above; `isDirect: true` just satisfies
+    // the shared schema's isDirect-or-isComment check). `contents` is deliberately left
+    // empty — the shared `AutomationFormSchema`'s `contents.min(1)` then correctly forces
+    // the admin to author real content before they can save; a contentless template would
+    // otherwise persist as literal junk.
     return {
       instagramIds: [TEMPLATE_PLACEHOLDER_INSTAGRAM_ID],
       conditionType: 'noCondition',
       conditions: [],
       isDirect: true,
       isComment: false,
-      contents: [{ type: AutomationContentTypesEnum.TEXT, text: t('defaultContentText') }],
+      contents: [],
     };
     // Computed once and handed to `AutomationBuilder`'s own `useForm` at mount only (it
     // doesn't react to later changes) — same rationale as the dashboard's own
@@ -190,6 +303,19 @@ export default function TemplateForm({ id }: TemplateFormProps) {
   }, [template, id]);
 
   const onSubmitTemplate = async (values: AutomationFormType) => {
+    // The metadata fields live in a separate `metaForm` (rendered in `headerSlot`) that
+    // `AutomationBuilder`'s own zod validation never sees — validate them here, before any
+    // network call, so a blank title/description gets a field-level error instead of a
+    // generic un-coded 400 from the backend's `@Length(1, ...)` DTO validators.
+    const metaValid = await metaForm.trigger(['templateTitle', 'templateDescription']);
+    if (!metaValid) {
+      const firstInvalidField = metaForm.formState.errors.templateTitle
+        ? 'templateTitle'
+        : 'templateDescription';
+      metaForm.setFocus(firstInvalidField);
+      return;
+    }
+
     const meta = metaForm.getValues();
     setIsSubmitting(true);
     try {
@@ -238,12 +364,32 @@ export default function TemplateForm({ id }: TemplateFormProps) {
           <div className="grid gap-4 rounded-xl border bg-white p-4 shadow-sm">
             <div className="grid gap-1.5">
               <Label htmlFor="templateTitle">{t('label')}</Label>
-              <Input id="templateTitle" {...metaForm.register('templateTitle')} />
+              <Input
+                id="templateTitle"
+                aria-invalid={!!metaForm.formState.errors.templateTitle}
+                {...metaForm.register('templateTitle', {
+                  required: t('templateTitleRequired'),
+                  maxLength: { value: 150, message: t('templateTitleMaxLength') },
+                })}
+              />
+              {metaForm.formState.errors.templateTitle && (
+                <ErrorMessage>{metaForm.formState.errors.templateTitle.message}</ErrorMessage>
+              )}
             </div>
 
             <div className="grid gap-1.5">
               <Label htmlFor="templateDescription">{t('description')}</Label>
-              <Textarea id="templateDescription" {...metaForm.register('templateDescription')} />
+              <Textarea
+                id="templateDescription"
+                aria-invalid={!!metaForm.formState.errors.templateDescription}
+                {...metaForm.register('templateDescription', {
+                  required: t('templateDescriptionRequired'),
+                  maxLength: { value: 500, message: t('templateDescriptionMaxLength') },
+                })}
+              />
+              {metaForm.formState.errors.templateDescription && (
+                <ErrorMessage>{metaForm.formState.errors.templateDescription.message}</ErrorMessage>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
