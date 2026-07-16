@@ -164,6 +164,9 @@ export const AutomationFormSchema = z
     commentStartText: optionalStringToUndef,
     commentStartTitle: optionalStringToUndef,
 
+    title: optionalStringToUndef,
+    enabled: optionalBoolDefault(true),
+
     // فقط فالوورها
     justFollowers: z.boolean(),
 

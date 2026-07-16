@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 
+import { cn } from '@/lib/utils';
 import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
 import { CrosshairIcon, InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
 import { CircleXIcon, CopyIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';
@@ -25,10 +26,25 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
   const usernames = item.instagramLinks?.map((l) => l.instagram?.username).filter(Boolean) ?? [];
 
   return (
-    <Card className="gap-0 border-violet-200 p-0 shadow-violet-200">
+    <Card
+      className={cn('gap-0 border-violet-200 p-0 shadow-violet-200', !item.enabled && 'opacity-60')}
+    >
       <CardContent className="p-2">
         <div className="flex">
           <div className="flex-1 space-y-3 p-2 text-sm">
+            {(item.title || !item.enabled) && (
+              <div className="flex items-center gap-2">
+                {item.title && <div className="text-sm font-semibold">{item.title}</div>}
+                {!item.enabled && (
+                  <Badge
+                    variant="outline"
+                    className="h-5 rounded-full border-gray-300 bg-gray-100 px-2 py-0 text-[11px] font-medium text-gray-500"
+                  >
+                    {t('disabled_badge')}
+                  </Badge>
+                )}
+              </div>
+            )}
             <div className="flex items-center gap-1 text-[12px] text-gray-400">
               <InstagramLogoIcon size={13} />
               <span>

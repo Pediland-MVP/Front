@@ -12,6 +12,7 @@ import { JustFollowers } from './Form/JustFollowers';
 import { CommentTriggerInputs } from './Form/CommentTriggerInputs';
 import { CommentLimitAlert } from './Form/CommentLimitAlert';
 import { TargetPostComment } from './Form/TargetPostComment';
+import { TitleAndEnabled } from './Form/TitleAndEnabled';
 import { Contents } from './Contents/Contents';
 import { AutomationContentModeEnum } from './constants/automationContent.enum';
 import { AutomationFormSchema, type AutomationFormType } from './schemas/automationForm';
@@ -56,6 +57,7 @@ export function AutomationBuilder({
       isRemindersEnabled: false,
       isReplyCommentEnabled: false,
       justFollowers: false,
+      enabled: true,
       ...initialValue,
     },
   });
@@ -118,6 +120,12 @@ export function AutomationBuilder({
             {commentRepliesSlot}
             <CommentTriggerInputs helpSlot={helpSlots?.commentTrigger} />
             <CommentLimitAlert />
+          </div>
+        )}
+
+        {mode === 'automation' && (
+          <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
+            <TitleAndEnabled control={form.control} />
           </div>
         )}
 

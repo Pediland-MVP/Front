@@ -716,6 +716,11 @@
         "description": "با فعال سازی این گزینه، برای اینکه کاربر پیام شما رو دریافت کنه حتما باید پیج شما رو فالو کنه"
       }
     },
+    "TitleAndEnabled": {
+      "title_label": "نام پیام خودکار (اختیاری)",
+      "title_placeholder": "مثلاً: ارسال قیمت محصولات تابستانی",
+      "enabled_label": "فعال"
+    },
     "List": {
       "title": "عنوان",
       "conditionValue": "مقدار شرط",
@@ -750,7 +755,8 @@
       "direct": "دایرکت",
       "comment": "کامنت",
       "specified_post": "پست خاص",
-      "no_instagram_assigned": "بدون اینستاگرام متصل"
+      "no_instagram_assigned": "بدون اینستاگرام متصل",
+      "disabled_badge": "غیرفعال"
     },
     "ContentPromotionDialog": {
       "title": "ارتقا حساب کاربری",
