@@ -2,7 +2,10 @@ import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Contents } from '../Contents';
-import { AutomationContentModeEnum } from '../../constants/automationContent.enum';
+import {
+  AutomationContentModeEnum,
+  AutomationContentTypesEnum,
+} from '../../constants/automationContent.enum';
 import type { AutomationBuilderApiClient } from '../../types/apiClient';
 import type { AutomationBuilderMode } from '../../AutomationBuilder.types';
 
@@ -39,12 +42,14 @@ function Wrapper({
   apiClient,
   builderMode,
   mode,
+  initialContents,
 }: {
   apiClient?: AutomationBuilderApiClient;
   builderMode?: AutomationBuilderMode;
   mode?: AutomationContentModeEnum;
+  initialContents?: any[];
 }) {
-  const form = useForm({ defaultValues: { contents: [], reminders: [] } });
+  const form = useForm({ defaultValues: { contents: initialContents ?? [], reminders: [] } });
   return (
     <FormProvider {...form}>
       <Contents
@@ -147,5 +152,44 @@ describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gatin
     fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.getByText('buttons.titles.instagram_post')).toBeInTheDocument();
+  });
+});
+
+describe('Contents — DELAY content-type shared 23h budget (Add-content flow)', () => {
+  it('appends a DELAY item normally when the 23h budget still has room', () => {
+    render(<Wrapper />);
+    fireEvent.click(screen.getByText('افزودن مرحله'));
+    fireEvent.click(screen.getByText('buttons.titles.delay'));
+
+    expect(screen.queryByText('budget_exhausted_title')).not.toBeInTheDocument();
+  });
+
+  it('shows the exhausted-budget dialog instead of appending when existing DELAY items already sum to 23h', () => {
+    render(
+      <Wrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.DELAY,
+            delayMs: 23 * 60 * 60 * 1000,
+            delayUnit: 'hour',
+          },
+        ]}
+      />,
+    );
+    // With one item already present, the inline "add_content" button (not the empty-state
+    // "add_step" CTA) opens the ChooseAutomationType picker — see the next-intl mock note
+    // at the top of this file.
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('buttons.titles.delay'));
+
+    expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument();
+  });
+
+  it('does not show the dialog when mode=REMINDER, even with an over-budget contents array elsewhere (budget only applies to the contents array)', () => {
+    render(<Wrapper mode={AutomationContentModeEnum.REMINDER} />);
+    fireEvent.click(screen.getByText('افزودن مرحله'));
+    fireEvent.click(screen.getByText('buttons.titles.delay'));
+
+    expect(screen.queryByText('budget_exhausted_title')).not.toBeInTheDocument();
   });
 });

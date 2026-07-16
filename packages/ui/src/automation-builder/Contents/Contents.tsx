@@ -43,6 +43,9 @@ import { ValidationTypeEnum } from '../types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
 import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
 import { ChooseAutomationType } from './ChooseAutomationType';
+import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
+import { delayUnitOptionsCount, remainingDelayBudgetMs } from '../utils/delayBudget';
+import type { ContentItemType } from '../schemas/automationForm';
 import z from 'zod';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 
@@ -94,6 +97,7 @@ export const Contents = ({
   } = useFormContext<AutomationFormType>();
 
   const [isChoosingType, setIsChoosingType] = useState(false);
+  const [isDelayBudgetExhausted, setIsDelayBudgetExhausted] = useState(false);
 
   const arrayName =
     mode === AutomationContentModeEnum.REMINDER ? 'reminders' : ('contents' as const);
@@ -205,6 +209,19 @@ export const Contents = ({
       return;
     }
 
+    // The 23h delay budget only applies to the `contents` array — `reminders` cannot
+    // meaningfully carry DELAY items (see the `showTemplateInsert` comment above), so this
+    // check is skipped there.
+    if (option.value === AutomationContentTypesEnum.DELAY && arrayName === 'contents') {
+      const contentsForBudget = (watched ?? []) as ContentItemType[];
+      const remainingMs = remainingDelayBudgetMs(contentsForBudget, contentsForBudget.length);
+      if (delayUnitOptionsCount(remainingMs, 'sec') < 1) {
+        setIsChoosingType(false);
+        setIsDelayBudgetExhausted(true);
+        return;
+      }
+    }
+
     appendContents({
       type: option.value === 'media' ? AutomationContentTypesEnum.IMAGE : option.value,
       ...(mode === AutomationContentModeEnum.AUTOMATION && {
@@ -314,6 +331,11 @@ export const Contents = ({
           onOpenChange={setIsChoosingType}
           onSelect={selectAutomationTypeHandler}
           options={contentTypeOptionsForMode}
+        />
+
+        <DelayBudgetExhaustedDialog
+          open={isDelayBudgetExhausted}
+          onOpenChange={setIsDelayBudgetExhausted}
         />
 
         {/* Only ever mounted when `showTemplateInsert` — the `'template'` option that
