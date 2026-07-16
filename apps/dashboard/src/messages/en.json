@@ -824,7 +824,9 @@
       "error": "Payment failed",
       "sucessFull": "Operation completed successfully",
       "sucessFullDescription": "Your payment was successful and the service has been activated",
-      "refId": "Tracking Number: {refId}"
+      "refId": "Tracking Number: {refId}",
+      "redirecting": "Redirecting in {seconds}s...",
+      "redirectNow": "Go now"
     },
     "PlanSelection": {
       "description": "To use Befroosh’s premium features, you need to activate a subscription. Please select one of the 1-month, 3-month, or 12-month plans based on your follower count.",
@@ -1164,6 +1166,10 @@
     "orderCardToCardNotUploaded": "Please first upload your card-to-card receipt",
     "orderProcessing": "Your order has been successfully registered",
     "orderProcessingDescription": "Your purchase will be reviewed by the store and, if approved, the order details will be sent to your Instagram.",
+    "paymentFailed": "Payment failed",
+    "paymentFailedDescription": "Your payment was not completed or was cancelled. Any deducted amount will be refunded within a few minutes.",
+    "refId": "Payment gateway tracking code",
+    "refIdCopied": "Tracking code copied",
     "orderInvalid": "Your order has expired or has been paid.",
     "invalidEmail": "Invalid email",
     "selectGender": "Select an option",
