@@ -25,10 +25,16 @@ ENV NEXT_PUBLIC_BACK_API_URL=$NEXT_PUBLIC_BACK_API_URL \
 
 # Workspace-aware: dashboard depends on @befroosh/ui, so copy the whole monorepo.
 COPY . .
+# After building, every workspace's node_modules is deleted and reinstalled
+# prod-only scoped to `front...` (front + the workspace packages it actually
+# depends on, i.e. @befroosh/ui), so the runtime image doesn't ship
+# node_modules or the admin app's dependency tree.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    --mount=type=cache,id=turbo-front,target=/app/.turbo \
     pnpm install --frozen-lockfile \
  && pnpm exec turbo run build --filter=front \
- && pnpm install --frozen-lockfile --prod --ignore-scripts
+ && find . -maxdepth 3 -name node_modules -type d -prune -exec rm -rf {} + \
+ && pnpm --filter=front... install --frozen-lockfile --prod --ignore-scripts
 
 # ---- runtime stage: slim base, runs `next start` ----
 FROM node:24-slim AS runtime
@@ -36,7 +42,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable
-COPY --from=build /app /app
+# Only copy what the `front` app needs to run — the admin app's source and
+# node_modules are skipped (its node_modules is already gone after the
+# scoped install above).
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/
+COPY --from=build /app/apps/dashboard /app/apps/dashboard
+COPY --from=build /app/packages /app/packages
 
 EXPOSE 3000
 CMD ["pnpm", "--filter", "front", "start"]
