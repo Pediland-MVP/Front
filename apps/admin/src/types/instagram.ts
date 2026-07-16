@@ -13,6 +13,8 @@ export type InstagramRow = {
   labels?: AssignedLabel[];
 };
 
+export type InstagramDetail = InstagramRow;
+
 export type Instagram = {
   id: string;
   createDate: string;
