@@ -13,7 +13,9 @@ import { AutomationFormType, ContentItemType } from '../schemas/automationForm';
 import {
   DELAY_UNIT_MS,
   DelayUnit,
+  convertDelayMsAcrossUnit,
   delayUnitOptionsCount,
+  magnitudeOptionsFor,
   remainingDelayBudgetMs,
 } from '../utils/delayBudget';
 import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
@@ -41,24 +43,20 @@ export function DelayContent({ index }: DelayContentProps) {
 
   const remainingMs = remainingDelayBudgetMs(contents, index);
   const maxOptions = delayUnitOptionsCount(remainingMs, delayUnit);
-  const magnitudeOptions = Array.from({ length: maxOptions }, (_, i) => String(i + 1));
+  const currentMagnitudeNumber =
+    delayMs != null ? Math.round(delayMs / DELAY_UNIT_MS[delayUnit]) : undefined;
   const currentMagnitude =
-    delayMs != null ? String(Math.round(delayMs / DELAY_UNIT_MS[delayUnit])) : undefined;
+    currentMagnitudeNumber != null ? String(currentMagnitudeNumber) : undefined;
+  const magnitudeOptions = magnitudeOptionsFor(remainingMs, delayUnit, currentMagnitudeNumber).map(
+    String,
+  );
 
   const delayMagnitudeChangeHandler = (value: string) => {
     setValue(delayMsNameKey, Number(value) * DELAY_UNIT_MS[delayUnit]);
   };
 
-  // Prevent from being under 1 (existing rule) and clamp to the remaining budget for the
-  // newly selected unit (new rule) when converting the stored value across units. If the
-  // new unit has no room at all (newMax === 0), the value is left at its 1-unit floor —
-  // this rare over-budget edge case is caught by the submit-time total-delay check
-  // (dashboard's `AutomationForm.tsx` / admin's `TemplateForm.tsx`), not silently hidden.
   const delayUnitChangeHandler = (value: DelayUnit) => {
-    const newMax = delayUnitOptionsCount(remainingDelayBudgetMs(contents, index), value);
-    const rawMagnitude = getValues(delayMsNameKey) / DELAY_UNIT_MS[value];
-    const clampedMagnitude = Math.min(Math.max(1, Math.round(rawMagnitude)), Math.max(newMax, 1));
-    setValue(delayMsNameKey, clampedMagnitude * DELAY_UNIT_MS[value]);
+    setValue(delayMsNameKey, convertDelayMsAcrossUnit(getValues(delayMsNameKey), value));
     setValue(delayUnitNameKey, value);
   };
 
@@ -101,7 +99,7 @@ export function DelayContent({ index }: DelayContentProps) {
                   setIsMagnitudeOpen(nextOpen);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-disabled={maxOptions < 1}>
                   <SelectValue placeholder={t('selectValue')} />
                 </SelectTrigger>
                 <SelectContent>

@@ -3,7 +3,9 @@ import { AutomationContentTypesEnum } from '../../constants/automationContent.en
 import {
   DELAY_UNIT_MS,
   TOTAL_DELAY_BUDGET_MS,
+  convertDelayMsAcrossUnit,
   delayUnitOptionsCount,
+  magnitudeOptionsFor,
   remainingDelayBudgetMs,
   sumOtherDelaysMs,
 } from '../delayBudget';
@@ -83,6 +85,58 @@ describe('delayBudget', () => {
     it('returns 0 when remaining is positive but smaller than one unit of granularity', () => {
       expect(delayUnitOptionsCount(500, 'sec')).toBe(0);
       expect(delayUnitOptionsCount(DELAY_UNIT_MS.min - 1, 'min')).toBe(0);
+    });
+  });
+
+  describe('magnitudeOptionsFor', () => {
+    it('returns 1..N when the current magnitude already fits within the computed range', () => {
+      expect(magnitudeOptionsFor(TOTAL_DELAY_BUDGET_MS, 'hour', 5)).toEqual([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+      ]);
+    });
+
+    it('inserts the current magnitude when it falls outside the budget-derived range, instead of dropping it', () => {
+      // A sibling DELAY item consumed budget after this item's own 23h value was set, so
+      // the recomputed range only goes up to 22 — the item's real value (23) must still
+      // appear, not silently disappear from the option list.
+      const remaining = TOTAL_DELAY_BUDGET_MS - DELAY_UNIT_MS.hour;
+      expect(magnitudeOptionsFor(remaining, 'hour', 23)).toEqual([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+      ]);
+    });
+
+    it('inserts the current magnitude above the min/sec 60-cap when the stored value exceeds it', () => {
+      expect(magnitudeOptionsFor(TOTAL_DELAY_BUDGET_MS, 'sec', 3600)).toContain(3600);
+      expect(magnitudeOptionsFor(TOTAL_DELAY_BUDGET_MS, 'sec', 3600).at(-1)).toBe(3600);
+    });
+
+    it('ignores a current magnitude of 0 or undefined (no value set yet)', () => {
+      expect(magnitudeOptionsFor(DELAY_UNIT_MS.hour * 3, 'hour', 0)).toEqual([1, 2, 3]);
+      expect(magnitudeOptionsFor(DELAY_UNIT_MS.hour * 3, 'hour', undefined)).toEqual([1, 2, 3]);
+    });
+
+    it('never duplicates the current magnitude when it is already present in the range', () => {
+      const options = magnitudeOptionsFor(DELAY_UNIT_MS.hour * 5, 'hour', 3);
+      expect(options.filter((n) => n === 3)).toHaveLength(1);
+    });
+  });
+
+  describe('convertDelayMsAcrossUnit', () => {
+    it('preserves the exact delayMs when it remains representable in the new unit (>=1 whole unit)', () => {
+      // 2 hours converted to minutes is 120 whole minutes -- well above 1, so the exact
+      // millisecond value must be kept untouched, even though the minute select's rendered
+      // option range is capped at 60 (that cap is a display concern, not a data-loss trigger).
+      expect(convertDelayMsAcrossUnit(DELAY_UNIT_MS.hour * 2, 'min')).toBe(DELAY_UNIT_MS.hour * 2);
+    });
+
+    it('preserves an exact multiple of the new unit unchanged', () => {
+      expect(convertDelayMsAcrossUnit(DELAY_UNIT_MS.min * 90, 'hour')).toBe(DELAY_UNIT_MS.min * 90);
+    });
+
+    it('bumps up to exactly 1 new-unit when the value would round to under 1 in the new unit', () => {
+      // 1 second converted to hours would round to 0 whole hours -- unrepresentable, so it's
+      // floored up to exactly 1 hour instead of vanishing.
+      expect(convertDelayMsAcrossUnit(DELAY_UNIT_MS.sec, 'hour')).toBe(DELAY_UNIT_MS.hour);
     });
   });
 });

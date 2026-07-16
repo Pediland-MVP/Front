@@ -192,4 +192,25 @@ describe('Contents — DELAY content-type shared 23h budget (Add-content flow)',
 
     expect(screen.queryByText('budget_exhausted_title')).not.toBeInTheDocument();
   });
+
+  it('blocks adding a DELAY item when less than 1 hour remains, even though several seconds/minutes are still free (the appended item always defaults to 1 hour)', () => {
+    render(
+      <Wrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.DELAY,
+            // 22h55m consumed -> 5 minutes (300000ms) remain: enough for a 'sec'-granularity
+            // check to pass, but not enough for the fixed 1-hour default this handler
+            // appends -- the guard must check at 'hour' granularity to catch this.
+            delayMs: 22 * 60 * 60 * 1000 + 55 * 60 * 1000,
+            delayUnit: 'hour',
+          },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('buttons.titles.delay'));
+
+    expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument();
+  });
 });

@@ -43,3 +43,34 @@ export function delayUnitOptionsCount(remainingMs: number, unit: DelayUnit): num
   const capped = unit === 'hour' ? raw : Math.min(60, raw);
   return Math.max(0, capped);
 }
+
+/** The `1..N` magnitude options a delay item's select should render for `unit`, given
+ * `remainingMs` left in the shared budget. Always includes `currentMagnitude` even when it
+ * falls outside the computed `1..N` range (e.g. a sibling DELAY item has since consumed
+ * more of the shared budget than when this item's value was set) — the select must always
+ * be able to display the item's real stored value, never silently fall back to a blank
+ * placeholder for a value that's still valid. */
+export function magnitudeOptionsFor(
+  remainingMs: number,
+  unit: DelayUnit,
+  currentMagnitude?: number,
+): number[] {
+  const maxOptions = delayUnitOptionsCount(remainingMs, unit);
+  const options = Array.from({ length: maxOptions }, (_, i) => i + 1);
+  if (currentMagnitude != null && currentMagnitude > 0 && !options.includes(currentMagnitude)) {
+    options.push(currentMagnitude);
+    options.sort((a, b) => a - b);
+  }
+  return options;
+}
+
+/** The `delayMs` to store after switching a delay item to `newUnit`. Preserves the exact
+ * original value whenever it remains representable (rounds to at least 1 whole `newUnit`)
+ * — merely switching the unit dropdown must never truncate a value the user already
+ * configured (e.g. converting a 2-hour delay to "minutes", where `min` options cap at 60,
+ * previously silently dropped it to 60 minutes). Only bumps the value up to exactly 1
+ * `newUnit` when it would otherwise round to under 1 and so become unrepresentable. */
+export function convertDelayMsAcrossUnit(currentDelayMs: number, newUnit: DelayUnit): number {
+  const rawMagnitude = Math.round(currentDelayMs / DELAY_UNIT_MS[newUnit]);
+  return rawMagnitude < 1 ? DELAY_UNIT_MS[newUnit] : currentDelayMs;
+}

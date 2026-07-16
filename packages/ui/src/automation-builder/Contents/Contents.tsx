@@ -215,7 +215,11 @@ export const Contents = ({
     if (option.value === AutomationContentTypesEnum.DELAY && arrayName === 'contents') {
       const contentsForBudget = (watched ?? []) as ContentItemType[];
       const remainingMs = remainingDelayBudgetMs(contentsForBudget, contentsForBudget.length);
-      if (delayUnitOptionsCount(remainingMs, 'sec') < 1) {
+      // Checked against 'hour', not 'sec': the appended item below always defaults to a
+      // 1-hour delay, so the guard must confirm a full hour is actually free — checking at
+      // 'sec' granularity let as little as 1 second of remaining budget pass, immediately
+      // pushing the new item's own delay over the shared 23h cap.
+      if (delayUnitOptionsCount(remainingMs, 'hour') < 1) {
         setIsChoosingType(false);
         setIsDelayBudgetExhausted(true);
         return;
