@@ -2,8 +2,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -11,25 +9,20 @@ import {
   SelectValue,
 } from '@/components/ui';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
-import { AutomationFormType } from '../schemas/automationForm';
-import p2eNumbers from '../utils/p2eNumber';
+import { AutomationFormType, ContentItemType } from '../schemas/automationForm';
+import {
+  DELAY_UNIT_MS,
+  DelayUnit,
+  delayUnitOptionsCount,
+  remainingDelayBudgetMs,
+} from '../utils/delayBudget';
+import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
 import { useTranslations } from 'next-intl';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { useState } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 type DelayContentProps = {
   index: number;
-};
-
-const timeUnits = {
-  sec: {
-    zarib: 1000,
-  },
-  min: {
-    zarib: 1000 * 60,
-  },
-  hour: {
-    zarib: 1000 * 60 * 60,
-  },
 };
 
 export function DelayContent({ index }: DelayContentProps) {
@@ -39,32 +32,33 @@ export function DelayContent({ index }: DelayContentProps) {
   const { control, setValue, getValues } = useFormContext<AutomationFormType>();
   const t = useTranslations('Automations.Contents.Delay');
 
-  const delayUnit = useWatch({
-    name: delayUnitNameKey,
-    control,
-  });
+  const [isMagnitudeOpen, setIsMagnitudeOpen] = useState(false);
+  const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false);
 
-  const delayMsChangeHandler = (timeMs: number) => {
-    setValue(delayMsNameKey, timeMs * timeUnits[delayUnit].zarib);
+  const delayUnit = (useWatch({ name: delayUnitNameKey, control }) as DelayUnit) || 'hour';
+  const delayMs = useWatch({ name: delayMsNameKey, control });
+  const contents = (useWatch({ name: 'contents', control }) ?? []) as ContentItemType[];
+
+  const remainingMs = remainingDelayBudgetMs(contents, index);
+  const maxOptions = delayUnitOptionsCount(remainingMs, delayUnit);
+  const magnitudeOptions = Array.from({ length: maxOptions }, (_, i) => String(i + 1));
+  const currentMagnitude =
+    delayMs != null ? String(Math.round(delayMs / DELAY_UNIT_MS[delayUnit])) : undefined;
+
+  const delayMagnitudeChangeHandler = (value: string) => {
+    setValue(delayMsNameKey, Number(value) * DELAY_UNIT_MS[delayUnit]);
   };
 
-  // Preventing from words
-  // Converting p2e number
-  const delayMsInputHandler = (e: React.FormEvent<HTMLInputElement>) => {
-    if (Number.isNaN(+e.currentTarget.value)) {
-      const arrayOfWords = e.currentTarget.value.split('');
-      arrayOfWords.pop();
-      e.currentTarget.value = arrayOfWords.join();
-    }
-    e.currentTarget.value = p2eNumbers(e.currentTarget.value);
-  };
-
-  // Prevent from being under 1
-  const delayUnitChangeHandler = (value: string) => {
-    const delayMsAfterChange = getValues(delayMsNameKey) / timeUnits[value]?.zarib;
-    if (delayMsAfterChange < 1) {
-      setValue(delayMsNameKey, timeUnits[value].zarib);
-    }
+  // Prevent from being under 1 (existing rule) and clamp to the remaining budget for the
+  // newly selected unit (new rule) when converting the stored value across units. If the
+  // new unit has no room at all (newMax === 0), the value is left at its 1-unit floor —
+  // this rare over-budget edge case is caught by the submit-time total-delay check
+  // (dashboard's `AutomationForm.tsx` / admin's `TemplateForm.tsx`), not silently hidden.
+  const delayUnitChangeHandler = (value: DelayUnit) => {
+    const newMax = delayUnitOptionsCount(remainingDelayBudgetMs(contents, index), value);
+    const rawMagnitude = getValues(delayMsNameKey) / DELAY_UNIT_MS[value];
+    const clampedMagnitude = Math.min(Math.max(1, Math.round(rawMagnitude)), Math.max(newMax, 1));
+    setValue(delayMsNameKey, clampedMagnitude * DELAY_UNIT_MS[value]);
     setValue(delayUnitNameKey, value);
   };
 
@@ -79,7 +73,7 @@ export function DelayContent({ index }: DelayContentProps) {
               <SelectValue placeholder={t('selectTimeUnit')} />
             </SelectTrigger>
             <SelectContent>
-              {Object.keys(timeUnits).map((tKey) => (
+              {(['sec', 'min', 'hour'] as DelayUnit[]).map((tKey) => (
                 <SelectItem key={tKey} value={tKey}>
                   {t(`timeUnits.${tKey}`)}
                 </SelectItem>
@@ -90,24 +84,41 @@ export function DelayContent({ index }: DelayContentProps) {
       />
 
       <FormField
-        name={`contents.${index}.delayMs`}
+        name={delayMsNameKey}
         control={control}
-        render={({ field, fieldState: { invalid } }) => (
+        render={({ fieldState: { invalid } }) => (
           <FormItem>
             <FormControl>
-              <Input
-                {...field}
-                onInput={delayMsInputHandler}
-                onChange={(e) => delayMsChangeHandler(+e.target.value)}
-                type="text"
-                value={field.value / timeUnits[delayUnit]?.zarib}
-                defaultValue={field.value / timeUnits[delayUnit]?.zarib}
-              />
+              <Select
+                value={currentMagnitude}
+                onValueChange={delayMagnitudeChangeHandler}
+                open={isMagnitudeOpen}
+                onOpenChange={(nextOpen) => {
+                  if (nextOpen && maxOptions < 1) {
+                    setIsBudgetDialogOpen(true);
+                    return;
+                  }
+                  setIsMagnitudeOpen(nextOpen);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('selectValue')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {magnitudeOptions.map((n) => (
+                    <SelectItem key={n} value={n}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FormControl>
-            {invalid && <ErrorMessage>{t(`at_least_1_second`)}</ErrorMessage>}
+            {invalid && <ErrorMessage>{t('at_least_1_second')}</ErrorMessage>}
           </FormItem>
         )}
       />
+
+      <DelayBudgetExhaustedDialog open={isBudgetDialogOpen} onOpenChange={setIsBudgetDialogOpen} />
     </div>
   );
 }
