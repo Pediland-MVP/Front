@@ -74,3 +74,17 @@ export function convertDelayMsAcrossUnit(currentDelayMs: number, newUnit: DelayU
   const rawMagnitude = Math.round(currentDelayMs / DELAY_UNIT_MS[newUnit]);
   return rawMagnitude < 1 ? DELAY_UNIT_MS[newUnit] : currentDelayMs;
 }
+
+/** The exact whole-number magnitude of `delayMs` in `unit`, or `undefined` when `delayMs`
+ * isn't an exact multiple of that unit. Used for display: rounding a non-exact value (e.g.
+ * 45 seconds shown as "1" while the unit selector reads "minutes") would show a magnitude
+ * that doesn't match what's actually stored — safer to show nothing selected than a
+ * plausible-looking but wrong number the user might unknowingly re-affirm. */
+export function exactMagnitudeFor(
+  delayMs: number | null | undefined,
+  unit: DelayUnit,
+): number | undefined {
+  if (delayMs == null) return undefined;
+  if (delayMs % DELAY_UNIT_MS[unit] !== 0) return undefined;
+  return delayMs / DELAY_UNIT_MS[unit];
+}

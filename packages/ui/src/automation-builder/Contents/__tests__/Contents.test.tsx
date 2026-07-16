@@ -185,12 +185,11 @@ describe('Contents — DELAY content-type shared 23h budget (Add-content flow)',
     expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument();
   });
 
-  it('does not show the dialog when mode=REMINDER, even with an over-budget contents array elsewhere (budget only applies to the contents array)', () => {
+  it('hides the DELAY content-type option entirely in mode=REMINDER (DelayContent has no reminders-array equivalent, so offering it would corrupt the contents array)', () => {
     render(<Wrapper mode={AutomationContentModeEnum.REMINDER} />);
     fireEvent.click(screen.getByText('افزودن مرحله'));
-    fireEvent.click(screen.getByText('buttons.titles.delay'));
 
-    expect(screen.queryByText('budget_exhausted_title')).not.toBeInTheDocument();
+    expect(screen.queryByText('buttons.titles.delay')).not.toBeInTheDocument();
   });
 
   it('blocks adding a DELAY item when less than 1 hour remains, even though several seconds/minutes are still free (the appended item always defaults to 1 hour)', () => {
@@ -212,5 +211,71 @@ describe('Contents — DELAY content-type shared 23h budget (Add-content flow)',
     fireEvent.click(screen.getByText('buttons.titles.delay'));
 
     expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument();
+  });
+
+  it('blocks inserting a template whose own DELAY items would push the total over the shared 23h budget', async () => {
+    // Unique search term so this test's `/templates?search=...` SWR key never collides with
+    // another test's cached result in the same run (SWR's cache is a module-level
+    // singleton, not reset between tests/components).
+    const searchTerm = 'delay-budget-template-test-unique-query';
+
+    const get = vi.fn((url: string) => {
+      if (url.startsWith('/templates?search=')) {
+        return Promise.resolve({
+          data: {
+            items: [
+              {
+                id: 't1',
+                templateTitle: 'My Template',
+                templateDescription: null,
+                templateImage: null,
+              },
+            ],
+          },
+        });
+      }
+      if (url === '/templates/t1') {
+        // 10h of DELAY content in the template; only 3h remain in the destination automation.
+        return Promise.resolve({
+          data: {
+            contents: [{ type: AutomationContentTypesEnum.DELAY, delayMs: 10 * 60 * 60 * 1000 }],
+          },
+        });
+      }
+      return Promise.resolve({ data: {} });
+    });
+
+    render(
+      <Wrapper
+        apiClient={{ upload: vi.fn(), get }}
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.DELAY,
+            delayMs: 20 * 60 * 60 * 1000,
+            delayUnit: 'hour',
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByText('افزودن محتوا'));
+    fireEvent.click(screen.getByText('buttons.titles.template'));
+
+    fireEvent.change(screen.getByPlaceholderText('searchPlaceholder'), {
+      target: { value: searchTerm },
+    });
+
+    await waitFor(
+      () =>
+        expect(get).toHaveBeenCalledWith(
+          expect.stringContaining(`/templates?search=${encodeURIComponent(searchTerm)}`),
+        ),
+      { timeout: 2000 },
+    );
+
+    fireEvent.click(await screen.findByText('My Template'));
+
+    await waitFor(() => expect(get).toHaveBeenCalledWith('/templates/t1'));
+    await waitFor(() => expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument());
   });
 });

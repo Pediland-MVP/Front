@@ -5,6 +5,7 @@ import {
   TOTAL_DELAY_BUDGET_MS,
   convertDelayMsAcrossUnit,
   delayUnitOptionsCount,
+  exactMagnitudeFor,
   magnitudeOptionsFor,
   remainingDelayBudgetMs,
   sumOtherDelaysMs,
@@ -137,6 +138,25 @@ describe('delayBudget', () => {
       // 1 second converted to hours would round to 0 whole hours -- unrepresentable, so it's
       // floored up to exactly 1 hour instead of vanishing.
       expect(convertDelayMsAcrossUnit(DELAY_UNIT_MS.sec, 'hour')).toBe(DELAY_UNIT_MS.hour);
+    });
+  });
+
+  describe('exactMagnitudeFor', () => {
+    it('returns the exact whole-number magnitude when delayMs is a clean multiple of unit', () => {
+      expect(exactMagnitudeFor(DELAY_UNIT_MS.hour * 2, 'hour')).toBe(2);
+      expect(exactMagnitudeFor(DELAY_UNIT_MS.min * 45, 'min')).toBe(45);
+    });
+
+    it('returns undefined when delayMs is not an exact multiple of unit, instead of a misleading rounded value', () => {
+      // 45 seconds is not a whole number of minutes (0.75) -- must not silently display "1".
+      expect(exactMagnitudeFor(45 * DELAY_UNIT_MS.sec, 'min')).toBeUndefined();
+      // 90 minutes (1.5h) is not a whole number of hours -- must not silently display "2".
+      expect(exactMagnitudeFor(DELAY_UNIT_MS.min * 90, 'hour')).toBeUndefined();
+    });
+
+    it('returns undefined for null/undefined delayMs', () => {
+      expect(exactMagnitudeFor(null, 'hour')).toBeUndefined();
+      expect(exactMagnitudeFor(undefined, 'hour')).toBeUndefined();
     });
   });
 });

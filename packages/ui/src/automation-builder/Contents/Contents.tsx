@@ -44,7 +44,11 @@ import { QuestionTextErrorMessage } from './QuestionContent';
 import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
 import { ChooseAutomationType } from './ChooseAutomationType';
 import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
-import { delayUnitOptionsCount, remainingDelayBudgetMs } from '../utils/delayBudget';
+import {
+  delayUnitOptionsCount,
+  remainingDelayBudgetMs,
+  sumOtherDelaysMs,
+} from '../utils/delayBudget';
 import type { ContentItemType } from '../schemas/automationForm';
 import z from 'zod';
 import { AutomationBuilderApiClient } from '../types/apiClient';
@@ -172,7 +176,23 @@ export const Contents = ({
       const detail = await apiClient
         .get(`/templates/${template.id}`)
         .then((res) => res.data as { contents?: any[] });
-      appendContents(remapTemplateContents(detail.contents ?? []));
+      const remapped = remapTemplateContents(detail.contents ?? []);
+
+      // Unlike the single-item add flow (which appends exactly one DELAY item),
+      // inserting a template appends a whole batch that can itself contain several DELAY
+      // items — check the batch's own DELAY total against the remaining shared budget
+      // before appending, instead of only relying on the submit-time backstop.
+      const contentsForBudget = (watched ?? []) as ContentItemType[];
+      const remainingMs = remainingDelayBudgetMs(contentsForBudget, contentsForBudget.length);
+      const templateDelaysMs = sumOtherDelaysMs(remapped as ContentItemType[], -1);
+      if (templateDelaysMs > remainingMs) {
+        setIsPickingTemplate(false);
+        setTemplateSearch('');
+        setIsDelayBudgetExhausted(true);
+        return;
+      }
+
+      appendContents(remapped);
       setIsPickingTemplate(false);
       setTemplateSearch('');
       clearErrors(arrayName);
@@ -195,9 +215,20 @@ export const Contents = ({
   // `TemplateForm.tsx`), and the backend's `TemplateContentDto` rejects that content type
   // outright — offering it here would just be a guaranteed-fail submit for the admin.
   // `PRODUCT` stays available in template mode; the backend DTO does allow it.
+  //
+  // Also hide `DELAY` in `mode === REMINDER`: `DelayContent`'s field paths and the shared
+  // 23h budget math are hardcoded to the `contents` array (see the `showTemplateInsert`
+  // comment above) — there is no `reminders`-array equivalent, so offering DELAY here would
+  // silently write into/corrupt the automation's real `contents` array at the same index.
   const contentTypeOptionsForMode = contentTypeOptions.filter((option) => {
     if (!showTemplateInsert && option.value === 'template') return false;
     if (builderMode === 'template' && option.value === AutomationContentTypesEnum.INSTAGRAM_POST) {
+      return false;
+    }
+    if (
+      mode === AutomationContentModeEnum.REMINDER &&
+      option.value === AutomationContentTypesEnum.DELAY
+    ) {
       return false;
     }
     return true;
@@ -209,9 +240,8 @@ export const Contents = ({
       return;
     }
 
-    // The 23h delay budget only applies to the `contents` array — `reminders` cannot
-    // meaningfully carry DELAY items (see the `showTemplateInsert` comment above), so this
-    // check is skipped there.
+    // DELAY is only ever offered for the `contents` array (see `contentTypeOptionsForMode`
+    // above) — `arrayName === 'contents'` here is a defensive match, not a mode branch.
     if (option.value === AutomationContentTypesEnum.DELAY && arrayName === 'contents') {
       const contentsForBudget = (watched ?? []) as ContentItemType[];
       const remainingMs = remainingDelayBudgetMs(contentsForBudget, contentsForBudget.length);

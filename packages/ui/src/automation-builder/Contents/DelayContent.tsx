@@ -15,6 +15,7 @@ import {
   DelayUnit,
   convertDelayMsAcrossUnit,
   delayUnitOptionsCount,
+  exactMagnitudeFor,
   magnitudeOptionsFor,
   remainingDelayBudgetMs,
 } from '../utils/delayBudget';
@@ -43,8 +44,12 @@ export function DelayContent({ index }: DelayContentProps) {
 
   const remainingMs = remainingDelayBudgetMs(contents, index);
   const maxOptions = delayUnitOptionsCount(remainingMs, delayUnit);
-  const currentMagnitudeNumber =
-    delayMs != null ? Math.round(delayMs / DELAY_UNIT_MS[delayUnit]) : undefined;
+  // Only an exact multiple of the current unit gets a displayed selection — a rounded
+  // magnitude for a non-exact value (e.g. 45 seconds shown as "1" while "minutes" is
+  // selected) would silently disagree with what's actually stored. Showing the placeholder
+  // instead costs nothing: the real delayMs is untouched either way (see
+  // convertDelayMsAcrossUnit), and picking any option from the list writes an exact value.
+  const currentMagnitudeNumber = exactMagnitudeFor(delayMs, delayUnit);
   const currentMagnitude =
     currentMagnitudeNumber != null ? String(currentMagnitudeNumber) : undefined;
   const magnitudeOptions = magnitudeOptionsFor(remainingMs, delayUnit, currentMagnitudeNumber).map(
@@ -87,6 +92,15 @@ export function DelayContent({ index }: DelayContentProps) {
         render={({ fieldState: { invalid } }) => (
           <FormItem>
             <FormControl>
+              {/* `aria-invalid`/`aria-disabled` are set directly on `SelectTrigger` rather
+                  than relying on `FormControl`'s Slot merge: Radix's `Select` Root (the
+                  direct child here) only recognizes its own known props and silently drops
+                  anything else, so `FormControl` can never actually reach the trigger DOM
+                  node through it. `aria-disabled` alone also carries no visual weight —
+                  the shared select.tsx only styles the native `disabled:` pseudo-class —
+                  so the exhausted state gets an explicit className too; a real `disabled`
+                  prop can't be used here since it would also block the click this Select
+                  relies on to open `DelayBudgetExhaustedDialog` instead of the dropdown. */}
               <Select
                 value={currentMagnitude}
                 onValueChange={delayMagnitudeChangeHandler}
@@ -99,7 +113,11 @@ export function DelayContent({ index }: DelayContentProps) {
                   setIsMagnitudeOpen(nextOpen);
                 }}
               >
-                <SelectTrigger aria-disabled={maxOptions < 1}>
+                <SelectTrigger
+                  aria-disabled={maxOptions < 1}
+                  aria-invalid={invalid}
+                  className={maxOptions < 1 ? 'cursor-not-allowed opacity-50' : undefined}
+                >
                   <SelectValue placeholder={t('selectValue')} />
                 </SelectTrigger>
                 <SelectContent>
