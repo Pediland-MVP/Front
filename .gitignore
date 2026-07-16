@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-/Front/packages/ui/node_modules
+/packages/ui/node_modules
 /.turbo
 
 /.pnp
