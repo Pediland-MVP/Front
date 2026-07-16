@@ -13,10 +13,16 @@ ENV NEXT_PUBLIC_BACK_API_URL=$NEXT_PUBLIC_BACK_API_URL \
     NEXT_TELEMETRY_DISABLED=1
 
 COPY . .
+# After building, every workspace's node_modules is deleted and reinstalled
+# prod-only scoped to `admin...` (admin + the workspace packages it actually
+# depends on), so the runtime image doesn't ship node_modules or the
+# dashboard app's dependency tree.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    --mount=type=cache,id=turbo-admin,target=/app/.turbo \
     pnpm install --frozen-lockfile \
  && pnpm exec turbo run build --filter=admin \
- && pnpm install --frozen-lockfile --prod --ignore-scripts
+ && find . -maxdepth 3 -name node_modules -type d -prune -exec rm -rf {} + \
+ && pnpm --filter=admin... install --frozen-lockfile --prod --ignore-scripts
 
 # ---- runtime stage: slim base, runs `next start` ----
 FROM node:24-slim AS runtime
@@ -24,7 +30,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable
-COPY --from=build /app /app
+# Only copy what the `admin` app needs to run — the dashboard app's source
+# and node_modules are skipped (its node_modules is already gone after the
+# scoped install above).
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package.json /app/pnpm-workspace.yaml /app/
+COPY --from=build /app/apps/admin /app/apps/admin
+COPY --from=build /app/packages /app/packages
 
 EXPOSE 3000
 CMD ["pnpm", "--filter", "admin", "start"]
