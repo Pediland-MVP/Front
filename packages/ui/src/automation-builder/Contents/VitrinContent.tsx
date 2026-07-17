@@ -17,7 +17,8 @@ import {
   Cross1Icon,
 } from '@radix-ui/react-icons';
 
-import { Button, Input, Textarea, Label, FormField, FormItem } from '@/components/ui';
+import { Button, Input, Label, FormField, FormItem } from '@/components/ui';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { Progress } from '@/components/ui/progress';
 import { AutomationButtons } from './AutomationButtons';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -213,10 +214,9 @@ function VitrinItemCard({
         control={control}
         render={({ field, fieldState: { error } }) => (
           <FormItem>
-            <Textarea
+            <AutoResizeTextarea
               {...field}
               placeholder={t('fields.description.placeholder')}
-              rows={2}
               value={field.value || ''}
             />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}

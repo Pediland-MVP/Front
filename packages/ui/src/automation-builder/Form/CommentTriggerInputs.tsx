@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { FormField, FormItem, FormLabel, FormMessage, Textarea } from '@/components/ui';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 
 type CommentTriggerInputsProps = {
   /** Rendered next to the start-request-message label. Replaces the dashboard-only
@@ -61,7 +62,7 @@ export const CommentTriggerInputs = ({ helpSlot }: CommentTriggerInputsProps = {
                 <FormLabel>{t('start_request_message')}</FormLabel>
                 {helpSlot}
               </div>
-              <Textarea
+              <AutoResizeTextarea
                 {...field}
                 value={field.value ?? ''}
                 placeholder={t('comment_placeholder')}

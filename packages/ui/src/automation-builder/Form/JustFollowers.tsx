@@ -15,8 +15,8 @@ import {
   FormMessage,
   Input,
   Switch,
-  Textarea,
 } from '@/components/ui';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
 type AutomationDefaults = {
@@ -101,11 +101,10 @@ export const JustFollowers = ({
               <FormItem>
                 <FormLabel className="">{t('message_text')}</FormLabel>
                 <FormControl>
-                  <Textarea
+                  <AutoResizeTextarea
                     placeholder={t('placeholder')}
                     {...field}
                     value={field.value ?? ''}
-                    rows={3}
                   />
                 </FormControl>
                 {error && <ErrorMessage>{t('Errors.followMessage.required')}</ErrorMessage>}
