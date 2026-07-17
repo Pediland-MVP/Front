@@ -969,6 +969,7 @@
         }
       },
       "Button": {
+        "you_can_use_vars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",
         "vitrin_details": "جزئیات ویترین",
         "title_label": "عنوان",
         "description_label": "توضیحات",

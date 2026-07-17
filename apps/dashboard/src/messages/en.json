@@ -543,6 +543,7 @@
         }
       },
       "Button": {
+        "you_can_use_vars": "Use <name>#Name</name> to insert the user’s name.",
         "add": "Add Button",
         "text": {
           "label": "Text",
