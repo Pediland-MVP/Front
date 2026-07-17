@@ -22,7 +22,8 @@ The component measures in a `useLayoutEffect` keyed on the `value` prop. An `onC
 
 ## Changes
 
-- `packages/ui/src/components/ui-custom/AutoResizeTextarea.tsx` (new): wraps the shadcn `Textarea`, reads `lineHeight` and padding/borders from computed style, sets height to `scrollHeight` clamped between `minRows * lineHeight` and `maxRows * lineHeight`, sets `overflow-y: hidden` under the cap and `overflow-y: auto` at the cap, and merges the ref so react-hook-form's focus-on-error still works. Props: `minRows = 4`, `maxRows = 12`.
+- `packages/ui/src/components/ui-custom/AutoResizeTextarea.tsx` (new): wraps the shadcn `Textarea`, reads `lineHeight` and padding/borders from computed style, sets height to `scrollHeight` clamped between `minRows * lineHeight` and `maxRows * lineHeight`, sets `overflow-y: hidden` under the cap and `overflow-y: auto` at the cap, and merges the ref so react-hook-form's focus-on-error still works. Props: `minRows = 4`, `maxRows = 12`. Also observes the element with a `ResizeObserver` so a width-only change (sidebar toggle, orientation change, window resize) re-measures too, not just a `value` change — otherwise a field under the cap could clip wrapped text with no scrollbar.
+- The component adds `resize-none` on top of the base `Textarea` (which has no `resize` rule). This removes the user's ability to manually drag-resize these 7 fields, which was possible before this branch. This is intentional: a manual drag would get overwritten by the very next keystroke's auto-measurement, which would feel broken.
 - `packages/ui/src/automation-builder/Contents/TextContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={4}`.
 - `packages/ui/src/automation-builder/Contents/ButtonContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`. This field had no `rows` attribute at all before the change.
 - `packages/ui/src/automation-builder/Contents/QuestionContent.tsx`: swapped `Textarea` for `AutoResizeTextarea` on the question prompt field (line 95) and the validation error message field (line 139), dropped `rows={1}` from both fields.
@@ -30,7 +31,7 @@ The component measures in a `useLayoutEffect` keyed on the `value` prop. An `onC
 - `packages/ui/src/automation-builder/Form/JustFollowers.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={3}`.
 - `packages/ui/src/automation-builder/Form/CommentTriggerInputs.tsx`: swapped `Textarea` for `AutoResizeTextarea` on the comment consent start text field (line 65). This field had no `rows` attribute at all before the change. (Note: the `commentStartTitle` field on line 82 remains a plain `Textarea` by design.)
 
-Total: 80 unit tests passing (73 pre-existing + 7 new in `AutoResizeTextarea.tsx`).
+Total: 81 unit tests passing (73 pre-existing + 8 new in `AutoResizeTextarea.tsx`, including the width-change/ResizeObserver test added in review).
 
 ## Explicitly out of scope
 
