@@ -45,4 +45,32 @@ describe('DelayContent (shared)', () => {
     render(<Wrapper contents={[delayItem(60 * 60 * 1000)]} />);
     expect(screen.getByText('timeUnits.hour')).toBeInTheDocument();
   });
+
+  it('no longer displays "hour" as the unit selector\'s value once a sibling leaves it less than 1 hour of room', () => {
+    // Sibling consumes 22h15m of the 23h budget -> only 45min remains for this item's own
+    // unit switch -- "hour" (this item's own current selection) is filtered out of the
+    // rendered options, so Radix has no matching item to show for the still-stored 'hour'
+    // value (a closed Select only ever shows its currently-selected value's label; the
+    // other options' text never mounts until opened, so this is the only way to observe
+    // the filtering here without simulating a click-open).
+    render(
+      <Wrapper
+        contents={[
+          delayItem(60 * 60 * 1000, 'hour'),
+          delayItem(22 * 60 * 60 * 1000 + 15 * 60 * 1000, 'hour'),
+        ]}
+      />,
+    );
+    expect(screen.queryByText('timeUnits.hour')).not.toBeInTheDocument();
+  });
+
+  it('removes the unit selector entirely when siblings consume the full 23h budget (no unit is affordable)', () => {
+    render(
+      <Wrapper
+        contents={[delayItem(60 * 60 * 1000, 'hour'), delayItem(23 * 60 * 60 * 1000 - 500, 'hour')]}
+      />,
+    );
+    expect(screen.queryByText('timeUnits.hour')).not.toBeInTheDocument();
+    expect(screen.queryByText('selectTimeUnit')).not.toBeInTheDocument();
+  });
 });

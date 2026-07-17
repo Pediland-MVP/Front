@@ -75,6 +75,19 @@ export function convertDelayMsAcrossUnit(currentDelayMs: number, newUnit: DelayU
   return rawMagnitude < 1 ? DELAY_UNIT_MS[newUnit] : currentDelayMs;
 }
 
+/** Every `DelayUnit`, in display order. */
+export const DELAY_UNITS: DelayUnit[] = ['sec', 'min', 'hour'];
+
+/** Which of `DELAY_UNITS` currently have at least one selectable magnitude, given
+ * `remainingMs` left in the shared budget. The unit dropdown only offers units returned
+ * here — switching to a unit with zero room is what previously let the "bump up to 1
+ * whole unit" fallback in `convertDelayMsAcrossUnit` silently push a delay item's value
+ * past its own remaining budget. Filtering at the source (never offering an unaffordable
+ * unit) is the actual fix; `convertDelayMsAcrossUnit` stays as a defensive fallback. */
+export function availableDelayUnits(remainingMs: number): DelayUnit[] {
+  return DELAY_UNITS.filter((unit) => delayUnitOptionsCount(remainingMs, unit) >= 1);
+}
+
 /** The exact whole-number magnitude of `delayMs` in `unit`, or `undefined` when `delayMs`
  * isn't an exact multiple of that unit. Used for display: rounding a non-exact value (e.g.
  * 45 seconds shown as "1" while the unit selector reads "minutes") would show a magnitude

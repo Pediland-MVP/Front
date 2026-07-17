@@ -13,6 +13,7 @@ import { AutomationFormType, ContentItemType } from '../schemas/automationForm';
 import {
   DELAY_UNIT_MS,
   DelayUnit,
+  availableDelayUnits,
   convertDelayMsAcrossUnit,
   delayUnitOptionsCount,
   exactMagnitudeFor,
@@ -44,6 +45,10 @@ export function DelayContent({ index }: DelayContentProps) {
 
   const remainingMs = remainingDelayBudgetMs(contents, index);
   const maxOptions = delayUnitOptionsCount(remainingMs, delayUnit);
+  // Only offer units this item can actually afford at least 1 whole unit of — switching to
+  // a unit with zero room was what let the old "bump up to 1 unit" fallback silently push
+  // this item's value past its own remaining budget with no warning.
+  const unitOptions = availableDelayUnits(remainingMs);
   // Only an exact multiple of the current unit gets a displayed selection — a rounded
   // magnitude for a non-exact value (e.g. 45 seconds shown as "1" while "minutes" is
   // selected) would silently disagree with what's actually stored. Showing the placeholder
@@ -67,24 +72,30 @@ export function DelayContent({ index }: DelayContentProps) {
 
   return (
     <div className="flex items-center justify-center gap-x-2">
-      <FormField
-        name={delayUnitNameKey}
-        control={control}
-        render={({ field }) => (
-          <Select onValueChange={delayUnitChangeHandler} defaultValue={field.value}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('selectTimeUnit')} />
-            </SelectTrigger>
-            <SelectContent>
-              {(['sec', 'min', 'hour'] as DelayUnit[]).map((tKey) => (
-                <SelectItem key={tKey} value={tKey}>
-                  {t(`timeUnits.${tKey}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      />
+      {/* No unit affordable at all (this item's remaining budget is under 1 second) — there
+          is nothing a unit switch could accomplish, so the control is removed rather than
+          left as an empty, unusable dropdown. The magnitude select below already surfaces
+          `DelayBudgetExhaustedDialog` in this same state via its own `maxOptions < 1` check. */}
+      {unitOptions.length > 0 && (
+        <FormField
+          name={delayUnitNameKey}
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={delayUnitChangeHandler} defaultValue={field.value}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('selectTimeUnit')} />
+              </SelectTrigger>
+              <SelectContent>
+                {unitOptions.map((tKey) => (
+                  <SelectItem key={tKey} value={tKey}>
+                    {t(`timeUnits.${tKey}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+      )}
 
       <FormField
         name={delayMsNameKey}

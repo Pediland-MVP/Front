@@ -3,6 +3,7 @@ import { AutomationContentTypesEnum } from '../../constants/automationContent.en
 import {
   DELAY_UNIT_MS,
   TOTAL_DELAY_BUDGET_MS,
+  availableDelayUnits,
   convertDelayMsAcrossUnit,
   delayUnitOptionsCount,
   exactMagnitudeFor,
@@ -157,6 +158,27 @@ describe('delayBudget', () => {
     it('returns undefined for null/undefined delayMs', () => {
       expect(exactMagnitudeFor(null, 'hour')).toBeUndefined();
       expect(exactMagnitudeFor(undefined, 'hour')).toBeUndefined();
+    });
+  });
+
+  describe('availableDelayUnits', () => {
+    it('returns all three units when the full budget is available', () => {
+      expect(availableDelayUnits(TOTAL_DELAY_BUDGET_MS)).toEqual(['sec', 'min', 'hour']);
+    });
+
+    it('excludes "hour" when less than 1 hour remains, keeping "min"/"sec"', () => {
+      // 45 minutes remain -- no room for a whole hour, but min/sec still have room.
+      expect(availableDelayUnits(DELAY_UNIT_MS.min * 45)).toEqual(['sec', 'min']);
+    });
+
+    it('excludes "hour" and "min" when less than 1 minute remains, keeping only "sec"', () => {
+      expect(availableDelayUnits(DELAY_UNIT_MS.sec * 30)).toEqual(['sec']);
+    });
+
+    it('returns an empty array when under 1 second remains -- no unit is affordable', () => {
+      expect(availableDelayUnits(500)).toEqual([]);
+      expect(availableDelayUnits(0)).toEqual([]);
+      expect(availableDelayUnits(-1)).toEqual([]);
     });
   });
 });
