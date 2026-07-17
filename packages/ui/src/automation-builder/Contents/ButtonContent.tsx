@@ -37,7 +37,11 @@ export const ButtonContent = ({ contentIndex, mode, apiClient }: ButtonContentPr
         name={`${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.buttonTemplate.text`}
         render={({ field, fieldState: { error } }) => (
           <FormItem>
-            <FormLabel>{t('text.label')}</FormLabel>
+            <FormLabel>
+              {t.rich('you_can_use_vars', {
+                name: (chunks) => <span className="text-blue-500">{chunks}</span>,
+              })}
+            </FormLabel>
             <Textarea
               {...field}
               maxLength={640}
