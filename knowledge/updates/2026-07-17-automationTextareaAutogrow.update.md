@@ -8,7 +8,7 @@ Every long-text field in the automation contents editor is a fixed-height box co
 
 ## Solution
 
-Replaced fixed `rows` attributes with a new `AutoResizeTextarea` component that measures its content via JavaScript, starts at 4 rows, grows as the user types, and caps at 12 rows (after which it scrolls internally by design, to keep a content list with several open blocks from becoming unreasonably tall). All 7 affected call sites now use the same component, ensuring consistent behavior.
+Replaced fixed `rows` attributes with a new `AutoResizeTextarea` component that measures its content via JavaScript, starts at 4 rows, grows as the user types, and caps at 12 rows (after which it scrolls internally by design, to keep a content list with several open blocks from becoming unreasonably tall). All 7 affected call sites now use the same component, ensuring consistent behavior. This is a deliberate trade-off: the 1000-character message from the Problem section above will fill more than 12 rows, so once it hits the cap it keeps growing inside an internal scrollbar rather than the field growing without limit.
 
 ## Design decisions
 
@@ -24,19 +24,19 @@ The component measures in a `useLayoutEffect` keyed on the `value` prop. An `onC
 
 - `packages/ui/src/components/ui-custom/AutoResizeTextarea.tsx` (new): wraps the shadcn `Textarea`, reads `lineHeight` and padding/borders from computed style, sets height to `scrollHeight` clamped between `minRows * lineHeight` and `maxRows * lineHeight`, sets `overflow-y: hidden` under the cap and `overflow-y: auto` at the cap, and merges the ref so react-hook-form's focus-on-error still works. Props: `minRows = 4`, `maxRows = 12`.
 - `packages/ui/src/automation-builder/Contents/TextContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={4}`.
-- `packages/ui/src/automation-builder/Contents/ButtonContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={4}`.
-- `packages/ui/src/automation-builder/Contents/QuestionContent.tsx`: swapped `Textarea` for `AutoResizeTextarea` on the question prompt field (line 95) and the validation error message field (line 140), dropped hardcoded `rows`.
-- `packages/ui/src/automation-builder/Contents/VitrinContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={4}`.
-- `packages/ui/src/automation-builder/Form/JustFollowers.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={2}`.
-- `packages/ui/src/automation-builder/Form/CommentTriggerInputs.tsx`: swapped `Textarea` for `AutoResizeTextarea` on the comment consent start text field (line 64), dropped `rows={1}`. (Note: the `commentStartTitle` button label on line 81 remains a plain `Input` by design.)
+- `packages/ui/src/automation-builder/Contents/ButtonContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`. This field had no `rows` attribute at all before the change.
+- `packages/ui/src/automation-builder/Contents/QuestionContent.tsx`: swapped `Textarea` for `AutoResizeTextarea` on the question prompt field (line 95) and the validation error message field (line 139), dropped `rows={1}` from both fields.
+- `packages/ui/src/automation-builder/Contents/VitrinContent.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={2}`.
+- `packages/ui/src/automation-builder/Form/JustFollowers.tsx`: swapped `Textarea` for `AutoResizeTextarea`, dropped `rows={3}`.
+- `packages/ui/src/automation-builder/Form/CommentTriggerInputs.tsx`: swapped `Textarea` for `AutoResizeTextarea` on the comment consent start text field (line 65). This field had no `rows` attribute at all before the change. (Note: the `commentStartTitle` field on line 82 remains a plain `Textarea` by design.)
 
 Total: 80 unit tests passing (73 pre-existing + 7 new in `AutoResizeTextarea.tsx`).
 
 ## Explicitly out of scope
 
-- `Form/CommentTriggerInputs.tsx:81` (`commentStartTitle`) — the start button's label, a short one-line field. Not auto-resizing.
+- `Form/CommentTriggerInputs.tsx:82` (`commentStartTitle`) — the start button's label, a short one-line field. Not auto-resizing.
 - `Contents/ContentPromotion.tsx:136` — read-only (disabled) promo block, not form-bound. Not changed.
-- The hardcoded-Persian i18n bug at `QuestionContent.tsx:140` — a known separate defect. This work changes that field's height only.
+- The hardcoded-Persian i18n bug at `QuestionContent.tsx:139` — a known separate defect. This work changes that field's height only.
 
 ## Verification
 
