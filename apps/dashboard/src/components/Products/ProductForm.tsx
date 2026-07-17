@@ -164,14 +164,20 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                   z.object({
                     _xid: z.string().optional(),
                     postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
-                    title: z.string().min(1, { message: t('Alerts.button_title_required') }),
+                    title: z
+                      .string()
+                      .min(1, { message: t('Alerts.button_title_required') })
+                      .max(35, { message: t('Alerts.button_title_max_length') }),
                     url: z.string().optional().nullable(),
                     destinationContentCycleId: z.string().optional().nullable(),
                   }),
                   z.object({
                     _xid: z.string().optional(),
                     postbackPayloadType: z.literal(ButtonTypeEnum.URL),
-                    title: z.string().min(1, { message: t('Alerts.button_title_required') }),
+                    title: z
+                      .string()
+                      .min(1, { message: t('Alerts.button_title_required') })
+                      .max(35, { message: t('Alerts.button_title_max_length') }),
                     url: z
                       .string({
                         required_error: t('Alerts.button_url_required'),
@@ -182,7 +188,10 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                   z.object({
                     _xid: z.string().optional(),
                     postbackPayloadType: z.literal(ButtonTypeEnum.START_AUTOMATION),
-                    title: z.string().min(1, { message: t('Alerts.button_title_required') }),
+                    title: z
+                      .string()
+                      .min(1, { message: t('Alerts.button_title_required') })
+                      .max(35, { message: t('Alerts.button_title_max_length') }),
                     url: z.string().optional().nullable(),
                     destinationContentCycleId: z
                       .string({

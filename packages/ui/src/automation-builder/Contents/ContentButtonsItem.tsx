@@ -208,6 +208,7 @@ export const ButtonContentItem = ({
                   <div className="w-full space-y-1">
                     <Input
                       {...field}
+                      maxLength={35}
                       aria-invalid={!!error}
                       placeholder={t(`${selectedType}.placeholder`)}
                     />

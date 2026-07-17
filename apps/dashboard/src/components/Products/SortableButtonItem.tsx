@@ -85,6 +85,7 @@ export const SortableButtonItem = ({
                   <Input
                     placeholder={t('button_text')}
                     {...labelField}
+                    maxLength={35}
                     value={labelField.value ?? ''}
                   />
                 </FormControl>

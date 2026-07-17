@@ -1152,6 +1152,7 @@
         "descrption_length": "توضیحات {product} باید حداقل 5 حرف باشد.",
         "buttons": "حداقل یک دکمه برای ویترین ایجاد کنید.",
         "button_title_required": "لطفا متن دکمه را وارد کنید.",
+        "button_title_max_length": "متن دکمه نمی‌تواند بیشتر از ۳۵ کاراکتر باشد.",
         "button_url_required": "لطفا آدرس لینک را وارد کنید.",
         "button_automation_required": "لطفا پیام خودکار را انتخاب کنید.",
         "image": "لطفا تصویر {product} خود را انتخاب کنید.",
