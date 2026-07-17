@@ -572,6 +572,10 @@
           "description": "کاربر با کلیک بر روی این دکمه به این لینک منتقل میشود.",
           "placeholder": "مثال: https://befroosh.app"
         },
+        "instagram_post": {
+          "label": "پست اینستاگرام",
+          "placeholder": "لینک پست انتخاب‌شده"
+        },
         "Errors": {
           "required": "متن ابتدایی را وارد کنید.",
           "buttonTypeRequired": "نوع دکمه‌را مشخص کنید"

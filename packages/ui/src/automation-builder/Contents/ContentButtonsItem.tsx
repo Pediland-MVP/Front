@@ -8,11 +8,14 @@ import { cn } from '@/lib/utils';
 import { AutomationFormType } from '../schemas/automationForm';
 import { ButtonTypeEnum } from '../types/buttons.enum';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { Control, useFormContext, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { AutomationSearchSelect } from './AutomationSearchSelect';
 import { useContentsContext } from './ContentsContext';
 import { AutomationBuilderApiClient } from '../types/apiClient';
+import { InstagramPostSelectDialog } from '../Form/InstagramPostSelectDialog';
 import {
   Button,
   Card,
@@ -34,6 +37,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import { MoveVerticalIcon, TrashIcon } from 'lucide-react';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
 import { AutomationButtonsContentTypes } from './AutomationButtons';
 
 type ButtonContentItemProps = {
@@ -64,6 +68,7 @@ const contentTypePayloadType: Record<
     startAutomation: true,
     text: true,
     url: true,
+    instagram_post: true,
   },
   question: {
     text: true,
@@ -89,12 +94,21 @@ export const ButtonContentItem = ({
   const form = useFormContext<AutomationFormType>();
   const { builderMode } = useContentsContext();
 
-  // Templates (admin builder) can't offer a "start automation" button: there is no
-  // workspace automation to target, and the id would dangle once a user creates an
-  // automation from the template. Hide it from the type picker in template mode.
+  const t = useTranslations('Automations.Contents.Button');
+  const t_ec = useTranslations('Automations.Contents.Button.Errors');
+  const t_post = useTranslations('Automations.InstagramPostSelectDialog');
+  const t_guard = useTranslations('Automations.TargetPostComment.Errors');
+
+  // Templates (admin builder) can't offer a "start automation" button or an "Instagram
+  // Post" button: there is no workspace automation to target, and no fixed Instagram
+  // account to fetch posts from. Hide both from the type picker in template mode.
   const isButtonTypeAllowed = (buttonType: ButtonTypeEnum) =>
     !!contentTypePayloadType[contentType][buttonType] &&
-    !(builderMode === 'template' && buttonType === ButtonTypeEnum.START_AUTOMATION);
+    !(
+      builderMode === 'template' &&
+      (buttonType === ButtonTypeEnum.START_AUTOMATION ||
+        buttonType === ButtonTypeEnum.INSTAGRAM_POST)
+    );
 
   // ── محاسبه مسیر پویا (اینجا فیکس اصلی است) ──
   type DefaultFieldNameType =
@@ -102,17 +116,40 @@ export const ButtonContentItem = ({
   const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : contentType === 'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
   const fieldPath = fieldNameOverride ?? defaultFieldName;
 
-  const selectedType = useWatch({
+  const postbackPayloadType = useWatch({
     name: `${fieldPath}.${index}.postbackPayloadType` as any,
     control,
   });
 
+  // The saved form only ever stores `postbackPayloadType: 'url'` for both the plain URL
+  // button and the "Instagram Post" button (the latter is a URL button under the hood —
+  // see docs/superpowers/specs/2026-07-17-instagram-post-button-design.md). They can't be
+  // told apart from the form value alone, so which one the dropdown *displays* is tracked
+  // separately, seeded once from the saved value. Reopening a saved automation always
+  // shows a previously-post-picked button as a plain URL button — that's expected.
+  const [uiButtonType, setUiButtonType] = useState<ButtonTypeEnum | ''>(postbackPayloadType ?? '');
+  const [isPostDialogOpen, setIsPostDialogOpen] = useState(false);
+
+  const typeSelectHandler = (value: ButtonTypeEnum) => {
+    setUiButtonType(value);
+    form.setValue(
+      `${fieldPath}.${index}.postbackPayloadType` as any,
+      value === ButtonTypeEnum.INSTAGRAM_POST ? ButtonTypeEnum.URL : value,
+    );
+  };
+
+  const openPostPickerHandler = () => {
+    const instagramIds = form.getValues('instagramIds') ?? [];
+    if (instagramIds.length > 1) {
+      toast.error(t_guard('specific_post_requires_single_instagram'));
+      return;
+    }
+    setIsPostDialogOpen(true);
+  };
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
-
-  const t = useTranslations('Automations.Contents.Button');
-  const t_ec = useTranslations('Automations.Contents.Button.Errors');
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -171,10 +208,10 @@ export const ButtonContentItem = ({
           <FormField
             control={form.control}
             name={`${fieldPath}.${index}.postbackPayloadType` as any}
-            render={({ field: typeField, fieldState: { error } }) => (
+            render={({ fieldState: { error } }) => (
               <FormItem className="w-full space-y-0 sm:w-auto">
                 {Object.values(ButtonTypeEnum).filter(isButtonTypeAllowed).length > 1 && (
-                  <Select value={typeField.value ?? ''} onValueChange={typeField.onChange}>
+                  <Select value={uiButtonType || ''} onValueChange={typeSelectHandler}>
                     <SelectTrigger className="gap-1 pr-2 pl-1.5">
                       <SelectValue placeholder={t('button_type')} />
                     </SelectTrigger>
@@ -199,7 +236,7 @@ export const ButtonContentItem = ({
           />
 
           {/* عنوان دکمه */}
-          {selectedType && (
+          {uiButtonType && (
             <FormField
               control={form.control}
               name={`${fieldPath}.${index}.title` as any}
@@ -210,7 +247,7 @@ export const ButtonContentItem = ({
                       {...field}
                       maxLength={35}
                       aria-invalid={!!error}
-                      placeholder={t(`${selectedType}.placeholder`)}
+                      placeholder={t(`${uiButtonType}.placeholder`)}
                     />
                     {error && <ErrorMessage>{error.message}</ErrorMessage>}
                   </div>
@@ -219,30 +256,62 @@ export const ButtonContentItem = ({
             />
           )}
 
-          {/* URL (فقط وقتی نوع URL انتخاب شده) */}
-          {selectedType === ButtonTypeEnum.URL && (
+          {/* URL (وقتی نوع URL یا پست اینستاگرام انتخاب شده) */}
+          {(uiButtonType === ButtonTypeEnum.URL ||
+            uiButtonType === ButtonTypeEnum.INSTAGRAM_POST) && (
             <FormField
               control={form.control}
               name={`${fieldPath}.${index}.url` as any}
               render={({ field, fieldState: { error } }) => (
                 <FormItem className="w-full">
-                  <Input
-                    type="url"
-                    dir="ltr"
-                    className="text-left"
-                    {...field}
-                    value={field.value ?? ''}
-                    aria-invalid={!!error}
-                    placeholder={t('url.placeholder')}
-                  />
+                  <div className="flex items-center gap-1">
+                    <Input
+                      type="url"
+                      dir="ltr"
+                      className="text-left"
+                      {...field}
+                      value={field.value ?? ''}
+                      aria-invalid={!!error}
+                      placeholder={
+                        uiButtonType === ButtonTypeEnum.INSTAGRAM_POST
+                          ? t('instagram_post.placeholder')
+                          : t('url.placeholder')
+                      }
+                    />
+                    {uiButtonType === ButtonTypeEnum.INSTAGRAM_POST && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0"
+                        aria-label={t_post('select_post')}
+                        onClick={openPostPickerHandler}
+                      >
+                        <InstagramLogoIcon />
+                      </Button>
+                    )}
+                  </div>
                   {error && <ErrorMessage>{error.message}</ErrorMessage>}
+                  {uiButtonType === ButtonTypeEnum.INSTAGRAM_POST && (
+                    <InstagramPostSelectDialog
+                      index={index}
+                      mode={mode}
+                      apiClient={apiClient}
+                      open={isPostDialogOpen}
+                      onOpenChange={setIsPostDialogOpen}
+                      onSelect={(post) => {
+                        field.onChange(post.permalink ?? '');
+                        setIsPostDialogOpen(false);
+                      }}
+                    />
+                  )}
                 </FormItem>
               )}
             />
           )}
 
           {/* انتخاب اتوماسیون (فقط وقتی نوع START_AUTOMATION انتخاب شده) */}
-          {selectedType === ButtonTypeEnum.START_AUTOMATION && (
+          {uiButtonType === ButtonTypeEnum.START_AUTOMATION && (
             <FormField
               control={form.control}
               name={`${fieldPath}.${index}.destinationContentCycleId` as any}

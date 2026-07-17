@@ -562,6 +562,10 @@
           "description": "The user will be redirected to this link when tapping the button.",
           "placeholder": "Example: https://befroosh.app"
         },
+        "instagram_post": {
+          "label": "Instagram Post",
+          "placeholder": "Selected post link"
+        },
         "Errors": {
           "required": "Enter the initial text."
         }
