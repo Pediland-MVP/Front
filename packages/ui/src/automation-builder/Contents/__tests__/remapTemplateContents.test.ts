@@ -31,6 +31,30 @@ describe('remapTemplateContents', () => {
     expect(result[1].delayUnit).toBe('sec');
   });
 
+  it('falls back to "sec" (never "min") for a delayMs that is >= 1 minute but not an exact number of minutes', () => {
+    // 90 seconds -- only producible via legacy/pre-select-box data, since today's UI only
+    // ever writes whole-unit values. A size-only threshold ("&gt;= 1 minute -&gt; 'min'")
+    // would pick 'min' here even though 90000 isn't a whole number of minutes, leaving the
+    // magnitude select with no exact value to display (DelayContent's exactMagnitudeFor
+    // only shows an exact whole-number match). Picking the largest EXACT unit avoids this.
+    const raw = [{ id: 'a', type: AutomationContentTypesEnum.DELAY, delayMs: 90000 }];
+    const result = remapTemplateContents(raw);
+    expect(result[0].delayUnit).toBe('sec');
+  });
+
+  it('falls back to "min" (never "hour") for a delayMs that is >= 1 hour but not an exact number of hours', () => {
+    // 90 minutes (5,400,000ms) -- exact in minutes, but not in hours.
+    const raw = [{ id: 'a', type: AutomationContentTypesEnum.DELAY, delayMs: 1000 * 60 * 90 }];
+    const result = remapTemplateContents(raw);
+    expect(result[0].delayUnit).toBe('min');
+  });
+
+  it('picks the largest exact unit when multiple would divide evenly', () => {
+    const raw = [{ id: 'a', type: AutomationContentTypesEnum.DELAY, delayMs: 1000 * 60 * 60 * 3 }];
+    const result = remapTemplateContents(raw);
+    expect(result[0].delayUnit).toBe('hour');
+  });
+
   it('remaps buttonTemplate.buttons the same way AutomationForm normalizes them on load', () => {
     const raw = [
       {

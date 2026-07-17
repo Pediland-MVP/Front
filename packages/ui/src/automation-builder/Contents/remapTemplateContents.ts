@@ -2,6 +2,22 @@
 
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
 import { ButtonTypeEnum } from '../types/buttons.enum';
+import { DELAY_UNIT_MS } from '../utils/delayBudget';
+
+/**
+ * Picks a `delayUnit` for `delayMs` that it's an EXACT multiple of, preferring the largest
+ * such unit (hour, then min), and always falling back to `'sec'` (every integer millisecond
+ * count is an exact number of seconds). A threshold-only pick (">= 1h -> hour") can assign a
+ * unit `delayMs` doesn't evenly divide into — e.g. 90 seconds is ">= 1 minute" but isn't a
+ * whole number of minutes — which then makes `DelayContent`'s `exactMagnitudeFor` unable to
+ * find a displayable value for it (it only ever shows an exact whole-number magnitude), so
+ * the field looks permanently blank/broken even though `delayMs` itself is valid.
+ */
+function inferExactDelayUnit(delayMs: number): 'hour' | 'min' | 'sec' {
+  if (delayMs % DELAY_UNIT_MS.hour === 0) return 'hour';
+  if (delayMs % DELAY_UNIT_MS.min === 0) return 'min';
+  return 'sec';
+}
 
 /**
  * Normalizes a single raw button row (`ButtonTemplateItem`, whether it comes from a
@@ -144,9 +160,7 @@ export function remapTemplateContents(rawContents: any[]): any[] {
     const content: any = { ...rest };
 
     if (content.type === AutomationContentTypesEnum.DELAY) {
-      if (content.delayMs >= 1000 * 60 * 60) content.delayUnit = 'hour';
-      else if (content.delayMs >= 1000 * 60) content.delayUnit = 'min';
-      else content.delayUnit = 'sec';
+      content.delayUnit = inferExactDelayUnit(content.delayMs);
     }
 
     if (content.buttonTemplate?.buttons) {
