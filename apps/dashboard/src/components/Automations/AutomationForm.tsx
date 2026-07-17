@@ -25,12 +25,18 @@ import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 import { InstagramNamespace } from '@/types/instagram';
+import {
+  clearAutomationDraft,
+  getCurrentWorkspaceId,
+  readAutomationDraft,
+} from '@/utils/automationDraft';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 
 import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
+import { AutomationDraftWatcher } from './AutomationDraftWatcher';
 import { ConnectInstagramAlert } from './ConnectInstagramAlert';
 import { FreeQuotaWarningDialog } from './FreeQuotaWarningDialog';
 import { CommentReplies } from './Form/CommentReplies';
@@ -93,6 +99,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
   const automationSourceId = id ?? copyFromId;
+  const workspaceId = getCurrentWorkspaceId();
   const automationKey = isUUID(automationSourceId) ? `/contentCycle/${automationSourceId}` : null;
   // Only consulted for a brand-new automation that isn't already sourced from `id`/`copyFromId` —
   // those two take priority (mirrors the page-level guard: `?templateId=` is only meaningful on
@@ -285,6 +292,14 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
       };
     }
 
+    // Brand-new automation with no copy/template source: a stored local draft (if any)
+    // takes priority over blank defaults — this is the resume path, reached only via the
+    // draft dialog's "ادامه قبلی" button navigating to a query-param-free /automations/add.
+    if (!id && !copyFromId && !templateId && workspaceId) {
+      const draft = readAutomationDraft(workspaceId);
+      if (draft) return draft;
+    }
+
     // Brand-new automation: seed the page filter's selection plus the workspace's
     // remembered default texts (falls back to the same hardcoded copy the old form used).
     return {
@@ -295,7 +310,8 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     };
     // Only recomputed when the source data changes — `AutomationBuilder` reads this once,
     // so recomputing on every keystroke elsewhere is both unnecessary and would (if it were
-    // re-passed) fight the user's own edits.
+    // re-passed) fight the user's own edits. `workspaceId` is derived from the JWT and is
+    // stable for the component's lifetime, so it's intentionally excluded here too.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source]);
 
@@ -332,6 +348,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     })
       .then(() => {
         toast.success(id ? t('Toast.updated') : t('Toast.created'));
+        if (workspaceId) clearAutomationDraft(workspaceId);
         router.push('/automations');
         mutate(mutateIncludeStringKey('/contentCycle'));
         automationMutate();
@@ -539,6 +556,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
           headerSlot={
             <>
               <InstagramPromotionWatcher accounts={accounts} onChange={setIsPromotion} />
+              {!id && <AutomationDraftWatcher workspaceId={workspaceId} />}
               {!hasInstagram && <ConnectInstagramAlert />}
               <InstagramSelectField />
             </>
