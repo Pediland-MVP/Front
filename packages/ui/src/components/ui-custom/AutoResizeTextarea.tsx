@@ -25,7 +25,12 @@ const AutoResizeTextarea = React.forwardRef<HTMLTextAreaElement, AutoResizeTexta
       [ref],
     );
 
-    React.useLayoutEffect(() => {
+    // Tracks the element's own last-observed width so the ResizeObserver callback can
+    // ignore the resizes it causes itself (our height writes never change width, but a
+    // scrollbar toggling on/off can shave off a few px — bail if width truly didn't move).
+    const lastWidth = React.useRef(0);
+
+    const resize = React.useCallback(() => {
       const el = innerRef.current;
       if (!el) return;
 
@@ -50,7 +55,31 @@ const AutoResizeTextarea = React.forwardRef<HTMLTextAreaElement, AutoResizeTexta
 
       el.style.height = `${Math.min(Math.max(contentHeight, minHeight), maxHeight)}px`;
       el.style.overflowY = contentHeight > maxHeight ? 'auto' : 'hidden';
-    }, [value, minRows, maxRows]);
+
+      lastWidth.current = el.clientWidth;
+    }, [minRows, maxRows]);
+
+    React.useLayoutEffect(() => {
+      resize();
+    }, [resize, value]);
+
+    // Text wrapping depends on width too. A sidebar toggle, orientation change, or window
+    // resize can shrink the field with no `value` change — while under the cap the field is
+    // `overflow-y: hidden`, so without this the extra wrapped lines become unreachable until
+    // the next keystroke. This effect (not useLayoutEffect) subscribes the observer; the
+    // callback itself calls the same `resize()` used above, so there is one measurement path.
+    React.useEffect(() => {
+      const el = innerRef.current;
+      if (!el || typeof ResizeObserver === 'undefined') return;
+
+      const observer = new ResizeObserver(() => {
+        if (el.clientWidth === lastWidth.current) return; // our own height writes, ignore
+        resize();
+      });
+      observer.observe(el);
+
+      return () => observer.disconnect();
+    }, [resize]);
 
     return (
       <Textarea

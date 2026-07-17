@@ -19,6 +19,11 @@ const MAX_HEIGHT = 258;
 let fakeScrollHeight = 0;
 let originalScrollHeight: PropertyDescriptor | undefined;
 
+// jsdom also has no ResizeObserver at all (not just no layout). Width-change tests stub the
+// element's clientWidth the same way scrollHeight is stubbed above.
+let fakeClientWidth = 300;
+let originalClientWidth: PropertyDescriptor | undefined;
+
 beforeEach(() => {
   originalScrollHeight = Object.getOwnPropertyDescriptor(
     HTMLTextAreaElement.prototype,
@@ -27,6 +32,15 @@ beforeEach(() => {
   Object.defineProperty(HTMLTextAreaElement.prototype, 'scrollHeight', {
     configurable: true,
     get: () => fakeScrollHeight,
+  });
+
+  originalClientWidth = Object.getOwnPropertyDescriptor(
+    HTMLTextAreaElement.prototype,
+    'clientWidth',
+  );
+  Object.defineProperty(HTMLTextAreaElement.prototype, 'clientWidth', {
+    configurable: true,
+    get: () => fakeClientWidth,
   });
 
   const realGetComputedStyle = window.getComputedStyle.bind(window);
@@ -48,13 +62,41 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   if (originalScrollHeight) {
     Object.defineProperty(HTMLTextAreaElement.prototype, 'scrollHeight', originalScrollHeight);
   } else {
     delete (HTMLTextAreaElement.prototype as unknown as Record<string, unknown>).scrollHeight;
   }
+  if (originalClientWidth) {
+    Object.defineProperty(HTMLTextAreaElement.prototype, 'clientWidth', originalClientWidth);
+  } else {
+    delete (HTMLTextAreaElement.prototype as unknown as Record<string, unknown>).clientWidth;
+  }
   fakeScrollHeight = 0;
+  fakeClientWidth = 300;
 });
+
+// Minimal ResizeObserver stub: jsdom implements no layout, so it can never report a real
+// resize. It records the callback passed by the component and exposes it so a test can fire
+// it manually, standing in for the browser actually detecting a width change.
+class ResizeObserverStub {
+  static instances: ResizeObserverStub[] = [];
+  callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+    ResizeObserverStub.instances.push(this);
+  }
+
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+
+  fire() {
+    this.callback([] as unknown as ResizeObserverEntry[], this as unknown as ResizeObserver);
+  }
+}
 
 describe('AutoResizeTextarea', () => {
   it('renders at the 4-row floor when empty, even though the content is one line tall', () => {
@@ -115,5 +157,35 @@ describe('AutoResizeTextarea', () => {
 
     const el = screen.getByPlaceholderText('سلام');
     expect(el).toHaveAttribute('maxLength', '640');
+  });
+
+  it('re-measures when the element width changes, but not when width is unchanged', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverStub);
+    ResizeObserverStub.instances = [];
+
+    fakeClientWidth = 300;
+    fakeScrollHeight = 150;
+    render(
+      <AutoResizeTextarea value="a message that wraps differently per width" onChange={() => {}} />,
+    );
+
+    const el = screen.getByRole('textbox');
+    expect(el.style.height).toBe(`${150 + BORDER * 2}px`);
+
+    const observer = ResizeObserverStub.instances.at(-1);
+    expect(observer).toBeDefined();
+
+    // Simulate content that would measure taller (e.g. narrower width wrapped an extra
+    // line), but the observed element's own width did not move — e.g. a spurious
+    // ResizeObserver callback from something else. Must NOT re-measure.
+    fakeScrollHeight = 220;
+    observer!.fire();
+    expect(el.style.height).toBe(`${150 + BORDER * 2}px`);
+
+    // Now the width genuinely changes (e.g. the console sidebar toggled). Must re-measure,
+    // and it must pick up the already-updated scrollHeight above through the same clamp path.
+    fakeClientWidth = 220;
+    observer!.fire();
+    expect(el.style.height).toBe(`${220 + BORDER * 2}px`);
   });
 });
