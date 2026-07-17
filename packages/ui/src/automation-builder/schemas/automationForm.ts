@@ -134,6 +134,7 @@ export const ContentItemSchema = z.object({
   delayMs: z.number().min(1000).optional().nullable(),
   delayUnit: z.string().optional().nullable(),
 });
+export type ContentItemType = z.infer<typeof ContentItemSchema>;
 
 export const ContentItemConditionSchema = z.object({
   type: z.string().min(1),

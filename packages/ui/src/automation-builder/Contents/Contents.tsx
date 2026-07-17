@@ -43,6 +43,13 @@ import { ValidationTypeEnum } from '../types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
 import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
 import { ChooseAutomationType } from './ChooseAutomationType';
+import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
+import {
+  delayUnitOptionsCount,
+  remainingDelayBudgetMs,
+  sumOtherDelaysMs,
+} from '../utils/delayBudget';
+import type { ContentItemType } from '../schemas/automationForm';
 import z from 'zod';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 
@@ -94,6 +101,7 @@ export const Contents = ({
   } = useFormContext<AutomationFormType>();
 
   const [isChoosingType, setIsChoosingType] = useState(false);
+  const [isDelayBudgetExhausted, setIsDelayBudgetExhausted] = useState(false);
 
   const arrayName =
     mode === AutomationContentModeEnum.REMINDER ? 'reminders' : ('contents' as const);
@@ -168,7 +176,23 @@ export const Contents = ({
       const detail = await apiClient
         .get(`/templates/${template.id}`)
         .then((res) => res.data as { contents?: any[] });
-      appendContents(remapTemplateContents(detail.contents ?? []));
+      const remapped = remapTemplateContents(detail.contents ?? []);
+
+      // Unlike the single-item add flow (which appends exactly one DELAY item),
+      // inserting a template appends a whole batch that can itself contain several DELAY
+      // items — check the batch's own DELAY total against the remaining shared budget
+      // before appending, instead of only relying on the submit-time backstop.
+      const contentsForBudget = (watched ?? []) as ContentItemType[];
+      const remainingMs = remainingDelayBudgetMs(contentsForBudget, contentsForBudget.length);
+      const templateDelaysMs = sumOtherDelaysMs(remapped as ContentItemType[], -1);
+      if (templateDelaysMs > remainingMs) {
+        setIsPickingTemplate(false);
+        setTemplateSearch('');
+        setIsDelayBudgetExhausted(true);
+        return;
+      }
+
+      appendContents(remapped);
       setIsPickingTemplate(false);
       setTemplateSearch('');
       clearErrors(arrayName);
@@ -191,9 +215,20 @@ export const Contents = ({
   // `TemplateForm.tsx`), and the backend's `TemplateContentDto` rejects that content type
   // outright — offering it here would just be a guaranteed-fail submit for the admin.
   // `PRODUCT` stays available in template mode; the backend DTO does allow it.
+  //
+  // Also hide `DELAY` in `mode === REMINDER`: `DelayContent`'s field paths and the shared
+  // 23h budget math are hardcoded to the `contents` array (see the `showTemplateInsert`
+  // comment above) — there is no `reminders`-array equivalent, so offering DELAY here would
+  // silently write into/corrupt the automation's real `contents` array at the same index.
   const contentTypeOptionsForMode = contentTypeOptions.filter((option) => {
     if (!showTemplateInsert && option.value === 'template') return false;
     if (builderMode === 'template' && option.value === AutomationContentTypesEnum.INSTAGRAM_POST) {
+      return false;
+    }
+    if (
+      mode === AutomationContentModeEnum.REMINDER &&
+      option.value === AutomationContentTypesEnum.DELAY
+    ) {
       return false;
     }
     return true;
@@ -203,6 +238,22 @@ export const Contents = ({
     if (option.value === 'template') {
       setIsPickingTemplate(true);
       return;
+    }
+
+    // DELAY is only ever offered for the `contents` array (see `contentTypeOptionsForMode`
+    // above) — `arrayName === 'contents'` here is a defensive match, not a mode branch.
+    if (option.value === AutomationContentTypesEnum.DELAY && arrayName === 'contents') {
+      const contentsForBudget = (watched ?? []) as ContentItemType[];
+      const remainingMs = remainingDelayBudgetMs(contentsForBudget, contentsForBudget.length);
+      // Checked against 'hour', not 'sec': the appended item below always defaults to a
+      // 1-hour delay, so the guard must confirm a full hour is actually free — checking at
+      // 'sec' granularity let as little as 1 second of remaining budget pass, immediately
+      // pushing the new item's own delay over the shared 23h cap.
+      if (delayUnitOptionsCount(remainingMs, 'hour') < 1) {
+        setIsChoosingType(false);
+        setIsDelayBudgetExhausted(true);
+        return;
+      }
     }
 
     appendContents({
@@ -314,6 +365,11 @@ export const Contents = ({
           onOpenChange={setIsChoosingType}
           onSelect={selectAutomationTypeHandler}
           options={contentTypeOptionsForMode}
+        />
+
+        <DelayBudgetExhaustedDialog
+          open={isDelayBudgetExhausted}
+          onOpenChange={setIsDelayBudgetExhausted}
         />
 
         {/* Only ever mounted when `showTemplateInsert` — the `'template'` option that

@@ -391,6 +391,25 @@ export default function TemplateForm({ id }: TemplateFormProps) {
     }
   };
 
+  // Mirrors the dashboard's own `AutomationForm.tsx`'s `handleBeforeSubmit` — templates
+  // can contain DELAY content items too (see `transformContent` above), but this form had
+  // no equivalent guard against their total exceeding the shared 23h budget.
+  const handleBeforeSubmit = (values: AutomationFormType): boolean => {
+    let totalDelaysMs = 0;
+    values.contents.forEach((c) => {
+      if (c.type === AutomationContentTypesEnum.DELAY) {
+        totalDelaysMs += c.delayMs ?? 0;
+      }
+    });
+
+    if (totalDelaysMs > 1000 * 60 * 60 * 23) {
+      toast.error(t_automations('Contents.Errors.totalDelayMsShouldBeUnder23Hour'));
+      return false;
+    }
+
+    return true;
+  };
+
   // `AutomationBuilder`'s internal `form.handleSubmit`'s "onInvalid" callback — mirrors
   // the dashboard's own `AutomationForm.tsx`'s `handleInvalid`, giving top-level feedback
   // when the shared `zodResolver` rejects the submit (e.g. a failing field scrolled out of
@@ -411,6 +430,7 @@ export default function TemplateForm({ id }: TemplateFormProps) {
         isSubmitting={isSubmitting}
         onSubmit={onSubmitTemplate}
         onInvalid={handleInvalid}
+        beforeSubmit={handleBeforeSubmit}
         onCancel={() => router.push('/templates')}
         submitLabel={isSubmitting ? t('saving') : t('save')}
         cancelLabel={t('cancel')}
