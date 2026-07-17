@@ -38,7 +38,7 @@ into the template picker.
 
 - Unit tests: `jwt.test.ts`, `automationDraft.test.ts`, `AutomationDraftWatcher.test.tsx`,
   `AutomationDraftDialog.test.tsx`, `AutomationForm.draft.test.tsx`, `page.test.tsx` (all
-  under `apps/dashboard/src`) — 24 tests total, all passing, each task independently
+  under `apps/dashboard/src`) — 28 tests total, all passing, each task independently
   reviewed clean (spec compliance + code quality) during implementation.
 - Manual walkthrough of the full resume/discard/clear-on-save/workspace-isolation flow in
   a running dashboard instance.
