@@ -121,6 +121,13 @@ describe('delayBudget', () => {
       const options = magnitudeOptionsFor(DELAY_UNIT_MS.hour * 5, 'hour', 3);
       expect(options.filter((n) => n === 3)).toHaveLength(1);
     });
+
+    it('is non-empty (contains the current value) even when remainingMs is 0 -- delayUnitOptionsCount alone would be 0 here', () => {
+      // Callers must gate "is this select exhausted?" on the actual returned list length,
+      // not on delayUnitOptionsCount directly -- the two disagree exactly in this case.
+      expect(delayUnitOptionsCount(0, 'hour')).toBe(0);
+      expect(magnitudeOptionsFor(0, 'hour', 1)).toEqual([1]);
+    });
   });
 
   describe('convertDelayMsAcrossUnit', () => {

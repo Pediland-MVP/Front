@@ -15,7 +15,6 @@ import {
   DelayUnit,
   availableDelayUnits,
   convertDelayMsAcrossUnit,
-  delayUnitOptionsCount,
   exactMagnitudeFor,
   magnitudeOptionsFor,
   remainingDelayBudgetMs,
@@ -44,7 +43,6 @@ export function DelayContent({ index }: DelayContentProps) {
   const contents = (useWatch({ name: 'contents', control }) ?? []) as ContentItemType[];
 
   const remainingMs = remainingDelayBudgetMs(contents, index);
-  const maxOptions = delayUnitOptionsCount(remainingMs, delayUnit);
   // Only offer units this item can actually afford at least 1 whole unit of — switching to
   // a unit with zero room was what let the old "bump up to 1 unit" fallback silently push
   // this item's value past its own remaining budget with no warning.
@@ -60,6 +58,12 @@ export function DelayContent({ index }: DelayContentProps) {
   const magnitudeOptions = magnitudeOptionsFor(remainingMs, delayUnit, currentMagnitudeNumber).map(
     String,
   );
+  // The list can still have exactly one entry (the item's own current value, always
+  // re-inserted by magnitudeOptionsFor) even when the budget-only `delayUnitOptionsCount`
+  // is 0 — gating on the actual rendered list, not the budget count alone, is what lets the
+  // user still open the select to view/re-affirm their own value in that case, instead of
+  // always being redirected to the exhausted-budget dialog.
+  const isMagnitudeExhausted = magnitudeOptions.length < 1;
 
   const delayMagnitudeChangeHandler = (value: string) => {
     setValue(delayMsNameKey, Number(value) * DELAY_UNIT_MS[delayUnit]);
@@ -75,7 +79,8 @@ export function DelayContent({ index }: DelayContentProps) {
       {/* No unit affordable at all (this item's remaining budget is under 1 second) — there
           is nothing a unit switch could accomplish, so the control is removed rather than
           left as an empty, unusable dropdown. The magnitude select below already surfaces
-          `DelayBudgetExhaustedDialog` in this same state via its own `maxOptions < 1` check. */}
+          `DelayBudgetExhaustedDialog` in this same state via its own `isMagnitudeExhausted`
+          check. */}
       {unitOptions.length > 0 && (
         <FormField
           name={delayUnitNameKey}
@@ -117,7 +122,7 @@ export function DelayContent({ index }: DelayContentProps) {
                 onValueChange={delayMagnitudeChangeHandler}
                 open={isMagnitudeOpen}
                 onOpenChange={(nextOpen) => {
-                  if (nextOpen && maxOptions < 1) {
+                  if (nextOpen && isMagnitudeExhausted) {
                     setIsBudgetDialogOpen(true);
                     return;
                   }
@@ -125,9 +130,9 @@ export function DelayContent({ index }: DelayContentProps) {
                 }}
               >
                 <SelectTrigger
-                  aria-disabled={maxOptions < 1}
+                  aria-disabled={isMagnitudeExhausted}
                   aria-invalid={invalid}
-                  className={maxOptions < 1 ? 'cursor-not-allowed opacity-50' : undefined}
+                  className={isMagnitudeExhausted ? 'cursor-not-allowed opacity-50' : undefined}
                 >
                   <SelectValue placeholder={t('selectValue')} />
                 </SelectTrigger>

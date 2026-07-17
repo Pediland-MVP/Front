@@ -73,4 +73,20 @@ describe('DelayContent (shared)', () => {
     expect(screen.queryByText('timeUnits.hour')).not.toBeInTheDocument();
     expect(screen.queryByText('selectTimeUnit')).not.toBeInTheDocument();
   });
+
+  it("keeps the magnitude select open-able (not exhausted) when the item's own current value is the only option, even though budget-derived maxOptions is 0", () => {
+    // Sibling alone consumes the full 23h budget, so this item's own remaining budget
+    // (excluding itself) is 0 -- delayUnitOptionsCount would be 0, but magnitudeOptionsFor
+    // always re-inserts the item's own current value ('1'), so the select genuinely has one
+    // valid, already-selected option and must not be treated as exhausted.
+    render(
+      <Wrapper
+        contents={[delayItem(60 * 60 * 1000, 'hour'), delayItem(23 * 60 * 60 * 1000, 'hour')]}
+      />,
+    );
+    const trigger = screen.getByText('1').closest('button');
+    expect(trigger).not.toBeNull();
+    expect(trigger).toHaveAttribute('aria-disabled', 'false');
+    expect(trigger).not.toHaveClass('cursor-not-allowed');
+  });
 });
