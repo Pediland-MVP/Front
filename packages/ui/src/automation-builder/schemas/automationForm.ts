@@ -4,6 +4,7 @@ import { AutomationContentTypesEnum } from '../constants/automationContent.enum'
 import { ButtonTypeEnum } from '../types/buttons.enum';
 import { ValidationTypeEnum } from '../types/validationType.enum';
 import z from 'zod';
+import { httpsInText, httpsUrl } from '../../lib/toHttps';
 
 // Inlined from apps/dashboard/src/utils/regex.ts (REGEX_URL) — not worth moving a
 // single regex constant across the app boundary just for this one usage.
@@ -65,7 +66,7 @@ const ButtonSchema = z.discriminatedUnion('postbackPayloadType', [
   z.object({
     postbackPayloadType: z.literal(ButtonTypeEnum.URL),
     title: z.string().min(1).max(35),
-    url: z.string().regex(REGEX_URL),
+    url: z.string().regex(REGEX_URL).transform(httpsUrl),
     priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
@@ -82,7 +83,7 @@ const ButtonSchema = z.discriminatedUnion('postbackPayloadType', [
 
 const ButtonTemplateSchema = z
   .object({
-    text: z.string().min(1),
+    text: z.string().min(1).transform(httpsInText),
     buttons: z.array(ButtonSchema),
   })
   .optional()
@@ -112,7 +113,9 @@ export type VitrinItemType = z.infer<typeof VitrinItemSchema>;
 export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
-  text: optionalStringToUndef,
+  // Chained onto the shared helper rather than folded into it: `optionalStringToUndef`
+  // also backs `consentText`, which is deliberately NOT normalized.
+  text: optionalStringToUndef.transform((v) => (v === undefined ? v : httpsInText(v))),
   quickReplies: z.array(ButtonSchema).optional().nullable(),
   consentText: optionalStringToUndef,
   haveConsent: optionalBoolDefault(false),
