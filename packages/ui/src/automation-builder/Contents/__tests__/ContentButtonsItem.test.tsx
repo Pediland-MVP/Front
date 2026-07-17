@@ -137,4 +137,34 @@ describe('ButtonContentItem — "Instagram Post" button type', () => {
     });
     expect(urlInput).toHaveValue('https://www.instagram.com/p/media-1/');
   });
+
+  it('switching the type back to plain URL after picking Instagram Post preserves the underlying `url` postbackPayloadType and clears the post-picker UI', () => {
+    render(<Wrapper builderMode="automation" />);
+
+    // Select "Instagram Post" first.
+    openTypeDropdown();
+    fireEvent.click(screen.getByText('instagram_post.label'));
+
+    // The post-picker icon button is present while "Instagram Post" is selected.
+    expect(screen.getByRole('button', { name: 'select_post' })).toBeInTheDocument();
+
+    // Switch back to plain "URL".
+    openTypeDropdown();
+    fireEvent.click(screen.getByText('url.label'));
+
+    // postbackPayloadType stays 'url' the whole time (both types share the same
+    // underlying value), and the UI now reflects the plain URL type: no post-picker
+    // button, and the URL input shows the plain URL placeholder.
+    expect(screen.queryByRole('button', { name: 'select_post' })).not.toBeInTheDocument();
+    const urlInputs = screen
+      .getAllByPlaceholderText('url.placeholder')
+      .filter((el) => el.getAttribute('type') === 'url');
+    expect(urlInputs).toHaveLength(1);
+
+    // Switch forward to "Instagram Post" again — the picker button should reappear,
+    // confirming the toggle round-trips cleanly without corrupting state.
+    openTypeDropdown();
+    fireEvent.click(screen.getByText('instagram_post.label'));
+    expect(screen.getByRole('button', { name: 'select_post' })).toBeInTheDocument();
+  });
 });

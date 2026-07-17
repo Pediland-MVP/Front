@@ -135,6 +135,7 @@ export const ButtonContentItem = ({
     form.setValue(
       `${fieldPath}.${index}.postbackPayloadType` as any,
       value === ButtonTypeEnum.INSTAGRAM_POST ? ButtonTypeEnum.URL : value,
+      { shouldValidate: true },
     );
   };
 
