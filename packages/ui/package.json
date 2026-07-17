@@ -12,6 +12,7 @@
     ".": "./src/index.ts",
     "./lib/utils": "./src/lib/utils.ts",
     "./lib/markdown": "./src/lib/markdown.ts",
+    "./lib/toHttps": "./src/lib/toHttps.ts",
     "./hooks/use-media-query": "./src/hooks/use-media-query.ts",
     "./types/fileUploader": "./src/types/fileUploader.ts",
     "./automation-builder": "./src/automation-builder/index.ts"
