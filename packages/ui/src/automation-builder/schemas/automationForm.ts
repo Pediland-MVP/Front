@@ -165,8 +165,12 @@ export const AutomationFormSchema = z
     instagramPost: InstagramPostSchema, // برای سناریوهای سطح فرم
 
     // شروع مکالمه در کامنت
-    commentStartText: optionalStringToUndef,
-    commentStartTitle: optionalStringToUndef,
+    commentStartText: optionalStringToUndef.transform((v) =>
+      v === undefined ? v : httpsInText(v),
+    ),
+    commentStartTitle: optionalStringToUndef.transform((v) =>
+      v === undefined ? v : httpsInText(v),
+    ),
 
     title: optionalStringToUndef,
     enabled: optionalBoolDefault(true),
@@ -175,8 +179,16 @@ export const AutomationFormSchema = z
     justFollowers: z.boolean(),
 
     // پیام‌های فالو
-    followMessage: z.string().optional().nullable(),
-    followCheckMessage: z.string().optional().nullable(),
+    followMessage: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((v) => (v ? httpsInText(v) : v)),
+    followCheckMessage: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((v) => (v ? httpsInText(v) : v)),
 
     // یادآورها
     isRemindersEnabled: optionalBoolDefault(false),
@@ -184,7 +196,7 @@ export const AutomationFormSchema = z
     reminders: z.array(
       z.object({
         type: z.nativeEnum(AutomationContentTypesEnum),
-        text: optionalStringToUndef,
+        text: optionalStringToUndef.transform((v) => (v === undefined ? v : httpsInText(v))),
         quickReplies: z.array(ButtonSchema).optional().nullable(),
         instagramPost: InstagramPostSchema,
         file: FileSchema,

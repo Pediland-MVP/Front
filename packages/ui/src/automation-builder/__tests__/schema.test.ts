@@ -114,3 +114,76 @@ describe('automation schema — http links are upgraded to https on parse', () =
     expect(result.data.consentText).toBe('قوانین در http://shop.ir/terms');
   });
 });
+
+describe('automation schema — http links upgraded in the remaining message fields', () => {
+  const base = {
+    isDirect: true,
+    isComment: false,
+    isNoCondition: true,
+    conditionType: 'noCondition' as const,
+    instagramIds: ['3fa85f64-5717-4562-b3fc-2c963f66afa6'],
+    contents: [{ type: AutomationContentTypesEnum.TEXT, text: 'hi' }],
+    justFollowers: false,
+    isRemindersEnabled: false,
+    reminders: [],
+    isCommentContentTargetEnabled: false,
+    isReplyCommentEnabled: false,
+  };
+
+  it('upgrades an http link in followMessage/followCheckMessage when justFollowers is on', () => {
+    const result = AutomationFormSchema.safeParse({
+      ...base,
+      justFollowers: true,
+      followMessage: 'دنبال کن http://shop.ir',
+      followCheckMessage: 'چک کن http://shop.ir/check',
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.followMessage).toBe('دنبال کن https://shop.ir');
+    expect(result.data.followCheckMessage).toBe('چک کن https://shop.ir/check');
+  });
+
+  it('upgrades an http link in commentStartText/commentStartTitle', () => {
+    const result = AutomationFormSchema.safeParse({
+      ...base,
+      isComment: true,
+      commentStartText: 'لینک http://shop.ir را ببین',
+      commentStartTitle: 'عنوان http://shop.ir',
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.commentStartText).toBe('لینک https://shop.ir را ببین');
+    expect(result.data.commentStartTitle).toBe('عنوان https://shop.ir');
+  });
+
+  it('upgrades an http link in a reminder text, mirroring contents[].text', () => {
+    const result = AutomationFormSchema.safeParse({
+      ...base,
+      isRemindersEnabled: true,
+      reminderTime: '1h',
+      reminders: [
+        {
+          type: AutomationContentTypesEnum.TEXT,
+          text: 'یادآوری http://shop.ir',
+        },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.reminders[0].text).toBe('یادآوری https://shop.ir');
+  });
+
+  it('does not touch the automation title — it is a plain Input, not a message', () => {
+    const result = AutomationFormSchema.safeParse({
+      ...base,
+      title: 'کمپین http://shop.ir',
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.title).toBe('کمپین http://shop.ir');
+  });
+});
