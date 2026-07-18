@@ -86,6 +86,7 @@ export const AutomationButtons = ({
       append({
         title: '',
         ...(contentType === 'question' && { postbackPayloadType: ButtonTypeEnum.TEXT }),
+        ...(contentType === 'buttonTemplate' && { postbackPayloadType: ButtonTypeEnum.URL }),
       });
     }
   };

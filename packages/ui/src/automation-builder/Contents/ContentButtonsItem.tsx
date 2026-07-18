@@ -52,6 +52,13 @@ type ButtonContentItemProps = {
   apiClient: AutomationBuilderApiClient;
 };
 
+const buttonTemplateTypeOrder: ButtonTypeEnum[] = [
+  ButtonTypeEnum.URL,
+  ButtonTypeEnum.START_AUTOMATION,
+  ButtonTypeEnum.INSTAGRAM_POST,
+  ButtonTypeEnum.TEXT,
+];
+
 const contentTypePayloadType: Record<
   | 'buttonTemplate'
   | AutomationContentTypesEnum.QUESTION
@@ -218,7 +225,10 @@ export const ButtonContentItem = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {Object.values(ButtonTypeEnum).map((buttonType) => {
+                        {(contentType === 'buttonTemplate'
+                          ? buttonTemplateTypeOrder
+                          : Object.values(ButtonTypeEnum)
+                        ).map((buttonType) => {
                           return isButtonTypeAllowed(buttonType) ? (
                             <SelectItem key={buttonType} value={buttonType}>
                               {t(`${buttonType}.label`)}
