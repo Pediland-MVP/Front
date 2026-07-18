@@ -168,3 +168,103 @@ describe('ButtonContentItem — "Instagram Post" button type', () => {
     expect(screen.getByRole('button', { name: 'select_post' })).toBeInTheDocument();
   });
 });
+
+describe('ButtonContentItem — locked CONSENT quick reply (cannot be removed while a content follows it)', () => {
+  function TextWrapper({
+    contents,
+    removeMock,
+  }: {
+    contents: any[];
+    removeMock: ReturnType<typeof vi.fn>;
+  }) {
+    const form = useForm({ defaultValues: { contents } });
+    return (
+      <FormProvider {...form}>
+        <ContentsContext.Provider
+          value={{
+            builderMode: 'automation',
+            contents: [],
+            updateContents: vi.fn(),
+            removeContents: vi.fn(),
+          }}
+        >
+          <ButtonContentItem
+            id="qr-1"
+            index={0}
+            contentIndex={0}
+            remove={removeMock}
+            mode={AutomationContentModeEnum.AUTOMATION}
+            contentType="text"
+            control={form.control}
+            apiClient={{ get: vi.fn(), upload: vi.fn() }}
+          />
+        </ContentsContext.Provider>
+      </FormProvider>
+    );
+  }
+
+  it('shows the locked-explanation dialog instead of removing a CONSENT quick reply when another content follows it', () => {
+    const removeMock = vi.fn();
+    render(
+      <TextWrapper
+        removeMock={removeMock}
+        contents={[
+          {
+            type: 'text',
+            quickReplies: [{ title: 'مکث و ادامه', postbackPayloadType: 'CONSENT' }],
+          },
+          { type: 'text' },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(removeMock).not.toHaveBeenCalled();
+    expect(screen.getByText('consent_locked_description')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('consent_locked_close'));
+    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
+  });
+
+  it('removes a CONSENT quick reply normally when it is the last content (nothing follows it)', () => {
+    const removeMock = vi.fn();
+    render(
+      <TextWrapper
+        removeMock={removeMock}
+        contents={[
+          {
+            type: 'text',
+            quickReplies: [{ title: 'مکث و ادامه', postbackPayloadType: 'CONSENT' }],
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(removeMock).toHaveBeenCalledWith(0);
+    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
+  });
+
+  it('removes a non-CONSENT quick reply normally even when another content follows it', () => {
+    const removeMock = vi.fn();
+    render(
+      <TextWrapper
+        removeMock={removeMock}
+        contents={[
+          {
+            type: 'text',
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+          { type: 'text' },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(removeMock).toHaveBeenCalledWith(0);
+    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
+  });
+});

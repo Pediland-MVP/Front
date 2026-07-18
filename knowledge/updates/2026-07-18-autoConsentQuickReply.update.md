@@ -40,9 +40,12 @@ choice (no new provenance flag on quick replies), confirmed in the design doc.
 This effect never removes a `CONSENT` button, including when a content that
 had one added stops being last again.
 
-The button's title reuses the existing translation key `Button.CONSENT.label`
-(`"مکث و ادامه"`, already used by the manual type-picker in
-`ContentButtonsItem.tsx`) rather than a new key or a hardcoded string.
+The button's title originally reused the translation key `Button.CONSENT.label`
+(`"مکث و ادامه"`) — corrected same-day in
+`2026-07-18-lockConsentQuickReply.update.md` to a dedicated
+`Button.CONSENT.auto_title` (`"ادامه"`), since `"مکث و ادامه"` reads well as
+the internal type-picker name but not as the actual button text an Instagram
+customer taps.
 
 No backend change: the payload this produces is the same shape a
 manually-added `CONSENT` quick reply already produces, and `CreateQuickReplyDto`

@@ -17,6 +17,13 @@ import { useContentsContext } from './ContentsContext';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 import { InstagramPostSelectDialog } from '../Form/InstagramPostSelectDialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Button,
   Card,
   CardContent,
@@ -142,6 +149,28 @@ export const ButtonContentItem = ({
   // shows a previously-post-picked button as a plain URL button — that's expected.
   const [uiButtonType, setUiButtonType] = useState<ButtonTypeEnum | ''>(postbackPayloadType ?? '');
   const [isPostDialogOpen, setIsPostDialogOpen] = useState(false);
+  const [isConsentLockedDialogOpen, setIsConsentLockedDialogOpen] = useState(false);
+
+  // A CONSENT quick reply on a TEXT content that has a following content is required —
+  // removing it would bring back Instagram's own bug of hiding this content's buttons
+  // once another content follows (see Contents.tsx's auto-insert effect, which is what
+  // adds this button in the first place). Lock it regardless of whether the button was
+  // auto-added or the user added it manually; the risk is identical either way.
+  const parentArrayName = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
+  const parentContents = useWatch({ name: parentArrayName, control }) as unknown[] | undefined;
+  const hasNextContent =
+    mode === AutomationContentModeEnum.AUTOMATION &&
+    (parentContents?.length ?? 0) > contentIndex + 1;
+  const isLockedConsentButton =
+    contentType === 'text' && postbackPayloadType === ButtonTypeEnum.CONSENT && hasNextContent;
+
+  const removeHandler = () => {
+    if (isLockedConsentButton) {
+      setIsConsentLockedDialogOpen(true);
+      return;
+    }
+    remove(index);
+  };
 
   const typeSelectHandler = (value: ButtonTypeEnum) => {
     setUiButtonType(value);
@@ -203,7 +232,7 @@ export const ButtonContentItem = ({
                 size="icon"
                 className="text-destructive size-5! p-0"
                 type="button"
-                onClick={() => remove(index)}
+                onClick={removeHandler}
               >
                 <TrashIcon />
               </Button>
@@ -357,6 +386,20 @@ export const ButtonContentItem = ({
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={isConsentLockedDialogOpen} onOpenChange={setIsConsentLockedDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('consent_locked_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('consent_locked_description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsConsentLockedDialogOpen(false)}>
+              {t('consent_locked_close')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

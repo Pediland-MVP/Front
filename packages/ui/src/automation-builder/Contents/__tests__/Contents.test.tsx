@@ -334,10 +334,10 @@ describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () =
       />,
     );
 
-    // Under the next-intl mock at the top of this file, `t_button('CONSENT.label')`
+    // Under the next-intl mock at the top of this file, `t_button('CONSENT.auto_title')`
     // echoes back the literal key.
     expect(dumpedQuickReplies(0)).toEqual([
-      { title: 'CONSENT.label', postbackPayloadType: 'CONSENT' },
+      { title: 'CONSENT.auto_title', postbackPayloadType: 'CONSENT' },
       { title: 'x', postbackPayloadType: 'TEXT' },
     ]);
   });
@@ -429,14 +429,14 @@ describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () =
         initialContents={[
           {
             type: AutomationContentTypesEnum.TEXT,
-            quickReplies: [{ title: 'CONSENT.label', postbackPayloadType: 'CONSENT' }],
+            quickReplies: [{ title: 'existing consent title', postbackPayloadType: 'CONSENT' }],
           },
         ]}
       />,
     );
 
     expect(dumpedQuickReplies(0)).toEqual([
-      { title: 'CONSENT.label', postbackPayloadType: 'CONSENT' },
+      { title: 'existing consent title', postbackPayloadType: 'CONSENT' },
     ]);
   });
 });
