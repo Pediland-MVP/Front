@@ -10,7 +10,7 @@ Users entered `http://` links into automation buttons, automation message texts,
 
 A pure util, `packages/ui/src/lib/toHttps.ts`, wired into the form schemas as zod `.transform()`s. It runs at submit (zodResolver parses on validate and hands `handleSubmit` the transformed data), so it is silent — the input keeps showing what the user typed while the API receives `https://`.
 
-- `httpsUrl(value)` — whole-value URL fields. Upgrades `http://`, passes `https://` through, and prepends `https://` to a bare domain. Safe because callers validate with `REGEX_URL` first.
+- `httpsUrl(value)` — whole-value URL fields. Upgrades `http://`, passes `https://` through, and prepends `https://` to a bare domain. In `automationForm.ts`, button urls are pre-validated with `REGEX_URL`; in `ProductForm.tsx`, vitrin button urls only require non-empty (`.min(1)`), so bare strings receive `https://` prefix (e.g. `"abc"` → `"https://abc"`).
 - `httpsInText(text)` — free text. Upgrades explicit `http://` only. It deliberately does **not** prepend a scheme to bare domains: nothing validates free text, so that rule would wrongly rewrite `index.js`, `فایل.zip`, or `1.5`.
 
 No exception for localhost or raw IPs, by decision.
