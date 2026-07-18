@@ -444,10 +444,10 @@
         "totalCount": "کل آیتم‌ها",
         "fields": {
           "title": {
-            "placeholder": "تایتل"
+            "placeholder": "عنوان (اختیاری)"
           },
           "description": {
-            "placeholder": "توضیحات"
+            "placeholder": "توضیحات (اختیاری)"
           }
         },
         "imageUploader": {

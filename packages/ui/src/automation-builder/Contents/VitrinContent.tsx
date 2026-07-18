@@ -216,7 +216,7 @@ function VitrinItemCard({
             <Textarea
               {...field}
               placeholder={t('fields.description.placeholder')}
-              rows={2}
+              rows={5}
               value={field.value || ''}
             />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}

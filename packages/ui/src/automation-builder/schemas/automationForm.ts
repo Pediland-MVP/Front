@@ -103,8 +103,12 @@ const InstagramPostSchema = z
 export const VitrinItemSchema = z.object({
   imageId: z.union([z.string().nonempty(), z.number()]).optional().nullable(),
   imageUrl: z.string().optional().nullable(),
-  title: z.string().nonempty(),
-  description: z.string().nonempty().transform(httpsInText),
+  title: z.string().optional().nullable(),
+  description: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((v) => (v ? httpsInText(v) : v)),
   buttons: z.array(ButtonSchema).optional().nullable(),
   destinationContentCycleTitle: z.string().optional().nullable(),
 });
