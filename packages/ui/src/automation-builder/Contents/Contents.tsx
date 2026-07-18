@@ -92,10 +92,12 @@ export const Contents = ({
   const t_contentTypes = useTranslations('Automations.Contents.Types');
   const t_err = useTranslations('Automations.Contents.Errors');
   const t_templatePicker = useTranslations('Automations.TemplatePicker');
+  const t_button = useTranslations('Automations.Contents.Button');
 
   const {
     control,
     trigger,
+    setValue,
     clearErrors,
     formState: { errors },
   } = useFormContext<AutomationFormType>();
@@ -130,6 +132,42 @@ export const Contents = ({
       clearErrors(arrayName);
     }
   }, [hasItems, arrayName, clearErrors, errors]);
+
+  // Instagram hides a TEXT content's quick-reply buttons once another content follows
+  // it — unless one of those quick replies is the CONSENT ("مکث و ادامه" / pause-and-
+  // continue) type, which is what makes the send loop stop and wait for a tap
+  // (`shouldPauseForConsent` in `contentCycle.service.ts`). Auto-insert that button at
+  // index 0 for any TEXT content that has quick replies, isn't the last content
+  // anymore, and doesn't already have a CONSENT button — the "already has one" check
+  // is what stops this from ever inserting a duplicate, whether that existing button
+  // was added by the user or by this same effect a moment earlier. Scoped to the
+  // `contents` array only (not `reminders`, which has its own separate shape).
+  useEffect(() => {
+    if (arrayName !== 'contents') return;
+
+    const list = (watched ?? []) as ContentItemType[];
+    list.forEach((content, index) => {
+      if (index === list.length - 1) return;
+      if (content.type !== AutomationContentTypesEnum.TEXT) return;
+
+      const quickReplies = content.quickReplies ?? [];
+      if (quickReplies.length === 0 || quickReplies.length >= 13) return;
+
+      const hasConsent = quickReplies.some(
+        (qr) => qr?.postbackPayloadType === ButtonTypeEnum.CONSENT,
+      );
+      if (hasConsent) return;
+
+      setValue(
+        `contents.${index}.quickReplies` as any,
+        [
+          { title: t_button('CONSENT.label'), postbackPayloadType: ButtonTypeEnum.CONSENT },
+          ...quickReplies,
+        ],
+        { shouldDirty: true },
+      );
+    });
+  }, [watched, arrayName, setValue, t_button]);
 
   // Configure sensors for drag and drop
   const sensors = useSensors(

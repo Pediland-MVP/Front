@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
 import { Contents } from '../Contents';
 import {
   AutomationContentModeEnum,
@@ -15,11 +15,23 @@ import type { AutomationBuilderMode } from '../../AutomationBuilder.types';
 // add button by, which we resolve to their real Persian copy. With an empty `contents`
 // array the empty-state CTA (`add_step`) is what opens the type chooser; the inline
 // `add_content` button only renders once there's at least one step.
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) =>
-    key === 'add_content' ? 'افزودن محتوا' : key === 'add_step' ? 'افزودن مرحله' : key,
-  useLocale: () => 'fa',
-}));
+//
+// `t.rich` also needs a stub: `TextContent`/`QuestionContent` call it for a "you can use
+// variables" hint. Earlier tests in this file never fully render those bodies (they only
+// exercise the add-content dialog/flow), so this gap was latent until the auto-CONSENT
+// tests below render real TEXT/QUESTION content items.
+vi.mock('next-intl', () => {
+  const makeT = () => {
+    const t = ((key: string) =>
+      key === 'add_content' ? 'افزودن محتوا' : key === 'add_step' ? 'افزودن مرحله' : key) as any;
+    t.rich = (key: string) => key;
+    return t;
+  };
+  return {
+    useTranslations: () => makeT(),
+    useLocale: () => 'fa',
+  };
+});
 
 // ChooseAutomationType uses `useMediaQuery`, which calls `matchMedia` — jsdom doesn't
 // implement it, so stub a "not mobile" result.
@@ -277,5 +289,154 @@ describe('Contents — DELAY content-type shared 23h budget (Add-content flow)',
 
     await waitFor(() => expect(get).toHaveBeenCalledWith('/templates/t1'));
     await waitFor(() => expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument());
+  });
+});
+
+describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () => {
+  // Dumps the live `contents` form state to the DOM so tests can assert on it without
+  // reaching into the `useForm` instance directly. `useWatch`/`getValues` here reflect
+  // real form state (not `useFieldArray`'s render-only `fields`), so no RHF-injected
+  // `_xid` key ends up in these values.
+  function ContentsDump() {
+    const { control } = useFormContext();
+    const watched = useWatch({ name: 'contents', control });
+    return <div data-testid="contents-dump">{JSON.stringify(watched ?? [])}</div>;
+  }
+
+  function AutoConsentWrapper({ initialContents }: { initialContents: any[] }) {
+    const form = useForm({ defaultValues: { contents: initialContents, reminders: [] } });
+    return (
+      <FormProvider {...form}>
+        <Contents
+          mode={AutomationContentModeEnum.AUTOMATION}
+          apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        />
+        <ContentsDump />
+      </FormProvider>
+    );
+  }
+
+  function dumpedQuickReplies(index: number) {
+    const dump = JSON.parse(screen.getByTestId('contents-dump').textContent ?? '[]');
+    return dump[index].quickReplies;
+  }
+
+  it('inserts a CONSENT quick reply at index 0 when a TEXT content with quick replies is not the last content', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    // Under the next-intl mock at the top of this file, `t_button('CONSENT.label')`
+    // echoes back the literal key.
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'CONSENT.label', postbackPayloadType: 'CONSENT' },
+      { title: 'x', postbackPayloadType: 'TEXT' },
+    ]);
+  });
+
+  it('does not insert a duplicate CONSENT button when one already exists (user-added or from a prior auto-insert)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'already there', postbackPayloadType: 'CONSENT' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'already there', postbackPayloadType: 'CONSENT' },
+    ]);
+  });
+
+  it('does not insert when the content is already at the 13 quick-reply cap', () => {
+    const thirteen = Array.from({ length: 13 }, (_, i) => ({
+      title: `b${i}`,
+      postbackPayloadType: 'TEXT',
+    }));
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, quickReplies: thirteen },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    const quickReplies = dumpedQuickReplies(0);
+    expect(quickReplies).toHaveLength(13);
+    expect(quickReplies[0].postbackPayloadType).toBe('TEXT');
+  });
+
+  it('does not insert for a content with no quick replies at all (nothing to preserve)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, quickReplies: [] },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([]);
+  });
+
+  it('does not insert for non-TEXT content types, even with quick replies and a following content', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.QUESTION,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([{ title: 'x', postbackPayloadType: 'TEXT' }]);
+  });
+
+  it('does not insert for the last content in the list (nothing follows it)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([{ title: 'x', postbackPayloadType: 'TEXT' }]);
+  });
+
+  it('leaves an existing CONSENT button in place when the content is last (no auto-removal, regardless of how it got there)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'CONSENT.label', postbackPayloadType: 'CONSENT' }],
+          },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'CONSENT.label', postbackPayloadType: 'CONSENT' },
+    ]);
   });
 });
