@@ -8,10 +8,6 @@ vi.mock('@/hooks/usePermissions', () => ({
 vi.mock('@/components/Automations/AutomationsCardList', () => ({
   AutomationsCardList: () => <div data-testid="automations-card-list" />,
 }));
-vi.mock('@/components/Automations/CreateAutomationTemplateDialog', () => ({
-  CreateAutomationTemplateDialog: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="template-dialog" /> : null,
-}));
 
 const push = vi.fn();
 vi.mock('next/navigation', () => ({
@@ -50,13 +46,13 @@ beforeEach(() => {
 });
 
 describe('Automations list page — draft resume prompt', () => {
-  it('opens the template picker directly when there is no draft', async () => {
+  it('navigates straight to /automations/add when there is no draft', async () => {
     renderPage();
     await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
 
     fireEvent.click(screen.getByText(messages.Automations.add));
 
-    expect(screen.getByTestId('template-dialog')).toBeInTheDocument();
+    expect(push).toHaveBeenCalledWith('/automations/add');
     expect(
       screen.queryByText(messages.Automations.DraftDialog.description),
     ).not.toBeInTheDocument();
@@ -70,10 +66,10 @@ describe('Automations list page — draft resume prompt', () => {
     fireEvent.click(screen.getByText(messages.Automations.add));
 
     expect(screen.getByText(messages.Automations.DraftDialog.description)).toBeInTheDocument();
-    expect(screen.queryByTestId('template-dialog')).not.toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
   });
 
-  it('"ساخت اتومیشن جدید" clears the draft and falls through to the template picker', async () => {
+  it('"ساخت اتومیشن جدید" clears the draft and navigates straight to /automations/add', async () => {
     (hasAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue(true);
     renderPage();
     await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
@@ -82,7 +78,7 @@ describe('Automations list page — draft resume prompt', () => {
     fireEvent.click(screen.getByText(messages.Automations.DraftDialog.createNew));
 
     expect(clearAutomationDraft).toHaveBeenCalledWith('ws-1');
-    expect(screen.getByTestId('template-dialog')).toBeInTheDocument();
+    expect(push).toHaveBeenCalledWith('/automations/add');
   });
 
   it('"ادامه قبلی" navigates straight to /automations/add', async () => {
@@ -94,6 +90,5 @@ describe('Automations list page — draft resume prompt', () => {
     fireEvent.click(screen.getByText(messages.Automations.DraftDialog.resume));
 
     expect(push).toHaveBeenCalledWith('/automations/add');
-    expect(screen.queryByTestId('template-dialog')).not.toBeInTheDocument();
   });
 });

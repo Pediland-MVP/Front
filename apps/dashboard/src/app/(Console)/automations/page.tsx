@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 
 import { AutomationsCardList } from '@/components/Automations/AutomationsCardList';
 import { AutomationDraftDialog } from '@/components/Automations/AutomationDraftDialog';
-import { CreateAutomationTemplateDialog } from '@/components/Automations/CreateAutomationTemplateDialog';
 import { LayoutCard } from '@/components/Layout/LayoutCard';
 import { Button } from '@/components/ui';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
@@ -26,7 +25,6 @@ export default function Page() {
   const [search, setSearch] = useState<string>('');
   const [effectiveSearch, setEffectiveSearch] = useState<string>('');
   const router = useRouter();
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState<boolean>(false);
   const [isDraftDialogOpen, setIsDraftDialogOpen] = useState<boolean>(false);
 
   const setTools = useHeaderFeatures((s) => s.setTools);
@@ -43,14 +41,14 @@ export default function Page() {
       setIsDraftDialogOpen(true);
       return;
     }
-    setIsTemplateDialogOpen(true);
+    router.push('/automations/add');
   };
 
   const handleDraftCreateNew = () => {
     const workspaceId = getCurrentWorkspaceId();
     if (workspaceId) clearAutomationDraft(workspaceId);
     setIsDraftDialogOpen(false);
-    setIsTemplateDialogOpen(true);
+    router.push('/automations/add');
   };
 
   const handleDraftResume = () => {
@@ -103,10 +101,6 @@ export default function Page() {
   return (
     <LayoutCard className="_automation">
       <AutomationsCardList search={effectiveSearch} />
-      <CreateAutomationTemplateDialog
-        open={isTemplateDialogOpen}
-        onOpenChange={setIsTemplateDialogOpen}
-      />
       <AutomationDraftDialog
         isOpen={isDraftDialogOpen}
         onClose={() => setIsDraftDialogOpen(false)}
