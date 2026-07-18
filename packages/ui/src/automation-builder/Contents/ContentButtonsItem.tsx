@@ -263,51 +263,58 @@ export const ButtonContentItem = ({
             <FormField
               control={form.control}
               name={`${fieldPath}.${index}.url` as any}
-              render={({ field, fieldState: { error } }) => (
-                <FormItem className="w-full">
-                  <div className="flex items-center gap-1">
-                    <Input
-                      type="url"
-                      dir="ltr"
-                      className="text-left"
-                      {...field}
-                      value={field.value ?? ''}
-                      aria-invalid={!!error}
-                      placeholder={
-                        uiButtonType === ButtonTypeEnum.INSTAGRAM_POST
-                          ? t('instagram_post.placeholder')
-                          : t('url.placeholder')
-                      }
-                    />
-                    {uiButtonType === ButtonTypeEnum.INSTAGRAM_POST && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="shrink-0"
-                        aria-label={t_post('select_post')}
-                        onClick={openPostPickerHandler}
-                      >
-                        <InstagramLogoIcon />
-                      </Button>
+              render={({ field, fieldState: { error } }) => {
+                const isInstagramPost = uiButtonType === ButtonTypeEnum.INSTAGRAM_POST;
+                const hasSelectedPost = isInstagramPost && !!field.value;
+                const showPickerOnly = isInstagramPost && !hasSelectedPost;
+
+                return (
+                  <FormItem className="w-full">
+                    <div className="flex items-center gap-1">
+                      {!showPickerOnly && (
+                        <Input
+                          type="url"
+                          dir="ltr"
+                          className="text-left"
+                          {...field}
+                          value={field.value ?? ''}
+                          aria-invalid={!!error}
+                          placeholder={
+                            isInstagramPost ? t('instagram_post.placeholder') : t('url.placeholder')
+                          }
+                        />
+                      )}
+                      {isInstagramPost && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size={showPickerOnly ? 'default' : 'icon'}
+                          className={showPickerOnly ? 'w-full' : 'shrink-0'}
+                          aria-label={t_post('select_post')}
+                          onClick={openPostPickerHandler}
+                        >
+                          <InstagramLogoIcon />
+                          {showPickerOnly && t_post('select_post')}
+                        </Button>
+                      )}
+                    </div>
+                    {error && <ErrorMessage>{error.message}</ErrorMessage>}
+                    {isInstagramPost && (
+                      <InstagramPostSelectDialog
+                        index={index}
+                        mode={mode}
+                        apiClient={apiClient}
+                        open={isPostDialogOpen}
+                        onOpenChange={setIsPostDialogOpen}
+                        onSelect={(post) => {
+                          field.onChange(post.permalink ?? '');
+                          setIsPostDialogOpen(false);
+                        }}
+                      />
                     )}
-                  </div>
-                  {error && <ErrorMessage>{error.message}</ErrorMessage>}
-                  {uiButtonType === ButtonTypeEnum.INSTAGRAM_POST && (
-                    <InstagramPostSelectDialog
-                      index={index}
-                      mode={mode}
-                      apiClient={apiClient}
-                      open={isPostDialogOpen}
-                      onOpenChange={setIsPostDialogOpen}
-                      onSelect={(post) => {
-                        field.onChange(post.permalink ?? '');
-                        setIsPostDialogOpen(false);
-                      }}
-                    />
-                  )}
-                </FormItem>
-              )}
+                  </FormItem>
+                );
+              }}
             />
           )}
 
