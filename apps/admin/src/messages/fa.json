@@ -1000,7 +1000,8 @@
         },
         "CONSENT": {
           "label": "مکث و ادامه",
-          "placeholder": "مثلا: بریم بعدی؟"
+          "placeholder": "مثلا: بریم بعدی؟",
+          "auto_title": "ادامه"
         },
         "consent": {
           "label": "مکث و ادامه",

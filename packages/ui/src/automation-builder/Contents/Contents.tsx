@@ -161,7 +161,7 @@ export const Contents = ({
       setValue(
         `contents.${index}.quickReplies` as any,
         [
-          { title: t_button('CONSENT.label'), postbackPayloadType: ButtonTypeEnum.CONSENT },
+          { title: t_button('CONSENT.auto_title'), postbackPayloadType: ButtonTypeEnum.CONSENT },
           ...quickReplies,
         ],
         { shouldDirty: true },
