@@ -163,9 +163,18 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     for (const instagramId of instagramIds) {
       const account = accounts.find((a) => a.id === instagramId);
       if (!account) continue;
+      // Exact equality, not `>=`: the backend's sticky `freeAutomationQuotaExceeded` flag
+      // is only guaranteed to flip on links created through the normal save/update path
+      // (see FreeAutomationQuotaService) — a page whose live count already sits above the
+      // limit for any other reason (e.g. pre-existing links from before this feature
+      // shipped) would keep failing the `!freeAutomationQuotaExceeded` check and re-show
+      // this dialog on every single submission. Matching only the exact boundary value
+      // means the dialog can only ever fire once per page — the one submission that takes
+      // it from `limit` to `limit + 1` — and self-heals once the live count moves past it,
+      // regardless of whether the sticky flag caught up.
       if (
         !account.freeAutomationQuotaExceeded &&
-        account.automationCount >= account.freeAutomationLimit
+        account.automationCount === account.freeAutomationLimit
       ) {
         return { usedCount: account.automationCount, limit: account.freeAutomationLimit };
       }
