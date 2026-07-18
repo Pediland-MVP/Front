@@ -126,7 +126,11 @@ export const ContentItemSchema = z.object({
   buttonTemplate: ButtonTemplateSchema,
   products: z.array(ProductSchema).optional().nullable(),
   validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
-  validationErrorMessage: z.string().optional().nullable(),
+  validationErrorMessage: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((v) => (v ? httpsInText(v) : v)),
   productIds: z.array(z.string()).optional().nullable(),
   haveInstagramPost: z
     .boolean()
@@ -216,7 +220,11 @@ export const AutomationFormSchema = z
         _xid: z.string().optional().nullable(),
         buttonTemplate: ButtonTemplateSchema, // شامل normalize URL مانند contents
         validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
-        validationErrorMessage: z.string().optional().nullable(),
+        validationErrorMessage: z
+          .string()
+          .optional()
+          .nullable()
+          .transform((v) => (v ? httpsInText(v) : v)),
         vitrins: z.array(VitrinItemSchema).optional().nullable(),
       }),
     ),

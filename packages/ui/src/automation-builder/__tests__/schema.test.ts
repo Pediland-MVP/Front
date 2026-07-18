@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
 import { AutomationFormSchema, ContentItemSchema } from '../schemas/automationForm';
 import { ButtonTypeEnum } from '../types/buttons.enum';
+import { ValidationTypeEnum } from '../types/validationType.enum';
 
 describe('automation-builder shared schema/constants', () => {
   it('exposes AutomationContentTypesEnum.TEXT', () => {
@@ -113,6 +114,19 @@ describe('automation schema — http links are upgraded to https on parse', () =
     if (!result.success) return;
     expect(result.data.consentText).toBe('قوانین در http://shop.ir/terms');
   });
+
+  it('upgrades an http link in a QUESTION content validationErrorMessage', () => {
+    const result = ContentItemSchema.safeParse({
+      type: AutomationContentTypesEnum.QUESTION,
+      text: 'سوال',
+      validationType: ValidationTypeEnum.Text,
+      validationErrorMessage: 'اشتباه است، راهنما: http://help.shop.ir',
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.validationErrorMessage).toBe('اشتباه است، راهنما: https://help.shop.ir');
+  });
 });
 
 describe('automation schema — http links upgraded in the remaining message fields', () => {
@@ -174,6 +188,28 @@ describe('automation schema — http links upgraded in the remaining message fie
     expect(result.success).toBe(true);
     if (!result.success) return;
     expect(result.data.reminders[0].text).toBe('یادآوری https://shop.ir');
+  });
+
+  it('upgrades an http link in a reminder validationErrorMessage, mirroring contents[].validationErrorMessage', () => {
+    const result = AutomationFormSchema.safeParse({
+      ...base,
+      isRemindersEnabled: true,
+      reminderTime: '1h',
+      reminders: [
+        {
+          type: AutomationContentTypesEnum.QUESTION,
+          text: 'سوال یادآوری',
+          validationType: ValidationTypeEnum.Text,
+          validationErrorMessage: 'اشتباه است، راهنما: http://help.shop.ir',
+        },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.reminders[0].validationErrorMessage).toBe(
+      'اشتباه است، راهنما: https://help.shop.ir',
+    );
   });
 
   it('does not touch the automation title — it is a plain Input, not a message', () => {

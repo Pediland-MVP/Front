@@ -24,7 +24,8 @@ No exception for localhost or raw IPs, by decision.
   - `.transform(httpsUrl)` on `ButtonSchema`'s `url` field (covers button templates, quick replies, and vitrin buttons).
   - `.transform(httpsInText)` on `ButtonTemplateSchema.text` (button template messages).
   - `.transform(httpsInText)` on `ContentItemSchema.text` (content item text body).
-  - **Task 2b expansion**: `.transform(httpsInText)` on `commentStartText`, `commentStartTitle`, `followMessage`, and `reminders[].text` — all confirmed as `<Textarea>` message fields consuming `httpsInText`.
+  - **Task 2b expansion**: `.transform(httpsInText)` on `commentStartText`, `commentStartTitle`, `followMessage`, and `reminders[].text` — all confirmed as `<Textarea>` message fields consuming `httpsInText`. This pass did not catch every remaining message textarea — see the Task 5 gap fix below.
+  - **Task 5 gap fix** (found in the final whole-branch review, one step after Task 2b): `.transform((v) => (v ? httpsInText(v) : v))` on `validationErrorMessage` in both `ContentItemSchema` and the `reminders[]` item schema. It renders as a `<Textarea>` (`QuestionContent.tsx:134-147`, label "پیام خطای اعتبارسنجی") — the bot sends it back to the customer on failed QUESTION-content validation — but was missed by Task 2b.
 - **Modify** `Front/apps/dashboard/src/components/Products/ProductForm.tsx` — `.transform(httpsUrl)` on the `ButtonTypeEnum.URL` branch of the button field schema.
 
 ## Notes
@@ -39,5 +40,5 @@ No exception for localhost or raw IPs, by decision.
 ## Verification
 
 - `cd Front/packages/ui && pnpm vitest run src/lib/__tests__/toHttps.test.ts` — 16 pass (all util variants).
-- `cd Front/packages/ui && pnpm vitest run src/automation-builder/__tests__/schema.test.ts` — 13 pass (9 from Task 2 + 4 from Task 2b's additional fields).
+- `cd Front/packages/ui && pnpm vitest run src/automation-builder/__tests__/schema.test.ts` — 15 pass (9 from Task 2 + 4 from Task 2b's additional fields + 2 from the Task 5 `validationErrorMessage` gap fix).
 - `ProductForm` wiring has no automated test (its schema is inline and closes over `t`); verified by tracing the submit path, including into `@hookform/resolvers/zod`'s source, to confirm `handleSubmit` receives the transformed zod output.
