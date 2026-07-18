@@ -142,6 +142,20 @@ export const AudioRecorderWithVisualizer = ({
 
     recorder.stop();
 
+    const { mediaRecorder, stream, analyser, audioContext } = mediaRecorderRef.current;
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    }
+    if (analyser) {
+      analyser.disconnect();
+    }
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    if (audioContext) {
+      audioContext.close();
+    }
+
     setIsRecording(false);
     setIsRecordingFinished(true);
     setTimer(0);
