@@ -314,7 +314,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
           <DialogTrigger asChild>
             <Button
               size="lg"
-              className="bg-violet-650 rounded-xl shadow-lg transition-all hover:bg-violet-700 active:scale-95"
+              className="bg-violet-600 rounded-xl shadow-lg transition-all hover:bg-violet-700 active:scale-95"
             >
               <ShoppingCartIcon className="h-5 w-5" />
               {t('buy_subscription')}
