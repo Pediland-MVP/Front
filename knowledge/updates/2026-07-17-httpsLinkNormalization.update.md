@@ -26,6 +26,7 @@ No exception for localhost or raw IPs, by decision.
   - `.transform(httpsInText)` on `ContentItemSchema.text` (content item text body).
   - **Task 2b expansion**: `.transform(httpsInText)` on `commentStartText`, `commentStartTitle`, `followMessage`, and `reminders[].text` — all confirmed as `<Textarea>` message fields consuming `httpsInText`. This pass did not catch every remaining message textarea — see the Task 5 gap fix below.
   - **Task 5 gap fix** (found in the final whole-branch review, one step after Task 2b): `.transform((v) => (v ? httpsInText(v) : v))` on `validationErrorMessage` in both `ContentItemSchema` and the `reminders[]` item schema. It renders as a `<Textarea>` (`QuestionContent.tsx:134-147`, label "پیام خطای اعتبارسنجی") — the bot sends it back to the customer on failed QUESTION-content validation — but was missed by Task 2b.
+  - **Task 6 gap fix** (found in the *second* pass of the final whole-branch review — the third round of gap-closing overall, after Task 2b and the Task 5 fix above): `.transform(httpsInText)` on `VitrinItemSchema.description`. It renders as a `<Textarea>` (`VitrinContent.tsx:212-224`, `rows={2}`) — the per-card message text the bot sends to the customer alongside the vitrin card — but had no transform wired. It is distinct from the dashboard's own product-catalog "description" field (`apps/dashboard/src/components/Products/ProductForm.tsx`), which stays out of scope by design. `VitrinItemSchema.title` was checked in the same pass and correctly stays untouched — it is a plain `<Input>` (`VitrinContent.tsx:196-208`), matching the existing convention (Input fields left alone, Textarea fields covered).
 - **Modify** `Front/apps/dashboard/src/components/Products/ProductForm.tsx` — `.transform(httpsUrl)` on the `ButtonTypeEnum.URL` branch of the button field schema.
 
 ## Notes
@@ -34,11 +35,13 @@ No exception for localhost or raw IPs, by decision.
 - `optionalStringToUndef` also backs `consentText`. The transform is chained onto `text` only — `consentText` is intentionally not normalized.
 - `followCheckMessage` was deliberately **not** wired, despite living right next to `followMessage`. It renders as a plain `<Input>` (a short "retry button" label, e.g. "فالو کردم ✅"), not a message. This was caught during code review and left untouched by decision.
 - `title` (the automation's own name) was also deliberately left untouched — it is a plain `<Input>`, not a message.
+- Coverage note: this feature went through **three rounds of gap-closing** after the initial Task 2/2b pass — `validationErrorMessage` (Task 5) and `VitrinItemSchema.description` (Task 6) were both found by later review passes, not the original sweep. Treat any prior "coverage is exhaustive" framing in this doc's earlier sections as describing the state *at that point in time*, not a final guarantee — always re-check Textarea message fields against the transform list when touching this schema.
 - `automationForm.ts` is shared with the admin templates form, so admin inherits this normalization. Intended: it matches admin's https-only backend validation.
 - `apps/dashboard/src/schemas/aas.ts` contains a near-identical dead schema that nothing imports. Left untouched; worth deleting in a separate cleanup.
 
 ## Verification
 
 - `cd Front/packages/ui && pnpm vitest run src/lib/__tests__/toHttps.test.ts` — 16 pass (all util variants).
-- `cd Front/packages/ui && pnpm vitest run src/automation-builder/__tests__/schema.test.ts` — 15 pass (9 from Task 2 + 4 from Task 2b's additional fields + 2 from the Task 5 `validationErrorMessage` gap fix).
+- `cd Front/packages/ui && pnpm vitest run src/automation-builder/__tests__/schema.test.ts` — 16 pass (9 from Task 2 + 4 from Task 2b's additional fields + 2 from the Task 5 `validationErrorMessage` gap fix + 1 from the Task 6 `VitrinItemSchema.description` gap fix).
+- `cd Front/packages/ui && pnpm vitest run src/automation-builder/__tests__/AutomationBuilder.test.tsx src/automation-builder/Contents/__tests__/Contents.test.tsx` — 19 pass (regression check for Task 6, unrelated pre-existing `DialogContent` a11y console warnings).
 - `ProductForm` wiring has no automated test (its schema is inline and closes over `t`); verified by tracing the submit path, including into `@hookform/resolvers/zod`'s source, to confirm `handleSubmit` receives the transformed zod output.

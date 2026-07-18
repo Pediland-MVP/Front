@@ -104,7 +104,7 @@ export const VitrinItemSchema = z.object({
   imageId: z.union([z.string().nonempty(), z.number()]).optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   title: z.string().nonempty(),
-  description: z.string().nonempty(),
+  description: z.string().nonempty().transform(httpsInText),
   buttons: z.array(ButtonSchema).optional().nullable(),
   destinationContentCycleTitle: z.string().optional().nullable(),
 });

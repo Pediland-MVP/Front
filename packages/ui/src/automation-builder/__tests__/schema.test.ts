@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
-import { AutomationFormSchema, ContentItemSchema } from '../schemas/automationForm';
+import {
+  AutomationFormSchema,
+  ContentItemSchema,
+  VitrinItemSchema,
+} from '../schemas/automationForm';
 import { ButtonTypeEnum } from '../types/buttons.enum';
 import { ValidationTypeEnum } from '../types/validationType.enum';
 
@@ -221,5 +225,17 @@ describe('automation schema — http links upgraded in the remaining message fie
     expect(result.success).toBe(true);
     if (!result.success) return;
     expect(result.data.title).toBe('کمپین http://shop.ir');
+  });
+
+  it('upgrades an http link in a vitrin card description but leaves its title alone', () => {
+    const result = VitrinItemSchema.safeParse({
+      title: 'محصول ویژه',
+      description: 'برای خرید به http://shop.ir سر بزنید',
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.description).toBe('برای خرید به https://shop.ir سر بزنید');
+    expect(result.data.title).toBe('محصول ویژه');
   });
 });
