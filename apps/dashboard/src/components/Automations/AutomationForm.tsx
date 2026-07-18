@@ -570,6 +570,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
                 title={t('Contents.Help.title')}
                 description={t('Contents.Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
+                noAbsolute
               />
             ),
             justFollowers: (
