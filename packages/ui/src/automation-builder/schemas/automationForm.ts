@@ -4,6 +4,7 @@ import { AutomationContentTypesEnum } from '../constants/automationContent.enum'
 import { ButtonTypeEnum } from '../types/buttons.enum';
 import { ValidationTypeEnum } from '../types/validationType.enum';
 import z from 'zod';
+import { httpsInText, httpsUrl } from '../../lib/toHttps';
 
 // Inlined from apps/dashboard/src/utils/regex.ts (REGEX_URL) — not worth moving a
 // single regex constant across the app boundary just for this one usage.
@@ -65,7 +66,7 @@ const ButtonSchema = z.discriminatedUnion('postbackPayloadType', [
   z.object({
     postbackPayloadType: z.literal(ButtonTypeEnum.URL),
     title: z.string().min(1).max(35),
-    url: z.string().regex(REGEX_URL),
+    url: z.string().regex(REGEX_URL).transform(httpsUrl),
     priority: z.number().optional().nullable(),
     _xid: z.string().optional().nullable(),
   }),
@@ -82,7 +83,7 @@ const ButtonSchema = z.discriminatedUnion('postbackPayloadType', [
 
 const ButtonTemplateSchema = z
   .object({
-    text: z.string().min(1),
+    text: z.string().min(1).transform(httpsInText),
     buttons: z.array(ButtonSchema),
   })
   .optional()
@@ -103,7 +104,7 @@ export const VitrinItemSchema = z.object({
   imageId: z.union([z.string().nonempty(), z.number()]).optional().nullable(),
   imageUrl: z.string().optional().nullable(),
   title: z.string().nonempty(),
-  description: z.string().nonempty(),
+  description: z.string().nonempty().transform(httpsInText),
   buttons: z.array(ButtonSchema).optional().nullable(),
   destinationContentCycleTitle: z.string().optional().nullable(),
 });
@@ -112,7 +113,9 @@ export type VitrinItemType = z.infer<typeof VitrinItemSchema>;
 export const ContentItemSchema = z.object({
   id: z.string().optional().nullable(),
   _xid: z.string().optional().nullable(),
-  text: optionalStringToUndef,
+  // Chained onto the shared helper rather than folded into it: `optionalStringToUndef`
+  // also backs `consentText`, which is deliberately NOT normalized.
+  text: optionalStringToUndef.transform((v) => (v === undefined ? v : httpsInText(v))),
   quickReplies: z.array(ButtonSchema).optional().nullable(),
   consentText: optionalStringToUndef,
   haveConsent: optionalBoolDefault(false),
@@ -123,7 +126,11 @@ export const ContentItemSchema = z.object({
   buttonTemplate: ButtonTemplateSchema,
   products: z.array(ProductSchema).optional().nullable(),
   validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
-  validationErrorMessage: z.string().optional().nullable(),
+  validationErrorMessage: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((v) => (v ? httpsInText(v) : v)),
   productIds: z.array(z.string()).optional().nullable(),
   haveInstagramPost: z
     .boolean()
@@ -162,8 +169,12 @@ export const AutomationFormSchema = z
     instagramPost: InstagramPostSchema, // برای سناریوهای سطح فرم
 
     // شروع مکالمه در کامنت
-    commentStartText: optionalStringToUndef,
-    commentStartTitle: optionalStringToUndef,
+    commentStartText: optionalStringToUndef.transform((v) =>
+      v === undefined ? v : httpsInText(v),
+    ),
+    commentStartTitle: optionalStringToUndef.transform((v) =>
+      v === undefined ? v : httpsInText(v),
+    ),
 
     title: optionalStringToUndef,
     enabled: optionalBoolDefault(true),
@@ -172,7 +183,11 @@ export const AutomationFormSchema = z
     justFollowers: z.boolean(),
 
     // پیام‌های فالو
-    followMessage: z.string().optional().nullable(),
+    followMessage: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((v) => (v ? httpsInText(v) : v)),
     followCheckMessage: z.string().optional().nullable(),
 
     // یادآورها
@@ -181,7 +196,7 @@ export const AutomationFormSchema = z
     reminders: z.array(
       z.object({
         type: z.nativeEnum(AutomationContentTypesEnum),
-        text: optionalStringToUndef,
+        text: optionalStringToUndef.transform((v) => (v === undefined ? v : httpsInText(v))),
         quickReplies: z.array(ButtonSchema).optional().nullable(),
         instagramPost: InstagramPostSchema,
         file: FileSchema,
@@ -205,7 +220,11 @@ export const AutomationFormSchema = z
         _xid: z.string().optional().nullable(),
         buttonTemplate: ButtonTemplateSchema, // شامل normalize URL مانند contents
         validationType: z.nativeEnum(ValidationTypeEnum).optional().nullable(),
-        validationErrorMessage: z.string().optional().nullable(),
+        validationErrorMessage: z
+          .string()
+          .optional()
+          .nullable()
+          .transform((v) => (v ? httpsInText(v) : v)),
         vitrins: z.array(VitrinItemSchema).optional().nullable(),
       }),
     ),
