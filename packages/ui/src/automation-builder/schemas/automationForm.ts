@@ -184,11 +184,7 @@ export const AutomationFormSchema = z
       .optional()
       .nullable()
       .transform((v) => (v ? httpsInText(v) : v)),
-    followCheckMessage: z
-      .string()
-      .optional()
-      .nullable()
-      .transform((v) => (v ? httpsInText(v) : v)),
+    followCheckMessage: z.string().optional().nullable(),
 
     // یادآورها
     isRemindersEnabled: optionalBoolDefault(false),

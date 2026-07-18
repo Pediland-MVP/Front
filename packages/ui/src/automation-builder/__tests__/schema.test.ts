@@ -130,18 +130,18 @@ describe('automation schema — http links upgraded in the remaining message fie
     isReplyCommentEnabled: false,
   };
 
-  it('upgrades an http link in followMessage/followCheckMessage when justFollowers is on', () => {
+  it('upgrades an http link in followMessage but leaves followCheckMessage alone — it is a short button label, not a message', () => {
     const result = AutomationFormSchema.safeParse({
       ...base,
       justFollowers: true,
       followMessage: 'دنبال کن http://shop.ir',
-      followCheckMessage: 'چک کن http://shop.ir/check',
+      followCheckMessage: 'فالو کردم http://shop.ir',
     });
 
     expect(result.success).toBe(true);
     if (!result.success) return;
     expect(result.data.followMessage).toBe('دنبال کن https://shop.ir');
-    expect(result.data.followCheckMessage).toBe('چک کن https://shop.ir/check');
+    expect(result.data.followCheckMessage).toBe('فالو کردم http://shop.ir');
   });
 
   it('upgrades an http link in commentStartText/commentStartTitle', () => {
