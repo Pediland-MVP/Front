@@ -110,6 +110,8 @@ export const ButtonContentItem = ({
         buttonType === ButtonTypeEnum.INSTAGRAM_POST)
     );
 
+  const allowedButtonTypes = Object.values(ButtonTypeEnum).filter(isButtonTypeAllowed);
+
   // ── محاسبه مسیر پویا (اینجا فیکس اصلی است) ──
   type DefaultFieldNameType =
     `${'contents' | 'reminders'}.${number}.${'buttonTemplate.buttons' | 'quickReplies' | 'buttons'}`;
@@ -166,15 +168,9 @@ export const ButtonContentItem = ({
         isDragging && 'z-10',
       )}
     >
-      <Card
-        className={cn(
-          'w-full gap-0 p-3',
-          index !== 0 && 'pt-4',
-          isDragging && 'ring-primary ring-1',
-        )}
-      >
-        <CardHeader className="-mt-2 p-0">
-          <div className="flex items-center justify-between">
+      <Card className={cn('w-full gap-3 p-4', isDragging && 'ring-primary ring-1')}>
+        <CardHeader className="p-0">
+          <div className="flex min-h-5 items-center justify-between">
             {index !== 0 ? (
               <Button
                 variant="link"
@@ -204,27 +200,30 @@ export const ButtonContentItem = ({
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-wrap gap-2 p-0">
+        <CardContent className="flex flex-wrap gap-3 p-0">
           {/* نوع دکمه */}
           <FormField
             control={form.control}
             name={`${fieldPath}.${index}.postbackPayloadType` as any}
             render={({ fieldState: { error } }) => (
-              <FormItem className="w-full space-y-0 sm:w-auto">
-                {Object.values(ButtonTypeEnum).filter(isButtonTypeAllowed).length > 1 && (
+              <FormItem
+                className={cn(
+                  'w-full space-y-0',
+                  allowedButtonTypes.length > 1 ? 'sm:w-52 sm:shrink-0' : 'sm:w-auto',
+                )}
+              >
+                {allowedButtonTypes.length > 1 && (
                   <Select value={uiButtonType || ''} onValueChange={typeSelectHandler}>
                     <SelectTrigger className="gap-1 pr-2 pl-1.5">
                       <SelectValue placeholder={t('button_type')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {Object.values(ButtonTypeEnum).map((buttonType) => {
-                          return isButtonTypeAllowed(buttonType) ? (
-                            <SelectItem key={buttonType} value={buttonType}>
-                              {t(`${buttonType}.label`)}
-                            </SelectItem>
-                          ) : null;
-                        })}
+                        {allowedButtonTypes.map((buttonType) => (
+                          <SelectItem key={buttonType} value={buttonType}>
+                            {t(`${buttonType}.label`)}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -242,16 +241,14 @@ export const ButtonContentItem = ({
               control={form.control}
               name={`${fieldPath}.${index}.title` as any}
               render={({ field, fieldState: { error } }) => (
-                <FormItem className="flex w-full flex-1">
-                  <div className="w-full space-y-1">
-                    <Input
-                      {...field}
-                      maxLength={35}
-                      aria-invalid={!!error}
-                      placeholder={t(`${uiButtonType}.placeholder`)}
-                    />
-                    {error && <ErrorMessage>{error.message}</ErrorMessage>}
-                  </div>
+                <FormItem className="w-full min-w-0 space-y-1 sm:w-auto sm:flex-1">
+                  <Input
+                    {...field}
+                    maxLength={35}
+                    aria-invalid={!!error}
+                    placeholder={t(`${uiButtonType}.placeholder`)}
+                  />
+                  {error && <ErrorMessage>{error.message}</ErrorMessage>}
                 </FormItem>
               )}
             />
@@ -269,8 +266,8 @@ export const ButtonContentItem = ({
                 const showPickerOnly = isInstagramPost && !hasSelectedPost;
 
                 return (
-                  <FormItem className="w-full">
-                    <div className="flex items-center gap-1">
+                  <FormItem className="w-full space-y-1">
+                    <div className="flex items-center gap-2">
                       {!showPickerOnly && (
                         <Input
                           type="url"
@@ -289,7 +286,7 @@ export const ButtonContentItem = ({
                           type="button"
                           variant="outline"
                           size={showPickerOnly ? 'default' : 'icon'}
-                          className={showPickerOnly ? 'w-full' : 'shrink-0'}
+                          className={showPickerOnly ? 'w-full' : 'size-10! shrink-0'}
                           aria-label={t_post('select_post')}
                           onClick={openPostPickerHandler}
                         >
