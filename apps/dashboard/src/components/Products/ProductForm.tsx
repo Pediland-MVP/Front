@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import * as z from 'zod';
+import { httpsUrl } from '@befroosh/ui/lib/toHttps';
 
 // UI Components from shadcn and custom theme
 import { FormCustomFields } from '@/components/Products/FormCustomFields';
@@ -182,7 +183,8 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
                       .string({
                         required_error: t('Alerts.button_url_required'),
                       })
-                      .min(1, { message: t('Alerts.button_url_required') }),
+                      .min(1, { message: t('Alerts.button_url_required') })
+                      .transform(httpsUrl),
                     destinationContentCycleId: z.string().optional().nullable(),
                   }),
                   z.object({
