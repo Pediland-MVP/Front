@@ -6,7 +6,7 @@ import { useDebounce } from 'use-debounce';
 import { fetcher } from '@/hooks/swr/api-client';
 import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
-import TemplatesTable from './templates-table';
+import TemplatesCardList from './templates-card-list';
 
 export default function TemplatesPageClient() {
   const [page, setPage] = useState(1);
@@ -26,7 +26,7 @@ export default function TemplatesPageClient() {
   if (error) return <FetchError />;
 
   return (
-    <TemplatesTable
+    <TemplatesCardList
       isRefetching={isValidating && !!data}
       templates={data?.items ?? []}
       totalCount={data?.meta?.totalItems ?? 0}

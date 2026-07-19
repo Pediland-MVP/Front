@@ -3,18 +3,15 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { Table } from '@tanstack/react-table';
-import { useState } from 'react';
 
-import { LayoutTable } from '@/components/layout/LayoutTable';
-import { DataTable } from '@/components/table/data-table';
-import { DataTablePagination } from '@/components/table/pagination';
+import { LayoutCard } from '@/components/layout/LayoutCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import api from '@/hooks/swr/api-client';
-import { useTemplateColumns, TemplateRow } from './columns';
+import { TemplateCard, TemplateRow } from './template-card';
+import { TemplatesPagination } from './templates-pagination';
 
-interface TemplatesTableProps {
+interface TemplatesCardListProps {
   isRefetching?: boolean;
   templates: TemplateRow[];
   totalCount: number;
@@ -27,7 +24,7 @@ interface TemplatesTableProps {
   mutate: () => void;
 }
 
-export default function TemplatesTable({
+export default function TemplatesCardList({
   isRefetching,
   templates,
   totalCount,
@@ -38,11 +35,10 @@ export default function TemplatesTable({
   search,
   onSearchChange,
   mutate,
-}: TemplatesTableProps) {
+}: TemplatesCardListProps) {
   const t = useTranslations('Templates');
   const t_ec = useTranslations('ERROR_CODES');
   const router = useRouter();
-  const [tableInstance, setTableInstance] = useState<Table<TemplateRow> | null>(null);
 
   const handleDelete = async (row: TemplateRow) => {
     if (!confirm(t('deleteConfirm'))) return;
@@ -56,11 +52,9 @@ export default function TemplatesTable({
     }
   };
 
-  const columns = useTemplateColumns((row) => router.push(`/templates/${row.id}`), handleDelete);
-
   return (
-    <LayoutTable isRefetching={isRefetching}>
-      <div className="flex flex-1 flex-col gap-2 overflow-hidden p-4">
+    <LayoutCard>
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden">
         <div className="flex flex-wrap items-center gap-1.5">
           <Input
             type="search"
@@ -72,19 +66,34 @@ export default function TemplatesTable({
           <Button onClick={() => router.push('/templates/add')}>{t('addTemplate')}</Button>
         </div>
 
-        <DataTable
-          columns={columns}
-          data={templates}
-          tableInstanceRef={setTableInstance}
+        <div className="flex-1">
+          {templates.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-muted-foreground text-sm">{t('noTemplates')}</div>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+              {templates.map((row) => (
+                <TemplateCard
+                  key={row.id}
+                  row={row}
+                  onEdit={() => router.push(`/templates/${row.id}`)}
+                  onDelete={() => handleDelete(row)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <TemplatesPagination
+          isLoading={isRefetching}
           page={page}
           limit={limit}
           totalCount={totalCount}
           onPageChange={onPageChange}
           onLimitChange={onLimitChange}
         />
-
-        {tableInstance && <DataTablePagination table={tableInstance} totalCount={totalCount} />}
       </div>
-    </LayoutTable>
+    </LayoutCard>
   );
 }
