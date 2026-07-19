@@ -46,7 +46,11 @@ export default function ConnectPage() {
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
   const { workspaces } = useWorkspaces();
-  const { workspaceId, can } = usePermissions();
+  const { workspaceId, can, isLoading: isPermissionsLoading } = usePermissions();
+  // While workspaceId is set but the effective-permissions fetch hasn't resolved yet,
+  // `can()` reads an empty permission set and would report "not granted" even for an
+  // owner/member who actually has instagram:manage — wait for the fetch instead.
+  const isCheckingPermission = Boolean(workspaceId) && isPermissionsLoading;
   const canConnect = canConnectInstagram && (workspaceId ? can('instagram:manage') : true);
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
@@ -143,6 +147,10 @@ export default function ConnectPage() {
               {atInstagramLimit ? (
                 <div className="w-full rounded-xl bg-violet-50 px-4 py-3 text-center text-sm text-violet-700">
                   {t('instagram_limit')}
+                </div>
+              ) : isCheckingPermission ? (
+                <div className="flex w-full items-center justify-center py-4">
+                  <Spinner className="size-6" />
                 </div>
               ) : !canConnect ? (
                 // Sub-scenario B.2 — member lacks instagram:manage permission.
