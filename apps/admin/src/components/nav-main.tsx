@@ -32,6 +32,11 @@ export function NavMain({ items }: { items: NavItem[] }) {
   const { isMobile, setOpenMobile } = useSidebar();
   const router = useRouter();
 
+  const activeParentTitle = items.find((item) =>
+    item.children?.some((child) => pathname === child.url),
+  )?.title;
+  const [openTitle, setOpenTitle] = useState<string | null>(activeParentTitle ?? null);
+
   const navigate = (url: string) => {
     if (pathname === url) {
       if (isMobile) setOpenMobile(false);
@@ -55,6 +60,8 @@ export function NavMain({ items }: { items: NavItem[] }) {
               item={item}
               pathname={pathname}
               navigate={navigate}
+              open={openTitle === item.title}
+              onOpenChange={(open) => setOpenTitle(open ? item.title : null)}
             />
           ) : (
             <SidebarMenuItem key={item.title}>
@@ -88,16 +95,19 @@ function CollapsibleNavItem({
   item,
   pathname,
   navigate,
+  open,
+  onOpenChange,
 }: {
   item: NavItem;
   pathname: string;
   navigate: (url: string) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const isChildActive = item.children?.some((c) => pathname === c.url) ?? false;
-  const [open, setOpen] = useState(isChildActive);
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} asChild>
+    <Collapsible open={open} onOpenChange={onOpenChange} asChild>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
@@ -110,7 +120,7 @@ function CollapsibleNavItem({
                 : 'hover:text-primary active:text-primary data-[state=open]:text-primary data-[state=open]:hover:text-primary hover:border-violet-300/70 hover:bg-violet-100 active:bg-violet-100 data-[state=open]:border-violet-300/70 data-[state=open]:bg-violet-100 data-[state=open]:hover:bg-violet-100',
             )}
             onClick={() => {
-              if (!open) setOpen(true);
+              if (!open) onOpenChange(true);
             }}
           >
             <button
@@ -143,7 +153,7 @@ function CollapsibleNavItem({
                       : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
                   )}
                   onClick={() => {
-                    setOpen(true);
+                    onOpenChange(true);
                   }}
                 >
                   <button
