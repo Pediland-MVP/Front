@@ -1,13 +1,16 @@
 'use client';
 
 import * as React from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 /* ----------------------------- Types ----------------------------- */
 
 type StableCarouselContextValue = {
   currentIndex: number;
   totalItems: number;
+  isRtl: boolean;
   scrollTo: (index: number) => void;
   scrollPrev: () => void;
   scrollNext: () => void;
@@ -53,13 +56,19 @@ export function StableCarousel({
 }: StableCarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(defaultIndex);
   const [totalItems, setTotalItems] = React.useState(0);
+  const [isRtl, setIsRtl] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Count children to determine total items
+  // Count children to determine total items, and read the resolved text
+  // direction so the track can translate toward the correct physical side —
+  // in `dir="rtl"` ancestors (this app's default locale), a flex row's main
+  // axis runs right-to-left, so a plain `-index * 100%` translate pushes
+  // slides off-screen in the wrong direction instead of revealing them.
   React.useEffect(() => {
     if (containerRef.current) {
       const items = containerRef.current.querySelectorAll('[data-stable-carousel-item="true"]');
       setTotalItems(items.length);
+      setIsRtl(getComputedStyle(containerRef.current).direction === 'rtl');
     }
   });
 
@@ -112,13 +121,23 @@ export function StableCarousel({
     () => ({
       currentIndex,
       totalItems,
+      isRtl,
       scrollTo,
       scrollPrev,
       scrollNext,
       canScrollPrev,
       canScrollNext,
     }),
-    [currentIndex, totalItems, scrollTo, scrollPrev, scrollNext, canScrollPrev, canScrollNext],
+    [
+      currentIndex,
+      totalItems,
+      isRtl,
+      scrollTo,
+      scrollPrev,
+      scrollNext,
+      canScrollPrev,
+      canScrollNext,
+    ],
   );
 
   return (
@@ -144,14 +163,15 @@ type StableCarouselContentProps = {
 };
 
 export function StableCarouselContent({ children, className }: StableCarouselContentProps) {
-  const { currentIndex } = useStableCarousel();
+  const { currentIndex, isRtl } = useStableCarousel();
+  const sign = isRtl ? 1 : -1;
 
   return (
     <div className="overflow-hidden" data-slot="stable-carousel-content">
       <div
         className={cn('flex transition-transform duration-300 ease-out', className)}
         style={{
-          transform: `translateX(-${currentIndex * 100}%)`,
+          transform: `translateX(${sign * currentIndex * 100}%)`,
         }}
       >
         {children}
@@ -178,6 +198,68 @@ export function StableCarouselItem({ children, className }: StableCarouselItemPr
     >
       {children}
     </div>
+  );
+}
+
+/* ----------------------------- StableCarouselPrevious / Next ----------------------------- */
+
+type StableCarouselButtonProps = Omit<React.ComponentProps<typeof Button>, 'onClick'>;
+
+export function StableCarouselPrevious({
+  className,
+  variant = 'outline',
+  size = 'icon',
+  ...props
+}: StableCarouselButtonProps) {
+  const { scrollPrev, canScrollPrev, totalItems } = useStableCarousel();
+  if (totalItems < 2) return null;
+
+  return (
+    <Button
+      type="button"
+      variant={variant}
+      size={size}
+      className={cn(
+        'absolute start-2 top-1/2 -translate-y-1/2 rounded-full',
+        size === 'icon' && 'size-8',
+        className,
+      )}
+      disabled={!canScrollPrev}
+      onClick={scrollPrev}
+      {...props}
+    >
+      <ChevronLeftIcon className="size-4 rtl:rotate-180" />
+      <span className="sr-only">Previous slide</span>
+    </Button>
+  );
+}
+
+export function StableCarouselNext({
+  className,
+  variant = 'outline',
+  size = 'icon',
+  ...props
+}: StableCarouselButtonProps) {
+  const { scrollNext, canScrollNext, totalItems } = useStableCarousel();
+  if (totalItems < 2) return null;
+
+  return (
+    <Button
+      type="button"
+      variant={variant}
+      size={size}
+      className={cn(
+        'absolute end-2 top-1/2 -translate-y-1/2 rounded-full',
+        size === 'icon' && 'size-8',
+        className,
+      )}
+      disabled={!canScrollNext}
+      onClick={scrollNext}
+      {...props}
+    >
+      <ChevronRightIcon className="size-4 rtl:rotate-180" />
+      <span className="sr-only">Next slide</span>
+    </Button>
   );
 }
 

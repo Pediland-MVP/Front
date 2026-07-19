@@ -11,6 +11,8 @@ import {
   StableCarouselApi,
   StableCarouselContent,
   StableCarouselItem,
+  StableCarouselNext,
+  StableCarouselPrevious,
   useStableCarousel,
 } from '@/components/ui/stable-carousel';
 import { useActiveBanners, ActiveBanner } from '@/hooks/useActiveBanners';
@@ -155,6 +157,8 @@ export const DashboardBannerCarousel = () => {
             </StableCarouselItem>
           ))}
         </StableCarouselContent>
+        <StableCarouselPrevious />
+        <StableCarouselNext />
         <BannerCarouselDots />
       </StableCarousel>
     </div>
