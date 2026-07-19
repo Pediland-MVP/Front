@@ -34,6 +34,20 @@ export function AppBreadcrumb() {
       qa: t('qa'),
       guides: t('guides'),
       chats: t('chats'),
+      workspaces: t('workspaces'),
+      'workspace-categories': t('workspaceCategories'),
+      banners: t('banners'),
+      templates: t('templates'),
+      labels: t('labels'),
+      instagrams: t('instagrams'),
+      tasks: t('tasks'),
+      admins: t('admins'),
+      settings: t('settings'),
+      webhooks: t('webhooks'),
+      plans: t('plans'),
+      jobs: t('jobs'),
+      finance: t('finance'),
+      'automation-errors': t('automationErrors'),
     };
     return map[seg] ?? decodeURIComponent(seg);
   };
