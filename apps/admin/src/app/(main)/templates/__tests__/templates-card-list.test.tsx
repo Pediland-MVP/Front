@@ -9,7 +9,7 @@ vi.mock('@/hooks/swr/api-client', () => ({
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
-import TemplatesTable from '../templates-table';
+import TemplatesCardList from '../templates-card-list';
 
 const rows = [
   {
@@ -22,11 +22,11 @@ const rows = [
   },
 ];
 
-describe('TemplatesTable', () => {
-  it('renders a row title and an "all categories" badge', () => {
+describe('TemplatesCardList', () => {
+  it('renders a card title and an "all categories" badge', () => {
     render(
       <NextIntlClientProvider locale="fa" messages={messages}>
-        <TemplatesTable
+        <TemplatesCardList
           templates={rows as any}
           totalCount={1}
           page={1}
