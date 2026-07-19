@@ -9,7 +9,6 @@ import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { Conditions, ConditionTypesEnum } from './Form/Conditions';
 import { Triggers } from './Form/Triggers';
 import { JustFollowers } from './Form/JustFollowers';
-import { CommentTriggerInputs } from './Form/CommentTriggerInputs';
 import { CommentLimitAlert } from './Form/CommentLimitAlert';
 import { TargetPostComment } from './Form/TargetPostComment';
 import { TitleAndEnabled } from './Form/TitleAndEnabled';
@@ -105,6 +104,7 @@ export function AutomationBuilder({
             isPromotion={isPromotion}
             helpSlot={helpSlots?.contents}
             builderMode={mode}
+            commentTriggerHelpSlot={helpSlots?.commentTrigger}
           />
         </div>
 
@@ -118,7 +118,6 @@ export function AutomationBuilder({
               helpSlot={helpSlots?.justFollowers}
             />
             {commentRepliesSlot}
-            <CommentTriggerInputs helpSlot={helpSlots?.commentTrigger} />
             <CommentLimitAlert />
           </div>
         )}

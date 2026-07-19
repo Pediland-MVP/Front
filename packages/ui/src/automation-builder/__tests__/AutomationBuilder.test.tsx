@@ -85,7 +85,7 @@ describe('AutomationBuilder (shared, mode=template)', () => {
     // Mode-gating: `JustFollowers` (identified by its own `_just-followers` root
     // class — a pre-existing, unique className in the production component, not
     // added for this test) is one of the automation-only sections
-    // (JustFollowers/CommentTriggerInputs/CommentLimitAlert) that `AutomationBuilder`
+    // (JustFollowers/CommentLimitAlert) that `AutomationBuilder`
     // gates behind `mode === 'automation'`. In `mode="template"` it must not be
     // mounted at all (not just visually hidden) — a regression like swapping the
     // `&&` gate for `||`, or dropping it, would render it here.
@@ -99,7 +99,7 @@ describe('AutomationBuilder (shared, mode=template)', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
 
-  it('does NOT render automation-only sections (JustFollowers/CommentTriggerInputs/CommentLimitAlert) when mode=template', () => {
+  it('does NOT render automation-only sections (JustFollowers/CommentLimitAlert) when mode=template', () => {
     const { container } = render(
       <AutomationBuilder
         mode="template"
