@@ -25,9 +25,6 @@ import {
   BookmarksSimpleIcon,
   ClipboardTextIcon,
   InstagramLogoIcon,
-  MegaphoneIcon,
-  FileTextIcon,
-  WarningCircleIcon,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -43,6 +40,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('webhooks'), url: '/webhooks' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('jobs'), url: '/jobs' }] : []),
+      ...(user?.role !== 'kam' ? [{ title: t('automationErrors'), url: '/automation-errors' }] : []),
+      { title: t('banners'), url: '/banners' },
+      { title: t('templates'), url: '/templates' },
       { title: t('aiAgent'), url: '/aiagent' },
       ...(user?.role !== 'kam' ? [{ title: t('settings'), url: '/settings' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('helpGuides'), url: '/guides' }] : []),
@@ -64,23 +64,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '/instagrams',
         icon: InstagramLogoIcon,
       },
-      ...(user?.role !== 'kam'
-        ? [{ title: t('automationErrors'), url: '/automation-errors', icon: WarningCircleIcon }]
-        : []),
       {
         title: t('workspaceCategories'),
         url: '/workspace-categories',
         icon: TagIcon,
-      },
-      {
-        title: t('banners'),
-        url: '/banners',
-        icon: MegaphoneIcon,
-      },
-      {
-        title: t('templates'),
-        url: '/templates',
-        icon: FileTextIcon,
       },
       {
         title: t('myCustomers'),
