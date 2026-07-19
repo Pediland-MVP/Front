@@ -292,6 +292,103 @@ describe('Contents — DELAY content-type shared 23h budget (Add-content flow)',
   });
 });
 
+describe('Contents — StartAutomationMessage (read-only comment-start preview)', () => {
+  function CommentStartWrapper({
+    isComment,
+    justFollowers,
+    initialContents,
+  }: {
+    isComment?: boolean;
+    justFollowers?: boolean;
+    initialContents?: any[];
+  }) {
+    const form = useForm({
+      defaultValues: {
+        contents: initialContents ?? [],
+        reminders: [],
+        isComment: isComment ?? false,
+        justFollowers: justFollowers ?? false,
+      },
+    });
+    return (
+      <FormProvider {...form}>
+        <Contents
+          mode={AutomationContentModeEnum.AUTOMATION}
+          apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        />
+      </FormProvider>
+    );
+  }
+
+  // Under the next-intl mock at the top of this file, every key echoes back verbatim
+  // regardless of namespace, so `t('start_request_message')` from the
+  // `Automations.CommentConsent` namespace resolves to the literal key.
+  const HEADER_TEXT = 'start_request_message';
+
+  it('shows the read-only start-message card when isComment=true, justFollowers=false, and there is more than one content', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+  });
+
+  it('hides the card when justFollowers is on, even with isComment=true and multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('hides the card when there is only a single, non-PRODUCT content', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[{ type: AutomationContentTypesEnum.TEXT }]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('shows the card for a single PRODUCT content even though contents.length is 1', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[{ type: AutomationContentTypesEnum.PRODUCT }]}
+      />,
+    );
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+  });
+
+  it('hides the card entirely when isComment is false', () => {
+    render(
+      <CommentStartWrapper
+        isComment={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+});
+
 describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () => {
   // Dumps the live `contents` form state to the DOM so tests can assert on it without
   // reaching into the `useForm` instance directly. `useWatch`/`getValues` here reflect

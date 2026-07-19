@@ -70,7 +70,7 @@ export interface AutomationBuilderProps {
    * `hasInstagram`. */
   isPromotion?: boolean;
   /** Rendered inside the automation-only section, between `JustFollowers` and
-   * `CommentTriggerInputs` — the same position the dashboard-only `CommentReplies`
+   * `CommentLimitAlert` — the same position the dashboard-only `CommentReplies`
    * component (workspace comment-reply defaults) occupied before the automation-builder
    * move. Not rendered in `mode="template"`. */
   commentRepliesSlot?: React.ReactNode;

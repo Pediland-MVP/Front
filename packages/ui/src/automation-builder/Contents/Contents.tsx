@@ -43,6 +43,7 @@ import { ValidationTypeEnum } from '../types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
 import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
 import { ChooseAutomationType } from './ChooseAutomationType';
+import { StartAutomationMessage } from './StartAutomationMessage';
 import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
 import {
   delayUnitOptionsCount,
@@ -71,6 +72,9 @@ type ContentsProps = {
    * render `Contents` directly outside `AutomationBuilder` (e.g. the dashboard's own
    * `Form/Reminder.tsx`), which are never in template mode. */
   builderMode?: AutomationBuilderMode;
+  /** Rendered next to the `StartAutomationMessage` header label. Replaces the
+   * dashboard-only `HelpMeDialog` that used to be hardcoded there. */
+  commentTriggerHelpSlot?: React.ReactNode;
 };
 
 // `GET /templates?search=` (core's `readTemplates`) returns a `PaginatedResult` body —
@@ -87,6 +91,7 @@ export const Contents = ({
   isPromotion,
   helpSlot,
   builderMode = 'automation',
+  commentTriggerHelpSlot,
 }: ContentsProps) => {
   const t = useTranslations('Automations.Contents');
   const t_contentTypes = useTranslations('Automations.Contents.Types');
@@ -337,6 +342,10 @@ export const Contents = ({
   return (
     <ContentsContext.Provider value={{ contents, updateContents, removeContents, builderMode }}>
       <div className="_content-item flex flex-col gap-3">
+        {mode === AutomationContentModeEnum.AUTOMATION && (
+          <StartAutomationMessage helpSlot={commentTriggerHelpSlot} />
+        )}
+
         {contents.length === 0 && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
