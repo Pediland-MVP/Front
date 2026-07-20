@@ -28,12 +28,28 @@ import { Button } from '@/components/ui/button';
 import useSWR from 'swr';
 import { DurationResponse, PlanResponse } from '@/types/subscription';
 import api, { fetcher } from '@/hooks/swr/api-client';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatNumber } from '@/lib/formatNumber';
 import { onInputP2EHandler } from '@/lib/p2eNumber';
 import { toast } from 'sonner';
 
+interface WorkspaceInstagramOption {
+  id: string;
+  username: string;
+}
+
+interface WorkspaceOption {
+  workspaceId: string;
+  workspaceName: string;
+  isPersonal: boolean;
+  role: 'owner' | 'member';
+  instagrams: WorkspaceInstagramOption[];
+}
+
 const FormSchema = z.object({
+  workspaceId: z.string().min(1, 'ورک‌اسپیس را انتخاب کنید.'),
+  instagramId: z.string().optional(),
   planId: z.string().min(1, 'اشتراک را انتخاب کنید.'),
   planDurationId: z.string().min(1, 'مدت را انتخاب کنید.'),
   price: z.number().optional(),
@@ -53,15 +69,58 @@ export const AddSubscriptionDialog = ({
 }: AddSubscriptionDialogProps) => {
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
 
+  const t_ec = useTranslations('ERROR_CODES');
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      workspaceId: '',
+      instagramId: '',
       planId: '',
       planDurationId: '',
       price: 0,
       finalPrice: undefined,
     },
   });
+
+  const { data: workspacesData, isLoading: isWorkspacesLoading } = useSWR<{
+    items: WorkspaceOption[];
+  }>(open ? `/users/${userId}/workspaces?page=1&limit=100` : null, fetcher);
+
+  // Only workspaces this customer OWNS. Charging one they merely belong to would credit
+  // a different customer's account and show up on that owner's page instead.
+  const ownedWorkspaces = useMemo(
+    () => (workspacesData?.items ?? []).filter((w) => w.role === 'owner'),
+    [workspacesData],
+  );
+
+  const selectedWorkspaceId = form.watch('workspaceId');
+
+  const availableInstagrams = useMemo(
+    () => ownedWorkspaces.find((w) => w.workspaceId === selectedWorkspaceId)?.instagrams ?? [],
+    [ownedWorkspaces, selectedWorkspaceId],
+  );
+
+  // Exactly one owned workspace -> preselect it, so the common case needs no clicks.
+  useEffect(() => {
+    if (ownedWorkspaces.length === 1 && !form.getValues('workspaceId')) {
+      form.setValue('workspaceId', ownedWorkspaces[0].workspaceId);
+    }
+  }, [ownedWorkspaces, form]);
+
+  // Exactly one page in the chosen workspace -> preselect it. Also clears a page that
+  // belonged to a previously selected workspace and is no longer valid.
+  useEffect(() => {
+    if (!selectedWorkspaceId) return;
+    const current = form.getValues('instagramId');
+    const stillValid = availableInstagrams.some((ig) => ig.id === current);
+    if (current && !stillValid) {
+      form.setValue('instagramId', '');
+    }
+    if (availableInstagrams.length === 1 && !stillValid) {
+      form.setValue('instagramId', availableInstagrams[0].id);
+    }
+  }, [selectedWorkspaceId, availableInstagrams, form]);
 
   const { data: plansData, isLoading: isPlansLoading } = useSWR<PlanResponse>(`/plans`, fetcher);
 
@@ -74,6 +133,9 @@ export const AddSubscriptionDialog = ({
     const price = data.finalPrice ?? data.price;
     const payload = {
       userId,
+      workspaceId: data.workspaceId,
+      // Empty string means "no specific page" -> untargeted pool sub.
+      ...(data.instagramId ? { instagramId: data.instagramId } : {}),
       planDurationId: data.planDurationId,
       price,
     };
@@ -82,11 +144,10 @@ export const AddSubscriptionDialog = ({
       await api.post('/subscriptions', payload);
       onOpenChange(false);
       toast.success('اشتراک با موفقیت اضافه شد.');
-    } catch (error) {
-      console.error(error);
-      toast.error('خطا در اضافه کردن اشتراک.');
-    } finally {
       form.reset();
+    } catch (error) {
+      const code = (error as { response?: { data?: { code?: string } } })?.response?.data?.code;
+      toast.error((code && t_ec(code)) || 'خطا در اضافه کردن اشتراک.');
     }
   };
 
@@ -103,6 +164,72 @@ export const AddSubscriptionDialog = ({
             onSubmit={form.handleSubmit(handleAddSubscription)}
             className="grid gap-x-2 gap-y-3 md:grid-cols-3"
           >
+            <FormField
+              control={form.control}
+              name="workspaceId"
+              render={({ field }) => (
+                <FormItem className="md:col-span-3">
+                  <FormLabel>ورک‌اسپیس</FormLabel>
+                  <Select
+                    disabled={isWorkspacesLoading || ownedWorkspaces.length === 0}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="ورک‌اسپیس را انتخاب کنید" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ownedWorkspaces.map((ws) => (
+                        <SelectItem key={ws.workspaceId} value={ws.workspaceId}>
+                          {ws.workspaceName}
+                          {ws.isPersonal ? ' (شخصی)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {!isWorkspacesLoading && ownedWorkspaces.length === 0 && (
+                    <p className="text-xs text-rose-600">
+                      این کاربر هیچ ورک‌اسپیسی ندارد و قابل شارژ نیست.
+                    </p>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="instagramId"
+              render={({ field }) => (
+                <FormItem className="md:col-span-3">
+                  <FormLabel>پیج اینستاگرام (اختیاری)</FormLabel>
+                  <Select
+                    disabled={!selectedWorkspaceId}
+                    onValueChange={(val) => field.onChange(val === 'none' ? '' : val)}
+                    value={field.value ? field.value : 'none'}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="بدون پیج خاص (استخر)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">بدون پیج خاص (استخر)</SelectItem>
+                      {availableInstagrams.map((ig) => (
+                        <SelectItem key={ig.id} value={ig.id}>
+                          @{ig.username}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-slate-500">
+                    {field.value
+                      ? 'اگر این پیج اشتراک فعال داشته باشد، این شارژ رزرو می‌شود و بعد از پایان اشتراک فعلی شروع می‌شود.'
+                      : 'بدون انتخاب پیج، شارژ به استخر ورک‌اسپیس اضافه می‌شود و هنگام اتصال پیج مصرف می‌شود.'}
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="planId"
@@ -216,7 +343,10 @@ export const AddSubscriptionDialog = ({
             />
 
             <div className="mt-3 flex gap-2 md:col-span-3">
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting || ownedWorkspaces.length === 0}
+              >
                 {form.formState.isSubmitting ? 'در حال ثبت...' : 'افزودن اشتراک'}
               </Button>
 
