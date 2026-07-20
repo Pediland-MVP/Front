@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import useSWR from 'swr';
 import { DurationResponse, PlanResponse } from '@/types/subscription';
 import api, { fetcher } from '@/hooks/swr/api-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { formatNumber } from '@/lib/formatNumber';
 import { onInputP2EHandler } from '@/lib/p2eNumber';
@@ -101,7 +101,20 @@ export const AddSubscriptionDialog = ({
     [ownedWorkspaces, selectedWorkspaceId],
   );
 
+  // Which workspaceId we've already resolved the page (instagramId) defaults for. This is
+  // what lets the dialog PRESERVE the operator's selections across close/reopen: closing
+  // pauses the workspaces SWR key, which makes `availableInstagrams` momentarily collapse
+  // to [] (and then pop back once reopened/revalidated) even though nothing about the
+  // workspace actually changed. Without this guard, the page-defaults effect below would
+  // treat that flicker as "the list changed" and clear (or re-auto-select over) whatever
+  // the operator had deliberately chosen - including a deliberate "no page" (pool) choice.
+  // Reset to null whenever the workspace actually changes (see that effect) or the dialog
+  // is opened for a different customer (see the userId-reset effect further down).
+  const instagramDefaultsAppliedRef = useRef<string | null>(null);
+
   // Exactly one owned workspace -> preselect it, so the common case needs no clicks.
+  // Only ever SETS an empty value, never clears an existing one, so it's already safe
+  // across the close/reopen SWR flicker described above.
   useEffect(() => {
     if (ownedWorkspaces.length === 1 && !form.getValues('workspaceId')) {
       form.setValue('workspaceId', ownedWorkspaces[0].workspaceId);
@@ -109,9 +122,15 @@ export const AddSubscriptionDialog = ({
   }, [ownedWorkspaces, form]);
 
   // Exactly one page in the chosen workspace -> preselect it. Also clears a page that
-  // belonged to a previously selected workspace and is no longer valid.
+  // belonged to a previously selected workspace and is no longer valid. Runs at most once
+  // per selectedWorkspaceId (tracked via instagramDefaultsAppliedRef) so a later re-render
+  // with the SAME workspace - e.g. the SWR list flickering to [] and back while the dialog
+  // closes/reopens, or a background revalidation - never touches instagramId again. That is
+  // what keeps a deliberate "بدون پیج خاص" (pool) choice from being silently overwritten.
   useEffect(() => {
     if (!selectedWorkspaceId) return;
+    if (instagramDefaultsAppliedRef.current === selectedWorkspaceId) return;
+
     const current = form.getValues('instagramId');
     const stillValid = availableInstagrams.some((ig) => ig.id === current);
     if (current && !stillValid) {
@@ -120,7 +139,21 @@ export const AddSubscriptionDialog = ({
     if (availableInstagrams.length === 1 && !stillValid) {
       form.setValue('instagramId', availableInstagrams[0].id);
     }
+    instagramDefaultsAppliedRef.current = selectedWorkspaceId;
   }, [selectedWorkspaceId, availableInstagrams, form]);
+
+  // Opening the dialog for a DIFFERENT customer must never carry over the previous
+  // customer's selections - the component can stay mounted across userId changes (the
+  // parent just swaps the prop and re-opens). Reset the form and the page-defaults tracker
+  // back to a clean slate whenever userId changes, independent of open/close.
+  const previousUserIdRef = useRef(userId);
+  useEffect(() => {
+    if (previousUserIdRef.current === userId) return;
+    previousUserIdRef.current = userId;
+    form.reset();
+    setSelectedPlanId('');
+    instagramDefaultsAppliedRef.current = null;
+  }, [userId, form]);
 
   const { data: plansData, isLoading: isPlansLoading } = useSWR<PlanResponse>(`/plans`, fetcher);
 
