@@ -66,6 +66,9 @@ export type Customer = {
       createDate: string;
       paymentMethod: string;
     }[];
+    workspaceId: string;
+    workspaceName: string;
+    isPersonalWorkspace: boolean;
   }[];
 
   instagrams: Instagram[];
