@@ -213,7 +213,9 @@
     "BANNER_NOT_FOUND": "بنر یافت نشد",
     "BANNER_CATEGORY_NOT_FOUND": "یک یا چند دسته‌بندی انتخاب‌شده یافت نشد",
     "TEMPLATE_NOT_FOUND": "قالب یافت نشد",
-    "TEMPLATE_CATEGORY_ASSIGNMENT_REQUIRED": "حداقل یک دسته‌بندی انتخاب کنید یا گزینه «اعمال روی همه دسته‌بندی‌ها» را فعال کنید"
+    "TEMPLATE_CATEGORY_ASSIGNMENT_REQUIRED": "حداقل یک دسته‌بندی انتخاب کنید یا گزینه «اعمال روی همه دسته‌بندی‌ها» را فعال کنید",
+    "WORKSPACE_NOT_OWNED_BY_USER": "این ورک‌اسپیس متعلق به این کاربر نیست",
+    "INSTAGRAM_NOT_IN_WORKSPACE": "این پیج در ورک‌اسپیس انتخاب‌شده وجود ندارد"
   },
   "Workspaces": {
     "title": "کسب‌وکارها",
