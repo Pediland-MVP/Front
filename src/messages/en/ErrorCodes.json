@@ -87,6 +87,11 @@
     "VERIFY_TRANSACTION_NOT_FOUND": "Verification transaction not found.",
     "ZARINPAL_ERROR": "Zarinpal error.",
     "ZARINPAL_USER_HAVE_NOT": "User does not have a Zarinpal account.",
-    "ZARINPAL_VERIFY_ERROR": "Zarinpal verification error."
+    "ZARINPAL_VERIFY_ERROR": "Zarinpal verification error.",
+
+    "INVALID_AUDIO_FILE": "The audio file is not valid.",
+    "AUDIO_CONVERSION_FAILED": "Audio conversion failed, please try again.",
+    "AUDIO_CONVERTER_BUSY": "The audio converter is busy right now, please try again shortly.",
+    "AUDIO_TOO_LONG": "The audio is longer than the 10-minute limit."
   }
 }

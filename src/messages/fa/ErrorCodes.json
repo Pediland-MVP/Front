@@ -88,6 +88,11 @@
     "VERIFY_TRANSACTION_NOT_FOUND": "تراکنش تأیید پیدا نشد",
     "ZARINPAL_ERROR": "خطا در زرین پال",
     "ZARINPAL_USER_HAVE_NOT": "کاربر زرین پال ندارد",
-    "ZARINPAL_VERIFY_ERROR": "خطا در تأیید زرین پال"
+    "ZARINPAL_VERIFY_ERROR": "خطا در تأیید زرین پال",
+
+    "INVALID_AUDIO_FILE": "فایل صوتی معتبر نیست",
+    "AUDIO_CONVERSION_FAILED": "تبدیل فایل صوتی ناموفق بود، لطفاً دوباره تلاش کنید",
+    "AUDIO_CONVERTER_BUSY": "سیستم تبدیل صدا در حال حاضر شلوغ است، لطفاً کمی بعد دوباره تلاش کنید",
+    "AUDIO_TOO_LONG": "مدت فایل صوتی بیشتر از حد مجاز (۱۰ دقیقه) است"
   }
 }

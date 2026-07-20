@@ -223,7 +223,8 @@
   "AudioRecorderWithVisualizer": {
     "title": "برای ضبط ویس اینجا کلیک کنید",
     "recordAgain": "ضبط مجدد",
-    "saveRecord": "تایید"
+    "saveRecord": "تایید",
+    "encodeError": "پردازش صدای ضبط‌شده ناموفق بود. دوباره تلاش کنید."
   },
   "Directs": {
     "ExcelExport": {

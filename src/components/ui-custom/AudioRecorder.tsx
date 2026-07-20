@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   ArrowsCounterClockwiseIcon,
   CheckIcon,
@@ -29,6 +30,71 @@ let timerTimeout: NodeJS.Timeout;
 
 const padWithLeadingZeros = (num: number, length: number): string => {
   return String(num).padStart(length, "0");
+};
+
+const writeAsciiString = (view: DataView, offset: number, str: string) => {
+  for (let i = 0; i < str.length; i++) {
+    view.setUint8(offset + i, str.charCodeAt(i));
+  }
+};
+
+const audioBufferToWavBlob = (audioBuffer: AudioBuffer): Blob => {
+  const numChannels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const bytesPerSample = 2;
+  const blockAlign = numChannels * bytesPerSample;
+  const dataSize = audioBuffer.length * blockAlign;
+
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+
+  writeAsciiString(view, 0, "RIFF");
+  view.setUint32(4, 36 + dataSize, true);
+  writeAsciiString(view, 8, "WAVE");
+  writeAsciiString(view, 12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * blockAlign, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bytesPerSample * 8, true);
+  writeAsciiString(view, 36, "data");
+  view.setUint32(40, dataSize, true);
+
+  const channelData = Array.from({ length: numChannels }, (_, channel) =>
+    audioBuffer.getChannelData(channel),
+  );
+
+  let offset = 44;
+  for (let i = 0; i < audioBuffer.length; i++) {
+    for (let channel = 0; channel < numChannels; channel++) {
+      const sample = Math.max(-1, Math.min(1, channelData[channel][i]));
+      view.setInt16(
+        offset,
+        sample < 0 ? sample * 0x8000 : sample * 0x7fff,
+        true,
+      );
+      offset += 2;
+    }
+  }
+
+  return new Blob([buffer], { type: "audio/wav" });
+};
+
+// MediaRecorder's real output codec (e.g. WebM/Opus in Chrome, MP4/AAC in
+// Safari) never matches what we label the upload as. The backend sniffs actual
+// file bytes, so we decode the recording and re-encode it as a genuine WAV
+// container before handing it off.
+const recordingToWavBlob = async (recordedBlob: Blob): Promise<Blob> => {
+  const arrayBuffer = await recordedBlob.arrayBuffer();
+  const audioCtx = new AudioContext();
+  try {
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    return audioBufferToWavBlob(audioBuffer);
+  } finally {
+    await audioCtx.close();
+  }
 };
 
 export const AudioRecorderWithVisualizer = ({
@@ -132,13 +198,23 @@ export const AudioRecorderWithVisualizer = ({
     e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>,
   ) {
     e.stopPropagation();
-    recorder.onstop = () => {
-      const recordBlob = new Blob(recordingChunks, {
-        type: "audio/wav",
+    recorder.onstop = async () => {
+      const recordedBlob = new Blob(recordingChunks, {
+        type: recorder.mimeType,
       });
+      recordingChunks = [];
+
+      let wavBlob: Blob;
+      try {
+        wavBlob = await recordingToWavBlob(recordedBlob);
+      } catch (error) {
+        console.error(error);
+        toast.error(t("encodeError"));
+        return;
+      }
 
       if (onRecordingComplete) {
-        const file = new File([recordBlob], `Audio_${Date.now()}.wav`, {
+        const file = new File([wavBlob], `Audio_${Date.now()}.wav`, {
           type: "audio/wav",
         });
         onRecordingComplete(file);
@@ -146,12 +222,26 @@ export const AudioRecorderWithVisualizer = ({
 
       setCurrentRecord({
         ...currentRecord,
-        file: window.URL.createObjectURL(recordBlob),
+        file: window.URL.createObjectURL(wavBlob),
       });
-      recordingChunks = [];
     };
 
     recorder.stop();
+
+    const { mediaRecorder, stream, analyser, audioContext } =
+      mediaRecorderRef.current;
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
+    if (analyser) {
+      analyser.disconnect();
+    }
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    if (audioContext) {
+      audioContext.close();
+    }
 
     setIsRecording(false);
     setIsRecordingFinished(true);
