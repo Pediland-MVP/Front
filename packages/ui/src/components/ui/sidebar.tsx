@@ -356,7 +356,18 @@ function SidebarContent({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="sidebar-content"
       data-sidebar="content"
-      className={cn('flex min-h-0 flex-1 flex-col gap-3 overflow-hidden', className)}
+      className={cn(
+        // Scrolls on its own so the header/footer stay pinned. Without
+        // overflow-y-auto, an opened parent menu that outgrows the sidebar
+        // height gets clipped with no way to reach the hidden items.
+        // overflow-x-hidden keeps the submenu indent from causing sideways
+        // scroll; overscroll-contain stops the page behind from scrolling
+        // once the sidebar hits its end.
+        'scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent flex min-h-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto overscroll-contain',
+        // In icon mode there is nothing to scroll — keep it clipped.
+        'group-data-[collapsible=icon]:overflow-hidden',
+        className,
+      )}
       {...props}
     />
   );

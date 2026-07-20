@@ -17,7 +17,7 @@ import {
 import { CaretLeftIcon } from '@phosphor-icons/react';
 import { type Icon as PhosphorIcon } from '@phosphor-icons/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type NavItem = {
   title: string;
@@ -105,10 +105,29 @@ function CollapsibleNavItem({
   onOpenChange: (open: boolean) => void;
 }) {
   const isChildActive = item.children?.some((c) => pathname === c.url) ?? false;
+  const itemRef = useRef<HTMLLIElement>(null);
+
+  // Opening a menu near the bottom pushes its children past the sidebar's
+  // visible area. Once the children are in the DOM, pull the whole item back
+  // into view. 'nearest' scrolls the minimum needed, so a menu that already
+  // fits does not move at all.
+  useEffect(() => {
+    if (!open) return;
+    const frame = requestAnimationFrame(() => {
+      itemRef.current?.scrollIntoView({
+        block: 'nearest',
+        // matchMedia is missing in jsdom, so guard it rather than throw.
+        behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+          ? 'auto'
+          : 'smooth',
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
 
   return (
     <Collapsible open={open} onOpenChange={onOpenChange} asChild>
-      <SidebarMenuItem>
+      <SidebarMenuItem ref={itemRef}>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
             asChild
