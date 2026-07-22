@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { NextIntlClientProvider } from 'next-intl';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { NextIntlClientProvider, useTranslations } from 'next-intl';
 import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // This suite targets the single riskiest piece of Task 5: the "بازسازی جدول تنوع‌ها"
 // (regenerate) diff logic. Regenerating the variant table from the options builder must NOT
@@ -31,7 +33,7 @@ beforeEach(() => {
 
 import messages from '@/messages/fa.json';
 import { VariantsSection } from './VariantsSection';
-import type { ProductFormValues } from '../productForm.schema';
+import { buildProductFormSchema, type ProductFormValues } from '../productForm.schema';
 
 let capturedForm: UseFormReturn<ProductFormValues> | undefined;
 
@@ -49,6 +51,37 @@ function Harness({ defaultValues }: { defaultValues: ProductFormValues }) {
 
 function renderHarness(defaultValues: ProductFormValues) {
   return render(<Harness defaultValues={defaultValues} />);
+}
+
+// Only used by the Finding-2 regression test below: wires up the SAME zod schema/resolver
+// `ProductEditorPage` uses in the real app, so `form.formState.errors` gets populated exactly
+// the way `@hookform/resolvers`'s `toNestErrors` really nests it. The other suites above
+// intentionally render without a resolver (they only assert on `getValues`/DOM interactions),
+// so this is a separate harness rather than a change to the shared one.
+function HarnessWithResolverInner({ defaultValues }: { defaultValues: ProductFormValues }) {
+  // `useTranslations` needs the `NextIntlClientProvider` context, so this must render as a
+  // CHILD of it, not alongside it — mirrors how `ProductEditorPage` builds its schema.
+  const t = useTranslations('Commerce.Editor');
+  const schema = useMemo(() => buildProductFormSchema(t), [t]);
+  const form = useForm<ProductFormValues>({ defaultValues, resolver: zodResolver(schema) });
+  capturedForm = form;
+  return (
+    <FormProvider {...form}>
+      <VariantsSection mode="edit" />
+    </FormProvider>
+  );
+}
+
+function HarnessWithResolver({ defaultValues }: { defaultValues: ProductFormValues }) {
+  return (
+    <NextIntlClientProvider locale="fa" messages={messages}>
+      <HarnessWithResolverInner defaultValues={defaultValues} />
+    </NextIntlClientProvider>
+  );
+}
+
+function renderHarnessWithResolver(defaultValues: ProductFormValues) {
+  return render(<HarnessWithResolver defaultValues={defaultValues} />);
 }
 
 const twoValueOptionForm = (): ProductFormValues => ({
@@ -73,6 +106,7 @@ const twoValueOptionForm = (): ProductFormValues => ({
     {
       id: 'var-s',
       valueIndexes: [0],
+      _valueIdentities: ['val-s'],
       sku: 'SKU-S',
       price: 1000,
       isActive: true,
@@ -82,8 +116,139 @@ const twoValueOptionForm = (): ProductFormValues => ({
     {
       id: 'var-m',
       valueIndexes: [1],
+      _valueIdentities: ['val-m'],
       sku: 'SKU-M',
       price: 2000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+  ],
+});
+
+// Size: S(val-s) / M(val-m) / L(val-l) — used by the "remove a middle value" regression test.
+// `_valueIdentities` mirrors what `mapProductDetailToFormValues` would populate from real
+// backend ids, so the diff can key on stable identity instead of raw position.
+const threeValueOptionForm = (): ProductFormValues => ({
+  title: '',
+  description: '',
+  status: 'draft',
+  kind: 'physical',
+  categoryId: null,
+  shippingCost: 0,
+  options: [
+    {
+      id: 'opt-1',
+      name: 'Size',
+      style: 'dropdown',
+      values: [
+        { id: 'val-s', value: 'S' },
+        { id: 'val-m', value: 'M' },
+        { id: 'val-l', value: 'L' },
+      ],
+    },
+  ],
+  variants: [
+    {
+      id: 'var-s',
+      valueIndexes: [0],
+      _valueIdentities: ['val-s'],
+      sku: 'SKU-S',
+      price: 1000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+    {
+      id: 'var-m',
+      valueIndexes: [1],
+      _valueIdentities: ['val-m'],
+      sku: 'SKU-M',
+      price: 2000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+    {
+      id: 'var-l',
+      valueIndexes: [2],
+      _valueIdentities: ['val-l'],
+      sku: 'SKU-L',
+      price: 3000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+  ],
+});
+
+// Size: S(val-s) / M(val-m) x Color: Red(val-red) / Blue(val-blue) — used by the
+// option-row-reorder regression test. Each of the 4 combinations has a distinct, traceable
+// price/sku so a mis-mapping after reorder is unambiguous.
+const twoOptionMatrixForm = (): ProductFormValues => ({
+  title: '',
+  description: '',
+  status: 'draft',
+  kind: 'physical',
+  categoryId: null,
+  shippingCost: 0,
+  options: [
+    {
+      id: 'opt-size',
+      name: 'Size',
+      style: 'dropdown',
+      values: [
+        { id: 'val-s', value: 'S' },
+        { id: 'val-m', value: 'M' },
+      ],
+    },
+    {
+      id: 'opt-color',
+      name: 'Color',
+      style: 'dropdown',
+      values: [
+        { id: 'val-red', value: 'Red' },
+        { id: 'val-blue', value: 'Blue' },
+      ],
+    },
+  ],
+  variants: [
+    {
+      id: 'var-s-red',
+      valueIndexes: [0, 0],
+      _valueIdentities: ['val-s', 'val-red'],
+      sku: 'SKU-S-RED',
+      price: 1000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+    {
+      id: 'var-s-blue',
+      valueIndexes: [0, 1],
+      _valueIdentities: ['val-s', 'val-blue'],
+      sku: 'SKU-S-BLUE',
+      price: 2000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+    {
+      id: 'var-m-red',
+      valueIndexes: [1, 0],
+      _valueIdentities: ['val-m', 'val-red'],
+      sku: 'SKU-M-RED',
+      price: 3000,
+      isActive: true,
+      trackInventory: false,
+      allowBackorder: false,
+    },
+    {
+      id: 'var-m-blue',
+      valueIndexes: [1, 1],
+      _valueIdentities: ['val-m', 'val-blue'],
+      sku: 'SKU-M-BLUE',
+      price: 4000,
       isActive: true,
       trackInventory: false,
       allowBackorder: false,
@@ -133,6 +298,81 @@ describe('VariantsSection regenerate diffing', () => {
     const variants = capturedForm!.getValues('variants');
     expect(variants).toHaveLength(1);
     expect(variants[0]).toMatchObject({ id: 'var-s', sku: 'SKU-S', price: 1000 });
+  });
+
+  // Regression for the Critical review finding: the diff used to key existing variants by
+  // their raw positional `valueIndexes.join(',')`. Removing a NON-LAST value (the middle
+  // "M" here) shifts every later value down by one position without changing what it IS —
+  // so the old key '1' (which used to mean M) got matched against the new combo `[1]` (which
+  // now means L), silently making the surviving "L" row inherit M's stale price/sku. Keying
+  // on each value's stable identity (`id`/`_localId`) instead of position fixes this.
+  it("keeps the surviving variant's OWN price/sku after removing a middle option value", async () => {
+    renderHarness(threeValueOptionForm());
+
+    // Remove the "M" chip (the middle one — S, [M], L).
+    const removeButtons = screen.getAllByLabelText(messages.Commerce.Editor.Variants.removeValue);
+    expect(removeButtons).toHaveLength(3);
+    fireEvent.click(removeButtons[1]);
+
+    fireEvent.click(screen.getByTestId('regenerate-variants-button'));
+
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
+
+    const variants = capturedForm!.getValues('variants');
+    expect(variants).toHaveLength(2);
+
+    const s = variants.find((v) => v.id === 'var-s');
+    const l = variants.find((v) => v.id === 'var-l');
+
+    // S is untouched.
+    expect(s).toMatchObject({ sku: 'SKU-S', price: 1000 });
+    // L must keep ITS OWN price/sku (3000/SKU-L) — not M's (2000/SKU-M), which is what the
+    // old positional diff would have silently assigned it.
+    expect(l).toMatchObject({ sku: 'SKU-L', price: 3000 });
+    expect(variants.some((v) => v.id === 'var-m')).toBe(false);
+  });
+
+  // Regression for the same finding's second half: reordering OPTION ROWS (not just editing
+  // values within one row) shifts every existing variant's `valueIndexes` slots exactly like
+  // a value removal does — slot 0 used to mean "Size", now means "Color". The stable-identity
+  // diff must keep matching variants to the correct combination regardless of which slot the
+  // option now occupies.
+  it('preserves correct variant-to-value mapping after an option-row reorder', async () => {
+    renderHarness(twoOptionMatrixForm());
+
+    // Simulate a Color/Size row reorder (equivalent to what `handleOptionDragEnd` would do —
+    // driving the same `options` array `handleRegenerate` reads from is sufficient to exercise
+    // the diff logic under test without needing a real dnd-kit pointer/keyboard drag).
+    const options = capturedForm!.getValues('options');
+    await act(async () => {
+      capturedForm!.setValue('options', [options[1], options[0]]);
+    });
+
+    fireEvent.click(screen.getByTestId('regenerate-variants-button'));
+
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
+
+    const variants = capturedForm!.getValues('variants');
+    expect(variants).toHaveLength(4);
+
+    // Regardless of which slot (Color first, Size second, post-reorder) each combination now
+    // occupies, every row must still carry ITS OWN original price/sku.
+    expect(variants.find((v) => v.id === 'var-s-red')).toMatchObject({
+      sku: 'SKU-S-RED',
+      price: 1000,
+    });
+    expect(variants.find((v) => v.id === 'var-s-blue')).toMatchObject({
+      sku: 'SKU-S-BLUE',
+      price: 2000,
+    });
+    expect(variants.find((v) => v.id === 'var-m-red')).toMatchObject({
+      sku: 'SKU-M-RED',
+      price: 3000,
+    });
+    expect(variants.find((v) => v.id === 'var-m-blue')).toMatchObject({
+      sku: 'SKU-M-BLUE',
+      price: 4000,
+    });
   });
 
   it('blocks regeneration with a hard error (not a silent cap) above VARIANT_LIMIT', async () => {
@@ -204,5 +444,34 @@ describe('VariantsSection variant table edits', () => {
 
     expect(capturedForm!.getValues('variants.0.sku')).toBe('SKU-S-NEW');
     expect(capturedForm!.getValues('variants.1.sku')).toBe('SKU-M');
+  });
+});
+
+describe('VariantsSection array-level "at least one active variant" safety net', () => {
+  // Regression for the Important review finding: `@hookform/resolvers`'s `toNestErrors`
+  // nests a whole-array `.refine` error under `errors.variants.root`, not directly on
+  // `errors.variants`, whenever the array's own item fields (`variants.0.price`, etc.) are
+  // also registered — which they always are here. The old code read
+  // `errors.variants.message`, which is therefore always `undefined`, so this safety-net
+  // message never rendered. This uses the resolver-wired harness (the real app's schema) so
+  // `formState.errors` is populated exactly the way it really nests, rather than asserting on
+  // a hand-built errors object.
+  it('renders the safety-net message when the schema-level refine fires', async () => {
+    const form = twoValueOptionForm();
+    // Both variants inactive — e.g. legacy data already at zero active variants on load. The
+    // primary UI guard (disabled switch/delete on the "last active" variant) never blocks
+    // this state from existing in the first place, since it only stops the user from
+    // creating it via the switches — it doesn't retroactively fix already-invalid data.
+    form.variants[0].isActive = false;
+    form.variants[1].isActive = false;
+    renderHarnessWithResolver(form);
+
+    await act(async () => {
+      await capturedForm!.trigger();
+    });
+
+    expect(
+      await screen.findByText(messages.Commerce.Editor.Validation.atLeastOneActiveVariantRequired),
+    ).toBeInTheDocument();
   });
 });

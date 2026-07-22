@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { useFieldArray, useFormContext, useWatch, type FieldError } from 'react-hook-form';
 import { toast } from 'sonner';
 import {
   closestCenter,
@@ -73,7 +73,26 @@ interface VariantsSectionProps {
 }
 
 type OptionValue = ProductFormValues['options'][number]['values'][number];
+type Option = ProductFormValues['options'][number];
 type Variant = ProductFormValues['variants'][number];
+
+// A value's STABLE identity for diffing purposes: its real backend `id` once persisted, or
+// the `_localId` assigned the moment it was typed in this session (see `addValue`). Never the
+// value's array position — positions shift on reorder/removal, which is exactly what broke
+// the old positional diff (see `handleRegenerate`'s comment).
+const getValueIdentity = (value: OptionValue | undefined): string | undefined =>
+  value?.id ?? value?._localId;
+
+// A variant combination's diff key is the SORTED set of its selected values' stable
+// identities — sorted (not option-position order) so the key survives an option-ROW reorder
+// too: reordering options changes which slot in `valueIndexes` a given option occupies, but
+// the underlying SET of selected values (and therefore this key) is unchanged.
+const getComboKey = (identities: string[]): string => [...identities].sort().join('|');
+
+const getComboIdentities = (combo: number[], options: Option[]): string[] =>
+  combo.map(
+    (valueIndex, optionIndex) => getValueIdentity(options[optionIndex]?.values[valueIndex]) ?? '',
+  );
 
 /**
  * Variants & pricing — options builder (up to `OPTION_LIMIT` options, chip-based value
@@ -148,20 +167,28 @@ export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSection
 
     const combos = generateVariantCombinations(counts);
     const currentVariants = form.getValues('variants');
-    // Diff key = the positional combination itself. Any combination that still exists after
-    // regeneration keeps its existing row (id, price, SKU, stock, toggles) untouched — only
-    // combinations that are new get a fresh default row, and combinations that no longer
-    // exist are dropped. This is the guard against losing a merchant's already-entered prices
-    // on every options edit.
+    // Diff key = the SORTED SET of the combination's values' stable identities (real `id` or
+    // session `_localId`, never raw array position — see `getValueIdentity`/`getComboKey`).
+    // Any combination that still exists after regeneration keeps its existing row (id, price,
+    // SKU, stock, toggles) untouched — only combinations that are new get a fresh default row,
+    // and combinations that no longer exist are dropped. This is the guard against losing a
+    // merchant's already-entered prices on every options edit.
+    //
+    // Keying by raw position (the old approach) breaks the moment positions shift under the
+    // existing rows: removing a non-last value, or reordering option rows, both shift which
+    // index means what without changing the underlying values — a positional key would then
+    // silently match the wrong old row to a new combo (see the regression tests below).
     const existingByKey = new Map(
-      currentVariants.map((variant) => [variant.valueIndexes.join(','), variant]),
+      currentVariants.map((variant) => [getComboKey(variant._valueIdentities ?? []), variant]),
     );
 
     const nextVariants: Variant[] = combos.map((combo) => {
-      const existing = existingByKey.get(combo.join(','));
-      if (existing) return { ...existing, valueIndexes: combo };
+      const identities = getComboIdentities(combo, options);
+      const existing = existingByKey.get(getComboKey(identities));
+      if (existing) return { ...existing, valueIndexes: combo, _valueIdentities: identities };
       return {
         valueIndexes: combo,
+        _valueIdentities: identities,
         price: 0,
         isActive: true,
         trackInventory: false,
@@ -202,8 +229,15 @@ export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSection
     variantsFieldArray.remove(index);
   };
 
-  const arrayLevelError = (form.formState.errors.variants as { message?: string } | undefined)
-    ?.message;
+  // `@hookform/resolvers`'s `toNestErrors` nests a whole-array `.superRefine`/`.refine` error
+  // (path `variants`) under `errors.variants.root`, NOT directly on `errors.variants` — it
+  // does this whenever the array's own item fields (`variants.0.price`, etc.) are also
+  // registered, which they always are here. Reading `errors.variants.message` (the old code)
+  // is therefore always `undefined`; this safety-net message never rendered. Verified against
+  // the installed `@hookform/resolvers/dist/resolvers.mjs`'s `toNestErrors`.
+  const arrayLevelError = (
+    form.formState.errors.variants as (FieldError & { root?: FieldError }) | undefined
+  )?.root?.message;
 
   return (
     <div className="flex flex-col gap-5">
@@ -352,7 +386,12 @@ const OptionRow = ({
   const addValue = () => {
     const trimmed = valueDraft.trim();
     if (!trimmed) return;
-    const newValue: OptionValue = { value: trimmed };
+    // Assign the stable client-side identity the MOMENT the value is created — this is what
+    // lets `VariantsSection`'s regenerate-diff (see `getValueIdentity`) recognize this exact
+    // value across later edits/regenerates, before it has ever been saved (and therefore has
+    // no backend `id` yet). Never sent to the backend (`buildOptionsPayload` only reads
+    // `id`/`value`/`colorHex`).
+    const newValue: OptionValue = { value: trimmed, _localId: crypto.randomUUID() };
     if (optionStyle === 'color') newValue.colorHex = '#cccccc';
     valuesFieldArray.append(newValue);
     setValueDraft('');

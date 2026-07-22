@@ -27,11 +27,35 @@ export interface ProductFormValues {
     id?: string;
     name: string;
     style: CommerceOptionDetail['style'];
-    values: Array<{ id?: string; value: string; colorHex?: string }>;
+    values: Array<{
+      id?: string;
+      value: string;
+      colorHex?: string;
+      /**
+       * Client-only stable identity for a value that has no backend `id` yet (freshly typed
+       * in this session, before the first save). Assigned once, the moment the value is
+       * created (see `OptionRow`'s `addValue`), and never sent to the backend — the payload
+       * builders (`ProductEditorPage.tsx`) only ever read `id`/`value`/`colorHex`. Exists so
+       * `VariantsSection`'s regenerate-diff can key on a STABLE per-value identity
+       * (`id ?? _localId`) instead of the value's raw array position, which breaks under
+       * reorder/removal — see the diffing comment on `handleRegenerate`.
+       */
+      _localId?: string;
+    }>;
   }>;
   variants: Array<{
     id?: string;
     valueIndexes: number[]; // positional, matches the backend's VariantDto exactly
+    /**
+     * Parallel to `valueIndexes`, but holds the STABLE identity (`id ?? _localId`) of each
+     * selected option value instead of its position. Positions shift whenever an option's
+     * values are reordered/removed or option rows themselves are reordered, so `valueIndexes`
+     * alone can't be used to recognize "is this still the same variant" across a regenerate —
+     * this field can. Populated for loaded data in `mapProductDetailToFormValues` (straight
+     * from `optionValueIds`) and recomputed for every row `VariantsSection.handleRegenerate`
+     * writes. Client-only — never sent to the backend.
+     */
+    _valueIdentities?: string[];
     sku?: string;
     price: number;
     compareAtPrice?: number;
@@ -167,6 +191,7 @@ export const buildEmptyProductFormValues = (): ProductFormValues => ({
   variants: [
     {
       valueIndexes: [],
+      _valueIdentities: [],
       price: 0,
       isActive: true,
       trackInventory: false,
@@ -216,6 +241,9 @@ export const mapProductDetailToFormValues = (
   variants: product.variants.map((variant) => ({
     id: variant.id,
     valueIndexes: computeValueIndexes(variant, product.options),
+    // Straight from the backend's real value ids — already the exact stable identity set
+    // `VariantsSection`'s regenerate-diff needs, no re-derivation required.
+    _valueIdentities: variant.optionValueIds,
     sku: variant.sku ?? undefined,
     price: variant.price,
     compareAtPrice: variant.compareAtPrice ?? undefined,
