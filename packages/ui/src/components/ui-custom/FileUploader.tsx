@@ -66,7 +66,7 @@ export const FileUploader = ({
   };
 
   const { getRootProps, isDragActive } = useDropzone({
-    multiple: false,
+    multiple,
     noClick: true,
     onDrop: handleFileChange,
     onDropRejected: (error: any) => {
@@ -85,6 +85,7 @@ export const FileUploader = ({
           id="file-upload-handle"
           type={type}
           accept={accept}
+          multiple={multiple}
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
