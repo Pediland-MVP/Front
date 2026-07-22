@@ -2343,5 +2343,29 @@
       "delete_desc": "امکان حذف دائمی چرخه‌های محتوا"
     }
   },
-  "Commerce": {}
+  "Commerce": {
+    "List": {
+      "title": "کالاها",
+      "add": "کالای جدید",
+      "no_products": "هیچ کالایی ثبت نشده است.",
+      "Status": {
+        "all": "همه",
+        "active": "فعال",
+        "draft": "پیش‌نویس",
+        "archived": "آرشیو شده"
+      },
+      "Toast": {
+        "deleted": "کالای مورد نظر حذف شد."
+      },
+      "Card": {
+        "physical": "فیزیکی",
+        "digital": "دیجیتال",
+        "edit": "ویرایش",
+        "delete": "حذف",
+        "tooman": "تومان",
+        "priceFrom": "از {price} تومان",
+        "needsStockReview": "بررسی موجودی"
+      }
+    }
+  }
 }
