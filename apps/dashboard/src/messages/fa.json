@@ -1902,7 +1902,12 @@
     "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
   },
   "ERROR_CODES": {
-    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "این اتوماسیون به یک پست خاص متصل است و فقط می‌تواند یک پیج داشته باشد"
+    "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "این اتوماسیون به یک پست خاص متصل است و فقط می‌تواند یک پیج داشته باشد",
+    "COMMERCE_KIND_LOCKED": "چون این کالا حداقل یک سفارش دارد، نوع آن دیگر قابل تغییر نیست.",
+    "COMMERCE_PRODUCT_NOT_FOUND": "کالای مورد نظر پیدا نشد.",
+    "COMMERCE_OPTION_LIMIT_EXCEEDED": "حداکثر ۳ گزینهٔ تنوع مجاز است.",
+    "COMMERCE_VARIANT_LIMIT_EXCEEDED": "تعداد تنوع‌ها بیش از حد مجاز (۲۰۰۰ مورد) است.",
+    "COMMERCE_INVALID_SELECTION": "کالا باید حداقل یک تنوع فعال داشته باشد."
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
@@ -2366,6 +2371,62 @@
         "priceFrom": "از {price} تومان",
         "needsStockReview": "بررسی موجودی",
         "noVariant": "بدون تنوع"
+      }
+    },
+    "Editor": {
+      "Nav": {
+        "basic": "اطلاعات پایه",
+        "media": "رسانه",
+        "variants": "تنوع‌ها و قیمت",
+        "inventory": "موجودی",
+        "org": "دسته‌بندی و کالکشن",
+        "shipping": "هزینهٔ ارسال"
+      },
+      "Basic": {
+        "title": "عنوان کالا",
+        "description": "توضیحات",
+        "status": "وضعیت",
+        "StatusOptions": {
+          "draft": "پیش‌نویس",
+          "active": "فعال",
+          "archived": "آرشیو شده"
+        },
+        "kind": "نوع کالا",
+        "KindOptions": {
+          "physical": "فیزیکی",
+          "digital": "دیجیتال"
+        },
+        "kindLockedTooltip": "پس از ثبت کالا، نوع آن دیگر قابل تغییر نیست.",
+        "category": "دسته‌بندی",
+        "categoryPlaceholder": "یک دسته‌بندی انتخاب کنید",
+        "categoryNone": "بدون دسته‌بندی"
+      },
+      "Shipping": {
+        "shippingCost": "هزینهٔ ارسال (تومان)"
+      },
+      "placeholderNotice": "این بخش در حال ساخت است.",
+      "SaveBar": {
+        "save": "ذخیرهٔ تغییرات",
+        "cancel": "انصراف"
+      },
+      "Toast": {
+        "created": "کالا با موفقیت ثبت شد.",
+        "updated": "تغییرات کالا ذخیره شد."
+      },
+      "Errors": {
+        "kindLocked": "چون این کالا حداقل یک سفارش دارد، نوع آن دیگر قابل تغییر نیست.",
+        "generic": "مشکلی پیش آمد. دوباره تلاش کنید.",
+        "notFound": "کالای مورد نظر پیدا نشد."
+      },
+      "Validation": {
+        "titleRequired": "عنوان کالا را وارد کنید.",
+        "titleMax": "عنوان کالا نمی‌تواند بیشتر از ۲۵۵ نویسه باشد.",
+        "shippingCostInvalid": "هزینهٔ ارسال باید عددی صفر یا بزرگ‌تر باشد.",
+        "priceInvalid": "قیمت باید عددی صفر یا بزرگ‌تر باشد.",
+        "optionLimit": "حداکثر ۳ گزینهٔ تنوع مجاز است.",
+        "variantRequired": "کالا باید حداقل یک تنوع فعال داشته باشد.",
+        "optionNameRequired": "نام گزینه را وارد کنید.",
+        "optionValueRequired": "مقدار گزینه را وارد کنید."
       }
     }
   }
