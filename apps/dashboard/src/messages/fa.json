@@ -2364,7 +2364,8 @@
         "delete": "حذف",
         "tooman": "تومان",
         "priceFrom": "از {price} تومان",
-        "needsStockReview": "بررسی موجودی"
+        "needsStockReview": "بررسی موجودی",
+        "noVariant": "بدون تنوع"
       }
     }
   }

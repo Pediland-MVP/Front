@@ -40,6 +40,8 @@ export const ProductListPage = () => {
   const router = useRouter();
   const { can } = usePermissions();
   const hasViewPermission = can('product:view');
+  const canEdit = can('product:edit');
+  const canDelete = can('product:delete');
 
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
@@ -108,7 +110,7 @@ export const ProductListPage = () => {
   }, []);
 
   const handleDeleteConfirm = async () => {
-    if (itemToDelete) {
+    if (itemToDelete && canDelete) {
       await api
         .delete(`/commerce/products/${itemToDelete}`)
         .then(() => {
@@ -217,7 +219,13 @@ export const ProductListPage = () => {
         ) : (
           <div className="grid gap-3 md:grid-cols-3 2xl:grid-cols-4">
             {products.map((item) => (
-              <CommerceProductCard key={item.id} product={item} handleDelete={handleDelete} />
+              <CommerceProductCard
+                key={item.id}
+                product={item}
+                handleDelete={handleDelete}
+                canEdit={canEdit}
+                canDelete={canDelete}
+              />
             ))}
           </div>
         )}

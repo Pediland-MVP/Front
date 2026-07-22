@@ -17,9 +17,16 @@ import {
 interface CommerceProductCardProps {
   product: CommerceProductListItem;
   handleDelete: (id: string) => void;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
-const CommerceProductCardComponent = ({ product, handleDelete }: CommerceProductCardProps) => {
+const CommerceProductCardComponent = ({
+  product,
+  handleDelete,
+  canEdit,
+  canDelete,
+}: CommerceProductCardProps) => {
   const router = useRouter();
   const t = useTranslations('Commerce.List');
   const isPhysical = product.kind === 'physical';
@@ -69,39 +76,53 @@ const CommerceProductCardComponent = ({ product, handleDelete }: CommerceProduct
             </Badge>
           </div>
 
-          {hasPriceRange && (
+          {hasPriceRange ? (
             <div className="text-primary text-[14px] font-semibold">
               {isSinglePrice
                 ? `${product.minPrice!.toLocaleString()} ${t('Card.tooman')}`
                 : t('Card.priceFrom', { price: product.minPrice!.toLocaleString() })}
             </div>
+          ) : (
+            <div className="text-muted-foreground text-[14px] font-medium">
+              {t('Card.noVariant')}
+            </div>
           )}
         </div>
       </CardContent>
 
-      <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
-        <Button
-          className="text-muted-foreground h-9 w-full flex-1 rounded-none rounded-br-xl hover:bg-green-100 hover:text-green-800"
-          variant="ghost"
-          type="button"
-          size="sm"
-          onClick={() => router.push(`/products/${product.id}`)}
-        >
-          <PencilIcon className="text-green-600" />
-          {t('Card.edit')}
-        </Button>
+      {(canEdit || canDelete) && (
+        <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
+          {canEdit && (
+            <Button
+              className={`text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-green-100 hover:text-green-800 ${
+                canDelete ? 'rounded-br-xl' : 'rounded-b-xl'
+              }`}
+              variant="ghost"
+              type="button"
+              size="sm"
+              onClick={() => router.push(`/products/${product.id}`)}
+            >
+              <PencilIcon className="text-green-600" />
+              {t('Card.edit')}
+            </Button>
+          )}
 
-        <Button
-          className="hover:text-destructive text-muted-foreground h-9 w-full flex-1 rounded-none rounded-bl-xl hover:bg-red-100"
-          variant="ghost"
-          type="button"
-          size="sm"
-          onClick={() => handleDelete(product.id)}
-        >
-          <CircleXIcon className="text-destructive" />
-          {t('Card.delete')}
-        </Button>
-      </CardFooter>
+          {canDelete && (
+            <Button
+              className={`hover:text-destructive text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-red-100 ${
+                canEdit ? 'rounded-bl-xl' : 'rounded-b-xl'
+              }`}
+              variant="ghost"
+              type="button"
+              size="sm"
+              onClick={() => handleDelete(product.id)}
+            >
+              <CircleXIcon className="text-destructive" />
+              {t('Card.delete')}
+            </Button>
+          )}
+        </CardFooter>
+      )}
     </Card>
   );
 };

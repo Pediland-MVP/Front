@@ -12,8 +12,11 @@ vi.mock('swr/immutable', () => ({
   default: (...args: unknown[]) => mockUseSWRImmutable(...args),
 }));
 
+// `can` defaults to false for every slug; individual tests override it via
+// `mockCan.mockImplementation(...)` to exercise permission-gated UI (edit/delete buttons).
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(false) }));
 vi.mock('@/hooks/usePermissions', () => ({
-  usePermissions: () => ({ can: () => false }),
+  usePermissions: () => ({ can: mockCan }),
 }));
 
 const push = vi.fn();
@@ -49,6 +52,10 @@ const buildItem = (overrides: Partial<CommerceProductListItem> = {}): CommercePr
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // `vi.clearAllMocks()` clears call history but not a mock's implementation, so
+  // re-pin the default here — otherwise a `mockImplementation` set by one test
+  // (e.g. the permission-gating tests below) would leak into the next test.
+  mockCan.mockReset().mockReturnValue(false);
 });
 
 describe('ProductListPage', () => {
@@ -122,5 +129,77 @@ describe('ProductListPage', () => {
 
     expect(screen.getByText('12,000 تومان')).toBeInTheDocument();
     expect(screen.queryByText(/^از /)).not.toBeInTheDocument();
+  });
+
+  it('renders the "no variant yet" fallback instead of an empty gap when minPrice/maxPrice are null', () => {
+    const item = buildItem({ id: 'no-price', minPrice: null, maxPrice: null });
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [item],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    expect(() => renderPage()).not.toThrow();
+
+    expect(screen.getByText(messages.Commerce.List.Card.noVariant)).toBeInTheDocument();
+  });
+
+  it('does not render the edit/delete footer buttons when the viewer lacks both permissions', () => {
+    mockCan.mockReturnValue(false);
+    const item = buildItem();
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [item],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    renderPage();
+
+    expect(screen.queryByText(messages.Commerce.List.Card.edit)).not.toBeInTheDocument();
+    expect(screen.queryByText(messages.Commerce.List.Card.delete)).not.toBeInTheDocument();
+  });
+
+  it('renders only the edit button when the viewer can edit but not delete', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:edit');
+    const item = buildItem();
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [item],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Commerce.List.Card.edit)).toBeInTheDocument();
+    expect(screen.queryByText(messages.Commerce.List.Card.delete)).not.toBeInTheDocument();
+  });
+
+  it('renders both edit and delete buttons when the viewer has both permissions', () => {
+    mockCan.mockImplementation(
+      (slug: string) => slug === 'product:edit' || slug === 'product:delete',
+    );
+    const item = buildItem();
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [item],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Commerce.List.Card.edit)).toBeInTheDocument();
+    expect(screen.getByText(messages.Commerce.List.Card.delete)).toBeInTheDocument();
   });
 });
