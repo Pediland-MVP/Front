@@ -78,16 +78,20 @@ export interface CommerceProductDetail {
   updateDate: string;
   options: CommerceOptionDetail[];
   variants: CommerceVariantDetail[];
+  media: CommerceProductMedia[];
 }
 
+// Matches the backend's CommerceProductMediaDetailDto exactly (Back commit dd45d1fc) —
+// there is no dedicated GET media-list route; this array comes back inline on
+// GET /commerce/products/:id (CommerceProductDetail.media above). No productId/fileId:
+// those are internal backend fields, never exposed once the url is resolved server-side.
 export interface CommerceProductMedia {
   id: string;
-  productId: string;
-  fileId: number;
   type: CommerceMediaType;
   position: number;
   alt: string | null;
-  url: string; // resolved by the upload response / GET media list — see Task 4
+  url: string;
+  posterUrl: string | null; // resolved poster frame for video media, else null
 }
 
 export interface CommerceCategory {
