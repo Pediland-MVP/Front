@@ -12,6 +12,7 @@ import useSWRImmutable from 'swr/immutable';
 
 import api from '@/hooks/swr/api-client';
 import { usePermissions } from '@/hooks/usePermissions';
+import { cn } from '@/lib/utils';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 import type { CommerceProductDetail } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
@@ -95,6 +96,7 @@ const buildCreatePayload = (values: ProductFormValues) => ({
   status: values.status,
   kind: values.kind,
   ...(values.categoryId && { categoryId: values.categoryId }),
+  shippingCost: values.shippingCost,
   options: buildOptionsPayload(values.options),
   variants: buildVariantsPayload(values.variants),
 });
@@ -119,6 +121,7 @@ const buildUpdatePayload = (values: ProductFormValues) => ({
   status: values.status,
   kind: values.kind,
   categoryId: values.categoryId,
+  shippingCost: values.shippingCost,
 });
 
 export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) => {
@@ -242,7 +245,9 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col gap-5">
-        <div className="flex flex-1 flex-col gap-5 md:flex-row md:items-start md:gap-6">
+        <div
+          className={cn('flex flex-1 flex-col gap-5', !isMobile && 'flex-row items-start gap-6')}
+        >
           <EditorScrollspyNav
             sections={sections}
             sectionRefs={sectionRefs}
