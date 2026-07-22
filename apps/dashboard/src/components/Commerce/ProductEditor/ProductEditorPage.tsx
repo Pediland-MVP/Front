@@ -31,6 +31,7 @@ import {
   type ProductFormValues,
 } from './productForm.schema';
 import { BasicInfoSection } from './sections/BasicInfoSection';
+import { MediaSection } from './sections/MediaSection';
 import { ShippingSection } from './sections/ShippingSection';
 
 interface ProductEditorPageProps {
@@ -227,6 +228,9 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
   const renderSectionContent = (id: EditorSectionId) => {
     if (id === 'basic') return <BasicInfoSection />;
     if (id === 'shipping') return <ShippingSection />;
+    if (id === 'media') {
+      return <MediaSection mode={mode} productId={productId} media={product?.media ?? []} />;
+    }
 
     return (
       <Card>

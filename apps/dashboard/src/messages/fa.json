@@ -2404,6 +2404,17 @@
       "Shipping": {
         "shippingCost": "هزینهٔ ارسال (تومان)"
       },
+      "Media": {
+        "title": "تصاویر و ویدیوها",
+        "saveProductFirst": "ابتدا کالا را ذخیره کنید تا بتوانید تصویر اضافه کنید",
+        "cover": "شاخص",
+        "delete": "حذف",
+        "uploadSuccess": "فایل‌ها با موفقیت آپلود شد.",
+        "uploadError": "آپلود برخی از فایل‌ها با خطا مواجه شد.",
+        "deleteSuccess": "فایل حذف شد.",
+        "deleteError": "حذف فایل با خطا مواجه شد.",
+        "reorderError": "تغییر ترتیب با خطا مواجه شد."
+      },
       "placeholderNotice": "این بخش در حال ساخت است.",
       "SaveBar": {
         "save": "ذخیرهٔ تغییرات",
