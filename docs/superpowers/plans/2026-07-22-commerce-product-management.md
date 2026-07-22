@@ -423,38 +423,51 @@ export interface ProductFormValues {
 - Test: `apps/dashboard/src/components/Commerce/ProductEditor/sections/MediaSection.test.tsx`
 
 **Interfaces:**
-- Consumes: `CommerceProductMedia` (Task 1). Requires `productId` — **this section is
-  disabled with an explanatory message ("ابتدا کالا را ذخیره کنید تا بتوانید تصویر اضافه کنید")
-  until the product has been saved once (i.e. `mode === 'edit'` or create has already
-  succeeded once and redirected)** — matches the real API, which has no "attach media to an
-  unsaved product" concept.
-- Produces: nothing consumed elsewhere directly, but Task 6 (per-variant media picker) reads
-  the same `GET`-ed media list via a shared SWR key `` `/commerce/products/${productId}/media` ``
-  — **confirm this GET-list route actually exists before this task starts** (the API surface
-  enumeration found `POST/DELETE/PATCH` on `.../media` but the report did not confirm a
-  plain `GET` to list a product's media — check `MediaController` again; if there truly is no
-  GET, the media list must instead come from the product detail response once Task 3's fetch
-  is extended, or media state is only known immediately after each upload/delete response.
-  **Do not assume a GET route exists — verify first, this is the single biggest unknown left
-  in this plan.**).
+- Consumes: `CommerceProductMedia`, `CommerceProductDetail.media` (Task 1, corrected in
+  commit `e5e4b7a3` after the backend gap this section originally flagged as unresolved was
+  fixed — the Back branch has NO dedicated GET media-list route; `media[]` comes back inline
+  on `GET /commerce/products/:id`, the exact same fetch `ProductEditorPage.tsx` already makes
+  in edit mode). `CommerceProductMedia` is `{id, type, position, alt, url, posterUrl}` — no
+  `productId`/`fileId` (internal-only backend fields, never exposed), `posterUrl` is the
+  resolved poster-frame URL for video media (`null` for images).
+- Requires `productId` — **this section is disabled with an explanatory message ("ابتدا کالا
+  را ذخیره کنید تا بتوانید تصویر اضافه کنید") until the product has been saved once** (i.e.
+  `mode === 'edit'`, or create has already succeeded once and redirected) — matches the real
+  API, which has no "attach media to an unsaved product" concept.
+- **Architecture, resolved**: do NOT maintain a separate local `useState` for the media
+  array. `MediaSection.tsx` reads `media` off the SAME `useSWR` cache entry
+  `ProductEditorPage.tsx` already populates for `GET /commerce/products/:id` (pass the SWR
+  key + fetched data down, or call `useSWR` again with the identical key so it dedupes
+  against the same cache). **Every mutation** — upload, delete, reorder — calls the
+  mutation endpoint, then `mutate()`s that SAME product-detail SWR key to refetch and get
+  the authoritative list back (this is also how a freshly-uploaded image gets a real `url`:
+  `POST .../media`'s own response returns the raw entity with NO resolved url at all, so
+  don't try to render straight from the POST response — revalidate instead). Task 6
+  (per-variant media picker) reads the same cached `media` array this task establishes as
+  the pattern, not a separate fetch.
 
-- [ ] **Step 1: Verify the actual media-read path** (per the Interfaces note above) before
-  writing any code — grep `media.controller.ts` for a `@Get` decorator. Adjust this task's
-  data-fetching approach based on what's actually there.
-- [ ] **Step 2: Build the upload dropzone** using the existing `FileUploader` (`multiple`
-  mode) → `POST /commerce/products/:id/media` (multipart), append the returned media to
-  local state, `toast.success`.
-- [ ] **Step 3: Build the reorder grid** — drag via `@dnd-kit` (already a project dependency,
+- [ ] **Step 1: Build the upload dropzone** using the existing `FileUploader` (`multiple`
+  mode) → `POST /commerce/products/:id/media` (multipart, one request per file if multiple
+  are dropped at once — the endpoint accepts one file per call). On each successful upload,
+  `mutate()` the product-detail SWR key (don't try to construct a tile from the POST
+  response — it has no resolved `url`). `toast.success` once all uploads in a batch settle.
+- [ ] **Step 2: Build the reorder grid** — drag via `@dnd-kit` (already a project dependency,
   see `SortableButtonItem.tsx`/`dnd.tsx` for the exact pattern to copy), on drop call
-  `PATCH /commerce/products/:id/media` with the full reordered `mediaIds[]`. First position
-  renders a "شاخص" cover badge (implicit, no separate flag — per spec).
-- [ ] **Step 4: Delete button per tile** → `DELETE /commerce/products/:id/media/:mediaId`,
-  optimistic local removal + rollback on error.
-- [ ] **Step 5: `Commerce.Editor.Media.*` i18n keys.**
-- [ ] **Step 6: Write `MediaSection.test.tsx`** — upload success appends a tile, reorder
-  calls the PATCH with the right id order, delete removes a tile and rolls back on a mocked
-  API error.
-- [ ] **Step 7: Run tests, commit.**
+  `PATCH /commerce/products/:id/media` with the full reordered `mediaIds[]`, then `mutate()`
+  the same SWR key. First position renders a "شاخص" cover badge (implicit, no separate flag
+  — per spec). For instant visual feedback before the refetch resolves, it's fine to
+  optimistically reorder the local render via SWR's `mutate(key, optimisticData, {revalidate:
+  true})` rather than a second parallel local state array.
+- [ ] **Step 3: Delete button per tile** → `DELETE /commerce/products/:id/media/:mediaId`,
+  then `mutate()` the SWR key (same pattern as upload/reorder — one consistent mutate-then-
+  revalidate flow for all three mutations, no bespoke optimistic-rollback logic per action).
+- [ ] **Step 4: `Commerce.Editor.Media.*` i18n keys.**
+- [ ] **Step 5: Write `MediaSection.test.tsx`** — upload success triggers the SWR mutate
+  (assert the mutate/refetch call, not a locally-appended tile), reorder calls the PATCH
+  with the right id order, delete calls the DELETE then triggers mutate. Include one video
+  fixture (`type: 'video'`, non-null `posterUrl`) to prove the poster image renders instead
+  of trying to play/embed the video inline.
+- [ ] **Step 6: Run tests, commit.**
 
 ---
 
