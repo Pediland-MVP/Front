@@ -2107,5 +2107,6 @@
       "delete": "Delete Content Cycle",
       "delete_desc": "Permanently delete content cycles"
     }
-  }
+  },
+  "Commerce": {}
 }
