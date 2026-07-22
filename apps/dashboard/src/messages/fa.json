@@ -2415,6 +2415,55 @@
         "deleteError": "حذف فایل با خطا مواجه شد.",
         "reorderError": "تغییر ترتیب با خطا مواجه شد."
       },
+      "Variants": {
+        "optionsCardTitle": "گزینه‌های تنوع",
+        "optionsCardDescription": "مثلاً «رنگ» یا «وزن» را اضافه کنید و مقادیر هرکدام را وارد کنید — جدول تنوع‌ها به‌صورت خودکار ساخته می‌شود.",
+        "optionNamePlaceholder": "نام گزینه (مثلاً رنگ)",
+        "optionStyleLabel": "نوع نمایش",
+        "OptionStyleOptions": {
+          "dropdown": "کشویی",
+          "button": "دکمه‌ای",
+          "color": "رنگی"
+        },
+        "valueInputPlaceholder": "+ افزودن مقدار و Enter",
+        "colorHexLabel": "کد رنگ",
+        "removeOption": "حذف گزینه",
+        "removeValue": "حذف مقدار",
+        "addOption": "افزودن گزینه دیگر",
+        "optionLimitReached": "حداکثر ۳ گزینهٔ تنوع مجاز است.",
+        "regenerateButton": "بازسازی جدول تنوع‌ها ({count} ترکیب)",
+        "regenerateNeedsValues": "برای بازسازی جدول، هر گزینه باید حداقل یک مقدار داشته باشد.",
+        "regenerateLimitExceeded": "تعداد ترکیب‌های این گزینه‌ها ({count}) از سقف مجاز (۲۰۰۰ تنوع) بیشتر است. مقدارهای کمتری انتخاب کنید.",
+        "regenerateSuccess": "جدول تنوع‌ها بازسازی شد.",
+        "tableCardTitle": "جدول تنوع‌ها",
+        "tableCardDescription": "قیمت، موجودی و SKU هر ترکیب را جدا تعیین کنید. برای تخفیف زمان‌دار، «فروش ویژه» را فعال کنید.",
+        "variantCountBadge": "{count} تنوع",
+        "Columns": {
+          "media": "رسانه",
+          "variant": "تنوع",
+          "sku": "SKU",
+          "price": "قیمت (تومان)",
+          "compareAtPrice": "قیمت قبل از تخفیف",
+          "sale": "فروش ویژه",
+          "stock": "موجودی",
+          "trackInventory": "پیگیری موجودی",
+          "allowBackorder": "سفارش پس از اتمام موجودی",
+          "isActive": "فعال",
+          "actions": ""
+        },
+        "defaultVariantLabel": "کالای پایه",
+        "skuPlaceholder": "کد SKU (اختیاری)",
+        "mediaPlaceholderTooltip": "انتخاب رسانهٔ اختصاصی این تنوع در نسخهٔ بعدی فعال می‌شود.",
+        "saleToggleLabel": "فروش ویژه",
+        "salePriceLabel": "قیمت ویژه",
+        "saleStartsAtLabel": "شروع فروش ویژه",
+        "saleEndsAtLabel": "پایان فروش ویژه (اختیاری)",
+        "stockReadonlyNote": "برای تغییر موجودی، به بخش «موجودی» بروید.",
+        "deleteVariant": "حذف تنوع",
+        "deleteBlockedLastActive": "این تنها تنوع فعال کالا است — پیش از حذف آن، تنوع دیگری را فعال کنید.",
+        "deactivateBlockedLastActive": "این تنها تنوع فعال کالا است — حداقل یک تنوع باید همیشه فعال بماند.",
+        "noVariants": "هنوز هیچ تنوعی ساخته نشده است."
+      },
       "placeholderNotice": "این بخش در حال ساخت است.",
       "SaveBar": {
         "save": "ذخیرهٔ تغییرات",
@@ -2437,7 +2486,11 @@
         "optionLimit": "حداکثر ۳ گزینهٔ تنوع مجاز است.",
         "variantRequired": "کالا باید حداقل یک تنوع فعال داشته باشد.",
         "optionNameRequired": "نام گزینه را وارد کنید.",
-        "optionValueRequired": "مقدار گزینه را وارد کنید."
+        "optionValueRequired": "مقدار گزینه را وارد کنید.",
+        "compareAtPriceInvalid": "قیمت قبل از تخفیف باید بیشتر از قیمت باشد.",
+        "salePriceInvalid": "قیمت ویژه باید کمتر از قیمت باشد.",
+        "saleWindowRequired": "قیمت ویژه و تاریخ شروع آن باید هر دو با هم تنظیم شوند.",
+        "atLeastOneActiveVariantRequired": "کالا باید حداقل یک تنوع فعال داشته باشد."
       }
     }
   }

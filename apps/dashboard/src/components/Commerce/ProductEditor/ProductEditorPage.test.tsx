@@ -160,3 +160,62 @@ describe('ProductEditorPage shippingCost payload', () => {
     );
   });
 });
+
+// This targets Task 5's cross-task wiring: `buildUpdatePayload` must switch from ALWAYS
+// omitting `options`/`variants` (Task 3's placeholder behavior) to including them only when
+// `form.formState.dirtyFields` shows the Variants section actually touched them — verified in
+// both directions in one flow (edited variants => included, untouched options => omitted).
+describe('ProductEditorPage options/variants dirty-field gating', () => {
+  const editProductResponse = {
+    data: {
+      id: 'prod-1',
+      title: 'محصول موجود',
+      description: '',
+      status: 'draft',
+      kind: 'physical',
+      categoryId: null,
+      shippingCost: 5000,
+      options: [],
+      variants: [
+        {
+          id: 'var-1',
+          optionValueIds: [],
+          sku: 'OLD-SKU',
+          price: 1000,
+          isActive: true,
+          trackInventory: false,
+          allowBackorder: false,
+        },
+      ],
+    },
+  };
+
+  it('includes variants (but not options) when only the variant table was edited', async () => {
+    mockUseSWRImmutable.mockImplementation((key: string | null) => {
+      if (key === '/commerce/categories') {
+        return { data: { items: [] }, error: undefined, isLoading: false };
+      }
+      if (key === '/commerce/products/prod-1') {
+        return { data: editProductResponse, error: undefined, isLoading: false };
+      }
+      return { data: undefined, error: undefined, isLoading: false };
+    });
+
+    renderPage({ mode: 'edit', productId: 'prod-1' });
+
+    await waitFor(() => expect(screen.getByDisplayValue('محصول موجود')).toBeInTheDocument());
+
+    fireEvent.change(
+      screen.getByPlaceholderText(messages.Commerce.Editor.Variants.skuPlaceholder),
+      { target: { value: 'NEW-SKU' } },
+    );
+
+    fireEvent.click(screen.getByText(messages.Commerce.Editor.SaveBar.save));
+
+    await waitFor(() => expect(put).toHaveBeenCalled());
+    const [, payload] = put.mock.calls[0];
+    expect(payload).toHaveProperty('variants');
+    expect(payload.variants[0]).toMatchObject({ id: 'var-1', sku: 'NEW-SKU' });
+    expect(payload).not.toHaveProperty('options');
+  });
+});

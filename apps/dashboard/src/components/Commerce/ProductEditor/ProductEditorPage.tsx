@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldNamesMarkedBoolean } from 'react-hook-form';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
@@ -33,6 +33,7 @@ import {
 import { BasicInfoSection } from './sections/BasicInfoSection';
 import { MediaSection } from './sections/MediaSection';
 import { ShippingSection } from './sections/ShippingSection';
+import { VariantsSection } from './sections/VariantsSection';
 
 interface ProductEditorPageProps {
   mode: 'create' | 'edit';
@@ -103,26 +104,29 @@ const buildCreatePayload = (values: ProductFormValues) => ({
 });
 
 /**
- * `PUT /commerce/products/:id` deliberately OMITS `options`/`variants` here — this task has
- * no UI that lets the user touch them (Tasks 4-8 do), and the backend treats a missing
+ * `PUT /commerce/products/:id` only sends `options`/`variants` when the form's
+ * `dirtyFields` shows they were actually touched — the backend treats a missing
  * `options`/`variants` key as "leave unchanged" (see Back's
- * `product.service.ts#updateProduct`). Sending them back unconditionally from this task's
- * mapping would risk corrupting real variant/option data through a round-trip this task never
- * needed to get byte-perfect. `categoryId` is sent as-is (including `null`) because the
- * backend supports an explicit `null` to clear an existing category — omitting it here would
- * make "remove category" impossible from Basic Info.
- *
- * Once Task 5's variants UI (and Task 4's media / Task 6's org section) can mark the form as
- * genuinely dirty on those fields, this function should switch to conditionally including
- * them (e.g. via `form.formState.dirtyFields`) instead of never sending them.
+ * `product.service.ts#updateProduct`), so a product whose Variants section was never opened
+ * never risks a spurious round-trip of data this task didn't touch. Task 5's `VariantsSection`
+ * is the only UI that writes into `options`/`variants` via `useFieldArray`, and every write
+ * through `useFieldArray`/`setValue` marks `dirtyFields.options`/`dirtyFields.variants`, so
+ * this check is accurate in both directions. `categoryId` is sent as-is (including `null`)
+ * because the backend supports an explicit `null` to clear an existing category — omitting it
+ * here would make "remove category" impossible from Basic Info.
  */
-const buildUpdatePayload = (values: ProductFormValues) => ({
+const buildUpdatePayload = (
+  values: ProductFormValues,
+  dirtyFields: FieldNamesMarkedBoolean<ProductFormValues>,
+) => ({
   title: values.title,
   description: values.description,
   status: values.status,
   kind: values.kind,
   categoryId: values.categoryId,
   shippingCost: values.shippingCost,
+  ...(dirtyFields.options && { options: buildOptionsPayload(values.options) }),
+  ...(dirtyFields.variants && { variants: buildVariantsPayload(values.variants) }),
 });
 
 export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) => {
@@ -190,7 +194,7 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
         await mutate(mutateIncludeStringKey('/commerce/products'));
         router.push(`/products/${data.data.id}`);
       } else if (productId) {
-        const payload = buildUpdatePayload(values);
+        const payload = buildUpdatePayload(values, form.formState.dirtyFields);
         await api.put(`/commerce/products/${productId}`, payload);
         toast.success(t('Toast.updated'));
         await mutate(mutateIncludeStringKey('/commerce/products'));
@@ -230,6 +234,9 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
     if (id === 'shipping') return <ShippingSection />;
     if (id === 'media') {
       return <MediaSection mode={mode} productId={productId} media={product?.media ?? []} />;
+    }
+    if (id === 'variants') {
+      return <VariantsSection mode={mode} existingVariants={product?.variants ?? []} />;
     }
 
     return (

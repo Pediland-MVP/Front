@@ -68,24 +68,59 @@ export const buildProductFormSchema = (t: Translator) => {
     values: z.array(optionValueSchema),
   });
 
-  const variantSchema = z.object({
-    id: z.string().optional(),
-    valueIndexes: z.array(z.number().int().nonnegative()),
-    sku: z.string().optional(),
-    price: z
-      .number()
-      .int()
-      .nonnegative({ message: t('Validation.priceInvalid') }),
-    compareAtPrice: z.number().int().positive().optional(),
-    salePrice: z.number().int().nonnegative().optional(),
-    saleStartsAt: z.string().optional(),
-    saleEndsAt: z.string().optional(),
-    isActive: z.boolean(),
-    trackInventory: z.boolean(),
-    allowBackorder: z.boolean(),
-    weight: z.number().nonnegative().optional(),
-    initialStock: z.number().int().nonnegative().optional(),
-  });
+  // `compareAtPrice`/`salePrice` cross-field rules mirror the backend's variant validation
+  // exactly (see design spec "Variants & pricing"): `compareAtPrice > price` (strictly, not
+  // `>=`), `salePrice < price`, and `salePrice`/`saleStartsAt` must be set together. Checking
+  // these here means the user sees the error inline before submit instead of after a 400.
+  const variantSchema = z
+    .object({
+      id: z.string().optional(),
+      valueIndexes: z.array(z.number().int().nonnegative()),
+      sku: z.string().optional(),
+      price: z
+        .number()
+        .int()
+        .nonnegative({ message: t('Validation.priceInvalid') }),
+      compareAtPrice: z.number().int().positive().optional(),
+      salePrice: z.number().int().nonnegative().optional(),
+      saleStartsAt: z.string().optional(),
+      saleEndsAt: z.string().optional(),
+      isActive: z.boolean(),
+      trackInventory: z.boolean(),
+      allowBackorder: z.boolean(),
+      weight: z.number().nonnegative().optional(),
+      initialStock: z.number().int().nonnegative().optional(),
+    })
+    .superRefine((variant, ctx) => {
+      if (variant.compareAtPrice !== undefined && variant.compareAtPrice <= variant.price) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('Validation.compareAtPriceInvalid'),
+          path: ['compareAtPrice'],
+        });
+      }
+
+      if (variant.salePrice !== undefined && variant.salePrice >= variant.price) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('Validation.salePriceInvalid'),
+          path: ['salePrice'],
+        });
+      }
+
+      if (Boolean(variant.salePrice !== undefined) !== Boolean(variant.saleStartsAt)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('Validation.saleWindowRequired'),
+          path: ['salePrice'],
+        });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('Validation.saleWindowRequired'),
+          path: ['saleStartsAt'],
+        });
+      }
+    });
 
   return z.object({
     title: z
@@ -101,7 +136,17 @@ export const buildProductFormSchema = (t: Translator) => {
       .int()
       .nonnegative({ message: t('Validation.shippingCostInvalid') }),
     options: z.array(optionSchema).max(3, { message: t('Validation.optionLimit') }),
-    variants: z.array(variantSchema).min(1, { message: t('Validation.variantRequired') }),
+    variants: z
+      .array(variantSchema)
+      .min(1, { message: t('Validation.variantRequired') })
+      // Client-side mirror of the backend's `assertHasLiveVariant` guard — a product can
+      // never be saved with zero active variants. `VariantsSection` also blocks the
+      // deactivate/delete action itself so the user never gets this far, but this is the
+      // safety net if the form is submitted some other way.
+      .refine((variants) => variants.some((variant) => variant.isActive), {
+        message: t('Validation.atLeastOneActiveVariantRequired'),
+        path: [],
+      }),
   });
 };
 
