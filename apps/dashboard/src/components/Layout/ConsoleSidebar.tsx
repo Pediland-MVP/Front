@@ -56,6 +56,20 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       url: '/products',
       icon: CubeIcon,
       isActive: true,
+      items: [
+        {
+          title: t('productsAll'),
+          url: '/products',
+        },
+        {
+          title: t('productsTaxonomy'),
+          url: '/products/taxonomy',
+        },
+        {
+          title: t('productsImport'),
+          url: '/products/import',
+        },
+      ],
     },
     {
       title: t('ordersList'),
