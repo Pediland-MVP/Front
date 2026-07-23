@@ -101,18 +101,11 @@ export const VariantMediaPickerDialog = ({
         ...(coverId && { coverMediaId: coverId }),
       });
 
-      // `GET /commerce/products/:id` does NOT yet return each variant's media assignment —
-      // confirmed against the Back implementation (`media.service.ts#setVariantMedia`'s own
-      // response is just `{variantId, count}`, and Back's Task 16 report explicitly flags
-      // wiring per-variant cover reads into the read path as a FUTURE task, not done). A plain
-      // revalidating `mutate(key)` would therefore immediately overwrite the assignment we
-      // just saved with a fresh response that has no such field, erasing it from the UI right
-      // after a successful save. So: write the known-good result straight into the SAME shared
-      // SWR cache entry with `revalidate: false` — the same "shared cache is the source of
-      // truth" mechanism Task 4's MediaSection established for upload/reorder/delete — and
-      // deliberately skip the follow-up revalidating mutate this task's brief would otherwise
-      // call for. Once a future backend task adds this field to the GET response, this local
-      // write becomes redundant but harmless (revalidation will just confirm the same value).
+      // `GET /commerce/products/:id` now returns each variant's media assignment (Back commit
+      // 869261f8 closed the read-side gap this comment used to describe). Optimistically write
+      // the known-good result into the shared SWR cache (same "shared cache is the source of
+      // truth" mechanism Task 4's MediaSection established), then revalidate against the
+      // server for eventual consistency — matching Task 4's upload/reorder/delete pattern.
       await mutate(
         productDetailKey(productId),
         (current: IResponseMessage<CommerceProductDetail> | undefined) =>
@@ -130,7 +123,7 @@ export const VariantMediaPickerDialog = ({
               ),
             },
           },
-        { revalidate: false },
+        { revalidate: true },
       );
 
       toast.success(t('saveSuccess'));

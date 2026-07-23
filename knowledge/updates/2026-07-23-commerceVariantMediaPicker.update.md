@@ -80,7 +80,18 @@ Test Files  4 passed (4)
      Tests  31 passed (31)
 ```
 
-## Known limitation (flagged for whole-branch review)
+## Resolved: the read-side gap this doc originally flagged
+
+The "known limitation" below described `GET /commerce/products/:id` not returning
+per-variant media, which forced `handleSave` to write into the SWR cache with
+`revalidate: false` (skipping the follow-up revalidate). This was fixed same-day on the
+paired Back branch (`Back/knowledge/updates/2026-07-23-commerceVariantMediaReadable.update.md`,
+commit `869261f8`) — `CommerceProductVariantDetailDto` now includes `media`. `handleSave`
+was updated to `revalidate: true`, matching Task 4's normal optimistic-write-then-revalidate
+pattern; the assignment now survives a page reload correctly. Original text kept below for
+history.
+
+## Known limitation (flagged for whole-branch review) — RESOLVED, see above
 
 Because the backend doesn't yet expose per-variant media on `GET /commerce/products/:id`,
 a merchant who sets a variant's cover, then reloads the page (or another session opens the

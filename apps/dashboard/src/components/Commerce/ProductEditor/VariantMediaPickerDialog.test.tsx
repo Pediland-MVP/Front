@@ -129,7 +129,7 @@ describe('VariantMediaPickerDialog', () => {
     );
   });
 
-  it('after a successful save, writes the assignment into the shared SWR cache without a full revalidate', async () => {
+  it('after a successful save, optimistically writes the assignment into the shared SWR cache and revalidates', async () => {
     renderDialog([IMAGE]);
 
     fireEvent.click(screen.getByTestId('media-pool-tile-media-1'));
@@ -137,13 +137,11 @@ describe('VariantMediaPickerDialog', () => {
 
     await waitFor(() => expect(put).toHaveBeenCalled());
 
-    // Same shared key `ProductEditorPage.tsx`/`MediaSection.tsx` use, written with
-    // `revalidate: false` (the follow-up plain revalidate is deliberately skipped — see the
-    // code comment on why the GET response can't supply this field yet).
+    // Same shared key `ProductEditorPage.tsx`/`MediaSection.tsx` use, matching Task 4's
+    // optimistic-write-then-revalidate pattern now that the GET response includes this field.
     expect(mutateMock).toHaveBeenCalledWith('/commerce/products/prod-1', expect.any(Function), {
-      revalidate: false,
+      revalidate: true,
     });
-    expect(mutateMock).not.toHaveBeenCalledWith('/commerce/products/prod-1');
   });
 
   it('shows the empty-pool message when the product has no media yet', () => {

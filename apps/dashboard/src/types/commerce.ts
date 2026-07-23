@@ -60,7 +60,9 @@ export interface CommerceVariantDetail {
   weight: number | null;
   onHand: number;
   optionValueIds: string[];
-  media?: CommerceVariantMediaAssignment; // populated lazily by Task 6, not in the GET detail
+  // Always present in the GET detail response (Back commit 869261f8) — {selectedMediaIds: [],
+  // coverMediaId: null} means "no override, falls back to the product's implicit cover".
+  media: CommerceVariantMediaAssignment;
 }
 
 export interface CommerceProductDetail {
