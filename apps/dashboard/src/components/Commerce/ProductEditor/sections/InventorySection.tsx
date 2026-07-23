@@ -80,12 +80,16 @@ export const InventorySection = ({
       .join(' / ');
   };
 
-  const rows = watchedVariants.map((variant, index) => ({
-    index,
-    variantId: variant.id,
-    label: getVariantLabel(variant.valueIndexes ?? []),
-    onHand: existingVariants.find((existing) => existing.id === variant.id)?.onHand,
-  }));
+  const rows = watchedVariants.map((variant, index) => {
+    const existing = existingVariants.find((existing) => existing.id === variant.id);
+    return {
+      index,
+      variantId: variant.id,
+      label: getVariantLabel(variant.valueIndexes ?? []),
+      onHand: existing?.onHand,
+      lowStockThreshold: existing?.lowStockThreshold ?? null,
+    };
+  });
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [adjustVariantId, setAdjustVariantId] = useState<string | null>(null);
@@ -313,6 +317,7 @@ export const InventorySection = ({
           variantId={adjustRow.variantId}
           variantLabel={adjustRow.label}
           currentOnHand={adjustRow.onHand ?? 0}
+          currentLowStockThreshold={adjustRow.lowStockThreshold}
         />
       )}
     </div>

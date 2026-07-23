@@ -31,6 +31,7 @@ interface AdjustStockDialogProps {
   variantId: string;
   variantLabel: string;
   currentOnHand: number;
+  currentLowStockThreshold: number | null;
 }
 
 type Direction = 'increase' | 'decrease';
@@ -50,6 +51,7 @@ export const AdjustStockDialog = ({
   variantId,
   variantLabel,
   currentOnHand,
+  currentLowStockThreshold,
 }: AdjustStockDialogProps) => {
   const t = useTranslations('Commerce.Editor.Inventory.Adjust');
   const { onFocus } = useSelectOnFocus();
@@ -68,8 +70,8 @@ export const AdjustStockDialog = ({
     setNewOnHand(currentOnHand);
     setDirection('increase');
     setDeltaAmount(undefined);
-    setLowStockThreshold(undefined);
-  }, [open, variantId, currentOnHand]);
+    setLowStockThreshold(currentLowStockThreshold ?? undefined);
+  }, [open, variantId, currentOnHand, currentLowStockThreshold]);
 
   // Purely local helper: folds the typed delta amount (always entered as a positive
   // magnitude) into the single "new stock" field the request actually submits, using

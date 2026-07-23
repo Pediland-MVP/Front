@@ -19,7 +19,7 @@ vi.mock('sonner', () => ({ toast: { error: toastError, success: toastSuccess } }
 import messages from '@/messages/fa.json';
 import { AdjustStockDialog } from './AdjustStockDialog';
 
-function renderDialog(currentOnHand = 18) {
+function renderDialog(currentOnHand = 18, currentLowStockThreshold: number | null = null) {
   const onOpenChange = vi.fn();
   render(
     <NextIntlClientProvider locale="fa" messages={messages}>
@@ -30,6 +30,7 @@ function renderDialog(currentOnHand = 18) {
         variantId="var-1"
         variantLabel="۵۰۰ گرم / بدون جعبه"
         currentOnHand={currentOnHand}
+        currentLowStockThreshold={currentLowStockThreshold}
       />
     </NextIntlClientProvider>,
   );
@@ -89,6 +90,23 @@ describe('AdjustStockDialog', () => {
     fireEvent.change(deltaInputs[0], { target: { value: '5' } });
 
     expect(screen.getByTestId('adjust-stock-new-on-hand')).toHaveValue('13');
+  });
+
+  it('seeds the low-stock threshold input from the current value, and omits it from the PATCH when left untouched', async () => {
+    renderDialog(18, 7);
+
+    const input = screen.getByLabelText(
+      messages.Commerce.Editor.Inventory.Adjust.lowStockThreshold,
+    ) as HTMLInputElement;
+    expect(input.value).toBe('7');
+
+    fireEvent.click(screen.getByText(messages.Commerce.Editor.Inventory.Adjust.submit));
+
+    await waitFor(() =>
+      expect(patch).toHaveBeenCalledWith('/commerce/products/prod-1/stock', [
+        { variantId: 'var-1', onHand: 18, lowStockThreshold: 7 },
+      ]),
+    );
   });
 
   it('includes lowStockThreshold in the PATCH body only when the user provides one', async () => {

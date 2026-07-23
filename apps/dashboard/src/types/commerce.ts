@@ -59,6 +59,9 @@ export interface CommerceVariantDetail {
   allowBackorder: boolean;
   weight: number | null;
   onHand: number;
+  // Always present in the GET detail response (Back commit 56276b7a) — null means no
+  // threshold has ever been set for this variant.
+  lowStockThreshold: number | null;
   optionValueIds: string[];
   // Always present in the GET detail response (Back commit 869261f8) — {selectedMediaIds: [],
   // coverMediaId: null} means "no override, falls back to the product's implicit cover".

@@ -162,6 +162,7 @@ describe('InventorySection', () => {
             allowBackorder: false,
             weight: null,
             onHand: 18,
+            lowStockThreshold: null,
             optionValueIds: [],
             media: { selectedMediaIds: [], coverMediaId: null },
           },
@@ -189,6 +190,7 @@ describe('InventorySection', () => {
     allowBackorder: false,
     weight: null,
     onHand: 18,
+    lowStockThreshold: null,
     optionValueIds: [],
     media: { selectedMediaIds: [], coverMediaId: null },
   };
