@@ -2641,7 +2641,6 @@
         "failed": "خطاها",
         "jobFailed": "پردازش فایل با خطا متوقف شد. لطفاً فایل را بررسی و دوباره تلاش کنید.",
         "downloadErrorReport": "دانلود گزارش خطاها",
-        "downloadErrorReportUnavailable": "دانلود مستقیم گزارش خطاها هنوز فعال نشده است.",
         "importAnother": "بارگذاری فایل دیگر",
         "backToProducts": "بازگشت به فهرست کالاها"
       }

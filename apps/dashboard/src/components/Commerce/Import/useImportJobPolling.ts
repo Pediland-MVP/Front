@@ -16,7 +16,8 @@ export interface CommerceImportJobStatus {
   state: CommerceImportJobState;
   processed: number;
   failed: number;
-  errorReportFileId?: number;
+  // Already a resolved, downloadable URL (Back commit a0bad83c) — never a bare file id.
+  errorReportUrl?: string;
 }
 
 /** BullMQ states that mean "the job will never change again" — polling must stop here. */

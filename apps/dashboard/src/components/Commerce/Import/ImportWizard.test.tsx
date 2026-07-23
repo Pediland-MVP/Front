@@ -44,7 +44,12 @@ describe('ImportWizard', () => {
   it('uploads the selected file, moves to processing, then to the result step once the job is terminal — no column-mapping or preview step in between', async () => {
     post.mockResolvedValue({ data: { data: { jobId: 'job-42' } } });
     fetcherMock.mockResolvedValue({
-      data: { state: 'completed', processed: 3, failed: 1, errorReportFileId: 7 },
+      data: {
+        state: 'completed',
+        processed: 3,
+        failed: 1,
+        errorReportUrl: 'https://cdn.example.com/error-report-7.xlsx',
+      },
     });
 
     renderWizard();
@@ -72,10 +77,28 @@ describe('ImportWizard', () => {
     await waitFor(() => expect(screen.getByText(t.result.title)).toBeInTheDocument());
     expect(screen.getByTestId('import-result-processed')).toHaveTextContent('3');
     expect(screen.getByTestId('import-result-failed')).toHaveTextContent('1');
-    // The error-report affordance is real (visible) but honestly disabled — see the
-    // ErrorReportDownload comment in ImportWizard.tsx for why there's no working link yet.
-    expect(screen.getByText(t.result.downloadErrorReport)).toBeInTheDocument();
-    expect(screen.getByText(t.result.downloadErrorReport).closest('button')).toBeDisabled();
+    // The error-report link is real now that the backend resolves the file id to a URL.
+    const downloadLink = screen.getByText(t.result.downloadErrorReport).closest('a')!;
+    expect(downloadLink).toHaveAttribute('href', 'https://cdn.example.com/error-report-7.xlsx');
+    expect(downloadLink).toHaveAttribute('download');
+  });
+
+  it('does not render the error-report link when the job had no error report', async () => {
+    // Distinct jobId from the previous test so the SWR cache key differs — otherwise the
+    // previous test's cached `/commerce/import/job-42` response could leak into this one.
+    post.mockResolvedValue({ data: { data: { jobId: 'job-43' } } });
+    fetcherMock.mockResolvedValue({
+      data: { state: 'completed', processed: 5, failed: 0 },
+    });
+
+    renderWizard();
+
+    const file = new File(['title,...'], 'products.csv', { type: 'text/csv' });
+    const input = document.querySelector('#file-upload-handle') as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [file] } });
+
+    await waitFor(() => expect(screen.getByText(t.result.title)).toBeInTheDocument());
+    expect(screen.queryByText(t.result.downloadErrorReport)).not.toBeInTheDocument();
   });
 
   it('stays on the upload step and toasts a translated error when the upload request fails', async () => {

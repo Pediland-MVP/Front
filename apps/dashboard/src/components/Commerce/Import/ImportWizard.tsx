@@ -10,16 +10,7 @@ import api from '@/hooks/swr/api-client';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Spinner } from '@/components/ui/spinner';
 import { FileUploader } from '@/components/ui-custom/FileUploader';
 
@@ -218,7 +209,7 @@ const ResultStep = ({
           </div>
         )}
 
-        {status.errorReportFileId != null && <ErrorReportDownload />}
+        {status.errorReportUrl && <ErrorReportDownload url={status.errorReportUrl} />}
 
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={onReset}>
@@ -255,32 +246,18 @@ const SummaryTile = ({
   </div>
 );
 
-// KNOWN GAP — see task-10-report.md "Concerns": `errorReportFileId` (from
-// `GET /commerce/import/:jobId`) is a raw numeric `FileEntity` id, not a resolved `url`. Every
-// other place in this codebase that shows a file to the user (media tiles, product covers)
-// gets an ALREADY-RESOLVED `url` back from its own endpoint — see the comment on
-// `CommerceProductMedia` in `types/commerce.ts` ("no productId/fileId ... never exposed once
-// the url is resolved server-side"). The excel-export features the design spec pointed at
-// (`excelExportOrders.drawer.tsx` etc.) don't expose a fileId + download route either — they
-// email the finished file. So there is NO existing "resolve a bare FileEntity id into a
-// download URL" route anywhere in this app to reuse, and inventing one here would be exactly
-// the kind of guessed backend contract the task brief warned against. This renders a real,
-// visible affordance (not silently dropped) but keeps it honestly disabled until Back adds a
-// companion download route (e.g. `GET /commerce/import/:jobId/error-report`, workspace-scoped
-// like the status endpoint already is).
-const ErrorReportDownload = () => {
+// The gap this component originally worked around (GET /commerce/import/:jobId returning a
+// bare, unresolvable FileEntity id) was fixed same-day on the paired Back branch (commit
+// a0bad83c) — `errorReportUrl` is now a real, already-resolved download URL, same convention
+// as every other file reference in this codebase (media tiles, product covers).
+const ErrorReportDownload = ({ url }: { url: string }) => {
   const t = useTranslations('Commerce.Import');
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span>
-          <Button type="button" variant="outline" disabled className="w-full">
-            {t('result.downloadErrorReport')}
-          </Button>
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>{t('result.downloadErrorReportUnavailable')}</TooltipContent>
-    </Tooltip>
+    <Button type="button" variant="outline" className="w-full" asChild>
+      <a href={url} download rel="noopener noreferrer">
+        {t('result.downloadErrorReport')}
+      </a>
+    </Button>
   );
 };
