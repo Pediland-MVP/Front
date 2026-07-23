@@ -1,0 +1,145 @@
+'use client';
+
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+import useSWRImmutable from 'swr/immutable';
+
+import api from '@/hooks/swr/api-client';
+import { cn } from '@/lib/utils';
+import { toggleProductInCollectionMembership } from '@/utils/commerce/toggleProductInCollection';
+import type { CommerceCollectionListItem, PaginatedResult } from '@/types/commerce';
+
+import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+
+interface CollectionsSectionProps {
+  mode: 'create' | 'edit';
+  productId?: string;
+}
+
+// `GET /commerce/collections` returns a synthetic single page (`PaginatedResult`, per project
+// convention for array responses — see CLAUDE.md §9) — there is no product-scoped "add to
+// collection" endpoint, only `PUT /commerce/collections/:id`, which replaces the collection's
+// ENTIRE `productIds[]`. Every chip toggle here is a read-modify-write against this same
+// cached list: read the collection's current `productIds` from the cache, compute the new
+// full array via `toggleProductInCollectionMembership`, PUT it back, then revalidate this
+// exact key so every chip's active state reflects the authoritative result.
+const collectionsKey = '/commerce/collections';
+
+/**
+ * Collections-membership editor only — category assignment is a single `categoryId` field
+ * on the product, handled entirely by `BasicInfoSection` (spec correction: this section's
+ * title mentions "categories" for historical reasons, its actual scope is collections only).
+ */
+export const CollectionsSection = ({ mode, productId }: CollectionsSectionProps) => {
+  const t = useTranslations('Commerce.Editor.Collections');
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
+
+  // Same whole-section "save first" gate `MediaSection`/`InventorySection` use — there is no
+  // persisted product to look up collection membership for until the product has been saved
+  // once. The SWR hook below is still called unconditionally (key `null` when not eligible),
+  // matching `InventorySection`'s convention: never call a hook conditionally.
+  const shouldFetch = mode === 'edit' && !!productId;
+  const {
+    data: collectionsData,
+    error: collectionsError,
+    isLoading: isCollectionsLoading,
+  } = useSWRImmutable<PaginatedResult<CommerceCollectionListItem[]>>(
+    shouldFetch ? collectionsKey : null,
+  );
+
+  if (mode !== 'edit' || !productId) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">{t('saveProductFirst')}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const collections = collectionsData?.items ?? [];
+
+  const setPending = (collectionId: string, isPending: boolean) => {
+    setPendingIds((current) => {
+      const next = new Set(current);
+      if (isPending) next.add(collectionId);
+      else next.delete(collectionId);
+      return next;
+    });
+  };
+
+  const handleToggle = async (collection: CommerceCollectionListItem) => {
+    const wasMember = collection.productIds.includes(productId);
+    const productIds = toggleProductInCollectionMembership(collection, productId);
+
+    setPending(collection.id, true);
+    try {
+      // Full-replace semantics: always PUT the complete desired `productIds[]`, never a delta
+      // and never just this product's id alone — the backend has no product-scoped
+      // "add/remove" endpoint (see the `collectionsKey` comment above).
+      await api.put(`/commerce/collections/${collection.id}`, { productIds });
+      toast.success(wasMember ? t('removeSuccess') : t('addSuccess'));
+    } catch {
+      // Only the PUT failing is a real save error — a hiccup in the revalidating `mutate`
+      // below must not be misreported as this failing (matches
+      // `AdjustStockDialog#handleSubmit`/`VariantMediaPickerDialog#handleSave`'s convention).
+      toast.error(wasMember ? t('removeError') : t('addError'));
+    } finally {
+      // Caught here (not left to the nested `finally` alone) so a revalidation-fetch hiccup
+      // can never (a) get misreported as the PUT itself failing — the toast above already
+      // fired independently of this — or (b) strand this chip in a permanent pending state.
+      // Both are the exact two bugs this pattern exists to avoid.
+      try {
+        await mutate(collectionsKey);
+      } catch {
+        // intentionally silent — see comment above
+      } finally {
+        setPending(collection.id, false);
+      }
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('title')}</CardTitle>
+        <p className="text-muted-foreground text-sm">{t('description')}</p>
+      </CardHeader>
+      <CardContent>
+        {isCollectionsLoading ? (
+          <LoaderSpin />
+        ) : collectionsError ? (
+          <p className="text-destructive text-sm">{t('loadError')}</p>
+        ) : collections.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('empty')}</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {collections.map((collection) => {
+              const isMember = collection.productIds.includes(productId);
+              const isPending = pendingIds.has(collection.id);
+              return (
+                <button
+                  key={collection.id}
+                  type="button"
+                  disabled={isPending}
+                  data-testid={`collection-chip-${collection.id}`}
+                  aria-pressed={isMember}
+                  onClick={() => handleToggle(collection)}
+                  className={cn(isPending && 'pointer-events-none opacity-60')}
+                >
+                  <Badge variant={isMember ? 'default' : 'secondary'}>{collection.name}</Badge>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};

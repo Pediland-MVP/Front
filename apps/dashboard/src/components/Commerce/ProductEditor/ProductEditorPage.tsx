@@ -18,7 +18,7 @@ import type { CommerceProductDetail } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 
-import { Button, Card, CardContent, CardHeader, CardTitle, Form } from '@/components/ui';
+import { Button, Form } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { NoDataError } from '@/components/Global/NoDataError';
@@ -31,6 +31,7 @@ import {
   type ProductFormValues,
 } from './productForm.schema';
 import { BasicInfoSection } from './sections/BasicInfoSection';
+import { CollectionsSection } from './sections/CollectionsSection';
 import { InventorySection } from './sections/InventorySection';
 import { MediaSection } from './sections/MediaSection';
 import { ShippingSection } from './sections/ShippingSection';
@@ -43,9 +44,10 @@ interface ProductEditorPageProps {
 
 const MOBILE_MEDIA_QUERY = '(max-width: 900px)';
 
-// Six section ids, in the order the design spec lists them. As of Task 7, only `org`
-// (Categories & collections, Task 8's work) still renders the generic placeholder card —
-// every other section has its real content wired in below.
+// Six section ids, in the order the design spec lists them. As of Task 8, every section has
+// its real content wired in below — `org` (Categories & collections) renders
+// `CollectionsSection`, which handles collection MEMBERSHIP only; category assignment is the
+// single `categoryId` field already handled by `BasicInfoSection` (spec correction).
 const SECTION_IDS: EditorSectionId[] = [
   'basic',
   'media',
@@ -255,17 +257,9 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
         />
       );
     }
-
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t(`Nav.${id}`)}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t('placeholderNotice')}</p>
-        </CardContent>
-      </Card>
-    );
+    // `org` was the last section still on the generic placeholder card — every `EditorSectionId`
+    // is now handled above, so this branch (and the fallback below it) is exhaustive.
+    return <CollectionsSection mode={mode} productId={productId} />;
   };
 
   const cancelHref = mode === 'edit' && productId ? `/products/${productId}` : '/products';
