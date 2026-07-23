@@ -154,7 +154,7 @@ describe('VariantMediaPickerDialog', () => {
     expect(toastSuccess).toHaveBeenCalled();
   });
 
-  it('reports a save error only when the PUT itself fails, not when the post-save revalidate does', async () => {
+  it('reports a save error when the PUT itself fails', async () => {
     put.mockRejectedValueOnce(new Error('network'));
     renderDialog([IMAGE]);
 
@@ -163,6 +163,28 @@ describe('VariantMediaPickerDialog', () => {
 
     await waitFor(() => expect(toastError).toHaveBeenCalled());
     expect(toastSuccess).not.toHaveBeenCalled();
+  });
+
+  it('the literal original bug: PUT succeeds but the post-save revalidate rejects — still reports success, never error, and re-enables the Save button', async () => {
+    // First mutate() call is the optimistic write (revalidate:false) — resolves normally.
+    // Second is the final plain revalidating mutate(key) in `finally` — this one rejects.
+    mutateMock.mockResolvedValueOnce(undefined);
+    mutateMock.mockRejectedValueOnce(new Error('revalidate failed'));
+    renderDialog([IMAGE]);
+
+    fireEvent.click(screen.getByTestId('media-pool-tile-media-1'));
+    const saveButton = screen
+      .getByText(messages.Commerce.Editor.VariantMedia.save)
+      .closest('button')!;
+    fireEvent.click(saveButton);
+
+    await waitFor(() => expect(put).toHaveBeenCalled());
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
+    expect(toastError).not.toHaveBeenCalled();
+    // The Save button must not be permanently stuck disabled/loading after the revalidate
+    // rejects — this is the exact regression a bare `await mutate(key)` in `finally` would
+    // reintroduce (skips `setIsSaving(false)` when the revalidate itself throws).
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
   });
 
   it('shows the empty-pool message when the product has no media yet', () => {

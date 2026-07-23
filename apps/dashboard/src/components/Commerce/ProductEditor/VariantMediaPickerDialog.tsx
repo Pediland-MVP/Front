@@ -133,8 +133,19 @@ export const VariantMediaPickerDialog = ({
       // from this signal, matching MediaSection#handleDragEnd's convention).
       toast.error(t('saveError'));
     } finally {
-      await mutate(key);
-      setIsSaving(false);
+      // A rejection here is caught (not just contained by nested finally): the optimistic
+      // write above already reflects the just-saved assignment, so a revalidation hiccup
+      // isn't a save failure — a later natural refetch reconciles it. Without this catch,
+      // the rejection would both skip `setIsSaving(false)` (permanently stranding the Save
+      // button in a loading state, since the dialog is never remounted between opens) and
+      // surface as an unhandled promise rejection.
+      try {
+        await mutate(key);
+      } catch {
+        // intentionally silent — see comment above
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
