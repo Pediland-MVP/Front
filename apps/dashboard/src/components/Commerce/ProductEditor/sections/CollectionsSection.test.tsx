@@ -24,6 +24,14 @@ vi.mock('sonner', () => ({ toast: { error: toastError, success: toastSuccess } }
 const { put } = vi.hoisted(() => ({ put: vi.fn().mockResolvedValue({ data: {} }) }));
 vi.mock('@/hooks/swr/api-client', () => ({ default: { put } }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 import messages from '@/messages/fa.json';
 import { CollectionsSection } from './CollectionsSection';
 
@@ -71,6 +79,7 @@ beforeEach(() => {
   mockUseSWRImmutable.mockReturnValue({ data: undefined, error: undefined, isLoading: false });
   mutateMock.mockResolvedValue(undefined);
   put.mockResolvedValue({ data: {} });
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('CollectionsSection', () => {
@@ -170,5 +179,21 @@ describe('CollectionsSection', () => {
     expect(toastError).not.toHaveBeenCalled();
     // The pending state must still clear even though `mutate` rejected.
     await waitFor(() => expect(chip).not.toBeDisabled());
+  });
+
+  it('disables every chip and never PUTs when the viewer lacks product:edit', () => {
+    mockCan.mockReturnValue(false);
+    mockUseSWRImmutable.mockReturnValue({
+      data: collectionsPage([SUMMER, WINTER]),
+      error: undefined,
+      isLoading: false,
+    });
+    renderSection();
+
+    const chip = screen.getByTestId('collection-chip-col-2');
+    expect(chip).toBeDisabled();
+
+    fireEvent.click(chip);
+    expect(put).not.toHaveBeenCalled();
   });
 });

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { mutate } from 'swr';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { CommerceCollectionListItem } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 
@@ -41,6 +42,11 @@ interface CollectionDialogProps {
 export const CollectionDialog = ({ open, onOpenChange, collection }: CollectionDialogProps) => {
   const t = useTranslations('Commerce.Taxonomy.CollectionDialog');
   const t_ec = useTranslations('ERROR_CODES');
+  const { can } = usePermissions();
+  // Verified against the real backend controller (`collections.controller.ts`): both
+  // `POST /commerce/collections` (create) and `PUT /commerce/collections/:id` (update)
+  // require the SAME `PRODUCT_EDIT` permission — there is no separate create slug.
+  const canEdit = can('product:edit');
 
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -57,7 +63,10 @@ export const CollectionDialog = ({ open, onOpenChange, collection }: CollectionD
   const isInvalid = name.trim().length === 0;
 
   const handleSubmit = async () => {
-    if (isInvalid) return;
+    // Defense-in-depth: the backend already enforces `product:edit` on both the create and
+    // update routes, but the request must never even fire when the viewer lacks the
+    // permission — the submit button below is also disabled for the same case.
+    if (isInvalid || !canEdit) return;
 
     setIsSaving(true);
     try {
@@ -110,7 +119,7 @@ export const CollectionDialog = ({ open, onOpenChange, collection }: CollectionD
           <ButtonLoading
             type="button"
             isLoading={isSaving}
-            disabled={isInvalid}
+            disabled={isInvalid || !canEdit}
             onClick={handleSubmit}
           >
             {t('submit')}

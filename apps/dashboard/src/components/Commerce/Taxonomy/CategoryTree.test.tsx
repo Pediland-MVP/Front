@@ -27,6 +27,14 @@ const { put, del } = vi.hoisted(() => ({
 }));
 vi.mock('@/hooks/swr/api-client', () => ({ default: { put, delete: del } }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 // jsdom has no real pointer/drag support — same limitation `MediaSection.test.tsx` documents.
 // Capture the `onDragEnd` handler `CategoryTree` passes to the real `DndContext` and invoke it
 // directly with a synthetic drag event. Everything else from `@dnd-kit/core` stays real, so
@@ -113,6 +121,7 @@ beforeEach(() => {
   put.mockResolvedValue({ data: {} });
   del.mockResolvedValue({ data: {} });
   capturedOnDragEnd = undefined;
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('CategoryTree', () => {
@@ -262,5 +271,34 @@ describe('CategoryTree', () => {
       expect(toastError).toHaveBeenCalledWith(messages.ERROR_CODES.COMMERCE_CATEGORY_IN_USE),
     );
     expect(toastSuccess).not.toHaveBeenCalled();
+  });
+});
+
+describe('CategoryTree permission gating', () => {
+  beforeEach(() => {
+    mockCan.mockReturnValue(false);
+  });
+
+  it('hides the edit/delete buttons and never PUTs/DELETEs when the viewer lacks product:edit', async () => {
+    mockUseSWRImmutable.mockReturnValue({
+      data: categoriesPage([ROOT, SIBLING]),
+      error: undefined,
+      isLoading: false,
+    });
+    renderTree();
+
+    expect(
+      screen.queryByRole('button', { name: messages.Commerce.Taxonomy.Category.edit }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: messages.Commerce.Taxonomy.Category.delete }),
+    ).not.toBeInTheDocument();
+
+    // Defense-in-depth: even if a drag end somehow fired, the reorder must no-op.
+    expect(capturedOnDragEnd).toBeDefined();
+    await capturedOnDragEnd!({ active: { id: 'cat-4' }, over: { id: 'cat-1' } });
+
+    expect(put).not.toHaveBeenCalled();
+    expect(mutateMock).not.toHaveBeenCalled();
   });
 });

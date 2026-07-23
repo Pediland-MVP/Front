@@ -16,6 +16,14 @@ const { toastError, toastSuccess } = vi.hoisted(() => ({
 }));
 vi.mock('sonner', () => ({ toast: { error: toastError, success: toastSuccess } }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 import messages from '@/messages/fa.json';
 import { AdjustStockDialog } from './AdjustStockDialog';
 
@@ -41,6 +49,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mutateMock.mockResolvedValue(undefined);
   patch.mockResolvedValue({ data: {} });
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('AdjustStockDialog', () => {
@@ -181,6 +190,19 @@ describe('AdjustStockDialog', () => {
     expect(
       screen.getByText(messages.Commerce.Editor.Inventory.Adjust.submit).closest('button'),
     ).toBeDisabled();
+    expect(patch).not.toHaveBeenCalled();
+  });
+
+  it('disables submit and never PATCHes when the viewer lacks product:edit', () => {
+    mockCan.mockReturnValue(false);
+    renderDialog(18);
+
+    const submitButton = screen
+      .getByText(messages.Commerce.Editor.Inventory.Adjust.submit)
+      .closest('button')!;
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.click(submitButton);
     expect(patch).not.toHaveBeenCalled();
   });
 });

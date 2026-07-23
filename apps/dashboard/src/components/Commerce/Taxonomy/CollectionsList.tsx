@@ -9,6 +9,7 @@ import useSWRImmutable from 'swr/immutable';
 import { PencilIcon, Trash2Icon } from 'lucide-react';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { CommerceCollectionListItem, PaginatedResult } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 
@@ -32,6 +33,11 @@ export const CollectionsList = ({
 }: CollectionsListProps) => {
   const t = useTranslations('Commerce.Taxonomy.Collection');
   const t_ec = useTranslations('ERROR_CODES');
+  const { can } = usePermissions();
+  // Verified against the real backend controller (`collections.controller.ts`): create,
+  // update, AND delete all require the SAME `PRODUCT_EDIT` permission — there is no separate
+  // create/delete slug for collections.
+  const canEdit = can('product:edit');
 
   const {
     data: collectionsData,
@@ -49,7 +55,10 @@ export const CollectionsList = ({
   );
 
   const handleDeleteConfirm = async () => {
-    if (!deletingCollection) return;
+    // Defense-in-depth: the backend already enforces `product:edit` on
+    // `DELETE /commerce/collections/:id`, but the request must never even fire when the
+    // viewer lacks the permission — the delete button below is also hidden for the same case.
+    if (!deletingCollection || !canEdit) return;
 
     try {
       await api.delete(`/commerce/collections/${deletingCollection.id}`);
@@ -91,25 +100,29 @@ export const CollectionsList = ({
                   {t('productCount', { count: collection.productIds.length })}
                 </Badge>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setEditingCollection(collection)}
-                >
-                  <PencilIcon className="size-4 text-green-600" />
-                  <span className="sr-only">{t('edit')}</span>
-                </Button>
+                {canEdit && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditingCollection(collection)}
+                  >
+                    <PencilIcon className="size-4 text-green-600" />
+                    <span className="sr-only">{t('edit')}</span>
+                  </Button>
+                )}
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setDeletingCollection(collection)}
-                >
-                  <Trash2Icon className="text-destructive size-4" />
-                  <span className="sr-only">{t('delete')}</span>
-                </Button>
+                {canEdit && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setDeletingCollection(collection)}
+                  >
+                    <Trash2Icon className="text-destructive size-4" />
+                    <span className="sr-only">{t('delete')}</span>
+                  </Button>
+                )}
               </div>
             ))}
           </div>

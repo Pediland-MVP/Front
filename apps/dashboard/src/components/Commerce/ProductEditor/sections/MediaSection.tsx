@@ -26,6 +26,7 @@ import { DotsSixVerticalIcon } from '@phosphor-icons/react/dist/ssr';
 import { Trash2Icon } from 'lucide-react';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { CommerceProductDetail, CommerceProductMedia } from '@/types/commerce';
 import type { IResponseMessage } from '@/types/responseMessage';
 
@@ -47,6 +48,8 @@ const productDetailKey = (productId: string) => `/commerce/products/${productId}
 
 export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
   const t = useTranslations('Commerce.Editor.Media');
+  const { can } = usePermissions();
+  const canEdit = can('product:edit');
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -86,7 +89,10 @@ export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
   };
 
   const handleFilesSelected = async (files: File[]) => {
-    if (files.length === 0) return;
+    // Defense-in-depth: the backend already enforces `product:edit` on
+    // `POST /commerce/products/:id/media`, but the request must never even fire when the
+    // viewer lacks the permission — same convention as every other mutation gated below.
+    if (!canEdit || files.length === 0) return;
 
     setIsUploading(true);
     setProgress(0);
@@ -112,6 +118,7 @@ export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
   };
 
   const handleDelete = async (mediaId: string) => {
+    if (!canEdit) return;
     try {
       await api.delete(`/commerce/products/${productId}/media/${mediaId}`);
       toast.success(t('deleteSuccess'));
@@ -123,6 +130,7 @@ export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
+    if (!canEdit) return;
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -166,14 +174,16 @@ export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
         <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <FileUploader
-          multiple
-          type="file"
-          accept="image/*,video/*"
-          onChange={handleFilesSelected}
-          isUploading={isUploading}
-          progress={progress}
-        />
+        {canEdit && (
+          <FileUploader
+            multiple
+            type="file"
+            accept="image/*,video/*"
+            onChange={handleFilesSelected}
+            isUploading={isUploading}
+            progress={progress}
+          />
+        )}
 
         {sortedMedia.length > 0 && (
           <DndContext
@@ -193,6 +203,7 @@ export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
                     coverLabel={t('cover')}
                     deleteLabel={t('delete')}
                     onDelete={handleDelete}
+                    canEdit={canEdit}
                   />
                 ))}
               </div>
@@ -209,14 +220,17 @@ const MediaTile = ({
   coverLabel,
   deleteLabel,
   onDelete,
+  canEdit,
 }: {
   item: CommerceProductMedia;
   coverLabel: string;
   deleteLabel: string;
   onDelete: (mediaId: string) => void;
+  canEdit: boolean;
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item.id,
+    disabled: !canEdit,
   });
 
   const style = {
@@ -247,25 +261,29 @@ const MediaTile = ({
         sizes="(max-width: 768px) 50vw, 25vw"
       />
 
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        className="absolute top-1.5 left-1.5 z-10 flex size-6 cursor-grab touch-none items-center justify-center rounded bg-black/40 text-white active:cursor-grabbing"
-      >
-        <DotsSixVerticalIcon size={16} />
-      </button>
+      {canEdit && (
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="absolute top-1.5 left-1.5 z-10 flex size-6 cursor-grab touch-none items-center justify-center rounded bg-black/40 text-white active:cursor-grabbing"
+        >
+          <DotsSixVerticalIcon size={16} />
+        </button>
+      )}
 
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        className="absolute bottom-1.5 left-1.5 z-10 size-7"
-        onClick={() => onDelete(item.id)}
-        aria-label={deleteLabel}
-      >
-        <Trash2Icon className="text-destructive" size={14} />
-      </Button>
+      {canEdit && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="absolute bottom-1.5 left-1.5 z-10 size-7"
+          onClick={() => onDelete(item.id)}
+          aria-label={deleteLabel}
+        >
+          <Trash2Icon className="text-destructive" size={14} />
+        </Button>
+      )}
     </div>
   );
 };

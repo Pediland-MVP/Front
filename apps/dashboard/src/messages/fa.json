@@ -2458,6 +2458,7 @@
         "defaultVariantLabel": "کالای پایه",
         "skuPlaceholder": "کد SKU (اختیاری)",
         "mediaUnsavedTooltip": "ابتدا کالا را ذخیره کنید تا بتوانید رسانهٔ اختصاصی این تنوع را تعیین کنید.",
+        "mediaNoPermissionTooltip": "شما اجازهٔ ویرایش رسانهٔ این کالا را ندارید.",
         "mediaAssignTooltip": "اختصاص رسانهٔ جدا برای این تنوع",
         "mediaEditTooltip": "تصویر شاخص اختصاصی این تنوع — برای تغییر کلیک کنید",
         "saleToggleLabel": "فروش ویژه",
@@ -2493,6 +2494,7 @@
         "viewLedger": "مشاهدهٔ تراز موجودی",
         "adjustStock": "ثبت اصلاح موجودی",
         "unsavedTooltip": "ابتدا کالا را ذخیره کنید تا بتوانید موجودی این تنوع را مدیریت کنید.",
+        "noPermissionTooltip": "شما اجازهٔ ثبت اصلاح موجودی را ندارید.",
         "noVariants": "هنوز هیچ تنوعی ساخته نشده است.",
         "Ledger": {
           "title": "تراز موجودی — {variant}",

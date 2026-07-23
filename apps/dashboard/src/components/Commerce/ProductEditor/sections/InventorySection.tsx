@@ -6,6 +6,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { HistoryIcon, Settings2Icon } from 'lucide-react';
 import useSWRImmutable from 'swr/immutable';
 
+import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import { formatNumber } from '@/utils/formatNumber';
 import type {
@@ -73,6 +74,11 @@ export const InventorySection = ({
 }: InventorySectionProps) => {
   const t = useTranslations('Commerce.Editor.Inventory');
   const form = useFormContext<ProductFormValues>();
+  const { can } = usePermissions();
+  // `viewLedger` only reads (`GET .../movements/:variantId`, gated `product:view` server-side)
+  // — no permission check needed for that button. `adjustStock` opens a dialog whose
+  // `handleSubmit` PATCHes stock, which the backend gates on `product:edit`.
+  const canEditStock = can('product:edit');
 
   // Same `useWatch` source `VariantsSection` reads from, so variant labels here always match
   // what the merchant sees in the Variants & pricing table — including a variant added this
@@ -196,6 +202,7 @@ export const InventorySection = ({
             <TableBody>
               {rows.map((row) => {
                 const isUnsaved = !row.variantId;
+                const isAdjustDisabled = isUnsaved || !canEditStock;
                 return (
                   <TableRow
                     key={row.index}
@@ -233,7 +240,7 @@ export const InventorySection = ({
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                disabled={isUnsaved}
+                                disabled={isAdjustDisabled}
                                 data-testid={`inventory-adjust-stock-${row.index}`}
                                 onClick={() => setAdjustVariantId(row.variantId ?? null)}
                               >
@@ -242,7 +249,11 @@ export const InventorySection = ({
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {isUnsaved ? t('unsavedTooltip') : t('adjustStock')}
+                            {isUnsaved
+                              ? t('unsavedTooltip')
+                              : !canEditStock
+                                ? t('noPermissionTooltip')
+                                : t('adjustStock')}
                           </TooltipContent>
                         </Tooltip>
                       </div>

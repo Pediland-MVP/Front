@@ -19,6 +19,14 @@ const { toastError, toastSuccess } = vi.hoisted(() => ({
 }));
 vi.mock('sonner', () => ({ toast: { error: toastError, success: toastSuccess } }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 import messages from '@/messages/fa.json';
 import { VariantMediaPickerDialog } from './VariantMediaPickerDialog';
 
@@ -65,6 +73,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mutateMock.mockResolvedValue(undefined);
   put.mockResolvedValue({ data: {} });
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('VariantMediaPickerDialog', () => {
@@ -190,5 +199,23 @@ describe('VariantMediaPickerDialog', () => {
   it('shows the empty-pool message when the product has no media yet', () => {
     renderDialog([]);
     expect(screen.getByText(messages.Commerce.Editor.VariantMedia.emptyPool)).toBeInTheDocument();
+  });
+});
+
+describe('VariantMediaPickerDialog permission gating', () => {
+  it('disables the Save button and never PUTs when the viewer lacks product:edit', async () => {
+    mockCan.mockReturnValue(false);
+    renderDialog([IMAGE]);
+
+    fireEvent.click(screen.getByTestId('media-pool-tile-media-1'));
+    const saveButton = screen
+      .getByText(messages.Commerce.Editor.VariantMedia.save)
+      .closest('button')!;
+    expect(saveButton).toBeDisabled();
+
+    fireEvent.click(saveButton);
+
+    expect(put).not.toHaveBeenCalled();
+    expect(mutateMock).not.toHaveBeenCalled();
   });
 });

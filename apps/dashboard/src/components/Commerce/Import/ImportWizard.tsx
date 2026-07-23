@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { isAxiosError } from 'axios';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 
@@ -47,6 +48,11 @@ const ACCEPTED_TYPES = '.csv,.xlsx,.xls';
 export const ImportWizard = () => {
   const t = useTranslations('Commerce.Import');
   const t_ec = useTranslations('ERROR_CODES');
+  const { can } = usePermissions();
+  // `POST /commerce/import` requires `product:create` server-side (`import.controller.ts`) —
+  // it creates brand-new products, matching the same slug `ProductListPage.tsx`'s "new
+  // product" button gates on.
+  const canImport = can('product:create');
 
   const [step, setStep] = useState<WizardStep>('upload');
   const [jobId, setJobId] = useState<string | null>(null);
@@ -61,6 +67,11 @@ export const ImportWizard = () => {
     step === 'processing' && isTerminalImportState(status?.state) ? 'result' : step;
 
   const handleFileSelected = async (files: File[]) => {
+    // Defense-in-depth: the backend already enforces `product:create` on
+    // `POST /commerce/import`, but the request must never even fire when the viewer lacks
+    // the permission — the uploader control itself is also hidden for the same case below.
+    if (!canImport) return;
+
     const file = files[0];
     if (!file) return;
 
@@ -116,13 +127,15 @@ export const ImportWizard = () => {
               {t('upload.downloadSample')}
             </a>
 
-            <FileUploader
-              type="file"
-              accept={ACCEPTED_TYPES}
-              multiple={false}
-              isUploading={isUploading}
-              onChange={handleFileSelected}
-            />
+            {canImport && (
+              <FileUploader
+                type="file"
+                accept={ACCEPTED_TYPES}
+                multiple={false}
+                isUploading={isUploading}
+                onChange={handleFileSelected}
+              />
+            )}
           </CardContent>
         </Card>
       )}

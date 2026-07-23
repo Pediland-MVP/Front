@@ -7,6 +7,7 @@ import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import { toggleProductInCollectionMembership } from '@/utils/commerce/toggleProductInCollection';
 import type { CommerceCollectionListItem, PaginatedResult } from '@/types/commerce';
@@ -35,6 +36,8 @@ const collectionsKey = '/commerce/collections';
  */
 export const CollectionsSection = ({ mode, productId }: CollectionsSectionProps) => {
   const t = useTranslations('Commerce.Editor.Collections');
+  const { can } = usePermissions();
+  const canEdit = can('product:edit');
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
 
   // Same whole-section "save first" gate `MediaSection`/`InventorySection` use — there is no
@@ -75,6 +78,11 @@ export const CollectionsSection = ({ mode, productId }: CollectionsSectionProps)
   };
 
   const handleToggle = async (collection: CommerceCollectionListItem) => {
+    // Defense-in-depth: the backend already enforces `product:edit` on
+    // `PUT /commerce/collections/:id`, but the request must never even fire when the viewer
+    // lacks the permission — every chip is also disabled for the same case below.
+    if (!canEdit) return;
+
     const wasMember = collection.productIds.includes(productId);
     const productIds = toggleProductInCollectionMembership(collection, productId);
 
@@ -127,7 +135,7 @@ export const CollectionsSection = ({ mode, productId }: CollectionsSectionProps)
                 <button
                   key={collection.id}
                   type="button"
-                  disabled={isPending}
+                  disabled={isPending || !canEdit}
                   data-testid={`collection-chip-${collection.id}`}
                   aria-pressed={isMember}
                   onClick={() => handleToggle(collection)}

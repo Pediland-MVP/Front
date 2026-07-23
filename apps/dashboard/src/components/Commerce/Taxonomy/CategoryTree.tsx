@@ -27,6 +27,7 @@ import { DotsSixVerticalIcon } from '@phosphor-icons/react/dist/ssr';
 import { PencilIcon, Trash2Icon } from 'lucide-react';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { CommerceCategory, CommerceCategoryNode, PaginatedResult } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import { buildCategoryTree } from '@/utils/commerce/buildCategoryTree';
@@ -51,6 +52,11 @@ export const CategoryTree = ({
 }: CategoryTreeProps) => {
   const t = useTranslations('Commerce.Taxonomy.Category');
   const t_ec = useTranslations('ERROR_CODES');
+  const { can } = usePermissions();
+  // Verified against the real backend controller (`categories.controller.ts`): create,
+  // update, delete, AND reorder (a `PUT` per moved node) all require the SAME `PRODUCT_EDIT`
+  // permission — there is no separate create/delete slug for categories.
+  const canEdit = can('product:edit');
 
   const {
     data: categoriesData,
@@ -76,6 +82,11 @@ export const CategoryTree = ({
   // Re-parenting a category is done through `CategoryDialog`'s parent select instead, which
   // the server's `COMMERCE_CATEGORY_CYCLE` check still guards.
   const handleDragEnd = async (event: DragEndEvent) => {
+    // Defense-in-depth: the backend already enforces `product:edit` on
+    // `PUT /commerce/categories/:id`, but the reorder request must never even fire when the
+    // viewer lacks the permission — every node's drag handle is also disabled below.
+    if (!canEdit) return;
+
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -127,7 +138,7 @@ export const CategoryTree = ({
   };
 
   const handleDeleteConfirm = async () => {
-    if (!deletingCategory) return;
+    if (!deletingCategory || !canEdit) return;
 
     try {
       await api.delete(`/commerce/categories/${deletingCategory.id}`);
@@ -168,6 +179,7 @@ export const CategoryTree = ({
               onDelete={setDeletingCategory}
               editLabel={t('edit')}
               deleteLabel={t('delete')}
+              canEdit={canEdit}
             />
           </DndContext>
         )}
@@ -204,6 +216,7 @@ interface CategoryTreeLevelProps {
   onDelete: (category: CommerceCategory) => void;
   editLabel: string;
   deleteLabel: string;
+  canEdit: boolean;
 }
 
 const CategoryTreeLevel = ({
@@ -213,6 +226,7 @@ const CategoryTreeLevel = ({
   onDelete,
   editLabel,
   deleteLabel,
+  canEdit,
 }: CategoryTreeLevelProps) => (
   <SortableContext items={nodes.map((n) => n.id)} strategy={verticalListSortingStrategy}>
     <div className="flex flex-col gap-1.5">
@@ -225,6 +239,7 @@ const CategoryTreeLevel = ({
           onDelete={onDelete}
           editLabel={editLabel}
           deleteLabel={deleteLabel}
+          canEdit={canEdit}
         />
       ))}
     </div>
@@ -238,6 +253,7 @@ interface CategoryTreeNodeProps {
   onDelete: (category: CommerceCategory) => void;
   editLabel: string;
   deleteLabel: string;
+  canEdit: boolean;
 }
 
 const CategoryTreeNode = ({
@@ -247,9 +263,11 @@ const CategoryTreeNode = ({
   onDelete,
   editLabel,
   deleteLabel,
+  canEdit,
 }: CategoryTreeNodeProps) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: node.id,
+    disabled: !canEdit,
   });
 
   const dndStyle = {
@@ -277,15 +295,19 @@ const CategoryTreeNode = ({
 
         <span className="flex-1 truncate text-sm">{node.name}</span>
 
-        <Button type="button" variant="ghost" size="icon" onClick={() => onEdit(node)}>
-          <PencilIcon className="size-4 text-green-600" />
-          <span className="sr-only">{editLabel}</span>
-        </Button>
+        {canEdit && (
+          <Button type="button" variant="ghost" size="icon" onClick={() => onEdit(node)}>
+            <PencilIcon className="size-4 text-green-600" />
+            <span className="sr-only">{editLabel}</span>
+          </Button>
+        )}
 
-        <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(node)}>
-          <Trash2Icon className="text-destructive size-4" />
-          <span className="sr-only">{deleteLabel}</span>
-        </Button>
+        {canEdit && (
+          <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(node)}>
+            <Trash2Icon className="text-destructive size-4" />
+            <span className="sr-only">{deleteLabel}</span>
+          </Button>
+        )}
       </div>
 
       {node.children.length > 0 && (
@@ -297,6 +319,7 @@ const CategoryTreeNode = ({
             onDelete={onDelete}
             editLabel={editLabel}
             deleteLabel={deleteLabel}
+            canEdit={canEdit}
           />
         </div>
       )}

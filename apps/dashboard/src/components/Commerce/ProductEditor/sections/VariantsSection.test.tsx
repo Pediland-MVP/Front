@@ -17,6 +17,14 @@ const { toastError, toastSuccess } = vi.hoisted(() => ({
 }));
 vi.mock('sonner', () => ({ toast: { error: toastError, success: toastSuccess } }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 beforeAll(() => {
   (global as unknown as { ResizeObserver: unknown }).ResizeObserver =
     (global as unknown as { ResizeObserver?: unknown }).ResizeObserver ||
@@ -29,6 +37,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 import messages from '@/messages/fa.json';
@@ -561,5 +570,17 @@ describe('VariantsSection per-variant media button', () => {
     const img = button.querySelector('img');
     expect(img).toBeInTheDocument();
     expect(img?.getAttribute('src')).toBe(MEDIA_1.url);
+  });
+
+  // Regression for the whole-branch review finding: the per-variant media button opened
+  // `VariantMediaPickerDialog`'s `handleSave` (a real `PUT .../variants/:variantId/media`)
+  // with no permission check anywhere in the chain. The button must disable the same way it
+  // already does for an unsaved variant.
+  it('disables the media button when the viewer lacks product:edit, even for a saved variant', () => {
+    mockCan.mockReturnValue(false);
+    renderHarness(twoValueOptionForm(), { productId: 'prod-1', media: [MEDIA_1] });
+
+    expect(screen.getByTestId('variant-media-button-0')).toBeDisabled();
+    expect(screen.getByTestId('variant-media-button-1')).toBeDisabled();
   });
 });

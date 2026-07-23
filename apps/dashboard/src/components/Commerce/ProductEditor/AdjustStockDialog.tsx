@@ -7,6 +7,7 @@ import { mutate } from 'swr';
 
 import api from '@/hooks/swr/api-client';
 import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
+import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import { formatNumber } from '@/utils/formatNumber';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
@@ -55,6 +56,8 @@ export const AdjustStockDialog = ({
 }: AdjustStockDialogProps) => {
   const t = useTranslations('Commerce.Editor.Inventory.Adjust');
   const { onFocus } = useSelectOnFocus();
+  const { can } = usePermissions();
+  const canEdit = can('product:edit');
 
   const [newOnHand, setNewOnHand] = useState(currentOnHand);
   const [direction, setDirection] = useState<Direction>('increase');
@@ -86,7 +89,10 @@ export const AdjustStockDialog = ({
   const isInvalid = !Number.isFinite(newOnHand) || newOnHand < 0;
 
   const handleSubmit = async () => {
-    if (isInvalid) return;
+    // Defense-in-depth: the backend already enforces `product:edit` on
+    // `PATCH /commerce/products/:id/stock`, but the request must never even fire when the
+    // viewer lacks the permission — the submit button below is also disabled for the same case.
+    if (isInvalid || !canEdit) return;
 
     setIsSaving(true);
     try {
@@ -220,7 +226,7 @@ export const AdjustStockDialog = ({
           <ButtonLoading
             type="button"
             isLoading={isSaving}
-            disabled={isInvalid}
+            disabled={isInvalid || !canEdit}
             onClick={handleSubmit}
           >
             {t('submit')}

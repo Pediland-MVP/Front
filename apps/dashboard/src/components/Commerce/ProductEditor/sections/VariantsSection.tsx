@@ -27,6 +27,7 @@ import { PlusIcon, RefreshCcwIcon, Trash2Icon } from 'lucide-react';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
 import { formatNumber } from '@/utils/formatNumber';
 import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
+import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import type {
   CommerceProductMedia,
@@ -122,6 +123,8 @@ export const VariantsSection = ({
   const t = useTranslations('Commerce.Editor.Variants');
   const tv = useTranslations('Commerce.Editor.Validation');
   const form = useFormContext<ProductFormValues>();
+  const { can } = usePermissions();
+  const canEdit = can('product:edit');
 
   // One dialog instance, controlled by which row (if any) currently has it open — mirrors the
   // approved mockup's single `modalVariantMedia` reused across every row via `pickerState`,
@@ -365,6 +368,7 @@ export const VariantsSection = ({
                   mode={mode}
                   label={getVariantLabel(watchedVariants[index]?.valueIndexes ?? [])}
                   variantId={watchedVariants[index]?.id}
+                  canEditMedia={canEdit}
                   mediaAssignment={
                     existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)
                       ?.media
@@ -562,6 +566,7 @@ const VariantRow = ({
   mode,
   label,
   variantId,
+  canEditMedia,
   mediaAssignment,
   mediaPool,
   existingOnHand,
@@ -578,6 +583,10 @@ const VariantRow = ({
    * media button stays disabled until this exists, since `PUT .../variants/:variantId/media`
    * requires a real id. */
   variantId?: string;
+  /** Whether the viewer holds `product:edit` — the per-variant media picker mutates the
+   * product's media assignment, so the opening button must stay disabled without it, same
+   * gate `VariantMediaPickerDialog#handleSave` enforces on the actual PUT. */
+  canEditMedia: boolean;
   mediaAssignment?: CommerceVariantMediaAssignment;
   mediaPool: CommerceProductMedia[];
   existingOnHand?: number;
@@ -609,8 +618,10 @@ const VariantRow = ({
   // A brand-new variant added this session (via "regenerate" or otherwise) has no real
   // backend id yet — `PUT .../variants/:variantId/media` requires one, so the button stays
   // disabled (with an explanatory tooltip) until the whole product form is saved once, the
-  // same rule `MediaSection` applies to the whole Media section pre-save.
-  const isMediaButtonDisabled = !variantId;
+  // same rule `MediaSection` applies to the whole Media section pre-save. Lacking
+  // `product:edit` disables it the same way, for the same reason `VariantMediaPickerDialog`'s
+  // own Save button is disabled without it.
+  const isMediaButtonDisabled = !variantId || !canEditMedia;
   const coverMedia = mediaAssignment?.coverMediaId
     ? mediaPool.find((item) => item.id === mediaAssignment.coverMediaId)
     : undefined;
@@ -619,11 +630,13 @@ const VariantRow = ({
       ? (coverMedia.posterUrl ?? coverMedia.url)
       : coverMedia.url
     : undefined;
-  const mediaButtonTooltip = isMediaButtonDisabled
+  const mediaButtonTooltip = !variantId
     ? t('mediaUnsavedTooltip')
-    : coverMedia
-      ? t('mediaEditTooltip')
-      : t('mediaAssignTooltip');
+    : !canEditMedia
+      ? t('mediaNoPermissionTooltip')
+      : coverMedia
+        ? t('mediaEditTooltip')
+        : t('mediaAssignTooltip');
 
   return (
     <TableRow>

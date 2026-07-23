@@ -14,6 +14,14 @@ vi.mock('@/hooks/swr/api-client', () => ({
   fetcher: fetcherMock,
 }));
 
+// `can` defaults to true (every existing test above assumes full create permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 import messages from '@/messages/fa.json';
 import { ImportWizard } from './ImportWizard';
 
@@ -29,6 +37,7 @@ const t = messages.Commerce.Import;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('ImportWizard', () => {
@@ -117,5 +126,15 @@ describe('ImportWizard', () => {
       expect(toastError).toHaveBeenCalledWith(messages.ERROR_CODES.COMMERCE_IMPORT_INVALID_FILE),
     );
     expect(screen.getByText(t.upload.title)).toBeInTheDocument();
+  });
+});
+
+describe('ImportWizard permission gating', () => {
+  it('hides the uploader and never POSTs when the viewer lacks product:create', () => {
+    mockCan.mockReturnValue(false);
+    renderWizard();
+
+    expect(document.querySelector('#file-upload-handle')).not.toBeInTheDocument();
+    expect(post).not.toHaveBeenCalled();
   });
 });

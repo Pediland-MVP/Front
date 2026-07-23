@@ -20,6 +20,14 @@ vi.mock('@/hooks/swr/api-client', () => ({
   default: { post, delete: del, patch },
 }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 // jsdom has no real pointer/drag support, so exercising @dnd-kit's actual sensors isn't
 // feasible here (there's no existing test in this repo that drives real dnd-kit drag events
 // either — `SortableButtonItem`/`FormVitrinButtons` have no test file to mirror). Instead,
@@ -81,6 +89,7 @@ beforeEach(() => {
   del.mockResolvedValue({ data: {} });
   patch.mockResolvedValue({ data: {} });
   capturedOnDragEnd = undefined;
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('MediaSection', () => {
@@ -169,6 +178,30 @@ describe('MediaSection', () => {
       over: { id: 'media-1' },
     });
 
+    expect(patch).not.toHaveBeenCalled();
+    expect(mutateMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('MediaSection permission gating', () => {
+  beforeEach(() => {
+    mockCan.mockReturnValue(false);
+  });
+
+  it('hides the uploader and never calls upload/delete/reorder endpoints when the viewer lacks product:edit', async () => {
+    renderSection([IMAGE, VIDEO]);
+
+    // The uploader control itself must not be rendered — there is nothing to click.
+    expect(document.querySelector('#file-upload-handle')).not.toBeInTheDocument();
+    // The per-tile delete button and drag handle are also hidden.
+    expect(screen.queryByLabelText(messages.Commerce.Editor.Media.delete)).not.toBeInTheDocument();
+
+    // Defense-in-depth: even if a drag end somehow fired, the handler itself must no-op.
+    expect(capturedOnDragEnd).toBeDefined();
+    await capturedOnDragEnd!({ active: { id: 'media-2' }, over: { id: 'media-1' } });
+
+    expect(post).not.toHaveBeenCalled();
+    expect(del).not.toHaveBeenCalled();
     expect(patch).not.toHaveBeenCalled();
     expect(mutateMock).not.toHaveBeenCalled();
   });

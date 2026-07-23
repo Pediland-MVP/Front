@@ -29,6 +29,14 @@ vi.mock('swr', () => ({ mutate: mutateMock }));
 const { patch } = vi.hoisted(() => ({ patch: vi.fn().mockResolvedValue({ data: {} }) }));
 vi.mock('@/hooks/swr/api-client', () => ({ default: { patch } }));
 
+// `can` defaults to true (every existing test above assumes full edit permission) — the
+// dedicated permission-gating suite below overrides it to false, same mocking convention
+// `ProductListPage.test.tsx` uses for `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
+
 import messages from '@/messages/fa.json';
 import { InventorySection } from './InventorySection';
 import type { ProductFormValues } from '../productForm.schema';
@@ -87,6 +95,7 @@ beforeEach(() => {
   mockUseSWRImmutable.mockReturnValue({ data: undefined, error: undefined, isLoading: false });
   mutateMock.mockResolvedValue(undefined);
   patch.mockResolvedValue({ data: {} });
+  mockCan.mockReset().mockReturnValue(true);
 });
 
 describe('InventorySection', () => {
@@ -382,5 +391,23 @@ describe('InventorySection', () => {
 
     expect(screen.getByText(messages.Commerce.Editor.Inventory.Adjust.title)).toBeInTheDocument();
     expect(screen.getByTestId('adjust-stock-new-on-hand')).toHaveValue('18');
+  });
+
+  // Regression for the whole-branch review finding: the "adjust stock" button opened
+  // `AdjustStockDialog`'s `handleSubmit` (a real `PATCH .../stock`) with no permission check
+  // anywhere in the chain. "view ledger" stays enabled — it only reads, gated `product:view`
+  // server-side, not `product:edit`.
+  it('disables only "adjust stock" (not "view ledger") for a saved variant when the viewer lacks product:edit', () => {
+    mockCan.mockReturnValue(false);
+    render(
+      <Harness
+        productId="prod-1"
+        defaultValues={buildForm([{ ...savedVariant, valueIndexes: [] }])}
+        existingVariants={[savedVariant]}
+      />,
+    );
+
+    expect(screen.getByTestId('inventory-adjust-stock-0')).toBeDisabled();
+    expect(screen.getByTestId('inventory-view-ledger-0')).not.toBeDisabled();
   });
 });

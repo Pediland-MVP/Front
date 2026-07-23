@@ -8,6 +8,7 @@ import { mutate } from 'swr';
 import { CheckIcon, StarIcon, VideoCameraIcon } from '@phosphor-icons/react/dist/ssr';
 
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import type {
   CommerceProductDetail,
@@ -57,6 +58,8 @@ export const VariantMediaPickerDialog = ({
   initialAssignment,
 }: VariantMediaPickerDialogProps) => {
   const t = useTranslations('Commerce.Editor.VariantMedia');
+  const { can } = usePermissions();
+  const canEdit = can('product:edit');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [coverId, setCoverId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -91,6 +94,11 @@ export const VariantMediaPickerDialog = ({
   };
 
   const handleSave = async () => {
+    // Defense-in-depth: the backend already enforces `product:edit` on
+    // `PUT .../variants/:variantId/media`, but the request must never even fire when the
+    // viewer lacks the permission — the Save button below is also disabled for the same case.
+    if (!canEdit) return;
+
     setIsSaving(true);
     const key = productDetailKey(productId);
 
@@ -182,7 +190,12 @@ export const VariantMediaPickerDialog = ({
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('cancel')}
           </Button>
-          <ButtonLoading type="button" isLoading={isSaving} onClick={handleSave}>
+          <ButtonLoading
+            type="button"
+            isLoading={isSaving}
+            disabled={!canEdit}
+            onClick={handleSave}
+          >
             {t('save')}
           </ButtonLoading>
         </DialogFooter>
