@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -218,8 +218,11 @@ describe('InventorySection', () => {
 
     fireEvent.click(screen.getByTestId('inventory-view-ledger-0'));
 
+    // Always fetches a single large page (the backend's documented `@Max(200)` cap on
+    // `ReadMovementsDto.limit`) at `page=1` — never re-fetches per displayed page, see the
+    // multi-page test below.
     expect(mockUseSWRImmutable).toHaveBeenCalledWith(
-      '/commerce/products/prod-1/movements/var-1?page=1&limit=20',
+      '/commerce/products/prod-1/movements/var-1?page=1&limit=200',
     );
 
     // Row 0 (newest, delta -2): balanceAfter = currentOnHand (18).
@@ -228,6 +231,122 @@ describe('InventorySection', () => {
     expect(screen.getByText('+50')).toBeInTheDocument();
     const balanceCells = screen.getAllByText(/^(18|20)$/);
     expect(balanceCells.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('reconstructs balanceAfter correctly for rows past the first display page, from a single fetched set', () => {
+    // 25 movements (more than the default 20-per-display-page), each delta = -1, DESC-ordered
+    // (index 0 = newest). With currentOnHand = 100, hand-computed balanceAfter[i] = 100 + i —
+    // in particular row 20 (the FIRST row of display-page 2) must be 120, not 100. Under the
+    // old bug (re-fetching a server page and re-anchoring each page at `currentOnHand`), page
+    // 2's first row would have been wrongly shown as 100.
+    const totalMovements = 25;
+    const movements: CommerceStockMovement[] = Array.from({ length: totalMovements }, (_, i) =>
+      buildMovement({
+        id: `mv-${totalMovements - i}`,
+        delta: -1,
+        createDate: new Date(2026, 6, totalMovements - i).toISOString(),
+      }),
+    );
+
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: movements,
+        meta: {
+          currentPage: 1,
+          itemCount: totalMovements,
+          itemsPerPage: 200,
+          totalItems: totalMovements,
+          totalPages: 1,
+        },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    render(
+      <Harness
+        productId="prod-1"
+        defaultValues={buildForm([{ ...savedVariant, valueIndexes: [] }])}
+        existingVariants={[{ ...savedVariant, onHand: 100 }]}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('inventory-view-ledger-0'));
+
+    // Scope queries to the ledger rows only — the variants table above also shows the raw
+    // onHand (100) in its own "stock" column, which would otherwise collide with balanceAfter.
+    const ledgerRows = () => within(screen.getByTestId('inventory-ledger-rows'));
+
+    // Display page 1 (rows 0-19): first row's balanceAfter is the live onHand (100).
+    expect(ledgerRows().getByText('100')).toBeInTheDocument();
+    // Row 19 (last on page 1) must show 119, not yet visible until we've confirmed page 1
+    // renders correctly — this only appears once, unambiguously, on page 1.
+    expect(ledgerRows().getByText('119')).toBeInTheDocument();
+    // Row 20 (page 2's first row) is NOT rendered yet.
+    expect(ledgerRows().queryByText('120')).not.toBeInTheDocument();
+
+    // Advance to display page 2 — this must be a pure client-side slice, never a new server
+    // fetch with a different `page`/`limit`.
+    fireEvent.click(screen.getByText('صفحه بعد').closest('button')!);
+
+    // Row 20's balanceAfter must be 120 (100 + 20) — the correct value anchored on the WHOLE
+    // fetched set, not 100 (which is what the old per-page-refetch bug would have shown).
+    expect(ledgerRows().getByText('120')).toBeInTheDocument();
+    expect(ledgerRows().getByText('124')).toBeInTheDocument(); // row 24, the oldest movement.
+    // Page 1's rows are no longer rendered.
+    expect(ledgerRows().queryByText('119')).not.toBeInTheDocument();
+
+    // The SWR key never changed — still `page=1&limit=200` — proving no server re-fetch was
+    // triggered by moving to display page 2.
+    expect(mockUseSWRImmutable).toHaveBeenLastCalledWith(
+      '/commerce/products/prod-1/movements/var-1?page=1&limit=200',
+    );
+  });
+
+  it('shows a "more movements than fetched" notice only when the backend reports more total items than were fetched', () => {
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [buildMovement({ id: 'mv-1', delta: -1 })],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 200, totalItems: 250, totalPages: 2 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    render(
+      <Harness
+        productId="prod-1"
+        defaultValues={buildForm([{ ...savedVariant, valueIndexes: [] }])}
+        existingVariants={[savedVariant]}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('inventory-view-ledger-0'));
+
+    expect(screen.getByTestId('inventory-ledger-truncated-notice')).toBeInTheDocument();
+  });
+
+  it('does NOT show the "more movements than fetched" notice when everything was fetched', () => {
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [buildMovement({ id: 'mv-1', delta: -1 })],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 200, totalItems: 1, totalPages: 1 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    render(
+      <Harness
+        productId="prod-1"
+        defaultValues={buildForm([{ ...savedVariant, valueIndexes: [] }])}
+        existingVariants={[savedVariant]}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('inventory-view-ledger-0'));
+
+    expect(screen.queryByTestId('inventory-ledger-truncated-notice')).not.toBeInTheDocument();
   });
 
   it('shows the empty-ledger message once fetched with no movements', () => {

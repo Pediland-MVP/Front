@@ -50,6 +50,14 @@ interface InventorySectionProps {
 }
 
 const LEDGER_DEFAULT_LIMIT = 20;
+// The backend's `ReadMovementsDto.limit` hard-caps at 200 (`@Max(200)`). We fetch a single
+// page at this cap — ordered DESC by `createDate` (the service's own default order, see
+// `InventoryService#movementsOf`) — and reconstruct `balanceAfter` ONCE over that whole set,
+// then paginate the already-reconstructed array CLIENT-SIDE for display. Re-fetching a new
+// server page per click would feed `reconstructLedgerBalances` a stale anchor for page 2+
+// (see the util's contract: `movements[0]` must be the single most recent change overall) —
+// see the fix-report for the full incident writeup.
+const LEDGER_FETCH_LIMIT = 200;
 
 /**
  * Ledger + adjust-stock UI. Both `GET .../movements/:variantId` and
@@ -93,13 +101,10 @@ export const InventorySection = ({
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [adjustVariantId, setAdjustVariantId] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(LEDGER_DEFAULT_LIMIT);
-
-  // A fresh variant selection always starts back at page 1 of its own ledger.
-  useEffect(() => {
-    setPage(1);
-  }, [selectedVariantId]);
+  // These two are LOCAL display pagination only — they slice the already-reconstructed
+  // array in memory, they never trigger a new server fetch (see `LEDGER_FETCH_LIMIT` above).
+  const [displayPage, setDisplayPage] = useState(1);
+  const [displayLimit, setDisplayLimit] = useState(LEDGER_DEFAULT_LIMIT);
 
   const selectedRow = rows.find((row) => row.variantId === selectedVariantId);
   const adjustRow = rows.find((row) => row.variantId === adjustVariantId);
@@ -111,9 +116,18 @@ export const InventorySection = ({
     isLoading: isLedgerLoading,
   } = useSWRImmutable<PaginatedResult<CommerceStockMovement[]>>(
     shouldFetchLedger
-      ? `/commerce/products/${productId}/movements/${selectedVariantId}?page=${page}&limit=${limit}`
+      ? `/commerce/products/${productId}/movements/${selectedVariantId}?page=1&limit=${LEDGER_FETCH_LIMIT}`
       : null,
   );
+
+  // Reset the display page to 1 both when a fresh variant is selected AND whenever the
+  // underlying ledger data itself is re-fetched — `useSWRImmutable` never revalidates on its
+  // own, so the only way `ledgerData` changes for the SAME variant is `AdjustStockDialog`'s
+  // post-save `mutate()` call. That covers the "reset after a successful stock adjustment"
+  // case for free, without a separate callback wired through the dialog.
+  useEffect(() => {
+    setDisplayPage(1);
+  }, [selectedVariantId, ledgerData]);
 
   // Direct `mode`/`productId` checks (not a derived boolean) so TS narrows `productId` from
   // `string | undefined` to `string` for the rest of the component — same convention
@@ -145,8 +159,23 @@ export const InventorySection = ({
 
   const movements = ledgerData?.items ?? [];
   const currentOnHand = selectedRow?.onHand ?? 0;
+  // Reconstructed ONCE over the whole fetched (up-to-`LEDGER_FETCH_LIMIT`) set — `movements[0]`
+  // really is the single most recent change overall, so `currentOnHand` is a valid anchor for
+  // every row, not just the first server page's worth.
   const movementsWithBalance = reconstructLedgerBalances(movements, currentOnHand);
   const meta = ledgerData?.meta;
+
+  // The backend may have more movements than our fetch cap can hold — never silently show a
+  // partial view with no explanation (see `LEDGER_FETCH_LIMIT`'s comment).
+  const isLedgerTruncated = !!meta && meta.totalItems > movements.length;
+
+  // Client-side slice of the already-reconstructed array for the page the merchant is viewing.
+  const displayTotalPages = Math.max(1, Math.ceil(movementsWithBalance.length / displayLimit));
+  const displayStartIndex = (displayPage - 1) * displayLimit;
+  const pagedMovements = movementsWithBalance.slice(
+    displayStartIndex,
+    displayStartIndex + displayLimit,
+  );
 
   return (
     <div className="flex flex-col gap-5">
@@ -245,6 +274,14 @@ export const InventorySection = ({
               <p className="text-destructive text-sm">{t('Ledger.loadError')}</p>
             ) : (
               <>
+                {isLedgerTruncated && (
+                  <p
+                    className="text-muted-foreground mb-3 text-sm"
+                    data-testid="inventory-ledger-truncated-notice"
+                  >
+                    {t('Ledger.truncatedNotice', { limit: LEDGER_FETCH_LIMIT })}
+                  </p>
+                )}
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -254,8 +291,8 @@ export const InventorySection = ({
                       <TableHead className="text-end">{t('Ledger.Columns.balanceAfter')}</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
-                    {movementsWithBalance.map((movement) => (
+                  <TableBody data-testid="inventory-ledger-rows">
+                    {pagedMovements.map((movement) => (
                       <TableRow key={movement.id}>
                         <TableCell className="tabular-nums">
                           {new Date(movement.createDate).toLocaleString('fa-IR')}
@@ -278,7 +315,7 @@ export const InventorySection = ({
                         </TableCell>
                       </TableRow>
                     ))}
-                    {movementsWithBalance.length === 0 && (
+                    {pagedMovements.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={4} className="text-muted-foreground">
                           {t('Ledger.empty')}
@@ -288,18 +325,21 @@ export const InventorySection = ({
                   </TableBody>
                 </Table>
 
+                {/* Local, in-memory pagination over the already-reconstructed array — no
+                    server fetch is triggered by page/limit changes here (see
+                    `LEDGER_FETCH_LIMIT`'s comment). */}
                 <ItemsPagination
                   isLoading={isLedgerLoading}
-                  onPageChange={setPage}
+                  onPageChange={setDisplayPage}
                   onLimitChange={(newLimit) => {
-                    setLimit(newLimit);
-                    setPage(1);
+                    setDisplayLimit(newLimit);
+                    setDisplayPage(1);
                   }}
-                  totalCount={meta?.totalItems ?? 0}
-                  serverPage={meta?.currentPage ?? page}
-                  serverPerPage={meta?.itemsPerPage ?? limit}
-                  serverItemCount={meta?.itemCount ?? movements.length}
-                  serverTotalPages={meta?.totalPages ?? 1}
+                  totalCount={movementsWithBalance.length}
+                  serverPage={displayPage}
+                  serverPerPage={displayLimit}
+                  serverItemCount={pagedMovements.length}
+                  serverTotalPages={displayTotalPages}
                 />
               </>
             )}
