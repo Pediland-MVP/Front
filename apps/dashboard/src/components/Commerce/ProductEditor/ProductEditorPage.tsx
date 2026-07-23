@@ -236,7 +236,14 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
       return <MediaSection mode={mode} productId={productId} media={product?.media ?? []} />;
     }
     if (id === 'variants') {
-      return <VariantsSection mode={mode} existingVariants={product?.variants ?? []} />;
+      return (
+        <VariantsSection
+          mode={mode}
+          productId={productId}
+          media={product?.media ?? []}
+          existingVariants={product?.variants ?? []}
+        />
+      );
     }
 
     return (

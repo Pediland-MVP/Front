@@ -34,23 +34,46 @@ beforeEach(() => {
 import messages from '@/messages/fa.json';
 import { VariantsSection } from './VariantsSection';
 import { buildProductFormSchema, type ProductFormValues } from '../productForm.schema';
+import type { CommerceProductMedia, CommerceVariantDetail } from '@/types/commerce';
 
 let capturedForm: UseFormReturn<ProductFormValues> | undefined;
 
-function Harness({ defaultValues }: { defaultValues: ProductFormValues }) {
+function Harness({
+  defaultValues,
+  productId,
+  media,
+  existingVariants,
+}: {
+  defaultValues: ProductFormValues;
+  productId?: string;
+  media?: CommerceProductMedia[];
+  existingVariants?: CommerceVariantDetail[];
+}) {
   const form = useForm<ProductFormValues>({ defaultValues });
   capturedForm = form;
   return (
     <NextIntlClientProvider locale="fa" messages={messages}>
       <FormProvider {...form}>
-        <VariantsSection mode="edit" />
+        <VariantsSection
+          mode="edit"
+          productId={productId}
+          media={media}
+          existingVariants={existingVariants}
+        />
       </FormProvider>
     </NextIntlClientProvider>
   );
 }
 
-function renderHarness(defaultValues: ProductFormValues) {
-  return render(<Harness defaultValues={defaultValues} />);
+function renderHarness(
+  defaultValues: ProductFormValues,
+  extra?: {
+    productId?: string;
+    media?: CommerceProductMedia[];
+    existingVariants?: CommerceVariantDetail[];
+  },
+) {
+  return render(<Harness defaultValues={defaultValues} {...extra} />);
 }
 
 // Only used by the Finding-2 regression test below: wires up the SAME zod schema/resolver
@@ -473,5 +496,70 @@ describe('VariantsSection array-level "at least one active variant" safety net',
     expect(
       await screen.findByText(messages.Commerce.Editor.Validation.atLeastOneActiveVariantRequired),
     ).toBeInTheDocument();
+  });
+});
+
+describe('VariantsSection per-variant media button', () => {
+  const MEDIA_1: CommerceProductMedia = {
+    id: 'media-1',
+    type: 'image',
+    position: 0,
+    alt: null,
+    url: 'https://cdn.example.com/media-1.jpg',
+    posterUrl: null,
+  };
+
+  // `PUT /commerce/products/:id/variants/:variantId/media` requires a real, persisted
+  // variant id. A variant just added this session (id undefined, e.g. via "regenerate" or a
+  // fresh row) has no such id yet — the button must stay disabled rather than attempt the
+  // call with a missing/undefined variantId.
+  it('disables the media button for a variant with no real persisted id yet', () => {
+    const form = twoValueOptionForm();
+    form.variants[1].id = undefined;
+    renderHarness(form, { productId: 'prod-1', media: [MEDIA_1] });
+
+    expect(screen.getByTestId('variant-media-button-0')).not.toBeDisabled();
+    expect(screen.getByTestId('variant-media-button-1')).toBeDisabled();
+  });
+
+  it('shows a dashed placeholder (no cover assigned) for a saved variant with no media override', () => {
+    renderHarness(twoValueOptionForm(), { productId: 'prod-1', media: [MEDIA_1] });
+
+    const button = screen.getByTestId('variant-media-button-0');
+    expect(button).not.toBeDisabled();
+    expect(button.querySelector('img')).not.toBeInTheDocument();
+  });
+
+  it("shows the variant's own cover thumbnail once it has a media assignment", () => {
+    const existingVariants: CommerceVariantDetail[] = [
+      {
+        id: 'var-s',
+        sku: 'SKU-S',
+        price: 1000,
+        compareAtPrice: null,
+        salePrice: null,
+        saleStartsAt: null,
+        saleEndsAt: null,
+        optionSignature: '',
+        position: 0,
+        isActive: true,
+        trackInventory: false,
+        allowBackorder: false,
+        weight: null,
+        onHand: 0,
+        optionValueIds: ['val-s'],
+        media: { selectedMediaIds: ['media-1'], coverMediaId: 'media-1' },
+      },
+    ];
+    renderHarness(twoValueOptionForm(), {
+      productId: 'prod-1',
+      media: [MEDIA_1],
+      existingVariants,
+    });
+
+    const button = screen.getByTestId('variant-media-button-0');
+    const img = button.querySelector('img');
+    expect(img).toBeInTheDocument();
+    expect(img?.getAttribute('src')).toBe(MEDIA_1.url);
   });
 });

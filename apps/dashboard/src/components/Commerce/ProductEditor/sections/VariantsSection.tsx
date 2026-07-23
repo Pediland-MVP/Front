@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch, type FieldError } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,7 +27,12 @@ import { PlusIcon, RefreshCcwIcon, Trash2Icon } from 'lucide-react';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
 import { formatNumber } from '@/utils/formatNumber';
 import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
-import type { CommerceVariantDetail } from '@/types/commerce';
+import { cn } from '@/lib/utils';
+import type {
+  CommerceProductMedia,
+  CommerceVariantDetail,
+  CommerceVariantMediaAssignment,
+} from '@/types/commerce';
 
 import {
   Badge,
@@ -61,14 +67,22 @@ import {
   TooltipTrigger,
 } from '@/components/ui';
 
+import { VariantMediaPickerDialog } from '../VariantMediaPickerDialog';
 import { generateVariantCombinations, OPTION_LIMIT, VARIANT_LIMIT } from '../variantMatrix.util';
 import type { ProductFormValues } from '../productForm.schema';
 
 interface VariantsSectionProps {
   mode: 'create' | 'edit';
-  /** The fetched product's variants (edit mode only) — used only to read the read-only
-   * `onHand` figure for the stock column. Never written back to; stock edits go through
-   * Task 7's dedicated inventory endpoint. */
+  /** Needed to build the `PUT .../variants/:variantId/media` URL — the per-variant media
+   * picker is disabled entirely without it (mirrors `MediaSection`'s `mode`/`productId` gate). */
+  productId?: string;
+  /** The product's whole media pool (same `GET /commerce/products/:id` response's `media`
+   * field `MediaSection` reads) — the per-variant picker can only choose from it. */
+  media?: CommerceProductMedia[];
+  /** The fetched product's variants (edit mode only) — used to read the read-only `onHand`
+   * figure for the stock column, and (Task 6) each variant's currently-known media
+   * assignment for the media button's thumbnail. Never written back to for pricing/stock;
+   * those edits go through Task 7's dedicated inventory endpoint. */
   existingVariants?: CommerceVariantDetail[];
 }
 
@@ -99,10 +113,20 @@ const getComboIdentities = (combo: number[], options: Option[]): string[] =>
  * entry) plus the generated variant table. This is the only section that mutates
  * `options`/`variants` via `useFieldArray` (see `productForm.schema.ts`'s shared shape).
  */
-export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSectionProps) => {
+export const VariantsSection = ({
+  mode,
+  productId,
+  media = [],
+  existingVariants = [],
+}: VariantsSectionProps) => {
   const t = useTranslations('Commerce.Editor.Variants');
   const tv = useTranslations('Commerce.Editor.Validation');
   const form = useFormContext<ProductFormValues>();
+
+  // One dialog instance, controlled by which row (if any) currently has it open — mirrors the
+  // approved mockup's single `modalVariantMedia` reused across every row via `pickerState`,
+  // rather than mounting a dialog per row.
+  const [mediaPickerIndex, setMediaPickerIndex] = useState<number | null>(null);
 
   const optionsFieldArray = useFieldArray({
     control: form.control,
@@ -239,6 +263,12 @@ export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSection
     form.formState.errors.variants as (FieldError & { root?: FieldError }) | undefined
   )?.root?.message;
 
+  // The media picker only ever targets a variant with a real, persisted id — `VariantRow`
+  // already disables the button otherwise (see the gating comment there), so this is a
+  // defensive re-check, not the primary gate.
+  const mediaPickerVariantId =
+    mediaPickerIndex !== null ? watchedVariants[mediaPickerIndex]?.id : undefined;
+
   return (
     <div className="flex flex-col gap-5">
       <Card>
@@ -334,6 +364,12 @@ export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSection
                   index={index}
                   mode={mode}
                   label={getVariantLabel(watchedVariants[index]?.valueIndexes ?? [])}
+                  variantId={watchedVariants[index]?.id}
+                  mediaAssignment={
+                    existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)
+                      ?.media
+                  }
+                  mediaPool={media}
                   existingOnHand={
                     existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)
                       ?.onHand
@@ -343,6 +379,7 @@ export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSection
                     Boolean(watchedVariants[index]?.isActive) && activeVariantCount <= 1
                   }
                   onRemove={() => handleRemoveVariant(index)}
+                  onOpenMediaPicker={() => setMediaPickerIndex(index)}
                 />
               ))}
               {variantsFieldArray.fields.length === 0 && (
@@ -356,6 +393,26 @@ export const VariantsSection = ({ mode, existingVariants = [] }: VariantsSection
           </Table>
         </CardContent>
       </Card>
+
+      {productId && mediaPickerVariantId && (
+        <VariantMediaPickerDialog
+          open={mediaPickerIndex !== null}
+          onOpenChange={(open) => {
+            if (!open) setMediaPickerIndex(null);
+          }}
+          productId={productId}
+          variantId={mediaPickerVariantId}
+          variantLabel={getVariantLabel(
+            mediaPickerIndex !== null
+              ? (watchedVariants[mediaPickerIndex]?.valueIndexes ?? [])
+              : [],
+          )}
+          pool={media}
+          initialAssignment={
+            existingVariants.find((variant) => variant.id === mediaPickerVariantId)?.media
+          }
+        />
+      )}
     </div>
   );
 };
@@ -504,18 +561,30 @@ const VariantRow = ({
   index,
   mode,
   label,
+  variantId,
+  mediaAssignment,
+  mediaPool,
   existingOnHand,
   deleteBlockedReason,
   isLastActiveVariant,
   onRemove,
+  onOpenMediaPicker,
 }: {
   index: number;
   mode: 'create' | 'edit';
   label: string;
+  /** The variant's real, persisted backend id — `undefined` for a variant the merchant just
+   * added this session (via "regenerate" or otherwise) that has never been saved yet. The
+   * media button stays disabled until this exists, since `PUT .../variants/:variantId/media`
+   * requires a real id. */
+  variantId?: string;
+  mediaAssignment?: CommerceVariantMediaAssignment;
+  mediaPool: CommerceProductMedia[];
   existingOnHand?: number;
   deleteBlockedReason: string | null;
   isLastActiveVariant: boolean;
   onRemove: () => void;
+  onOpenMediaPicker: () => void;
 }) => {
   const t = useTranslations('Commerce.Editor.Variants');
   const form = useFormContext<ProductFormValues>();
@@ -537,18 +606,52 @@ const VariantRow = ({
     }
   };
 
+  // A brand-new variant added this session (via "regenerate" or otherwise) has no real
+  // backend id yet — `PUT .../variants/:variantId/media` requires one, so the button stays
+  // disabled (with an explanatory tooltip) until the whole product form is saved once, the
+  // same rule `MediaSection` applies to the whole Media section pre-save.
+  const isMediaButtonDisabled = !variantId;
+  const coverMedia = mediaAssignment?.coverMediaId
+    ? mediaPool.find((item) => item.id === mediaAssignment.coverMediaId)
+    : undefined;
+  const coverPreviewUrl = coverMedia
+    ? coverMedia.type === 'video'
+      ? (coverMedia.posterUrl ?? coverMedia.url)
+      : coverMedia.url
+    : undefined;
+  const mediaButtonTooltip = isMediaButtonDisabled
+    ? t('mediaUnsavedTooltip')
+    : coverMedia
+      ? t('mediaEditTooltip')
+      : t('mediaAssignTooltip');
+
   return (
     <TableRow>
       <TableCell>
         <Tooltip>
           <TooltipTrigger asChild>
             <span>
-              <Button type="button" variant="outline" size="icon" disabled className="size-8">
-                <ImageIcon size={14} />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                disabled={isMediaButtonDisabled}
+                onClick={onOpenMediaPicker}
+                data-testid={`variant-media-button-${index}`}
+                className={cn(
+                  'relative size-8 overflow-hidden',
+                  !coverPreviewUrl && 'border-dashed',
+                )}
+              >
+                {coverPreviewUrl ? (
+                  <Image src={coverPreviewUrl} alt="" fill className="object-cover" sizes="32px" />
+                ) : (
+                  <ImageIcon size={14} />
+                )}
               </Button>
             </span>
           </TooltipTrigger>
-          <TooltipContent>{t('mediaPlaceholderTooltip')}</TooltipContent>
+          <TooltipContent>{mediaButtonTooltip}</TooltipContent>
         </Tooltip>
       </TableCell>
 
