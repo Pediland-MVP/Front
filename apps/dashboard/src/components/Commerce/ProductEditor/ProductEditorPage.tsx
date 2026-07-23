@@ -31,6 +31,7 @@ import {
   type ProductFormValues,
 } from './productForm.schema';
 import { BasicInfoSection } from './sections/BasicInfoSection';
+import { InventorySection } from './sections/InventorySection';
 import { MediaSection } from './sections/MediaSection';
 import { ShippingSection } from './sections/ShippingSection';
 import { VariantsSection } from './sections/VariantsSection';
@@ -42,9 +43,9 @@ interface ProductEditorPageProps {
 
 const MOBILE_MEDIA_QUERY = '(max-width: 900px)';
 
-// Six section ids, in the order the design spec lists them. Only `basic`/`shipping` render
-// real content in this task — the rest are placeholders Tasks 4/5/6/7/8 fill in, so the
-// scrollspy/nav mechanism is provable end-to-end before those tasks start.
+// Six section ids, in the order the design spec lists them. As of Task 7, only `org`
+// (Categories & collections, Task 8's work) still renders the generic placeholder card —
+// every other section has its real content wired in below.
 const SECTION_IDS: EditorSectionId[] = [
   'basic',
   'media',
@@ -241,6 +242,15 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
           mode={mode}
           productId={productId}
           media={product?.media ?? []}
+          existingVariants={product?.variants ?? []}
+        />
+      );
+    }
+    if (id === 'inventory') {
+      return (
+        <InventorySection
+          mode={mode}
+          productId={productId}
           existingVariants={product?.variants ?? []}
         />
       );
