@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { toggleProductInCollectionMembership } from './toggleProductInCollection';
 import { CommerceCollectionListItem } from '@/types/commerce';
 

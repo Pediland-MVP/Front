@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { buildCategoryTree } from './buildCategoryTree';
 import { CommerceCategory } from '@/types/commerce';
 

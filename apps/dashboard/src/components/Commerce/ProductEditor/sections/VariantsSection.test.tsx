@@ -556,6 +556,7 @@ describe('VariantsSection per-variant media button', () => {
         allowBackorder: false,
         weight: null,
         onHand: 0,
+        lowStockThreshold: null,
         optionValueIds: ['val-s'],
         media: { selectedMediaIds: ['media-1'], coverMediaId: 'media-1' },
       },
