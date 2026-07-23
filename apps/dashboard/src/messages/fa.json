@@ -1907,7 +1907,9 @@
     "COMMERCE_PRODUCT_NOT_FOUND": "کالای مورد نظر پیدا نشد.",
     "COMMERCE_OPTION_LIMIT_EXCEEDED": "حداکثر ۳ گزینهٔ تنوع مجاز است.",
     "COMMERCE_VARIANT_LIMIT_EXCEEDED": "تعداد تنوع‌ها بیش از حد مجاز (۲۰۰۰ مورد) است.",
-    "COMMERCE_INVALID_SELECTION": "کالا باید حداقل یک تنوع فعال داشته باشد."
+    "COMMERCE_INVALID_SELECTION": "کالا باید حداقل یک تنوع فعال داشته باشد.",
+    "COMMERCE_CATEGORY_IN_USE": "این دسته‌بندی زیردسته یا کالایی دارد و قابل حذف نیست.",
+    "COMMERCE_CATEGORY_CYCLE": "این دسته‌بندی نمی‌تواند زیرمجموعهٔ خودش یا فرزندانش باشد."
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
@@ -2562,6 +2564,55 @@
         "salePriceInvalid": "قیمت ویژه باید کمتر از قیمت باشد.",
         "saleWindowRequired": "قیمت ویژه و تاریخ شروع آن باید هر دو با هم تنظیم شوند.",
         "atLeastOneActiveVariantRequired": "کالا باید حداقل یک تنوع فعال داشته باشد."
+      }
+    },
+    "Taxonomy": {
+      "newCategory": "دسته‌بندی جدید",
+      "newCollection": "کالکشن جدید",
+      "Category": {
+        "title": "دسته‌بندی‌ها",
+        "empty": "هنوز دسته‌بندی‌ای ثبت نشده است.",
+        "loadError": "دریافت فهرست دسته‌بندی‌ها با خطا مواجه شد.",
+        "edit": "ویرایش",
+        "delete": "حذف",
+        "deleteSuccess": "دسته‌بندی حذف شد.",
+        "deleteError": "حذف دسته‌بندی با خطا مواجه شد.",
+        "reorderError": "تغییر ترتیب دسته‌بندی با خطا مواجه شد."
+      },
+      "CategoryDialog": {
+        "createTitle": "دسته‌بندی جدید",
+        "editTitle": "ویرایش دسته‌بندی",
+        "name": "نام دسته‌بندی",
+        "nameRequired": "نام دسته‌بندی را وارد کنید.",
+        "parent": "دسته‌بندی والد",
+        "parentPlaceholder": "یک دسته‌بندی والد انتخاب کنید",
+        "parentNone": "بدون والد (سطح اول)",
+        "cancel": "انصراف",
+        "submit": "ذخیره",
+        "createSuccess": "دسته‌بندی با موفقیت ساخته شد.",
+        "updateSuccess": "تغییرات دسته‌بندی ذخیره شد.",
+        "genericError": "مشکلی پیش آمد. دوباره تلاش کنید."
+      },
+      "Collection": {
+        "title": "کالکشن‌ها",
+        "empty": "هنوز کالکشنی ساخته نشده است.",
+        "loadError": "دریافت فهرست کالکشن‌ها با خطا مواجه شد.",
+        "productCount": "{count} کالا",
+        "edit": "ویرایش",
+        "delete": "حذف",
+        "deleteSuccess": "کالکشن حذف شد.",
+        "deleteError": "حذف کالکشن با خطا مواجه شد."
+      },
+      "CollectionDialog": {
+        "createTitle": "کالکشن جدید",
+        "editTitle": "ویرایش کالکشن",
+        "name": "نام کالکشن",
+        "nameRequired": "نام کالکشن را وارد کنید.",
+        "cancel": "انصراف",
+        "submit": "ذخیره",
+        "createSuccess": "کالکشن با موفقیت ساخته شد.",
+        "updateSuccess": "تغییرات کالکشن ذخیره شد.",
+        "genericError": "مشکلی پیش آمد. دوباره تلاش کنید."
       }
     }
   }
