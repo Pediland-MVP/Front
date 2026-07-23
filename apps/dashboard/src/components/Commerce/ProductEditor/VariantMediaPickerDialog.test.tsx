@@ -13,6 +13,12 @@ vi.mock('swr', () => ({ mutate: mutateMock }));
 const { put } = vi.hoisted(() => ({ put: vi.fn().mockResolvedValue({ data: {} }) }));
 vi.mock('@/hooks/swr/api-client', () => ({ default: { put } }));
 
+const { toastError, toastSuccess } = vi.hoisted(() => ({
+  toastError: vi.fn(),
+  toastSuccess: vi.fn(),
+}));
+vi.mock('sonner', () => ({ toast: { error: toastError, success: toastSuccess } }));
+
 import messages from '@/messages/fa.json';
 import { VariantMediaPickerDialog } from './VariantMediaPickerDialog';
 
@@ -129,7 +135,7 @@ describe('VariantMediaPickerDialog', () => {
     );
   });
 
-  it('after a successful save, optimistically writes the assignment into the shared SWR cache and revalidates', async () => {
+  it('optimistically writes the assignment (revalidate:false) before saving, then revalidates for real after the PUT settles', async () => {
     renderDialog([IMAGE]);
 
     fireEvent.click(screen.getByTestId('media-pool-tile-media-1'));
@@ -138,10 +144,25 @@ describe('VariantMediaPickerDialog', () => {
     await waitFor(() => expect(put).toHaveBeenCalled());
 
     // Same shared key `ProductEditorPage.tsx`/`MediaSection.tsx` use, matching Task 4's
-    // optimistic-write-then-revalidate pattern now that the GET response includes this field.
+    // MediaSection#handleDragEnd convention: optimistic local write first (revalidate:false,
+    // so it can't race the PUT with a premature refetch), then a plain revalidating
+    // `mutate(key)` once the PUT settles (in `finally`, decoupled from the success/error toast).
     expect(mutateMock).toHaveBeenCalledWith('/commerce/products/prod-1', expect.any(Function), {
-      revalidate: true,
+      revalidate: false,
     });
+    await waitFor(() => expect(mutateMock).toHaveBeenCalledWith('/commerce/products/prod-1'));
+    expect(toastSuccess).toHaveBeenCalled();
+  });
+
+  it('reports a save error only when the PUT itself fails, not when the post-save revalidate does', async () => {
+    put.mockRejectedValueOnce(new Error('network'));
+    renderDialog([IMAGE]);
+
+    fireEvent.click(screen.getByTestId('media-pool-tile-media-1'));
+    fireEvent.click(screen.getByText(messages.Commerce.Editor.VariantMedia.save));
+
+    await waitFor(() => expect(toastError).toHaveBeenCalled());
+    expect(toastSuccess).not.toHaveBeenCalled();
   });
 
   it('shows the empty-pool message when the product has no media yet', () => {

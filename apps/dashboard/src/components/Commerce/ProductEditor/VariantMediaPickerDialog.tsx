@@ -92,6 +92,31 @@ export const VariantMediaPickerDialog = ({
 
   const handleSave = async () => {
     setIsSaving(true);
+    const key = productDetailKey(productId);
+
+    // Optimistic re-render for instant feedback: write the desired assignment straight into
+    // the shared SWR cache entry (NOT a local `useState`) with `revalidate: false` so it
+    // doesn't race the PUT below with a premature refetch — same convention as Task 4's
+    // MediaSection#handleDragEnd. The final `mutate(key)` after the PUT settles revalidates
+    // for real (`GET /commerce/products/:id` returns this field since Back commit
+    // `869261f8`), so the authoritative assignment always wins.
+    await mutate(
+      key,
+      (current: IResponseMessage<CommerceProductDetail> | undefined) =>
+        current && {
+          ...current,
+          data: {
+            ...current.data,
+            variants: current.data.variants.map((variant) =>
+              variant.id === variantId
+                ? { ...variant, media: { selectedMediaIds: selectedIds, coverMediaId: coverId } }
+                : variant,
+            ),
+          },
+        },
+      { revalidate: false },
+    );
+
     try {
       // Full-replace semantics: always send the complete desired set, never a delta. An empty
       // `selectedIds` is itself the "clear the override, fall back to the product's cover"
@@ -100,37 +125,15 @@ export const VariantMediaPickerDialog = ({
         mediaIds: selectedIds,
         ...(coverId && { coverMediaId: coverId }),
       });
-
-      // `GET /commerce/products/:id` now returns each variant's media assignment (Back commit
-      // 869261f8 closed the read-side gap this comment used to describe). Optimistically write
-      // the known-good result into the shared SWR cache (same "shared cache is the source of
-      // truth" mechanism Task 4's MediaSection established), then revalidate against the
-      // server for eventual consistency — matching Task 4's upload/reorder/delete pattern.
-      await mutate(
-        productDetailKey(productId),
-        (current: IResponseMessage<CommerceProductDetail> | undefined) =>
-          current && {
-            ...current,
-            data: {
-              ...current.data,
-              variants: current.data.variants.map((variant) =>
-                variant.id === variantId
-                  ? {
-                      ...variant,
-                      media: { selectedMediaIds: selectedIds, coverMediaId: coverId },
-                    }
-                  : variant,
-              ),
-            },
-          },
-        { revalidate: true },
-      );
-
       toast.success(t('saveSuccess'));
       onOpenChange(false);
     } catch {
+      // Only a PUT failure is a real save error — a hiccup in the revalidating `mutate` below
+      // must not report the save itself as failed (that mutate runs in `finally`, decoupled
+      // from this signal, matching MediaSection#handleDragEnd's convention).
       toast.error(t('saveError'));
     } finally {
+      await mutate(key);
       setIsSaving(false);
     }
   };
