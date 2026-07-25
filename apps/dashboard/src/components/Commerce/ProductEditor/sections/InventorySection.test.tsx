@@ -100,7 +100,7 @@ beforeEach(() => {
 });
 
 describe('InventorySection', () => {
-  it('shows the "save the product first" message in create mode', () => {
+  it('lets opening stock be set per variant in create mode, writing to variants[].initialStock', () => {
     render(
       <Harness
         defaultValues={buildForm([
@@ -116,9 +116,40 @@ describe('InventorySection', () => {
       />,
     );
 
-    expect(
-      screen.getByText(messages.Commerce.Editor.Inventory.saveProductFirst),
-    ).toBeInTheDocument();
+    // The ledger/adjust controls need real variant ids, so create mode shows only the
+    // opening-stock input — which IS supported at create (`variants[].initialStock`).
+    const input = screen.getByTestId('opening-stock-0') as HTMLInputElement;
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: '12' } });
+    expect(input.value).toBe('12');
+
+    // `formatNumber` is en-US, so the displayed value carries thousand separators (English
+    // digits) — the Persian->English conversion happens on the way IN, via onInputP2EHandler.
+    fireEvent.change(input, { target: { value: '1234' } });
+    expect(input.value).toBe('1,234');
+  });
+
+  it('accepts Persian digits in the create-mode opening-stock input (CLAUDE.md §18)', () => {
+    render(
+      <Harness
+        defaultValues={buildForm([
+          {
+            price: 0,
+            isActive: true,
+            trackInventory: false,
+            allowBackorder: false,
+            valueIndexes: [],
+          },
+        ])}
+        mode="create"
+      />,
+    );
+
+    const input = screen.getByTestId('opening-stock-0') as HTMLInputElement;
+    // A `type="number"` input would blank this out before the converter ever ran.
+    expect(input).not.toHaveAttribute('type', 'number');
+    expect(input).toHaveAttribute('inputmode', 'numeric');
   });
 
   it('disables ledger/adjust controls for a variant with no persisted id, with a "save first" tooltip', () => {

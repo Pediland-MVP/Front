@@ -9,6 +9,8 @@ import useSWRImmutable from 'swr/immutable';
 import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import { formatNumber } from '@/utils/formatNumber';
+import { onInputP2EHandler } from '@/utils/p2eNumber';
+import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
 import type {
   CommerceStockMovement,
   CommerceStockMovementReason,
@@ -29,6 +31,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  FormControl,
+  FormField,
+  FormItem,
+  Input,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -79,6 +85,7 @@ export const InventorySection = ({
   // — no permission check needed for that button. `adjustStock` opens a dialog whose
   // `handleSubmit` PATCHes stock, which the backend gates on `product:edit`.
   const canEditStock = can('product:edit');
+  const { onFocus } = useSelectOnFocus();
 
   // Same `useWatch` source `VariantsSection` reads from, so variant labels here always match
   // what the merchant sees in the Variants & pricing table — including a variant added this
@@ -139,13 +146,68 @@ export const InventorySection = ({
   // `string | undefined` to `string` for the rest of the component — same convention
   // `MediaSection` uses for its own whole-section gate.
   if (mode !== 'edit' || !productId) {
+    // Create mode. The ledger and the adjust-stock dialog both need real variant ids, which
+    // do not exist yet — but OPENING stock does: `variants[].initialStock` is part of the
+    // create payload and the backend seeds the inventory level plus a `manual`/`initial`
+    // ledger row from it. So the section shows exactly that, one row per variant currently in
+    // the form. It writes the SAME form field the Variants & pricing table exposes, so editing
+    // it in either place stays in sync with no extra wiring.
     return (
       <Card>
         <CardHeader>
           <CardTitle>{t('title')}</CardTitle>
+          <p className="text-muted-foreground text-sm">{t('openingStockHint')}</p>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">{t('saveProductFirst')}</p>
+          {rows.length === 0 ? (
+            <p className="text-muted-foreground text-sm">{t('noVariants')}</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-start">{t('Columns.variant')}</TableHead>
+                  <TableHead className="text-start">{t('Columns.openingStock')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.index}>
+                    <TableCell className="text-start font-medium">{row.label}</TableCell>
+                    <TableCell>
+                      <FormField
+                        control={form.control}
+                        name={`variants.${row.index}.initialStock`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-0">
+                            <FormControl>
+                              {/* Digit-safe per CLAUDE.md §18: a TEXT input with
+                                  `onInputP2EHandler`, never `type="number"` — the browser
+                                  blanks non-ASCII input, so Persian digits would never reach
+                                  the converter. */}
+                              <Input
+                                inputMode="numeric"
+                                onInput={onInputP2EHandler}
+                                placeholder="۰"
+                                data-testid={`opening-stock-${row.index}`}
+                                value={field.value == null ? '' : (formatNumber(field.value) ?? '')}
+                                onFocus={onFocus}
+                                onChange={(e) =>
+                                  field.onChange(
+                                    e.target.value === '' ? undefined : +e.target.value,
+                                  )
+                                }
+                                className="h-8 w-24"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     );

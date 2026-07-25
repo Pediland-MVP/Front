@@ -44,6 +44,22 @@ against the now-existing product.
 Object URLs are revoked in a `useEffect` cleanup; without it every re-pick would leak a blob
 for the life of the page.
 
+### Inventory — opening stock per variant
+
+`InventorySection` ("تراز موجودی") was gated too. The ledger and the adjust-stock dialog both
+need real variant ids, so those genuinely cannot work before the first save — but **opening
+stock can**: `variants[].initialStock` is already part of the create payload, and the backend
+seeds the inventory level plus a `manual`/`initial` ledger row from it.
+
+So create mode now renders one row per variant currently in the form with an opening-stock
+input, instead of a placeholder. It writes the **same** `variants[].initialStock` field the
+Variants & pricing table already exposes, so editing it in either place stays in sync with no
+extra wiring.
+
+The input follows CLAUDE.md §18: a **text** input with `inputMode="numeric"` and
+`onInputP2EHandler`, never `type="number"` (which blanks non-ASCII input so the Persian→English
+conversion would never run), plus `formatNumber` for display and `useSelectOnFocus`.
+
 ## Changes
 
 - `productForm.schema.ts` — `collectionIds` added to the interface, the zod object, the
@@ -54,18 +70,24 @@ for the life of the page.
   modes.
 - `sections/MediaSection.tsx` — `PendingMediaPicker`; `pendingFiles` / `onPendingFilesChange`
   props.
+- `sections/InventorySection.tsx` — create mode renders the opening-stock table instead of the
+  placeholder.
 - `messages/fa.json` — `Commerce.Editor.Media.pendingHint`,
-  `Commerce.Editor.Toast.createdWithMediaErrors`, and
+  `Commerce.Editor.Toast.createdWithMediaErrors`, `Commerce.Editor.Inventory.openingStockHint`,
+  `Commerce.Editor.Inventory.Columns.openingStock`, and
   `ERROR_CODES.COMMERCE_COLLECTION_NOT_FOUND` (the backend code existed but had no Persian
   string, so it would have surfaced raw — CLAUDE.md §10).
 - Tests updated: `CollectionsSection.test.tsx` and `MediaSection.test.tsx` replaced their
   "shows the save-first message" cases with create-mode behaviour cases;
   `productForm.schema.test.ts`, `InventorySection.test.tsx` and `VariantsSection.test.tsx`
   had `collectionIds: []` added to their hand-built `ProductFormValues` literals.
+  `InventorySection.test.tsx` also swapped its placeholder case for two create-mode cases
+  (opening-stock input writes the form field and formats via `formatNumber`; the input honours
+  the §18 text-input contract).
 
 ## Verification
 
-- `npx vitest run src/components/Commerce/ProductEditor` → **87 passed / 87**, 11 files.
+- `npx vitest run src/components/Commerce/ProductEditor` → **88 passed / 88**, 11 files.
 - `npx tsc --noEmit` (apps/dashboard) → 268 error lines; **zero** relating to this change. The
   4 `collectionIds` errors this initially introduced in test literals were fixed.
 
