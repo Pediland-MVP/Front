@@ -1911,7 +1911,11 @@
     "COMMERCE_CATEGORY_IN_USE": "این دسته‌بندی زیردسته یا کالایی دارد و قابل حذف نیست.",
     "COMMERCE_CATEGORY_CYCLE": "این دسته‌بندی نمی‌تواند زیرمجموعهٔ خودش یا فرزندانش باشد.",
     "COMMERCE_IMPORT_INVALID_FILE": "فایل انتخاب‌شده معتبر نیست. فقط فایل CSV یا Excel (xlsx/xls) قابل قبول است.",
-    "COMMERCE_IMPORT_JOB_NOT_FOUND": "فرایند بارگذاری مورد نظر پیدا نشد."
+    "COMMERCE_IMPORT_JOB_NOT_FOUND": "فرایند بارگذاری مورد نظر پیدا نشد.",
+    "COMMERCE_INVALID_MEDIA": "فایل انتخاب‌شده معتبر نیست. فقط تصویر (PNG، JPEG، GIF، WebP) یا ویدیو قابل قبول است.",
+    "COMMERCE_CATEGORY_NOT_FOUND": "دسته‌بندی مورد نظر پیدا نشد.",
+    "COMMERCE_INVALID_QUANTITY": "تعداد باید یک عدد صحیح و بزرگ‌تر از صفر باشد.",
+    "ORDER_QUANTITY_INVALID": "تعداد سفارش باید یک عدد صحیح و بزرگ‌تر از صفر باشد."
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
