@@ -22,6 +22,14 @@ export interface ProductFormValues {
   status: CommerceProductStatus;
   kind: CommerceProductKind;
   categoryId: string | null;
+  /**
+   * Create mode only. Collection membership is normally owned by the collection side
+   * (`PUT /commerce/collections/:id` with the full `productIds[]`), which a product that
+   * does not exist yet cannot use. `POST /commerce/products` accepts `collectionIds` so the
+   * membership rows are written in the SAME transaction as the product. In edit mode
+   * `CollectionsSection` still writes through the collections API and this stays `[]`.
+   */
+  collectionIds: string[];
   shippingCost: number;
   options: Array<{
     id?: string;
@@ -155,6 +163,7 @@ export const buildProductFormSchema = (t: Translator) => {
     status: z.enum(['draft', 'active', 'archived']),
     kind: z.enum(['physical', 'digital']),
     categoryId: z.string().nullable(),
+    collectionIds: z.array(z.string()),
     shippingCost: z
       .number()
       .int()
@@ -186,6 +195,7 @@ export const buildEmptyProductFormValues = (): ProductFormValues => ({
   status: 'draft',
   kind: 'physical',
   categoryId: null,
+  collectionIds: [],
   shippingCost: 0,
   options: [],
   variants: [
@@ -227,6 +237,8 @@ export const mapProductDetailToFormValues = (
   status: product.status,
   kind: product.kind,
   categoryId: product.categoryId,
+  // Edit mode writes membership through the collections API, not the product payload.
+  collectionIds: [],
   shippingCost: product.shippingCost,
   options: product.options.map((option) => ({
     id: option.id,

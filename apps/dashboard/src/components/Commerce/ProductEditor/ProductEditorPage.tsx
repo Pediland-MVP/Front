@@ -101,6 +101,9 @@ const buildCreatePayload = (values: ProductFormValues) => ({
   status: values.status,
   kind: values.kind,
   ...(values.categoryId && { categoryId: values.categoryId }),
+  // Written into the join table inside the same transaction as the product — a product being
+  // created has no id, so it cannot use the collection-side `PUT /commerce/collections/:id`.
+  ...(values.collectionIds.length > 0 && { collectionIds: values.collectionIds }),
   shippingCost: values.shippingCost,
   options: buildOptionsPayload(values.options),
   variants: buildVariantsPayload(values.variants),
@@ -183,6 +186,35 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
   }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Create mode: files picked before the product exists. Held here (not in the form) so the
+  // zod schema stays serialisable, and uploaded by `uploadPendingMedia` once we have an id.
+  const [pendingMedia, setPendingMedia] = useState<File[]>([]);
+
+  /**
+   * Uploads the create-mode media queue against the freshly created product, in array order
+   * so index 0 becomes `position` 0 (the cover). Sequential on purpose: the endpoint takes one
+   * file per call and positions are assigned server-side in arrival order, so firing these in
+   * parallel would make the cover non-deterministic.
+   *
+   * Returns the number that failed. A failure here does NOT fail the create — the product is
+   * already committed, so we surface a partial-success toast and still navigate to the editor,
+   * where the user can retry the upload against the now-existing product.
+   */
+  const uploadPendingMedia = async (newProductId: string, files: File[]): Promise<number> => {
+    let failed = 0;
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        await api.post(`/commerce/products/${newProductId}/media`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } catch {
+        failed += 1;
+      }
+    }
+    return failed;
+  };
 
   const onSubmit = async (values: ProductFormValues) => {
     setIsSubmitting(true);
@@ -193,9 +225,22 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
           '/commerce/products',
           payload,
         );
-        toast.success(t('Toast.created'));
+        const newProductId = data.data.id;
+
+        const failedUploads = pendingMedia.length
+          ? await uploadPendingMedia(newProductId, pendingMedia)
+          : 0;
+        if (failedUploads > 0) {
+          // The product itself saved — only some files did not. Say so explicitly rather than
+          // showing a plain success, so the user knows to retry in the editor.
+          toast.warning(t('Toast.createdWithMediaErrors', { count: failedUploads }));
+        } else {
+          toast.success(t('Toast.created'));
+        }
+        setPendingMedia([]);
+
         await mutate(mutateIncludeStringKey('/commerce/products'));
-        router.push(`/products/${data.data.id}`);
+        router.push(`/products/${newProductId}`);
       } else if (productId) {
         const payload = buildUpdatePayload(values, form.formState.dirtyFields);
         await api.put(`/commerce/products/${productId}`, payload);
@@ -236,7 +281,15 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
     if (id === 'basic') return <BasicInfoSection />;
     if (id === 'shipping') return <ShippingSection />;
     if (id === 'media') {
-      return <MediaSection mode={mode} productId={productId} media={product?.media ?? []} />;
+      return (
+        <MediaSection
+          mode={mode}
+          productId={productId}
+          media={product?.media ?? []}
+          pendingFiles={pendingMedia}
+          onPendingFilesChange={setPendingMedia}
+        />
+      );
     }
     if (id === 'variants') {
       return (

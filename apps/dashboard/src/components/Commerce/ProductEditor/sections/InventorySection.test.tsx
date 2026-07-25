@@ -68,6 +68,7 @@ const buildForm = (variants: ProductFormValues['variants']): ProductFormValues =
   status: 'draft',
   kind: 'physical',
   categoryId: null,
+  collectionIds: [],
   shippingCost: 0,
   options: [],
   variants,

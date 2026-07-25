@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
@@ -12,8 +13,10 @@ import { cn } from '@/lib/utils';
 import { toggleProductInCollectionMembership } from '@/utils/commerce/toggleProductInCollection';
 import type { CommerceCollectionListItem, PaginatedResult } from '@/types/commerce';
 
-import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Badge, Card, CardContent, CardHeader, CardTitle, FormField } from '@/components/ui';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
+
+import type { ProductFormValues } from '../productForm.schema';
 
 interface CollectionsSectionProps {
   mode: 'create' | 'edit';
@@ -30,6 +33,75 @@ interface CollectionsSectionProps {
 const collectionsKey = '/commerce/collections';
 
 /**
+ * Create mode. There is no product id yet, so membership cannot be written through
+ * `PUT /commerce/collections/:id`. Instead the picked ids go into the form's `collectionIds`
+ * and ride along in `POST /commerce/products`, which writes the membership rows inside the
+ * same transaction as the product — so a product is never briefly visible outside the
+ * collections the user chose, and a failed create leaves no membership behind.
+ */
+const PendingCollectionsPicker = ({
+  collections,
+  isLoading,
+  hasError,
+}: {
+  collections: CommerceCollectionListItem[];
+  isLoading: boolean;
+  hasError: boolean;
+}) => {
+  const t = useTranslations('Commerce.Editor.Collections');
+  const { can } = usePermissions();
+  const { control } = useFormContext<ProductFormValues>();
+
+  return (
+    <FormField
+      control={control}
+      name="collectionIds"
+      render={({ field }) => (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('title')}</CardTitle>
+            <p className="text-muted-foreground text-sm">{t('description')}</p>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <LoaderSpin />
+            ) : hasError ? (
+              <p className="text-destructive text-sm">{t('loadError')}</p>
+            ) : collections.length === 0 ? (
+              <p className="text-muted-foreground text-sm">{t('empty')}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {collections.map((collection) => {
+                  const isMember = field.value.includes(collection.id);
+                  return (
+                    <button
+                      key={collection.id}
+                      type="button"
+                      disabled={!can('product:create')}
+                      data-testid={`collection-chip-${collection.id}`}
+                      aria-pressed={isMember}
+                      onClick={() =>
+                        field.onChange(
+                          isMember
+                            ? field.value.filter((id) => id !== collection.id)
+                            : [...field.value, collection.id],
+                        )
+                      }
+                    >
+                      <Badge variant={isMember ? 'default' : 'secondary'}>{collection.name}</Badge>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    />
+  );
+};
+
+/**
  * Collections-membership editor only — category assignment is a single `categoryId` field
  * on the product, handled entirely by `BasicInfoSection` (spec correction: this section's
  * title mentions "categories" for historical reasons, its actual scope is collections only).
@@ -40,29 +112,22 @@ export const CollectionsSection = ({ mode, productId }: CollectionsSectionProps)
   const canEdit = can('product:edit');
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
 
-  // Same whole-section "save first" gate `MediaSection`/`InventorySection` use — there is no
-  // persisted product to look up collection membership for until the product has been saved
-  // once. The SWR hook below is still called unconditionally (key `null` when not eligible),
-  // matching `InventorySection`'s convention: never call a hook conditionally.
-  const shouldFetch = mode === 'edit' && !!productId;
+  // Fetched in BOTH modes: create mode offers the same list, it just records the choice in
+  // the form (`PendingCollectionsPicker`) instead of PUTting each collection, because there
+  // is no product id to put into a collection's `productIds[]` yet.
   const {
     data: collectionsData,
     error: collectionsError,
     isLoading: isCollectionsLoading,
-  } = useSWRImmutable<PaginatedResult<CommerceCollectionListItem[]>>(
-    shouldFetch ? collectionsKey : null,
-  );
+  } = useSWRImmutable<PaginatedResult<CommerceCollectionListItem[]>>(collectionsKey);
 
   if (mode !== 'edit' || !productId) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t('saveProductFirst')}</p>
-        </CardContent>
-      </Card>
+      <PendingCollectionsPicker
+        collections={collectionsData?.items ?? []}
+        isLoading={isCollectionsLoading}
+        hasError={!!collectionsError}
+      />
     );
   }
 

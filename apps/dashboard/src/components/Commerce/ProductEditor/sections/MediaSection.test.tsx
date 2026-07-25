@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
@@ -82,6 +82,12 @@ function renderSection(media: CommerceProductMedia[], mode: 'create' | 'edit' = 
   );
 }
 
+// jsdom implements neither of these; the create-mode preview grid calls both.
+beforeAll(() => {
+  URL.createObjectURL = vi.fn(() => 'blob:preview');
+  URL.revokeObjectURL = vi.fn();
+});
+
 beforeEach(() => {
   vi.clearAllMocks();
   mutateMock.mockResolvedValue(undefined);
@@ -93,10 +99,53 @@ beforeEach(() => {
 });
 
 describe('MediaSection', () => {
-  it('shows the "save the product first" message and does nothing until the product has a real id', () => {
-    renderSection([], 'create');
+  it('queues files locally in create mode and uploads nothing until the product exists', () => {
+    const onPendingFilesChange = vi.fn();
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <MediaSection
+          mode="create"
+          productId={undefined}
+          media={[]}
+          pendingFiles={[]}
+          onPendingFilesChange={onPendingFilesChange}
+        />
+      </NextIntlClientProvider>,
+    );
 
-    expect(screen.getByText(messages.Commerce.Editor.Media.saveProductFirst)).toBeInTheDocument();
+    const file = new File(['data'], 'photo.png', { type: 'image/png' });
+    const input = document.querySelector('#file-upload-handle') as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [file] } });
+
+    // The queue is handed up to ProductEditorPage; the media endpoint needs a product id in
+    // the path, so nothing may be POSTed here.
+    expect(onPendingFilesChange).toHaveBeenCalledWith([file]);
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it('previews queued files in create mode, marks the first as the cover, and can remove one', () => {
+    const onPendingFilesChange = vi.fn();
+    const first = new File(['a'], 'first.png', { type: 'image/png' });
+    const second = new File(['b'], 'second.png', { type: 'image/png' });
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <MediaSection
+          mode="create"
+          productId={undefined}
+          media={[]}
+          pendingFiles={[first, second]}
+          onPendingFilesChange={onPendingFilesChange}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getByTestId('pending-media-0')).toBeInTheDocument();
+    expect(screen.getByTestId('pending-media-1')).toBeInTheDocument();
+    // Index 0 uploads first and so becomes position 0 — the cover.
+    expect(screen.getByText(messages.Commerce.Editor.Media.cover)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('pending-media-remove-0'));
+    expect(onPendingFilesChange).toHaveBeenCalledWith([second]);
     expect(post).not.toHaveBeenCalled();
   });
 

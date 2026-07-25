@@ -20,6 +20,7 @@ const baseValues = (): ProductFormValues => ({
   status: 'draft',
   kind: 'physical',
   categoryId: null,
+  collectionIds: [],
   shippingCost: 0,
   options: [],
   variants: [{ ...baseVariant }],

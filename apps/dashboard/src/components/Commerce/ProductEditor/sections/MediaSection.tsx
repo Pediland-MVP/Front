@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -37,7 +37,99 @@ interface MediaSectionProps {
   mode: 'create' | 'edit';
   productId?: string;
   media: CommerceProductMedia[];
+  /** Create mode only — files chosen before the product exists. Owned by `ProductEditorPage`. */
+  pendingFiles?: File[];
+  onPendingFilesChange?: (files: File[]) => void;
 }
+
+/**
+ * Create mode. `POST /commerce/products/:id/media` needs a product id in the path and
+ * `commerce_product_media.productId` is NOT NULL, so there is nowhere to put a file until the
+ * product row exists. Rather than creating a throwaway draft product (which litters the list
+ * when the form is abandoned), the files are held in memory here and uploaded by
+ * `ProductEditorPage` immediately after `POST /commerce/products` returns the new id.
+ *
+ * Array order is upload order, which becomes `position` — so index 0 is the cover image.
+ */
+const PendingMediaPicker = ({
+  files,
+  onChange,
+}: {
+  files: File[];
+  onChange: (files: File[]) => void;
+}) => {
+  const t = useTranslations('Commerce.Editor.Media');
+  const { can } = usePermissions();
+  const canCreate = can('product:create');
+
+  // Object URLs are recreated whenever the file list changes and revoked on the way out;
+  // without the cleanup every re-pick leaks a blob for the lifetime of the page.
+  const previews = useMemo(
+    () => files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    [files],
+  );
+  useEffect(() => {
+    return () => previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+  }, [previews]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('title')}</CardTitle>
+        <p className="text-muted-foreground text-sm">{t('pendingHint')}</p>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {previews.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {previews.map((preview, index) => (
+              <div
+                key={`${preview.file.name}-${index}`}
+                className="group relative aspect-square overflow-hidden rounded-md border"
+                data-testid={`pending-media-${index}`}
+              >
+                {preview.file.type.startsWith('video/') ? (
+                  <video src={preview.url} className="h-full w-full object-cover" muted />
+                ) : (
+                  // Plain <img>: the src is a local blob: URL, which next/image cannot optimise.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={preview.url}
+                    alt={preview.file.name}
+                    className="h-full w-full object-cover"
+                  />
+                )}
+                {index === 0 && (
+                  <Badge className="absolute start-1 top-1" variant="default">
+                    {t('cover')}
+                  </Badge>
+                )}
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  aria-label={t('delete')}
+                  data-testid={`pending-media-remove-${index}`}
+                  className="absolute end-1 top-1"
+                  onClick={() => onChange(files.filter((_, i) => i !== index))}
+                >
+                  <Trash2Icon className="size-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        {canCreate && (
+          <FileUploader
+            multiple
+            type="file"
+            accept="image/*,video/*"
+            onChange={(selected: File[]) => onChange([...files, ...selected])}
+          />
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 // Same SWR key `ProductEditorPage.tsx` uses for `GET /commerce/products/:id`. Every mutation
 // below (upload/reorder/delete) revalidates THIS key instead of keeping a local `media`
@@ -46,7 +138,13 @@ interface MediaSectionProps {
 // upload endpoint's own POST response has no resolved url at all.
 const productDetailKey = (productId: string) => `/commerce/products/${productId}`;
 
-export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
+export const MediaSection = ({
+  mode,
+  productId,
+  media,
+  pendingFiles = [],
+  onPendingFilesChange,
+}: MediaSectionProps) => {
   const t = useTranslations('Commerce.Editor.Media');
   const { can } = usePermissions();
   const canEdit = can('product:edit');
@@ -64,14 +162,7 @@ export const MediaSection = ({ mode, productId, media }: MediaSectionProps) => {
   // `string | undefined` to `string` for the rest of the component.
   if (mode !== 'edit' || !productId) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t('saveProductFirst')}</p>
-        </CardContent>
-      </Card>
+      <PendingMediaPicker files={pendingFiles} onChange={onPendingFilesChange ?? (() => {})} />
     );
   }
 

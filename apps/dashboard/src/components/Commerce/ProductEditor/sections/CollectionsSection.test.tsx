@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import type { CommerceCollectionListItem, PaginatedResult } from '@/types/commerce';
 
@@ -34,6 +35,29 @@ vi.mock('@/hooks/usePermissions', () => ({
 
 import messages from '@/messages/fa.json';
 import { CollectionsSection } from './CollectionsSection';
+import { buildEmptyProductFormValues, type ProductFormValues } from '../productForm.schema';
+
+// Create mode reads/writes `collectionIds` through `useFormContext`, so it must render inside
+// a FormProvider. `latestValues` lets a test assert what the form now holds without a submit.
+let latestValues: ProductFormValues | null = null;
+const CreateModeHarness = () => {
+  const form = useForm<ProductFormValues>({ defaultValues: buildEmptyProductFormValues() });
+  latestValues = form.watch();
+  return (
+    <FormProvider {...form}>
+      <CollectionsSection mode="create" productId={undefined} />
+    </FormProvider>
+  );
+};
+
+function renderCreateSection() {
+  latestValues = null;
+  return render(
+    <NextIntlClientProvider locale="fa" messages={messages}>
+      <CreateModeHarness />
+    </NextIntlClientProvider>,
+  );
+}
 
 function renderSection(mode: 'create' | 'edit' = 'edit', productId: string | undefined = 'prod-1') {
   return render(
@@ -83,14 +107,41 @@ beforeEach(() => {
 });
 
 describe('CollectionsSection', () => {
-  it('shows the "save the product first" message and never fetches until the product has a real id', () => {
-    renderSection('create', undefined);
+  it('offers the collections as chips in create mode and records the pick in the form, without any PUT', () => {
+    mockUseSWRImmutable.mockReturnValue({
+      data: collectionsPage([SUMMER, WINTER]),
+      error: undefined,
+      isLoading: false,
+    });
+    renderCreateSection();
 
-    expect(
-      screen.getByText(messages.Commerce.Editor.Collections.saveProductFirst),
-    ).toBeInTheDocument();
-    // The hook must still be CALLED (rules-of-hooks), but with a null key so it never fetches.
-    expect(mockUseSWRImmutable).toHaveBeenCalledWith(null);
+    // Create mode fetches the same list — there is no product id to scope it, so the key is
+    // the plain collections key rather than the old `null`.
+    expect(mockUseSWRImmutable).toHaveBeenCalledWith('/commerce/collections');
+    expect(latestValues?.collectionIds).toEqual([]);
+
+    fireEvent.click(screen.getByTestId(`collection-chip-${SUMMER.id}`));
+
+    // The choice lives in the form and rides along in POST /commerce/products — membership is
+    // NEVER written through the collection-side PUT here, because the product has no id yet.
+    expect(latestValues?.collectionIds).toEqual([SUMMER.id]);
+    expect(put).not.toHaveBeenCalled();
+  });
+
+  it('un-picks a collection chip in create mode', () => {
+    mockUseSWRImmutable.mockReturnValue({
+      data: collectionsPage([SUMMER, WINTER]),
+      error: undefined,
+      isLoading: false,
+    });
+    renderCreateSection();
+
+    fireEvent.click(screen.getByTestId(`collection-chip-${SUMMER.id}`));
+    fireEvent.click(screen.getByTestId(`collection-chip-${WINTER.id}`));
+    expect(latestValues?.collectionIds).toEqual([SUMMER.id, WINTER.id]);
+
+    fireEvent.click(screen.getByTestId(`collection-chip-${SUMMER.id}`));
+    expect(latestValues?.collectionIds).toEqual([WINTER.id]);
     expect(put).not.toHaveBeenCalled();
   });
 

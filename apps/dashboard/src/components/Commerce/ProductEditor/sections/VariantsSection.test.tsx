@@ -122,6 +122,7 @@ const twoValueOptionForm = (): ProductFormValues => ({
   status: 'draft',
   kind: 'physical',
   categoryId: null,
+  collectionIds: [],
   shippingCost: 0,
   options: [
     {
@@ -167,6 +168,7 @@ const threeValueOptionForm = (): ProductFormValues => ({
   status: 'draft',
   kind: 'physical',
   categoryId: null,
+  collectionIds: [],
   shippingCost: 0,
   options: [
     {
@@ -223,6 +225,7 @@ const twoOptionMatrixForm = (): ProductFormValues => ({
   status: 'draft',
   kind: 'physical',
   categoryId: null,
+  collectionIds: [],
   shippingCost: 0,
   options: [
     {
