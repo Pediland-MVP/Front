@@ -2,32 +2,22 @@
 
 import { CommerceProductListItem } from '@/types/commerce';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 
 import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
-import {
-  CircleXIcon,
-  FileDigitIcon,
-  PackageIcon,
-  PencilIcon,
-  TriangleAlertIcon,
-} from 'lucide-react';
+import { CircleXIcon, FileDigitIcon, PackageIcon, TriangleAlertIcon } from 'lucide-react';
 
 interface CommerceProductCardProps {
   product: CommerceProductListItem;
   handleDelete: (id: string) => void;
-  canEdit: boolean;
   canDelete: boolean;
 }
 
 const CommerceProductCardComponent = ({
   product,
   handleDelete,
-  canEdit,
   canDelete,
 }: CommerceProductCardProps) => {
-  const router = useRouter();
   const t = useTranslations('Commerce.List');
   const isPhysical = product.kind === 'physical';
   const TypeIcon = isPhysical ? PackageIcon : FileDigitIcon;
@@ -90,37 +80,18 @@ const CommerceProductCardComponent = ({
         </div>
       </CardContent>
 
-      {(canEdit || canDelete) && (
+      {canDelete && (
         <CardFooter className="flex rounded-b-xl bg-gray-100 p-0">
-          {canEdit && (
-            <Button
-              className={`text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-green-100 hover:text-green-800 ${
-                canDelete ? 'rounded-br-xl' : 'rounded-b-xl'
-              }`}
-              variant="ghost"
-              type="button"
-              size="sm"
-              onClick={() => router.push(`/products/${product.id}`)}
-            >
-              <PencilIcon className="text-green-600" />
-              {t('Card.edit')}
-            </Button>
-          )}
-
-          {canDelete && (
-            <Button
-              className={`hover:text-destructive text-muted-foreground h-9 w-full flex-1 rounded-none hover:bg-red-100 ${
-                canEdit ? 'rounded-bl-xl' : 'rounded-b-xl'
-              }`}
-              variant="ghost"
-              type="button"
-              size="sm"
-              onClick={() => handleDelete(product.id)}
-            >
-              <CircleXIcon className="text-destructive" />
-              {t('Card.delete')}
-            </Button>
-          )}
+          <Button
+            className="hover:text-destructive text-muted-foreground h-9 w-full flex-1 rounded-none rounded-b-xl hover:bg-red-100"
+            variant="ghost"
+            type="button"
+            size="sm"
+            onClick={() => handleDelete(product.id)}
+          >
+            <CircleXIcon className="text-destructive" />
+            {t('Card.delete')}
+          </Button>
         </CardFooter>
       )}
     </Card>

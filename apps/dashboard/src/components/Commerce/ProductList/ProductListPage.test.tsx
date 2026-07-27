@@ -147,7 +147,7 @@ describe('ProductListPage', () => {
     expect(screen.getByText(messages.Commerce.List.Card.noVariant)).toBeInTheDocument();
   });
 
-  it('does not render the edit/delete footer buttons when the viewer lacks both permissions', () => {
+  it('does not render the delete footer button when the viewer lacks the permission', () => {
     mockCan.mockReturnValue(false);
     const item = buildItem();
     mockUseSWRImmutable.mockReturnValue({
@@ -161,12 +161,11 @@ describe('ProductListPage', () => {
 
     renderPage();
 
-    expect(screen.queryByText(messages.Commerce.List.Card.edit)).not.toBeInTheDocument();
     expect(screen.queryByText(messages.Commerce.List.Card.delete)).not.toBeInTheDocument();
   });
 
-  it('renders only the edit button when the viewer can edit but not delete', () => {
-    mockCan.mockImplementation((slug: string) => slug === 'product:edit');
+  it('renders the delete button when the viewer has the permission', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:delete');
     const item = buildItem();
     mockUseSWRImmutable.mockReturnValue({
       data: {
@@ -179,27 +178,28 @@ describe('ProductListPage', () => {
 
     renderPage();
 
-    expect(screen.getByText(messages.Commerce.List.Card.edit)).toBeInTheDocument();
-    expect(screen.queryByText(messages.Commerce.List.Card.delete)).not.toBeInTheDocument();
-  });
-
-  it('renders both edit and delete buttons when the viewer has both permissions', () => {
-    mockCan.mockImplementation(
-      (slug: string) => slug === 'product:edit' || slug === 'product:delete',
-    );
-    const item = buildItem();
-    mockUseSWRImmutable.mockReturnValue({
-      data: {
-        items: [item],
-        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
-      },
-      error: undefined,
-      isLoading: false,
-    });
-
-    renderPage();
-
-    expect(screen.getByText(messages.Commerce.List.Card.edit)).toBeInTheDocument();
     expect(screen.getByText(messages.Commerce.List.Card.delete)).toBeInTheDocument();
+  });
+
+  // The product editor was removed, so the list is read-only apart from delete. Assert on the
+  // permission probes rather than on rendered text: the header "add" button lives in the
+  // `useHeaderFeatures` store (not this tree's DOM), so a text query cannot see it. If either
+  // entry point were ever re-added it would have to gate on one of these two slugs first.
+  it('never asks for the create/edit permissions, so no add or edit entry point exists', () => {
+    mockCan.mockReturnValue(true);
+    const item = buildItem();
+    mockUseSWRImmutable.mockReturnValue({
+      data: {
+        items: [item],
+        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
+      },
+      error: undefined,
+      isLoading: false,
+    });
+
+    renderPage();
+
+    expect(mockCan).not.toHaveBeenCalledWith('product:create');
+    expect(mockCan).not.toHaveBeenCalledWith('product:edit');
   });
 });
