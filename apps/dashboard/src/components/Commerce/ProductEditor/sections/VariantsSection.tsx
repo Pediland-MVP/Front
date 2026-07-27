@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch, type FieldError } from 'react-hook-form';
@@ -70,6 +70,13 @@ import {
 
 import { VariantMediaPickerDialog } from '../VariantMediaPickerDialog';
 import { generateVariantCombinations, OPTION_LIMIT, VARIANT_LIMIT } from '../variantMatrix.util';
+import {
+  aggregate,
+  flattenGroups,
+  groupVariants,
+  type VariantAggregate,
+} from '../variantTree.util';
+import { applyBulkPrice, fillDownTargets, type BulkPriceMode } from '../variantBulk.util';
 import type { ProductFormValues } from '../productForm.schema';
 
 interface VariantsSectionProps {
@@ -131,6 +138,19 @@ export const VariantsSection = ({
   // rather than mounting a dialog per row.
   const [mediaPickerIndex, setMediaPickerIndex] = useState<number | null>(null);
 
+  // Selection drives the bulk bar. Keyed by react-hook-form's stable `_vid`, not array index —
+  // indexes shift under a regenerate and would silently re-point a selection at other rows.
+  const [selectedKeys, setSelectedKeys] = useState<ReadonlySet<string>>(() => new Set());
+  const [anchorKey, setAnchorKey] = useState<string | null>(null);
+  // Groups start COLLAPSED. That is the performance answer for this table: the backend allows
+  // 2000 variations, and with the tree only the expanded group's leaves are ever in the DOM, so
+  // a 10-colour x 200-size product renders 10 rows until the merchant opens one. No virtualiser
+  // needed for the realistic shape.
+  const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(() => new Set());
+  const [bulkPanel, setBulkPanel] = useState<'price' | 'stock' | null>(null);
+  const [bulkMode, setBulkMode] = useState<BulkPriceMode>('set');
+  const [bulkValue, setBulkValue] = useState('');
+
   const optionsFieldArray = useFieldArray({
     control: form.control,
     name: 'options',
@@ -148,6 +168,244 @@ export const VariantsSection = ({
   // variant labels and to check "is this the last active variant" correctly.
   const watchedOptions = useWatch({ control: form.control, name: 'options' }) ?? [];
   const watchedVariants = useWatch({ control: form.control, name: 'variants' }) ?? [];
+
+  /**
+   * Rows in the shape the tree utils want. Derived from `useFieldArray`'s `fields` (stable
+   * `_vid` identity) plus the live watched values, so a keystroke that changes a value index
+   * regroups the row without waiting for a structural change.
+   */
+  const treeRows = useMemo(
+    () =>
+      variantsFieldArray.fields.map((field, index) => ({
+        key: field._vid as string,
+        index,
+        valueIndexes: watchedVariants[index]?.valueIndexes ?? [],
+      })),
+    [variantsFieldArray.fields, watchedVariants],
+  );
+
+  const groups = useMemo(
+    () =>
+      groupVariants(
+        treeRows,
+        (row) => row.valueIndexes,
+        (watchedOptions[0]?.values ?? []).map((value) => value.value),
+        watchedOptions.length,
+      ),
+    [treeRows, watchedOptions],
+  );
+
+  const flatRows = useMemo(() => flattenGroups(groups, expandedKeys), [groups, expandedKeys]);
+
+  /**
+   * A group's roll-up for one numeric column.
+   *
+   * Stock reads `trackInventory === false` as Infinity so an all-untracked group summarises as
+   * "نامحدود" rather than as a mixed range, and falls back to the persisted `onHand` in edit
+   * mode, where `initialStock` is only present for rows the merchant has actually touched.
+   */
+  const aggregateOf = (
+    rows: Array<{ index: number }>,
+    field: 'price' | 'compareAtPrice' | 'stock',
+  ): VariantAggregate =>
+    aggregate(
+      rows.map(({ index }) => {
+        const variant = watchedVariants[index];
+        if (!variant) return null;
+        if (field === 'stock') {
+          if (variant.trackInventory === false) return Infinity;
+          const persisted = existingVariants.find((item) => item.id === variant.id)?.onHand;
+          return variant.initialStock ?? persisted ?? null;
+        }
+        return variant[field] ?? null;
+      }),
+    );
+
+  const selectedIndexes = useMemo(
+    () => treeRows.filter((row) => selectedKeys.has(row.key)).map((row) => row.index),
+    [treeRows, selectedKeys],
+  );
+
+  const toggleGroupOpen = (key: string) =>
+    setExpandedKeys((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+
+  /** Shift-click extends from the last clicked row, matching the design's range select. */
+  const toggleRowSelected = (key: string, withShift: boolean) => {
+    setSelectedKeys((current) => {
+      const next = new Set(current);
+      const keys = treeRows.map((row) => row.key);
+      if (withShift && anchorKey) {
+        const from = keys.indexOf(anchorKey);
+        const to = keys.indexOf(key);
+        if (from > -1 && to > -1) {
+          for (const inRange of keys.slice(Math.min(from, to), Math.max(from, to) + 1)) {
+            next.add(inRange);
+          }
+          return next;
+        }
+      }
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+    setAnchorKey(key);
+  };
+
+  /** Checking a parent means "every variation under it", so the bar's count stays honest. */
+  const toggleGroupSelected = (keys: string[]) =>
+    setSelectedKeys((current) => {
+      const next = new Set(current);
+      const allSelected = keys.length > 0 && keys.every((key) => next.has(key));
+      for (const key of keys) {
+        if (allSelected) next.delete(key);
+        else next.add(key);
+      }
+      return next;
+    });
+
+  const clearSelection = () => {
+    setSelectedKeys(new Set());
+    setAnchorKey(null);
+    setBulkPanel(null);
+    setBulkValue('');
+  };
+
+  const handleBulkPrice = () => {
+    const amount = Number(bulkValue);
+    if (!bulkValue || Number.isNaN(amount) || amount < 0) return;
+    const selected = new Set(selectedIndexes);
+    const current = form.getValues('variants');
+    const { rows, changedCount, skippedCount } = applyBulkPrice(
+      current.map((variant, index) => ({ variant, index })),
+      ({ index }) => selected.has(index),
+      ({ variant }) => variant.price ?? null,
+      ({ variant, index }, price) => ({ variant: { ...variant, price }, index }),
+      bulkMode,
+      amount,
+    );
+    form.setValue(
+      'variants',
+      rows.map((row) => row.variant),
+      { shouldDirty: true },
+    );
+    toast.success(
+      skippedCount > 0
+        ? t('bulkPriceAppliedWithSkips', { count: changedCount, skipped: skippedCount })
+        : t('bulkPriceApplied', { count: changedCount }),
+    );
+    setBulkValue('');
+  };
+
+  const handleBulkStock = (infinite: boolean) => {
+    const amount = Number(bulkValue);
+    if (!infinite && (!bulkValue || Number.isNaN(amount) || amount < 0)) return;
+    const selected = new Set(selectedIndexes);
+    const current = form.getValues('variants');
+    form.setValue(
+      'variants',
+      current.map((variant, index) =>
+        selected.has(index)
+          ? infinite
+            ? { ...variant, trackInventory: false }
+            : { ...variant, trackInventory: true, initialStock: amount }
+          : variant,
+      ),
+      { shouldDirty: true },
+    );
+    toast.success(
+      infinite
+        ? t('bulkStockInfinite', { count: selected.size })
+        : t('bulkStockApplied', { count: selected.size, value: amount }),
+    );
+    setBulkValue('');
+  };
+
+  /**
+   * Writes one value across every leaf of a group — the design's parent-row edit.
+   * Setting stock this way also re-enables tracking, otherwise the number would be written and
+   * then ignored by an untracked variant.
+   */
+  const applyToGroup = (
+    rows: Array<{ index: number }>,
+    field: 'price' | 'compareAtPrice' | 'stock',
+    value: number,
+  ) => {
+    const indexes = new Set(rows.map((row) => row.index));
+    const current = form.getValues('variants');
+    form.setValue(
+      'variants',
+      current.map((variant, index) => {
+        if (!indexes.has(index)) return variant;
+        if (field === 'stock') return { ...variant, trackInventory: true, initialStock: value };
+        return { ...variant, [field]: value };
+      }),
+      { shouldDirty: true },
+    );
+    toast.success(t('groupValueApplied', { count: indexes.size }));
+  };
+
+  /** Ctrl/Cmd+D — copy this cell down the rest of its own group, never across groups. */
+  const handleFillDown = (
+    groupRows: Array<{ index: number }>,
+    originIndex: number,
+    field: 'price' | 'compareAtPrice',
+    value: number,
+  ) => {
+    const position = groupRows.findIndex((row) => row.index === originIndex);
+    const targets = fillDownTargets(groupRows, position);
+    if (!targets.length) return;
+    const indexes = new Set(targets.map((row) => row.index));
+    const current = form.getValues('variants');
+    form.setValue(
+      'variants',
+      current.map((variant, index) =>
+        indexes.has(index) ? { ...variant, [field]: value } : variant,
+      ),
+      { shouldDirty: true },
+    );
+    toast.success(t('filledDown', { count: indexes.size }));
+  };
+
+  /**
+   * One variation row. Extracted so the tree render reads as group-or-leaf rather than
+   * repeating this prop list inline; `groupRows` is threaded through purely so Ctrl+D knows
+   * which rows count as "below this one, in this group".
+   */
+  const renderLeaf = (
+    index: number,
+    key: string,
+    groupRows: Array<{ index: number }>,
+    isInsideBranch: boolean,
+  ) => (
+    <VariantRow
+      key={key}
+      index={index}
+      mode={mode}
+      label={getVariantLabel(watchedVariants[index]?.valueIndexes ?? [])}
+      variantId={watchedVariants[index]?.id}
+      canEditMedia={canEdit}
+      isSelected={selectedKeys.has(key)}
+      isIndented={isInsideBranch}
+      onToggleSelected={(withShift) => toggleRowSelected(key, withShift)}
+      onFillDown={(field, value) => handleFillDown(groupRows, index, field, value)}
+      mediaAssignment={
+        existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)?.media
+      }
+      mediaPool={media}
+      existingOnHand={
+        existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)?.onHand
+      }
+      deleteBlockedReason={getDeleteBlockedReason(index)}
+      isLastActiveVariant={Boolean(watchedVariants[index]?.isActive) && activeVariantCount <= 1}
+      onRemove={() => handleRemoveVariant(index)}
+      onOpenMediaPicker={() => setMediaPickerIndex(index)}
+    />
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -344,9 +602,131 @@ export const VariantsSection = ({
         </CardHeader>
         <CardContent>
           {arrayLevelError && <p className="text-destructive mb-2 text-sm">{arrayLevelError}</p>}
+
+          {selectedKeys.size > 0 && canEdit && (
+            <div
+              data-testid="variant-bulk-bar"
+              className="bg-muted mb-3 flex flex-wrap items-center gap-2 rounded-md border p-2"
+            >
+              <span className="text-sm font-semibold">
+                {t('bulkSelected', { count: selectedIndexes.length })}
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant={bulkPanel === 'price' ? 'default' : 'outline'}
+                data-testid="variant-bulk-price-toggle"
+                onClick={() => setBulkPanel(bulkPanel === 'price' ? null : 'price')}
+              >
+                {t('bulkPrice')}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={bulkPanel === 'stock' ? 'default' : 'outline'}
+                data-testid="variant-bulk-stock-toggle"
+                onClick={() => setBulkPanel(bulkPanel === 'stock' ? null : 'stock')}
+              >
+                {t('bulkStock')}
+              </Button>
+
+              {bulkPanel === 'price' && (
+                <>
+                  <Select
+                    value={bulkMode}
+                    onValueChange={(value) => setBulkMode(value as BulkPriceMode)}
+                  >
+                    <SelectTrigger className="h-8 w-32" data-testid="variant-bulk-mode">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="set">{t('bulkModeSet')}</SelectItem>
+                      <SelectItem value="increase">{t('bulkModeIncrease')}</SelectItem>
+                      <SelectItem value="decrease">{t('bulkModeDecrease')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    inputMode="numeric"
+                    onInput={onInputP2EHandler}
+                    data-testid="variant-bulk-value"
+                    value={bulkValue}
+                    onChange={(e) => setBulkValue(e.target.value)}
+                    className="h-8 w-28"
+                    placeholder={bulkMode === 'set' ? t('bulkPricePlaceholder') : '٪'}
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    data-testid="variant-bulk-price-apply"
+                    onClick={handleBulkPrice}
+                  >
+                    {t('bulkApply')}
+                  </Button>
+                </>
+              )}
+
+              {bulkPanel === 'stock' && (
+                <>
+                  <Input
+                    inputMode="numeric"
+                    onInput={onInputP2EHandler}
+                    data-testid="variant-bulk-stock-value"
+                    value={bulkValue}
+                    onChange={(e) => setBulkValue(e.target.value)}
+                    className="h-8 w-28"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    data-testid="variant-bulk-stock-apply"
+                    onClick={() => handleBulkStock(false)}
+                  >
+                    {t('bulkApply')}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    data-testid="variant-bulk-infinite"
+                    onClick={() => handleBulkStock(true)}
+                  >
+                    {t('bulkInfinite')}
+                  </Button>
+                </>
+              )}
+
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="ms-auto"
+                data-testid="variant-bulk-clear"
+                onClick={clearSelection}
+              >
+                {t('bulkClear')}
+              </Button>
+            </div>
+          )}
+
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-9">
+                  <input
+                    type="checkbox"
+                    aria-label={t('selectAll')}
+                    data-testid="variant-select-all"
+                    className="accent-primary size-4 cursor-pointer"
+                    checked={treeRows.length > 0 && selectedKeys.size === treeRows.length}
+                    onChange={() =>
+                      setSelectedKeys((current) =>
+                        current.size === treeRows.length
+                          ? new Set()
+                          : new Set(treeRows.map((row) => row.key)),
+                      )
+                    }
+                  />
+                </TableHead>
                 <TableHead className="w-9"></TableHead>
                 <TableHead>{t('Columns.variant')}</TableHead>
                 <TableHead>{t('Columns.sku')}</TableHead>
@@ -361,34 +741,30 @@ export const VariantsSection = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {variantsFieldArray.fields.map((field, index) => (
-                <VariantRow
-                  key={field._vid}
-                  index={index}
-                  mode={mode}
-                  label={getVariantLabel(watchedVariants[index]?.valueIndexes ?? [])}
-                  variantId={watchedVariants[index]?.id}
-                  canEditMedia={canEdit}
-                  mediaAssignment={
-                    existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)
-                      ?.media
-                  }
-                  mediaPool={media}
-                  existingOnHand={
-                    existingVariants.find((variant) => variant.id === watchedVariants[index]?.id)
-                      ?.onHand
-                  }
-                  deleteBlockedReason={getDeleteBlockedReason(index)}
-                  isLastActiveVariant={
-                    Boolean(watchedVariants[index]?.isActive) && activeVariantCount <= 1
-                  }
-                  onRemove={() => handleRemoveVariant(index)}
-                  onOpenMediaPicker={() => setMediaPickerIndex(index)}
-                />
-              ))}
+              {flatRows.map((entry) =>
+                entry.kind === 'group' ? (
+                  <VariantGroupRow
+                    key={`group-${entry.group.key}`}
+                    label={entry.group.label}
+                    rowCount={entry.group.rows.length}
+                    isOpen={expandedKeys.has(entry.group.key)}
+                    isSelected={entry.group.rows.every((row) => selectedKeys.has(row.key))}
+                    priceAggregate={aggregateOf(entry.group.rows, 'price')}
+                    stockAggregate={aggregateOf(entry.group.rows, 'stock')}
+                    canEdit={canEdit}
+                    onToggleOpen={() => toggleGroupOpen(entry.group.key)}
+                    onToggleSelected={() =>
+                      toggleGroupSelected(entry.group.rows.map((row) => row.key))
+                    }
+                    onApplyPrice={(value) => applyToGroup(entry.group.rows, 'price', value)}
+                  />
+                ) : (
+                  renderLeaf(entry.row.index, entry.row.key, entry.group.rows, entry.group.isBranch)
+                ),
+              )}
               {variantsFieldArray.fields.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={11} className="text-muted-foreground">
+                  <TableCell colSpan={12} className="text-muted-foreground">
                     {t('noVariants')}
                   </TableCell>
                 </TableRow>
@@ -561,12 +937,153 @@ const OptionRow = ({
   );
 };
 
+/**
+ * A collapsible parent row: one value of the FIRST option, summarising every variation beneath
+ * it. Editing its price writes that one value across the whole group — the design's "make this
+ * group uniform" gesture.
+ */
+const VariantGroupRow = ({
+  label,
+  rowCount,
+  isOpen,
+  isSelected,
+  priceAggregate,
+  stockAggregate,
+  canEdit,
+  onToggleOpen,
+  onToggleSelected,
+  onApplyPrice,
+}: {
+  label: string;
+  rowCount: number;
+  isOpen: boolean;
+  isSelected: boolean;
+  priceAggregate: VariantAggregate;
+  stockAggregate: VariantAggregate;
+  canEdit: boolean;
+  onToggleOpen: () => void;
+  onToggleSelected: () => void;
+  onApplyPrice: (value: number) => void;
+}) => {
+  const t = useTranslations('Commerce.Editor.Variants');
+  const { onFocus } = useSelectOnFocus();
+  const [draft, setDraft] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  /** "—" when nothing is set, one figure when the group agrees, a range when it does not. */
+  const summarise = (aggregateValue: VariantAggregate, infiniteLabel?: string) => {
+    if (aggregateValue.state === 'empty') return '—';
+    if (aggregateValue.state === 'uniform') {
+      return aggregateValue.value === Infinity
+        ? (infiniteLabel ?? '∞')
+        : String(formatNumber(aggregateValue.value));
+    }
+    const max =
+      aggregateValue.max === Infinity
+        ? (infiniteLabel ?? '∞')
+        : String(formatNumber(aggregateValue.max));
+    return `${formatNumber(aggregateValue.min)} – ${max}`;
+  };
+
+  const commit = () => {
+    setIsEditing(false);
+    const value = Number(draft);
+    setDraft('');
+    if (draft === '' || Number.isNaN(value) || value < 0) return;
+    onApplyPrice(value);
+  };
+
+  return (
+    <TableRow data-testid={`variant-group-${label}`} className="bg-muted/60">
+      <TableCell>
+        <input
+          type="checkbox"
+          aria-label={t('selectGroup', { name: label })}
+          data-testid={`variant-group-select-${label}`}
+          className="accent-primary size-4 cursor-pointer"
+          checked={isSelected}
+          onChange={onToggleSelected}
+        />
+      </TableCell>
+      <TableCell>
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          aria-label={t(isOpen ? 'collapseGroup' : 'expandGroup', { name: label })}
+          data-testid={`variant-group-toggle-${label}`}
+          onClick={onToggleOpen}
+          className="text-muted-foreground hover:text-foreground flex size-6 items-center justify-center"
+        >
+          <span className={cn('transition-transform', !isOpen && 'rotate-90 rtl:-rotate-90')}>
+            ▾
+          </span>
+        </button>
+      </TableCell>
+      <TableCell className="text-start font-semibold">
+        {label}
+        <span className="text-muted-foreground ms-2 text-xs font-normal">
+          {t('groupRowCount', { count: rowCount })}
+        </span>
+      </TableCell>
+      <TableCell />
+      <TableCell>
+        {isEditing && canEdit ? (
+          <Input
+            autoFocus
+            inputMode="numeric"
+            onInput={onInputP2EHandler}
+            data-testid={`variant-group-price-input-${label}`}
+            value={draft}
+            onFocus={onFocus}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.currentTarget.blur();
+              }
+              if (e.key === 'Escape') {
+                setDraft('');
+                setIsEditing(false);
+              }
+            }}
+            className="h-8 w-28"
+          />
+        ) : (
+          <button
+            type="button"
+            disabled={!canEdit}
+            data-testid={`variant-group-price-${label}`}
+            onClick={() => setIsEditing(true)}
+            className="hover:bg-background rounded px-1 tabular-nums disabled:cursor-default"
+          >
+            {summarise(priceAggregate)}
+          </button>
+        )}
+      </TableCell>
+      <TableCell />
+      <TableCell />
+      <TableCell className="tabular-nums">
+        {summarise(stockAggregate, t('infiniteShort'))}
+      </TableCell>
+      <TableCell />
+      <TableCell />
+      <TableCell />
+      <TableCell />
+    </TableRow>
+  );
+};
+
 const VariantRow = ({
   index,
   mode,
   label,
   variantId,
   canEditMedia,
+  isSelected,
+  isIndented,
+  onToggleSelected,
+  onFillDown,
   mediaAssignment,
   mediaPool,
   existingOnHand,
@@ -578,6 +1095,12 @@ const VariantRow = ({
   index: number;
   mode: 'create' | 'edit';
   label: string;
+  isSelected: boolean;
+  /** Leaf of a collapsible group — indented so the tree structure reads at a glance. */
+  isIndented: boolean;
+  onToggleSelected: (withShift: boolean) => void;
+  /** Ctrl/Cmd+D on a price cell copies it down the rest of THIS row's group. */
+  onFillDown: (field: 'price' | 'compareAtPrice', value: number) => void;
   /** The variant's real, persisted backend id — `undefined` for a variant the merchant just
    * added this session (via "regenerate" or otherwise) that has never been saved yet. The
    * media button stays disabled until this exists, since `PUT .../variants/:variantId/media`
@@ -639,8 +1162,21 @@ const VariantRow = ({
         : t('mediaAssignTooltip');
 
   return (
-    <TableRow>
+    <TableRow data-selected={isSelected} className={cn(isSelected && 'bg-primary/5')}>
       <TableCell>
+        <input
+          type="checkbox"
+          aria-label={t('selectRow', { name: label })}
+          data-testid={`variant-select-${index}`}
+          className="accent-primary size-4 cursor-pointer"
+          checked={isSelected}
+          // Shift-click extends the range from the last clicked row. Read off the native event
+          // because React's synthetic change event does not carry modifier keys.
+          onClick={(e) => onToggleSelected(e.shiftKey)}
+          onChange={() => undefined}
+        />
+      </TableCell>
+      <TableCell className={cn(isIndented && 'ps-6')}>
         <Tooltip>
           <TooltipTrigger asChild>
             <span>
@@ -705,6 +1241,15 @@ const VariantRow = ({
                   value={formatNumber(field.value ?? 0)}
                   onFocus={onFocus}
                   onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
+                  // Ctrl/Cmd+D copies this price down the rest of its own group — the fastest
+                  // way to price a size run without touching the next colour.
+                  onKeyDown={(e) => {
+                    if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+                      e.preventDefault();
+                      const value = Number(e.currentTarget.value.replace(/,/g, ''));
+                      if (!Number.isNaN(value)) onFillDown('price', value);
+                    }
+                  }}
                   className="h-8 w-28"
                 />
               </FormControl>

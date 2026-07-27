@@ -603,3 +603,132 @@ describe('VariantsSection per-variant media button', () => {
     expect(screen.getByTestId('variant-media-button-1')).toBeDisabled();
   });
 });
+
+// The redesigned table groups variations under the FIRST option's values. Two options are
+// needed for a group to become a collapsible branch at all — a single-option product stays flat.
+const twoAxisForm = (): ProductFormValues => ({
+  ...twoValueOptionForm(),
+  options: [
+    {
+      id: 'opt-colour',
+      name: 'رنگ',
+      style: 'dropdown',
+      values: [
+        { id: 'v-black', value: 'مشکی' },
+        { id: 'v-white', value: 'سفید' },
+      ],
+    },
+    {
+      id: 'opt-size',
+      name: 'سایز',
+      style: 'dropdown',
+      values: [
+        { id: 'v-40', value: '۴۰' },
+        { id: 'v-41', value: '۴۱' },
+      ],
+    },
+  ],
+  variants: [0, 1].flatMap((colour) =>
+    [0, 1].map((size) => ({
+      id: `var-${colour}-${size}`,
+      valueIndexes: [colour, size],
+      _valueIdentities: [`c${colour}`, `s${size}`],
+      price: colour === 0 ? 1000 : 2000,
+      isActive: true,
+      trackInventory: true,
+      allowBackorder: false,
+    })),
+  ),
+});
+
+describe('VariantsSection tree, selection and bulk edit', () => {
+  it('renders one collapsible parent per first-option value, with leaves hidden until expanded', () => {
+    renderHarness(twoAxisForm());
+
+    expect(screen.getByTestId('variant-group-مشکی')).toBeInTheDocument();
+    expect(screen.getByTestId('variant-group-سفید')).toBeInTheDocument();
+    // This is the performance property, not a cosmetic one: with 2000 variations allowed, only
+    // the expanded group's leaves are ever in the DOM.
+    expect(screen.queryByTestId('variant-price-0')).not.toBeInTheDocument();
+  });
+
+  it("reveals that group's leaves when the parent is expanded", () => {
+    renderHarness(twoAxisForm());
+
+    fireEvent.click(screen.getByTestId('variant-group-toggle-مشکی'));
+
+    expect(screen.getByTestId('variant-price-0')).toBeInTheDocument();
+    // The other group stays shut — expanding is per group, not global.
+    expect(screen.queryByTestId('variant-price-2')).not.toBeInTheDocument();
+  });
+
+  it('rolls a group up to a single price when its leaves agree', () => {
+    renderHarness(twoAxisForm());
+    expect(screen.getByTestId('variant-group-price-مشکی')).toHaveTextContent('1,000');
+  });
+
+  it('rolls a disagreeing group up to a min-max range', () => {
+    const values = twoAxisForm();
+    values.variants[1].price = 5000; // مشکی now holds 1000 and 5000
+    renderHarness(values);
+
+    expect(screen.getByTestId('variant-group-price-مشکی')).toHaveTextContent('1,000');
+    expect(screen.getByTestId('variant-group-price-مشکی')).toHaveTextContent('5,000');
+  });
+
+  it('shows the bulk bar only once something is selected, reporting the real leaf count', () => {
+    renderHarness(twoAxisForm());
+    expect(screen.queryByTestId('variant-bulk-bar')).not.toBeInTheDocument();
+
+    // Checking a parent means "all of its variations", so the bar must say 2, not 1.
+    fireEvent.click(screen.getByTestId('variant-group-select-مشکی'));
+
+    expect(screen.getByTestId('variant-bulk-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('variant-bulk-bar')).toHaveTextContent('2');
+  });
+
+  it('select-all covers every variation across every group', () => {
+    renderHarness(twoAxisForm());
+
+    fireEvent.click(screen.getByTestId('variant-select-all'));
+
+    expect(screen.getByTestId('variant-bulk-bar')).toHaveTextContent('4');
+  });
+
+  it('applies a bulk set price to the selected variations only', () => {
+    renderHarness(twoAxisForm());
+
+    fireEvent.click(screen.getByTestId('variant-group-select-مشکی'));
+    fireEvent.click(screen.getByTestId('variant-bulk-price-toggle'));
+    fireEvent.change(screen.getByTestId('variant-bulk-value'), { target: { value: '7000' } });
+    fireEvent.click(screen.getByTestId('variant-bulk-price-apply'));
+
+    // مشکی's roll-up moved; سفید's did not.
+    expect(screen.getByTestId('variant-group-price-مشکی')).toHaveTextContent('7,000');
+    expect(screen.getByTestId('variant-group-price-سفید')).toHaveTextContent('2,000');
+  });
+
+  it('writes one price across a whole group when the parent roll-up is edited', () => {
+    const values = twoAxisForm();
+    values.variants[1].price = 5000;
+    renderHarness(values);
+
+    fireEvent.click(screen.getByTestId('variant-group-price-مشکی'));
+    fireEvent.change(screen.getByTestId('variant-group-price-input-مشکی'), {
+      target: { value: '3000' },
+    });
+    fireEvent.blur(screen.getByTestId('variant-group-price-input-مشکی'));
+
+    // The range collapses to one figure — the group is now uniform.
+    expect(screen.getByTestId('variant-group-price-مشکی')).toHaveTextContent('3,000');
+    expect(screen.getByTestId('variant-group-price-مشکی')).not.toHaveTextContent('–');
+  });
+
+  it('does not group a single-option product into one-child branches', () => {
+    renderHarness(twoValueOptionForm());
+
+    expect(screen.queryByTestId('variant-group-S')).not.toBeInTheDocument();
+    // Leaves render directly, with no parent row to expand first.
+    expect(screen.getByTestId('variant-price-0')).toBeInTheDocument();
+  });
+});
