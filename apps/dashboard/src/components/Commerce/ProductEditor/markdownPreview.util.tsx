@@ -29,15 +29,21 @@ export function safeHref(url: string): string | null {
   }
 }
 
-const INLINE = /(\*\*[^*]+\*\*|\[[^\]]*\]\([^)]*\))/g;
+// Order matters: `split` scans left to right and takes the first alternative that matches, so
+// bold must precede italic or `**x**` would be consumed as an empty italic followed by junk.
+const INLINE = /(\*\*[^*]+\*\*|\*[^*\n]+\*|\[[^\]]*\]\([^)]*\))/g;
 
-/** Bold and links inside one line. Anything unmatched stays literal text. */
+/** Bold, italic and links inside one line. Anything unmatched stays literal text. */
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
   return text.split(INLINE).map((part, index) => {
     const key = `${keyPrefix}-${index}`;
 
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return <strong key={key}>{part.slice(2, -2)}</strong>;
+    }
+
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return <em key={key}>{part.slice(1, -1)}</em>;
     }
 
     const link = /^\[([^\]]*)\]\(([^)]*)\)$/.exec(part);

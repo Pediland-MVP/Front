@@ -41,6 +41,7 @@ beforeEach(() => {
 });
 
 import messages from '@/messages/fa.json';
+import { OptionsSection } from './OptionsSection';
 import { VariantsSection } from './VariantsSection';
 import { buildProductFormSchema, type ProductFormValues } from '../productForm.schema';
 import type { CommerceProductMedia, CommerceVariantDetail } from '@/types/commerce';
@@ -63,7 +64,12 @@ function Harness({
   return (
     <NextIntlClientProvider locale="fa" messages={messages}>
       <FormProvider {...form}>
+        {/* Options and the variation table are separate sections in the real page (steps 7 and
+            9, with specs between them). Both are rendered here because these tests drive the
+            table THROUGH the options editor — adding a value, then regenerating. */}
+        <OptionsSection step={7} />
         <VariantsSection
+          step={9}
           mode="edit"
           productId={productId}
           media={media}
@@ -99,7 +105,7 @@ function HarnessWithResolverInner({ defaultValues }: { defaultValues: ProductFor
   capturedForm = form;
   return (
     <FormProvider {...form}>
-      <VariantsSection mode="edit" />
+      <VariantsSection step={9} mode="edit" />
     </FormProvider>
   );
 }
@@ -465,31 +471,43 @@ describe('VariantsSection regenerate diffing', () => {
   });
 });
 
+// The design's row has no column for SKU, the sale window, backorder or the active flag — they
+// live behind the per-row settings popover. Opening it is therefore a precondition for asserting
+// on any of them, and Radix mounts the content asynchronously.
+async function openRowSettings(index: number) {
+  fireEvent.click(screen.getByTestId(`variant-more-${index}`));
+  await screen.findByTestId(`variant-sku-${index}`);
+}
+
 describe('VariantsSection last-active-variant guard', () => {
   it('disables the isActive switch and delete button for the only active variant', async () => {
     const form = twoValueOptionForm();
     form.variants[1].isActive = false; // only var-s is active now
     renderHarness(form);
 
-    expect(screen.getByTestId('variant-active-0')).toBeDisabled();
     expect(screen.getByTestId('variant-delete-0')).toBeDisabled();
-    // The inactive one is free to toggle/delete.
-    expect(screen.getByTestId('variant-active-1')).not.toBeDisabled();
+    // The inactive one is free to delete.
     expect(screen.getByTestId('variant-delete-1')).not.toBeDisabled();
+
+    await openRowSettings(0);
+    expect(screen.getByTestId('variant-active-0')).toBeDisabled();
   });
 
   it('allows deactivating/deleting once another variant is active', async () => {
     renderHarness(twoValueOptionForm());
 
-    expect(screen.getByTestId('variant-active-0')).not.toBeDisabled();
     expect(screen.getByTestId('variant-delete-0')).not.toBeDisabled();
+
+    await openRowSettings(0);
+    expect(screen.getByTestId('variant-active-0')).not.toBeDisabled();
   });
 });
 
 describe('VariantsSection variant table edits', () => {
-  it('updates price/sku on the correct row without touching the other rows', () => {
+  it('updates price/sku on the correct row without touching the other rows', async () => {
     renderHarness(twoValueOptionForm());
 
+    await openRowSettings(0);
     fireEvent.change(screen.getByTestId('variant-sku-0'), { target: { value: 'SKU-S-NEW' } });
 
     expect(capturedForm!.getValues('variants.0.sku')).toBe('SKU-S-NEW');
@@ -714,10 +732,10 @@ describe('VariantsSection tree, selection and bulk edit', () => {
     renderHarness(values);
 
     fireEvent.click(screen.getByTestId('variant-group-price-مشکی'));
-    fireEvent.change(screen.getByTestId('variant-group-price-input-مشکی'), {
+    fireEvent.change(screen.getByTestId('variant-group-price-مشکی-input'), {
       target: { value: '3000' },
     });
-    fireEvent.blur(screen.getByTestId('variant-group-price-input-مشکی'));
+    fireEvent.blur(screen.getByTestId('variant-group-price-مشکی-input'));
 
     // The range collapses to one figure — the group is now uniform.
     expect(screen.getByTestId('variant-group-price-مشکی')).toHaveTextContent('3,000');

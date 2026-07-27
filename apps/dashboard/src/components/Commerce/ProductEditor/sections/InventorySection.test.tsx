@@ -56,7 +56,12 @@ function Harness({
   return (
     <NextIntlClientProvider locale="fa" messages={messages}>
       <FormProvider {...form}>
-        <InventorySection mode={mode} productId={productId} existingVariants={existingVariants} />
+        <InventorySection
+          step={10}
+          mode={mode}
+          productId={productId}
+          existingVariants={existingVariants}
+        />
       </FormProvider>
     </NextIntlClientProvider>
   );

@@ -21,10 +21,6 @@ import type {
 import {
   Badge,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Table,
   TableBody,
   TableCell,
@@ -43,10 +39,13 @@ import { ItemsPagination } from '@/components/Console/ItemsPagination';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 
 import { AdjustStockDialog } from '../AdjustStockDialog';
+import { EditorSection } from '../ui/EditorSection';
+import { editorCard } from '../ui/editorChrome';
 import type { ProductFormValues } from '../productForm.schema';
 import { reconstructLedgerBalances } from '../reconstructLedgerBalances.util';
 
 interface InventorySectionProps {
+  step: number;
   mode: 'create' | 'edit';
   productId?: string;
   /** The fetched product's variants (edit mode only) — the ONLY source of a variant's live
@@ -74,6 +73,7 @@ const LEDGER_FETCH_LIMIT = 200;
  * gate and `MediaSection`'s whole-section "save the product first" gate.
  */
 export const InventorySection = ({
+  step,
   mode,
   productId,
   existingVariants = [],
@@ -153,63 +153,55 @@ export const InventorySection = ({
     // the form. It writes the SAME form field the Variants & pricing table exposes, so editing
     // it in either place stays in sync with no extra wiring.
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-          <p className="text-muted-foreground text-sm">{t('openingStockHint')}</p>
-        </CardHeader>
-        <CardContent>
-          {rows.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t('noVariants')}</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-start">{t('Columns.variant')}</TableHead>
-                  <TableHead className="text-start">{t('Columns.openingStock')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.index}>
-                    <TableCell className="text-start font-medium">{row.label}</TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`variants.${row.index}.initialStock`}
-                        render={({ field }) => (
-                          <FormItem className="space-y-0">
-                            <FormControl>
-                              {/* Digit-safe per CLAUDE.md §18: a TEXT input with
+      <EditorSection step={step} title={t('title')} hint={t('openingStockHint')}>
+        {rows.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('noVariants')}</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-start">{t('Columns.variant')}</TableHead>
+                <TableHead className="text-start">{t('Columns.openingStock')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.index}>
+                  <TableCell className="text-start font-medium">{row.label}</TableCell>
+                  <TableCell>
+                    <FormField
+                      control={form.control}
+                      name={`variants.${row.index}.initialStock`}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            {/* Digit-safe per CLAUDE.md §18: a TEXT input with
                                   `onInputP2EHandler`, never `type="number"` — the browser
                                   blanks non-ASCII input, so Persian digits would never reach
                                   the converter. */}
-                              <Input
-                                inputMode="numeric"
-                                onInput={onInputP2EHandler}
-                                placeholder="۰"
-                                data-testid={`opening-stock-${row.index}`}
-                                value={field.value == null ? '' : (formatNumber(field.value) ?? '')}
-                                onFocus={onFocus}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value === '' ? undefined : +e.target.value,
-                                  )
-                                }
-                                className="h-8 w-24"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                            <Input
+                              inputMode="numeric"
+                              onInput={onInputP2EHandler}
+                              placeholder="۰"
+                              data-testid={`opening-stock-${row.index}`}
+                              value={field.value == null ? '' : (formatNumber(field.value) ?? '')}
+                              onFocus={onFocus}
+                              onChange={(e) =>
+                                field.onChange(e.target.value === '' ? undefined : +e.target.value)
+                              }
+                              className="h-8 w-24"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </EditorSection>
     );
   }
 
@@ -246,13 +238,9 @@ export const InventorySection = ({
   );
 
   return (
-    <div className="flex flex-col gap-5">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-          <p className="text-muted-foreground text-sm">{t('description')}</p>
-        </CardHeader>
-        <CardContent>
+    <EditorSection bare step={step} title={t('title')} hint={t('description')}>
+      <div className="flex flex-col gap-5">
+        <div className={cn(editorCard, 'p-4')}>
           <Table>
             <TableHeader>
               <TableRow>
@@ -332,15 +320,13 @@ export const InventorySection = ({
               )}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+        </div>
 
-      {selectedVariantId && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('Ledger.title', { variant: selectedRow?.label ?? '' })}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {selectedVariantId && (
+          <div className={cn(editorCard, 'p-4')}>
+            <h3 className="mb-3 text-sm font-bold">
+              {t('Ledger.title', { variant: selectedRow?.label ?? '' })}
+            </h3>
             {isLedgerLoading ? (
               <LoaderSpin />
             ) : ledgerError ? (
@@ -416,23 +402,23 @@ export const InventorySection = ({
                 />
               </>
             )}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
 
-      {adjustRow?.variantId && (
-        <AdjustStockDialog
-          open={!!adjustVariantId}
-          onOpenChange={(open) => {
-            if (!open) setAdjustVariantId(null);
-          }}
-          productId={productId}
-          variantId={adjustRow.variantId}
-          variantLabel={adjustRow.label}
-          currentOnHand={adjustRow.onHand ?? 0}
-          currentLowStockThreshold={adjustRow.lowStockThreshold}
-        />
-      )}
-    </div>
+        {adjustRow?.variantId && (
+          <AdjustStockDialog
+            open={!!adjustVariantId}
+            onOpenChange={(open) => {
+              if (!open) setAdjustVariantId(null);
+            }}
+            productId={productId}
+            variantId={adjustRow.variantId}
+            variantLabel={adjustRow.label}
+            currentOnHand={adjustRow.onHand ?? 0}
+            currentLowStockThreshold={adjustRow.lowStockThreshold}
+          />
+        )}
+      </div>
+    </EditorSection>
   );
 };

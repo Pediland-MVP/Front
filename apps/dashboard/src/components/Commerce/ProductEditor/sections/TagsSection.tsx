@@ -9,17 +9,10 @@ import { XIcon } from 'lucide-react';
 import { usePermissions } from '@/hooks/usePermissions';
 import type { PaginatedResult } from '@/types/commerce';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  FormField,
-  Input,
-} from '@/components/ui';
+import { FormField } from '@/components/ui';
 
+import { EditorRailCard } from '../ui/EditorSection';
+import { editorAddButtonSm, editorChipSuggest, editorInputSm } from '../ui/editorChrome';
 import type { ProductFormValues } from '../productForm.schema';
 
 /**
@@ -70,71 +63,74 @@ export const TagsSection = ({ mode }: { mode: 'create' | 'edit' }) => {
         const suggestions = pool.filter((name) => !has(name)).slice(0, SUGGESTION_LIMIT);
 
         return (
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('title')}</CardTitle>
-              <p className="text-muted-foreground text-sm">{t('description')}</p>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((name) => (
-                    <Badge key={name} variant="secondary" className="gap-1 ps-2 pe-1">
-                      {name}
-                      {canEdit && (
-                        <button
-                          type="button"
-                          aria-label={t('remove', { name })}
-                          data-testid={`tag-remove-${name}`}
-                          onClick={() => field.onChange(tags.filter((item) => item !== name))}
-                          className="hover:text-destructive"
-                        >
-                          <XIcon className="size-3" />
-                        </button>
-                      )}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+          <EditorRailCard title={t('title')} count={tags.length || undefined}>
+            {tags.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {tags.map((name) => (
+                  <span
+                    key={name}
+                    className="bg-tint2 text-primary border-lnv inline-flex items-center gap-1 rounded-full border py-1 ps-2.5 pe-1 text-xs font-bold"
+                  >
+                    {name}
+                    {canEdit && (
+                      <button
+                        type="button"
+                        aria-label={t('remove', { name })}
+                        data-testid={`tag-remove-${name}`}
+                        onClick={() => field.onChange(tags.filter((item) => item !== name))}
+                        className="hover:bg-dtint hover:text-dtext grid size-[18px] place-items-center rounded-full transition-colors"
+                      >
+                        <XIcon className="size-2.5" />
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-mut text-xs">{t('description')}</p>
+            )}
 
-              {canEdit && (
-                <div className="flex gap-2">
-                  <Input
-                    value={draft}
-                    data-testid="tag-input"
-                    placeholder={t('placeholder')}
-                    onChange={(e) => setDraft(e.target.value)}
-                    // Enter adds without submitting the whole product form.
-                    onKeyDown={(e) => {
-                      if (e.key !== 'Enter') return;
-                      e.preventDefault();
-                      add(draft);
-                    }}
-                    className="h-9 max-w-64"
-                  />
-                  <Button type="button" variant="outline" size="sm" onClick={() => add(draft)}>
-                    {t('add')}
-                  </Button>
-                </div>
-              )}
+            {canEdit && (
+              <div className="flex gap-1.5">
+                <input
+                  value={draft}
+                  data-testid="tag-input"
+                  aria-label={t('title')}
+                  placeholder={t('placeholder')}
+                  onChange={(e) => setDraft(e.target.value)}
+                  // Enter adds without submitting the whole product form.
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Enter') return;
+                    e.preventDefault();
+                    add(draft);
+                  }}
+                  className={editorInputSm}
+                />
+                <button type="button" onClick={() => add(draft)} className={editorAddButtonSm}>
+                  {t('add')}
+                </button>
+              </div>
+            )}
 
-              {canEdit && suggestions.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-muted-foreground text-xs">{t('suggestions')}</span>
+            {canEdit && suggestions.length > 0 && (
+              <div>
+                <div className="text-mut mb-1.5 text-xs">{t('suggestions')}</div>
+                <div className="flex flex-wrap gap-1.5">
                   {suggestions.map((name) => (
                     <button
                       key={name}
                       type="button"
                       data-testid={`tag-suggestion-${name}`}
                       onClick={() => add(name)}
+                      className={editorChipSuggest}
                     >
-                      <Badge variant="outline">{name}</Badge>
+                      + {name}
                     </button>
                   ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            )}
+          </EditorRailCard>
         );
       }}
     />

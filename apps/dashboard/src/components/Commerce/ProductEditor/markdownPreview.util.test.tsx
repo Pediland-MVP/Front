@@ -41,6 +41,18 @@ describe('renderMarkdown', () => {
     expect(container.querySelector('strong')).toHaveTextContent('مش تنفسی');
   });
 
+  it('renders italic', () => {
+    const { container } = show('وزن *۲۸۰ گرم* است');
+    expect(container.querySelector('em')).toHaveTextContent('۲۸۰ گرم');
+  });
+
+  // Bold must win: the alternation is ordered so `**x**` is never read as an empty italic.
+  it('does not mistake bold for italic', () => {
+    const { container } = show('**مش تنفسی**');
+    expect(container.querySelector('strong')).toHaveTextContent('مش تنفسی');
+    expect(container.querySelector('em')).toBeNull();
+  });
+
   it('renders a heading as bold text, not an h1-h6', () => {
     const { container } = show('### درباره این کفش');
 

@@ -2,23 +2,21 @@
 
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
-import { PlusIcon, Trash2Icon } from 'lucide-react';
+import { PlusIcon, XIcon } from 'lucide-react';
 
 import { usePermissions } from '@/hooks/usePermissions';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Input,
-} from '@/components/ui';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui';
 
+import { EditorSection } from '../ui/EditorSection';
+import {
+  editorAddButton,
+  editorEmptyBox,
+  editorIconButtonDanger,
+  editorInputSm,
+  editorInputGhost,
+  editorSubBox,
+} from '../ui/editorChrome';
 import type { ProductFormValues } from '../productForm.schema';
 
 /** Mirrors the backend's `@ArrayMaxSize(50)` on `specs` so the UI refuses before the API does. */
@@ -31,7 +29,7 @@ const SPEC_LIMIT = 50;
  * product page. These are ordered `{title, body}` pairs stored as jsonb on the product, because
  * they are only ever read whole with it — never filtered, searched or joined.
  */
-export const SpecsSection = ({ mode }: { mode: 'create' | 'edit' }) => {
+export const SpecsSection = ({ step, mode }: { step: number; mode: 'create' | 'edit' }) => {
   const t = useTranslations('Commerce.Editor.Specs');
   const { can } = usePermissions();
   const canEdit = can(mode === 'create' ? 'product:create' : 'product:edit');
@@ -40,85 +38,87 @@ export const SpecsSection = ({ mode }: { mode: 'create' | 'edit' }) => {
   const specs = useFieldArray({ control, name: 'specs', keyName: '_sid' });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
-        <p className="text-muted-foreground text-sm">{t('description')}</p>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        {specs.fields.length === 0 && <p className="text-muted-foreground text-sm">{t('empty')}</p>}
+    <EditorSection step={step} title={t('title')} hint={t('description')} cardClassName="p-3">
+      <div className="flex flex-col gap-2.5">
+        {specs.fields.length === 0 && (
+          <div className={editorEmptyBox}>
+            <div className="mb-1 text-sm font-bold">{t('empty')}</div>
+            <p className="text-mut m-0 text-xs text-pretty">{t('emptyHint')}</p>
+          </div>
+        )}
 
         {specs.fields.map((row, index) => (
-          <div key={row._sid} className="flex items-start gap-2">
-            <FormField
-              control={control}
-              name={`specs.${index}.title`}
-              render={({ field }) => (
-                <FormItem className="w-44 space-y-0">
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={!canEdit}
-                      data-testid={`spec-title-${index}`}
-                      placeholder={t('titlePlaceholder')}
-                      className="h-9 font-semibold"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+          <div key={row._sid} className={`${editorSubBox} flex flex-col gap-2`}>
+            <div className="flex items-center gap-1.5">
+              <FormField
+                control={control}
+                name={`specs.${index}.title`}
+                render={({ field }) => (
+                  <FormItem className="min-w-0 flex-1 space-y-0">
+                    <FormControl>
+                      <input
+                        {...field}
+                        disabled={!canEdit}
+                        data-testid={`spec-title-${index}`}
+                        aria-label={t('titlePlaceholder')}
+                        placeholder={t('titlePlaceholder')}
+                        className={editorInputGhost}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {canEdit && (
+                <button
+                  type="button"
+                  aria-label={t('remove')}
+                  data-testid={`spec-remove-${index}`}
+                  onClick={() => specs.remove(index)}
+                  className={editorIconButtonDanger}
+                >
+                  <XIcon className="size-3.5" />
+                </button>
               )}
-            />
+            </div>
+
             <FormField
               control={control}
               name={`specs.${index}.body`}
               render={({ field }) => (
-                <FormItem className="flex-1 space-y-0">
+                <FormItem className="space-y-0">
                   <FormControl>
-                    <Input
+                    <input
                       {...field}
                       disabled={!canEdit}
                       data-testid={`spec-body-${index}`}
+                      aria-label={t('bodyPlaceholder')}
                       placeholder={t('bodyPlaceholder')}
-                      className="h-9"
+                      className={editorInputSm}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {canEdit && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={t('remove')}
-                data-testid={`spec-remove-${index}`}
-                onClick={() => specs.remove(index)}
-                className="text-muted-foreground hover:text-destructive size-9"
-              >
-                <Trash2Icon className="size-4" />
-              </Button>
-            )}
           </div>
         ))}
 
         {canEdit && (
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             data-testid="spec-add"
             // Capped to match the backend's ArrayMaxSize(50): better a disabled button than a
             // 400 after the merchant has typed the 51st row.
             disabled={specs.fields.length >= SPEC_LIMIT}
             onClick={() => specs.append({ title: '', body: '' })}
-            className="self-start"
+            className={editorAddButton}
           >
-            <PlusIcon className="size-4" />
+            <PlusIcon className="size-3.5" />
             {t('add')}
-          </Button>
+          </button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </EditorSection>
   );
 };

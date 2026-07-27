@@ -1,24 +1,18 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import useSWRImmutable from 'swr/immutable';
 
-import type { CommerceCategory, CommerceCategoryNode, PaginatedResult } from '@/types/commerce';
-import { buildCategoryTree } from '@/utils/commerce/buildCategoryTree';
+import type { CommerceCategory, PaginatedResult } from '@/types/commerce';
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -29,26 +23,26 @@ import {
   TooltipTrigger,
 } from '@/components/ui';
 
-import { MarkdownDescriptionField } from '../MarkdownDescriptionField';
+import { CategoryPickerDialog, CATEGORIES_KEY } from '../CategoryPickerDialog';
+import { EditorSection } from '../ui/EditorSection';
 import type { ProductFormValues } from '../productForm.schema';
 
-const NO_CATEGORY_VALUE = 'none';
-
-interface CategoryOption {
-  id: string;
-  label: string;
-  depth: number;
-}
-
-const flattenCategoryTree = (nodes: CommerceCategoryNode[], depth = 0): CategoryOption[] =>
-  nodes.flatMap((node) => [
-    { id: node.id, label: node.name, depth },
-    ...flattenCategoryTree(node.children, depth + 1),
-  ]);
-
-export const BasicInfoSection = () => {
+/**
+ * Step 3 — where the product sits in the catalogue.
+ *
+ * The design shows category as a one-line summary plus a button that opens a picker, rather than
+ * a `<select>`: a real workspace has a two-level tree, and a flat option list loses the parent
+ * that gives a subcategory its meaning ("کتانی" under "کفش" vs under "لباس بچه").
+ *
+ * `status` and `kind` ride along here. The design has no home for them — its header shows status
+ * as a read-only badge — but both are real, saved fields, so they keep an explicit control
+ * instead of being silently dropped in a restyle.
+ */
+export const CategorySection = ({ step }: { step: number }) => {
   const t = useTranslations('Commerce.Editor');
+  const tc = useTranslations('Commerce.Editor.Category');
   const form = useFormContext<ProductFormValues>();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const variants = useWatch({ control: form.control, name: 'variants' });
   // Design spec: `kind` should lock once the product has ≥1 order line — the frontend can't
@@ -60,54 +54,64 @@ export const BasicInfoSection = () => {
   const isKindLocked = (variants ?? []).some((variant) => Boolean(variant.id));
 
   const { data: categoriesData } =
-    useSWRImmutable<PaginatedResult<CommerceCategory[]>>('/commerce/categories');
-  const categoryOptions = useMemo(
-    () => flattenCategoryTree(buildCategoryTree(categoriesData?.items ?? [])),
-    [categoriesData],
-  );
+    useSWRImmutable<PaginatedResult<CommerceCategory[]>>(CATEGORIES_KEY);
+  const categories = useMemo(() => categoriesData?.items ?? [], [categoriesData]);
+
+  const categoryId = useWatch({ control: form.control, name: 'categoryId' });
+  const selected = categories.find((category) => category.id === categoryId);
+  // Shown as "کفش / کتانی" so a subcategory is never ambiguous about which parent it belongs to.
+  const categoryPath = useMemo(() => {
+    if (!selected) return null;
+    const parent = selected.parentId
+      ? categories.find((category) => category.id === selected.parentId)
+      : undefined;
+    return parent ? `${parent.name} / ${selected.name}` : selected.name;
+  }, [selected, categories]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('Nav.basic')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <EditorSection step={step} title={tc('title')}>
+      <div className="flex flex-col gap-4">
         <FormField
           control={form.control}
-          name="title"
+          name="categoryId"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('Basic.title')}</FormLabel>
-              <FormControl>
-                <Input maxLength={255} {...field} />
-              </FormControl>
+            <FormItem className="space-y-0">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="min-w-[200px] flex-1">
+                  <div className="text-sm font-bold">{categoryPath ?? tc('none')}</div>
+                  <p className="text-mut mt-1 text-xs">
+                    {categoryPath ? tc('hintSelected') : tc('hintEmpty')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  data-testid="category-open-picker"
+                  onClick={() => setIsPickerOpen(true)}
+                  className="border-lnv bg-card text-primary hover:bg-tint h-[38px] flex-none rounded-lg border px-3.5 text-sm font-bold transition-colors"
+                >
+                  {categoryPath ? tc('change') : tc('choose')}
+                </button>
+              </div>
               <FormMessage />
+
+              <CategoryPickerDialog
+                open={isPickerOpen}
+                onOpenChange={setIsPickerOpen}
+                categories={categories}
+                value={field.value}
+                onChange={field.onChange}
+              />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('Basic.description')}</FormLabel>
-              <FormControl>
-                {/* Markdown, with a render-only preview — the stored value stays raw text. */}
-                <MarkdownDescriptionField value={field.value} onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="border-lnv grid gap-4 border-t pt-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Basic.status')}</FormLabel>
+                <FormLabel className="text-mut text-xs font-bold">{t('Basic.status')}</FormLabel>
                 <FormControl>
                   <Select dir="rtl" value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
@@ -130,7 +134,7 @@ export const BasicInfoSection = () => {
             name="kind"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Basic.kind')}</FormLabel>
+                <FormLabel className="text-mut text-xs font-bold">{t('Basic.kind')}</FormLabel>
                 <FormControl>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -165,40 +169,7 @@ export const BasicInfoSection = () => {
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="categoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('Basic.category')}</FormLabel>
-              <FormControl>
-                <Select
-                  dir="rtl"
-                  value={field.value ?? NO_CATEGORY_VALUE}
-                  onValueChange={(value) =>
-                    field.onChange(value === NO_CATEGORY_VALUE ? null : value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('Basic.categoryPlaceholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NO_CATEGORY_VALUE}>{t('Basic.categoryNone')}</SelectItem>
-                    {categoryOptions.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {'  '.repeat(option.depth)}
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </CardContent>
-    </Card>
+      </div>
+    </EditorSection>
   );
 };

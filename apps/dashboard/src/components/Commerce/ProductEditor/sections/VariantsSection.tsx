@@ -5,24 +5,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch, type FieldError } from 'react-hook-form';
 import { toast } from 'sonner';
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { DotsSixVerticalIcon, ImageIcon } from '@phosphor-icons/react/dist/ssr';
-import { PlusIcon, RefreshCcwIcon, Trash2Icon } from 'lucide-react';
+import { ImageIcon } from '@phosphor-icons/react/dist/ssr';
+import { ChevronDownIcon, InfinityIcon, SettingsIcon, XIcon } from 'lucide-react';
 
 import { onInputP2EHandler } from '@/utils/p2eNumber';
 import { formatNumber } from '@/utils/formatNumber';
@@ -36,18 +20,11 @@ import type {
 } from '@/types/commerce';
 
 import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   DatePicker,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -57,19 +34,14 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui';
 
 import { VariantMediaPickerDialog } from '../VariantMediaPickerDialog';
-import { generateVariantCombinations, OPTION_LIMIT, VARIANT_LIMIT } from '../variantMatrix.util';
+import { EditorSection } from '../ui/EditorSection';
+import { editorCard, editorInputCell } from '../ui/editorChrome';
 import {
   aggregate,
   flattenGroups,
@@ -78,6 +50,16 @@ import {
 } from '../variantTree.util';
 import { applyBulkPrice, fillDownTargets, type BulkPriceMode } from '../variantBulk.util';
 import type { ProductFormValues } from '../productForm.schema';
+
+/**
+ * The variation grid's column template, shared by the header, group rows and leaf rows so the
+ * three always line up. Expressed once here rather than repeated per row: the design's grid is
+ * `grid`, not `table`, because a leaf row has to indent under its parent without the browser's
+ * table layout forcing every cell back to the same box.
+ */
+const GRID_COLUMNS =
+  'grid items-center gap-2.5 ' +
+  '[grid-template-columns:26px_minmax(120px,1.2fr)_88px_minmax(110px,1fr)_minmax(120px,1fr)_minmax(110px,.9fr)_76px]';
 
 interface VariantsSectionProps {
   mode: 'create' | 'edit';
@@ -94,39 +76,20 @@ interface VariantsSectionProps {
   existingVariants?: CommerceVariantDetail[];
 }
 
-type OptionValue = ProductFormValues['options'][number]['values'][number];
-type Option = ProductFormValues['options'][number];
-type Variant = ProductFormValues['variants'][number];
-
-// A value's STABLE identity for diffing purposes: its real backend `id` once persisted, or
-// the `_localId` assigned the moment it was typed in this session (see `addValue`). Never the
-// value's array position — positions shift on reorder/removal, which is exactly what broke
-// the old positional diff (see `handleRegenerate`'s comment).
-const getValueIdentity = (value: OptionValue | undefined): string | undefined =>
-  value?.id ?? value?._localId;
-
-// A variant combination's diff key is the SORTED set of its selected values' stable
-// identities — sorted (not option-position order) so the key survives an option-ROW reorder
-// too: reordering options changes which slot in `valueIndexes` a given option occupies, but
-// the underlying SET of selected values (and therefore this key) is unchanged.
-const getComboKey = (identities: string[]): string => [...identities].sort().join('|');
-
-const getComboIdentities = (combo: number[], options: Option[]): string[] =>
-  combo.map(
-    (valueIndex, optionIndex) => getValueIdentity(options[optionIndex]?.values[valueIndex]) ?? '',
-  );
-
 /**
- * Variants & pricing — options builder (up to `OPTION_LIMIT` options, chip-based value
- * entry) plus the generated variant table. This is the only section that mutates
- * `options`/`variants` via `useFieldArray` (see `productForm.schema.ts`'s shared shape).
+ * Step 9 — the generated variation table.
+ *
+ * The option axes that FEED this table live in `OptionsSection` (step 7); the design puts the
+ * specs card between the two. Both write the same `options`/`variants` form arrays through
+ * `useFormContext`, so the split costs nothing but keeps each file to one job.
  */
 export const VariantsSection = ({
+  step,
   mode,
   productId,
   media = [],
   existingVariants = [],
-}: VariantsSectionProps) => {
+}: VariantsSectionProps & { step: number }) => {
   const t = useTranslations('Commerce.Editor.Variants');
   const tv = useTranslations('Commerce.Editor.Validation');
   const form = useFormContext<ProductFormValues>();
@@ -151,11 +114,6 @@ export const VariantsSection = ({
   const [bulkMode, setBulkMode] = useState<BulkPriceMode>('set');
   const [bulkValue, setBulkValue] = useState('');
 
-  const optionsFieldArray = useFieldArray({
-    control: form.control,
-    name: 'options',
-    keyName: '_oid',
-  });
   const variantsFieldArray = useFieldArray({
     control: form.control,
     name: 'variants',
@@ -407,84 +365,6 @@ export const VariantsSection = ({
     />
   );
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
-
-  const handleOptionDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = optionsFieldArray.fields.findIndex((field) => field._oid === active.id);
-    const newIndex = optionsFieldArray.fields.findIndex((field) => field._oid === over.id);
-    if (oldIndex !== -1 && newIndex !== -1) optionsFieldArray.move(oldIndex, newIndex);
-  };
-
-  const addOption = () => {
-    if (optionsFieldArray.fields.length >= OPTION_LIMIT) return;
-    optionsFieldArray.append({ name: '', style: 'dropdown', values: [] });
-  };
-
-  // Shown on the regenerate button so the merchant sees the resulting count before clicking —
-  // mirrors the mockup's "بازسازی جدول تنوع‌ها (۶ ترکیب)" label. Cheap enough to recompute on
-  // every render — not worth a `useMemo` (whose dependency, `watchedOptions`, is a fresh array
-  // reference from `useWatch` on every render anyway).
-  const potentialVariantCount =
-    watchedOptions.length === 0
-      ? 1
-      : watchedOptions.reduce((total, option) => total * option.values.length, 1);
-
-  const handleRegenerate = () => {
-    const options = form.getValues('options');
-    const counts = options.map((option) => option.values.length);
-
-    if (options.length > 0 && counts.some((count) => count === 0)) {
-      toast.error(t('regenerateNeedsValues'));
-      return;
-    }
-
-    const total = counts.length === 0 ? 1 : counts.reduce((product, count) => product * count, 1);
-    if (total > VARIANT_LIMIT) {
-      // Hard, blocking error — never silently cap/truncate the combination list.
-      toast.error(t('regenerateLimitExceeded', { count: total }));
-      return;
-    }
-
-    const combos = generateVariantCombinations(counts);
-    const currentVariants = form.getValues('variants');
-    // Diff key = the SORTED SET of the combination's values' stable identities (real `id` or
-    // session `_localId`, never raw array position — see `getValueIdentity`/`getComboKey`).
-    // Any combination that still exists after regeneration keeps its existing row (id, price,
-    // SKU, stock, toggles) untouched — only combinations that are new get a fresh default row,
-    // and combinations that no longer exist are dropped. This is the guard against losing a
-    // merchant's already-entered prices on every options edit.
-    //
-    // Keying by raw position (the old approach) breaks the moment positions shift under the
-    // existing rows: removing a non-last value, or reordering option rows, both shift which
-    // index means what without changing the underlying values — a positional key would then
-    // silently match the wrong old row to a new combo (see the regression tests below).
-    const existingByKey = new Map(
-      currentVariants.map((variant) => [getComboKey(variant._valueIdentities ?? []), variant]),
-    );
-
-    const nextVariants: Variant[] = combos.map((combo) => {
-      const identities = getComboIdentities(combo, options);
-      const existing = existingByKey.get(getComboKey(identities));
-      if (existing) return { ...existing, valueIndexes: combo, _valueIdentities: identities };
-      return {
-        valueIndexes: combo,
-        _valueIdentities: identities,
-        price: 0,
-        isActive: true,
-        trackInventory: false,
-        allowBackorder: false,
-      };
-    });
-
-    variantsFieldArray.replace(nextVariants);
-    toast.success(t('regenerateSuccess'));
-  };
-
   const activeVariantCount = watchedVariants.filter((variant) => variant.isActive).length;
 
   const getVariantLabel = (valueIndexes: number[]) => {
@@ -530,217 +410,62 @@ export const VariantsSection = ({
   const mediaPickerVariantId =
     mediaPickerIndex !== null ? watchedVariants[mediaPickerIndex]?.id : undefined;
 
+  const allSelected = treeRows.length > 0 && selectedKeys.size === treeRows.length;
+
+  /**
+   * Footer health line. `price` is required by the form contract, so "unpriced" means literally
+   * zero — which for a live product is almost always an oversight rather than a free giveaway,
+   * and is worth naming before the merchant hits save.
+   */
+  const unpricedCount = watchedVariants.filter((variant) => !variant.price).length;
+  const trackedStock = watchedVariants.reduce((total, variant) => {
+    if (variant.trackInventory === false) return total;
+    const persisted = existingVariants.find((item) => item.id === variant.id)?.onHand;
+    return total + (variant.initialStock ?? persisted ?? 0);
+  }, 0);
+
   return (
-    <div className="flex flex-col gap-5">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('optionsCardTitle')}</CardTitle>
-          <p className="text-muted-foreground text-sm">{t('optionsCardDescription')}</p>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          {optionsFieldArray.fields.length > 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleOptionDragEnd}
-            >
-              <SortableContext
-                items={optionsFieldArray.fields.map((field) => field._oid)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="flex flex-col gap-3">
-                  {optionsFieldArray.fields.map((field, index) => (
-                    <OptionRow
-                      key={field._oid}
-                      id={field._oid}
-                      index={index}
-                      onRemove={() => optionsFieldArray.remove(index)}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          )}
+    <EditorSection
+      bare
+      step={step}
+      title={t('tableCardTitle')}
+      hint={t('variantCountBadge', { count: variantsFieldArray.fields.length })}
+    >
+      {arrayLevelError && (
+        <p className="text-destructive mb-2 text-sm" role="alert">
+          {arrayLevelError}
+        </p>
+      )}
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addOption}
-              disabled={optionsFieldArray.fields.length >= OPTION_LIMIT}
-            >
-              <PlusIcon size={15} />
-              {t('addOption')}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              className="ms-auto me-0"
-              onClick={handleRegenerate}
-              data-testid="regenerate-variants-button"
-            >
-              <RefreshCcwIcon size={15} />
-              {t('regenerateButton', { count: potentialVariantCount })}
-            </Button>
-          </div>
-          {optionsFieldArray.fields.length >= OPTION_LIMIT && (
-            <p className="text-muted-foreground text-xs">{t('optionLimitReached')}</p>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-3">
-          <div>
-            <CardTitle>{t('tableCardTitle')}</CardTitle>
-            <p className="text-muted-foreground text-sm">{t('tableCardDescription')}</p>
-          </div>
-          <Badge variant="secondary">
-            {t('variantCountBadge', { count: variantsFieldArray.fields.length })}
-          </Badge>
-        </CardHeader>
-        <CardContent>
-          {arrayLevelError && <p className="text-destructive mb-2 text-sm">{arrayLevelError}</p>}
-
-          {selectedKeys.size > 0 && canEdit && (
+      <div className={editorCard}>
+        <div className="overflow-x-auto">
+          <div role="grid" aria-label={t('tableCardTitle')} className="min-w-[880px]">
             <div
-              data-testid="variant-bulk-bar"
-              className="bg-muted mb-3 flex flex-wrap items-center gap-2 rounded-md border p-2"
+              role="row"
+              className={cn(
+                GRID_COLUMNS,
+                'bg-muted border-lnv text-mut border-b px-4 py-2.5 text-xs font-bold',
+              )}
             >
-              <span className="text-sm font-semibold">
-                {t('bulkSelected', { count: selectedIndexes.length })}
-              </span>
-              <Button
-                type="button"
-                size="sm"
-                variant={bulkPanel === 'price' ? 'default' : 'outline'}
-                data-testid="variant-bulk-price-toggle"
-                onClick={() => setBulkPanel(bulkPanel === 'price' ? null : 'price')}
-              >
-                {t('bulkPrice')}
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={bulkPanel === 'stock' ? 'default' : 'outline'}
-                data-testid="variant-bulk-stock-toggle"
-                onClick={() => setBulkPanel(bulkPanel === 'stock' ? null : 'stock')}
-              >
-                {t('bulkStock')}
-              </Button>
-
-              {bulkPanel === 'price' && (
-                <>
-                  <Select
-                    value={bulkMode}
-                    onValueChange={(value) => setBulkMode(value as BulkPriceMode)}
-                  >
-                    <SelectTrigger className="h-8 w-32" data-testid="variant-bulk-mode">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="set">{t('bulkModeSet')}</SelectItem>
-                      <SelectItem value="increase">{t('bulkModeIncrease')}</SelectItem>
-                      <SelectItem value="decrease">{t('bulkModeDecrease')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    inputMode="numeric"
-                    onInput={onInputP2EHandler}
-                    data-testid="variant-bulk-value"
-                    value={bulkValue}
-                    onChange={(e) => setBulkValue(e.target.value)}
-                    className="h-8 w-28"
-                    placeholder={bulkMode === 'set' ? t('bulkPricePlaceholder') : '٪'}
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    data-testid="variant-bulk-price-apply"
-                    onClick={handleBulkPrice}
-                  >
-                    {t('bulkApply')}
-                  </Button>
-                </>
-              )}
-
-              {bulkPanel === 'stock' && (
-                <>
-                  <Input
-                    inputMode="numeric"
-                    onInput={onInputP2EHandler}
-                    data-testid="variant-bulk-stock-value"
-                    value={bulkValue}
-                    onChange={(e) => setBulkValue(e.target.value)}
-                    className="h-8 w-28"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    data-testid="variant-bulk-stock-apply"
-                    onClick={() => handleBulkStock(false)}
-                  >
-                    {t('bulkApply')}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    data-testid="variant-bulk-infinite"
-                    onClick={() => handleBulkStock(true)}
-                  >
-                    {t('bulkInfinite')}
-                  </Button>
-                </>
-              )}
-
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                className="ms-auto"
-                data-testid="variant-bulk-clear"
-                onClick={clearSelection}
-              >
-                {t('bulkClear')}
-              </Button>
+              <input
+                type="checkbox"
+                aria-label={t('selectAll')}
+                data-testid="variant-select-all"
+                className="accent-primary size-4 cursor-pointer"
+                checked={allSelected}
+                onChange={() =>
+                  setSelectedKeys(allSelected ? new Set() : new Set(treeRows.map((row) => row.key)))
+                }
+              />
+              <span role="columnheader">{t('Columns.variant')}</span>
+              <span role="columnheader">{t('Columns.media')}</span>
+              <span role="columnheader">{t('Columns.price')}</span>
+              <span role="columnheader">{t('Columns.compareAtPrice')}</span>
+              <span role="columnheader">{t('Columns.stock')}</span>
+              <span role="columnheader" />
             </div>
-          )}
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-9">
-                  <input
-                    type="checkbox"
-                    aria-label={t('selectAll')}
-                    data-testid="variant-select-all"
-                    className="accent-primary size-4 cursor-pointer"
-                    checked={treeRows.length > 0 && selectedKeys.size === treeRows.length}
-                    onChange={() =>
-                      setSelectedKeys((current) =>
-                        current.size === treeRows.length
-                          ? new Set()
-                          : new Set(treeRows.map((row) => row.key)),
-                      )
-                    }
-                  />
-                </TableHead>
-                <TableHead className="w-9"></TableHead>
-                <TableHead>{t('Columns.variant')}</TableHead>
-                <TableHead>{t('Columns.sku')}</TableHead>
-                <TableHead>{t('Columns.price')}</TableHead>
-                <TableHead>{t('Columns.compareAtPrice')}</TableHead>
-                <TableHead>{t('Columns.sale')}</TableHead>
-                <TableHead>{t('Columns.stock')}</TableHead>
-                <TableHead>{t('Columns.trackInventory')}</TableHead>
-                <TableHead>{t('Columns.allowBackorder')}</TableHead>
-                <TableHead>{t('Columns.isActive')}</TableHead>
-                <TableHead className="w-9"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <div role="rowgroup">
               {flatRows.map((entry) =>
                 entry.kind === 'group' ? (
                   <VariantGroupRow
@@ -750,29 +475,156 @@ export const VariantsSection = ({
                     isOpen={expandedKeys.has(entry.group.key)}
                     isSelected={entry.group.rows.every((row) => selectedKeys.has(row.key))}
                     priceAggregate={aggregateOf(entry.group.rows, 'price')}
+                    compareAggregate={aggregateOf(entry.group.rows, 'compareAtPrice')}
                     stockAggregate={aggregateOf(entry.group.rows, 'stock')}
                     canEdit={canEdit}
                     onToggleOpen={() => toggleGroupOpen(entry.group.key)}
                     onToggleSelected={() =>
                       toggleGroupSelected(entry.group.rows.map((row) => row.key))
                     }
-                    onApplyPrice={(value) => applyToGroup(entry.group.rows, 'price', value)}
+                    onApply={(field, value) => applyToGroup(entry.group.rows, field, value)}
                   />
                 ) : (
                   renderLeaf(entry.row.index, entry.row.key, entry.group.rows, entry.group.isBranch)
                 ),
               )}
+
               {variantsFieldArray.fields.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={12} className="text-muted-foreground">
-                    {t('noVariants')}
-                  </TableCell>
-                </TableRow>
+                <div className="text-mut px-4 py-8 text-center text-sm">{t('noVariants')}</div>
               )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-muted border-lnv text-mut flex flex-wrap items-center gap-3.5 rounded-b-2xl border-t px-4 py-2.5 text-xs">
+          <span>{t('footerCount', { count: variantsFieldArray.fields.length })}</span>
+          <span aria-hidden="true">·</span>
+          <span className={cn(unpricedCount > 0 && 'text-wtext font-bold')}>
+            {unpricedCount > 0
+              ? t('footerUnpriced', { count: unpricedCount })
+              : t('footerAllPriced')}
+          </span>
+          <span className="flex-1" />
+          <span className="text-foreground font-bold">
+            {t('footerStock', { count: formatNumber(trackedStock) })}
+          </span>
+        </div>
+      </div>
+
+      {selectedKeys.size > 0 && canEdit && (
+        <div
+          data-testid="variant-bulk-bar"
+          className="pointer-events-none fixed inset-x-6 bottom-5 z-20 flex justify-center"
+        >
+          <div className="bg-ink pointer-events-auto flex max-w-full flex-wrap items-center gap-3 rounded-2xl px-3.5 py-2.5 text-white shadow-lg">
+            <span className="text-xs font-bold whitespace-nowrap">
+              {t('bulkSelected', { count: selectedIndexes.length })}
+            </span>
+            <span aria-hidden="true" className="h-5 w-px bg-white/20" />
+
+            <div role="group" aria-label={t('bulkGroupLabel')} className="flex flex-wrap gap-1.5">
+              {(['price', 'stock'] as const).map((panel) => (
+                <button
+                  key={panel}
+                  type="button"
+                  aria-pressed={bulkPanel === panel}
+                  data-testid={`variant-bulk-${panel}-toggle`}
+                  onClick={() => setBulkPanel(bulkPanel === panel ? null : panel)}
+                  className={cn(
+                    'h-8 rounded-md border px-3 text-xs font-bold transition-colors',
+                    bulkPanel === panel
+                      ? 'border-white/50 bg-white/20'
+                      : 'border-white/20 hover:bg-white/10',
+                  )}
+                >
+                  {t(panel === 'price' ? 'bulkPrice' : 'bulkStock')}
+                </button>
+              ))}
+            </div>
+
+            {bulkPanel === 'price' && (
+              <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-white/10 p-1.5">
+                <Select
+                  value={bulkMode}
+                  onValueChange={(value) => setBulkMode(value as BulkPriceMode)}
+                >
+                  <SelectTrigger
+                    size="sm"
+                    className="h-7 w-28 border-0 bg-white/15 text-xs text-white"
+                    data-testid="variant-bulk-mode"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="set">{t('bulkModeSet')}</SelectItem>
+                    <SelectItem value="increase">{t('bulkModeIncrease')}</SelectItem>
+                    <SelectItem value="decrease">{t('bulkModeDecrease')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <input
+                  inputMode="numeric"
+                  onInput={onInputP2EHandler}
+                  data-testid="variant-bulk-value"
+                  aria-label={t('bulkValueLabel')}
+                  value={bulkValue}
+                  onChange={(e) => setBulkValue(e.target.value)}
+                  placeholder={bulkMode === 'set' ? t('bulkPricePlaceholder') : '٪'}
+                  className="h-7 w-24 rounded-md bg-white/15 px-2 text-xs text-white outline-none placeholder:text-white/50"
+                />
+                <button
+                  type="button"
+                  data-testid="variant-bulk-price-apply"
+                  onClick={handleBulkPrice}
+                  className="text-ink h-7 rounded-md bg-white px-3 text-xs font-extrabold"
+                >
+                  {t('bulkApply')}
+                </button>
+              </div>
+            )}
+
+            {bulkPanel === 'stock' && (
+              <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-white/10 p-1.5">
+                <input
+                  inputMode="numeric"
+                  onInput={onInputP2EHandler}
+                  data-testid="variant-bulk-stock-value"
+                  aria-label={t('bulkValueLabel')}
+                  value={bulkValue}
+                  onChange={(e) => setBulkValue(e.target.value)}
+                  className="h-7 w-24 rounded-md bg-white/15 px-2 text-xs text-white outline-none placeholder:text-white/50"
+                />
+                <button
+                  type="button"
+                  data-testid="variant-bulk-stock-apply"
+                  onClick={() => handleBulkStock(false)}
+                  className="text-ink h-7 rounded-md bg-white px-3 text-xs font-extrabold"
+                >
+                  {t('bulkApply')}
+                </button>
+                <button
+                  type="button"
+                  data-testid="variant-bulk-infinite"
+                  onClick={() => handleBulkStock(true)}
+                  className="h-7 rounded-md border border-white/25 px-2.5 text-xs font-semibold"
+                >
+                  {t('bulkInfinite')}
+                </button>
+              </div>
+            )}
+
+            <span aria-hidden="true" className="h-5 w-px bg-white/20" />
+            <button
+              type="button"
+              aria-label={t('bulkClear')}
+              data-testid="variant-bulk-clear"
+              onClick={clearSelection}
+              className="grid size-7 place-items-center rounded-md text-white/70 transition-colors hover:bg-white/15 hover:text-white"
+            >
+              <XIcon className="size-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {productId && mediaPickerVariantId && (
         <VariantMediaPickerDialog
@@ -793,154 +645,103 @@ export const VariantsSection = ({
           }
         />
       )}
-    </div>
+    </EditorSection>
   );
 };
 
-const OptionRow = ({
-  id,
-  index,
-  onRemove,
+type GroupField = 'price' | 'compareAtPrice' | 'stock';
+
+/**
+ * One roll-up cell on a parent row. Reads as text until clicked, then becomes an input whose
+ * value is written across every leaf in the group.
+ *
+ * That "click a summary to make the group uniform" gesture is the whole point of the parent row:
+ * a merchant with 40 sizes at one price should set it once here, not 40 times below.
+ */
+const GroupCell = ({
+  label,
+  summary,
+  title,
+  isMixed,
+  canEdit,
+  testId,
+  muted,
+  onApply,
 }: {
-  id: string;
-  index: number;
-  onRemove: () => void;
+  label: string;
+  summary: string;
+  title: string;
+  isMixed: boolean;
+  canEdit: boolean;
+  testId: string;
+  muted?: boolean;
+  onApply: (value: number) => void;
 }) => {
-  const t = useTranslations('Commerce.Editor.Variants');
-  const form = useFormContext<ProductFormValues>();
-  const [valueDraft, setValueDraft] = useState('');
+  const { onFocus } = useSelectOnFocus();
+  const [draft, setDraft] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-  const style = { transform: CSS.Transform.toString(transform), transition };
-
-  const valuesFieldArray = useFieldArray({
-    control: form.control,
-    name: `options.${index}.values`,
-    keyName: '_vxid',
-  });
-  const optionStyle = useWatch({ control: form.control, name: `options.${index}.style` });
-
-  const addValue = () => {
-    const trimmed = valueDraft.trim();
-    if (!trimmed) return;
-    // Assign the stable client-side identity the MOMENT the value is created — this is what
-    // lets `VariantsSection`'s regenerate-diff (see `getValueIdentity`) recognize this exact
-    // value across later edits/regenerates, before it has ever been saved (and therefore has
-    // no backend `id` yet). Never sent to the backend (`buildOptionsPayload` only reads
-    // `id`/`value`/`colorHex`).
-    const newValue: OptionValue = { value: trimmed, _localId: crypto.randomUUID() };
-    if (optionStyle === 'color') newValue.colorHex = '#cccccc';
-    valuesFieldArray.append(newValue);
-    setValueDraft('');
+  const commit = () => {
+    setIsEditing(false);
+    const value = Number(draft);
+    setDraft('');
+    // An empty or negative entry is a cancelled edit, not "set every row to zero" — writing that
+    // across a whole group on a stray blur would be unrecoverable without an undo.
+    if (draft === '' || Number.isNaN(value) || value < 0) return;
+    onApply(value);
   };
 
+  if (isEditing && canEdit) {
+    return (
+      <input
+        autoFocus
+        inputMode="numeric"
+        onInput={onInputP2EHandler}
+        data-testid={`${testId}-input`}
+        aria-label={label}
+        value={draft}
+        onFocus={onFocus}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            e.currentTarget.blur();
+          }
+          if (e.key === 'Escape') {
+            setDraft('');
+            setIsEditing(false);
+          }
+        }}
+        className={cn(editorInputCell, 'h-9 font-bold')}
+      />
+    );
+  }
+
   return (
-    <div ref={setNodeRef} style={style} className="flex items-start gap-3 rounded-lg border p-3">
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        className="text-muted-foreground mt-2 cursor-grab touch-none active:cursor-grabbing"
-        aria-label={t('removeOption')}
-      >
-        <DotsSixVerticalIcon size={16} />
-      </button>
-
-      <div className="flex w-36 shrink-0 flex-col gap-2">
-        <FormField
-          control={form.control}
-          name={`options.${index}.name`}
-          render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormControl>
-                <Input placeholder={t('optionNamePlaceholder')} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`options.${index}.style`}
-          render={({ field }) => (
-            <Select dir="rtl" value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dropdown">{t('OptionStyleOptions.dropdown')}</SelectItem>
-                <SelectItem value="button">{t('OptionStyleOptions.button')}</SelectItem>
-                <SelectItem value="color">{t('OptionStyleOptions.color')}</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-        />
-      </div>
-
-      <div className="flex flex-1 flex-wrap items-center gap-1.5">
-        {valuesFieldArray.fields.map((valueField, valueIndex) => (
-          <span
-            key={valueField._vxid}
-            className="bg-card inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium"
-          >
-            {optionStyle === 'color' && (
-              <FormField
-                control={form.control}
-                name={`options.${index}.values.${valueIndex}.colorHex`}
-                render={({ field }) => (
-                  <input
-                    type="color"
-                    value={field.value ?? '#cccccc'}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    className="size-4 shrink-0 cursor-pointer rounded-full border-0 p-0"
-                    aria-label={t('colorHexLabel')}
-                  />
-                )}
-              />
-            )}
-            {valueField.value}
-            <button
-              type="button"
-              onClick={() => valuesFieldArray.remove(valueIndex)}
-              aria-label={t('removeValue')}
-              className="text-muted-foreground opacity-60 hover:opacity-100"
-            >
-              ×
-            </button>
-          </span>
-        ))}
-        <Input
-          data-testid={`option-value-input-${index}`}
-          value={valueDraft}
-          onChange={(e) => setValueDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              addValue();
-            }
-          }}
-          placeholder={t('valueInputPlaceholder')}
-          className="h-7 w-40 text-xs"
-        />
-      </div>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onRemove}
-        aria-label={t('removeOption')}
-      >
-        <Trash2Icon size={16} className="text-muted-foreground" />
-      </Button>
-    </div>
+    <button
+      type="button"
+      disabled={!canEdit}
+      title={title}
+      aria-label={label}
+      data-testid={testId}
+      onClick={() => setIsEditing(true)}
+      className={cn(
+        'border-lnv bg-card hover:border-primary hover:bg-tint flex h-9 w-full items-center justify-center gap-1.5 rounded-md border text-xs font-bold transition-colors disabled:pointer-events-none',
+        muted && 'text-mut font-semibold',
+      )}
+    >
+      <span dir="ltr" className="tabular-nums">
+        {summary}
+      </span>
+      {isMixed && <span className="text-wtext text-xs font-semibold">●</span>}
+    </button>
   );
 };
 
 /**
  * A collapsible parent row: one value of the FIRST option, summarising every variation beneath
- * it. Editing its price writes that one value across the whole group — the design's "make this
- * group uniform" gesture.
+ * it. Editing a roll-up writes that one value across the whole group.
  */
 const VariantGroupRow = ({
   label,
@@ -948,27 +749,26 @@ const VariantGroupRow = ({
   isOpen,
   isSelected,
   priceAggregate,
+  compareAggregate,
   stockAggregate,
   canEdit,
   onToggleOpen,
   onToggleSelected,
-  onApplyPrice,
+  onApply,
 }: {
   label: string;
   rowCount: number;
   isOpen: boolean;
   isSelected: boolean;
   priceAggregate: VariantAggregate;
+  compareAggregate: VariantAggregate;
   stockAggregate: VariantAggregate;
   canEdit: boolean;
   onToggleOpen: () => void;
   onToggleSelected: () => void;
-  onApplyPrice: (value: number) => void;
+  onApply: (field: GroupField, value: number) => void;
 }) => {
   const t = useTranslations('Commerce.Editor.Variants');
-  const { onFocus } = useSelectOnFocus();
-  const [draft, setDraft] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
 
   /** "—" when nothing is set, one figure when the group agrees, a range when it does not. */
   const summarise = (aggregateValue: VariantAggregate, infiniteLabel?: string) => {
@@ -985,92 +785,87 @@ const VariantGroupRow = ({
     return `${formatNumber(aggregateValue.min)} – ${max}`;
   };
 
-  const commit = () => {
-    setIsEditing(false);
-    const value = Number(draft);
-    setDraft('');
-    if (draft === '' || Number.isNaN(value) || value < 0) return;
-    onApplyPrice(value);
-  };
-
   return (
-    <TableRow data-testid={`variant-group-${label}`} className="bg-muted/60">
-      <TableCell>
-        <input
-          type="checkbox"
-          aria-label={t('selectGroup', { name: label })}
-          data-testid={`variant-group-select-${label}`}
-          className="accent-primary size-4 cursor-pointer"
-          checked={isSelected}
-          onChange={onToggleSelected}
+    <div
+      role="row"
+      data-testid={`variant-group-${label}`}
+      data-selected={isSelected}
+      className={cn(
+        GRID_COLUMNS,
+        'bg-card border-ln hover:bg-muted border-b px-4 py-2.5 transition-colors',
+        isSelected && 'bg-tint2',
+      )}
+    >
+      <input
+        type="checkbox"
+        aria-label={t('selectGroup', { name: label })}
+        data-testid={`variant-group-select-${label}`}
+        className="accent-primary size-4 cursor-pointer"
+        checked={isSelected}
+        onChange={onToggleSelected}
+      />
+
+      <div role="gridcell" className="flex min-w-0 items-center gap-2">
+        <span className="truncate text-sm font-bold">{label}</span>
+        <span className="text-mut flex-none text-xs">
+          {t('groupRowCount', { count: rowCount })}
+        </span>
+      </div>
+
+      <div role="gridcell" />
+
+      <div role="gridcell">
+        <GroupCell
+          canEdit={canEdit}
+          isMixed={priceAggregate.state === 'mixed'}
+          label={t('groupPriceLabel', { name: label })}
+          title={t('groupPriceTooltip')}
+          summary={summarise(priceAggregate)}
+          testId={`variant-group-price-${label}`}
+          onApply={(value) => onApply('price', value)}
         />
-      </TableCell>
-      <TableCell>
+      </div>
+
+      <div role="gridcell">
+        <GroupCell
+          muted
+          canEdit={canEdit}
+          isMixed={compareAggregate.state === 'mixed'}
+          label={t('groupCompareLabel', { name: label })}
+          title={t('groupCompareTooltip')}
+          summary={summarise(compareAggregate)}
+          testId={`variant-group-compare-${label}`}
+          onApply={(value) => onApply('compareAtPrice', value)}
+        />
+      </div>
+
+      <div role="gridcell">
+        <GroupCell
+          canEdit={canEdit}
+          isMixed={stockAggregate.state === 'mixed'}
+          label={t('groupStockLabel', { name: label })}
+          title={t('groupStockTooltip')}
+          summary={summarise(stockAggregate, t('infiniteShort'))}
+          testId={`variant-group-stock-${label}`}
+          onApply={(value) => onApply('stock', value)}
+        />
+      </div>
+
+      <div role="gridcell" className="flex items-center justify-end">
         <button
           type="button"
           aria-expanded={isOpen}
           aria-label={t(isOpen ? 'collapseGroup' : 'expandGroup', { name: label })}
           data-testid={`variant-group-toggle-${label}`}
           onClick={onToggleOpen}
-          className="text-muted-foreground hover:text-foreground flex size-6 items-center justify-center"
+          className="text-mut hover:bg-tint2 hover:text-primary grid size-7 place-items-center rounded-md transition-colors"
         >
-          <span className={cn('transition-transform', !isOpen && 'rotate-90 rtl:-rotate-90')}>
-            ▾
-          </span>
-        </button>
-      </TableCell>
-      <TableCell className="text-start font-semibold">
-        {label}
-        <span className="text-muted-foreground ms-2 text-xs font-normal">
-          {t('groupRowCount', { count: rowCount })}
-        </span>
-      </TableCell>
-      <TableCell />
-      <TableCell>
-        {isEditing && canEdit ? (
-          <Input
-            autoFocus
-            inputMode="numeric"
-            onInput={onInputP2EHandler}
-            data-testid={`variant-group-price-input-${label}`}
-            value={draft}
-            onFocus={onFocus}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.currentTarget.blur();
-              }
-              if (e.key === 'Escape') {
-                setDraft('');
-                setIsEditing(false);
-              }
-            }}
-            className="h-8 w-28"
+          <ChevronDownIcon
+            className={cn('size-3.5 transition-transform', !isOpen && '-rotate-90')}
           />
-        ) : (
-          <button
-            type="button"
-            disabled={!canEdit}
-            data-testid={`variant-group-price-${label}`}
-            onClick={() => setIsEditing(true)}
-            className="hover:bg-background rounded px-1 tabular-nums disabled:cursor-default"
-          >
-            {summarise(priceAggregate)}
-          </button>
-        )}
-      </TableCell>
-      <TableCell />
-      <TableCell />
-      <TableCell className="tabular-nums">
-        {summarise(stockAggregate, t('infiniteShort'))}
-      </TableCell>
-      <TableCell />
-      <TableCell />
-      <TableCell />
-      <TableCell />
-    </TableRow>
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -1124,6 +919,9 @@ const VariantRow = ({
 
   const salePrice = useWatch({ control: form.control, name: `variants.${index}.salePrice` });
   const saleEnabled = salePrice !== undefined;
+  // Drives the "there is something set in here" tint on the settings button — otherwise a
+  // deactivated variation looks identical to a live one once its column is gone.
+  const isActiveValue = useWatch({ control: form.control, name: `variants.${index}.isActive` });
 
   const toggleSale = (enabled: boolean) => {
     if (enabled) {
@@ -1161,84 +959,102 @@ const VariantRow = ({
         ? t('mediaEditTooltip')
         : t('mediaAssignTooltip');
 
+  // Only meaningful when both are set and the compare price is genuinely higher — otherwise
+  // there is no discount to advertise, and rounding a negative would print "-12٪ off".
+  const price = useWatch({ control: form.control, name: `variants.${index}.price` });
+  const compareAtPrice = useWatch({
+    control: form.control,
+    name: `variants.${index}.compareAtPrice`,
+  });
+  const discountPercent =
+    compareAtPrice && price && compareAtPrice > price
+      ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
+      : null;
+
+  const trackInventory = useWatch({
+    control: form.control,
+    name: `variants.${index}.trackInventory`,
+  });
+  const isUntracked = trackInventory === false;
+
   return (
-    <TableRow data-selected={isSelected} className={cn(isSelected && 'bg-primary/5')}>
-      <TableCell>
-        <input
-          type="checkbox"
-          aria-label={t('selectRow', { name: label })}
-          data-testid={`variant-select-${index}`}
-          className="accent-primary size-4 cursor-pointer"
-          checked={isSelected}
-          // Shift-click extends the range from the last clicked row. Read off the native event
-          // because React's synthetic change event does not carry modifier keys.
-          onClick={(e) => onToggleSelected(e.shiftKey)}
-          onChange={() => undefined}
-        />
-      </TableCell>
-      <TableCell className={cn(isIndented && 'ps-6')}>
+    <div
+      role="row"
+      data-selected={isSelected}
+      data-testid={`variant-row-${index}`}
+      className={cn(
+        GRID_COLUMNS,
+        'border-ln bg-muted/40 hover:bg-muted border-b px-4 py-2 transition-colors',
+        isSelected && 'bg-tint2',
+      )}
+    >
+      <input
+        type="checkbox"
+        aria-label={t('selectRow', { name: label })}
+        data-testid={`variant-select-${index}`}
+        className="accent-primary size-4 cursor-pointer"
+        checked={isSelected}
+        // Shift-click extends the range from the last clicked row. Read off the native event
+        // because React's synthetic change event does not carry modifier keys.
+        onClick={(e) => onToggleSelected(e.shiftKey)}
+        onChange={() => undefined}
+      />
+
+      <div role="gridcell" className={cn('flex min-w-0 items-center gap-2', isIndented && 'ps-5')}>
+        {isIndented && (
+          // The tree elbow: a corner drawn with two borders, so a leaf reads as belonging to the
+          // group above it even when the list is scrolled past that group's own row.
+          <span
+            aria-hidden="true"
+            className="border-lnv mb-1.5 size-2.5 flex-none border-s border-b"
+          />
+        )}
+        <span className="truncate text-xs font-semibold">{label}</span>
+      </div>
+
+      <div role="gridcell">
         <Tooltip>
           <TooltipTrigger asChild>
             <span>
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                size="icon"
                 disabled={isMediaButtonDisabled}
                 onClick={onOpenMediaPicker}
                 data-testid={`variant-media-button-${index}`}
+                aria-label={t('mediaButtonLabel', { name: label })}
                 className={cn(
-                  'relative size-8 overflow-hidden',
+                  'border-lnv bg-card text-primary relative grid size-10 place-items-center overflow-hidden rounded-md border transition-colors',
                   !coverPreviewUrl && 'border-dashed',
+                  !isMediaButtonDisabled && 'hover:border-primary',
+                  isMediaButtonDisabled && 'cursor-not-allowed opacity-50',
                 )}
               >
                 {coverPreviewUrl ? (
-                  <Image src={coverPreviewUrl} alt="" fill className="object-cover" sizes="32px" />
+                  <Image src={coverPreviewUrl} alt="" fill className="object-cover" sizes="40px" />
                 ) : (
-                  <ImageIcon size={14} />
+                  <ImageIcon size={13} />
                 )}
-              </Button>
+              </button>
             </span>
           </TooltipTrigger>
           <TooltipContent>{mediaButtonTooltip}</TooltipContent>
         </Tooltip>
-      </TableCell>
+      </div>
 
-      <TableCell className="text-start font-medium">{label}</TableCell>
-
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`variants.${index}.sku`}
-          render={({ field }) => (
-            <FormItem className="space-y-0">
-              <FormControl>
-                <Input
-                  {...field}
-                  data-testid={`variant-sku-${index}`}
-                  value={field.value ?? ''}
-                  placeholder={t('skuPlaceholder')}
-                  className="h-8 w-28"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-      </TableCell>
-
-      <TableCell>
+      <div role="gridcell">
         <FormField
           control={form.control}
           name={`variants.${index}.price`}
           render={({ field }) => (
             <FormItem className="space-y-0">
               <FormControl>
-                <Input
+                <input
                   inputMode="numeric"
                   data-testid={`variant-price-${index}`}
                   onInput={onInputP2EHandler}
-                  placeholder="۰"
-                  value={formatNumber(field.value ?? 0)}
+                  aria-label={t('priceLabel', { name: label })}
+                  placeholder={t('noPrice')}
+                  value={formatNumber(field.value ?? 0) ?? ''}
                   onFocus={onFocus}
                   onChange={(e) => field.onChange(e.target.value === '' ? 0 : +e.target.value)}
                   // Ctrl/Cmd+D copies this price down the rest of its own group — the fastest
@@ -1250,51 +1066,177 @@ const VariantRow = ({
                       if (!Number.isNaN(value)) onFillDown('price', value);
                     }
                   }}
-                  className="h-8 w-28"
+                  // An unpriced row is tinted rather than silently blending in: it is the single
+                  // most common reason a saved product does not sell.
+                  className={cn(
+                    editorInputCell,
+                    'font-bold',
+                    !field.value && 'border-dline bg-dtint',
+                  )}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-      </TableCell>
+      </div>
 
-      <TableCell>
+      <div role="gridcell" className="flex items-center gap-1.5">
         <FormField
           control={form.control}
           name={`variants.${index}.compareAtPrice`}
           render={({ field }) => (
-            <FormItem className="space-y-0">
+            <FormItem className="min-w-0 flex-1 space-y-0">
               <FormControl>
-                <Input
+                <input
                   inputMode="numeric"
                   onInput={onInputP2EHandler}
-                  placeholder="۰"
+                  data-testid={`variant-compare-${index}`}
+                  aria-label={t('compareLabel', { name: label })}
+                  placeholder={t('noCompare')}
                   value={field.value == null ? '' : (formatNumber(field.value) ?? '')}
                   onFocus={onFocus}
                   onChange={(e) =>
                     field.onChange(e.target.value === '' ? undefined : +e.target.value)
                   }
-                  className="h-8 w-28"
+                  onKeyDown={(e) => {
+                    if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+                      e.preventDefault();
+                      const value = Number(e.currentTarget.value.replace(/,/g, ''));
+                      if (!Number.isNaN(value)) onFillDown('compareAtPrice', value);
+                    }
+                  }}
+                  className={cn(editorInputCell, 'text-mut font-semibold')}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-      </TableCell>
+        {discountPercent !== null && (
+          <span
+            title={t('discountTooltip')}
+            data-testid={`variant-discount-${index}`}
+            className="bg-dtint text-dtext flex-none rounded-full px-2 py-0.5 text-xs font-bold"
+          >
+            {t('discountBadge', { percent: discountPercent })}
+          </span>
+        )}
+      </div>
 
-      <TableCell>
+      <div role="gridcell" className="flex items-center gap-1.5">
+        {mode === 'create' ? (
+          <FormField
+            control={form.control}
+            name={`variants.${index}.initialStock`}
+            render={({ field }) => (
+              <FormItem className="min-w-0 flex-1 space-y-0">
+                <FormControl>
+                  <input
+                    inputMode="numeric"
+                    onInput={onInputP2EHandler}
+                    data-testid={`variant-stock-${index}`}
+                    aria-label={t('stockLabel', { name: label })}
+                    disabled={isUntracked}
+                    placeholder="—"
+                    value={
+                      isUntracked
+                        ? t('infiniteShort')
+                        : field.value == null
+                          ? ''
+                          : (formatNumber(field.value) ?? '')
+                    }
+                    onFocus={onFocus}
+                    onChange={(e) =>
+                      field.onChange(e.target.value === '' ? undefined : +e.target.value)
+                    }
+                    className={editorInputCell}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        ) : (
+          // Edit mode: on-hand is owned by the ledger (Task 7's stock endpoint), so it is shown
+          // read-only here and adjusted from the Inventory section instead.
+          <span
+            data-testid={`variant-stock-${index}`}
+            title={t('stockReadonlyNote')}
+            className="border-ln bg-card text-mut flex h-[34px] min-w-0 flex-1 items-center rounded-md border px-2.5 text-xs tabular-nums"
+          >
+            {isUntracked ? t('infiniteShort') : formatNumber(existingOnHand ?? 0)}
+          </span>
+        )}
+
+        <FormField
+          control={form.control}
+          name={`variants.${index}.trackInventory`}
+          render={({ field }) => (
+            <button
+              type="button"
+              aria-pressed={!field.value}
+              aria-label={t('infiniteToggleLabel', { name: label })}
+              title={t('infiniteToggleLabel', { name: label })}
+              data-testid={`variant-infinite-${index}`}
+              onClick={() => field.onChange(!field.value)}
+              className={cn(
+                'border-ln bg-card text-mut grid size-[30px] flex-none place-items-center rounded-md border transition-colors',
+                !field.value && 'border-lnv bg-tint2 text-primary',
+              )}
+            >
+              <InfinityIcon className="size-3.5" />
+            </button>
+          )}
+        />
+      </div>
+
+      <div role="gridcell" className="flex items-center justify-end gap-1">
+        {/* Everything the design's row has no column for — SKU, the sale window, backorder and
+            the active flag. They are real, saved fields, so they move behind a per-row popover
+            rather than being dropped to fit the layout. */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button type="button" variant="outline" size="sm">
-              {saleEnabled ? t('saleToggleLabel') + ' ✓' : t('saleToggleLabel')}
-            </Button>
+            <button
+              type="button"
+              data-testid={`variant-more-${index}`}
+              aria-label={t('moreSettings', { name: label })}
+              title={t('moreSettings', { name: label })}
+              className={cn(
+                'text-mut hover:bg-tint2 hover:text-primary grid size-7 place-items-center rounded-md transition-colors',
+                (saleEnabled || !isActiveValue) && 'bg-tint2 text-primary',
+              )}
+            >
+              <SettingsIcon className="size-3.5" />
+            </button>
           </PopoverTrigger>
-          <PopoverContent className="flex w-64 flex-col gap-3 bg-white">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('saleToggleLabel')}</span>
-              <Switch checked={saleEnabled} onCheckedChange={toggleSale} />
+          <PopoverContent className="bg-card flex w-72 flex-col gap-3">
+            <FormField
+              control={form.control}
+              name={`variants.${index}.sku`}
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <span className="text-mut text-xs font-bold">{t('Columns.sku')}</span>
+                  <FormControl>
+                    <input
+                      {...field}
+                      data-testid={`variant-sku-${index}`}
+                      value={field.value ?? ''}
+                      aria-label={t('Columns.sku')}
+                      placeholder={t('skuPlaceholder')}
+                      className={editorInputCell}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="border-lnv flex items-center justify-between border-t pt-3">
+              <span className="text-xs font-semibold">{t('saleToggleLabel')}</span>
+              <Switch
+                checked={saleEnabled}
+                data-testid={`variant-sale-toggle-${index}`}
+                onCheckedChange={toggleSale}
+              />
             </div>
 
             {saleEnabled && (
@@ -1304,17 +1246,19 @@ const VariantRow = ({
                   name={`variants.${index}.salePrice`}
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <span className="text-muted-foreground text-xs">{t('salePriceLabel')}</span>
+                      <span className="text-mut text-xs">{t('salePriceLabel')}</span>
                       <FormControl>
-                        <Input
+                        <input
                           inputMode="numeric"
                           onInput={onInputP2EHandler}
+                          aria-label={t('salePriceLabel')}
                           placeholder="۰"
                           value={field.value == null ? '' : (formatNumber(field.value) ?? '')}
                           onFocus={onFocus}
                           onChange={(e) =>
                             field.onChange(e.target.value === '' ? undefined : +e.target.value)
                           }
+                          className={editorInputCell}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1326,9 +1270,7 @@ const VariantRow = ({
                   name={`variants.${index}.saleStartsAt`}
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <span className="text-muted-foreground text-xs">
-                        {t('saleStartsAtLabel')}
-                      </span>
+                      <span className="text-mut text-xs">{t('saleStartsAtLabel')}</span>
                       <DatePicker
                         date={field.value ? new Date(field.value) : null}
                         onChange={(date) => field.onChange(date ? date.toISOString() : undefined)}
@@ -1342,7 +1284,7 @@ const VariantRow = ({
                   name={`variants.${index}.saleEndsAt`}
                   render={({ field }) => (
                     <FormItem className="space-y-1">
-                      <span className="text-muted-foreground text-xs">{t('saleEndsAtLabel')}</span>
+                      <span className="text-mut text-xs">{t('saleEndsAtLabel')}</span>
                       <DatePicker
                         date={field.value ? new Date(field.value) : null}
                         onChange={(date) => field.onChange(date ? date.toISOString() : undefined)}
@@ -1353,101 +1295,63 @@ const VariantRow = ({
                 />
               </>
             )}
+
+            <FormField
+              control={form.control}
+              name={`variants.${index}.allowBackorder`}
+              render={({ field }) => (
+                <div className="border-lnv flex items-center justify-between border-t pt-3">
+                  <span className="text-xs font-semibold">{t('Columns.allowBackorder')}</span>
+                  <Switch
+                    checked={field.value}
+                    data-testid={`variant-backorder-${index}`}
+                    onCheckedChange={field.onChange}
+                  />
+                </div>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name={`variants.${index}.isActive`}
+              render={({ field }) => (
+                <div className="border-lnv flex flex-col gap-1 border-t pt-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold">{t('Columns.isActive')}</span>
+                    <Switch
+                      data-testid={`variant-active-${index}`}
+                      checked={field.value}
+                      disabled={isLastActiveVariant}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                  {isLastActiveVariant && (
+                    <span className="text-mut text-xs">{t('deactivateBlockedLastActive')}</span>
+                  )}
+                </div>
+              )}
+            />
           </PopoverContent>
         </Popover>
-      </TableCell>
 
-      <TableCell>
-        {mode === 'create' ? (
-          <FormField
-            control={form.control}
-            name={`variants.${index}.initialStock`}
-            render={({ field }) => (
-              <FormItem className="space-y-0">
-                <FormControl>
-                  <Input
-                    inputMode="numeric"
-                    onInput={onInputP2EHandler}
-                    placeholder="۰"
-                    value={field.value == null ? '' : (formatNumber(field.value) ?? '')}
-                    onFocus={onFocus}
-                    onChange={(e) =>
-                      field.onChange(e.target.value === '' ? undefined : +e.target.value)
-                    }
-                    className="h-8 w-20"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        ) : (
-          <div className="flex flex-col items-center gap-0.5">
-            <span>{formatNumber(existingOnHand ?? 0)}</span>
-            <span className="text-muted-foreground text-[10px] whitespace-normal">
-              {t('stockReadonlyNote')}
-            </span>
-          </div>
-        )}
-      </TableCell>
-
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`variants.${index}.trackInventory`}
-          render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
-        />
-      </TableCell>
-
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`variants.${index}.allowBackorder`}
-          render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
-        />
-      </TableCell>
-
-      <TableCell>
-        <div className="flex flex-col items-center gap-1">
-          <FormField
-            control={form.control}
-            name={`variants.${index}.isActive`}
-            render={({ field }) => (
-              <Switch
-                data-testid={`variant-active-${index}`}
-                checked={field.value}
-                disabled={isLastActiveVariant}
-                onCheckedChange={field.onChange}
-              />
-            )}
-          />
-          {isLastActiveVariant && (
-            <span className="text-muted-foreground w-20 text-center text-[10px] whitespace-normal">
-              {t('deactivateBlockedLastActive')}
-            </span>
-          )}
-        </div>
-      </TableCell>
-
-      <TableCell>
         <Tooltip>
           <TooltipTrigger asChild>
             <span>
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="icon"
                 data-testid={`variant-delete-${index}`}
                 disabled={Boolean(deleteBlockedReason)}
                 onClick={onRemove}
                 aria-label={t('deleteVariant')}
+                className="text-mut hover:bg-dtint hover:text-dtext grid size-7 place-items-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-40"
               >
-                <Trash2Icon size={14} className="text-destructive" />
-              </Button>
+                <XIcon className="size-3.5" />
+              </button>
             </span>
           </TooltipTrigger>
           {deleteBlockedReason && <TooltipContent>{deleteBlockedReason}</TooltipContent>}
         </Tooltip>
-      </TableCell>
-    </TableRow>
+      </div>
+    </div>
   );
 };

@@ -5,37 +5,40 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useForm, type FieldNamesMarkedBoolean } from 'react-hook-form';
+import { useForm, useWatch, type FieldNamesMarkedBoolean } from 'react-hook-form';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
 import api from '@/hooks/swr/api-client';
 import { usePermissions } from '@/hooks/usePermissions';
-import { cn } from '@/lib/utils';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 import type { CommerceProductDetail } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 
-import { Button, Form } from '@/components/ui';
-import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
+import { Form } from '@/components/ui';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { NoDataError } from '@/components/Global/NoDataError';
 
-import { EditorScrollspyNav, type EditorSectionId } from './EditorScrollspyNav';
+import { applySeedToSingleVariant, readBaseSeed } from './baseSeed.util';
 import {
   buildEmptyProductFormValues,
   buildProductFormSchema,
   mapProductDetailToFormValues,
   type ProductFormValues,
 } from './productForm.schema';
-import { BasicInfoSection } from './sections/BasicInfoSection';
+import { EditorTopBar } from './ui/EditorTopBar';
+import { TitleSection } from './sections/TitleSection';
+import { DescriptionSection } from './sections/DescriptionSection';
+import { CategorySection } from './sections/CategorySection';
+import { BasePricingSection } from './sections/BasePricingSection';
 import { CollectionsSection } from './sections/CollectionsSection';
 import { TagsSection } from './sections/TagsSection';
 import { SpecsSection } from './sections/SpecsSection';
 import { InventorySection } from './sections/InventorySection';
 import { MediaSection } from './sections/MediaSection';
+import { OptionsSection } from './sections/OptionsSection';
 import { ShippingSection } from './sections/ShippingSection';
 import { VariantsSection } from './sections/VariantsSection';
 
@@ -44,20 +47,28 @@ interface ProductEditorPageProps {
   productId?: string;
 }
 
-const MOBILE_MEDIA_QUERY = '(max-width: 900px)';
-
-// Six section ids, in the order the design spec lists them. As of Task 8, every section has
-// its real content wired in below — `org` (Categories & collections) renders
-// `CollectionsSection`, which handles collection MEMBERSHIP only; category assignment is the
-// single `categoryId` field already handled by `BasicInfoSection` (spec correction).
-const SECTION_IDS: EditorSectionId[] = [
-  'basic',
-  'media',
-  'variants',
-  'inventory',
-  'org',
-  'shipping',
-];
+/**
+ * Step numbers for the single-scroll form, in the order the design lays them out. Kept as one
+ * object so the numbering stays consistent — a hard-coded `step={7}` in nine files drifts the
+ * first time a section is inserted.
+ *
+ * Steps 1-9 are the design's own; 10 and 11 are ours. The design has no stock-ledger or shipping
+ * section, but both are real saved data, so they continue the same numbering rather than being
+ * dropped or floated outside it.
+ */
+const STEPS = {
+  title: 1,
+  description: 2,
+  category: 3,
+  media: 4,
+  basePrice: 5,
+  baseStock: 6,
+  options: 7,
+  specs: 8,
+  variants: 9,
+  inventory: 10,
+  shipping: 11,
+} as const;
 
 const buildOptionsPayload = (options: ProductFormValues['options']) =>
   options.map((option) => ({
@@ -113,7 +124,12 @@ const buildCreatePayload = (values: ProductFormValues) => ({
   specs: values.specs,
   shippingCost: values.shippingCost,
   options: buildOptionsPayload(values.options),
-  variants: buildVariantsPayload(values.variants),
+  // A product with no options has one implicit variation that no table ever renders, so the
+  // base price/stock fields are the ONLY place its price can come from. Seeding here (rather
+  // than on every keystroke) keeps the form the single source of truth while typing.
+  variants: buildVariantsPayload(
+    applySeedToSingleVariant(values.variants, readBaseSeed(values), values.options.length > 0),
+  ),
 });
 
 /**
@@ -182,19 +198,26 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
     }
   }, [mode, product, form]);
 
-  const sections = useMemo(() => SECTION_IDS.map((id) => ({ id, label: t(`Nav.${id}`) })), [t]);
+  // The header mirrors the live form, not the fetched product: a merchant renaming a product
+  // should see the new name up top immediately, and the status pill has to follow the select in
+  // step 3 or the two disagree on screen.
+  const watchedTitle = useWatch({ control: form.control, name: 'title' }) ?? '';
+  const watchedStatus = useWatch({ control: form.control, name: 'status' }) ?? 'draft';
 
-  const sectionRefs = useRef<Partial<Record<EditorSectionId, HTMLElement | null>>>({});
-  const [activeSection, setActiveSection] = useState<EditorSectionId>('basic');
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia(MOBILE_MEDIA_QUERY);
-    const onChange = () => setIsMobile(mql.matches);
-    onChange();
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
-  }, []);
+  /**
+   * Discards unsaved edits. In edit mode that means the last fetched product; in create mode,
+   * an empty form. Media queued in create mode is dropped too — it is part of the same unsaved
+   * draft, and leaving it behind would silently upload files for a form the user just cleared.
+   */
+  const handleRevert = () => {
+    form.reset(
+      mode === 'edit' && product
+        ? mapProductDetailToFormValues(product)
+        : buildEmptyProductFormValues(),
+    );
+    setPendingMedia([]);
+    toast.success(t('Toast.reverted'));
+  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Create mode: files picked before the product exists. Held here (not in the form) so the
@@ -284,94 +307,66 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
     return <NoDataError />;
   }
 
-  const registerSectionRef = (id: EditorSectionId) => (el: HTMLDivElement | null) => {
-    sectionRefs.current[id] = el;
-  };
-
-  const renderSectionContent = (id: EditorSectionId) => {
-    if (id === 'basic') {
-      return (
-        <div className="flex flex-col gap-5">
-          <BasicInfoSection />
-          {/* Specs are product FACTS, so they belong with the basic info rather than with the
-              buyer-facing form fields they are easily confused with. */}
-          <SpecsSection mode={mode} />
-        </div>
-      );
-    }
-    if (id === 'shipping') return <ShippingSection />;
-    if (id === 'media') {
-      return (
-        <MediaSection
-          mode={mode}
-          productId={productId}
-          media={product?.media ?? []}
-          pendingFiles={pendingMedia}
-          onPendingFilesChange={setPendingMedia}
-        />
-      );
-    }
-    if (id === 'variants') {
-      return (
-        <VariantsSection
-          mode={mode}
-          productId={productId}
-          media={product?.media ?? []}
-          existingVariants={product?.variants ?? []}
-        />
-      );
-    }
-    if (id === 'inventory') {
-      return (
-        <InventorySection
-          mode={mode}
-          productId={productId}
-          existingVariants={product?.variants ?? []}
-        />
-      );
-    }
-    // `org` was the last section still on the generic placeholder card — every `EditorSectionId`
-    // is now handled above, so this branch (and the fallback below it) is exhaustive.
-    return (
-      <div className="flex flex-col gap-5">
-        <CollectionsSection mode={mode} productId={productId} />
-        <TagsSection mode={mode} />
-      </div>
-    );
-  };
-
   const cancelHref = mode === 'edit' && productId ? `/products/${productId}` : '/products';
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col gap-5">
-        <div
-          className={cn('flex flex-1 flex-col gap-5', !isMobile && 'flex-row items-start gap-6')}
-        >
-          <EditorScrollspyNav
-            sections={sections}
-            sectionRefs={sectionRefs}
-            activeSection={activeSection}
-            onSelect={setActiveSection}
-            isMobile={isMobile}
-          />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 flex-col">
+        <EditorTopBar
+          mode={mode}
+          title={watchedTitle}
+          status={watchedStatus}
+          isSubmitting={isSubmitting}
+          canSubmit={canSubmit}
+          isDirty={form.formState.isDirty}
+          cancelHref={cancelHref}
+          onRevert={handleRevert}
+        />
 
-          <div className="flex min-w-0 flex-1 flex-col gap-5">
-            {SECTION_IDS.filter((id) => !isMobile || id === activeSection).map((id) => (
-              <div key={id} ref={registerSectionRef(id)} className="scroll-mt-24">
-                {renderSectionContent(id)}
-              </div>
-            ))}
+        {/* The design's shell: one scrolling column of numbered steps, plus a 308px rail that
+            sticks below the header. Below 1180px the rail drops under the form (two columns,
+            then one) rather than being squeezed — the collection list needs its width. */}
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-start gap-6 pt-6 pb-24 xl:grid-cols-[minmax(0,1fr)_308px]">
+          <div className="flex min-w-0 flex-col gap-6">
+            <TitleSection step={STEPS.title} />
+            <DescriptionSection step={STEPS.description} />
+            <CategorySection step={STEPS.category} />
+            <MediaSection
+              step={STEPS.media}
+              mode={mode}
+              productId={productId}
+              media={product?.media ?? []}
+              pendingFiles={pendingMedia}
+              onPendingFilesChange={setPendingMedia}
+            />
+            <BasePricingSection priceStep={STEPS.basePrice} stockStep={STEPS.baseStock} />
+            <OptionsSection step={STEPS.options} />
+            {/* Specs are product FACTS, and the design places them between the option axes and
+                the generated table — close to the options they are easily confused with. */}
+            <SpecsSection step={STEPS.specs} mode={mode} />
+            <VariantsSection
+              step={STEPS.variants}
+              mode={mode}
+              productId={productId}
+              media={product?.media ?? []}
+              existingVariants={product?.variants ?? []}
+            />
+            <InventorySection
+              step={STEPS.inventory}
+              mode={mode}
+              productId={productId}
+              existingVariants={product?.variants ?? []}
+            />
+            <ShippingSection step={STEPS.shipping} />
           </div>
-        </div>
 
-        <div className="bg-background sticky bottom-0 z-10 -mx-4 flex items-center justify-end gap-2 border-t px-4 py-3 md:-mx-5">
-          <ButtonLoading type="submit" isLoading={isSubmitting} disabled={!canSubmit}>
-            {t('SaveBar.save')}
-          </ButtonLoading>
-          <Button type="button" variant="outline" onClick={() => router.push(cancelHref)}>
-            {t('SaveBar.cancel')}
-          </Button>
+          <aside
+            aria-label={t('Rail.label')}
+            className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:sticky xl:top-24 xl:grid-cols-1"
+          >
+            <CollectionsSection mode={mode} productId={productId} />
+            <TagsSection mode={mode} />
+          </aside>
         </div>
       </form>
     </Form>

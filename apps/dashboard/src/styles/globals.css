@@ -44,6 +44,24 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Commerce editor semantics. Declared here — not only in `:root` — because a bare custom
+     property is invisible to Tailwind: `bg-tint2` only compiles once the value is registered
+     as a `--color-*` theme entry. The `:root` block below holds the actual values. */
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-tint: var(--tint);
+  --color-tint2: var(--tint2);
+  --color-ln: var(--ln);
+  --color-lnv: var(--lnv);
+  --color-mut: var(--mut);
+  --color-wline: var(--wline);
+  --color-wtint: var(--wtint);
+  --color-wtext: var(--wtext);
+  --color-dline: var(--dline);
+  --color-dtint: var(--dtint);
+  --color-dtext: var(--dtext);
+  --color-ink: var(--ink);
 }
 
 :root {
@@ -90,6 +108,11 @@
   --warning: oklch(80% 0.16 90);
   --success: oklch(64.8% 0.15 160);
   --radius-full: 9999px;
+
+  /* The near-black the design uses for the floating bulk bar and the badges that sit on top of
+     a photo. Named `--ink`, not `--dark`, because `.dark` is the theme class — a `--dark`
+     token that does NOT mean "dark mode" would be read wrong by the next person. */
+  --ink: oklch(24% 0.02 293);
 
   /* Surfaces + lines */
   --tint: var(--muted);
@@ -151,6 +174,10 @@
      overrides of those flow through on their own. */
   --wtext: oklch(84% 0.11 78);
   --dtext: oklch(78% 0.14 20);
+  /* Also fixed-lightness: `--ink` is the "always dark, whatever the theme" surface the bulk bar
+     and photo badges sit on. In dark mode it must LIFT off the near-black page, not sink into
+     it, so it goes lighter here rather than following the usual invert. */
+  --ink: oklch(32% 0.02 293);
 }
 
 @layer base {

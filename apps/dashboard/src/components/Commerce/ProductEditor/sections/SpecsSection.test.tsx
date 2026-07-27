@@ -19,7 +19,7 @@ function Harness({ specs }: { specs: ProductFormValues['specs'] }) {
   latest = form.watch();
   return (
     <FormProvider {...form}>
-      <SpecsSection mode="create" />
+      <SpecsSection step={8} mode="create" />
     </FormProvider>
   );
 }

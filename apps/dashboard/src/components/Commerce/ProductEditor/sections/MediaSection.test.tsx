@@ -77,7 +77,12 @@ const VIDEO: CommerceProductMedia = {
 function renderSection(media: CommerceProductMedia[], mode: 'create' | 'edit' = 'edit') {
   return render(
     <NextIntlClientProvider locale="fa" messages={messages}>
-      <MediaSection mode={mode} productId={mode === 'edit' ? 'prod-1' : undefined} media={media} />
+      <MediaSection
+        step={4}
+        mode={mode}
+        productId={mode === 'edit' ? 'prod-1' : undefined}
+        media={media}
+      />
     </NextIntlClientProvider>,
   );
 }
@@ -104,6 +109,7 @@ describe('MediaSection', () => {
     render(
       <NextIntlClientProvider locale="fa" messages={messages}>
         <MediaSection
+          step={4}
           mode="create"
           productId={undefined}
           media={[]}
@@ -114,7 +120,7 @@ describe('MediaSection', () => {
     );
 
     const file = new File(['data'], 'photo.png', { type: 'image/png' });
-    const input = document.querySelector('#file-upload-handle') as HTMLInputElement;
+    const input = screen.getByTestId('media-file-input') as HTMLInputElement;
     fireEvent.change(input, { target: { files: [file] } });
 
     // The queue is handed up to ProductEditorPage; the media endpoint needs a product id in
@@ -130,6 +136,7 @@ describe('MediaSection', () => {
     render(
       <NextIntlClientProvider locale="fa" messages={messages}>
         <MediaSection
+          step={4}
           mode="create"
           productId={undefined}
           media={[]}
@@ -153,7 +160,7 @@ describe('MediaSection', () => {
     renderSection([]);
 
     const file = new File(['data'], 'photo.png', { type: 'image/png' });
-    const input = document.querySelector('#file-upload-handle') as HTMLInputElement;
+    const input = screen.getByTestId('media-file-input') as HTMLInputElement;
     fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() =>
@@ -241,7 +248,7 @@ describe('MediaSection permission gating', () => {
     renderSection([IMAGE, VIDEO]);
 
     // The uploader control itself must not be rendered — there is nothing to click.
-    expect(document.querySelector('#file-upload-handle')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('media-dropzone')).not.toBeInTheDocument();
     // The per-tile delete button and drag handle are also hidden.
     expect(screen.queryByLabelText(messages.Commerce.Editor.Media.delete)).not.toBeInTheDocument();
 

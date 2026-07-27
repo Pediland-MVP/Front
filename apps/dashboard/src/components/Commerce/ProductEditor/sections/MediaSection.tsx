@@ -23,17 +23,18 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DotsSixVerticalIcon } from '@phosphor-icons/react/dist/ssr';
-import { Trash2Icon } from 'lucide-react';
+import { XIcon } from 'lucide-react';
 
 import api from '@/hooks/swr/api-client';
 import { usePermissions } from '@/hooks/usePermissions';
 import type { CommerceProductDetail, CommerceProductMedia } from '@/types/commerce';
 import type { IResponseMessage } from '@/types/responseMessage';
 
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import { FileUploader } from '@/components/ui-custom/FileUploader';
+import { EditorSection } from '../ui/EditorSection';
+import { MediaDropzone } from '../ui/MediaDropzone';
 
 interface MediaSectionProps {
+  step: number;
   mode: 'create' | 'edit';
   productId?: string;
   media: CommerceProductMedia[];
@@ -52,9 +53,11 @@ interface MediaSectionProps {
  * Array order is upload order, which becomes `position` — so index 0 is the cover image.
  */
 const PendingMediaPicker = ({
+  step,
   files,
   onChange,
 }: {
+  step: number;
   files: File[];
   onChange: (files: File[]) => void;
 }) => {
@@ -73,18 +76,20 @@ const PendingMediaPicker = ({
   }, [previews]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
-        <p className="text-muted-foreground text-sm">{t('pendingHint')}</p>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        {previews.length > 0 && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {previews.map((preview, index) => (
+    <EditorSection
+      step={step}
+      title={t('title')}
+      hint={files.length ? t('countHint', { count: files.length }) : t('pendingHint')}
+      cardClassName="flex flex-col gap-3.5"
+    >
+      {canCreate && <MediaDropzone onFiles={(selected) => onChange([...files, ...selected])} />}
+
+      {previews.length > 0 && (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2.5">
+          {previews.map((preview, index) => (
+            <div key={`${preview.file.name}-${index}`} className="flex flex-col gap-1.5">
               <div
-                key={`${preview.file.name}-${index}`}
-                className="group relative aspect-square overflow-hidden rounded-md border"
+                className="border-ln relative aspect-square overflow-hidden rounded-lg border"
                 data-testid={`pending-media-${index}`}
               >
                 {preview.file.type.startsWith('video/') ? (
@@ -99,35 +104,28 @@ const PendingMediaPicker = ({
                   />
                 )}
                 {index === 0 && (
-                  <Badge className="absolute start-1 top-1" variant="default">
+                  <span className="bg-ink absolute end-1.5 top-1.5 rounded-md px-2 py-px text-xs font-bold text-white">
                     {t('cover')}
-                  </Badge>
+                  </span>
                 )}
-                <Button
+                <button
                   type="button"
-                  size="icon"
-                  variant="destructive"
                   aria-label={t('delete')}
                   data-testid={`pending-media-remove-${index}`}
-                  className="absolute end-1 top-1"
+                  className="hover:bg-dtint hover:text-dtext absolute start-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-white/90 text-black transition-colors"
                   onClick={() => onChange(files.filter((_, i) => i !== index))}
                 >
-                  <Trash2Icon className="size-4" />
-                </Button>
+                  <XIcon className="size-3" />
+                </button>
               </div>
-            ))}
-          </div>
-        )}
-        {canCreate && (
-          <FileUploader
-            multiple
-            type="file"
-            accept="image/*,video/*"
-            onChange={(selected: File[]) => onChange([...files, ...selected])}
-          />
-        )}
-      </CardContent>
-    </Card>
+              <div className="text-mut truncate text-start text-xs" dir="ltr">
+                {preview.file.name}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </EditorSection>
   );
 };
 
@@ -139,6 +137,7 @@ const PendingMediaPicker = ({
 const productDetailKey = (productId: string) => `/commerce/products/${productId}`;
 
 export const MediaSection = ({
+  step,
   mode,
   productId,
   media,
@@ -162,7 +161,11 @@ export const MediaSection = ({
   // `string | undefined` to `string` for the rest of the component.
   if (mode !== 'edit' || !productId) {
     return (
-      <PendingMediaPicker files={pendingFiles} onChange={onPendingFilesChange ?? (() => {})} />
+      <PendingMediaPicker
+        step={step}
+        files={pendingFiles}
+        onChange={onPendingFilesChange ?? (() => {})}
+      />
     );
   }
 
@@ -260,49 +263,43 @@ export const MediaSection = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {canEdit && (
-          <FileUploader
-            multiple
-            type="file"
-            accept="image/*,video/*"
-            onChange={handleFilesSelected}
-            isUploading={isUploading}
-            progress={progress}
-          />
-        )}
+    <EditorSection
+      step={step}
+      title={t('title')}
+      hint={sortedMedia.length ? t('countHint', { count: sortedMedia.length }) : undefined}
+      cardClassName="flex flex-col gap-3.5"
+    >
+      {canEdit && (
+        <MediaDropzone
+          onFiles={handleFilesSelected}
+          isUploading={isUploading}
+          progress={progress}
+        />
+      )}
 
-        {sortedMedia.length > 0 && (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
+      {sortedMedia.length > 0 && (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={sortedMedia.map((item) => item.id)}
+            strategy={rectSortingStrategy}
           >
-            <SortableContext
-              items={sortedMedia.map((item) => item.id)}
-              strategy={rectSortingStrategy}
-            >
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {sortedMedia.map((item) => (
-                  <MediaTile
-                    key={item.id}
-                    item={item}
-                    coverLabel={t('cover')}
-                    deleteLabel={t('delete')}
-                    onDelete={handleDelete}
-                    canEdit={canEdit}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
-      </CardContent>
-    </Card>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2.5">
+              {sortedMedia.map((item) => (
+                <MediaTile
+                  key={item.id}
+                  item={item}
+                  coverLabel={t('cover')}
+                  deleteLabel={t('delete')}
+                  videoLabel={t('videoBadge')}
+                  onDelete={handleDelete}
+                  canEdit={canEdit}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
+    </EditorSection>
   );
 };
 
@@ -310,12 +307,14 @@ const MediaTile = ({
   item,
   coverLabel,
   deleteLabel,
+  videoLabel,
   onDelete,
   canEdit,
 }: {
   item: CommerceProductMedia;
   coverLabel: string;
   deleteLabel: string;
+  videoLabel: string;
   onDelete: (mediaId: string) => void;
   canEdit: boolean;
 }) => {
@@ -337,44 +336,51 @@ const MediaTile = ({
   const previewUrl = item.type === 'video' ? (item.posterUrl ?? item.url) : item.url;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="bg-muted relative aspect-square overflow-hidden rounded-md border"
-    >
-      {isCover && <Badge className="absolute top-1.5 right-1.5 z-10">{coverLabel}</Badge>}
+    <div ref={setNodeRef} style={style} className="flex flex-col gap-1.5">
+      <div className="bg-muted border-ln relative aspect-square overflow-hidden rounded-lg border">
+        <Image
+          src={previewUrl}
+          alt={item.alt ?? ''}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 50vw, 160px"
+        />
 
-      <Image
-        src={previewUrl}
-        alt={item.alt ?? ''}
-        fill
-        className="object-cover"
-        sizes="(max-width: 768px) 50vw, 25vw"
-      />
+        {isCover && (
+          <span className="bg-ink absolute end-1.5 top-1.5 z-10 rounded-md px-2 py-px text-xs font-bold text-white">
+            {coverLabel}
+          </span>
+        )}
 
-      {canEdit && (
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          className="absolute top-1.5 left-1.5 z-10 flex size-6 cursor-grab touch-none items-center justify-center rounded bg-black/40 text-white active:cursor-grabbing"
-        >
-          <DotsSixVerticalIcon size={16} />
-        </button>
-      )}
+        {item.type === 'video' && (
+          <span className="bg-ink absolute end-1.5 bottom-1.5 z-10 rounded-md px-1.5 py-px text-xs font-bold text-white">
+            {videoLabel}
+          </span>
+        )}
 
-      {canEdit && (
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="absolute bottom-1.5 left-1.5 z-10 size-7"
-          onClick={() => onDelete(item.id)}
-          aria-label={deleteLabel}
-        >
-          <Trash2Icon className="text-destructive" size={14} />
-        </Button>
-      )}
+        {canEdit && (
+          <button
+            type="button"
+            aria-label={deleteLabel}
+            data-testid={`media-remove-${item.id}`}
+            className="hover:bg-dtint hover:text-dtext absolute start-1.5 top-1.5 z-10 grid size-6 place-items-center rounded-full bg-white/90 text-black transition-colors"
+            onClick={() => onDelete(item.id)}
+          >
+            <XIcon className="size-3" />
+          </button>
+        )}
+
+        {canEdit && (
+          <button
+            type="button"
+            {...attributes}
+            {...listeners}
+            className="absolute start-1.5 bottom-1.5 z-10 grid size-6 cursor-grab touch-none place-items-center rounded-md bg-black/45 text-white active:cursor-grabbing"
+          >
+            <DotsSixVerticalIcon size={14} />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

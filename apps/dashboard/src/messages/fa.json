@@ -2417,7 +2417,14 @@
         "mdHeading": "عنوان",
         "mdList": "فهرست",
         "mdBoldPlaceholder": "متن درشت",
-        "mdLinkPlaceholder": "متن پیوند"
+        "mdLinkPlaceholder": "متن پیوند",
+        "titlePlaceholder": "مثلاً کفش کتانی رانینگ پرو",
+        "titleHint": "{count} از {max} نویسه. همین متن، عنوان صفحه محصول در فروشگاه می‌شود.",
+        "descriptionHint": "متن را همین‌جا قالب‌بندی کنید",
+        "mdItalic": "مورب",
+        "mdItalicPlaceholder": "متن مورب",
+        "mdPlaceholder": "محصول را برای خریدار توضیح دهید…",
+        "mdCount": "{count} نویسه"
       },
       "Shipping": {
         "shippingCost": "هزینهٔ ارسال (تومان)"
@@ -2432,7 +2439,12 @@
         "deleteSuccess": "فایل حذف شد.",
         "deleteError": "حذف فایل با خطا مواجه شد.",
         "reorderError": "تغییر ترتیب با خطا مواجه شد.",
-        "pendingHint": "فایل‌ها بعد از ذخیره محصول بارگذاری می‌شوند. اولین تصویر، تصویر اصلی است."
+        "pendingHint": "فایل‌ها بعد از ذخیره محصول بارگذاری می‌شوند. اولین تصویر، تصویر اصلی است.",
+        "dropTitle": "فایل‌ها را اینجا رها کنید",
+        "dropHint": "تصویر یا ویدیو را اینجا رها کنید — یا کلیک کنید و از دستگاه‌تان انتخاب کنید.",
+        "uploading": "در حال بارگذاری…",
+        "countHint": "{count} فایل",
+        "videoBadge": "ویدیو"
       },
       "Variants": {
         "optionsCardTitle": "گزینه‌های تنوع",
@@ -2507,7 +2519,39 @@
         "bulkStockApplied": "موجودی {count} تنوع روی {value} تنظیم شد",
         "bulkStockInfinite": "{count} تنوع نامحدود شد",
         "groupValueApplied": "مقدار روی {count} تنوع این گروه یکسان شد",
-        "filledDown": "مقدار روی {count} تنوع پایین‌تر همین گروه نوشته شد"
+        "filledDown": "مقدار روی {count} تنوع پایین‌تر همین گروه نوشته شد",
+        "moveOptionUp": "انتقال به بالا",
+        "moveOptionUpTooltip": "ویژگی اول، سطح اصلی فهرست تنوع‌ها را می‌سازد.",
+        "moveOptionDown": "انتقال به پایین",
+        "optionValueCount": "{count} مقدار",
+        "removeOptionNamed": "حذف ویژگی {name}",
+        "addValue": "افزودن",
+        "multiValueHint": "چند مقدار را با کاما جدا کنید تا یک‌جا اضافه شوند.",
+        "noOptionsTitle": "این محصول تنوع ندارد",
+        "noOptionsHint": "قیمت و موجودی بالا برای کل محصول به کار می‌رود. اگر سایز یا رنگ دارید، یک ویژگی اضافه کنید.",
+        "regenerateSuccessSeeded": "جدول تنوع‌ها بازسازی شد و قیمت پایه روی تنوع‌های تازه نشست.",
+        "footerCount": "{count} تنوع",
+        "footerUnpriced": "{count} تنوع بدون قیمت",
+        "footerAllPriced": "همه تنوع‌ها قیمت دارند",
+        "footerStock": "مجموع موجودی: {count}",
+        "bulkGroupLabel": "ویرایش گروهی",
+        "bulkValueLabel": "مقدار",
+        "groupPriceLabel": "قیمت تنوع‌های {name}",
+        "groupPriceTooltip": "کلیک کنید تا یک قیمت روی همه تنوع‌های این گروه بنشیند.",
+        "groupCompareLabel": "قیمت بدون تخفیف تنوع‌های {name}",
+        "groupCompareTooltip": "کلیک کنید تا یک عدد روی همه تنوع‌های این گروه بنشیند.",
+        "groupStockLabel": "موجودی تنوع‌های {name}",
+        "groupStockTooltip": "کلیک کنید تا یک موجودی روی همه تنوع‌های این گروه بنشیند.",
+        "mediaButtonLabel": "رسانه {name}",
+        "priceLabel": "قیمت {name}",
+        "noPrice": "بدون قیمت",
+        "compareLabel": "قیمت بدون تخفیف {name}",
+        "noCompare": "بدون تخفیف",
+        "discountBadge": "{percent}٪",
+        "discountTooltip": "درصد تخفیف",
+        "stockLabel": "موجودی {name}",
+        "infiniteToggleLabel": "موجودی نامحدود {name}",
+        "moreSettings": "تنظیمات بیشتر {name}"
       },
       "VariantMedia": {
         "title": "رسانهٔ اختصاصی این تنوع",
@@ -2579,7 +2623,15 @@
         "addSuccess": "کالا به کالکشن اضافه شد.",
         "addError": "افزودن کالا به کالکشن با خطا مواجه شد.",
         "removeSuccess": "کالا از کالکشن حذف شد.",
-        "removeError": "حذف کالا از کالکشن با خطا مواجه شد."
+        "removeError": "حذف کالا از کالکشن با خطا مواجه شد.",
+        "search": "جست‌وجوی کالکشن",
+        "searchPlaceholder": "جست‌وجو در کالکشن‌ها…",
+        "noSearchMatch": "کالکشنی با این نام نیست — می‌توانید پایین بسازیدش.",
+        "newCollection": "کالکشن تازه",
+        "newCollectionPlaceholder": "کالکشن تازه…",
+        "add": "افزودن",
+        "createSuccess": "کالکشن ساخته شد.",
+        "createError": "ساختن کالکشن با خطا مواجه شد."
       },
       "placeholderNotice": "این بخش در حال ساخت است.",
       "SaveBar": {
@@ -2589,7 +2641,8 @@
       "Toast": {
         "created": "کالا با موفقیت ثبت شد.",
         "updated": "تغییرات کالا ذخیره شد.",
-        "createdWithMediaErrors": "محصول ساخته شد، اما بارگذاری {count} فایل ناموفق بود. می‌توانید دوباره تلاش کنید."
+        "createdWithMediaErrors": "محصول ساخته شد، اما بارگذاری {count} فایل ناموفق بود. می‌توانید دوباره تلاش کنید.",
+        "reverted": "تغییرات ذخیره‌نشده برگردانده شد."
       },
       "Errors": {
         "kindLocked": "چون این کالا حداقل یک سفارش دارد، نوع آن دیگر قابل تغییر نیست.",
@@ -2625,7 +2678,57 @@
         "titlePlaceholder": "عنوان، مثلاً جنس",
         "bodyPlaceholder": "مقدار، مثلاً مش تنفسی",
         "add": "افزودن مشخصه",
-        "remove": "حذف مشخصه"
+        "remove": "حذف مشخصه",
+        "emptyHint": "مواردی مثل جنس، کشور سازنده یا گارانتی را اینجا اضافه کنید."
+      },
+      "TopBar": {
+        "breadcrumb": "مسیر",
+        "products": "محصولات",
+        "newProduct": "محصول تازه",
+        "editProduct": "ویرایش محصول",
+        "untitled": "بدون عنوان",
+        "revert": "بازگردانی"
+      },
+      "Rail": {
+        "label": "کالکشن‌ها و برچسب‌ها"
+      },
+      "Category": {
+        "title": "دسته‌بندی",
+        "none": "بدون دسته‌بندی",
+        "hintSelected": "محصول در این دسته به خریدار نشان داده می‌شود.",
+        "hintEmpty": "دسته‌بندی کمک می‌کند خریدار محصول را در فروشگاه پیدا کند.",
+        "choose": "انتخاب دسته",
+        "change": "تغییر دسته",
+        "dialogTitle": "انتخاب دسته‌بندی",
+        "dialogDescription": "یک دسته یا زیردسته را انتخاب کنید، یا دسته تازه بسازید.",
+        "empty": "هنوز دسته‌بندی‌ای ساخته نشده است.",
+        "toggleChildren": "زیردسته‌های {name}",
+        "subCount": "{count} زیردسته",
+        "newSubIn": "زیردسته تازه در {name}",
+        "newSubPlaceholder": "زیردسته تازه…",
+        "add": "افزودن",
+        "newRoot": "دسته تازه",
+        "newRootPlaceholder": "دسته‌بندی تازه…",
+        "createRoot": "ساختن دسته",
+        "clear": "برداشتن دسته‌بندی",
+        "confirm": "تأیید",
+        "created": "دسته‌بندی ساخته شد.",
+        "createError": "ساختن دسته‌بندی با خطا مواجه شد."
+      },
+      "Base": {
+        "currency": "تومان",
+        "priceTitle": "قیمت",
+        "price": "قیمت فروش",
+        "pricePlaceholder": "۰",
+        "compare": "قیمت بدون تخفیف",
+        "comparePlaceholder": "بدون تخفیف",
+        "priceHint": "این قیمت روی هر تنوعی که بعداً بسازید می‌نشیند. اگر تنوع ندارید، همین قیمت محصول است.",
+        "priceLockedHint": "این محصول تنوع دارد؛ قیمت هر تنوع را در جدول پایین تنظیم کنید.",
+        "compareBelowPrice": "قیمت بدون تخفیف باید از قیمت فروش بیشتر باشد، وگرنه در فروشگاه تخفیفی نشان داده نمی‌شود.",
+        "stockTitle": "موجودی",
+        "stockPlaceholder": "۰",
+        "stockHint": "موجودی اولیه. اگر تنوع بسازید، این عدد روی اولین تنوع می‌نشیند.",
+        "stockLockedHint": "این محصول تنوع دارد؛ موجودی هر تنوع را در جدول پایین تنظیم کنید."
       }
     },
     "Taxonomy": {

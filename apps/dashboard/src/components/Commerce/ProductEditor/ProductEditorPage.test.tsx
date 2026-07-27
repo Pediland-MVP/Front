@@ -54,8 +54,7 @@ beforeEach(() => {
   put.mockResolvedValue({ data: {} });
 
   // `ProductEditorPage` reads `matchMedia('(max-width: 900px)')` synchronously in a `useEffect`
-  // to drive `isMobile` — stub it to the desktop (false) branch, same shape the
-  // `AutomationForm` submit tests stub.
+  // Radix popovers and the sticky header both read `matchMedia`; jsdom does not implement it.
   window.matchMedia = ((query: string) =>
     ({
       matches: false,
@@ -205,10 +204,11 @@ describe('ProductEditorPage options/variants dirty-field gating', () => {
 
     await waitFor(() => expect(screen.getByDisplayValue('محصول موجود')).toBeInTheDocument());
 
-    fireEvent.change(
-      screen.getByPlaceholderText(messages.Commerce.Editor.Variants.skuPlaceholder),
-      { target: { value: 'NEW-SKU' } },
-    );
+    // SKU moved behind the per-row settings popover in the redesign — the design's row has no
+    // column for it — so it has to be opened before the field exists in the DOM.
+    fireEvent.click(screen.getByTestId('variant-more-0'));
+    await screen.findByTestId('variant-sku-0');
+    fireEvent.change(screen.getByTestId('variant-sku-0'), { target: { value: 'NEW-SKU' } });
 
     fireEvent.click(screen.getByText(messages.Commerce.Editor.SaveBar.save));
 
