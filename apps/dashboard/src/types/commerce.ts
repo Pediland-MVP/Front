@@ -68,6 +68,12 @@ export interface CommerceVariantDetail {
   media: CommerceVariantMediaAssignment;
 }
 
+export interface CommerceProductSpec {
+  /** Static product fact shown to the buyer, e.g. "جنس رویه" / "مش تنفسی". */
+  title: string;
+  body: string;
+}
+
 export interface CommerceProductDetail {
   id: string;
   workspaceId: string;
@@ -84,6 +90,9 @@ export interface CommerceProductDetail {
   options: CommerceOptionDetail[];
   variants: CommerceVariantDetail[];
   media: CommerceProductMedia[];
+  /** Tag names, alphabetical. */
+  tags: string[];
+  specs: CommerceProductSpec[];
 }
 
 // Matches the backend's CommerceProductMediaDetailDto exactly (Back commit dd45d1fc) —
@@ -117,6 +126,12 @@ export interface CommerceCollectionListItem {
   name: string;
   slug: string;
   productIds: string[];
+  /**
+   * Live (non-soft-deleted) product count, computed server-side. Use THIS for the count badge,
+   * never `productIds.length` — the backend derives it so the id list can be dropped from that
+   * payload later without breaking the badge.
+   */
+  productCount: number;
   createDate: string;
   updateDate: string;
 }

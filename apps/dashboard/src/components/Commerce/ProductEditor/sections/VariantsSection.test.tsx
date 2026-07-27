@@ -123,6 +123,11 @@ const twoValueOptionForm = (): ProductFormValues => ({
   kind: 'physical',
   categoryId: null,
   collectionIds: [],
+  tags: [],
+  specs: [],
+  basePrice: null,
+  baseCompare: null,
+  baseStock: null,
   shippingCost: 0,
   options: [
     {
@@ -169,6 +174,11 @@ const threeValueOptionForm = (): ProductFormValues => ({
   kind: 'physical',
   categoryId: null,
   collectionIds: [],
+  tags: [],
+  specs: [],
+  basePrice: null,
+  baseCompare: null,
+  baseStock: null,
   shippingCost: 0,
   options: [
     {
@@ -226,6 +236,11 @@ const twoOptionMatrixForm = (): ProductFormValues => ({
   kind: 'physical',
   categoryId: null,
   collectionIds: [],
+  tags: [],
+  specs: [],
+  basePrice: null,
+  baseCompare: null,
+  baseStock: null,
   shippingCost: 0,
   options: [
     {

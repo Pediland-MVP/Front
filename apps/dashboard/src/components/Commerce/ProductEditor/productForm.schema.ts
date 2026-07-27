@@ -30,6 +30,18 @@ export interface ProductFormValues {
    * `CollectionsSection` still writes through the collections API and this stays `[]`.
    */
   collectionIds: string[];
+  /** Tag NAMES. Sent as-is; the backend resolves-or-creates each against the workspace pool. */
+  tags: string[];
+  specs: Array<{ title: string; body: string }>;
+  /**
+   * Base price/compare/stock are editor-only SEEDS, never persisted on the product: the design
+   * uses them to pre-fill each newly generated variation. `basePrice`/`baseCompare` seed every
+   * new variation; `baseStock` seeds only the FIRST, because a stock count is a quantity, not a
+   * template. Nothing reads them back after save — the values live on the variants.
+   */
+  basePrice: number | null;
+  baseCompare: number | null;
+  baseStock: number | null;
   shippingCost: number;
   options: Array<{
     id?: string;
@@ -164,6 +176,15 @@ export const buildProductFormSchema = (t: Translator) => {
     kind: z.enum(['physical', 'digital']),
     categoryId: z.string().nullable(),
     collectionIds: z.array(z.string()),
+    tags: z.array(z.string().min(1).max(50)).max(30),
+    specs: z
+      .array(z.object({ title: z.string().min(1).max(100), body: z.string().min(1).max(500) }))
+      .max(50),
+    // Editor-only seeds — nullable because "no base" is a real state (each variation then
+    // carries its own price), and never sent in the create/update payload.
+    basePrice: z.number().int().nonnegative().nullable(),
+    baseCompare: z.number().int().nonnegative().nullable(),
+    baseStock: z.number().int().nonnegative().nullable(),
     shippingCost: z
       .number()
       .int()
@@ -196,6 +217,11 @@ export const buildEmptyProductFormValues = (): ProductFormValues => ({
   kind: 'physical',
   categoryId: null,
   collectionIds: [],
+  tags: [],
+  specs: [],
+  basePrice: null,
+  baseCompare: null,
+  baseStock: null,
   shippingCost: 0,
   options: [],
   variants: [
@@ -239,6 +265,17 @@ export const mapProductDetailToFormValues = (
   categoryId: product.categoryId,
   // Edit mode writes membership through the collections API, not the product payload.
   collectionIds: [],
+  // `?? []` is not defensive noise: during a rolling deploy an SWR cache entry (or a still-warm
+  // backend) can hand back a detail response from before these fields existed. Without it they
+  // arrive `undefined`, zod rejects the whole form, and the submit handler silently never runs —
+  // the product becomes unsaveable with no error shown.
+  tags: product.tags ?? [],
+  specs: product.specs ?? [],
+  // Seeds are meaningless once variations exist, so edit mode starts them empty rather than
+  // guessing a "base" back out of the saved variant prices.
+  basePrice: null,
+  baseCompare: null,
+  baseStock: null,
   shippingCost: product.shippingCost,
   options: product.options.map((option) => ({
     id: option.id,

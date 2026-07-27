@@ -80,6 +80,37 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* ---- Commerce product editor (claude-design "Befroosh Design System") ----
+     The design system's base palette is byte-identical to the one above ("mirrors the tokens
+     in Front"), so only the semantics it adds are declared here. Everything below is DERIVED
+     from an existing token via color-mix, so it follows the theme instead of forking it —
+     including dark mode, where the .dark overrides of --primary/--border/--destructive flow
+     straight through. */
+  --warning: oklch(80% 0.16 90);
+  --success: oklch(64.8% 0.15 160);
+  --radius-full: 9999px;
+
+  /* Surfaces + lines */
+  --tint: var(--muted);
+  --tint2: color-mix(in oklch, var(--primary) 8%, transparent);
+  --ln: var(--border);
+  --lnv: var(--border);
+  --mut: var(--muted-foreground);
+  --glow: 0 0 0 3px color-mix(in oklch, var(--ring) 40%, transparent);
+
+  /* Warning set — an unpriced/zero-stock variation row */
+  --wline: color-mix(in oklch, var(--warning) 40%, transparent);
+  --wtint: color-mix(in oklch, var(--warning) 16%, transparent);
+  --wtext: oklch(52% 0.09 78);
+
+  /* Danger set — an invalid variation row */
+  --dline: color-mix(in oklch, var(--destructive) 32%, transparent);
+  --dtint: color-mix(in oklch, var(--destructive) 8%, transparent);
+  --dtext: oklch(50% 0.16 20);
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
 }
 
 .dark {
@@ -114,6 +145,12 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Commerce editor: only the two FIXED-lightness tokens need a dark counterpart. Every other
+     editor token is a color-mix over --primary/--border/--destructive/--ring, so the .dark
+     overrides of those flow through on their own. */
+  --wtext: oklch(84% 0.11 78);
+  --dtext: oklch(78% 0.14 20);
 }
 
 @layer base {

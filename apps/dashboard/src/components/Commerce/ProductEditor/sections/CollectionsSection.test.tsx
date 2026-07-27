@@ -85,6 +85,7 @@ const SUMMER: CommerceCollectionListItem = {
   name: 'Summer',
   slug: 'summer',
   productIds: ['prod-1', 'prod-2'],
+  productCount: 0,
   createDate: '2026-07-01T00:00:00.000Z',
   updateDate: '2026-07-01T00:00:00.000Z',
 };
@@ -94,6 +95,7 @@ const WINTER: CommerceCollectionListItem = {
   name: 'Winter',
   slug: 'winter',
   productIds: ['prod-2'],
+  productCount: 0,
   createDate: '2026-07-01T00:00:00.000Z',
   updateDate: '2026-07-01T00:00:00.000Z',
 };

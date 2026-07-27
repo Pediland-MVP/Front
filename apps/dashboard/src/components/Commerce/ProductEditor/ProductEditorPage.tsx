@@ -104,6 +104,11 @@ const buildCreatePayload = (values: ProductFormValues) => ({
   // Written into the join table inside the same transaction as the product — a product being
   // created has no id, so it cannot use the collection-side `PUT /commerce/collections/:id`.
   ...(values.collectionIds.length > 0 && { collectionIds: values.collectionIds }),
+  // Always sent, including empty: the backend treats an absent key as "leave unchanged", and on
+  // create there is nothing to leave. `basePrice`/`baseCompare`/`baseStock` are deliberately
+  // NOT sent — they are editor-only seeds that already landed on the variants.
+  tags: values.tags,
+  specs: values.specs,
   shippingCost: values.shippingCost,
   options: buildOptionsPayload(values.options),
   variants: buildVariantsPayload(values.variants),
@@ -130,6 +135,10 @@ const buildUpdatePayload = (
   status: values.status,
   kind: values.kind,
   categoryId: values.categoryId,
+  // Same dirty-gating as options/variants: an absent key means "leave unchanged" server-side,
+  // so a product whose Tags/Specs section was never opened never round-trips that data.
+  ...(dirtyFields.tags && { tags: values.tags }),
+  ...(dirtyFields.specs && { specs: values.specs }),
   shippingCost: values.shippingCost,
   ...(dirtyFields.options && { options: buildOptionsPayload(values.options) }),
   ...(dirtyFields.variants && { variants: buildVariantsPayload(values.variants) }),
