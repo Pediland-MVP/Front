@@ -6,7 +6,7 @@ the dashboard. Backend half:
 `Back/knowledge/updates/2026-07-25-commerceCreateTimeMediaAndCollections.update.md` and the
 tags/specs commits.
 
-Staged: **R4 tokens + contract**, **R5 variations table** (this doc), R6 remaining sections.
+Staged: **R4 tokens + contract**, **R5 variations table**, **R6 tags / specs / markdown** (all in this doc).
 
 ## The design, and what it is not
 
@@ -98,6 +98,30 @@ a whole table and only find out on save. `bulkPrice` clamps at zero, pinned by a
 The regenerate-diff logic (stable value identities, survives reorder/removal) is untouched; its
 14 existing tests still pass.
 
+## R6 — tags, specs and the markdown description
+
+`TagsSection` and `SpecsSection` are new (nothing equivalent existed), backed by the tags/specs
+API shipped earlier the same day. Tags de-duplicate **case-insensitively in the UI too** — the
+backend does, and letting the UI disagree would display a tag that silently vanishes on save.
+The spec list caps at 50 to match the backend's `@ArrayMaxSize(50)`: better a disabled button
+than a 400 after the merchant has typed the 51st row.
+
+### The markdown preview, and why it needs no sanitiser
+
+The description is now markdown with a write/preview toggle and a small toolbar. The repo has
+**no markdown library and no sanitiser**, and rather than add `react-markdown` + `rehype-sanitize`
+the preview renders the supported subset (`### heading`, `**bold**`, `- list`, `[text](url)`,
+paragraphs) **to React elements, never to an HTML string**.
+
+That is the security property, not a style choice: with no `dangerouslySetInnerHTML` anywhere,
+raw markup cannot become live DOM no matter what is typed — `<script>` and `<img onerror>` both
+render as literal text, pinned by tests. The one real sink left is a link's href, gated by
+`safeHref` to http/https/relative/anchor; a `javascript:` or `data:` link degrades to plain text
+rather than a clickable anchor.
+
+The stored value stays raw markdown and the preview never writes back, so toggling to preview
+and away cannot alter what the merchant typed.
+
 ## Changes
 
 - `variantTree.util.ts`, `variantBulk.util.ts` (+ their tests) — new.
@@ -105,12 +129,17 @@ The regenerate-diff logic (stable value identities, survives reorder/removal) is
   `renderLeaf`, per-row checkbox, Ctrl/Cmd+D fill-down.
 - `productForm.schema.ts`, `types/commerce.ts`, `ProductEditorPage.tsx`, `styles/globals.css` —
   R4.
-- `messages/fa.json` — 23 new `Commerce.Editor.Variants` keys.
+- `sections/TagsSection.tsx`, `sections/SpecsSection.tsx` (+ tests) — new.
+- `markdownPreview.util.tsx` (+ tests), `MarkdownDescriptionField.tsx` — new;
+  `sections/BasicInfoSection.tsx` swapped its plain `Textarea` for the markdown field.
+- `messages/fa.json` — 23 `Commerce.Editor.Variants` keys, plus `Tags` (6), `Specs` (7) and 9
+  `Basic` markdown keys.
 
 ## Verification
 
-- `vitest src/components/Commerce` → **168 passed / 168**, 20 files (36 util tests, 9 new
-  table-behaviour tests, the 14 pre-existing regenerate tests intact).
+- `vitest src/components/Commerce` → **198 passed / 198**, 23 files (36 tree/bulk util tests,
+  9 table-behaviour tests, 14 markdown tests incl. every XSS case, 16 tags/specs tests, and the
+  14 pre-existing regenerate tests intact).
 - `tsc --noEmit` → 272 lines, unchanged from baseline; nothing from this change. The one
   `VariantsSection.test.tsx` entry is the pre-existing `zodResolver`/`ZodObject` version
   mismatch on a line this change does not touch.

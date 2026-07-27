@@ -24,12 +24,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui';
 
+import { MarkdownDescriptionField } from '../MarkdownDescriptionField';
 import type { ProductFormValues } from '../productForm.schema';
 
 const NO_CATEGORY_VALUE = 'none';
@@ -93,7 +93,8 @@ export const BasicInfoSection = () => {
             <FormItem>
               <FormLabel>{t('Basic.description')}</FormLabel>
               <FormControl>
-                <Textarea rows={5} {...field} />
+                {/* Markdown, with a render-only preview — the stored value stays raw text. */}
+                <MarkdownDescriptionField value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

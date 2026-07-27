@@ -32,6 +32,8 @@ import {
 } from './productForm.schema';
 import { BasicInfoSection } from './sections/BasicInfoSection';
 import { CollectionsSection } from './sections/CollectionsSection';
+import { TagsSection } from './sections/TagsSection';
+import { SpecsSection } from './sections/SpecsSection';
 import { InventorySection } from './sections/InventorySection';
 import { MediaSection } from './sections/MediaSection';
 import { ShippingSection } from './sections/ShippingSection';
@@ -287,7 +289,16 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
   };
 
   const renderSectionContent = (id: EditorSectionId) => {
-    if (id === 'basic') return <BasicInfoSection />;
+    if (id === 'basic') {
+      return (
+        <div className="flex flex-col gap-5">
+          <BasicInfoSection />
+          {/* Specs are product FACTS, so they belong with the basic info rather than with the
+              buyer-facing form fields they are easily confused with. */}
+          <SpecsSection mode={mode} />
+        </div>
+      );
+    }
     if (id === 'shipping') return <ShippingSection />;
     if (id === 'media') {
       return (
@@ -321,7 +332,12 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
     }
     // `org` was the last section still on the generic placeholder card — every `EditorSectionId`
     // is now handled above, so this branch (and the fallback below it) is exhaustive.
-    return <CollectionsSection mode={mode} productId={productId} />;
+    return (
+      <div className="flex flex-col gap-5">
+        <CollectionsSection mode={mode} productId={productId} />
+        <TagsSection mode={mode} />
+      </div>
+    );
   };
 
   const cancelHref = mode === 'edit' && productId ? `/products/${productId}` : '/products';

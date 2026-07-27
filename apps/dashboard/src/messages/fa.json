@@ -2408,7 +2408,16 @@
         "kindLockedTooltip": "پس از ثبت کالا، نوع آن دیگر قابل تغییر نیست.",
         "category": "دسته‌بندی",
         "categoryPlaceholder": "یک دسته‌بندی انتخاب کنید",
-        "categoryNone": "بدون دسته‌بندی"
+        "categoryNone": "بدون دسته‌بندی",
+        "mdWrite": "نوشتن",
+        "mdPreview": "پیش‌نمایش",
+        "mdPreviewEmpty": "چیزی برای نمایش نیست.",
+        "mdBold": "درشت",
+        "mdLink": "پیوند",
+        "mdHeading": "عنوان",
+        "mdList": "فهرست",
+        "mdBoldPlaceholder": "متن درشت",
+        "mdLinkPlaceholder": "متن پیوند"
       },
       "Shipping": {
         "shippingCost": "هزینهٔ ارسال (تومان)"
@@ -2600,6 +2609,23 @@
         "salePriceInvalid": "قیمت ویژه باید کمتر از قیمت باشد.",
         "saleWindowRequired": "قیمت ویژه و تاریخ شروع آن باید هر دو با هم تنظیم شوند.",
         "atLeastOneActiveVariantRequired": "کالا باید حداقل یک تنوع فعال داشته باشد."
+      },
+      "Tags": {
+        "title": "برچسب‌ها",
+        "description": "برچسب‌ها به دسته‌بندی و جست‌وجوی داخلی کالاها کمک می‌کنند.",
+        "placeholder": "نام برچسب",
+        "add": "افزودن",
+        "remove": "حذف برچسب {name}",
+        "suggestions": "پیشنهادها:"
+      },
+      "Specs": {
+        "title": "مشخصات فنی",
+        "description": "ویژگی‌های ثابت کالا که به خریدار نمایش داده می‌شود.",
+        "empty": "هنوز مشخصه‌ای ثبت نشده است.",
+        "titlePlaceholder": "عنوان، مثلاً جنس",
+        "bodyPlaceholder": "مقدار، مثلاً مش تنفسی",
+        "add": "افزودن مشخصه",
+        "remove": "حذف مشخصه"
       }
     },
     "Taxonomy": {
