@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import type { CommerceProductDetail } from '@/types/commerce';
@@ -44,6 +44,7 @@ import messages from '@/messages/fa.json';
 import { ProductEditorPage } from './ProductEditorPage';
 
 const ATTR = messages.Commerce.Editor.Attributes;
+const VARIANTS = messages.Commerce.Editor.Variants;
 
 const detail = (over: Partial<CommerceProductDetail> = {}): CommerceProductDetail =>
   ({
@@ -104,6 +105,16 @@ function renderEditor(props: { mode: 'create' | 'edit'; productId?: string }) {
   );
 }
 
+/** Adds one axis in step ۷ and pushes a comma-separated list of values into it. */
+async function addAxis(name: string, values: string) {
+  fireEvent.click(screen.getByText(ATTR.addAttribute));
+  fireEvent.change(await screen.findByLabelText(ATTR.namePlaceholder), { target: { value: name } });
+
+  const draft = screen.getByLabelText(ATTR.valuePlaceholder);
+  fireEvent.change(draft, { target: { value: values } });
+  fireEvent.keyDown(draft, { key: 'Enter' });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockCan.mockReset().mockReturnValue(true);
@@ -137,19 +148,51 @@ describe('ProductEditorPage', () => {
     );
   });
 
-  it('regenerates the variation rows from the axis handler, not from an effect', async () => {
+  it('generates the variation rows when an axis value is added', async () => {
     stubReads(undefined);
 
     renderEditor({ mode: 'create' });
-
-    fireEvent.click(screen.getByText(ATTR.addAttribute));
-    fireEvent.change(screen.getByLabelText(ATTR.namePlaceholder), { target: { value: 'رنگ' } });
-
-    const draft = screen.getByLabelText(ATTR.valuePlaceholder);
-    fireEvent.change(draft, { target: { value: 'قرمز، آبی' } });
-    fireEvent.keyDown(draft, { key: 'Enter' });
+    await addAxis('رنگ', 'قرمز، آبی');
 
     // Two values on one axis ⇒ two rows, and the footer is the one thing that counts them all.
     await waitFor(() => expect(screen.getByText(/۲ تنوع$/)).toBeInTheDocument());
+  });
+
+  /**
+   * The real negative. Regeneration is driven by the axis EVENT HANDLERS; if it were ever moved
+   * into an effect watching `options`, deleting a row would itself re-trigger it and the row
+   * would come straight back — so a delete that STICKS across a later sync is the only assertion
+   * that can tell the two apart.
+   *
+   * It also proves the page shares ONE `useVariantSync` instance: `removeRows` (called by the
+   * grid) and `syncVariants` (called by the axis section) have to see the same suppression list,
+   * which they only do through the provider the shell renders.
+   */
+  it('does not resurrect a deleted row when a later axis edit regenerates', async () => {
+    stubReads(undefined);
+
+    renderEditor({ mode: 'create' });
+    await addAxis('رنگ', 'قرمز، آبی');
+    await screen.findByText(/۲ تنوع$/);
+
+    // Scoped to the grid: `Attributes.removeValue` and `Variants.remove` render the SAME Persian
+    // label ("حذف قرمز"), so an unscoped query matches the axis chip's ✕ as well as the row's —
+    // and the chip stays put after the row is deleted, which would make the assertion below pass
+    // for the wrong reason.
+    const grid = () => within(screen.getByRole('grid', { name: VARIANTS.gridLabel }));
+    fireEvent.click(grid().getByLabelText(VARIANTS.remove.replace('{name}', 'قرمز')));
+    await waitFor(() => expect(screen.getByText(/۱ تنوع$/)).toBeInTheDocument());
+
+    // A third value runs `syncVariants` again — the moment an effect-based version would bring
+    // قرمز back. Only سبز may appear.
+    const draft = screen.getByLabelText(ATTR.valuePlaceholder);
+    fireEvent.change(draft, { target: { value: 'سبز' } });
+    fireEvent.keyDown(draft, { key: 'Enter' });
+
+    await waitFor(() => expect(screen.getByText(/۲ تنوع$/)).toBeInTheDocument());
+    expect(
+      grid().queryByLabelText(VARIANTS.remove.replace('{name}', 'قرمز')),
+    ).not.toBeInTheDocument();
+    expect(grid().getByLabelText(VARIANTS.remove.replace('{name}', 'سبز'))).toBeInTheDocument();
   });
 });

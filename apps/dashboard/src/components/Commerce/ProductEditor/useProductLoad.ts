@@ -28,6 +28,17 @@ export interface ProductLoadResult {
   product: CommerceProductDetail | undefined;
   categories: CommerceCategory[];
   collections: CommerceCollectionListItem[];
+  /**
+   * Whether the collections request has SETTLED — answered or failed — as opposed to
+   * `collections.length > 0`.
+   *
+   * The two are not the same thing and the difference is a real bug: a workspace with no
+   * collections yet never makes the list non-empty, so a consumer arming on length alone stays
+   * armed for the whole session and fires again the moment the merchant creates their first
+   * collection — overwriting the selection they just made with the server's (still empty) idea
+   * of membership.
+   */
+  collectionsLoaded: boolean;
   /** Existing tag NAMES across the workspace, for the rail's suggestions. */
   tagPool: string[];
   /** Only the product blocks the form. The pickers fill in when they arrive. */
@@ -51,6 +62,9 @@ export const useProductLoad = (mode: 'create' | 'edit', productId?: string): Pro
     product: detail.data?.data,
     categories: categories.data?.items ?? [],
     collections: collections.data?.items ?? [],
+    // A failed read counts as settled: the seed must not wait forever on a request that will
+    // never answer, or membership would stay unseeded and Save would diff against nothing.
+    collectionsLoaded: collections.data !== undefined || collections.error !== undefined,
     tagPool: tags.data?.items ?? [],
     // Deliberately NOT `||`-ing the four: a slow categories request must not hold the whole form
     // behind a spinner, and a failed one must not read as "this product does not exist".

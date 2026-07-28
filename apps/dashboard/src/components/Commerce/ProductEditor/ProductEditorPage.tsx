@@ -121,10 +121,8 @@ interface ProductEditorPageProps {
  */
 export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) => {
   const t = useTranslations('Commerce.Editor');
-  const { product, categories, collections, tagPool, isLoading, loadError } = useProductLoad(
-    mode,
-    productId,
-  );
+  const { product, categories, collections, collectionsLoaded, tagPool, isLoading, loadError } =
+    useProductLoad(mode, productId);
 
   const schema = useMemo(() => buildProductEditorSchema(t), [t]);
   const form = useForm<ProductFormValues>({
@@ -158,7 +156,19 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
   }, [loadError, t]);
 
   if (isLoading) return <LoaderSpin />;
-  if (loadError || (mode === 'edit' && !product)) return <NoDataError />;
+  /**
+   * `loadError` alone must NOT gate this render. SWR sets `error` on a REVALIDATION failure while
+   * it still holds the previous `data`, and this page triggers those revalidations itself — after
+   * every media add and delete, and again from `useProductSave`, whose
+   * `mutateIncludeStringKey('/commerce/products')` substring filter also matches this detail key.
+   *
+   * Gating on the error would mean one transient 500 or offline blip swaps the whole editor for
+   * `<NoDataError />`, unmounting the form and throwing away every unsaved title, price and axis
+   * edit. It is only fatal when there is nothing left to show; a failed refresh with data in hand
+   * is reported by the one-shot toast above and nothing more.
+   */
+  if (mode === 'edit' && !product) return <NoDataError />;
+  if (loadError && !product) return <NoDataError />;
 
   return (
     <Form {...form}>
@@ -169,6 +179,7 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
           product={product}
           categories={categories}
           collections={collections}
+          collectionsLoaded={collectionsLoaded}
           tagPool={tagPool}
         />
       </VariantSyncProvider>
@@ -182,6 +193,7 @@ interface ProductEditorBodyProps {
   product?: CommerceProductDetail;
   categories: CommerceCategory[];
   collections: CommerceCollectionListItem[];
+  collectionsLoaded: boolean;
   tagPool: string[];
 }
 
@@ -191,6 +203,7 @@ const ProductEditorBody = ({
   product,
   categories,
   collections,
+  collectionsLoaded,
   tagPool,
 }: ProductEditorBodyProps) => {
   const t = useTranslations('Commerce.Editor');
@@ -248,23 +261,30 @@ const ProductEditorBody = ({
     resetSuppressed();
     reset(values);
     seeded.current = true;
-    seededMembership.current = collections.length > 0;
-  }, [collections.length, mode, product, reset, resetSuppressed, seedFrom]);
+    seededMembership.current = collectionsLoaded;
+  }, [collectionsLoaded, mode, product, reset, resetSuppressed, seedFrom]);
 
   /**
    * `/commerce/collections` is a separate request from the product, and only the product gates
    * the spinner. If it lands after the seed above, membership would be seeded as "belongs to
    * nothing" and — because seeding runs once — stay wrong for the whole session. Filled in here
    * instead, without dirtying the form, so Save still diffs against the real membership.
+   *
+   * Armed on the request having SETTLED, never on `collections.length > 0`. A workspace with no
+   * collections yet never satisfies the length test, so this effect would stay live all session
+   * and then fire on the merchant's FIRST create: the rail selects the new collection, the
+   * `mutate(COLLECTIONS_KEY)` that follows makes the list non-empty, and this would overwrite
+   * that selection with the server's membership — which is still empty, because nothing has been
+   * saved yet. The selection would vanish with no message and Save would leave the product out.
    */
   useEffect(() => {
     if (mode !== 'edit' || !product || !seeded.current || seededMembership.current) return;
-    if (!collections.length) return;
+    if (!collectionsLoaded) return;
     const ids = membershipOf(product.id);
     baseline.current = { ...baseline.current, collectionIds: ids };
     setValue('collectionIds', ids, { shouldDirty: false });
     seededMembership.current = true;
-  }, [collections.length, membershipOf, mode, product, setValue]);
+  }, [collectionsLoaded, membershipOf, mode, product, setValue]);
 
   // ---------------------------------------------------------------- media pool
 
@@ -300,9 +320,18 @@ const ProductEditorBody = ({
     [],
   );
 
-  // A ref, not state: this only has to stop a second upload/delete from overlapping the first,
-  // and re-rendering the whole editor for it would re-render the variant grid too.
+  /**
+   * Both, on purpose. The REF is the guard: it flips synchronously, so a second click landing in
+   * the same tick as the first cannot slip past it the way a state read from a stale closure
+   * would. The STATE is what `MediaSection` renders from — a guard the merchant cannot see just
+   * makes their click look broken.
+   */
   const mediaBusy = useRef(false);
+  const [isMediaBusy, setIsMediaBusy] = useState(false);
+  const markMediaBusy = useCallback((busy: boolean) => {
+    mediaBusy.current = busy;
+    setIsMediaBusy(busy);
+  }, []);
 
   /** Drops a media id out of every variant that pointed at it. */
   const detachMediaFromVariants = useCallback(
@@ -344,7 +373,7 @@ const ProductEditorBody = ({
       }
 
       if (!productId) return;
-      mediaBusy.current = true;
+      markMediaBusy(true);
       try {
         // Sequential for the same reason the create-mode upload is: `position` is assigned in
         // arrival order, and position 0 is the product cover.
@@ -357,20 +386,21 @@ const ProductEditorBody = ({
         }
         // Re-read rather than guess at what the upload minted: this is the only way to learn the
         // new ids, and it refreshes `position` after the server's own ordering.
-        const { data } = await api.get<IResponseMessage<CommerceProductDetail>>(
+        //
+        // Through `mutate` rather than a bare `api.get`, so ONE request does both jobs: it
+        // returns the fresh detail AND leaves it in the shared cache, so a remount seeds from a
+        // detail that agrees with what the merchant is looking at.
+        const refreshed = await mutate<IResponseMessage<CommerceProductDetail>>(
           productDetailKey(productId),
         );
-        setValue('media', poolOf(data.data.media ?? []), { shouldDirty: false });
-        // Keep the shared cache entry in step, so a remount seeds from a detail that agrees
-        // with what the merchant is looking at.
-        void mutate(productDetailKey(productId));
+        setValue('media', poolOf(refreshed?.data?.media ?? []), { shouldDirty: false });
       } catch {
         toast.error(t('Media.uploadError'));
       } finally {
-        mediaBusy.current = false;
+        markMediaBusy(false);
       }
     },
-    [canSubmit, getValues, mode, productId, setValue, t],
+    [canSubmit, getValues, markMediaBusy, mode, productId, setValue, t],
   );
 
   const handleRemoveMedia = useCallback(
@@ -395,7 +425,7 @@ const ProductEditorBody = ({
       }
 
       if (!productId) return;
-      mediaBusy.current = true;
+      markMediaBusy(true);
       try {
         // Immediate, and deliberately OUTSIDE Save/Revert (spec decision 3): a variant media
         // picker can only point at a file that really exists, so the tile cannot be a promise.
@@ -412,10 +442,10 @@ const ProductEditorBody = ({
       } catch {
         toast.error(t('Media.deleteError'));
       } finally {
-        mediaBusy.current = false;
+        markMediaBusy(false);
       }
     },
-    [canSubmit, detachMediaFromVariants, getValues, productId, setValue, t],
+    [canSubmit, detachMediaFromVariants, getValues, markMediaBusy, productId, setValue, t],
   );
 
   // ---------------------------------------------------------------- taxonomy creation
@@ -526,7 +556,7 @@ const ProductEditorBody = ({
     onSaved: (detail) => {
       const values = seedFrom(detail);
       baseline.current = values;
-      seededMembership.current = collections.length > 0;
+      seededMembership.current = collectionsLoaded;
       resetSuppressed();
       // Turns this session's local keys into real ids. Without it a second Save asks the backend
       // to create the same options and variants all over again.
@@ -600,6 +630,10 @@ const ProductEditorBody = ({
   /**
    * The display form of `categoryId` ("پوشاک › کفش ورزشی"). Resolved here rather than stored,
    * so the form never holds two representations of the same fact.
+   *
+   * The separator comes from `fa.json` rather than being a glyph in this file: which arrow reads
+   * correctly is a per-locale decision (it points the other way in an RTL breadcrumb), and it is
+   * not something a .tsx should be deciding.
    */
   const categoryPath = useMemo(() => {
     const node = categories.find((category) => category.id === categoryId);
@@ -607,8 +641,8 @@ const ProductEditorBody = ({
     const parent = node.parentId
       ? categories.find((category) => category.id === node.parentId)
       : undefined;
-    return parent ? `${parent.name} › ${node.name}` : node.name;
-  }, [categories, categoryId]);
+    return parent ? `${parent.name}${t('Category.pathSeparator')}${node.name}` : node.name;
+  }, [categories, categoryId, t]);
 
   const categoryTree = useMemo(() => mapCategoriesToTree(categories), [categories]);
 
@@ -640,6 +674,7 @@ const ProductEditorBody = ({
             step={STEPS.media}
             productId={productId}
             media={media}
+            isBusy={isMediaBusy}
             onAdd={(files) => void handleAddMedia(files)}
             onRemove={(item) => void handleRemoveMedia(item)}
           />

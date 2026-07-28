@@ -38,12 +38,19 @@ export const MediaSection = ({
   step = 4,
   productId,
   media,
+  isBusy = false,
   onAdd,
   onRemove,
 }: {
   step?: number;
   productId?: string;
   media: EditorMedia[];
+  /**
+   * An upload or a delete is in flight. In EDIT mode both are real API calls the page makes on
+   * the spot, and they run one file at a time — so without this the dropzone and the ✕ buttons
+   * would keep accepting clicks that the page silently drops on the floor.
+   */
+  isBusy?: boolean;
   onAdd: (files: File[]) => void;
   onRemove: (item: EditorMedia) => void;
 }) => {
@@ -52,6 +59,7 @@ export const MediaSection = ({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const take = (list: FileList | null) => {
+    if (isBusy) return;
     const files = Array.from(list ?? []);
     if (files.length) onAdd(files);
   };
@@ -66,11 +74,13 @@ export const MediaSection = ({
     <EditorSection step={step} title={t('title')} hint={hint} cardClassName="flex flex-col gap-3.5">
       <div
         role="button"
-        tabIndex={0}
+        tabIndex={isBusy ? -1 : 0}
+        aria-disabled={isBusy}
+        aria-busy={isBusy}
         data-testid="media-dropzone"
         onDragOver={(e) => {
           e.preventDefault();
-          setDragging(true);
+          if (!isBusy) setDragging(true);
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={(e) => {
@@ -78,23 +88,27 @@ export const MediaSection = ({
           setDragging(false);
           take(e.dataTransfer.files);
         }}
-        onClick={() => fileRef.current?.click()}
+        onClick={() => {
+          if (!isBusy) fileRef.current?.click();
+        }}
         onKeyDown={(e) => {
+          if (isBusy) return;
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             fileRef.current?.click();
           }
         }}
         className={cn(
-          'border-lnv bg-tint cursor-pointer rounded-lg border-2 border-dashed px-5 py-6 text-center transition-colors',
+          'border-lnv bg-tint rounded-lg border-2 border-dashed px-5 py-6 text-center transition-colors',
+          isBusy ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
           dragging && 'border-primary bg-tint2',
         )}
       >
         <div className="border-lnv bg-card text-primary mx-auto mb-2.5 grid size-10 place-items-center rounded-lg border">
           <UploadIcon className="size-4.5" />
         </div>
-        <div className="mb-1 text-sm font-bold">{t('dropTitle')}</div>
-        <p className="text-mut m-0 text-xs text-pretty">{t('dropHint')}</p>
+        <div className="mb-1 text-sm font-bold">{isBusy ? t('busy') : t('dropTitle')}</div>
+        <p className="text-mut m-0 text-xs text-pretty">{isBusy ? t('busyHint') : t('dropHint')}</p>
         <input
           ref={fileRef}
           type="file"
@@ -152,10 +166,11 @@ export const MediaSection = ({
 
                 <button
                   type="button"
+                  disabled={isBusy}
                   aria-label={t('remove', { name: item.name })}
                   data-testid={`media-remove-${item.id}`}
                   onClick={() => onRemove(item)}
-                  className="hover:bg-dtint hover:text-dtext absolute start-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-white/90 text-black transition-colors"
+                  className="hover:bg-dtint hover:text-dtext absolute start-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-white/90 text-black transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <XIcon className="size-3" />
                 </button>
