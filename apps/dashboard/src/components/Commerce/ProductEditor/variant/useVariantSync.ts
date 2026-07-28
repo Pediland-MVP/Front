@@ -8,7 +8,8 @@ import {
 } from 'react';
 import { useFieldArray, useFormContext, type FieldArrayWithId } from 'react-hook-form';
 
-import type { ProductFormValues } from '../productEditor.schema';
+import { valueKeyOf } from '../productEditor.mapping';
+import { MAX_VARIANTS, type ProductFormValues } from '../productEditor.schema';
 import {
   axesOf,
   comboKey,
@@ -38,8 +39,14 @@ import {
  * unrelated new ones.
  */
 
-/** Backend cap (`@ArrayMaxSize(2000)` on the variants array). Generation stops here. */
-export const MAX_VARIANTS = 2000;
+/**
+ * Backend cap (`@ArrayMaxSize(2000)` on the variants array). Generation stops here.
+ *
+ * Re-exported, not redeclared: the zod schema enforces the same ceiling, and if the two ever
+ * drifted `syncVariants` would happily generate rows that validation then rejects — with nothing
+ * the merchant could do about it, because they never asked for those rows in the first place.
+ */
+export { MAX_VARIANTS };
 
 export type VariantRow = ProductFormValues['variants'][number];
 
@@ -63,21 +70,25 @@ export interface VariantSync {
 }
 
 /**
- * Form options → tree axes. An option or value with no id is not an axis yet: `AttributesSection`
- * mints a local id the moment one is created, so this only skips a half-typed row.
+ * Form options → tree axes.
+ *
+ * The key of an option or a value is `id ?? localKey`, NEVER `id` alone. Until the product is
+ * saved nothing has a backend id — `AttributesSection` mints only a `localKey` — and
+ * `variants[].valueIds` are built from that same rule (`valueKeyOf`). Keying on `id` made this
+ * return `[]` for every brand-new product, so `combosOf` had nothing to expand and `syncVariants`
+ * generated no rows at all: the variation table simply never appeared in CREATE mode, and a value
+ * added during an EDIT session was dropped from its axis.
+ *
+ * A half-typed option still falls away, because `axesOf` drops any option with no values.
  */
 export const axesOfOptions = (options: ProductFormValues['options']): TreeAxis[] =>
   axesOf(
-    (options ?? [])
-      .filter((option): option is (typeof options)[number] & { id: string } => Boolean(option.id))
-      .map((option) => ({
-        id: option.id,
-        values: option.values
-          .filter((value): value is (typeof option.values)[number] & { id: string } =>
-            Boolean(value.id),
-          )
-          .map((value) => ({ id: value.id })),
-      })),
+    (options ?? []).map((option) => ({
+      id: option.id ?? option.localKey,
+      values: option.values
+        .map((value) => ({ id: valueKeyOf(value) }))
+        .filter((value) => Boolean(value.id)),
+    })),
   );
 
 interface RowSeed {

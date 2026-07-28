@@ -208,6 +208,3 @@ export function VariantLeafRow({
     </div>
   );
 }
-
-/** Exported for the group row, which tints its roll-up cells with the same rules. */
-export const cellTones = { priceTone, compareTone, stockTone };

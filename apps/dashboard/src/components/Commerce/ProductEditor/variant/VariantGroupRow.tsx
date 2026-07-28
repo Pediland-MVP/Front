@@ -6,6 +6,9 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Checkbox } from '@/components/ui';
+// The shared handler, not a local re-implementation of it (CLAUDE.md §18) — a roll-up cell has
+// to clean Persian digits exactly the way every other numeric input in the editor does.
+import { onInputP2EHandler } from '@/utils/p2eNumber';
 
 import type { ProductFormValues } from '../productEditor.schema';
 import { formatAmount, formatCount, parseAmount } from '../utils/editorNumber.util';
@@ -137,11 +140,7 @@ function GroupCell({
       aria-label={ariaLabel}
       placeholder={placeholder}
       className={`bg-card border-ln focus:border-primary h-9 w-full min-w-0 rounded-md border px-2 text-xs outline-none ${bold ? 'font-bold' : 'text-mut font-semibold'}`}
-      onInput={(event) => {
-        event.currentTarget.value = event.currentTarget.value
-          .replace(/[۰-۹]/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(digit).toString())
-          .replace(/[^0-9]/g, '');
-      }}
+      onInput={onInputP2EHandler}
       onBlur={(event) => commit(event.target.value)}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {

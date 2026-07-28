@@ -17,11 +17,21 @@ import { VariantsSection } from './VariantsSection';
 const T = messages.Commerce.Editor.Variants;
 const B = messages.Commerce.Editor.Bulk;
 
+/** A SAVED option: ids exist, and `mapDetailToFormValues` mirrors each one into `localKey`. */
 const option = (id: string, name: string, values: Array<[string, string]>) => ({
   id,
+  localKey: id,
   name,
   style: 'button' as const,
-  values: values.map(([valueId, value]) => ({ id: valueId, value })),
+  values: values.map(([valueId, value]) => ({ id: valueId, localKey: valueId, value })),
+});
+
+/** A BRAND-NEW option, as `AttributesSection` builds it: `localKey` only, no backend id. */
+const freshOption = (localKey: string, name: string, values: Array<[string, string]>) => ({
+  localKey,
+  name,
+  style: 'button' as const,
+  values: values.map(([valueKey, value]) => ({ localKey: valueKey, value })),
 });
 
 const row = (valueIds: string[], over: Partial<VariantRow> = {}): VariantRow => ({
@@ -83,6 +93,7 @@ const renderGrid = (over: Partial<ProductFormValues>) => {
         tags: [],
         specs: [],
         collectionIds: [],
+        media: [],
         basePrice: null,
         baseCompare: null,
         baseStock: null,
@@ -153,6 +164,25 @@ describe('VariantsSection — parent roll-up', () => {
     fireEvent.change(screen.getByLabelText('قیمت قرمز'), { target: { value: '۵۰۰۰۰۰' } });
 
     expect(grid.prices()).toEqual([500000, 420000]);
+  });
+});
+
+describe('VariantsSection — values created this session', () => {
+  it('labels a row whose valueIds are localKeys, instead of falling back to an em dash', () => {
+    // CREATE mode: `valueIds` hold `id ?? localKey`, so a label map keyed on `id` alone finds
+    // nothing and every row in the table reads "—".
+    renderGrid({
+      options: [
+        freshOption('color-local', 'رنگ', [
+          ['c1-local', 'قرمز'],
+          ['c2-local', 'آبی'],
+        ]),
+      ],
+      variants: [row(['c1-local'], { price: 420000 }), row(['c2-local'], { price: 315500 })],
+    });
+
+    expect(screen.getByLabelText('قیمت قرمز')).toBeInTheDocument();
+    expect(screen.getByLabelText('قیمت آبی')).toBeInTheDocument();
   });
 });
 

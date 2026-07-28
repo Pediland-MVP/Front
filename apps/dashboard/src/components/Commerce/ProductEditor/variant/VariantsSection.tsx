@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { Checkbox } from '@/components/ui';
 
+import { valueKeyOf } from '../productEditor.mapping';
 import type { ProductFormValues } from '../productEditor.schema';
 import { formatCount } from '../utils/editorNumber.util';
 import { topKeyOf } from './variantTree.util';
@@ -58,7 +59,11 @@ export function VariantsSection({ media, onOpenPicker }: VariantsSectionProps) {
     const map = new Map<string, { label: string; hex?: string | null }>();
     options.forEach((option) =>
       option.values.forEach((value) => {
-        if (value.id) map.set(value.id, { label: value.value, hex: value.colorHex ?? null });
+        // Keyed by `id ?? localKey`, the same rule `valueIds` is built from. Keying on `id` alone
+        // meant every row of a value created this session looked its label up under a key nobody
+        // uses and rendered the `—` fallback instead.
+        const key = valueKeyOf(value);
+        if (key) map.set(key, { label: value.value, hex: value.colorHex ?? null });
       }),
     );
     return map;

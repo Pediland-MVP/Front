@@ -6,11 +6,24 @@ import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
 import { useVariantSync, type VariantRow } from './useVariantSync';
 import type { ProductFormValues } from '../productEditor.schema';
 
+/** A SAVED axis: the backend has minted ids, and `mapDetailToFormValues` mirrors them into localKey. */
 const axis = (id: string, values: string[]) => ({
   id,
+  localKey: id,
   name: id,
   style: 'button' as const,
-  values: values.map((valueId) => ({ id: valueId, value: valueId })),
+  values: values.map((valueId) => ({ id: valueId, localKey: valueId, value: valueId })),
+});
+
+/**
+ * A BRAND-NEW axis, exactly as `AttributesSection` builds one: a `localKey` and nothing else.
+ * Nothing on this page has a backend id until the product is saved.
+ */
+const freshAxis = (localKey: string, values: string[]) => ({
+  localKey,
+  name: localKey,
+  style: 'button' as const,
+  values: values.map((valueKey) => ({ localKey: valueKey, value: valueKey })),
 });
 
 const row = (valueIds: string[], over: Partial<VariantRow> = {}): VariantRow => ({
@@ -38,6 +51,7 @@ const defaults = (over: Partial<ProductFormValues> = {}): ProductFormValues =>
     tags: [],
     specs: [],
     collectionIds: [],
+    media: [],
     basePrice: null,
     baseCompare: null,
     baseStock: null,
@@ -51,9 +65,13 @@ const setup = (initial: ProductFormValues) => {
   const Wrapper = ({ children }: { children: ReactNode }) => {
     const methods = useForm<ProductFormValues>({ defaultValues: initial });
     api = methods;
-    // Children go in the third argument, not a `children` prop — same shape `useVariantSync.ts`
-    // uses for its own provider, and the only one `react/no-children-prop` accepts.
-    return createElement(FormProvider, { ...methods }, children);
+    // `FormProvider<ProductFormValues>` pins the generic by hand. `FormProvider` is a generic
+    // ARROW function, not a `FunctionComponent`, so `createElement` falls back to inferring
+    // `FieldValues` and then rejects `methods` — the error is about the field-values type, not
+    // about `children`. `children` also has to stay in the props object because
+    // `FormProviderProps` declares it required, which is what the eslint suppression is for.
+    // eslint-disable-next-line react/no-children-prop
+    return createElement(FormProvider<ProductFormValues>, { ...methods, children });
   };
   const view = renderHook(() => useVariantSync(), { wrapper: Wrapper });
   return {
@@ -112,6 +130,30 @@ describe('syncVariants — generation', () => {
 
     expect(second.added).toBe(0);
     expect(t.rows()).toHaveLength(2);
+  });
+
+  it('generates for a brand-new product, whose options have a localKey and no id at all', () => {
+    // CREATE mode. `AttributesSection` mints `localKey` only — the backend id does not exist
+    // until Save. Keying the axes on `id` made this produce nothing, so the whole variation
+    // table never appeared for a new product.
+    const t = setup(defaults({ options: [freshAxis('color', ['c1', 'c2'])], basePrice: 420000 }));
+
+    t.sync();
+
+    expect(t.rows().map((r) => r.valueIds)).toEqual([['c1'], ['c2']]);
+    expect(t.rows().map((r) => r.price)).toEqual([420000, 420000]);
+  });
+
+  it('generates for a value added this session to an axis the backend already knows', () => {
+    // EDIT mode, the mixed case: a saved axis plus one fresh value carrying only a localKey.
+    const saved = axis('color', ['c1']);
+    const t = setup(defaults({ options: [saved] }));
+    t.sync();
+
+    t.setOptions([{ ...saved, values: [...saved.values, { localKey: 'c2-local', value: 'آبی' }] }]);
+    t.sync();
+
+    expect(t.rows().map((r) => r.valueIds)).toEqual([['c1'], ['c2-local']]);
   });
 
   it('stops at the 2000-variant ceiling and reports it', () => {
