@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
-import useSWRImmutable from 'swr/immutable';
 
 import api from '@/hooks/swr/api-client';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
@@ -243,7 +242,7 @@ const saveVariantMedia = async (
  * `PUT /commerce/collections/:id`, which replaces that collection's ENTIRE `productIds[]`, so
  * each change is a read-modify-write.
  *
- * `collections` MUST be a freshly revalidated list, not the editor's cached one — see the call
+ * `collections` MUST be the list just read from the server, not a cached one — see the call
  * site. The baseline is what every other product's membership is rebuilt from, so a stale one
  * silently evicts products this editor has never heard of.
  */
@@ -277,12 +276,9 @@ export const useProductSave = (
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
-  // Same key the rail reads, so this is the already-fetched cache entry rather than a second
-  // request. It is the baseline the membership diff is taken against.
-  const { data: collectionsData } =
-    useSWRImmutable<PaginatedResult<CommerceCollectionListItem[]>>(COLLECTIONS_KEY);
-  const collections = collectionsData?.items ?? [];
-
+  // No `useSWRImmutable(COLLECTIONS_KEY)` here on purpose. This hook used to hold the rail's
+  // cache entry as the membership baseline; it is now read fresh inside `save` (see step 5), and
+  // keeping a cached copy around would only invite somebody to reach for it again.
   const onSaved = options?.onSaved;
 
   const save = useCallback(
@@ -359,17 +355,32 @@ export const useProductSave = (
         if (mode === 'edit') {
           try {
             /**
-             * Revalidate FIRST, and diff against what comes back.
+             * Read the list FRESH, and diff against that.
              *
              * The rail reads `useSWRImmutable(COLLECTIONS_KEY)`, which by definition never
              * revalidates on focus, reconnect or staleness — so the cached `productIds[]` is
              * whatever it was when the editor opened. `PUT /commerce/collections/:id` replaces
              * the WHOLE array, so ticking a collection after somebody else added a different
              * product to it would write that other product straight out of the collection.
+             *
+             * DELIBERATELY a bare `api.get`, NOT `await mutate(COLLECTIONS_KEY)`. Do not
+             * "simplify" this back — `mutate` with no data argument does not behave like a
+             * fetch-or-throw. In swr 2.3.8 it falls into `startRevalidate()`, which returns
+             * `revalidators[0](MUTATE_EVENT).then(() => get().data)`, and the hook's own
+             * `revalidate` SWALLOWS a fetch error: it records the error into hook state and
+             * still returns `true`. So a failed GET makes `mutate` RESOLVE with the stale
+             * cached list, this `catch` never runs, and the full-replace PUT goes out against
+             * exactly the stale baseline this whole block exists to avoid.
+             *
+             * `api.get` genuinely rejects. `mutate(key, res, false)` then seeds the cache with
+             * what we read — `false` = do not revalidate, we already have the answer — so the
+             * rail and the taxonomy page see the same fresh data without a second request.
              */
-            const fresh =
-              await mutate<PaginatedResult<CommerceCollectionListItem[]>>(COLLECTIONS_KEY);
-            await syncCollections(targetId, values.collectionIds, fresh?.items ?? collections);
+            const { data: freshCollections } =
+              await api.get<PaginatedResult<CommerceCollectionListItem[]>>(COLLECTIONS_KEY);
+            await mutate(COLLECTIONS_KEY, freshCollections, false);
+
+            await syncCollections(targetId, values.collectionIds, freshCollections?.items ?? []);
             await mutate(COLLECTIONS_KEY);
           } catch {
             softFailure = softFailure ?? 'collections';
@@ -419,7 +430,7 @@ export const useProductSave = (
         setIsSaving(false);
       }
     },
-    [collections, mode, onSaved, productId, router, t, t_ec],
+    [mode, onSaved, productId, router, t, t_ec],
   );
 
   return { save, isSaving };

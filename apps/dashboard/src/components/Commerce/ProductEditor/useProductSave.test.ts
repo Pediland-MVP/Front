@@ -10,7 +10,7 @@ import type {
 
 // One shared log of every request the hook makes, in the order it made them. `vi.hoisted` because
 // `vi.mock` factories run before the imports (same pattern as `ProductListPage.test.tsx`).
-const { calls, apiMock, pushMock, toastMock, mutateMock, swrImmutableMock } = vi.hoisted(() => {
+const { calls, apiMock, pushMock, toastMock, mutateMock } = vi.hoisted(() => {
   const calls: string[] = [];
   return {
     calls,
@@ -22,21 +22,17 @@ const { calls, apiMock, pushMock, toastMock, mutateMock, swrImmutableMock } = vi
     },
     pushMock: vi.fn(),
     toastMock: { success: vi.fn(), warning: vi.fn(), error: vi.fn() },
-    // Rest param: the hook now READS what `mutate(COLLECTIONS_KEY)` returns (the membership diff
-    // has to run against a fresh list, not the immutable cache), so a test needs to be able to
-    // answer per key.
+    // Rest param so a test can assert WHICH key was seeded and with what — the collections cache
+    // is written through `mutate(key, data, false)` after the baseline GET.
     mutateMock: vi.fn(async (..._args: unknown[]): Promise<unknown> => undefined),
-    // Mutable per-test: the hook calls `useSWRImmutable(COLLECTIONS_KEY)` once, for the
-    // membership diff. Defaults to "nothing loaded"; the edit tests override it with a fixture.
-    // Typed with a rest param (rather than zero args) so it can stand in directly for the
-    // `swr/immutable` default export, which vitest calls with whatever key SWR was given.
-    swrImmutableMock: vi.fn((..._args: unknown[]) => ({ data: undefined }) as { data: unknown }),
   };
 });
 
 vi.mock('@/hooks/swr/api-client', () => ({ default: apiMock, fetcher: vi.fn() }));
 vi.mock('swr', () => ({ mutate: mutateMock }));
-vi.mock('swr/immutable', () => ({ default: swrImmutableMock }));
+// The hook itself no longer subscribes to `swr/immutable` — the membership baseline is a real GET
+// (see step 5) — but `useProductLoad`, imported here for its key helpers, still pulls it in.
+vi.mock('swr/immutable', () => ({ default: vi.fn(() => ({ data: undefined })) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: pushMock }) }));
 vi.mock('next-intl', () => ({ useTranslations: () => (key: string) => key }));
 vi.mock('sonner', () => ({ toast: toastMock }));
@@ -131,7 +127,6 @@ const valuesWithPendingMedia = (): ProductFormValues => {
 beforeEach(() => {
   calls.length = 0;
   vi.clearAllMocks();
-  swrImmutableMock.mockReturnValue({ data: undefined });
   // `clearAllMocks` clears CALLS, not implementations — restated so a per-test override does not
   // leak into the next one.
   mutateMock.mockImplementation(async () => undefined);
@@ -303,18 +298,26 @@ describe('useProductSave (edit)', () => {
     };
   };
 
+  /**
+   * The membership baseline is a REAL request now, not the immutable cache, so the collections
+   * key answers from `api.get`. Note the two envelope shapes: the product detail comes back
+   * wrapped (`{ data: { data } }`, `IResponseMessage`) while a list route answers with the bare
+   * `PaginatedResult` (`{ data: { items } }`).
+   */
   beforeEach(() => {
     apiMock.get.mockImplementation(async (url: string) => {
       calls.push(`GET ${url}`);
+      if (url === '/commerce/collections') {
+        return {
+          data: {
+            items: [
+              collection({ id: 'c-1', productIds: [] }), // not a member yet; the form wants it in
+              collection({ id: 'c-2', productIds: ['p-edit'] }), // a member; the form drops it
+            ],
+          },
+        };
+      }
       return { data: { data: editDetail } };
-    });
-    swrImmutableMock.mockReturnValue({
-      data: {
-        items: [
-          collection({ id: 'c-1', productIds: [] }), // not yet a member; the form wants it in
-          collection({ id: 'c-2', productIds: ['p-edit'] }), // currently a member; the form drops it
-        ],
-      },
     });
   });
 
@@ -359,16 +362,18 @@ describe('useProductSave (edit)', () => {
     expect(onSaved).toHaveBeenCalledWith(editDetail);
   });
 
-  it('diffs collection membership against a FRESHLY revalidated list, not the immutable cache', async () => {
+  it('diffs collection membership against a FRESHLY read list, not the immutable cache', async () => {
     // The rail reads `useSWRImmutable`, which never revalidates on focus or reconnect — so its
     // `productIds[]` is whatever it was when the editor opened. Somebody else added `p-other` to
     // `c-1` in the meantime; `PUT /commerce/collections/:id` replaces the WHOLE array, so diffing
-    // against the stale copy would write `p-other` straight out of the collection.
-    mutateMock.mockImplementation(async (key: unknown) =>
-      key === '/commerce/collections'
-        ? { items: [collection({ id: 'c-1', productIds: ['p-other'] })] }
-        : undefined,
-    );
+    // against a stale copy would write `p-other` straight out of the collection.
+    apiMock.get.mockImplementation(async (url: string) => {
+      calls.push(`GET ${url}`);
+      if (url === '/commerce/collections') {
+        return { data: { items: [collection({ id: 'c-1', productIds: ['p-other'] })] } };
+      }
+      return { data: { data: editDetail } };
+    });
 
     const { result } = renderHook(() => useProductSave('edit', 'p-edit'));
     await act(async () => {
@@ -378,9 +383,47 @@ describe('useProductSave (edit)', () => {
     expect(apiMock.put).toHaveBeenCalledWith('/commerce/collections/c-1', {
       productIds: ['p-other', 'p-edit'],
     });
-    // `c-2` is only a member in the stale cache; the fresh list does not list it at all, so there
-    // is nothing to write.
+    // The freshly read list is written back into the shared cache WITHOUT a second request, so
+    // the rail and the taxonomy page see what this save diffed against.
+    expect(mutateMock).toHaveBeenCalledWith(
+      '/commerce/collections',
+      { items: [collection({ id: 'c-1', productIds: ['p-other'] })] },
+      false,
+    );
+    // `c-2` exists only in the stale fixture; the fresh list does not mention it, so there is
+    // nothing to write for it.
     expect(apiMock.put).not.toHaveBeenCalledWith('/commerce/collections/c-2', expect.anything());
+  });
+
+  it('writes NO collection PUT and warns when the baseline read fails', async () => {
+    /**
+     * The failure path is the whole reason the baseline is an `api.get` and not
+     * `await mutate(COLLECTIONS_KEY)`. `mutate` with no data argument RESOLVES with the stale
+     * cached list even when the underlying GET rejects (swr's `revalidate` swallows the error and
+     * returns `true`), so relying on it would let the full-replace PUT go out against exactly the
+     * stale baseline this step exists to avoid — silently evicting another product.
+     */
+    apiMock.get.mockImplementation(async (url: string) => {
+      calls.push(`GET ${url}`);
+      if (url === '/commerce/collections') throw new Error('collections read failed');
+      return { data: { data: editDetail } };
+    });
+
+    const { result } = renderHook(() => useProductSave('edit', 'p-edit'));
+    await act(async () => {
+      await result.current.save(editValues());
+    });
+
+    // Not one membership write — a guess here corrupts a list this editor cannot even see.
+    const collectionPuts = apiMock.put.mock.calls.filter(([url]: [string]) =>
+      url.startsWith('/commerce/collections/'),
+    );
+    expect(collectionPuts).toEqual([]);
+
+    // And it is not silent: the product itself is committed, so this is a warning, not an error —
+    // but never the plain success toast.
+    expect(toastMock.warning).toHaveBeenCalledWith('Toast.collectionsFailed');
+    expect(toastMock.success).not.toHaveBeenCalled();
   });
 
   it('warns instead of claiming success when a per-variant media write fails', async () => {
