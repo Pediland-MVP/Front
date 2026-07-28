@@ -8,6 +8,7 @@ import { ExceptionMessage } from '@/types/exceptionMessage';
 import { CommerceProductListItem, CommerceProductStatus, PaginatedResult } from '@/types/commerce';
 import { AxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
@@ -24,6 +25,7 @@ import { DeleteConfirmationDialog } from '@/components/Global/DeleteConfirmation
 import { NoDataError } from '@/components/Global/NoDataError';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { CommerceProductCard } from './CommerceProductCard';
+import { CircleFadingPlusIcon } from 'lucide-react';
 
 const STATUS_FILTERS: { value: CommerceProductStatus | undefined; labelKey: string }[] = [
   { value: 'active', labelKey: 'active' },
@@ -35,8 +37,10 @@ const STATUS_FILTERS: { value: CommerceProductStatus | undefined; labelKey: stri
 export const ProductListPage = () => {
   const t = useTranslations('Commerce.List');
   const t_ec = useTranslations('ERROR_CODES');
+  const router = useRouter();
   const { can } = usePermissions();
   const hasViewPermission = can('product:view');
+  const canEdit = can('product:edit');
   const canDelete = can('product:delete');
 
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
@@ -134,12 +138,26 @@ export const ProductListPage = () => {
   // ------- Header wiring Start -------
   const HeaderButton = useMemo(
     () => (
-      <SearchToggleButton
-        isSearchVisible={isSearchVisible}
-        setIsSearchVisible={setIsSearchVisible}
-      />
+      <>
+        <SearchToggleButton
+          isSearchVisible={isSearchVisible}
+          setIsSearchVisible={setIsSearchVisible}
+        />
+
+        {can('product:create') && (
+          <Button
+            type="button"
+            size="md"
+            disabled={error}
+            onClick={() => router.push('/products/add')}
+          >
+            {t('add')}
+            <CircleFadingPlusIcon />
+          </Button>
+        )}
+      </>
     ),
-    [isSearchVisible],
+    [isSearchVisible, can, error, router, t],
   );
 
   const HeaderTools = useMemo(
@@ -205,6 +223,7 @@ export const ProductListPage = () => {
                 key={item.id}
                 product={item}
                 handleDelete={handleDelete}
+                canEdit={canEdit}
                 canDelete={canDelete}
               />
             ))}

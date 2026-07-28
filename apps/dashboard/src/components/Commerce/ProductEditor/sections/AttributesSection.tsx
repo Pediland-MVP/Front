@@ -49,9 +49,20 @@ export interface EditorConfirm {
 export const AttributesSection = ({
   step = 7,
   onConfirm,
+  onAxisChange,
 }: {
   step?: number;
   onConfirm: (confirm: EditorConfirm) => void;
+  /**
+   * Fired after every mutation of `options`. The page turns it into `syncVariants()`.
+   *
+   * It is a CALLBACK on each handler and not an effect watching `options`, because regeneration
+   * driven by an effect also fires on the `variants` change a deletion makes — so every row the
+   * merchant deletes comes straight back and the delete buttons look broken.
+   *
+   * Optional so this section still renders on its own, outside `<VariantSyncProvider>`.
+   */
+  onAxisChange?: () => void;
 }) => {
   const t = useTranslations('Commerce.Editor.Attributes');
   const { control, register, getValues, setValue } = useFormContext<ProductFormValues>();
@@ -90,6 +101,7 @@ export const AttributesSection = ({
     if (!fresh.length) return;
 
     setValue(`options.${index}.values`, [...current, ...fresh], { shouldDirty: true });
+    onAxisChange?.();
   };
 
   const removeValue = (index: number, localKey: string, label: string) => {
@@ -100,6 +112,7 @@ export const AttributesSection = ({
         current.filter((value) => value.localKey !== localKey),
         { shouldDirty: true },
       );
+      onAxisChange?.();
     };
 
     // Only ask when there is something to lose. On a product with no rows yet this is a free edit
@@ -122,11 +135,15 @@ export const AttributesSection = ({
         title: t('confirmAxisTitle'),
         body: t('confirmAxisBody'),
         ok: t('confirmRemove'),
-        run: () => remove(index),
+        run: () => {
+          remove(index);
+          onAxisChange?.();
+        },
       });
       return;
     }
     remove(index);
+    onAxisChange?.();
   };
 
   const atMax = fields.length >= MAX_ATTRS;
@@ -152,7 +169,10 @@ export const AttributesSection = ({
                       disabled={index === 0}
                       title={t('moveUp')}
                       aria-label={t('moveUp')}
-                      onClick={() => move(index, index - 1)}
+                      onClick={() => {
+                        move(index, index - 1);
+                        onAxisChange?.();
+                      }}
                       className={cn(editorIconButton, 'h-3.5 w-5 rounded-sm')}
                     >
                       <ChevronUpIcon className="size-2.5" />
@@ -162,7 +182,10 @@ export const AttributesSection = ({
                       disabled={index === fields.length - 1}
                       title={t('moveDown')}
                       aria-label={t('moveDown')}
-                      onClick={() => move(index, index + 1)}
+                      onClick={() => {
+                        move(index, index + 1);
+                        onAxisChange?.();
+                      }}
                       className={cn(editorIconButton, 'h-3.5 w-5 rounded-sm')}
                     >
                       <ChevronDownIcon className="size-2.5" />

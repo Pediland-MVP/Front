@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import { CommerceProductListItem } from '@/types/commerce';
@@ -24,6 +24,25 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push }),
 }));
 
+// The header button never enters this component's tree — `ProductListPage` hands it to the
+// `useHeaderFeatures` store and the console header renders it. Capture whatever node the store
+// was given so the test can render it directly; asserting on the permission probe (what the old
+// regression test did) cannot tell a rendered button from a dead code path.
+const { header } = vi.hoisted(() => ({ header: { buttons: null as React.ReactNode } }));
+vi.mock('@/lib/stores/useHeaderFeaturesStore', () => ({
+  useHeaderFeatures: (selector: (state: Record<string, unknown>) => unknown) =>
+    selector({
+      setButtons: (node: React.ReactNode) => {
+        header.buttons = node;
+      },
+      clearButtons: () => {},
+      setTools: () => {},
+      clearTools: () => {},
+      setError: () => {},
+      error: false,
+    }),
+}));
+
 import messages from '@/messages/fa.json';
 import { ProductListPage } from './ProductListPage';
 
@@ -34,6 +53,24 @@ function renderPage() {
     </NextIntlClientProvider>,
   );
 }
+
+/** Renders whatever `ProductListPage` pushed into the header slot. */
+function renderHeaderButtons() {
+  render(
+    <NextIntlClientProvider locale="fa" messages={messages}>
+      {header.buttons}
+    </NextIntlClientProvider>,
+  );
+}
+
+const listData = (item: CommerceProductListItem) => ({
+  data: {
+    items: [item],
+    meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
+  },
+  error: undefined,
+  isLoading: false,
+});
 
 const buildItem = (overrides: Partial<CommerceProductListItem> = {}): CommerceProductListItem => ({
   id: 'prod-1',
@@ -56,6 +93,7 @@ beforeEach(() => {
   // re-pin the default here — otherwise a `mockImplementation` set by one test
   // (e.g. the permission-gating tests below) would leak into the next test.
   mockCan.mockReset().mockReturnValue(false);
+  header.buttons = null;
 });
 
 describe('ProductListPage', () => {
@@ -181,25 +219,45 @@ describe('ProductListPage', () => {
     expect(screen.getByText(messages.Commerce.List.Card.delete)).toBeInTheDocument();
   });
 
-  // The product editor was removed, so the list is read-only apart from delete. Assert on the
-  // permission probes rather than on rendered text: the header "add" button lives in the
-  // `useHeaderFeatures` store (not this tree's DOM), so a text query cannot see it. If either
-  // entry point were ever re-added it would have to gate on one of these two slugs first.
-  it('never asks for the create/edit permissions, so no add or edit entry point exists', () => {
-    mockCan.mockReturnValue(true);
-    const item = buildItem();
-    mockUseSWRImmutable.mockReturnValue({
-      data: {
-        items: [item],
-        meta: { currentPage: 1, itemCount: 1, itemsPerPage: 21, totalItems: 1, totalPages: 1 },
-      },
-      error: undefined,
-      isLoading: false,
-    });
+  it('offers the add button in the header when the viewer can create products', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:create');
+    mockUseSWRImmutable.mockReturnValue(listData(buildItem()));
+
+    renderPage();
+    renderHeaderButtons();
+
+    expect(screen.getByText(messages.Commerce.List.add)).toBeInTheDocument();
+  });
+
+  it('hides the add button when the viewer cannot create products', () => {
+    mockCan.mockReturnValue(false);
+    mockUseSWRImmutable.mockReturnValue(listData(buildItem()));
+
+    renderPage();
+    renderHeaderButtons();
+
+    expect(screen.queryByText(messages.Commerce.List.add)).not.toBeInTheDocument();
+  });
+
+  it('renders the card edit button and routes to that product when the viewer can edit', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:edit');
+    mockUseSWRImmutable.mockReturnValue(listData(buildItem({ id: 'prod-7' })));
 
     renderPage();
 
-    expect(mockCan).not.toHaveBeenCalledWith('product:create');
-    expect(mockCan).not.toHaveBeenCalledWith('product:edit');
+    const editButton = screen.getByText(messages.Commerce.List.Card.edit);
+    expect(editButton).toBeInTheDocument();
+
+    fireEvent.click(editButton);
+    expect(push).toHaveBeenCalledWith('/products/prod-7');
+  });
+
+  it('does not render the card edit button when the viewer lacks the permission', () => {
+    mockCan.mockReturnValue(false);
+    mockUseSWRImmutable.mockReturnValue(listData(buildItem()));
+
+    renderPage();
+
+    expect(screen.queryByText(messages.Commerce.List.Card.edit)).not.toBeInTheDocument();
   });
 });
