@@ -153,26 +153,42 @@ const uploadPendingMedia = async (
 };
 
 /**
- * Local tile id → real media id.
+ * Local tile id → real media id, for tiles uploaded during THIS save.
  *
- * The upload endpoint is fire-and-forget from our side, so the link is positional: files went up
- * in pool order and `position` is assigned in arrival order, so the n-th surviving local id is
- * the n-th tile in the saved pool. That reasoning only holds when the counts agree — a create
- * starts from an empty pool, so they normally do. When they do not (an upload failed, or an edit
- * added to a pool that already had tiles) the map stays empty and the unresolvable ids are
- * dropped downstream rather than sent as-is.
+ * Cannot zip by raw count against the WHOLE saved pool: on CREATE the pool starts empty, so
+ * `detail.media.length` happens to equal the upload count and a plain positional zip works — but
+ * on EDIT the product can already have any number of photos, so `detail.media` after the refetch
+ * mixes pre-existing rows in with the new ones. Zipping by count there either lines up with the
+ * wrong rows or (if the counts disagree, which is the common case) produces an empty map, and an
+ * empty map silently drops the new photo's variant assignment with no toast — the exact bug this
+ * fixes.
+ *
+ * So the caller passes `preExistingIds`: every media id that was already in the form's pool
+ * BEFORE this save's uploads ran (`values.media` tiles with `isPending: false`). Excluding those
+ * from `saved` leaves exactly the rows created by this save, and THOSE can be zipped against
+ * `uploadedLocalIds` in upload order — safe because uploads are sequential and `position` is
+ * assigned server-side in arrival order, so the first upload is unconditionally the first new row.
+ *
+ * The guard still applies: if the counts disagree even after excluding the pre-existing ids (an
+ * upload failed, or a row landed for some other reason), nothing is guessed — same bail-out
+ * stance as `pairVariantRows`.
+ *
+ * Exported for the test and for nothing else — same rule as `pairVariantRows`.
  */
-const buildMediaIdMap = (
+export const buildMediaIdMap = (
   uploadedLocalIds: string[],
   saved: CommerceProductMedia[],
+  preExistingIds: ReadonlySet<string>,
 ): Map<string, string> => {
   const map = new Map<string, string>();
   if (!uploadedLocalIds.length) return map;
 
-  const ordered = [...saved].sort((a, b) => a.position - b.position);
-  if (uploadedLocalIds.length !== ordered.length) return map;
+  const newRows = [...saved]
+    .filter((item) => !preExistingIds.has(item.id))
+    .sort((a, b) => a.position - b.position);
+  if (uploadedLocalIds.length !== newRows.length) return map;
 
-  uploadedLocalIds.forEach((localId, index) => map.set(localId, ordered[index].id));
+  uploadedLocalIds.forEach((localId, index) => map.set(localId, newRows[index].id));
   return map;
 };
 
@@ -271,6 +287,12 @@ export const useProductSave = (
         }
 
         // ---- 2. the queued files, one at a time (see the header comment on why). ----
+        // Captured BEFORE the uploads run: this is the basis `buildMediaIdMap` uses to tell a
+        // pre-existing photo from one created by this save, not a count comparison — see its
+        // header comment for why the count is unsafe on edit.
+        const preExistingMediaIds = new Set(
+          values.media.filter((tile) => !tile.isPending).map((tile) => tile.id),
+        );
         const pending = values.media.filter((tile) => tile.isPending);
         const { uploadedLocalIds, failed } = pending.length
           ? await uploadPendingMedia(targetId, pending)
@@ -290,7 +312,7 @@ export const useProductSave = (
             targetId,
             values.variants,
             detail,
-            buildMediaIdMap(uploadedLocalIds, detail.media),
+            buildMediaIdMap(uploadedLocalIds, detail.media, preExistingMediaIds),
           );
         } catch {
           // Swallowed on purpose. Prices, stock, options and variants are already saved; raising
