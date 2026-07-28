@@ -2648,6 +2648,36 @@
         "confirmDeleteBody": "قیمت، موجودی و رسانه این تنوع‌ها حذف می‌شود.",
         "confirmDeleteOk": "حذف {count} تنوع",
         "cancel": "انصراف"
+      },
+      "Collections": {
+        "title": "مجموعه‌ها",
+        "countSelected": "{count} انتخاب شده",
+        "countNone": "هیچ‌کدام",
+        "search": "جست‌وجوی مجموعه",
+        "searchPlaceholder": "جست‌وجو در مجموعه‌ها…",
+        "productCount": "{count} محصول",
+        "noSearchMatch": "مجموعه‌ای با این نام نیست — می‌توانید پایین بسازیدش.",
+        "newCollection": "مجموعه تازه",
+        "newCollectionPlaceholder": "مجموعه تازه…",
+        "add": "افزودن",
+        "alreadyExists": "«{name}» از قبل هست — انتخاب شد",
+        "created": "مجموعه «{name}» ساخته و انتخاب شد"
+      },
+      "Tags": {
+        "title": "برچسب‌ها",
+        "count": "{count} برچسب",
+        "countEmpty": "خالی",
+        "empty": "هنوز برچسبی ندارد. برچسب‌ها به مشتری کمک می‌کند این محصول را در جست‌وجو پیدا کند.",
+        "newTag": "برچسب تازه",
+        "newTagPlaceholder": "برچسب تازه… و Enter",
+        "add": "افزودن",
+        "remove": "حذف برچسب {name}",
+        "splitHint": "چند برچسب را با کاما جدا کنید تا یک‌جا اضافه شوند.",
+        "suggestTitle": "پیشنهاد بر پایه دسته‌بندی",
+        "addedOne": "برچسب «{name}» اضافه شد",
+        "addedMany": "{count} برچسب اضافه شد",
+        "removed": "برچسب «{name}» برداشته شد",
+        "limitReached": "به سقف ۳۰ برچسب رسیده‌اید."
       }
     }
   }
