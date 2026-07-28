@@ -205,3 +205,133 @@
 .bg-instagram {
   background-image: linear-gradient(45deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%);
 }
+
+/* ---- Commerce product editor: the rules Tailwind cannot express ----
+ *
+ * Everything else on this page is Tailwind utilities. These are raw CSS for two concrete
+ * reasons, not for convenience:
+ *
+ * 1. `grid-template-areas` HAS NO TAILWIND UTILITY. Below 760px the variation grid stops being
+ *    seven columns and re-flows into a four-column / three-row card — checkbox and thumbnail
+ *    each span all three rows, and label / price / compare / stock / actions rearrange around
+ *    them. That is a named-area layout. Expressing it in an arbitrary-value class would mean an
+ *    unreadable `[grid-template-areas:...]` string plus seven `[grid-area:...]` classes, repeated
+ *    on every one of up to 2000 rows, at two breakpoints.
+ * 2. `[data-prose]` styles HTML THAT HAS NO CLASSES. The description surface is a
+ *    contentEditable whose children are generated at runtime — by `markdownToHtml` on load and
+ *    by `document.execCommand` on every toolbar press. Those <h3>/<p>/<ul>/<a>/<strong> elements
+ *    never pass through JSX, so there is nothing to hang a utility class on. A descendant
+ *    selector is the only hook.
+ *
+ * `[data-bad]` and `[data-chev]` ride along here because they must beat the `focus:`/`hover:`
+ * border utilities sitting on the same element — hence the `!important`.
+ */
+
+/* Variation grid, desktop: one column per header cell.
+   checkbox | label | media | price | compare | stock | actions */
+[data-vg] {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  grid-template-columns:
+    26px minmax(140px, 1.2fr) 88px minmax(120px, 1fr)
+    minmax(130px, 1fr) minmax(120px, 0.9fr) 56px;
+}
+
+@media (max-width: 760px) {
+  [data-vg] {
+    grid-template-columns: 24px 44px minmax(0, 1fr) minmax(58px, 84px) !important;
+    grid-template-areas:
+      'chk media label act'
+      'chk media price stock'
+      'chk media cmp  cmp' !important;
+    column-gap: 8px;
+    row-gap: 6px;
+    padding-inline: 11px !important;
+  }
+  /* Positional, because the row's children are fixed in count and order — a class per cell would
+     have to be threaded through three separate row components for no gain. */
+  [data-vg] > *:nth-child(1) {
+    grid-area: chk;
+    align-self: start;
+    margin-top: 12px;
+  }
+  [data-vg] > *:nth-child(2) {
+    grid-area: label;
+  }
+  [data-vg] > *:nth-child(3) {
+    grid-area: media;
+    align-self: start;
+  }
+  [data-vg] > *:nth-child(4) {
+    grid-area: price;
+  }
+  [data-vg] > *:nth-child(5) {
+    grid-area: cmp;
+  }
+  [data-vg] > *:nth-child(6) {
+    grid-area: stock;
+  }
+  [data-vg] > *:nth-child(7) {
+    grid-area: act;
+  }
+  /* The child row's indent is a desktop affordance; at this width it only eats the label. */
+  [data-row='leaf'] > *:nth-child(2) {
+    padding-inline-start: 0 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  [data-vg] {
+    grid-template-columns: 22px 38px minmax(0, 1fr) minmax(52px, 72px) !important;
+    column-gap: 6px;
+  }
+}
+
+/* An invalid cell. `empty` = a variation with no price, which blocks Save outright (the column
+   is NOT NULL). `zero` = a soft warning, e.g. compare not above price. */
+[data-bad='empty'] {
+  border-color: var(--dline) !important;
+  background: var(--dtint) !important;
+}
+[data-bad='zero'] {
+  border-color: var(--wline) !important;
+  background: var(--wtint) !important;
+}
+
+/* Expand/collapse chevron on a parent variation row. */
+[data-chev] {
+  transition: transform 0.18s ease-out;
+}
+[data-chev][aria-expanded='false'] {
+  transform: rotate(-90deg);
+}
+
+/* The WYSIWYG description surface — see reason 2 in the header note. `list-style` is restated
+   because Tailwind's preflight strips it from every <ul>. */
+[data-prose] h3 {
+  margin: 10px 0 4px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+[data-prose] p {
+  margin: 0 0 8px;
+}
+[data-prose] ul {
+  margin: 0 0 8px;
+  padding-inline-start: 20px;
+  list-style: disc;
+}
+[data-prose] li {
+  margin: 0 0 2px;
+}
+[data-prose] a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+[data-prose] strong {
+  font-weight: 800;
+}
+[data-prose] em {
+  font-style: italic;
+}

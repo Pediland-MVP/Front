@@ -2473,6 +2473,20 @@
         "specTitleRequired": "عنوان مشخصه را بنویسید.",
         "specBodyRequired": "توضیح مشخصه را بنویسید.",
         "tagLimit": "حداکثر ۳۰ برچسب می‌توانید اضافه کنید."
+      },
+      "TopBar": {
+        "breadcrumb": "مسیر",
+        "products": "محصولات",
+        "newProduct": "محصول تازه",
+        "editProduct": "ویرایش محصول",
+        "untitled": "بدون عنوان",
+        "preview": "پیش‌نمایش",
+        "revert": "بازگردانی",
+        "save": "ذخیره محصول",
+        "saving": "در حال ذخیره…",
+        "statusNoTitle": "عنوان ندارد",
+        "statusNoPrice": "{count} تنوع بدون قیمت",
+        "statusReady": "آماده انتشار"
       }
     }
   }
