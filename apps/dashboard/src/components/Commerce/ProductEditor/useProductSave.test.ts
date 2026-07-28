@@ -22,7 +22,10 @@ const { calls, apiMock, pushMock, toastMock, mutateMock, swrImmutableMock } = vi
     },
     pushMock: vi.fn(),
     toastMock: { success: vi.fn(), warning: vi.fn(), error: vi.fn() },
-    mutateMock: vi.fn(async () => undefined),
+    // Rest param: the hook now READS what `mutate(COLLECTIONS_KEY)` returns (the membership diff
+    // has to run against a fresh list, not the immutable cache), so a test needs to be able to
+    // answer per key.
+    mutateMock: vi.fn(async (..._args: unknown[]): Promise<unknown> => undefined),
     // Mutable per-test: the hook calls `useSWRImmutable(COLLECTIONS_KEY)` once, for the
     // membership diff. Defaults to "nothing loaded"; the edit tests override it with a fixture.
     // Typed with a rest param (rather than zero args) so it can stand in directly for the
@@ -129,6 +132,9 @@ beforeEach(() => {
   calls.length = 0;
   vi.clearAllMocks();
   swrImmutableMock.mockReturnValue({ data: undefined });
+  // `clearAllMocks` clears CALLS, not implementations — restated so a per-test override does not
+  // leak into the next one.
+  mutateMock.mockImplementation(async () => undefined);
 
   apiMock.post.mockImplementation(async (url: string) => {
     calls.push(`POST ${url}`);
@@ -352,6 +358,53 @@ describe('useProductSave (edit)', () => {
     // second Save must not try to re-create rows that already exist.
     expect(onSaved).toHaveBeenCalledWith(editDetail);
   });
+
+  it('diffs collection membership against a FRESHLY revalidated list, not the immutable cache', async () => {
+    // The rail reads `useSWRImmutable`, which never revalidates on focus or reconnect — so its
+    // `productIds[]` is whatever it was when the editor opened. Somebody else added `p-other` to
+    // `c-1` in the meantime; `PUT /commerce/collections/:id` replaces the WHOLE array, so diffing
+    // against the stale copy would write `p-other` straight out of the collection.
+    mutateMock.mockImplementation(async (key: unknown) =>
+      key === '/commerce/collections'
+        ? { items: [collection({ id: 'c-1', productIds: ['p-other'] })] }
+        : undefined,
+    );
+
+    const { result } = renderHook(() => useProductSave('edit', 'p-edit'));
+    await act(async () => {
+      await result.current.save(editValues());
+    });
+
+    expect(apiMock.put).toHaveBeenCalledWith('/commerce/collections/c-1', {
+      productIds: ['p-other', 'p-edit'],
+    });
+    // `c-2` is only a member in the stale cache; the fresh list does not list it at all, so there
+    // is nothing to write.
+    expect(apiMock.put).not.toHaveBeenCalledWith('/commerce/collections/c-2', expect.anything());
+  });
+
+  it('warns instead of claiming success when a per-variant media write fails', async () => {
+    // Assign a photo to a row, have its PUT 500. The product itself is committed, so this is a
+    // warning — but it must NOT be swallowed under "تغییرات ذخیره شد", or the merchant navigates
+    // away believing the assignment landed.
+    apiMock.put.mockImplementation(async (url: string) => {
+      calls.push(`PUT ${url}`);
+      if (url.includes('/variants/')) throw new Error('variant media failed');
+      return { data: {} };
+    });
+
+    const { result } = renderHook(() => useProductSave('edit', 'p-edit'));
+    await act(async () => {
+      await result.current.save(editValues());
+    });
+
+    expect(toastMock.warning).toHaveBeenCalledTimes(1);
+    expect(toastMock.success).not.toHaveBeenCalled();
+    // The failure does not abort the rest of the sequence either — collections still sync.
+    expect(apiMock.put).toHaveBeenCalledWith('/commerce/collections/c-1', {
+      productIds: ['p-edit'],
+    });
+  });
 });
 
 describe('useProductSave error toasts', () => {
@@ -466,8 +519,13 @@ describe('pairVariantRows', () => {
 
 describe('buildMediaIdMap', () => {
   it('resolves a create where the whole saved pool is new (count zip degenerates correctly)', () => {
-    const map = buildMediaIdMap(['local-1'], [media({ id: 'm-1', position: 0 })], new Set());
+    const { map, incomplete } = buildMediaIdMap(
+      ['local-1'],
+      [media({ id: 'm-1', position: 0 })],
+      new Set(),
+    );
     expect(map.get('local-1')).toBe('m-1');
+    expect(incomplete).toBe(false);
   });
 
   it('resolves an edit where the pool already had photos before this save (the fixed bug)', () => {
@@ -479,17 +537,27 @@ describe('buildMediaIdMap', () => {
     ];
     const preExisting = new Set(['m-1', 'm-2', 'm-3']);
 
-    const map = buildMediaIdMap(['local-4'], saved, preExisting);
+    const { map, incomplete } = buildMediaIdMap(['local-4'], saved, preExisting);
 
     expect(map.get('local-4')).toBe('m-4');
     expect(map.size).toBe(1);
+    expect(incomplete).toBe(false);
   });
 
-  it('stays empty when the new-row count disagrees with the upload count, instead of guessing', () => {
+  it('stays empty AND says so when the new-row count disagrees with the upload count', () => {
     // Only one row is actually new, but two local ids claim to have been uploaded — a state that
-    // should never happen, but the guard must still refuse to zip rather than mis-pair.
+    // should never happen, but the guard must still refuse to zip rather than mis-pair. It must
+    // also REPORT it: an empty map drops every new photo's variant assignment, and doing that
+    // under a success toast is how the merchant is told an assignment landed when it did not.
     const saved = [media({ id: 'm-1', position: 0 }), media({ id: 'm-2', position: 1 })];
-    const map = buildMediaIdMap(['local-a', 'local-b'], saved, new Set(['m-1']));
+    const { map, incomplete } = buildMediaIdMap(['local-a', 'local-b'], saved, new Set(['m-1']));
     expect(map.size).toBe(0);
+    expect(incomplete).toBe(true);
+  });
+
+  it('reports nothing to do as complete, not as a bail-out', () => {
+    const { map, incomplete } = buildMediaIdMap([], [media()], new Set());
+    expect(map.size).toBe(0);
+    expect(incomplete).toBe(false);
   });
 });

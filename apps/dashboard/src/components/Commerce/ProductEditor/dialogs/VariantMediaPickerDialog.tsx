@@ -18,14 +18,11 @@ import {
 } from '@/components/ui';
 
 import { topKeyOf } from '../variant/variantTree.util';
-import type { ProductFormValues } from '../productEditor.schema';
+import type { VariantMediaTarget } from '../variant/VariantLeafRow';
+import { posterOf, type ProductFormValues } from '../productEditor.schema';
 
-/**
- * `row` is one leaf by its field-array index; `group` is a parent row, keyed by its FIRST axis
- * value — the same first-axis grouping `topKeyOf` gives the variant grid, so "this group" means
- * exactly the leaves drawn under that parent and nothing else.
- */
-export type VariantMediaTarget = { kind: 'row'; index: number } | { kind: 'group'; key: string };
+/** Re-exported, not redeclared — `variant/VariantLeafRow` owns the one definition. */
+export type { VariantMediaTarget };
 
 export const VariantMediaPickerDialog = ({
   target,
@@ -95,6 +92,11 @@ export const VariantMediaPickerDialog = ({
             {media.map((item) => {
               const order = current.indexOf(item.id);
               const isPicked = order >= 0;
+              // A video's own url is the video FILE — `next/image` renders it as a broken tile.
+              // Draw its poster frame when the backend resolved one, and fall back to a real
+              // `<video>` element when it did not (a file queued in create mode has neither an
+              // upload nor a poster yet).
+              const poster = posterOf(item);
               return (
                 <button
                   key={item.id}
@@ -114,14 +116,23 @@ export const VariantMediaPickerDialog = ({
                     that has not been uploaded yet, and the Next image optimizer cannot fetch
                     one.
                   */}
-                  <Image
-                    src={item.url}
-                    alt={item.name}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                    sizes="104px"
-                  />
+                  {poster ? (
+                    <Image
+                      src={poster}
+                      alt={item.name}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                      sizes="104px"
+                    />
+                  ) : (
+                    <video
+                      src={item.url}
+                      muted
+                      aria-hidden="true"
+                      className="absolute inset-0 size-full object-cover"
+                    />
+                  )}
 
                   {item.type === 'video' && (
                     <span className="bg-dark absolute start-1 bottom-1 rounded px-1.5 text-xs font-bold text-white">

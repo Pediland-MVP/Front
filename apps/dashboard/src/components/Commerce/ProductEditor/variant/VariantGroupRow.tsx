@@ -281,7 +281,7 @@ export function VariantGroupRow({
             title={t('discount')}
             className="bg-dtint text-dtext flex-none rounded-full px-1.5 py-0.5 text-xs font-bold"
           >
-            ٪{formatCount(discount)}
+            {t('discountBadge', { percent: formatCount(discount) })}
           </span>
         )}
       </div>

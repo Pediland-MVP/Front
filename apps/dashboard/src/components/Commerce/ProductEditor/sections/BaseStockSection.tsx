@@ -15,9 +15,11 @@ import { EditorSection } from '../ui/EditorSection';
 /**
  * Step ۶ — the base stock.
  *
- * Same lock rule as step ۵, but a narrower seed: this count goes to the FIRST generated variation
- * only. Copying "۱۰ تا" across every size×colour row would invent stock the merchant never
- * counted, and inventory here is a real ledger (`InventoryService.setStock` writes a MANUAL row).
+ * Same lock rule as step ۵ — a variant row AND an axis that actually has values, never the bare
+ * `options.length`, which counts the empty axis "افزودن ویژگی" just appended — but a narrower
+ * seed: this count goes to the FIRST generated variation only. Copying "۱۰ تا" across every
+ * size×colour row would invent stock the merchant never counted, and inventory here is a real
+ * ledger (`InventoryService.setStock` writes a MANUAL row).
  */
 export const BaseStockSection = ({ step = 6 }: { step?: number }) => {
   const t = useTranslations('Commerce.Editor.BaseStock');
@@ -26,7 +28,8 @@ export const BaseStockSection = ({ step = 6 }: { step?: number }) => {
 
   const variants = useWatch({ control, name: 'variants' }) ?? [];
   const options = useWatch({ control, name: 'options' }) ?? [];
-  const locked = variants.length > 0 && options.length > 0;
+  const liveAxes = options.filter((option) => (option.values?.length ?? 0) > 0).length;
+  const locked = variants.length > 0 && liveAxes > 0;
 
   const { field: stock } = useController({ control, name: 'baseStock' });
 

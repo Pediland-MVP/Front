@@ -173,37 +173,48 @@ const uploadPendingMedia = async (
  * upload failed, or a row landed for some other reason), nothing is guessed — same bail-out
  * stance as `pairVariantRows`.
  *
+ * The bail-out is REPORTED, not just taken: an empty map makes `saveVariantMedia` filter every
+ * new photo's assignment away at `realIds.has(id)`, and doing that under a plain "تغییرات ذخیره
+ * شد" tells the merchant an assignment landed when it did not. `incomplete` routes it into the
+ * same warning toast a failed upload uses.
+ *
  * Exported for the test and for nothing else — same rule as `pairVariantRows`.
  */
 export const buildMediaIdMap = (
   uploadedLocalIds: string[],
   saved: CommerceProductMedia[],
   preExistingIds: ReadonlySet<string>,
-): Map<string, string> => {
+): { map: Map<string, string>; incomplete: boolean } => {
   const map = new Map<string, string>();
-  if (!uploadedLocalIds.length) return map;
+  if (!uploadedLocalIds.length) return { map, incomplete: false };
 
   const newRows = [...saved]
     .filter((item) => !preExistingIds.has(item.id))
     .sort((a, b) => a.position - b.position);
-  if (uploadedLocalIds.length !== newRows.length) return map;
+  if (uploadedLocalIds.length !== newRows.length) return { map, incomplete: true };
 
   uploadedLocalIds.forEach((localId, index) => map.set(localId, newRows[index].id));
-  return map;
+  return { map, incomplete: false };
 };
 
 /**
  * Writes each variant's media assignment, but only where it actually changed — including a
  * change to the empty list, which is how "this variant goes back to the product cover" is
  * expressed. Full-replace semantics: the endpoint takes the complete desired set, never a delta.
+ *
+ * Each PUT is independent, so ONE failure must not abandon the rest: assign a photo to five rows,
+ * have the first 500, and aborting there leaves four rows the merchant explicitly set untouched.
+ * The loop keeps going and returns how many failed, so the caller can say so out loud instead of
+ * showing a success toast over a partial write.
  */
 const saveVariantMedia = async (
   productId: string,
   rows: ProductFormValues['variants'],
   detail: CommerceProductDetail,
   mediaIdMap: Map<string, string>,
-): Promise<void> => {
+): Promise<{ failed: number }> => {
   const realIds = new Set(detail.media.map((item) => item.id));
+  let failed = 0;
 
   for (const { row, variant } of pairVariantRows(rows, detail.variants)) {
     const mediaIds = row.mediaIds
@@ -213,18 +224,28 @@ const saveVariantMedia = async (
 
     if (sameIds(mediaIds, variant.media?.selectedMediaIds ?? [])) continue;
 
-    await api.put(`/commerce/products/${productId}/variants/${variant.id}/media`, {
-      mediaIds,
-      ...(mediaIds[0] ? { coverMediaId: mediaIds[0] } : {}),
-    });
+    try {
+      await api.put(`/commerce/products/${productId}/variants/${variant.id}/media`, {
+        mediaIds,
+        ...(mediaIds[0] ? { coverMediaId: mediaIds[0] } : {}),
+      });
+    } catch {
+      failed += 1;
+    }
   }
+
+  return { failed };
 };
 
 /**
  * Brings collection membership in line with the form, one PUT per collection that actually
  * changed. There is no product-scoped "add to collection" route: the only write is
  * `PUT /commerce/collections/:id`, which replaces that collection's ENTIRE `productIds[]`, so
- * each change is a read-modify-write against the list this hook already has cached.
+ * each change is a read-modify-write.
+ *
+ * `collections` MUST be a freshly revalidated list, not the editor's cached one — see the call
+ * site. The baseline is what every other product's membership is rebuilt from, so a stale one
+ * silently evicts products this editor has never heard of.
  */
 const syncCollections = async (
   productId: string,
@@ -269,8 +290,9 @@ export const useProductSave = (
       if (mode === 'edit' && !productId) return;
 
       setIsSaving(true);
-      let softFailure: 'media' | 'collections' | null = null;
+      let softFailure: 'media' | 'variantMedia' | 'collections' | null = null;
       let mediaFailedCount = 0;
+      let variantMediaFailedCount = 0;
 
       try {
         // ---- 1. the product itself. The only step that can fail the save. ----
@@ -307,24 +329,47 @@ export const useProductSave = (
         const detail = detailResponse.data;
 
         // ---- 4. variant media. ----
+        // Never fails the SAVE — prices, stock, options and variants are already committed, and
+        // calling that "saving failed" would tell the merchant to redo work that is done. But it
+        // is not silent either: a swallowed failure under a success toast is how somebody
+        // navigates away believing five rows got their photo when the first PUT 500'd.
         try {
-          await saveVariantMedia(
+          const { map, incomplete } = buildMediaIdMap(
+            uploadedLocalIds,
+            detail.media,
+            preExistingMediaIds,
+          );
+          const { failed: variantMediaFailed } = await saveVariantMedia(
             targetId,
             values.variants,
             detail,
-            buildMediaIdMap(uploadedLocalIds, detail.media, preExistingMediaIds),
+            map,
           );
+          // `incomplete` counts as one: the map bailed out, so EVERY new photo's assignment was
+          // filtered away — the rows are not individually knowable, but the merchant must be told
+          // it did not land.
+          variantMediaFailedCount = variantMediaFailed + (incomplete ? 1 : 0);
         } catch {
-          // Swallowed on purpose. Prices, stock, options and variants are already saved; raising
-          // this as "saving failed" would tell the merchant to redo work that is committed. It is
-          // an assignment that can be redone from the row's own media button, and the row still
-          // shows the product cover meanwhile.
+          // The pairing itself threw (not one PUT). Same stance: report, do not fail the save.
+          variantMediaFailedCount = 1;
         }
+        if (variantMediaFailedCount > 0) softFailure = softFailure ?? 'variantMedia';
 
         // ---- 5. collection membership (edit only). ----
         if (mode === 'edit') {
           try {
-            await syncCollections(targetId, values.collectionIds, collections);
+            /**
+             * Revalidate FIRST, and diff against what comes back.
+             *
+             * The rail reads `useSWRImmutable(COLLECTIONS_KEY)`, which by definition never
+             * revalidates on focus, reconnect or staleness — so the cached `productIds[]` is
+             * whatever it was when the editor opened. `PUT /commerce/collections/:id` replaces
+             * the WHOLE array, so ticking a collection after somebody else added a different
+             * product to it would write that other product straight out of the collection.
+             */
+            const fresh =
+              await mutate<PaginatedResult<CommerceCollectionListItem[]>>(COLLECTIONS_KEY);
+            await syncCollections(targetId, values.collectionIds, fresh?.items ?? collections);
             await mutate(COLLECTIONS_KEY);
           } catch {
             softFailure = softFailure ?? 'collections';
@@ -333,6 +378,8 @@ export const useProductSave = (
 
         if (softFailure === 'media') {
           toast.warning(t('Toast.savedWithMediaErrors', { count: mediaFailedCount }));
+        } else if (softFailure === 'variantMedia') {
+          toast.warning(t('Toast.savedWithVariantMediaErrors', { count: variantMediaFailedCount }));
         } else if (softFailure === 'collections') {
           toast.warning(t('Toast.collectionsFailed'));
         } else {

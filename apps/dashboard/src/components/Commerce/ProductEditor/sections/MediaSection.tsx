@@ -7,6 +7,7 @@ import { UploadIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import e2pNumbers from '@/utils/e2pNumber';
 
+import type { EditorMedia } from '../productEditor.schema';
 import { EditorSection } from '../ui/EditorSection';
 
 /**
@@ -16,15 +17,12 @@ import { EditorSection } from '../ui/EditorSection';
  * and the upload endpoint needs an id in its path, so there is nowhere to put the file until
  * `POST /commerce/products` has returned one. It renders from an object URL and the page uploads
  * it right after create (spec, decision 3).
+ *
+ * Re-exported, NOT redeclared: this file used to carry its own structurally identical copy, and
+ * two definitions of the same tile drift the moment a field is added to one of them — silently,
+ * because nothing in the type system compares them.
  */
-export interface EditorMedia {
-  id: string;
-  name: string;
-  url: string;
-  type: 'image' | 'video';
-  isPending: boolean;
-  file?: File;
-}
+export type { EditorMedia };
 
 /**
  * Step ۴ — the media pool.
@@ -137,7 +135,12 @@ export const MediaSection = ({
                 )}
               >
                 {item.type === 'video' ? (
-                  <video src={item.url} muted className="h-full w-full object-cover" />
+                  <video
+                    src={item.url}
+                    poster={item.posterUrl ?? undefined}
+                    muted
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   // Plain <img>: a pending tile's src is a local blob: URL, which next/image
                   // cannot optimise, and mixing the two components per tile buys nothing.

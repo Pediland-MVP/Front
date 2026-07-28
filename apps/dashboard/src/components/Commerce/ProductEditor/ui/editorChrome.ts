@@ -33,13 +33,6 @@ export const editorInputSm =
   'focus:border-primary focus:ring-ring/40 focus:ring-[3px] ' +
   'disabled:cursor-not-allowed disabled:opacity-60';
 
-/** Variation-grid cell input — 34px, sits flush in the row. */
-export const editorInputCell =
-  'bg-card border-ln h-[34px] w-full min-w-0 rounded-md border px-2.5 text-xs outline-none ' +
-  'transition-[border-color,box-shadow] ' +
-  'focus:border-primary focus:ring-ring/40 focus:ring-[3px] ' +
-  'disabled:cursor-not-allowed disabled:opacity-60';
-
 /**
  * A field that reads as plain text until you touch it — used for the option and spec titles,
  * where a permanent input border would turn a short list into a wall of boxes.
@@ -85,9 +78,6 @@ export const editorChip =
 export const editorChipSuggest =
   'border-lnv bg-card text-mut rounded-full border border-dashed px-2.5 py-1 text-xs ' +
   'font-semibold transition-colors hover:border-primary hover:bg-tint2 hover:text-primary';
-
-/** Muted strip used for a card's header or footer band. */
-export const editorBand = 'bg-muted border-lnv text-mut text-xs';
 
 /** Empty-state box inside a card. */
 export const editorEmptyBox = 'border-ln rounded-lg border border-dashed px-4 py-6 text-center';

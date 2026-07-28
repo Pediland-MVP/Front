@@ -28,8 +28,18 @@ import { EditorSection } from '../ui/EditorSection';
  */
 export const SpecsSection = ({ step = 8 }: { step?: number }) => {
   const t = useTranslations('Commerce.Editor.Specs');
-  const { control, register } = useFormContext<ProductFormValues>();
+  const {
+    control,
+    register,
+    formState: { errors },
+  } = useFormContext<ProductFormValues>();
   const { fields, append, remove } = useFieldArray({ control, name: 'specs' });
+
+  /**
+   * A half-filled spec row fails `min(1)` on the title or the body and blocks Save. It used to do
+   * so with nothing red on screen, so "موردهای قرمز را درست کنید" pointed at nothing.
+   */
+  const rowError = (index: number) => errors.specs?.[index];
 
   return (
     <EditorSection bare step={step} title={t('title')} hint={t('hint')}>
@@ -46,6 +56,7 @@ export const SpecsSection = ({ step = 8 }: { step?: number }) => {
                   {...register(`specs.${index}.title`)}
                   aria-label={t('titlePlaceholder')}
                   placeholder={t('titlePlaceholder')}
+                  data-bad={rowError(index)?.title ? 'empty' : undefined}
                   className={editorInputGhost}
                 />
                 <button
@@ -61,8 +72,14 @@ export const SpecsSection = ({ step = 8 }: { step?: number }) => {
                 {...register(`specs.${index}.body`)}
                 aria-label={t('bodyPlaceholder')}
                 placeholder={t('bodyPlaceholder')}
+                data-bad={rowError(index)?.body ? 'empty' : undefined}
                 className={editorInputSm}
               />
+              {(rowError(index)?.title || rowError(index)?.body) && (
+                <p className="text-dtext m-0 text-xs">
+                  {rowError(index)?.title?.message ?? rowError(index)?.body?.message}
+                </p>
+              )}
             </div>
           ))}
 

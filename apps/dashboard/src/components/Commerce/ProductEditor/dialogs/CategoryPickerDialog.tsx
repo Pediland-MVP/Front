@@ -48,6 +48,9 @@ export const CategoryPickerDialog = ({
   onCreateSub,
 }: CategoryPickerDialogProps) => {
   const t = useTranslations('Commerce.Editor.CategoryPicker');
+  // The breadcrumb arrow is a per-locale decision (it flips in an RTL path), so it comes from
+  // `fa.json` like it does in the editor shell — not as a glyph typed into this file.
+  const tCategory = useTranslations('Commerce.Editor.Category');
   const { control, setValue } = useFormContext<ProductFormValues>();
   const categoryId = useWatch({ control, name: 'categoryId' }) ?? null;
 
@@ -74,10 +77,10 @@ export const CategoryPickerDialog = ({
     for (const root of tree) {
       if (root.id === categoryId) return root.name;
       const sub = root.subs.find((candidate) => candidate.id === categoryId);
-      if (sub) return `${root.name} › ${sub.name}`;
+      if (sub) return `${root.name}${tCategory('pathSeparator')}${sub.name}`;
     }
     return null;
-  }, [tree, categoryId]);
+  }, [tree, categoryId, tCategory]);
 
   const toggleOpen = (id: string) =>
     setOpenIds((current) =>

@@ -19,9 +19,14 @@ import { EditorSection } from '../ui/EditorSection';
  * variation's price. Once real variations exist the seed has nothing left to seed, and editing it
  * would silently do nothing — so the card locks instead of lying.
  *
- * "Real variations" means BOTH arrays are non-empty. `variants.length > 0` alone is not enough: a
- * product with no option axes still carries exactly one variant row (the product itself), and
- * that row IS what this card edits.
+ * "Real variations" means there is at least one variant row AND at least one axis that actually
+ * HAS values. `variants.length > 0` alone is not enough: a product with no option axes still
+ * carries exactly one variant row (the product itself), and that row IS what this card edits.
+ *
+ * And `options.length > 0` is not the right second half either — pressing "افزودن ویژگی" appends
+ * an empty axis, which generates no combination at all, so the card would grey out while the
+ * single implicit row it edits is still the only thing there. Only an axis with values can
+ * multiply into rows, which is exactly the set `axesOfValues` keeps at payload time.
  */
 export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
   const t = useTranslations('Commerce.Editor.BasePrice');
@@ -30,7 +35,8 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
 
   const variants = useWatch({ control, name: 'variants' }) ?? [];
   const options = useWatch({ control, name: 'options' }) ?? [];
-  const locked = variants.length > 0 && options.length > 0;
+  const liveAxes = options.filter((option) => (option.values?.length ?? 0) > 0).length;
+  const locked = variants.length > 0 && liveAxes > 0;
 
   const { field: price } = useController({ control, name: 'basePrice' });
   const { field: compare } = useController({ control, name: 'baseCompare' });

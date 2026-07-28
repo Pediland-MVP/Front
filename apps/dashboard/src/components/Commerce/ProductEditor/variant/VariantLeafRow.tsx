@@ -17,12 +17,27 @@ import {
 
 export interface VariantMediaItem {
   id: string;
+  /**
+   * The STILL to draw — a video's poster frame, never the video file itself (see `posterOf`).
+   * `null` when there is no still, which is how a queued create-mode video arrives; the row then
+   * draws its `+` placeholder instead of a broken image.
+   */
   url: string | null;
   name: string;
   isVideo?: boolean;
 }
 
-/** What the media picker (Task 9) is being opened for. */
+/**
+ * What the media picker is being opened for.
+ *
+ * `row` is one leaf by its field-array index; `group` is a parent row, keyed by its FIRST axis
+ * value — the same first-axis grouping `topKeyOf` gives the variant grid, so "this group" means
+ * exactly the leaves drawn under that parent and nothing else.
+ *
+ * THE ONE definition; `dialogs/VariantMediaPickerDialog` re-exports it. It used to be declared in
+ * both, structurally identical, so the producer and the consumer of a picker target could have
+ * drifted apart without a single compiler error.
+ */
 export type VariantMediaTarget = { kind: 'row'; index: number } | { kind: 'group'; key: string };
 
 export interface VariantLeafRowProps {
@@ -157,7 +172,7 @@ export function VariantLeafRow({
             title={t('discount')}
             className="bg-dtint text-dtext flex-none rounded-full px-1.5 py-0.5 text-xs font-bold"
           >
-            ٪{formatCount(discount)}
+            {t('discountBadge', { percent: formatCount(discount) })}
           </span>
         )}
       </div>

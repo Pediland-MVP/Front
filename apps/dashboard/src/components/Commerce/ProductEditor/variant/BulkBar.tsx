@@ -52,8 +52,15 @@ export function BulkBar({ selectedIndexes, media, onClear, onDelete }: BulkBarPr
 
   if (!selectedIndexes.length) return null;
 
+  /**
+   * `اعمال` used to sit there fully enabled with an empty box and do nothing at all when clicked —
+   * `parseAmount('')` is null and both handlers returned early, with no toast and no visible
+   * change. The button is disabled instead, and says why.
+   */
+  const amount = parseAmount(value);
+  const canApply = amount != null;
+
   const applyPrice = () => {
-    const amount = parseAmount(value);
     if (amount == null) return;
 
     let changed = 0;
@@ -85,7 +92,6 @@ export function BulkBar({ selectedIndexes, media, onClear, onDelete }: BulkBarPr
   };
 
   const applyStock = () => {
-    const amount = parseAmount(value);
     if (amount == null) return;
     selectedIndexes.forEach((index) => {
       setValue(`variants.${index}.stock`, amount, { shouldDirty: true });
@@ -179,7 +185,9 @@ export function BulkBar({ selectedIndexes, media, onClear, onDelete }: BulkBarPr
             <button
               type="button"
               onClick={applyPrice}
-              className="bg-primary text-ink h-7 rounded-md px-3 text-xs font-extrabold"
+              disabled={!canApply}
+              title={canApply ? undefined : t('applyDisabled')}
+              className="bg-primary text-ink h-7 rounded-md px-3 text-xs font-extrabold disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t('apply')}
             </button>
@@ -203,7 +211,9 @@ export function BulkBar({ selectedIndexes, media, onClear, onDelete }: BulkBarPr
             <button
               type="button"
               onClick={applyStock}
-              className="bg-primary text-ink h-7 rounded-md px-3 text-xs font-extrabold"
+              disabled={!canApply}
+              title={canApply ? undefined : t('applyDisabled')}
+              className="bg-primary text-ink h-7 rounded-md px-3 text-xs font-extrabold disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t('apply')}
             </button>

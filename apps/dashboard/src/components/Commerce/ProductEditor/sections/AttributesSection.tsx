@@ -8,7 +8,8 @@ import { ChevronDownIcon, ChevronUpIcon, PlusIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import e2pNumbers from '@/utils/e2pNumber';
 
-import type { ProductFormValues } from '../productEditor.schema';
+import type { EditorConfirm } from '../dialogs/ConfirmDialog';
+import { MAX_ATTRS, type ProductFormValues } from '../productEditor.schema';
 import {
   editorAddButton,
   editorAddButtonSm,
@@ -23,16 +24,23 @@ import {
 } from '../ui/editorChrome';
 import { EditorSection } from '../ui/EditorSection';
 
-/** Mirrors `@ArrayMaxSize(3)` on the backend's `options` — the add button disables at three. */
-export const MAX_ATTRS = 3;
+/**
+ * Mirrors `@ArrayMaxSize(3)` on the backend's `options` — the add button disables at three.
+ *
+ * Re-exported from the schema, not redeclared: the same ceiling is enforced by zod, and two
+ * copies of it would let this button keep accepting a fourth axis that validation then rejects.
+ * Same rule `useVariantSync` follows for `MAX_VARIANTS`.
+ */
+export { MAX_ATTRS };
 
-/** A destructive action the page must confirm before it runs. */
-export interface EditorConfirm {
-  title: string;
-  body: string;
-  ok: string;
-  run: () => void;
-}
+/**
+ * A destructive action the page must confirm before it runs.
+ *
+ * Re-exported from the dialog that renders it. Declaring it twice meant the producer (this
+ * section) and the consumer (`ConfirmDialog`) could disagree about the shape with nothing to
+ * catch it. Type-only, so nothing about the dialog's runtime is pulled in here.
+ */
+export type { EditorConfirm };
 
 /**
  * Step ۷ — the option axes.
@@ -65,8 +73,21 @@ export const AttributesSection = ({
   onAxisChange?: () => void;
 }) => {
   const t = useTranslations('Commerce.Editor.Attributes');
-  const { control, register, getValues, setValue } = useFormContext<ProductFormValues>();
+  const {
+    control,
+    register,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = useFormContext<ProductFormValues>();
   const { fields, append, remove, move } = useFieldArray({ control, name: 'options' });
+
+  /**
+   * An axis with no name fails `optionSchema.name.min(1)` and blocks Save. Without this the page
+   * said "موردهای قرمز را درست کنید" and there was nothing red anywhere on screen — the error was
+   * real, invisible, and unfixable except by guessing.
+   */
+  const nameError = (index: number) => errors.options?.[index]?.name;
 
   // `useFieldArray`'s `fields` is a SNAPSHOT, refreshed only when the array's own shape changes —
   // it does not see a `setValue` into `options.N.values`. The chips render off this live watch.
@@ -196,6 +217,7 @@ export const AttributesSection = ({
                     {...register(`options.${index}.name`)}
                     aria-label={t('namePlaceholder')}
                     placeholder={t('namePlaceholder')}
+                    data-bad={nameError(index) ? 'empty' : undefined}
                     className={editorInputGhost}
                   />
 
@@ -258,7 +280,9 @@ export const AttributesSection = ({
                     {t('add')}
                   </button>
                 </div>
-                <p className="text-mut mt-1.5 text-xs">{t('splitHint')}</p>
+                <p className={cn('mt-1.5 text-xs', nameError(index) ? 'text-dtext' : 'text-mut')}>
+                  {nameError(index)?.message ?? t('splitHint')}
+                </p>
               </div>
             );
           })}

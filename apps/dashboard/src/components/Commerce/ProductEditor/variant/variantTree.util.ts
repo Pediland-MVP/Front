@@ -69,6 +69,40 @@ export const missingCombos = (
 };
 
 /**
+ * A row's `valueIds` re-sorted into the CURRENT axis order, or `null` when the row does not carry
+ * exactly one live value per axis.
+ *
+ * This exists because `valueIds` is positional — slot `i` belongs to axis `i` — so MOVING an axis
+ * invalidates every row's array even though not one combination has changed. Without this, a
+ * cosmetic "move up" click makes `orphanRowIndexes` flag every row in the product, and the
+ * regeneration that follows drops every variant id and every field that has no control on this
+ * page (sku, weight, the sale window, isActive). Reordering in place instead keeps the rows
+ * exactly as they are; only the order inside each array changes.
+ *
+ * `null` is returned for a genuine orphan — a row that predates an axis, points at a value that
+ * has since been deleted, or somehow carries two values from the same axis. That set is exactly
+ * what `orphanRowIndexes` reports, so a caller that realigns first can keep using it unchanged.
+ */
+export const realignValueIds = (axes: TreeAxis[], valueIds: readonly string[]): string[] | null => {
+  const live = axesOf(axes);
+  if (valueIds.length !== live.length) return null;
+
+  const axisOfValue = new Map<string, number>();
+  live.forEach((axis, axisIndex) =>
+    axis.values.forEach((value) => axisOfValue.set(value.id, axisIndex)),
+  );
+
+  const slots: Array<string | null> = new Array(live.length).fill(null);
+  for (const valueId of valueIds) {
+    const axisIndex = axisOfValue.get(valueId);
+    // Unknown value, or a second value claiming an axis that is already filled.
+    if (axisIndex == null || slots[axisIndex] != null) return null;
+    slots[axisIndex] = valueId;
+  }
+  return slots.every((id): id is string => id != null) ? (slots as string[]) : null;
+};
+
+/**
  * Rows that no longer describe a valid combination — either they predate an axis (too few ids)
  * or they point at a value that has since been deleted. Returned as INDEXES so the caller can
  * feed them straight to react-hook-form's `remove()`.

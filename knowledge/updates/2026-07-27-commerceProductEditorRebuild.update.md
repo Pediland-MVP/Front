@@ -124,3 +124,121 @@ No backend change. The editor becomes a consumer of `GET /commerce/tags` and
   should land across all three together.
 - `Attributes.removeValue` and `Variants.remove` both render as `حذف {x}`, so an axis chip's ✕ and
   its variant row's ✕ read identically to a screen reader. Copy fix, not yet done.
+
+## Final whole-branch review — fix wave (2026-07-28)
+
+The pre-merge review found two CRITICAL data-loss paths and six IMPORTANT items. All are fixed in
+one wave; the two criticals are covered by tests that were confirmed to FAIL against the pre-fix
+code first.
+
+### C1 — an axis-shape change no longer strips a variant of its identity
+
+`buildRow` hardcoded `sku: null, weight: null, salePrice/saleStartsAt/saleEndsAt: null,
+allowBackorder: false, isActive: true` and minted no `id`, and `donorOf` carried only
+price/compare/stock/infinite/mediaIds. Because `buildUpdatePayload` sends
+`cascadeDeleteVariants: true` and `PUT /commerce/products/:id` replaces the whole variants array,
+a regenerated row arriving without an `id` is a DELETE of the real variant plus a blank INSERT —
+every SKU gone, every weight gone, and a deliberately deactivated variant back on sale. The price
+carried over, so the grid looked unchanged and only a toast hinted at it.
+
+- `RowSeed`/`buildRow` now carry the donor's `id` and all seven no-UI fields.
+- `id`, `sku` and `stock` are IDENTITY/QUANTITY and go to the first taker only (one donor can feed
+  three combinations); everything else describes the product and is copied to all of them.
+- `infinite` moved from the stock claim to the template set — ∞ is a tracking mode, not a count,
+  and gating it left the extra rows reading "no stock" instead of "untracked".
+- `ProductEditorPage.handleAxisChange` rebuilt the solo row from `buildEmptyProductForm()` when the
+  LAST axis was removed, losing the same seven fields plus the id. It now restores the dropped row
+  itself with an emptied selection.
+
+**A pure axis REORDER is now a permutation, not a regeneration.** `valueIds` is positional, so
+`move()` left every row's array in the old order and `orphanRowIndexes` flagged all of them — one
+cosmetic "move up" click, with no confirmation, wiped every SKU in the product. New pure helper
+`realignValueIds(axes, valueIds)` re-sorts a row into the current axis order (or returns `null`
+for a genuine orphan, exactly the set `orphanRowIndexes` reports), and `syncVariants` applies it
+through `useFieldArray`'s `update` before anything else looks at the rows. Nothing is added,
+nothing is removed, no id is ever at risk. `update` rather than `setValue` because the grid groups
+and labels off `fields`, which a `setValue` would leave showing the old axis order.
+
+### C2 — removing one of two axes no longer blanks the prices
+
+`donorOf` matched with `row.valueIds.every(id => combo.includes(id))`, which only holds when the
+combination GROWS. Removing an axis makes each orphan LONGER than its target, so no donor was
+found and every row fell back to `basePrice`/`baseCompare`/`baseStock` — which
+`mapDetailToFormValues` deliberately sets to null on a loaded product. Six priced variants came
+back blank, zod then blocked Save, and the work was recoverable only through بازگردانی.
+
+`donorOf` now also matches the shrink direction (`combo.every(id => row.valueIds.includes(id))`,
+first match wins). `Attributes.confirmAxisBody` was rewritten to say what actually happens: the
+rows merge, one row per remaining combination survives with its price/stock/media, the rest go.
+
+### I3 — collection membership diffs against a FRESH list
+
+`PUT /commerce/collections/:id` replaces the whole `productIds[]`, and the baseline came from
+`useSWRImmutable`, which by definition never revalidates. Opening the editor at 10:00, somebody
+else adding product B to a collection at 10:05, and ticking that collection at 10:10 wrote B
+straight out of it. `save` now `await mutate(COLLECTIONS_KEY)` immediately before the write and
+diffs against what comes back (falling back to the cached list only if the revalidation answers
+nothing).
+
+### I4 / I5 — media failures are reported instead of swallowed
+
+`saveVariantMedia` sat inside a bare `catch {}`: the first failing PUT aborted the loop, the rest
+were never attempted, and the merchant saw "تغییرات ذخیره شد". It now catches per row, keeps
+going, and returns a failure count. `buildMediaIdMap` returns `{ map, incomplete }` — its
+count-mismatch bail-out used to drop every new photo's variant assignment silently. Both route
+into a new `Toast.savedWithVariantMediaErrors` warning. Neither fails the save: the product is
+already committed.
+
+### I6 — validation errors outside `variants` are visible
+
+`onInvalid` scanned only `errors.variants`, and Attributes/Specs rendered no error text and no
+`data-bad`, so a nameless axis produced "موردهای قرمز را درست کنید" with nothing red on screen.
+The option-name input and both spec inputs now tint from `errors.options`/`errors.specs` and show
+the message, and `firstErrorPath` walks title → options → specs → variants in the page's own
+reading order to pick the input `setFocus` jumps to.
+
+### I7 — video no longer renders as a broken image
+
+`CommerceProductMedia.posterUrl` is the resolved poster frame and `toEditorMedia` never read it,
+so every surface except step ۴ put the video FILE through `<img>`/`next/image`. `EditorMedia`
+gained `posterUrl`, and a shared `posterOf(item)` returns the still to draw (`null` when there is
+none — a create-mode queued video). Applied to the variant grid rows, the bulk bar, the variant
+media picker and the preview dialog; the picker and preview fall back to a real `<video>` element
+when there is no poster, and step ۴'s `<video>` gained a `poster` attribute.
+
+### I8 — four shared types single-sourced
+
+Structurally identical duplicates are the dangerous kind: adding `posterUrl` to one `EditorMedia`
+and not the other would have diverged with no compiler error. Done BEFORE I7 for exactly that
+reason. `EditorMedia` → `productEditor.schema` (MediaSection re-exports), `EditorConfirm` →
+`dialogs/ConfirmDialog` (AttributesSection re-exports), `VariantMediaTarget` →
+`variant/VariantLeafRow` (the picker re-exports), `MAX_ATTRS` → `productEditor.schema`
+(AttributesSection re-exports, the pattern `MAX_VARIANTS` already used).
+
+### Cheap items from the ledger
+
+- `٪` hardcoded in both variant rows → `Variants.discountBadge`; `›` hardcoded in
+  `CategoryPickerDialog` and `PreviewDialog` → the existing `Category.pathSeparator` (CLAUDE.md §8).
+- Bulk bar: `اعمال` with an empty box silently did nothing — the button is now disabled with a
+  `Bulk.applyDisabled` title.
+- Steps ۵/۶ locked on `options.length > 0`, so pressing "افزودن ویژگی" greyed them out before any
+  variant existed. They now count axes that actually HAVE values, the same set `axesOfValues` keeps.
+- Deleted the dead `editorInputCell` and `editorBand` exports.
+
+### Verification
+
+- `pnpm vitest run src/components/Commerce` — 21 files / **199** tests (was 185). The 14 new ones:
+  4 in `useVariantSync.test.ts` (donor id + all seven fields carried on a grow; id/sku claimed by
+  exactly one of three replacements; a pure reorder orphans nothing; the shrink-direction donor),
+  7 pure `realignValueIds` cases, and 3 in `useProductSave.test.ts` (fresh-list collection diff,
+  variant-media failure warns instead of claiming success, `buildMediaIdMap`'s `incomplete` flag).
+- **Negative control:** with `useVariantSync.ts` and `variantTree.util.ts` reverted to the pre-fix
+  commit, exactly those 4 critical tests fail and the other 10 in the file still pass.
+- `tsc --noEmit` — 205 errors, byte-identical to the pre-fix baseline (zero new).
+- `eslint` on every changed file — 0 errors, 3 warnings, all three pre-existing on untouched lines.
+
+### Still deferred (unchanged, out of scope for this wave)
+
+The `packages/ui` `Badge` children typing gap, the repo-level zod 3/4 dedupe, the case-sensitive
+collection-name match, the `Attributes.removeValue` / `Variants.remove` a11y label collision, the
+unscoped `useWatch` perf items, CSS scoping, and `front-back-relations.md`.

@@ -202,6 +202,153 @@ describe('syncVariants — deletions stay deleted', () => {
   });
 });
 
+/**
+ * `PUT /commerce/products/:id` sends `cascadeDeleteVariants: true` and replaces the WHOLE variants
+ * array, so a row that comes back from regeneration without its `id` is a DELETE plus a blank
+ * INSERT. These cover the two ways that used to happen silently — the grid looked unchanged
+ * because the price carried over.
+ */
+describe('syncVariants — an axis edit never strips a variant of its identity', () => {
+  /** A saved row, exactly as `mapDetailToFormValues` produces one. */
+  const saved = (id: string, valueIds: string[], over: Partial<VariantRow> = {}) =>
+    row(valueIds, {
+      id,
+      price: 500000,
+      sku: `SKU-${id}`,
+      weight: 500,
+      salePrice: 400000,
+      saleStartsAt: '2026-07-01T00:00:00.000Z',
+      saleEndsAt: '2026-08-01T00:00:00.000Z',
+      allowBackorder: true,
+      isActive: false,
+      ...over,
+    });
+
+  it('carries the donor’s id and every no-UI field onto the combination that extends it', () => {
+    const t = setup(
+      defaults({
+        options: [axis('color', ['red', 'blue'])],
+        variants: [saved('v1', ['red']), saved('v2', ['blue'])],
+      }),
+    );
+
+    // A second axis with exactly ONE value: each old row maps 1:1 onto its replacement.
+    t.setOptions([axis('color', ['red', 'blue']), axis('size', ['m'])]);
+    t.sync();
+
+    const rows = t.rows();
+    expect(rows.map((r) => r.valueIds)).toEqual([
+      ['red', 'm'],
+      ['blue', 'm'],
+    ]);
+    expect(rows.map((r) => r.id)).toEqual(['v1', 'v2']);
+    expect(rows.map((r) => r.sku)).toEqual(['SKU-v1', 'SKU-v2']);
+    expect(rows.map((r) => r.weight)).toEqual([500, 500]);
+    expect(rows.map((r) => r.isActive)).toEqual([false, false]);
+    expect(rows.map((r) => r.allowBackorder)).toEqual([true, true]);
+    expect(rows.map((r) => r.salePrice)).toEqual([400000, 400000]);
+    expect(rows.map((r) => r.saleStartsAt)).toEqual([
+      '2026-07-01T00:00:00.000Z',
+      '2026-07-01T00:00:00.000Z',
+    ]);
+    expect(rows.map((r) => r.saleEndsAt)).toEqual([
+      '2026-08-01T00:00:00.000Z',
+      '2026-08-01T00:00:00.000Z',
+    ]);
+  });
+
+  it('gives the donor’s id and sku to exactly ONE of the rows that replace it', () => {
+    // One row split three ways: two of the three are genuinely new variants, and a duplicated id
+    // (or sku) would be an insert the backend silently collapses.
+    const t = setup(
+      defaults({
+        options: [axis('color', ['red'])],
+        variants: [saved('v1', ['red'])],
+      }),
+    );
+
+    t.setOptions([axis('color', ['red']), axis('size', ['s', 'm', 'l'])]);
+    t.sync();
+
+    const rows = t.rows();
+    expect(rows).toHaveLength(3);
+    expect(rows.map((r) => r.id)).toEqual(['v1', undefined, undefined]);
+    expect(rows.map((r) => r.sku)).toEqual(['SKU-v1', null, null]);
+    // Everything that describes the PRODUCT still lands on all three.
+    expect(rows.map((r) => r.isActive)).toEqual([false, false, false]);
+    expect(rows.map((r) => r.weight)).toEqual([500, 500, 500]);
+  });
+
+  it('keeps every id and sku through a pure axis REORDER — nothing is orphaned at all', () => {
+    // The worst trigger: `AttributesSection`'s move-up button asks for no confirmation, and
+    // `valueIds` is positional, so before the realign step every row looked stale.
+    const t = setup(
+      defaults({
+        options: [axis('color', ['red', 'blue']), axis('size', ['s', 'm'])],
+        variants: [
+          saved('v1', ['red', 's']),
+          saved('v2', ['red', 'm']),
+          saved('v3', ['blue', 's']),
+          saved('v4', ['blue', 'm']),
+        ],
+      }),
+    );
+    // The first sync settles the axis shape, the way a real session always does.
+    t.sync();
+
+    t.setOptions([axis('size', ['s', 'm']), axis('color', ['red', 'blue'])]);
+    const result = t.syncResult();
+
+    // Nothing added, nothing removed: the rows are a permutation of themselves.
+    expect(result).toMatchObject({ added: 0, removed: 0 });
+    const rows = t.rows();
+    expect(rows.map((r) => r.id).sort()).toEqual(['v1', 'v2', 'v3', 'v4']);
+    expect(rows.map((r) => r.sku).sort()).toEqual(['SKU-v1', 'SKU-v2', 'SKU-v3', 'SKU-v4']);
+    expect(rows.every((r) => r.isActive === false)).toBe(true);
+    // …and each row's ids are now in the NEW axis order, so the grid groups by size.
+    rows.forEach((r) => {
+      expect(['s', 'm']).toContain(r.valueIds[0]);
+      expect(['red', 'blue']).toContain(r.valueIds[1]);
+    });
+  });
+});
+
+describe('syncVariants — removing an axis keeps the numbers', () => {
+  it('finds a donor in the SHRINK direction instead of falling back to the blank base seeds', () => {
+    // `mapDetailToFormValues` sets basePrice/baseCompare/baseStock to null on a loaded product, so
+    // "no donor" here meant every price, stock and photo on screen went blank at once.
+    const t = setup(
+      defaults({
+        options: [axis('color', ['red', 'blue']), axis('size', ['s', 'm', 'l'])],
+        basePrice: null,
+        baseCompare: null,
+        baseStock: null,
+        variants: [
+          row(['red', 's'], { id: 'v1', price: 100, compare: 150, stock: 5, mediaIds: ['m-1'] }),
+          row(['red', 'm'], { id: 'v2', price: 110, compare: 160, stock: 6 }),
+          row(['red', 'l'], { id: 'v3', price: 120, compare: 170, stock: 7 }),
+          row(['blue', 's'], { id: 'v4', price: 200, compare: 250, stock: 8, mediaIds: ['m-2'] }),
+          row(['blue', 'm'], { id: 'v5', price: 210, compare: 260, stock: 9 }),
+          row(['blue', 'l'], { id: 'v6', price: 220, compare: 270, stock: 10 }),
+        ],
+      }),
+    );
+
+    t.setOptions([axis('color', ['red', 'blue'])]);
+    t.sync();
+
+    const rows = t.rows();
+    expect(rows.map((r) => r.valueIds)).toEqual([['red'], ['blue']]);
+    // The first row of each collapsed group donates — price, compare, stock, media and id all
+    // survive rather than coming back null.
+    expect(rows.map((r) => r.price)).toEqual([100, 200]);
+    expect(rows.map((r) => r.compare)).toEqual([150, 250]);
+    expect(rows.map((r) => r.stock)).toEqual([5, 8]);
+    expect(rows.map((r) => r.mediaIds)).toEqual([['m-1'], ['m-2']]);
+    expect(rows.map((r) => r.id)).toEqual(['v1', 'v4']);
+  });
+});
+
 describe('syncVariants — stale rows', () => {
   it('removes the rows of a value that no longer exists', () => {
     const t = setup(defaults({ options: [axis('color', ['c1', 'c2'])] }));

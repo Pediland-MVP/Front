@@ -15,6 +15,7 @@ import {
   comboKey,
   missingCombos,
   orphanRowIndexes,
+  realignValueIds,
   type TreeAxis,
 } from './variantTree.util';
 
@@ -91,25 +92,36 @@ export const axesOfOptions = (options: ProductFormValues['options']): TreeAxis[]
     })),
   );
 
+/**
+ * Everything a generated row is seeded with — INCLUDING the seven fields this design draws no
+ * control for and the backend row id itself.
+ *
+ * Carrying them is not a nicety. `buildUpdatePayload` sends `cascadeDeleteVariants: true` and
+ * `PUT /commerce/products/:id` replaces the whole variants array, so a regenerated row that
+ * arrives without an `id` is a DELETE of the old variant plus an INSERT of a blank one: the sku
+ * is gone, the weight is gone, the sale window is gone, and a variant the merchant deliberately
+ * deactivated comes back `isActive: true` — on sale again, silently, because the price carried
+ * over so the grid looks unchanged.
+ */
 interface RowSeed {
+  /** The backend row this seed came from. Absent ⇒ the backend mints a new one. */
+  id?: string;
   price: number | null;
   compare: number | null;
   stock: number | null;
   infinite: boolean;
   mediaIds: string[];
+  sku: string | null;
+  weight: number | null;
+  salePrice: number | null;
+  saleStartsAt: string | null;
+  saleEndsAt: string | null;
+  allowBackorder: boolean;
+  isActive: boolean;
 }
 
-/**
- * A row created this session has no `id` — the backend mints it. The seven fields with no UI in
- * this design still have to exist, because `PUT` replaces the whole variants array.
- */
-const buildRow = (valueIds: string[], seed: RowSeed): VariantRow => ({
-  valueIds,
-  price: seed.price,
-  compare: seed.compare,
-  stock: seed.stock,
-  infinite: seed.infinite,
-  mediaIds: seed.mediaIds,
+/** What a row with no donor at all starts from — a genuinely new combination. */
+const BLANK_SEED = {
   sku: null,
   weight: null,
   salePrice: null,
@@ -117,6 +129,25 @@ const buildRow = (valueIds: string[], seed: RowSeed): VariantRow => ({
   saleEndsAt: null,
   allowBackorder: false,
   isActive: true,
+} as const;
+
+const buildRow = (valueIds: string[], seed: RowSeed): VariantRow => ({
+  // Spread-or-nothing, never `id: undefined`: `buildVariantsPayload` keys off the property being
+  // ABSENT to decide insert-vs-update.
+  ...(seed.id ? { id: seed.id } : {}),
+  valueIds,
+  price: seed.price,
+  compare: seed.compare,
+  stock: seed.stock,
+  infinite: seed.infinite,
+  mediaIds: seed.mediaIds,
+  sku: seed.sku,
+  weight: seed.weight,
+  salePrice: seed.salePrice,
+  saleStartsAt: seed.saleStartsAt,
+  saleEndsAt: seed.saleEndsAt,
+  allowBackorder: seed.allowBackorder,
+  isActive: seed.isActive,
 });
 
 export const useVariantSync = (): VariantSync => {
@@ -125,7 +156,7 @@ export const useVariantSync = (): VariantSync => {
   // `keyName: 'key'`, not the default `'id'`: a variant HAS its own `id` (the backend row), and
   // the default would overwrite it in `fields` with a generated uuid — losing which rows already
   // exist server-side.
-  const { fields, append, remove } = useFieldArray<ProductFormValues, 'variants', 'key'>({
+  const { fields, append, remove, update } = useFieldArray<ProductFormValues, 'variants', 'key'>({
     control,
     name: 'variants',
     keyName: 'key',
@@ -137,13 +168,35 @@ export const useVariantSync = (): VariantSync => {
   const syncVariants = useCallback((): VariantSyncResult => {
     const values = getValues();
     const axes = axesOfOptions(values.options ?? []);
-    const rows = (values.variants ?? []) as VariantRow[];
+    const rows = [...((values.variants ?? []) as VariantRow[])];
 
     const shape = axes.map((axis) => axis.id).join('|');
     if (shape !== shapeRef.current) {
       shapeRef.current = shape;
       suppressedRef.current.clear();
     }
+
+    /**
+     * STEP 0 — a pure axis REORDER is a permutation, not a regeneration.
+     *
+     * `valueIds` is positional, so moving "رنگ" above "سایز" leaves every row's array in the old
+     * order and `orphanRowIndexes` flags ALL of them. Regenerating from that would hand every row
+     * a new identity: the ids go, and with `cascadeDeleteVariants` the backend deletes the real
+     * variants and inserts blanks — one "move up" click wipes every SKU in the product.
+     *
+     * So the rows are re-sorted in place first. Nothing is added, nothing is removed, no id is
+     * ever at risk. `update` rather than `setValue` because `useFieldArray`'s own `fields`
+     * snapshot is what the grid groups and labels off; a `setValue` would leave it showing the
+     * old axis order.
+     */
+    rows.forEach((row, index) => {
+      const current = row.valueIds ?? [];
+      const aligned = realignValueIds(axes, current);
+      if (!aligned || comboKey(aligned) === comboKey(current)) return;
+      const moved = { ...row, valueIds: aligned };
+      rows[index] = moved;
+      update(index, moved);
+    });
 
     const orphans = orphanRowIndexes(axes, rows);
     const orphanSet = new Set(orphans);
@@ -155,23 +208,50 @@ export const useVariantSync = (): VariantSync => {
     const wanted = missing.slice(0, room);
 
     /**
-     * A row that predates a new axis is not thrown away. The combinations that extend it inherit
-     * its price, compare and media — the design calls this `migrateRows`. Its stock goes to the
-     * FIRST one only, for the same reason `baseStock` does: a count is a quantity, not a template.
-     * The old row itself has to go: its combination no longer exists.
+     * A row whose combination no longer exists is not thrown away — the rows that REPLACE it
+     * inherit from it. The match has to work in BOTH directions, because an axis edit can make
+     * the combination longer or shorter:
+     *
+     *   - GROW (an axis was added): the old row's ids are a subset of the richer combination.
+     *     `['قرمز']` donates to `['قرمز','S']` and `['قرمز','M']`.
+     *   - SHRINK (an axis was removed): the target combination is a subset of the old row's ids.
+     *     `['قرمز','S']` donates to `['قرمز']`.
+     *
+     * Only the grow direction used to be tested for, so removing one of two axes found no donor
+     * at all and every row fell back to `basePrice`/`baseCompare`/`baseStock` — which
+     * `mapDetailToFormValues` deliberately leaves null on a loaded product. Six priced variants
+     * came back blank, zod then blocked Save, and the merchant's work was only recoverable
+     * through بازگردانی.
      */
     const donorOf = (combo: string[]): VariantRow | undefined =>
-      orphanRows.find(
-        (row) => row.valueIds.length > 0 && row.valueIds.every((id) => combo.includes(id)),
-      );
+      orphanRows.find((row) => {
+        const ids = row.valueIds ?? [];
+        if (!ids.length) return false;
+        return ids.every((id) => combo.includes(id)) || combo.every((id) => ids.includes(id));
+      });
 
     const hadRows = survivors.length > 0;
-    const stockClaimed = new Set<VariantRow>();
+    /**
+     * One donor can feed several combinations (`['قرمز']` → S, M, L), and three can collapse onto
+     * one. Whatever is an IDENTITY or a QUANTITY may therefore only go to the first taker:
+     *
+     *   - `id`  — two rows carrying the same variant id would be one insert and one silent loss;
+     *             the first taker keeps the real row (and with it its inventory ledger), the rest
+     *             are genuinely new variants.
+     *   - `sku` — a stock keeping unit names one sellable thing. Copying it across sizes would
+     *             produce duplicates that no warehouse can act on.
+     *   - `stock` — a count is a quantity, not a template. Same rule `baseStock` follows.
+     *
+     * Everything else (price, compare, media, weight, the sale window, allowBackorder, isActive
+     * and the ∞ flag) describes the product and is copied to every row the donor feeds.
+     */
+    const claimed = new Set<VariantRow>();
 
     const created = wanted.map((combo, position) => {
       const donor = donorOf(combo);
       if (!donor) {
         return buildRow(combo, {
+          ...BLANK_SEED,
           price: values.basePrice ?? null,
           compare: values.baseCompare ?? null,
           // baseStock seeds the first row ever generated and nothing else.
@@ -180,14 +260,24 @@ export const useVariantSync = (): VariantSync => {
           mediaIds: [],
         });
       }
-      const takesStock = !stockClaimed.has(donor);
-      stockClaimed.add(donor);
+      const isFirstTaker = !claimed.has(donor);
+      claimed.add(donor);
       return buildRow(combo, {
+        id: isFirstTaker ? donor.id : undefined,
+        sku: isFirstTaker ? donor.sku : null,
+        stock: isFirstTaker ? donor.stock : null,
         price: donor.price,
         compare: donor.compare,
-        stock: takesStock ? donor.stock : null,
-        infinite: takesStock ? donor.infinite : false,
+        // Not gated on `isFirstTaker`: ∞ is a tracking MODE, not a count. Dropping it left the
+        // extra rows reading "no stock" instead of "untracked".
+        infinite: donor.infinite,
         mediaIds: [...(donor.mediaIds ?? [])],
+        weight: donor.weight,
+        salePrice: donor.salePrice,
+        saleStartsAt: donor.saleStartsAt,
+        saleEndsAt: donor.saleEndsAt,
+        allowBackorder: donor.allowBackorder,
+        isActive: donor.isActive,
       });
     });
 
@@ -201,7 +291,7 @@ export const useVariantSync = (): VariantSync => {
       removed: orphans.length,
       capped: missing.length > wanted.length,
     };
-  }, [append, getValues, remove]);
+  }, [append, getValues, remove, update]);
 
   const removeRows = useCallback(
     (indexes: number[]) => {

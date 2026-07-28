@@ -14,6 +14,10 @@ export const MAX_SPECS = 50;
  * A media tile. `isPending` is true for a file chosen in CREATE mode, which has no row in
  * `commerce_product_media` yet — the product it belongs to does not exist, and that column is
  * NOT NULL. Those are uploaded immediately after the product is created.
+ *
+ * THE ONE definition. `sections/MediaSection` re-exports it rather than declaring its own: the
+ * two were structurally identical, which is precisely what made them dangerous — adding a field
+ * to one and not the other would have diverged silently, with no compiler error anywhere.
  */
 export interface EditorMedia {
   id: string;
@@ -22,7 +26,23 @@ export interface EditorMedia {
   type: 'image' | 'video';
   isPending: boolean;
   file?: File;
+  /**
+   * A video's resolved poster frame (`CommerceProductMedia.posterUrl`), when the backend has one.
+   * `undefined` on a file queued in CREATE mode — nothing has been transcoded yet.
+   */
+  posterUrl?: string | null;
 }
+
+/**
+ * The still frame to draw for a tile.
+ *
+ * A video's `url` is the video file itself: put it in an `<img>`/`next/image` and every surface
+ * except the pool (which renders a real `<video>`) shows a broken image. The poster frame is what
+ * a thumbnail wants, and `null` means "there is no still to show" — the caller draws its own
+ * placeholder rather than a broken one.
+ */
+export const posterOf = (item: Pick<EditorMedia, 'type' | 'url' | 'posterUrl'>): string | null =>
+  item.type === 'video' ? (item.posterUrl ?? null) : item.url;
 
 export interface ProductFormValues {
   title: string;

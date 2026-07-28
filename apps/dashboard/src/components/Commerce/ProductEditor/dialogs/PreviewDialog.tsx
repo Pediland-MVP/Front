@@ -22,7 +22,7 @@ import {
 import { discountPercent } from '../variant/variantTree.util';
 import { formatAmount } from '../utils/editorNumber.util';
 import { markdownToPlainText } from '../utils/markdown.util';
-import type { EditorMedia, ProductFormValues } from '../productEditor.schema';
+import { posterOf, type EditorMedia, type ProductFormValues } from '../productEditor.schema';
 
 /** Same key `useProductLoad` fills, so this is a shared cache read, not a second fetch. */
 const CATEGORIES_KEY = '/commerce/categories';
@@ -45,6 +45,9 @@ interface PreviewAxis {
  */
 export const PreviewDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const t = useTranslations('Commerce.Editor.Preview');
+  // The breadcrumb arrow is a per-locale decision (it points the other way in an RTL path), so it
+  // is a translation value, not a glyph typed into a .tsx — same key the editor shell reads.
+  const tCategory = useTranslations('Commerce.Editor.Category');
   const { control } = useFormContext<ProductFormValues>();
   // The whole form, on purpose: the preview touches title, description, category, media, the
   // base seeds, every axis and every variant. Watching each one separately would be a dozen
@@ -73,8 +76,8 @@ export const PreviewDialog = ({ open, onClose }: { open: boolean; onClose: () =>
     const parent = node.parentId
       ? list.find((category) => category.id === node.parentId)
       : undefined;
-    return parent ? `${parent.name} › ${node.name}` : node.name;
-  }, [categoriesData, values.categoryId]);
+    return parent ? `${parent.name}${tCategory('pathSeparator')}${node.name}` : node.name;
+  }, [categoriesData, tCategory, values.categoryId]);
 
   const axes: PreviewAxis[] = useMemo(
     () =>
@@ -131,6 +134,9 @@ export const PreviewDialog = ({ open, onClose }: { open: boolean; onClose: () =>
 
   const main = pool.find((item) => item.id === pickedMediaId) ?? pool[0] ?? null;
   const thumbs = pool.slice(0, THUMB_LIMIT);
+  // A video's `url` is the video file; `next/image` draws it as a broken tile. Prefer the poster
+  // frame the backend resolved, and fall back to a real `<video>` when there is none.
+  const mainPoster = main ? posterOf(main) : null;
 
   const stockText =
     stock === Infinity
@@ -158,16 +164,23 @@ export const PreviewDialog = ({ open, onClose }: { open: boolean; onClose: () =>
         <div className="grid min-h-0 flex-1 grid-cols-1 items-start gap-5 overflow-y-auto sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)]">
           <div className="flex flex-col gap-2">
             <div className="border-ln bg-muted relative aspect-square w-full overflow-hidden rounded-lg border">
-              {main ? (
+              {main && mainPoster ? (
                 // `unoptimized` for the same reason the media picker needs it: a create-mode
                 // tile's url is a blob: object URL the Next optimizer cannot fetch.
                 <Image
-                  src={main.url}
+                  src={mainPoster}
                   alt={main.name}
                   fill
                   unoptimized
                   className="object-cover"
                   sizes="240px"
+                />
+              ) : main ? (
+                <video
+                  src={main.url}
+                  muted
+                  aria-label={main.name}
+                  className="absolute inset-0 size-full object-cover"
                 />
               ) : (
                 <span className="text-mut absolute inset-0 grid place-items-center text-xs">
@@ -186,29 +199,41 @@ export const PreviewDialog = ({ open, onClose }: { open: boolean; onClose: () =>
 
             {thumbs.length > 1 && (
               <div className="flex flex-wrap gap-1.5">
-                {thumbs.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={main?.id === item.id}
-                    aria-label={item.name}
-                    data-testid={`preview-thumb-${item.id}`}
-                    onClick={() => setPickedMediaId(item.id)}
-                    className={cn(
-                      'bg-card relative size-11 overflow-hidden rounded-md border-2',
-                      main?.id === item.id ? 'border-primary' : 'border-ln',
-                    )}
-                  >
-                    <Image
-                      src={item.url}
-                      alt={item.name}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                      sizes="44px"
-                    />
-                  </button>
-                ))}
+                {thumbs.map((item) => {
+                  const poster = posterOf(item);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-pressed={main?.id === item.id}
+                      aria-label={item.name}
+                      data-testid={`preview-thumb-${item.id}`}
+                      onClick={() => setPickedMediaId(item.id)}
+                      className={cn(
+                        'bg-card relative size-11 overflow-hidden rounded-md border-2',
+                        main?.id === item.id ? 'border-primary' : 'border-ln',
+                      )}
+                    >
+                      {poster ? (
+                        <Image
+                          src={poster}
+                          alt={item.name}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                          sizes="44px"
+                        />
+                      ) : (
+                        <video
+                          src={item.url}
+                          muted
+                          aria-hidden="true"
+                          className="absolute inset-0 size-full object-cover"
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>

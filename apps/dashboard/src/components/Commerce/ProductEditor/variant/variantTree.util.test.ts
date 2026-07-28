@@ -7,6 +7,7 @@ import {
   discountPercent,
   missingCombos,
   orphanRowIndexes,
+  realignValueIds,
   topKeyOf,
 } from './variantTree.util';
 
@@ -105,6 +106,36 @@ describe('orphanRowIndexes', () => {
 
   it('flags nothing when every row is well formed', () => {
     expect(orphanRowIndexes([colour, size], [row(['c1', 's1'])])).toEqual([]);
+  });
+});
+
+describe('realignValueIds', () => {
+  it('re-sorts a row into the new axis order after a reorder', () => {
+    expect(realignValueIds([size, colour], ['c1', 's2'])).toEqual(['s2', 'c1']);
+  });
+
+  it('returns the same order when nothing moved', () => {
+    expect(realignValueIds([colour, size], ['c1', 's2'])).toEqual(['c1', 's2']);
+  });
+
+  it('ignores an axis that has no values, exactly like axesOf', () => {
+    expect(realignValueIds([colour, empty], ['c1'])).toEqual(['c1']);
+  });
+
+  it('returns null for a row that predates an axis, so the caller still orphans it', () => {
+    expect(realignValueIds([colour, size], ['c1'])).toBeNull();
+  });
+
+  it('returns null for a row pointing at a value that was deleted', () => {
+    expect(realignValueIds([colour, size], ['c9', 's1'])).toBeNull();
+  });
+
+  it('returns null when two ids claim the same axis', () => {
+    expect(realignValueIds([colour, size], ['c1', 'c2'])).toBeNull();
+  });
+
+  it('accepts the axis-less product’s single empty row', () => {
+    expect(realignValueIds([], [])).toEqual([]);
   });
 });
 

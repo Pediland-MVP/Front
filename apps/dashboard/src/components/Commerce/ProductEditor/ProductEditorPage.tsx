@@ -9,6 +9,7 @@ import {
   useFormContext,
   useWatch,
   type FieldErrors,
+  type FieldPath,
   type Resolver,
 } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -33,6 +34,7 @@ import { mapCategoriesToTree, mapDetailToFormValues } from './productEditor.mapp
 import {
   buildEmptyProductForm,
   buildProductEditorSchema,
+  posterOf,
   type EditorMedia,
   type ProductFormValues,
 } from './productEditor.schema';
@@ -81,8 +83,56 @@ const STEPS = {
   variants: 9,
 } as const;
 
-/** Which variant cell a failed submit should jump to. */
-type FocusTarget = { index: number; field: 'price' | 'compare' | 'stock' };
+/**
+ * Which input a failed submit should jump to.
+ *
+ * A path, not a variant index: the blocking issue is very often NOT in the grid — a nameless axis
+ * or a half-filled spec fails just as hard, and jumping only into `variants` left the merchant
+ * staring at a table with nothing wrong in it.
+ */
+type FocusTarget = { path: FieldPath<ProductFormValues> };
+
+/**
+ * The first input a failed submit should land on, walked in the page's own reading order —
+ * ۱ عنوان, ۷ ویژگی‌ها, ۸ مشخصات, ۹ تنوع‌ها.
+ *
+ * Zod issue paths are per-field (`['variants', 3, 'price']`, `['options', 0, 'name']`), which is
+ * what makes this possible at all. Anything not listed here has no focusable input to jump to.
+ */
+const firstErrorPath = (
+  errors: FieldErrors<ProductFormValues>,
+): FieldPath<ProductFormValues> | null => {
+  if (errors.title) return 'title';
+
+  const options = errors.options as Array<{ name?: unknown } | undefined> | undefined;
+  if (Array.isArray(options)) {
+    const index = options.findIndex((option) => !!option?.name);
+    if (index >= 0) return `options.${index}.name`;
+  }
+
+  const specs = errors.specs as Array<{ title?: unknown; body?: unknown } | undefined> | undefined;
+  if (Array.isArray(specs)) {
+    const index = specs.findIndex((spec) => !!spec?.title || !!spec?.body);
+    if (index >= 0) return specs[index]?.title ? `specs.${index}.title` : `specs.${index}.body`;
+  }
+
+  const rows = errors.variants as
+    | Array<{ price?: unknown; compare?: unknown; stock?: unknown } | undefined>
+    | undefined;
+  if (Array.isArray(rows)) {
+    const index = rows.findIndex((row) => !!row);
+    if (index >= 0) {
+      const row = rows[index];
+      return row?.price
+        ? `variants.${index}.price`
+        : row?.compare
+          ? `variants.${index}.compare`
+          : `variants.${index}.stock`;
+    }
+  }
+
+  return null;
+};
 
 const byPosition = (a: { position: number }, b: { position: number }): number =>
   a.position - b.position;
@@ -98,6 +148,10 @@ const toEditorMedia = (item: CommerceProductMedia): EditorMedia => ({
   url: item.url,
   type: item.type,
   isPending: false,
+  // Carried, not dropped: for a video this is the ONLY frame the thumbnail surfaces can draw.
+  // Without it the picker, both grid rows and the bulk bar all put the video file itself in an
+  // <img> and render a broken tile.
+  posterUrl: item.posterUrl,
 });
 
 const poolOf = (media: CommerceProductMedia[]): EditorMedia[] =>
@@ -293,12 +347,16 @@ const ProductEditorBody = ({
   const watchedMedia = useWatch({ control, name: 'media' });
   const media = useMemo(() => watchedMedia ?? [], [watchedMedia]);
 
-  /** The grid's thumbnails read a narrower shape than the pool tile. */
+  /**
+   * The grid's thumbnails read a narrower shape than the pool tile. `url` here is the STILL to
+   * draw — `posterOf` gives a video its poster frame, or `null` when there is none, which the
+   * rows render as their `+` placeholder instead of a broken image.
+   */
   const variantMedia = useMemo<VariantMediaItem[]>(
     () =>
       media.map((item) => ({
         id: item.id,
-        url: item.url,
+        url: posterOf(item),
         name: item.name,
         isVideo: item.type === 'video',
       })),
@@ -528,24 +586,17 @@ const ProductEditorBody = ({
      *
      * `reset` and not `setValue`: only a reset re-syncs `useFieldArray`'s own snapshot, and the
      * keep-flags leave the merchant's dirty state and errors exactly where they were.
+     *
+     * The restored row is the DROPPED row with its selection emptied, not a blank one wearing its
+     * price: `id`, `sku`, `weight`, the sale window and `isActive` have no control on this page
+     * and `PUT` replaces the whole variants array, so rebuilding from scratch here would delete
+     * the real variant and insert a stripped copy of it.
      */
     if (getValues('variants').length > 0) return;
     const donor = before[0];
     const [solo] = buildEmptyProductForm().variants;
     reset(
-      {
-        ...getValues(),
-        variants: [
-          {
-            ...solo,
-            price: donor?.price ?? null,
-            compare: donor?.compare ?? null,
-            stock: donor?.stock ?? null,
-            infinite: donor?.infinite ?? false,
-            mediaIds: [...(donor?.mediaIds ?? [])],
-          },
-        ],
-      },
+      { ...getValues(), variants: [donor ? { ...donor, valueIds: [] } : solo] },
       { keepDefaultValues: true, keepDirty: true, keepTouched: true, keepErrors: true },
     );
   }, [getValues, reset, syncVariants, tVariants]);
@@ -569,21 +620,8 @@ const ProductEditorBody = ({
   const onInvalid = useCallback(
     (errors: FieldErrors<ProductFormValues>) => {
       toast.error(t('Errors.invalid'));
-
-      // Zod issue paths are per-cell (`['variants', 3, 'price']`), which is exactly what makes
-      // jumping to the offending input possible.
-      const rows = errors.variants as
-        | Array<{ price?: unknown; compare?: unknown; stock?: unknown } | undefined>
-        | undefined;
-      if (!Array.isArray(rows)) return;
-      const index = rows.findIndex((row) => !!row);
-      if (index < 0) return;
-
-      const row = rows[index];
-      setFocusTarget({
-        index,
-        field: row?.price ? 'price' : row?.compare ? 'compare' : 'stock',
-      });
+      const path = firstErrorPath(errors);
+      if (path) setFocusTarget({ path });
     },
     [t],
   );
@@ -599,7 +637,7 @@ const ProductEditorBody = ({
     let inner = 0;
     const outer = window.requestAnimationFrame(() => {
       inner = window.requestAnimationFrame(() => {
-        setFocus(`variants.${focusTarget.index}.${focusTarget.field}`, { shouldSelect: true });
+        setFocus(focusTarget.path, { shouldSelect: true });
         setFocusTarget(null);
       });
     });
