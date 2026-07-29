@@ -2534,6 +2534,8 @@
         "title": "قیمت",
         "price": "قیمت فروش",
         "compare": "قیمت بدون تخفیف",
+        "hasDiscount": "این کالا تخفیف دارد",
+        "noDiscount": "بدون تخفیف",
         "tooman": "تومان",
         "pricePlaceholder": "۰",
         "comparePlaceholder": "بدون تخفیف",

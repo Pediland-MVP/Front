@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useController, useFormContext, useWatch } from 'react-hook-form';
 
+import { Switch } from '@/components/ui/switch';
 import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
 import { cn } from '@/lib/utils';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
@@ -41,8 +43,48 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
   const { field: price } = useController({ control, name: 'basePrice' });
   const { field: compare } = useController({ control, name: 'baseCompare' });
 
-  // Mirrors `CHK_commerce_variant_compare_gt_price`: equal is as wrong as lower.
-  const compareBad = price.value != null && compare.value != null && compare.value <= price.value;
+  /**
+   * Whether the product is on sale. This is UI state, NOT form data — the backend has no such
+   * flag, it infers "on sale" from `comparePrice` being present at all. Adding a field to
+   * `ProductFormValues` for it would mean carrying something every payload builder has to
+   * remember to strip.
+   *
+   * The switch has to follow the form value in, because the value arrives from places the user
+   * never touched: in edit mode the product loads AFTER this mounts and resets the form, and
+   * Revert does the same. Seeding `useState` once would leave a product that has a compare
+   * price rendering with the switch off and the field greyed out over its own data.
+   */
+  const [onSale, setOnSale] = useState(compare.value != null);
+
+  /**
+   * The last value this component itself wrote. Without it, clearing the input mid-edit reads
+   * as "value became null" and flips the switch off under the user's cursor — the field then
+   * disables itself while they are still typing in it. Same one-way arbitration the description
+   * editor uses for its contentEditable.
+   */
+  const lastLocal = useRef<number | null | undefined>(undefined);
+
+  useEffect(() => {
+    if (compare.value === lastLocal.current) return; // our own edit — leave the switch alone
+    setOnSale(compare.value != null);
+  }, [compare.value]);
+
+  const writeCompare = (next: number | null) => {
+    lastLocal.current = next;
+    compare.onChange(next);
+  };
+
+  const toggleSale = (next: boolean) => {
+    setOnSale(next);
+    // Turning it off must clear the value, not just hide it: a stale compare price left in the
+    // form would still be sent on save and the product would stay discounted.
+    if (!next) writeCompare(null);
+  };
+
+  // Mirrors `CHK_commerce_variant_compare_gt_price`: equal is as wrong as lower. Only meaningful
+  // while the sale is on — a disabled, null field can never be in violation.
+  const compareBad =
+    onSale && price.value != null && compare.value != null && compare.value <= price.value;
 
   return (
     <EditorSection
@@ -52,9 +94,13 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
     >
       <div className="grid grid-cols-2 gap-2.5">
         <div>
-          <label htmlFor="base-price" className="text-mut mb-1.5 block text-xs font-bold">
-            {t('price')}
-          </label>
+          {/* h-5 matches the compare column, whose label row also holds the switch — without a
+              shared height the two inputs sit a couple of pixels apart. */}
+          <div className="mb-1.5 flex h-5 items-center">
+            <label htmlFor="base-price" className="text-mut text-xs font-bold">
+              {t('price')}
+            </label>
+          </div>
           <div className="relative">
             <input
               id="base-price"
@@ -79,24 +125,40 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
         </div>
 
         <div>
-          <label htmlFor="base-compare" className="text-mut mb-1.5 block text-xs font-bold">
-            {t('compare')}
-          </label>
+          <div className="mb-1.5 flex h-5 items-center gap-2">
+            <label htmlFor="base-compare" className="text-mut text-xs font-bold">
+              {t('compare')}
+            </label>
+            <Switch
+              id="base-sale"
+              checked={onSale}
+              disabled={locked}
+              aria-label={t('hasDiscount')}
+              onCheckedChange={toggleSale}
+              className="ms-auto"
+            />
+          </div>
           <div className="relative">
             <input
               id="base-compare"
               type="text"
               inputMode="numeric"
-              disabled={locked}
+              // Locked (the product has real variations) OR simply not on sale. Both mean the
+              // seed is not editable, and a disabled input is also skipped by tab order.
+              disabled={locked || !onSale}
               aria-label={t('compare')}
-              placeholder={t('comparePlaceholder')}
+              placeholder={onSale ? t('comparePlaceholder') : t('noDiscount')}
               data-bad={compareBad ? 'zero' : undefined}
               {...selectOnFocus}
               onInput={onInputP2EHandler}
               value={formatAmount(compare.value)}
-              onChange={(e) => compare.onChange(parseAmount(e.target.value))}
+              onChange={(e) => writeCompare(parseAmount(e.target.value))}
               onBlur={compare.onBlur}
-              className={cn(editorInput, 'text-mut h-[42px] ps-3 pe-16 text-base font-semibold')}
+              className={cn(
+                editorInput,
+                'text-mut h-[42px] ps-3 pe-16 text-base font-semibold',
+                'disabled:cursor-not-allowed disabled:opacity-55',
+              )}
             />
             <span className="text-mut pointer-events-none absolute end-3 top-3 text-xs">
               {t('tooman')}
