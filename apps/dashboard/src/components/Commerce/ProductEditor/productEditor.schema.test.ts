@@ -16,6 +16,7 @@ const variant = (
   valueIds: [],
   price: 1000,
   compare: null,
+  hasDiscount: false,
   stock: 5,
   infinite: false,
   mediaIds: [],

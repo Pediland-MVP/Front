@@ -38,6 +38,7 @@ const row = (valueIds: string[], over: Partial<VariantRow> = {}): VariantRow => 
   valueIds,
   price: null,
   compare: null,
+  hasDiscount: false,
   stock: null,
   infinite: false,
   mediaIds: [],
@@ -122,6 +123,8 @@ const renderGrid = (over: Partial<ProductFormValues>) => {
     ...view,
     onOpenPicker,
     prices: () => api.getValues('variants').map((r) => r.price),
+    compares: () => api.getValues('variants').map((r) => r.compare),
+    flags: () => api.getValues('variants').map((r) => r.hasDiscount),
     form: () => api,
   };
 };
@@ -240,5 +243,87 @@ describe('VariantsSection — bulk bar', () => {
     fireEvent.click(screen.getByRole('button', { name: B.apply }));
 
     expect(grid.prices()).toEqual([150000, 150000, 150000, 150000]);
+  });
+});
+
+// ONE_AXIS is reused from above: a single axis makes every row its own top row, so the leaf
+// cells are on screen without expanding anything.
+describe('VariantsSection — per-row discount', () => {
+  it('leaves the compare cell shut until the row is marked as discounted', () => {
+    renderGrid(ONE_AXIS);
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز')).toBeDisabled();
+    expect(screen.getByLabelText(T.hasDiscountAria.replace('{name}', 'قرمز'))).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+  });
+
+  it('opens only the row whose button was pressed', () => {
+    const grid = renderGrid(ONE_AXIS);
+
+    fireEvent.click(screen.getByLabelText(T.hasDiscountAria.replace('{name}', 'قرمز')));
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز')).toBeEnabled();
+    // The sibling is untouched — this is a per-variation flag, not a table-wide mode.
+    expect(screen.getByLabelText('قیمت بدون تخفیف آبی')).toBeDisabled();
+    expect(grid.flags()).toEqual([true, false]);
+  });
+
+  it('shuts the cell AND clears the price when the button is pressed again', () => {
+    const grid = renderGrid({
+      ...ONE_AXIS,
+      variants: [
+        row(['c1'], { price: 100000, compare: 150000, hasDiscount: true }),
+        row(['c2'], { price: 200000 }),
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText(T.hasDiscountAria.replace('{name}', 'قرمز')));
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز')).toBeDisabled();
+    // Clearing is the half that actually removes the discount: buildUpdatePayload omits
+    // compareAtPrice when null and the backend writes `?? null` for a missing key. A value left
+    // behind would keep the variant discounted however the button reads.
+    expect(grid.compares()).toEqual([null, null]);
+    expect(grid.flags()).toEqual([false, false]);
+  });
+
+  it('opens a row that a parent roll-down gave a compare price to', () => {
+    // hasDiscount is false on both rows, so only the `compare != null` half of the check can
+    // open these cells. Without it a rolled-down price would sit in a cell nobody could edit.
+    const grid = renderGrid({
+      options: [
+        option('color', 'رنگ', [
+          ['c1', 'قرمز'],
+          ['c2', 'آبی'],
+        ]),
+        option('size', 'سایز', [
+          ['s1', 'S'],
+          ['s2', 'M'],
+        ]),
+      ],
+      variants: [
+        row(['c1', 's1'], { price: 100000 }),
+        row(['c1', 's2'], { price: 100000 }),
+        row(['c2', 's1'], { price: 200000 }),
+        row(['c2', 's2'], { price: 200000 }),
+      ],
+    });
+
+    const parent = screen.getByLabelText('قیمت بدون تخفیف قرمز');
+    fireEvent.change(parent, { target: { value: '۱۵۰۰۰۰' } });
+    fireEvent.blur(parent);
+
+    expect(grid.compares()).toEqual([150000, 150000, null, null]);
+    expect(grid.flags()).toEqual([false, false, false, false]);
+
+    // Expand both groups so the leaves are on screen, then check the cells the roll-down fed.
+    grid.container
+      .querySelectorAll<HTMLButtonElement>('[data-chev]')
+      .forEach((chevron) => fireEvent.click(chevron));
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز، S')).toBeEnabled();
+    expect(screen.getByLabelText('قیمت بدون تخفیف آبی، S')).toBeDisabled();
   });
 });

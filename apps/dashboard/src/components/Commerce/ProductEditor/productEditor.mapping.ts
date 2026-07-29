@@ -168,6 +168,10 @@ export const mapDetailToFormValues = (product: CommerceProductDetail): ProductFo
       valueIds: orderByAxis(variant.optionValueIds),
       price: variant.price,
       compare: variant.compareAtPrice,
+      // Seeded from the data, because the backend has no such column — a row that arrives with a
+      // compare price IS discounted. Seeding it here (rather than deriving on render) is what
+      // lets the merchant clear the cell without the discount switching itself off underneath.
+      hasDiscount: variant.compareAtPrice != null,
       // An untracked variant has no count to show; ∞ is the UI for it.
       stock: variant.trackInventory ? variant.onHand : null,
       infinite: !variant.trackInventory,

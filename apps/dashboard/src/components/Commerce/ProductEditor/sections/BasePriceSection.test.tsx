@@ -52,6 +52,7 @@ const variant = (valueIds: string[]) => ({
   valueIds,
   price: 1000,
   compare: null,
+  hasDiscount: false,
   stock: 1,
   infinite: false,
   mediaIds: [],

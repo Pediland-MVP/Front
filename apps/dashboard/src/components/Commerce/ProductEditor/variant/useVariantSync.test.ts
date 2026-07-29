@@ -30,6 +30,7 @@ const row = (valueIds: string[], over: Partial<VariantRow> = {}): VariantRow => 
   valueIds,
   price: null,
   compare: null,
+  hasDiscount: false,
   stock: null,
   infinite: false,
   mediaIds: [],
@@ -214,6 +215,8 @@ describe('syncVariants — an axis edit never strips a variant of its identity',
     row(valueIds, {
       id,
       price: 500000,
+      compare: 650000,
+      hasDiscount: true,
       sku: `SKU-${id}`,
       weight: 500,
       salePrice: 400000,
@@ -246,6 +249,9 @@ describe('syncVariants — an axis edit never strips a variant of its identity',
     expect(rows.map((r) => r.weight)).toEqual([500, 500]);
     expect(rows.map((r) => r.isActive)).toEqual([false, false]);
     expect(rows.map((r) => r.allowBackorder)).toEqual([true, true]);
+    // Not gated on isFirstTaker: whether the product is discounted describes the product,
+    // so both replacement rows keep it — same rule the ∞ flag follows.
+    expect(rows.map((r) => r.hasDiscount)).toEqual([true, true]);
     expect(rows.map((r) => r.salePrice)).toEqual([400000, 400000]);
     expect(rows.map((r) => r.saleStartsAt)).toEqual([
       '2026-07-01T00:00:00.000Z',

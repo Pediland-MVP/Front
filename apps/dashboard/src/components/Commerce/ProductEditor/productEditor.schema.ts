@@ -105,6 +105,18 @@ export interface ProductFormValues {
     valueIds: string[];
     price: number | null;
     compare: number | null;
+    /**
+     * Whether this row is meant to carry a discount. Editor-only — the backend has no such
+     * column, it infers "discounted" from `compareAtPrice` being present.
+     *
+     * A stored flag rather than a derived `compare != null`, for one concrete reason: the compare
+     * cell is an UNCONTROLLED `register` input, so the row cannot tell "the merchant just cleared
+     * the field" apart from "there is no discount". Derived, the cell would disable itself
+     * mid-keystroke the moment the field went empty. The rendered state is
+     * `compare != null || hasDiscount`, so a value arriving from a roll-up or fill-down still
+     * opens the cell without anyone having to remember to set this too.
+     */
+    hasDiscount: boolean;
     stock: number | null;
     /** ∞ in the design. Maps to `trackInventory: false`. */
     infinite: boolean;
@@ -170,6 +182,7 @@ export const buildProductEditorSchema = (t: Translator) => {
         .nonnegative({ message: t('Validation.priceInvalid') })
         .nullable(),
       compare: z.number().int().positive().nullable(),
+      hasDiscount: z.boolean(),
       stock: z
         .number()
         .int()
@@ -265,6 +278,7 @@ export const buildEmptyProductForm = (): ProductFormValues => ({
       valueIds: [],
       price: null,
       compare: null,
+      hasDiscount: false,
       stock: null,
       infinite: false,
       mediaIds: [],

@@ -126,6 +126,7 @@ describe('AttributesSection', () => {
               valueIds: ['v1'],
               price: 1000,
               compare: null,
+              hasDiscount: false,
               stock: 1,
               infinite: false,
               mediaIds: [],

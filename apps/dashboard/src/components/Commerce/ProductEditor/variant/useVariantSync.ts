@@ -108,6 +108,7 @@ interface RowSeed {
   id?: string;
   price: number | null;
   compare: number | null;
+  hasDiscount: boolean;
   stock: number | null;
   infinite: boolean;
   mediaIds: string[];
@@ -138,6 +139,7 @@ const buildRow = (valueIds: string[], seed: RowSeed): VariantRow => ({
   valueIds,
   price: seed.price,
   compare: seed.compare,
+  hasDiscount: seed.hasDiscount,
   stock: seed.stock,
   infinite: seed.infinite,
   mediaIds: seed.mediaIds,
@@ -254,6 +256,9 @@ export const useVariantSync = (): VariantSync => {
           ...BLANK_SEED,
           price: values.basePrice ?? null,
           compare: values.baseCompare ?? null,
+          // Follows the base seed: if step ۵ has the discount switched on, every row it seeds
+          // starts open too, so the merchant is not made to re-enable it row by row.
+          hasDiscount: values.baseCompare != null,
           // baseStock seeds the first row ever generated and nothing else.
           stock: !hadRows && position === 0 ? (values.baseStock ?? null) : null,
           infinite: false,
@@ -268,6 +273,9 @@ export const useVariantSync = (): VariantSync => {
         stock: isFirstTaker ? donor.stock : null,
         price: donor.price,
         compare: donor.compare,
+        // Not gated on `isFirstTaker`, same reasoning as ∞: whether a product is discounted
+        // describes the product, not one row's quantity.
+        hasDiscount: donor.hasDiscount,
         // Not gated on `isFirstTaker`: ∞ is a tracking MODE, not a count. Dropping it left the
         // extra rows reading "no stock" instead of "untracked".
         infinite: donor.infinite,

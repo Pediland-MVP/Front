@@ -102,6 +102,7 @@ const formVariant = (over: Partial<FormVariant> = {}): FormVariant => ({
   valueIds: [],
   price: 100,
   compare: null,
+  hasDiscount: false,
   stock: 0,
   infinite: false,
   mediaIds: [],
@@ -303,6 +304,28 @@ describe('mapDetailToFormValues', () => {
 });
 
 // ---------- mapCategoriesToTree ----------
+
+describe('mapDetailToFormValues — discount flag', () => {
+  it('marks a variant that arrives with a compare price as discounted', () => {
+    // The backend has no such column, so this is the only place the flag can come from. Get it
+    // wrong and every saved discount reopens as "no discount" with its price sitting in a
+    // greyed-out cell.
+    const form = mapDetailToFormValues(
+      detail({ variants: [variantDetail({ price: 100, compareAtPrice: 150 })] }),
+    );
+
+    expect(form.variants[0].hasDiscount).toBe(true);
+    expect(form.variants[0].compare).toBe(150);
+  });
+
+  it('leaves a variant with no compare price undiscounted', () => {
+    const form = mapDetailToFormValues(
+      detail({ variants: [variantDetail({ price: 100, compareAtPrice: null })] }),
+    );
+
+    expect(form.variants[0].hasDiscount).toBe(false);
+  });
+});
 
 describe('mapCategoriesToTree', () => {
   it('nests children under their root, both levels sorted by position', () => {

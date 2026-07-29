@@ -89,6 +89,12 @@ export function VariantLeafRow({
   const row = useWatch({ control, name: `variants.${index}` }) as VariantRow | undefined;
   if (!row) return null;
 
+  /**
+   * `compare != null ||` first, so a value arriving from a group roll-down, a bulk edit or
+   * Ctrl+D fill opens the cell on its own. Without that half, a rolled-down compare price would
+   * land in a row whose cell still read as "no discount" and refused to be edited.
+   */
+  const discounted = row.compare != null || row.hasDiscount;
   const discount = discountPercent(row.price, row.compare);
   const thumbIds = row.mediaIds ?? [];
   const thumb = media.find((item) => item.id === thumbIds[0]) ?? null;
@@ -160,13 +166,36 @@ export function VariantLeafRow({
           index={index}
           field="compare"
           value={row.compare}
-          tone={compareTone(row.compare, row.price)}
+          disabled={!discounted}
+          tone={discounted ? compareTone(row.compare, row.price) : ''}
           ariaLabel={t('compareAria', { name: ariaLabel })}
-          placeholder={t('comparePlaceholder')}
-          className="bg-card border-ln focus:border-primary text-mut h-[34px] w-full min-w-0 rounded-md border px-2 text-xs font-semibold outline-none"
+          placeholder={discounted ? t('comparePlaceholder') : t('noDiscount')}
+          className="bg-card border-ln focus:border-primary text-mut h-[34px] w-full min-w-0 rounded-md border px-2 text-xs font-semibold outline-none disabled:opacity-60"
           onNavigate={(direction) => onNavigate(index, 'compare', direction)}
           onFillDown={() => onFillDown(index, 'compare')}
         />
+        <button
+          type="button"
+          data-disc="1"
+          aria-pressed={discounted}
+          aria-label={t('hasDiscountAria', { name: ariaLabel })}
+          title={t('hasDiscount')}
+          onClick={() => {
+            const next = !discounted;
+            setValue(`variants.${index}.hasDiscount`, next, { shouldDirty: true });
+            // Clearing on the way off is the load-bearing half. `compareAtPrice` is simply
+            // omitted from the payload when null and the backend writes `?? null`, so a value
+            // left behind here would keep the row discounted no matter what this button reads.
+            if (!next) setValue(`variants.${index}.compare`, null, { shouldDirty: true });
+          }}
+          // Explicit conditional classes rather than the `aria-pressed:` variant: this is the
+          // only state the button has, and it must not depend on that variant being enabled.
+          className={`size-[30px] flex-none rounded-md border p-0 text-sm font-bold ${
+            discounted ? 'border-primary bg-tint2 text-primary' : 'border-ln bg-card text-mut'
+          }`}
+        >
+          ٪
+        </button>
         {discount != null && (
           <span
             title={t('discount')}
