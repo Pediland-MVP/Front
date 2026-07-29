@@ -92,15 +92,28 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
       title={t('title')}
       cardClassName={cn(locked && 'pointer-events-none opacity-55')}
     >
+      {/*
+        Its own full-width row rather than an icon tucked beside the compare label. A bare radix
+        switch is a 32×18 pill in `--input` (L≈87) on a white card (L≈100) — about 1.4:1 against
+        its background, with no text on it. It was there and it was unfindable. Given as its own
+        bordered, tinted row with a real sentence next to it, there is something to aim at.
+      */}
+      <label
+        htmlFor="base-sale"
+        className={cn(
+          'border-lnv bg-tint mb-2.5 flex items-center gap-2.5 rounded-lg border px-3 py-2.5',
+          locked ? 'cursor-not-allowed' : 'cursor-pointer',
+        )}
+      >
+        <Switch id="base-sale" checked={onSale} disabled={locked} onCheckedChange={toggleSale} />
+        <span className="text-sm font-bold">{t('hasDiscount')}</span>
+      </label>
+
       <div className="grid grid-cols-2 gap-2.5">
         <div>
-          {/* h-5 matches the compare column, whose label row also holds the switch — without a
-              shared height the two inputs sit a couple of pixels apart. */}
-          <div className="mb-1.5 flex h-5 items-center">
-            <label htmlFor="base-price" className="text-mut text-xs font-bold">
-              {t('price')}
-            </label>
-          </div>
+          <label htmlFor="base-price" className="text-mut mb-1.5 block text-xs font-bold">
+            {t('price')}
+          </label>
           <div className="relative">
             <input
               id="base-price"
@@ -125,19 +138,9 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
         </div>
 
         <div>
-          <div className="mb-1.5 flex h-5 items-center gap-2">
-            <label htmlFor="base-compare" className="text-mut text-xs font-bold">
-              {t('compare')}
-            </label>
-            <Switch
-              id="base-sale"
-              checked={onSale}
-              disabled={locked}
-              aria-label={t('hasDiscount')}
-              onCheckedChange={toggleSale}
-              className="ms-auto"
-            />
-          </div>
+          <label htmlFor="base-compare" className="text-mut mb-1.5 block text-xs font-bold">
+            {t('compare')}
+          </label>
           <div className="relative">
             <input
               id="base-compare"
