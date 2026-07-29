@@ -192,10 +192,31 @@ describe('AttributesSection — the "use مشخصات instead" notice', () => {
 
     const notice = screen.getByTestId('attributes-notice');
     expect(notice).toHaveAttribute('role', 'alert');
-    // Exact copy, not a substring: the apostrophes around 'مشخصات' pass through ICU message
-    // parsing, where `'` is the escape character. Asserting the whole string is what would catch
-    // it silently swallowing them.
-    expect(notice).toHaveTextContent(copy.notice);
+    /*
+     * Asserts the whole rendered sentence, not a substring, because two separate things can eat
+     * characters here and a substring match would survive both.
+     *
+     * The message writes the quotes around مشخصات DOUBLED (`''مشخصات''`) and that is load-bearing,
+     * not a typo. `'` is ICU's escape character, so a single `'` immediately before `</specs>`
+     * opens a quoted run that swallows the closing tag — the message then fails to parse and
+     * next-intl renders the literal key `Commerce.Editor.Attributes.notice` on screen. `''` is
+     * ICU's escape for one literal apostrophe, which is why this strips it back out before
+     * comparing. If someone ever "tidies" the doubling away, this test is what catches it.
+     */
+    const plain = copy.notice.replace(/<\/?(?:attrs|specs)>/g, '').replaceAll("''", "'");
+    expect(notice.textContent).toContain(plain);
+  });
+
+  it('marks up the two section names, each in its own colour', () => {
+    render(<Harness />);
+
+    const notice = screen.getByTestId('attributes-notice');
+    const marked = [...notice.querySelectorAll('strong')];
+
+    // Not just "some bold text somewhere": the whole point is that the feature being misused and
+    // the one to use instead are told apart, so they must be two DIFFERENT classes.
+    expect(marked.map((el) => el.textContent)).toEqual(['ویژگی‌ها', "'مشخصات'"]);
+    expect(marked[0].className).not.toEqual(marked[1].className);
   });
 
   it('stays put once axes exist — it is guidance, not an empty state', () => {

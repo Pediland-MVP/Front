@@ -184,7 +184,21 @@ export const AttributesSection = ({
         what step ۸ (مشخصات) is for.
       */}
       <Alert variant="note" className="mb-3" data-testid="attributes-notice">
-        <AlertDescription icon>{t('notice')}</AlertDescription>
+        <AlertDescription icon>
+          {/*
+            `t.rich`, so the two section names are marked up INSIDE the translated string rather
+            than by splitting it into three keys. Persian is RTL and the words sit mid-sentence —
+            three keys concatenated in JSX would hard-code an order the copy is free to change.
+
+            Two colours on purpose, not one: `attrs` is the feature being misused and stays in
+            the alert's own amber, `specs` is the thing to use instead and takes the primary
+            colour, so the sentence reads "not this → that" without being read word by word.
+          */}
+          {t.rich('notice', {
+            attrs: (chunks) => <strong className="font-bold text-amber-900">{chunks}</strong>,
+            specs: (chunks) => <strong className="text-primary font-bold">{chunks}</strong>,
+          })}
+        </AlertDescription>
       </Alert>
 
       <EditorSection bare step={step} title={t('title')} hint={t('hint')}>
