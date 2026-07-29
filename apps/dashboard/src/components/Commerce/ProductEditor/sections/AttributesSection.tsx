@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { ChevronDownIcon, ChevronUpIcon, PlusIcon, XIcon } from 'lucide-react';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import e2pNumbers from '@/utils/e2pNumber';
 
@@ -170,149 +171,168 @@ export const AttributesSection = ({
   const atMax = fields.length >= MAX_ATTRS;
 
   return (
-    <EditorSection bare step={step} title={t('title')} hint={t('hint')}>
-      <div className={editorCard}>
-        <div className="flex flex-col gap-2.5 p-3">
-          {fields.map((field, index) => {
-            const values = options[index]?.values ?? [];
+    <>
+      {/*
+        Sits BEFORE the step heading, not inside the card, because it is meant to be read before
+        the merchant starts adding axes — by the time they are looking at the card they have
+        already decided. It lives in this component rather than in the page so the warning and
+        the thing it warns about cannot drift apart.
 
-            return (
-              <div key={field.id} className={editorSubBox} data-testid={`attr-${index}`}>
-                <div className="mb-2.5 flex items-center gap-1.5">
-                  <div className="flex flex-none flex-col gap-px">
-                    {/*
+        The confusion it heads off is real and expensive: an axis multiplies into variation rows
+        that each need their own price and stock, so using ویژگی‌ها for descriptive facts like
+        جنس or کشور سازنده produces a product with one meaningless "choice" per fact. That is
+        what step ۸ (مشخصات) is for.
+      */}
+      <Alert variant="note" className="mb-3" data-testid="attributes-notice">
+        <AlertDescription icon>{t('notice')}</AlertDescription>
+      </Alert>
+
+      <EditorSection bare step={step} title={t('title')} hint={t('hint')}>
+        <div className={editorCard}>
+          <div className="flex flex-col gap-2.5 p-3">
+            {fields.map((field, index) => {
+              const values = options[index]?.values ?? [];
+
+              return (
+                <div key={field.id} className={editorSubBox} data-testid={`attr-${index}`}>
+                  <div className="mb-2.5 flex items-center gap-1.5">
+                    <div className="flex flex-none flex-col gap-px">
+                      {/*
                       Reordering is not cosmetic: the FIRST axis becomes the variation tree's top
                       level — the parent rows a merchant collapses and bulk-edits. Moving "رنگ"
                       above "سایز" turns a size-first list into a colour-first one.
                     */}
+                      <button
+                        type="button"
+                        disabled={index === 0}
+                        title={t('moveUp')}
+                        aria-label={t('moveUp')}
+                        onClick={() => {
+                          move(index, index - 1);
+                          onAxisChange?.();
+                        }}
+                        className={cn(editorIconButton, 'h-3.5 w-5 rounded-sm')}
+                      >
+                        <ChevronUpIcon className="size-2.5" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={index === fields.length - 1}
+                        title={t('moveDown')}
+                        aria-label={t('moveDown')}
+                        onClick={() => {
+                          move(index, index + 1);
+                          onAxisChange?.();
+                        }}
+                        className={cn(editorIconButton, 'h-3.5 w-5 rounded-sm')}
+                      >
+                        <ChevronDownIcon className="size-2.5" />
+                      </button>
+                    </div>
+
+                    <input
+                      {...register(`options.${index}.name`)}
+                      aria-label={t('namePlaceholder')}
+                      placeholder={t('namePlaceholder')}
+                      data-bad={nameError(index) ? 'empty' : undefined}
+                      className={editorInputGhost}
+                    />
+
+                    <span className="text-mut flex-none text-xs">
+                      {t('count', { count: e2pNumbers(String(values.length)) })}
+                    </span>
+
                     <button
                       type="button"
-                      disabled={index === 0}
-                      title={t('moveUp')}
-                      aria-label={t('moveUp')}
-                      onClick={() => {
-                        move(index, index - 1);
-                        onAxisChange?.();
-                      }}
-                      className={cn(editorIconButton, 'h-3.5 w-5 rounded-sm')}
+                      aria-label={t('removeAxis')}
+                      onClick={() => removeAxis(index)}
+                      className={editorIconButtonDanger}
                     >
-                      <ChevronUpIcon className="size-2.5" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={index === fields.length - 1}
-                      title={t('moveDown')}
-                      aria-label={t('moveDown')}
-                      onClick={() => {
-                        move(index, index + 1);
-                        onAxisChange?.();
-                      }}
-                      className={cn(editorIconButton, 'h-3.5 w-5 rounded-sm')}
-                    >
-                      <ChevronDownIcon className="size-2.5" />
+                      <XIcon className="size-3" />
                     </button>
                   </div>
 
-                  <input
-                    {...register(`options.${index}.name`)}
-                    aria-label={t('namePlaceholder')}
-                    placeholder={t('namePlaceholder')}
-                    data-bad={nameError(index) ? 'empty' : undefined}
-                    className={editorInputGhost}
-                  />
+                  <div className="flex flex-wrap gap-1.5">
+                    {values.map((value) => (
+                      <span key={value.localKey} className={editorChip}>
+                        {value.colorHex && (
+                          <span
+                            aria-hidden="true"
+                            style={{ background: value.colorHex }}
+                            className="size-3.5 flex-none rounded-full border border-black/15"
+                          />
+                        )}
+                        <span>{value.value}</span>
+                        <button
+                          type="button"
+                          aria-label={t('removeValue', { value: value.value })}
+                          onClick={() => removeValue(index, value.localKey, value.value)}
+                          className="bg-muted text-mut hover:bg-dtint hover:text-dtext grid size-5.5 flex-none place-items-center rounded-full transition-colors"
+                        >
+                          <XIcon className="size-2.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
 
-                  <span className="text-mut flex-none text-xs">
-                    {t('count', { count: e2pNumbers(String(values.length)) })}
-                  </span>
-
-                  <button
-                    type="button"
-                    aria-label={t('removeAxis')}
-                    onClick={() => removeAxis(index)}
-                    className={editorIconButtonDanger}
-                  >
-                    <XIcon className="size-3" />
-                  </button>
+                  <div className="mt-2.5 flex gap-1.5">
+                    <input
+                      value={drafts[field.id] ?? ''}
+                      aria-label={t('valuePlaceholder')}
+                      placeholder={t('valuePlaceholder')}
+                      onChange={(e) =>
+                        setDrafts((prev) => ({ ...prev, [field.id]: e.target.value }))
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key !== 'Enter') return;
+                        // Otherwise Enter submits the form — this input is inside the <form>.
+                        e.preventDefault();
+                        addValues(index, field.id);
+                      }}
+                      className={editorInputSm}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addValues(index, field.id)}
+                      className={editorAddButtonSm}
+                    >
+                      {t('add')}
+                    </button>
+                  </div>
+                  <p className={cn('mt-1.5 text-xs', nameError(index) ? 'text-dtext' : 'text-mut')}>
+                    {nameError(index)?.message ?? t('splitHint')}
+                  </p>
                 </div>
+              );
+            })}
 
-                <div className="flex flex-wrap gap-1.5">
-                  {values.map((value) => (
-                    <span key={value.localKey} className={editorChip}>
-                      {value.colorHex && (
-                        <span
-                          aria-hidden="true"
-                          style={{ background: value.colorHex }}
-                          className="size-3.5 flex-none rounded-full border border-black/15"
-                        />
-                      )}
-                      <span>{value.value}</span>
-                      <button
-                        type="button"
-                        aria-label={t('removeValue', { value: value.value })}
-                        onClick={() => removeValue(index, value.localKey, value.value)}
-                        className="bg-muted text-mut hover:bg-dtint hover:text-dtext grid size-5.5 flex-none place-items-center rounded-full transition-colors"
-                      >
-                        <XIcon className="size-2.5" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mt-2.5 flex gap-1.5">
-                  <input
-                    value={drafts[field.id] ?? ''}
-                    aria-label={t('valuePlaceholder')}
-                    placeholder={t('valuePlaceholder')}
-                    onChange={(e) => setDrafts((prev) => ({ ...prev, [field.id]: e.target.value }))}
-                    onKeyDown={(e) => {
-                      if (e.key !== 'Enter') return;
-                      // Otherwise Enter submits the form — this input is inside the <form>.
-                      e.preventDefault();
-                      addValues(index, field.id);
-                    }}
-                    className={editorInputSm}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => addValues(index, field.id)}
-                    className={editorAddButtonSm}
-                  >
-                    {t('add')}
-                  </button>
-                </div>
-                <p className={cn('mt-1.5 text-xs', nameError(index) ? 'text-dtext' : 'text-mut')}>
-                  {nameError(index)?.message ?? t('splitHint')}
-                </p>
+            {fields.length === 0 && (
+              <div className={editorEmptyBox}>
+                <div className="mb-1 text-sm font-bold">{t('empty')}</div>
+                <p className="text-mut m-0 text-xs text-pretty">{t('emptyHint')}</p>
               </div>
-            );
-          })}
+            )}
 
-          {fields.length === 0 && (
-            <div className={editorEmptyBox}>
-              <div className="mb-1 text-sm font-bold">{t('empty')}</div>
-              <p className="text-mut m-0 text-xs text-pretty">{t('emptyHint')}</p>
-            </div>
-          )}
-
-          <button
-            type="button"
-            disabled={atMax}
-            title={atMax ? t('maxReached') : undefined}
-            // `style: 'button'` is the default this editor writes. A value only becomes a colour
-            // swatch by carrying a hex — the design has no style picker.
-            // `localKey` is required on an option the same way it is on a value (schema.ts has no
-            // `?` on either): a field-array row needs a stable identity before Save mints a real
-            // id, and `append` — unlike `useFieldArray`'s own `field.id` — does not invent one.
-            onClick={() =>
-              append({ localKey: crypto.randomUUID(), name: '', style: 'button', values: [] })
-            }
-            className={editorAddButton}
-          >
-            <PlusIcon className="size-3" />
-            {t('addAttribute')}
-          </button>
+            <button
+              type="button"
+              disabled={atMax}
+              title={atMax ? t('maxReached') : undefined}
+              // `style: 'button'` is the default this editor writes. A value only becomes a colour
+              // swatch by carrying a hex — the design has no style picker.
+              // `localKey` is required on an option the same way it is on a value (schema.ts has no
+              // `?` on either): a field-array row needs a stable identity before Save mints a real
+              // id, and `append` — unlike `useFieldArray`'s own `field.id` — does not invent one.
+              onClick={() =>
+                append({ localKey: crypto.randomUUID(), name: '', style: 'button', values: [] })
+              }
+              className={editorAddButton}
+            >
+              <PlusIcon className="size-3" />
+              {t('addAttribute')}
+            </button>
+          </div>
         </div>
-      </div>
-    </EditorSection>
+      </EditorSection>
+    </>
   );
 };

@@ -185,3 +185,23 @@ describe('AttributesSection', () => {
     expect(screen.queryByText('قرمز')).not.toBeInTheDocument();
   });
 });
+
+describe('AttributesSection — the "use مشخصات instead" notice', () => {
+  it('renders the notice above the step heading, before any axis is added', () => {
+    render(<Harness />);
+
+    const notice = screen.getByTestId('attributes-notice');
+    expect(notice).toHaveAttribute('role', 'alert');
+    // Exact copy, not a substring: the apostrophes around 'مشخصات' pass through ICU message
+    // parsing, where `'` is the escape character. Asserting the whole string is what would catch
+    // it silently swallowing them.
+    expect(notice).toHaveTextContent(copy.notice);
+  });
+
+  it('stays put once axes exist — it is guidance, not an empty state', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByText(copy.addAttribute));
+
+    expect(screen.getByTestId('attributes-notice')).toBeInTheDocument();
+  });
+});
