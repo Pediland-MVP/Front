@@ -25,6 +25,13 @@ const nextConfig = {
       { protocol: 'https', hostname: 'koochaa-cdn.s3.amazonaws.com' },
       { protocol: 'https', hostname: 'cdn.zarinpal.com' },
       { protocol: 'https', hostname: 'befroosh.app' },
+      // Uploaded media. `dl.` is the custom domain on the prod R2 bucket, `dltest.` the one on
+      // the test bucket; the backend stores `DL_URL/<key>` as file.url, so every API-provided
+      // image URL now lives on one of these. Without them next/image refuses the host outright.
+      { protocol: 'https', hostname: 'dl.befroosh.app' },
+      { protocol: 'https', hostname: 'dltest.befroosh.app' },
+      // Pre-R2 rows still point at ArvanCloud. The account is dead, so these no longer load,
+      // but the pattern stays until those file.url rows are rewritten.
       { protocol: 'https', hostname: 'befroosh.s3.ir-thr-at1.arvanstorage.ir' },
     ],
   },
