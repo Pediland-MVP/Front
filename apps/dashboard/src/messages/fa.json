@@ -1916,7 +1916,17 @@
     "COMMERCE_CATEGORY_NOT_FOUND": "دسته‌بندی مورد نظر پیدا نشد.",
     "COMMERCE_INVALID_QUANTITY": "تعداد باید یک عدد صحیح و بزرگ‌تر از صفر باشد.",
     "ORDER_QUANTITY_INVALID": "تعداد سفارش باید یک عدد صحیح و بزرگ‌تر از صفر باشد.",
-    "COMMERCE_COLLECTION_NOT_FOUND": "یک یا چند مجموعه در این فضای کاری پیدا نشد."
+    "COMMERCE_COLLECTION_NOT_FOUND": "یک یا چند مجموعه در این فضای کاری پیدا نشد.",
+    "COMMERCE_PRODUCT_TITLE_REQUIRED": "عنوان محصول را بنویسید.",
+    "COMMERCE_PRODUCT_DESCRIPTION_REQUIRED": "توضیحات محصول را بنویسید.",
+    "COMMERCE_PRODUCT_CATEGORY_REQUIRED": "دسته‌بندی محصول را انتخاب کنید.",
+    "COMMERCE_VARIANT_LIMIT": "هر محصول باید بین ۱ تا ۲۰۰۰ تنوع داشته باشد.",
+    "COMMERCE_VARIANT_STOCK_REQUIRED": "موجودی هر تنوع را پر کنید، یا آن را بی‌نهایت کنید.",
+    "COMMERCE_INVALID_SALE_WINDOW": "پایان تخفیف باید بعد از شروع آن باشد.",
+    "COMMERCE_INVALID_SALE_PRICE": "قیمت‌های تخفیف این تنوع با هم سازگار نیستند.",
+    "PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE": "قیمت تخفیف‌خورده باید کمتر از قیمت اصلی باشد.",
+    "COMMERCE_DUPLICATE_VARIANT": "این ترکیب از ویژگی‌ها تکراری است.",
+    "COMMERCE_OPTION_VALUE_IN_USE": "این مقدار در تنوع‌های فعلی استفاده شده؛ برای حذف آن باید تنوع‌های مرتبط هم حذف شوند."
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
