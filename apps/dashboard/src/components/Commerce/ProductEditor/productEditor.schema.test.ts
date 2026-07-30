@@ -73,8 +73,10 @@ describe('buildProductEditorSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('allows a null stock — a blank count is not an error', () => {
-    expect(schema.safeParse(form({ variants: [variant({ stock: null })] })).success).toBe(true);
+  it('allows a null stock when the variant is ∞ — a blank count is not an error there', () => {
+    expect(
+      schema.safeParse(form({ variants: [variant({ stock: null, infinite: true })] })).success,
+    ).toBe(true);
   });
 
   it('rejects a fourth option axis, matching the backend ArrayMaxSize(3)', () => {
@@ -132,6 +134,100 @@ describe('buildProductEditorSchema', () => {
         ],
       }),
     );
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('buildProductEditorSchema — variant-level rules', () => {
+  it('requires a stock count on a tracked variant', () => {
+    const result = schema.safeParse(
+      form({ variants: [variant({ stock: null, infinite: false })] }),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['variants', 0, 'stock']);
+  });
+
+  it('accepts a null stock when the variant is ∞, because it is untracked on purpose', () => {
+    const result = schema.safeParse(form({ variants: [variant({ stock: null, infinite: true })] }));
+
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts a stock of zero — out of stock is a real answer, not a blank', () => {
+    const result = schema.safeParse(form({ variants: [variant({ stock: 0 })] }));
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects a price above the ceiling', () => {
+    const result = schema.safeParse(form({ variants: [variant({ price: 1_000_000_000_000 })] }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['variants', 0, 'price']);
+  });
+
+  it('rejects a sku over 100 characters', () => {
+    const result = schema.safeParse(form({ variants: [variant({ sku: 'A'.repeat(101) })] }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['variants', 0, 'sku']);
+  });
+
+  it('rejects a fractional or negative weight, which the DTO would reject as non-int', () => {
+    for (const weight of [1.5, -1]) {
+      const result = schema.safeParse(form({ variants: [variant({ weight })] }));
+      expect(result.success).toBe(false);
+    }
+  });
+
+  it('rejects a price at or below a carried-through salePrice', () => {
+    // salePrice has no UI. Without this rule the save reached the backend and came back
+    // PRODUCT_DISCOUNT_PRICE_IS_BIGGER_THAN_PRICE, pointing at a field nobody can see.
+    const result = schema.safeParse(
+      form({
+        variants: [
+          variant({ price: 400, salePrice: 400, saleStartsAt: '2026-07-01T00:00:00.000Z' }),
+        ],
+      }),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['variants', 0, 'price']);
+  });
+
+  it('rejects a salePrice with no start date, matching the DB CHECK', () => {
+    const result = schema.safeParse(
+      form({ variants: [variant({ price: 500, salePrice: 400, saleStartsAt: null })] }),
+    );
+
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a sale window that ends before it starts', () => {
+    const result = schema.safeParse(
+      form({
+        variants: [
+          variant({
+            price: 500,
+            salePrice: 400,
+            saleStartsAt: '2026-08-01T00:00:00.000Z',
+            saleEndsAt: '2026-07-01T00:00:00.000Z',
+          }),
+        ],
+      }),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['variants', 0, 'saleEndsAt']);
+  });
+
+  it('accepts an end date with no start date, which the DB CHECK permits', () => {
+    // The CHECK pairs salePrice with saleStartsAt only, so an end date alone is legal data.
+    const result = schema.safeParse(
+      form({ variants: [variant({ saleEndsAt: '2026-08-01T00:00:00.000Z' })] }),
+    );
+
     expect(result.success).toBe(true);
   });
 });

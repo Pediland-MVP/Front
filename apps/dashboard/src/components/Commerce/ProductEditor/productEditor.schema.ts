@@ -176,6 +176,12 @@ export const buildProductEditorSchema = (t: Translator) => {
     values: z.array(optionValueSchema),
   });
 
+  /** `price` is a bigint column; this keeps every amount inside Number.MAX_SAFE_INTEGER. */
+  const MAX_AMOUNT = 999_999_999_999;
+  const MAX_STOCK = 1_000_000_000;
+  /** grams. `weight` is an int4 column — unbounded, a large value is a driver 500, not a 400. */
+  const MAX_WEIGHT = 10_000_000;
+
   const variantSchema = z
     .object({
       id: z.string().optional(),
@@ -187,19 +193,30 @@ export const buildProductEditorSchema = (t: Translator) => {
         .number()
         .int()
         .nonnegative({ message: t('Validation.priceInvalid') })
+        .max(MAX_AMOUNT, { message: t('Validation.priceMax') })
         .nullable(),
-      compare: z.number().int().positive().nullable(),
+      compare: z.number().int().positive().max(MAX_AMOUNT).nullable(),
       hasDiscount: z.boolean(),
       stock: z
         .number()
         .int()
         .nonnegative({ message: t('Validation.stockInvalid') })
+        .max(MAX_STOCK, { message: t('Validation.stockMax') })
         .nullable(),
       infinite: z.boolean(),
       mediaIds: z.array(z.string()),
-      sku: z.string().nullable(),
-      weight: z.number().nullable(),
-      salePrice: z.number().nullable(),
+      sku: z
+        .string()
+        .trim()
+        .max(100, { message: t('Validation.skuMax') })
+        .nullable(),
+      weight: z
+        .number()
+        .int({ message: t('Validation.weightInvalid') })
+        .nonnegative({ message: t('Validation.weightInvalid') })
+        .max(MAX_WEIGHT, { message: t('Validation.weightMax') })
+        .nullable(),
+      salePrice: z.number().int().nonnegative().max(MAX_AMOUNT).nullable(),
       saleStartsAt: z.string().nullable(),
       saleEndsAt: z.string().nullable(),
       allowBackorder: z.boolean(),
@@ -220,6 +237,48 @@ export const buildProductEditorSchema = (t: Translator) => {
           path: ['compare'],
           message: t('Validation.compareInvalid'),
         });
+      }
+      // A tracked variant must say how many. ∞ is the way to say "not tracked" — blank is not.
+      if (!variant.infinite && variant.stock == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['stock'],
+          message: t('Validation.stockRequired'),
+        });
+      }
+      // Mirrors CHK_commerce_variant_sale_lt_price. Reported on `price`, not `salePrice`: the
+      // price cell is the one on screen, and it is the one the merchant can act on.
+      if (
+        variant.salePrice != null &&
+        variant.price != null &&
+        variant.salePrice >= variant.price
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['price'],
+          message: t('Validation.salePriceInvalid', { amount: variant.salePrice }),
+        });
+      }
+      // Mirrors CHK_commerce_variant_sale_schedule: set together or neither.
+      if ((variant.salePrice != null) !== (variant.saleStartsAt != null)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['saleStartsAt'],
+          message: t('Validation.salePricePairing'),
+        });
+      }
+      // Only when BOTH exist — an end date on its own is legal, the CHECK pairs salePrice with
+      // saleStartsAt only.
+      if (variant.saleStartsAt != null && variant.saleEndsAt != null) {
+        const starts = Date.parse(variant.saleStartsAt);
+        const ends = Date.parse(variant.saleEndsAt);
+        if (Number.isFinite(starts) && Number.isFinite(ends) && ends <= starts) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['saleEndsAt'],
+            message: t('Validation.saleWindowInvalid'),
+          });
+        }
       }
     });
 
