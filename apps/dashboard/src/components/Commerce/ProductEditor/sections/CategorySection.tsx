@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 
+import { cn } from '@/lib/utils';
+
 import type { ProductFormValues } from '../productEditor.schema';
 import { EditorSection } from '../ui/EditorSection';
 
@@ -24,18 +26,23 @@ export const CategorySection = ({
   onOpenPicker: () => void;
 }) => {
   const t = useTranslations('Commerce.Editor.Category');
-  const { control } = useFormContext<ProductFormValues>();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<ProductFormValues>();
   const categoryId = useWatch({ control, name: 'categoryId' });
 
   const chosen = Boolean(categoryId);
 
   return (
     <EditorSection step={step} title={t('title')} cardClassName="flex flex-wrap items-center gap-3">
-      <div className="min-w-[220px] flex-1">
+      <div className="min-w-[220px] flex-1" data-bad={errors.categoryId ? 'empty' : undefined}>
         <div className="text-sm font-bold" data-testid="category-path">
           {chosen ? (categoryPath ?? '—') : t('none')}
         </div>
-        <p className="text-mut mt-1 text-xs">{t('hint')}</p>
+        <p className={cn('mt-1 text-xs', errors.categoryId ? 'text-dtext' : 'text-mut')}>
+          {errors.categoryId?.message ?? t('hint')}
+        </p>
       </div>
       <button
         type="button"

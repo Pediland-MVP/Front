@@ -34,7 +34,11 @@ import { EditorSection } from '../ui/EditorSection';
  */
 export const DescriptionSection = ({ step = 2 }: { step?: number }) => {
   const t = useTranslations('Commerce.Editor.Description');
-  const { control, setValue } = useFormContext<ProductFormValues>();
+  const {
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<ProductFormValues>();
 
   const surfaceRef = useRef<HTMLDivElement>(null);
   /** The markdown this component last wrote INTO or read OUT OF the surface. */
@@ -118,8 +122,10 @@ export const DescriptionSection = ({ step = 2 }: { step?: number }) => {
             suppressContentEditableWarning
             data-prose="1"
             data-testid="md-surface"
+            data-bad={errors.description ? 'empty' : undefined}
             role="textbox"
             aria-multiline="true"
+            aria-invalid={errors.description ? true : undefined}
             aria-label={t('title')}
             onInput={pull}
             onBlur={pull}
@@ -134,8 +140,14 @@ export const DescriptionSection = ({ step = 2 }: { step?: number }) => {
           )}
         </div>
 
-        <div className="bg-muted border-lnv text-mut border-t px-3 py-2 text-xs">
-          {t('count', { count: e2pNumbers(String(description.length)) })}
+        <div
+          className={cn(
+            'border-lnv border-t px-3 py-2 text-xs',
+            errors.description ? 'bg-dtint text-dtext' : 'bg-muted text-mut',
+          )}
+        >
+          {errors.description?.message ??
+            t('count', { count: e2pNumbers(String(description.length)) })}
         </div>
       </div>
     </EditorSection>

@@ -195,4 +195,38 @@ describe('ProductEditorPage', () => {
     ).not.toBeInTheDocument();
     expect(grid().getByLabelText(VARIANTS.remove.replace('{name}', 'سبز'))).toBeInTheDocument();
   });
+
+  /**
+   * The whole point of this pair: a merchant is told "چند مورد کامل نیست. موردهای قرمز را درست
+   * کنید" and the description/category fields must actually turn red — this was the bug (see
+   * final-fix-brief Finding 1). `errors.description`/`errors.categoryId` reaching the DOM proves
+   * both `firstErrorPath` recognizes the paths AND the two sections render the error at all.
+   */
+  it('shows the required-description message when the schema rejects an empty description', async () => {
+    stubReads(undefined);
+    renderEditor({ mode: 'create' });
+
+    fireEvent.click(screen.getByTestId('editor-save'));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(messages.Commerce.Editor.Validation.descriptionRequired),
+      ).toBeInTheDocument(),
+    );
+    expect(screen.getByTestId('md-surface')).toHaveAttribute('data-bad', 'empty');
+  });
+
+  it('shows the required-category message when the schema rejects a null category', async () => {
+    stubReads(undefined);
+    renderEditor({ mode: 'create' });
+
+    fireEvent.click(screen.getByTestId('editor-save'));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(messages.Commerce.Editor.Validation.categoryRequired),
+      ).toBeInTheDocument(),
+    );
+    expect(screen.getByTestId('category-path').parentElement).toHaveAttribute('data-bad', 'empty');
+  });
 });

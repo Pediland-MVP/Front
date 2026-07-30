@@ -103,6 +103,8 @@ const firstErrorPath = (
   errors: FieldErrors<ProductFormValues>,
 ): FieldPath<ProductFormValues> | null => {
   if (errors.title) return 'title';
+  if (errors.description) return 'description';
+  if (errors.categoryId) return 'categoryId';
 
   const options = errors.options as Array<{ name?: unknown } | undefined> | undefined;
   if (Array.isArray(options)) {
