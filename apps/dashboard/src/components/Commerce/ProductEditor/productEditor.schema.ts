@@ -153,8 +153,14 @@ export const buildProductEditorSchema = (t: Translator) => {
     value: z
       .string()
       .trim()
-      .min(1, { message: t('Validation.optionValueRequired') }),
-    colorHex: z.string().optional(),
+      .min(1, { message: t('Validation.optionValueRequired') })
+      .max(100, { message: t('Validation.optionValueMax') }),
+    // `@Length(4, 9)` on the backend bounds the length but not the SHAPE, so "redred" passed
+    // both sides and reached the DB as an unrenderable swatch.
+    colorHex: z
+      .string()
+      .regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, { message: t('Validation.colorHexInvalid') })
+      .optional(),
     localKey: z.string(),
   });
 
@@ -164,7 +170,8 @@ export const buildProductEditorSchema = (t: Translator) => {
     name: z
       .string()
       .trim()
-      .min(1, { message: t('Validation.optionNameRequired') }),
+      .min(1, { message: t('Validation.optionNameRequired') })
+      .max(100, { message: t('Validation.optionNameMax') }),
     style: z.enum(['dropdown', 'button', 'color']),
     values: z.array(optionValueSchema),
   });
@@ -222,8 +229,18 @@ export const buildProductEditorSchema = (t: Translator) => {
       .trim()
       .min(1, { message: t('Validation.titleRequired') })
       .max(255, { message: t('Validation.titleMax') }),
-    description: z.string(),
-    categoryId: z.string().nullable(),
+    description: z
+      .string()
+      .trim()
+      .min(1, { message: t('Validation.descriptionRequired') })
+      .max(20_000, { message: t('Validation.descriptionMax') }),
+    // A product with no category cannot be found in the storefront's own navigation, so this
+    // is a data-completeness rule, not a UI preference.
+    categoryId: z
+      .string()
+      .min(1, { message: t('Validation.categoryRequired') })
+      .nullable()
+      .refine((value) => value != null, { message: t('Validation.categoryRequired') }),
     tags: z
       .array(z.string().trim().min(1).max(50))
       .max(MAX_TAGS, { message: t('Validation.tagLimit') }),
@@ -233,11 +250,13 @@ export const buildProductEditorSchema = (t: Translator) => {
           title: z
             .string()
             .trim()
-            .min(1, { message: t('Validation.specTitleRequired') }),
+            .min(1, { message: t('Validation.specTitleRequired') })
+            .max(100, { message: t('Validation.specTitleMax') }),
           body: z
             .string()
             .trim()
-            .min(1, { message: t('Validation.specBodyRequired') }),
+            .min(1, { message: t('Validation.specBodyRequired') })
+            .max(500, { message: t('Validation.specBodyMax') }),
         }),
       )
       .max(MAX_SPECS),

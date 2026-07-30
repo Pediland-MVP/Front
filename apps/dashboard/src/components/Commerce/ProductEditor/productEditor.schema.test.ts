@@ -33,6 +33,8 @@ const variant = (
 const form = (over: Partial<ProductFormValues> = {}): ProductFormValues => ({
   ...buildEmptyProductForm(),
   title: 'کفش',
+  description: 'توضیح آزمایشی',
+  categoryId: '11111111-1111-4111-8111-111111111111',
   variants: [variant()],
   ...over,
 });
@@ -147,5 +149,113 @@ describe('buildEmptyProductForm', () => {
     expect(empty.options).toEqual([]);
     expect(empty.media).toEqual([]);
     expect(empty.basePrice).toBeNull();
+  });
+});
+
+describe('buildProductEditorSchema — product-level rules', () => {
+  it('rejects a blank description', () => {
+    const result = schema.safeParse(form({ description: '   ' }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['description']);
+  });
+
+  it('rejects a description over 20000 characters', () => {
+    const result = schema.safeParse(form({ description: 'ا'.repeat(20_001) }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['description']);
+  });
+
+  it('rejects a product with no category', () => {
+    const result = schema.safeParse(form({ categoryId: null }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['categoryId']);
+  });
+
+  it('rejects a spec title over 100 characters, pointing at that row', () => {
+    const result = schema.safeParse(form({ specs: [{ title: 'ج'.repeat(101), body: 'مش' }] }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['specs', 0, 'title']);
+  });
+
+  it('rejects a spec body over 500 characters, pointing at that row', () => {
+    const result = schema.safeParse(form({ specs: [{ title: 'جنس', body: 'م'.repeat(501) }] }));
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['specs', 0, 'body']);
+  });
+
+  it('rejects an option name over 100 characters', () => {
+    const result = schema.safeParse(
+      form({
+        options: [{ localKey: 'o1', name: 'ر'.repeat(101), style: 'button' as const, values: [] }],
+      }),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual(['options', 0, 'name']);
+  });
+
+  it('rejects an option value over 100 characters', () => {
+    const result = schema.safeParse(
+      form({
+        options: [
+          {
+            localKey: 'o1',
+            name: 'رنگ',
+            style: 'button' as const,
+            values: [{ localKey: 'v1', value: 'ق'.repeat(101) }],
+          },
+        ],
+      }),
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error!.issues.map((i) => i.path)).toContainEqual([
+      'options',
+      0,
+      'values',
+      0,
+      'value',
+    ]);
+  });
+
+  it('rejects a colorHex that is not #RGB or #RRGGBB', () => {
+    const result = schema.safeParse(
+      form({
+        options: [
+          {
+            localKey: 'o1',
+            name: 'رنگ',
+            style: 'color' as const,
+            values: [{ localKey: 'v1', value: 'قرمز', colorHex: 'red' }],
+          },
+        ],
+      }),
+    );
+
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts both #RGB and #RRGGBB', () => {
+    for (const colorHex of ['#f00', '#FF0000']) {
+      const result = schema.safeParse(
+        form({
+          options: [
+            {
+              localKey: 'o1',
+              name: 'رنگ',
+              style: 'color' as const,
+              values: [{ localKey: 'v1', value: 'قرمز', colorHex }],
+            },
+          ],
+        }),
+      );
+
+      expect(result.success).toBe(true);
+    }
   });
 });
