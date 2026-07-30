@@ -195,7 +195,12 @@ export const buildProductEditorSchema = (t: Translator) => {
         .nonnegative({ message: t('Validation.priceInvalid') })
         .max(MAX_AMOUNT, { message: t('Validation.priceMax') })
         .nullable(),
-      compare: z.number().int().positive().max(MAX_AMOUNT).nullable(),
+      compare: z
+        .number()
+        .int()
+        .positive()
+        .max(MAX_AMOUNT, { message: t('Validation.amountMax') })
+        .nullable(),
       hasDiscount: z.boolean(),
       stock: z
         .number()
@@ -216,7 +221,12 @@ export const buildProductEditorSchema = (t: Translator) => {
         .nonnegative({ message: t('Validation.weightInvalid') })
         .max(MAX_WEIGHT, { message: t('Validation.weightMax') })
         .nullable(),
-      salePrice: z.number().int().nonnegative().max(MAX_AMOUNT).nullable(),
+      salePrice: z
+        .number()
+        .int()
+        .nonnegative()
+        .max(MAX_AMOUNT, { message: t('Validation.amountMax') })
+        .nullable(),
       saleStartsAt: z.string().nullable(),
       saleEndsAt: z.string().nullable(),
       allowBackorder: z.boolean(),

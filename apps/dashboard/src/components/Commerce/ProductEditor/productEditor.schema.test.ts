@@ -230,6 +230,17 @@ describe('buildProductEditorSchema — variant-level rules', () => {
 
     expect(result.success).toBe(true);
   });
+
+  it('reports an over-ceiling compare price through our own message, not zod’s English default', () => {
+    const result = schema.safeParse(
+      form({ variants: [variant({ price: 500, compare: 1_000_000_000_000 })] }),
+    );
+
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    const issue = result.error.issues.find((i) => i.path.join('.') === 'variants.0.compare');
+    expect(issue?.message).toBe('Validation.amountMax');
+  });
 });
 
 describe('buildEmptyProductForm', () => {
