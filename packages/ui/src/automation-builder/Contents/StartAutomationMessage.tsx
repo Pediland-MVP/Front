@@ -6,8 +6,24 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { FormField, FormItem, FormLabel, FormMessage, Input, Textarea } from '@/components/ui';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Button,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Textarea,
+} from '@/components/ui';
 import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { TrashIcon } from 'lucide-react';
 
 type StartAutomationMessageProps = {
   /** Rendered next to the header label. Replaces the dashboard-only `HelpMeDialog`
@@ -30,6 +46,7 @@ export const StartAutomationMessage = ({ helpSlot }: StartAutomationMessageProps
   const contents = watch('contents');
 
   const [isActive, setIsActive] = useState(false);
+  const [isDeleteLockedDialogOpen, setIsDeleteLockedDialogOpen] = useState(false);
 
   useEffect(() => {
     const shouldActivate =
@@ -52,12 +69,21 @@ export const StartAutomationMessage = ({ helpSlot }: StartAutomationMessageProps
 
   return (
     <div className="flex flex-col items-start gap-y-4 rounded-xl border border-dashed border-amber-200/75 bg-amber-50/60 p-3">
-      <div className="_header flex w-full items-center gap-3">
+      <div className="_header relative flex w-full items-center gap-3">
         <div className="bg-amber-550 flex size-5.5 shrink-0 items-center justify-center rounded-full p-0 text-white">
           <LockSimpleIcon size={12} weight="bold" />
         </div>
         <div className="text-secondary text-[13px] font-semibold">{t('start_request_message')}</div>
         {helpSlot}
+        <Button
+          variant="link"
+          size="icon"
+          className="text-destructive ms-auto size-5! p-0"
+          type="button"
+          onClick={() => setIsDeleteLockedDialogOpen(true)}
+        >
+          <TrashIcon />
+        </Button>
       </div>
 
       <div className="_content flex w-full flex-col gap-3">
@@ -98,6 +124,20 @@ export const StartAutomationMessage = ({ helpSlot }: StartAutomationMessageProps
           )}
         />
       </div>
+
+      <AlertDialog open={isDeleteLockedDialogOpen} onOpenChange={setIsDeleteLockedDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('delete_locked_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('delete_locked_description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsDeleteLockedDialogOpen(false)}>
+              {t('delete_locked_close')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
