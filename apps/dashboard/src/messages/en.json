@@ -671,9 +671,12 @@
       "comment_start_title_placeholder": "Start",
       "comment_start_title": "Start Button Text",
       "comment_start_text": "To receive the message, please tap the Receive Message button 🌟",
-      "start_request_message": "Start Request Message",
+      "start_request_message": "Start Conversation With Comment",
       "message_text": "Message Text",
-      "system_description": "This step is added automatically due to Instagram's rules. If a user enters the conversation through a comment, this message is sent to them first. Once they tap the button, the automation runs. If a user sends a direct message instead, this step is not shown and the automation starts from its first step.",
+      "system_description": "So you can send several messages to the user after a comment, this step is created automatically based on Instagram's rules.",
+      "delete_locked_title": "This message cannot be deleted",
+      "delete_locked_description": "To send more than one message in reply to a comment, this step is required by Instagram's rules. If you want it removed, see the help guide for this section.",
+      "delete_locked_close": "Got it",
       "Help": {
         "title": "Start Request Message",
         "description": "This section activates when your automation works on comments and includes at least two messages."
