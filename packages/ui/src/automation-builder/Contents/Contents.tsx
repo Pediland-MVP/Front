@@ -346,7 +346,7 @@ export const Contents = ({
           <StartAutomationMessage helpSlot={commentTriggerHelpSlot} />
         )}
 
-        {contents.length === 0 && (
+        {contents.length === 0 && !isChoosingType && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
             <p className="font-bold text-gray-500">{t('no_content_title')}</p>

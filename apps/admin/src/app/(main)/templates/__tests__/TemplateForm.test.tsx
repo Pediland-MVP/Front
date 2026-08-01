@@ -102,7 +102,7 @@ import TemplateForm from '../TemplateForm';
 // the `templateTitle` `<input>`).
 const addTextContent = (text: string) => {
   fireEvent.click(screen.getByText('افزودن محتوای دیگر'));
-  fireEvent.click(screen.getByText('پیام متنی'));
+  fireEvent.click(screen.getByText('متن'));
   const textareas = document.querySelectorAll('textarea');
   fireEvent.change(textareas[textareas.length - 1], { target: { value: text } });
 };
