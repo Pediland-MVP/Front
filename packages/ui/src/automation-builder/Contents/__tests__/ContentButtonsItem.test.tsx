@@ -203,7 +203,38 @@ describe('ButtonContentItem — locked CONSENT quick reply (cannot be removed wh
     );
   }
 
-  it('shows the locked-explanation dialog instead of removing a CONSENT quick reply when another content follows it', () => {
+  it('shows the locked-explanation dialog instead of removing a CONSENT quick reply while another quick reply on the same content still needs protecting', () => {
+    const removeMock = vi.fn();
+    render(
+      <TextWrapper
+        removeMock={removeMock}
+        contents={[
+          {
+            type: 'text',
+            quickReplies: [
+              { title: 'مکث و ادامه', postbackPayloadType: 'CONSENT' },
+              { title: 'اجرای یک پیام خودکار', postbackPayloadType: 'startAutomation' },
+            ],
+          },
+          { type: 'text' },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(removeMock).not.toHaveBeenCalled();
+    expect(screen.getByText('consent_locked_description')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('consent_locked_close'));
+    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
+  });
+
+  // BEF-142: the auto-insert effect in `Contents.tsx` adds the CONSENT button because the
+  // content had OTHER quick replies. Deleting every one of those left the user holding a
+  // lone CONSENT button that the lock refused to remove — the only escape was deleting the
+  // following content, deleting the CONSENT, then re-adding the content.
+  it('removes a CONSENT quick reply when it is the only quick reply left, even though another content follows it', () => {
     const removeMock = vi.fn();
     render(
       <TextWrapper
@@ -220,11 +251,33 @@ describe('ButtonContentItem — locked CONSENT quick reply (cannot be removed wh
 
     fireEvent.click(screen.getByRole('button'));
 
+    expect(removeMock).toHaveBeenCalledWith(0);
+    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
+  });
+
+  // A freshly-added quick reply row has no `postbackPayloadType` until the user picks one
+  // from the dropdown. It is still a real quick reply that Instagram would hide, so the
+  // CONSENT button must stay locked — "nothing left to protect" means an EMPTY list, not
+  // "no typed buttons".
+  it('keeps the CONSENT quick reply locked when the only other quick reply has no type picked yet', () => {
+    const removeMock = vi.fn();
+    render(
+      <TextWrapper
+        removeMock={removeMock}
+        contents={[
+          {
+            type: 'text',
+            quickReplies: [{ title: 'مکث و ادامه', postbackPayloadType: 'CONSENT' }, { title: '' }],
+          },
+          { type: 'text' },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
     expect(removeMock).not.toHaveBeenCalled();
     expect(screen.getByText('consent_locked_description')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('consent_locked_close'));
-    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
   });
 
   it('removes a CONSENT quick reply normally when it is the last content (nothing follows it)', () => {
