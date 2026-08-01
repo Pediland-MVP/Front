@@ -157,12 +157,29 @@ export const ButtonContentItem = ({
   // adds this button in the first place). Lock it regardless of whether the button was
   // auto-added or the user added it manually; the risk is identical either way.
   const parentArrayName = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
-  const parentContents = useWatch({ name: parentArrayName, control }) as unknown[] | undefined;
+  const parentContents = useWatch({ name: parentArrayName, control }) as
+    | { quickReplies?: ({ postbackPayloadType?: ButtonTypeEnum } | undefined)[] }[]
+    | undefined;
   const hasNextContent =
     mode === AutomationContentModeEnum.AUTOMATION &&
     (parentContents?.length ?? 0) > contentIndex + 1;
+
+  // ...but the CONSENT button only ever protects the content's OTHER quick replies. Once
+  // the user has deleted every one of them, there is nothing left for Instagram to hide,
+  // so keeping the lock on just traps them with a button they can never remove — BEF-142.
+  // (`contentType === 'text'` always reads `contents.N.quickReplies`: the only caller that
+  // passes `fieldNameOverride` is `VitrinContent`, and it passes `contentType="vitrin"`.)
+  // A quick reply with no `postbackPayloadType` yet is a row the user just added and has
+  // not typed — it still counts as something to protect.
+  const hasProtectedQuickReply = (parentContents?.[contentIndex]?.quickReplies ?? []).some(
+    (quickReply) => quickReply?.postbackPayloadType !== ButtonTypeEnum.CONSENT,
+  );
+
   const isLockedConsentButton =
-    contentType === 'text' && postbackPayloadType === ButtonTypeEnum.CONSENT && hasNextContent;
+    contentType === 'text' &&
+    postbackPayloadType === ButtonTypeEnum.CONSENT &&
+    hasNextContent &&
+    hasProtectedQuickReply;
 
   const removeHandler = () => {
     if (isLockedConsentButton) {
