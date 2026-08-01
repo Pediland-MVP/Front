@@ -49,9 +49,21 @@ export const StartAutomationMessage = ({ helpSlot }: StartAutomationMessageProps
   const [isDeleteLockedDialogOpen, setIsDeleteLockedDialogOpen] = useState(false);
 
   useEffect(() => {
+    // If content[0] already forces the user to tap/answer something (a QUESTION, or a
+    // TEXT that already has quick replies — which always get the auto-inserted CONSENT
+    // quick reply in Contents.tsx whenever another content follows), that tap/answer
+    // already opens Instagram's 24h window on its own. The separate start-request
+    // message would just be a redundant extra step. BEF-162.
+    const firstContent = contents?.[0];
+    const firstContentSelfGates =
+      firstContent?.type === AutomationContentTypesEnum.QUESTION ||
+      (firstContent?.type === AutomationContentTypesEnum.TEXT &&
+        (firstContent.quickReplies?.length ?? 0) > 0);
+
     const shouldActivate =
       isComment &&
       !justFollowers &&
+      !firstContentSelfGates &&
       (contents?.[0]?.type === AutomationContentTypesEnum.PRODUCT || contents?.length > 1);
 
     if (shouldActivate) {

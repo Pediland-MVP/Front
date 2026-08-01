@@ -387,6 +387,53 @@ describe('Contents — StartAutomationMessage (read-only comment-start preview)'
     );
     expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
   });
+
+  // BEF-162: content[0] can already force the user to tap/answer something itself,
+  // making the separate start-request card redundant.
+  it('hides the card when content[0] is TEXT with a quick reply, even with multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ id: 'qr-1', title: 'حله' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('hides the card when content[0] is QUESTION, even with multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.QUESTION },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('still shows the card when content[0] is TEXT with NO quick replies, even with multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, quickReplies: [] },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+  });
 });
 
 describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () => {
