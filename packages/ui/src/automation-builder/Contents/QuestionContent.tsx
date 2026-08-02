@@ -58,6 +58,10 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
         return 'کد ملی شما درست نیست';
       case ValidationTypeEnum.Number:
         return 'عدد وارد شده صحیح نیست';
+      case ValidationTypeEnum.Image:
+        return 'لطفا یک تصویر ارسال کنید';
+      case ValidationTypeEnum.PostalCode:
+        return 'کد پستی شما صحیح نیست';
       case ValidationTypeEnum.Text:
       default:
         return QuestionTextErrorMessage;
