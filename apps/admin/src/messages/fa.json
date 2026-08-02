@@ -934,7 +934,9 @@
             "nationalCode": "کدملی",
             "text": "متن",
             "number": "عدد",
-            "selectbox": "چند گزینه‌ای"
+            "selectbox": "چند گزینه‌ای",
+            "image": "تصویر",
+            "postalCode": "کد پستی"
           }
         },
         "Errors": {
