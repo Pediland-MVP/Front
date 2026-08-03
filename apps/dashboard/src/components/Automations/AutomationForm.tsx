@@ -579,8 +579,27 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     title: t('CommentConsent.Help.title'),
     description: t('CommentConsent.Help.description'),
     videoSrc: WizardVideoLinks.Automations.Hints.CommentConsent.video,
-    position: 'left' as const,
   };
+
+  // One guide per content type (BEF-140 item 4: "every content type needs a guide next
+  // to its title"), keyed by `AutomationContentTypesEnum`. Unlike the other help props
+  // above, these are brand-new guide locations with nothing hardcoded — content only
+  // ever comes from the Admin-managed `/guides/:helpId` CMS (see `guides-table.tsx`).
+  const contentTypeHelpSlots = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.values(AutomationContentTypesEnum).map((type) => [
+          type,
+          <HelpMeDialog
+            key={type}
+            helpId={`automation_content_${type}`}
+            title={t(`Contents.Types.buttons.descriptions.${type}`)}
+            noAbsolute
+          />,
+        ]),
+      ) as Partial<Record<AutomationContentTypesEnum, React.ReactNode>>,
+    [t],
+  );
 
   const isReady =
     !isAutomationLoading && !isTemplateLoading && !isLoading && !isAutomationDefaultsLoading;
@@ -637,9 +656,22 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
               <HelpMeDialog helpId="automation_just_followers" {...justFollowersHelpProps} />
             ),
             commentTrigger: (
-              <HelpMeDialog helpId="automation_comment_triggers" {...commentTriggerHelpProps} />
+              <HelpMeDialog
+                helpId="automation_comment_triggers"
+                {...commentTriggerHelpProps}
+                noAbsolute
+              />
+            ),
+            titleAndEnabled: (
+              <HelpMeDialog
+                helpId="automation_title"
+                title={t('TitleAndEnabled.Help.title')}
+                description={t('TitleAndEnabled.Help.description')}
+                noAbsolute
+              />
             ),
           }}
+          contentTypeHelpSlots={contentTypeHelpSlots}
         />
       )}
 
