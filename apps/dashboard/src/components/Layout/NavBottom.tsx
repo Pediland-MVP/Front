@@ -7,6 +7,7 @@ import { ReactElement } from 'react';
 import { useTranslations } from 'next-intl';
 
 import {
+  BuildingsIcon,
   CircleNotchIcon,
   HouseIcon,
   Icon,
@@ -14,7 +15,6 @@ import {
   LightningIcon,
   PlusCircleIcon,
   ShoppingBagIcon,
-  UserCircleIcon,
 } from '@phosphor-icons/react';
 import { WorkspaceDrawer } from '../Console/WorkspaceDrawer';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -83,8 +83,8 @@ export const NavBottom = () => {
     },
     {
       isProfile: true,
-      icon: UserCircleIcon,
-      labelKey: 'profile',
+      icon: BuildingsIcon,
+      labelKey: 'business',
     },
   ];
 
