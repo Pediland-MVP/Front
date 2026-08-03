@@ -114,7 +114,36 @@ the full set of resolved `pkg@version` entries gives **0 newly added versions an
 624 removed**, taking the graph from 1363 distinct packages to 739. The large
 line count also comes from pnpm re-keying peer-dependency hashes across the file.
 
-Timing still needs `next dev` to be run and compared. No tests were changed.
+### Measured dev timings
+Both sides run one at a time, `.next` deleted first, identical route order; the
+baseline is a throwaway worktree at parent `327be292`. Console routes were
+reached by sending a dummy `token` cookie, since `proxy.ts` only checks that the
+cookie **exists** (it does not verify the JWT) — without it every console route
+307s to `/auth` and the page never compiles.
+
+| Route | Before | After | Change |
+|---|---|---|---|
+| Ready (server boot) | 2.8–3.0s | 3.1s | ~same |
+| `/contacts` | **13.1–13.2s** | **1.69s** | **~7.8x faster** |
+| `/directs` | 2.4–2.8s | 1.77s | ~30% faster |
+| `/orders` | 1.59–1.60s | 1.38s | ~13% faster |
+| `/products` | 1.63–1.65s | 1.52s | ~7% faster |
+| `/automations` | 2.1–2.2s | 2.1s | noise |
+| `/auth`, `/auth/otp`, `/auth/password`, `/learn`, `/support`, `/install` | — | — | within ±5% (noise) |
+
+**Nearly all of the win comes from deleting the two `import * as` namespace
+imports, not from the deep-import rewrite.** `/contacts` renders
+`ContactDetailsDialog` → `dialogStyled.tsx`, which was the file doing
+`import * as Icons from '@phosphor-icons/react'`. That single namespace import
+cost ~11.5s of compile on that route. `/contacts` was re-measured twice on the
+baseline (13.2s, then 13.1s) to confirm it reproduces.
+
+Routes that only ever imported *named* icons barely moved. That is the honest
+result: `optimizePackageImports` plus deep imports are close to noise on their
+own here, because Turbopack already only pulls the named bindings it needs. The
+real killer was the namespace import, which defeats that entirely.
+
+No tests were changed.
 
 ## Gotchas found while doing this
 - **`motion` is not a newer `framer-motion`.** `motion/react` is literally
@@ -133,14 +162,26 @@ Timing still needs `next dev` to be run and compared. No tests were changed.
   reverted; only import lines are changed here. A repo-wide reformat is worth
   doing, but as its own branch.
 
+## Lesson for future work
+If a route feels disproportionately slow to compile, **look for
+`import * as X from '<big package>'` first.** A namespace import forces the whole
+barrel into the graph and no bundler config can undo it —
+`optimizePackageImports` and per-icon deep imports are both powerless against it.
+Two such imports were responsible for essentially the entire measured win here,
+while rewriting 116 named imports moved the needle by only a few percent. Both
+were also avoidable: each was doing dynamic icon-lookup-by-name over a set that
+was actually closed and statically known.
+
 ## Follow-ups (not applied)
-- **`apps/admin` has the same problem** — 19 Phosphor barrel import sites,
-  including `@phosphor-icons/react` and `@phosphor-icons/react/dist/ssr`, and its
-  own `next.config` without `optimizePackageImports`. Out of scope here.
-- **Disk pressure.** The disk sits at 98% (9 GB free after the 5.2 GB reclaim)
-  and the pnpm store is 13 GB. Low free space makes Turbopack's multi-GB cache
-  writes thrash, so `pnpm store prune` is worth running. Also reclaimable:
-  `Front/apps/admin/.next` (277 MB), `Site/.next` (210 MB).
+- **`apps/admin` is now done too** (commit `5b84540a`): 19 barrel imports across
+  18 files rewritten, plus `optimizePackageImports` in its `next.config.ts`.
+  Admin had no namespace imports, so by the finding above the gain there is
+  expected to be small; it was not separately timed.
+- **Disk pressure.** `pnpm store prune` was run: 421 packages / 15530 files
+  removed, store 13 GB → 12 GB, free space 8.8 GB → 9.9 GB. The disk is still at
+  98%, which is worth attention on its own — Turbopack's cache in the main
+  checkout had grown to 3.8 GB. Also reclaimable: `Front/apps/admin/.next`
+  (277 MB), `Site/.next` (210 MB).
 - **`packages/ui/src/components/ui-custom/phosphore-icons.ts`** is a 4-line
   re-export with no consumers — dead code, left in place.
 - **`node_modules` is partly tracked in git** — `git ls-files` shows 51 files
