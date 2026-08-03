@@ -596,7 +596,7 @@
             },
             "audio": {
               "text": "Voice/Music: Max size 25 MB",
-              "formats": "Supported formats: aac, m4a, wav, mp4"
+              "formats": "Supported formats: aac, m4a, wav, mp4, mp3"
             }
           }
         }
