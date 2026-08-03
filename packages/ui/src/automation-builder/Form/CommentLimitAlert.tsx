@@ -13,8 +13,10 @@ export const CommentLimitAlert = () => {
   }
 
   return (
-    <Alert variant="note">
-      <AlertDescription icon>{t('note')}</AlertDescription>
+    <Alert variant="note" className="items-start">
+      <AlertDescription icon className="w-full">
+        {t('note')}
+      </AlertDescription>
     </Alert>
   );
 };

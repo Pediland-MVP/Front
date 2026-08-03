@@ -7,7 +7,7 @@ import { InstagramNamespace } from '@/types/instagram';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import useSWRImmutable from 'swr/immutable';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -20,7 +20,7 @@ import { IResponseMessage } from '@/types/responseMessage';
 export function InstagramSelectField() {
   const [open, setOpen] = useState(false);
   const t = useTranslations('Automations');
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   // While a specific post is targeted, the automation is locked to the single
   // Instagram account that post belongs to — changing the selection here (even
@@ -36,8 +36,19 @@ export function InstagramSelectField() {
   >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
 
   const accounts = response?.data;
+  const instagramIds: string[] = useWatch({ control, name: 'instagramIds' }) ?? [];
 
-  if (isLoading || !accounts || accounts.length === 0) return null;
+  // A single-page workspace has nothing to pick between — hide the picker and
+  // make sure that one page is always the (implicit) target, since
+  // `instagramIds` is still a required, non-empty field on submit.
+  useEffect(() => {
+    if (!accounts || accounts.length !== 1) return;
+    const onlyId = accounts[0].id;
+    if (instagramIds.length === 1 && instagramIds[0] === onlyId) return;
+    setValue('instagramIds', [onlyId], { shouldValidate: true, shouldDirty: false });
+  }, [accounts, instagramIds, setValue]);
+
+  if (isLoading || !accounts || accounts.length <= 1) return null;
 
   return (
     <FormField

@@ -22,7 +22,7 @@ export default function AccountSessionManagementPage() {
         </div>
       </div>
 
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         {isLoading ? (
           <LoaderSpin />
         ) : error ? (

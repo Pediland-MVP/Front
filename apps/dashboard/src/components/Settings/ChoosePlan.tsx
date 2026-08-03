@@ -145,9 +145,6 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
     ? instagramById.get(selectedInstagramId)
     : undefined;
   const isSelectedIgTokenInvalid = selectedInstagram?.isIgTokenValid === false;
-  const isSelectedPageAlreadyCovered = selectedInstagramId
-    ? pageSubscriptions.some((sub) => sub.instagramId === selectedInstagramId)
-    : false;
 
   const {
     plan: currentPlan,
@@ -314,7 +311,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
           <DialogTrigger asChild>
             <Button
               size="lg"
-              className="bg-violet-600 rounded-xl shadow-lg transition-all hover:bg-violet-700 active:scale-95"
+              className="rounded-xl bg-violet-600 shadow-lg transition-all hover:bg-violet-700 active:scale-95"
             >
               <ShoppingCartIcon className="h-5 w-5" />
               {t('buy_subscription')}
@@ -549,28 +546,11 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                               </p>
                             )}
                           </div>
-
-                          {/* Desktop-only Coupon / Promo section */}
-                          <div className="border-slate-150 hidden rounded-2xl border bg-white p-4 shadow-xs md:block">
-                            <DiscountCode />
-                          </div>
-
-                          {/* Desktop-only Discount alert if code applied */}
-                          <div className="hidden md:block">
-                            <DiscountAlert />
-                          </div>
                         </div>
 
                         {/* LEFT COLUMN: Duration and Payment Cards (7 columns on desktop) */}
                         <div className="space-y-4 md:col-span-7">
                           {/* Warning Messages */}
-                          {isSelectedPageAlreadyCovered && (
-                            <div className="flex gap-2 rounded-xl border border-blue-100 bg-blue-50/70 p-3 text-xs text-blue-800">
-                              <span className="mt-1.5 h-2 w-2 shrink-0 animate-pulse rounded-full bg-blue-500" />
-                              <p className="leading-relaxed">{t('renewal_will_queue_notice')}</p>
-                            </div>
-                          )}
-
                           <div className="flex items-center gap-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-800">
                             <WarningCircleIcon
                               size={16}
@@ -578,16 +558,6 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                               className="text-amber-550 shrink-0"
                             />
                             <p className="leading-none">{t('vpnAlert')}</p>
-                          </div>
-
-                          {/* Mobile-only Coupon / Promo section */}
-                          <div className="border-slate-150 block rounded-2xl border bg-white p-4 shadow-xs md:hidden">
-                            <DiscountCode />
-                          </div>
-
-                          {/* Mobile-only Discount alert if code applied */}
-                          <div className="block md:hidden">
-                            <DiscountAlert />
                           </div>
 
                           <h4 className="mb-1 flex items-center gap-1.5 text-sm font-bold text-slate-800">
@@ -714,6 +684,14 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                               );
                             })}
                           </div>
+
+                          {/* Coupon / Promo section — kept last so it doesn't distract from
+                              plan selection; showing it first drove support tickets asking
+                              for a discount code before users even chose a plan. */}
+                          <div className="border-slate-150 rounded-2xl border bg-white p-4 shadow-xs">
+                            <DiscountCode />
+                          </div>
+                          <DiscountAlert />
                         </div>
                       </div>
                     )}
