@@ -6,18 +6,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { AutomationsCardList } from '@/components/Automations/AutomationsCardList';
-import { AutomationDraftDialog } from '@/components/Automations/AutomationDraftDialog';
 import { LayoutCard } from '@/components/Layout/LayoutCard';
 import { Button } from '@/components/ui';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
 import { CircleFadingPlusIcon } from 'lucide-react';
 import { usePermissions } from '@/hooks/usePermissions';
-import {
-  clearAutomationDraft,
-  getCurrentWorkspaceId,
-  hasAutomationDraft,
-} from '@/utils/automationDraft';
 
 export default function Page() {
   const t = useTranslations('Automations');
@@ -25,7 +19,6 @@ export default function Page() {
   const [search, setSearch] = useState<string>('');
   const [effectiveSearch, setEffectiveSearch] = useState<string>('');
   const router = useRouter();
-  const [isDraftDialogOpen, setIsDraftDialogOpen] = useState<boolean>(false);
 
   const setTools = useHeaderFeatures((s) => s.setTools);
   const clearTools = useHeaderFeatures((s) => s.clearTools);
@@ -36,23 +29,6 @@ export default function Page() {
   const { can } = usePermissions();
 
   const handleCreateAutomationClick = () => {
-    const workspaceId = getCurrentWorkspaceId();
-    if (workspaceId && hasAutomationDraft(workspaceId)) {
-      setIsDraftDialogOpen(true);
-      return;
-    }
-    router.push('/automations/add');
-  };
-
-  const handleDraftCreateNew = () => {
-    const workspaceId = getCurrentWorkspaceId();
-    if (workspaceId) clearAutomationDraft(workspaceId);
-    setIsDraftDialogOpen(false);
-    router.push('/automations/add');
-  };
-
-  const handleDraftResume = () => {
-    setIsDraftDialogOpen(false);
     router.push('/automations/add');
   };
 
@@ -101,12 +77,6 @@ export default function Page() {
   return (
     <LayoutCard className="_automation">
       <AutomationsCardList search={effectiveSearch} />
-      <AutomationDraftDialog
-        isOpen={isDraftDialogOpen}
-        onClose={() => setIsDraftDialogOpen(false)}
-        onCreateNew={handleDraftCreateNew}
-        onResume={handleDraftResume}
-      />
     </LayoutCard>
   );
 }
