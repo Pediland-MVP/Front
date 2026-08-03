@@ -1,7 +1,8 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
-import { Sidebar, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Sidebar } from '@phosphor-icons/react/dist/ssr/Sidebar';
+import { ArrowLeft } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 
 export default function ConversationsListSkeleton() {
   return (

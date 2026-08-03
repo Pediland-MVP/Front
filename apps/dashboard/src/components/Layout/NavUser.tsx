@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui';
-import { UserCircleIcon } from '@phosphor-icons/react';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/csr/UserCircle';
 import { EllipsisVerticalIcon } from 'lucide-react';
 import { UserDropdownMenu } from '../Console/UserDropdownMenu';
 import { WorkspaceSwitcherDialog } from '../Console/WorkspaceSwitcherDialog';

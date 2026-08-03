@@ -16,7 +16,8 @@ import {
   useFormContext,
 } from 'react-hook-form';
 
-import { ArrowsOutCardinalIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { ArrowsOutCardinalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsOutCardinal';
+import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 import { ButtonContent } from './ButtonContent';
 import { useContentsContext } from './ContentsContext';
 import { IGPostContent } from './IGPostContent';

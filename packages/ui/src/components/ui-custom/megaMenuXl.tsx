@@ -1,4 +1,5 @@
-import { CaretLeft, EnvelopeSimple } from '@phosphor-icons/react';
+import { CaretLeft } from '@phosphor-icons/react/dist/csr/CaretLeft';
+import { EnvelopeSimple } from '@phosphor-icons/react/dist/csr/EnvelopeSimple';
 import React from 'react';
 import screenShotExplain from '@/public/profile-ui-kommo.png';
 import ExplainFeatures from './explainFeaturesSmall';

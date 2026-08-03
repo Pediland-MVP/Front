@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { DevicesIcon } from '@phosphor-icons/react';
+import { DevicesIcon } from '@phosphor-icons/react/dist/csr/Devices';
 
 import { LayoutSettings } from '@/components/Layout/LayoutSettings';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';

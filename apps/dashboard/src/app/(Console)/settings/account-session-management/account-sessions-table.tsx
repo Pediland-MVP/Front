@@ -1,13 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import {
-  DesktopIcon,
-  DeviceMobileIcon,
-  DeviceTabletIcon,
-  InfoIcon,
-  QuestionIcon,
-} from '@phosphor-icons/react';
+import { DesktopIcon } from '@phosphor-icons/react/dist/csr/Desktop';
+import { DeviceMobileIcon } from '@phosphor-icons/react/dist/csr/DeviceMobile';
+import { DeviceTabletIcon } from '@phosphor-icons/react/dist/csr/DeviceTablet';
+import { InfoIcon } from '@phosphor-icons/react/dist/csr/Info';
+import { QuestionIcon } from '@phosphor-icons/react/dist/csr/Question';
 
 import {
   Badge,

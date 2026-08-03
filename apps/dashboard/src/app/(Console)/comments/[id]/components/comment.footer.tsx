@@ -6,7 +6,7 @@ import { Form, FormField } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import api from '@/hooks/swr/api-client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PaperPlaneRightIcon } from '@phosphor-icons/react/dist/ssr';
+import { PaperPlaneRightIcon } from '@phosphor-icons/react/dist/ssr/PaperPlaneRight';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useRef } from 'react';

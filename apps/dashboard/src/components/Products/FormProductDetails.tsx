@@ -27,7 +27,7 @@ import MultipleSelector, { Option } from '@/components/ui/multi-selector';
 import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
 import { useEffect, useState } from 'react';
 import { ProductVariationNamespace } from '@/types/variations/productAttribute.namespace';
-import { BarcodeIcon } from '@phosphor-icons/react/dist/ssr';
+import { BarcodeIcon } from '@phosphor-icons/react/dist/ssr/Barcode';
 
 interface FormProductDetailsProps {
   variations?: ProductVariationNamespace.GET.ProductAttributes;

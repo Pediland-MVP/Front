@@ -28,7 +28,9 @@ import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { CounterDown } from '@/components/ui-custom/CounterDown';
 import { InputPassword } from '@/components/ui-custom/InputPassword';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
-import { CircleNotchIcon, LockIcon, LockOpenIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import { LockIcon } from '@phosphor-icons/react/dist/csr/Lock';
+import { LockOpenIcon } from '@phosphor-icons/react/dist/csr/LockOpen';
 import { RefreshCwIcon } from 'lucide-react';
 import { REGEX_PASSWORD } from '@/utils/regex';
 

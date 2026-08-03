@@ -5,14 +5,12 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import {
-  CreditCardIcon,
-  CrownSimpleIcon,
-  DevicesIcon,
-  InstagramLogoIcon,
-  PasswordIcon,
-  UserCircleIcon,
-} from '@phosphor-icons/react';
+import { CreditCardIcon } from '@phosphor-icons/react/dist/csr/CreditCard';
+import { CrownSimpleIcon } from '@phosphor-icons/react/dist/csr/CrownSimple';
+import { DevicesIcon } from '@phosphor-icons/react/dist/csr/Devices';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/csr/InstagramLogo';
+import { PasswordIcon } from '@phosphor-icons/react/dist/csr/Password';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/csr/UserCircle';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { usePermissions } from '@/hooks/usePermissions';

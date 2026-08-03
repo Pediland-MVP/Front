@@ -1,5 +1,6 @@
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Sidebar } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeft } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
+import { Sidebar } from '@phosphor-icons/react/dist/ssr/Sidebar';
 
 export default function CommentsListSkeleton() {
   return (

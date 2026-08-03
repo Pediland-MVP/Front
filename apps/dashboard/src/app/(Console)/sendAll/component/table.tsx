@@ -20,7 +20,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowUp, Eye } from '@phosphor-icons/react/dist/ssr';
+import { ArrowUp } from '@phosphor-icons/react/dist/ssr/ArrowUp';
+import { Eye } from '@phosphor-icons/react/dist/ssr/Eye';
 import Image from 'next/image';
 // import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 // import { Checkbox } from "@/components/ui/checkbox"

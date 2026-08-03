@@ -1,7 +1,7 @@
 'use client';
 
 import { CardContent } from '@/components/ui/card';
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui';

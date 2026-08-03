@@ -1,7 +1,8 @@
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Info, Phone, Video } from 'lucide-react';
 import { leadNamespace } from '@/types/lead';
-import { ArrowLeft, X } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeft } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
+import { X } from '@phosphor-icons/react/dist/ssr/X';
 import { useRouter } from 'next/navigation';
 
 interface ChatTopbarProps {

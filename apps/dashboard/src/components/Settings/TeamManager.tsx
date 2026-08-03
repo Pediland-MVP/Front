@@ -27,7 +27,11 @@ import {
   Avatar,
   AvatarFallback,
 } from '@/components/ui';
-import { Trash, Shield, Plus, XSquare, UserCircle } from '@phosphor-icons/react';
+import { Trash } from '@phosphor-icons/react/dist/csr/Trash';
+import { Shield } from '@phosphor-icons/react/dist/csr/Shield';
+import { Plus } from '@phosphor-icons/react/dist/csr/Plus';
+import { XSquare } from '@phosphor-icons/react/dist/csr/XSquare';
+import { UserCircle } from '@phosphor-icons/react/dist/csr/UserCircle';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

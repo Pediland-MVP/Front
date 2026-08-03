@@ -14,7 +14,8 @@ import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { AudioRecorderWithVisualizer } from './AudioRecorder';
 import { AutomationContentTypesEnum } from '@/automation-builder/constants/automationContent.enum';
-import { CheckCircleIcon, CheckIcon } from '@phosphor-icons/react/dist/ssr';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 
 export const MediaUploader = ({
   files,

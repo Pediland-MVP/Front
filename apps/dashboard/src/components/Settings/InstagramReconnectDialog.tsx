@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui';
 import { InstagramNamespace } from '@/types/instagram';
-import { PlugsIcon } from '@phosphor-icons/react/dist/ssr';
+import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';
 import { CopyIcon, PlugIcon, TvMinimalPlayIcon } from 'lucide-react';
 import { ButtonLoading } from '../ui-custom/ButtonLoading';
 import { HelpMeDialog } from '../Global/HelpMeDialog';

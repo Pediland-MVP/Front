@@ -23,7 +23,7 @@ import {
 } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
-import { UserRectangleIcon } from '@phosphor-icons/react/dist/ssr';
+import { UserRectangleIcon } from '@phosphor-icons/react/dist/ssr/UserRectangle';
 
 export default function CustomerDetails() {
   const t = useTranslations('Checkout');

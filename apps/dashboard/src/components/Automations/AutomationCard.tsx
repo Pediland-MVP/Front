@@ -7,7 +7,8 @@ import { memo } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
-import { CrosshairIcon, InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { CrosshairIcon } from '@phosphor-icons/react/dist/ssr/Crosshair';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { CircleXIcon, CopyIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';
 import { CardImage } from '../Global/CardImage';
 import { usePermissions } from '@/hooks/usePermissions';

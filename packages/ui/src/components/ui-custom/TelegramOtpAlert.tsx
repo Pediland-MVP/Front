@@ -2,7 +2,7 @@
 
 import { CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
-import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
 
 interface TelegramOtpAlertProps {
   phone?: string;

@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { Alert, AlertDescription, AlertTitle, Button } from '@/components/ui';
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 export const ConnectInstagramAlert = () => {
   const t = useTranslations('ConnectInstagramAlert');

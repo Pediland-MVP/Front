@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { SessionNamespace } from '@/types/session';
-import { Mailbox } from '@phosphor-icons/react/dist/ssr';
+import { Mailbox } from '@phosphor-icons/react/dist/ssr/Mailbox';
 import { useMediaQuery } from '@react-hook/media-query';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';

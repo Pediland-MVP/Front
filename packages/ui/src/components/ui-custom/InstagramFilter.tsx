@@ -6,7 +6,7 @@ import { fetcher } from '@/hooks/swr/api-client';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
-import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 import { IResponseMessage } from '@/types/responseMessage';

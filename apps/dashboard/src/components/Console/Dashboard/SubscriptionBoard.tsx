@@ -15,7 +15,8 @@ import { useIsWebView } from '@/hooks/useIsWebView';
 
 import { Alert, AlertTitle, Button, CardContent } from '@/components/ui';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
-import { PlugsConnectedIcon, PlugsIcon } from '@phosphor-icons/react/dist/ssr';
+import { PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
+import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';
 import { ProgressRadial } from '../ProgressRadial';
 import { SubscriptionBoardSkeleton } from './SubscriptionBoard.skeleton';
 

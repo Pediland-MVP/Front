@@ -14,14 +14,12 @@ import { useMemo, useState } from 'react';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 import { hasOnlyFreeCredit, getRemainingDays } from '@/utils/subscription';
 
-import {
-  ArrowsClockwiseIcon,
-  CheckIcon,
-  PlugsConnectedIcon,
-  PlugsIcon,
-  SignOutIcon,
-  UserCircleIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
+import { PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
+import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';
+import { SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/ssr/UserCircle';
 import { ProgressLine } from '../Console/ProgressLine';
 import { Avatar, AvatarFallback, AvatarImage, Button, CardContent } from '../ui';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';

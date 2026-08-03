@@ -4,7 +4,9 @@ import { useTranslations } from 'next-intl';
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { PlusIcon } from 'lucide-react';
-import { InstagramLogoIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 import { InstagramAccounts } from '@/components/Settings/InstagramAccounts';
 import { Button } from '@/components/ui';

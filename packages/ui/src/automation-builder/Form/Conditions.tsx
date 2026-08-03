@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
-import { XCircleIcon } from '@phosphor-icons/react';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
 import { toast } from 'sonner';
 
 // The same 3-way union `@/types/contentCycles/conditions#ContentCycleConditionTypes` held

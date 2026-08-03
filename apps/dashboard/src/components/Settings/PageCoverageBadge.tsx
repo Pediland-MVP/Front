@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { SealCheckIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { SealCheckIcon } from '@phosphor-icons/react/dist/ssr/SealCheck';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { Alert, AlertDescription, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSubscriptionStore } from '@/store/subscriptionStore';

@@ -1,6 +1,6 @@
 'use client';
 
-import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
 
 interface TelegramOtpInlineLinkProps {
   phone?: string;

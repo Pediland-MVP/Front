@@ -44,7 +44,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import { MoveVerticalIcon, TrashIcon } from 'lucide-react';
-import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { AutomationButtonsContentTypes } from './AutomationButtons';
 
 type ButtonContentItemProps = {

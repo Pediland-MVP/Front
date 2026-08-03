@@ -9,7 +9,7 @@ import { formatNumber } from '@/utils/formatNumber';
 import { useTranslations } from 'next-intl';
 
 import { Button, CardContent } from '@/components/ui';
-import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr';
+import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown';
 import { ClockIcon, MoveLeftIcon, ShoppingCartIcon } from 'lucide-react';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { CardSimple } from '../ui-custom/CardSimple';

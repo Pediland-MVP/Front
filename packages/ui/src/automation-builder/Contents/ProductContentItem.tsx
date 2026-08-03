@@ -8,7 +8,8 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui';
-import { ArrowsOutCardinalIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { ArrowsOutCardinalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsOutCardinal';
+import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 import { useState } from 'react';
 import { ProductContentItemDialog } from './ProductContentItemDialog';
 import { AutomationBuilderApiClient } from '../types/apiClient';

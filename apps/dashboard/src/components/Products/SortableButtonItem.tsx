@@ -18,7 +18,7 @@ import {
 } from '@/components/ui';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ArrowsVerticalIcon } from '@phosphor-icons/react/dist/ssr';
+import { ArrowsVerticalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsVertical';
 import { Trash2Icon } from 'lucide-react';
 import { ButtonTypeEnum } from '@/types/buttons.enum';
 import { AutomationSearchSelect } from './AutomationSearchSelect';

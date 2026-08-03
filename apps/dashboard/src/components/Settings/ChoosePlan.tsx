@@ -8,13 +8,11 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { Instagram } from '@/types/user';
 import { formatNumber } from '@/utils/formatNumber';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  CircleIcon,
-  ClockCountdownIcon,
-  InstagramLogoIcon,
-  WarningCircleIcon,
-  TrendDownIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { CircleIcon } from '@phosphor-icons/react/dist/ssr/Circle';
+import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import { TrendDownIcon } from '@phosphor-icons/react/dist/ssr/TrendDown';
 import {
   MoveLeftIcon,
   ShoppingBagIcon,

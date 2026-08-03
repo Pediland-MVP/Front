@@ -54,7 +54,6 @@
     "input-otp": "^1.4.2",
     "jalaliday": "^3.1.1",
     "lucide-react": "^0.561.0",
-    "motion": "^12.34.3",
     "next-themes": "^0.4.6",
     "react-day-picker": "^9.11.1",
     "react-dropzone": "^14.3.8",

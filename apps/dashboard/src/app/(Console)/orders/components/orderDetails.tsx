@@ -19,7 +19,7 @@ import type { ExceptionMessage } from '@/types/exceptionMessage';
 import { ORDER_STATUS, type OrderNamespace } from '@/types/order/order.namespace';
 import { useGetOrderPrices } from '@/utils/getOrderPrices';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PenIcon } from '@phosphor-icons/react/dist/ssr';
+import { PenIcon } from '@phosphor-icons/react/dist/ssr/Pen';
 import type { AxiosError } from 'axios';
 import { CreditCard, Loader2, MapPin, Package, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';

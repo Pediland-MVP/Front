@@ -10,7 +10,7 @@ import {
   DialogTrigger,
   Button,
 } from '@/components/ui';
-import { ArrowsLeftRight } from '@phosphor-icons/react';
+import { ArrowsLeftRight } from '@phosphor-icons/react/dist/csr/ArrowsLeftRight';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 
 interface WorkspaceSwitcherDialogProps {

@@ -1,18 +1,16 @@
 // src/components/Automations/form/Contents/contentTypeOptions.tsx
 
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
-import {
-  ChatTextIcon,
-  InstagramLogoIcon,
-  ShoppingBagIcon,
-  RadioButtonIcon,
-  ImageIcon,
-  VideoIcon,
-  MusicNoteSimpleIcon,
-  CardsIcon,
-  TimerIcon,
-  StackIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ChatTextIcon } from '@phosphor-icons/react/dist/ssr/ChatText';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { ShoppingBagIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBag';
+import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr/RadioButton';
+import { ImageIcon } from '@phosphor-icons/react/dist/ssr/Image';
+import { VideoIcon } from '@phosphor-icons/react/dist/ssr/Video';
+import { MusicNoteSimpleIcon } from '@phosphor-icons/react/dist/ssr/MusicNoteSimple';
+import { CardsIcon } from '@phosphor-icons/react/dist/ssr/Cards';
+import { TimerIcon } from '@phosphor-icons/react/dist/ssr/Timer';
+import { StackIcon } from '@phosphor-icons/react/dist/ssr/Stack';
 import React from 'react';
 
 export interface ContentTypeOption {
