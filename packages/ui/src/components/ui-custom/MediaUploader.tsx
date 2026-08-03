@@ -204,7 +204,7 @@ export const MediaUploader = ({
   const acceptedFormats = {
     image: 'image/png, image/jpeg, image/gif',
     video: 'video/mp4, video/ogg, video/avi, video/quicktime, video/webm',
-    audio: 'audio/aac, audio/m4a, audio/wav, audio/mp4, audio/mpeg',
+    audio: 'audio/aac, audio/m4a, audio/wav, audio/mp4, audio/mpeg, audio/mp3',
   };
 
   return (
