@@ -166,9 +166,11 @@ export const WorkspaceDrawerContent = ({ onClose }: WorkspaceDrawerContentProps)
                             {instagram.isIgTokenValid ? t('connected') : t('disconnected')}
                           </span>
                         </div>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <PageCoverageBadge instagramId={instagram.id} />
-                        </div>
+                        {isActive && (
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <PageCoverageBadge instagramId={instagram.id} />
+                          </div>
+                        )}
                       </div>
                       <span className="truncate text-xs text-gray-600">{instagram.username}</span>
                       <div className="shrink-0 overflow-hidden rounded-full border border-white bg-gray-100">

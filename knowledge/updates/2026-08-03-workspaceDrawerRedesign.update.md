@@ -45,7 +45,7 @@ gone.
   `connected`, `disconnected`, `close`, `editProfile`).
 - `apps/dashboard/src/messages/{fa,en}.json`: new `NavBottom.business` key.
 - `apps/dashboard/src/components/Console/WorkspaceDrawerContent.tsx` (new)
-  + `WorkspaceDrawerContent.test.tsx` (new, 10 tests).
+  + `WorkspaceDrawerContent.test.tsx` (new, 11 tests).
 - `apps/dashboard/src/components/Console/WorkspaceDrawer.tsx`: reduced to a
   thin `Drawer`/`DrawerContent` wrapper around `WorkspaceDrawerContent`.
 - `apps/dashboard/src/components/Layout/NavBottom.tsx`: `UserCircleIcon` +
@@ -54,12 +54,27 @@ gone.
 
 ## Verification
 
-`WorkspaceDrawerContent.test.tsx` — 10 tests (TDD red→green), covering:
+`WorkspaceDrawerContent.test.tsx` — 11 tests (TDD red→green), covering:
 profile name/mobile render, total connected-pages count, per-workspace
 Instagram grouping, disconnected-label rendering, workspace/account-row tap
 switching context + closing the drawer, no-op tap on the already-active
 workspace, add-page navigation to `/connect`, pencil navigation to
-`/settings`, and the close button. `NavBottom.tsx`'s change is a pure
-icon/label swap with no existing test file to update.
+`/settings`, the close button, and (added during final-review fixes)
+`PageCoverageBadge` rendering only for the active workspace's account, not
+for other workspaces'. `NavBottom.tsx`'s change is a pure icon/label swap
+with no existing test file to update.
 
 Two items were deferred during task review, both Minor: (1) the Instagram account row's `<button>` still nests `PageCoverageBadge`'s own internal button in some subscription states — a `stopPropagation` wrapper fixes the functional click-bubbling bug but not the underlying invalid-HTML nesting; a full fix would require changing the row from a `<button>` to a non-button clickable container. (2) No automated test exercises the `stopPropagation` fix itself (the `PageCoverageBadge` test mock stays an inert div).
+
+**DEPLOY COUPLING:** this frontend reads the new `isIgTokenValid` field from
+`GET /workspaces`; if this Front change ships before the paired Back change,
+the field is `undefined` for every account and is treated as falsy, so every
+Instagram account in the drawer shows the red "قطع شده" (disconnected) dot
+even when it is actually fine. Deploy the paired Back change **before** (or
+together with, never after) this Front change.
+
+`PageCoverageBadge` is also now only rendered for the currently active
+workspace's accounts (see the 2026-08-03 final-review fix) — it reads
+`useSubscriptionStore()`, which only ever holds the active workspace's
+subscriptions, so rendering it for other workspaces' accounts showed wrong
+or falsely-shared subscription state.

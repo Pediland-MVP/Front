@@ -123,6 +123,15 @@ describe('WorkspaceDrawerContent', () => {
     expect(screen.getByText(messages.Console.WorkspaceDrawer.disconnected)).toBeInTheDocument();
   });
 
+  it('only renders PageCoverageBadge for the active workspace account, not for other workspaces', () => {
+    renderContent();
+    // ws-1 is the active workspace (usePermissions mock returns workspaceId: 'ws-1')
+    expect(screen.getByTestId('coverage-ig-1')).toBeInTheDocument();
+    // ws-2 is not active, so its account must not get a subscription badge
+    // (that data was never fetched for a non-active workspace and would be wrong/misleading)
+    expect(screen.queryByTestId('coverage-ig-2')).not.toBeInTheDocument();
+  });
+
   it('switches workspace and closes the drawer when tapping an Instagram account row', () => {
     const { onClose } = renderContent();
     fireEvent.click(screen.getByText('zenofashion.ir'));
