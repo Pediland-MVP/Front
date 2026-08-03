@@ -17,15 +17,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui';
-import {
-  BookOpenIcon,
-  PlayCircleIcon,
-  CaretLeftIcon,
-  CaretRightIcon,
-  MagnifyingGlassIcon,
-  XCircleIcon,
-  ArrowRightIcon,
-} from '@phosphor-icons/react';
+import { BookOpenIcon } from '@phosphor-icons/react/dist/csr/BookOpen';
+import { PlayCircleIcon } from '@phosphor-icons/react/dist/csr/PlayCircle';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/csr/CaretLeft';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/csr/CaretRight';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/csr/MagnifyingGlass';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/csr/ArrowRight';
 import { AutoAspectPlayer } from '@/components/Global/HelpMeDialog';
 import { parseMarkdownToHtml } from '@befroosh/ui/lib/markdown';
 

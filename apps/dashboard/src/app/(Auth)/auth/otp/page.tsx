@@ -27,7 +27,8 @@ import {
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { CounterDown } from '@/components/ui-custom/CounterDown';
 import { TelegramOtpInlineLink } from '@/components/ui-custom/TelegramOtpInlineLink';
-import { CircleNotchIcon, NumpadIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import { NumpadIcon } from '@phosphor-icons/react/dist/csr/Numpad';
 import { RefreshCwIcon } from 'lucide-react';
 import SupportButton from '../supportButton';
 

@@ -41,7 +41,7 @@ import { ContentsContext } from './ContentsContext';
 import { ContentsUploaderContextProvider } from './ContentsUploaderContext';
 import { ValidationTypeEnum } from '../types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
-import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
+import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr/FilePlus';
 import { ChooseAutomationType } from './ChooseAutomationType';
 import { StartAutomationMessage } from './StartAutomationMessage';
 import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';

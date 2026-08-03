@@ -6,16 +6,13 @@ import { usePathname } from 'next/navigation';
 import { ReactElement } from 'react';
 import { useTranslations } from 'next-intl';
 
-import {
-  BuildingsIcon,
-  CircleNotchIcon,
-  HouseIcon,
-  Icon,
-  IconProps,
-  LightningIcon,
-  PlusCircleIcon,
-  ShoppingBagIcon,
-} from '@phosphor-icons/react';
+import { BuildingsIcon } from '@phosphor-icons/react/dist/csr/Buildings';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import { HouseIcon } from '@phosphor-icons/react/dist/csr/House';
+import { LightningIcon } from '@phosphor-icons/react/dist/csr/Lightning';
+import { PlusCircleIcon } from '@phosphor-icons/react/dist/csr/PlusCircle';
+import { ShoppingBagIcon } from '@phosphor-icons/react/dist/csr/ShoppingBag';
+import type { Icon, IconProps } from '@phosphor-icons/react/dist/lib/types';
 import { WorkspaceDrawer } from '../Console/WorkspaceDrawer';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';

@@ -22,7 +22,7 @@ import {
   Input,
   Textarea,
 } from '@/components/ui';
-import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
 import { TrashIcon } from 'lucide-react';
 
 type StartAutomationMessageProps = {

@@ -4,14 +4,12 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Copy,
-  CreditCard,
-  Check,
-  CreditCardIcon,
-  CheckIcon,
-  CopyIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { Copy } from '@phosphor-icons/react/dist/ssr/Copy';
+import { CreditCard } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { Check } from '@phosphor-icons/react/dist/ssr/Check';
+import { CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
+import { CopyIcon } from '@phosphor-icons/react/dist/ssr/Copy';
 import { useCheckout } from '../useCheckout';
 import { useCopyToClipboard } from '@/hooks/useCopyToCllipboard';
 import useStartPayment from '../hooks/useStartPayment';

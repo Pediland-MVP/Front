@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui';
-import { CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrownSimple';
 
 interface ContentPromotionDialogProps {
   isOpen: boolean;

@@ -1,4 +1,4 @@
-import { Spinner } from '@phosphor-icons/react/dist/ssr';
+import { Spinner } from '@phosphor-icons/react/dist/ssr/Spinner';
 
 export default function ImageLoader() {
   return (

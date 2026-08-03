@@ -5,19 +5,17 @@ import { useInvitations } from '@/hooks/useInvitations';
 import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
-import {
-  AddressBookIcon,
-  BriefcaseIcon,
-  CubeIcon,
-  DownloadSimpleIcon,
-  GraduationCap,
-  HouseIcon,
-  InstagramLogoIcon,
-  LifebuoyIcon,
-  LightningIcon,
-  ShoppingBagIcon,
-  SlidersIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { AddressBookIcon } from '@phosphor-icons/react/dist/ssr/AddressBook';
+import { BriefcaseIcon } from '@phosphor-icons/react/dist/ssr/Briefcase';
+import { CubeIcon } from '@phosphor-icons/react/dist/ssr/Cube';
+import { DownloadSimpleIcon } from '@phosphor-icons/react/dist/ssr/DownloadSimple';
+import { GraduationCap } from '@phosphor-icons/react/dist/ssr/GraduationCap';
+import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { LifebuoyIcon } from '@phosphor-icons/react/dist/ssr/Lifebuoy';
+import { LightningIcon } from '@phosphor-icons/react/dist/ssr/Lightning';
+import { ShoppingBagIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBag';
+import { SlidersIcon } from '@phosphor-icons/react/dist/ssr/Sliders';
 import { LogoSlogan } from '../Global/LogoSlogan';
 import { LogoText } from '../Global/LogoText';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, useSidebar } from '../ui';

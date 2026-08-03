@@ -11,7 +11,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { mutate } from 'swr';
-import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/csr/CheckCircle';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
 
 const REDIRECT_DELAY_SEC = 4;
 

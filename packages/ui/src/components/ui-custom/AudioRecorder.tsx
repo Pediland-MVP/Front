@@ -5,11 +5,9 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import {
-  ArrowsCounterClockwiseIcon,
-  CheckIcon,
-  MicrophoneIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ArrowsCounterClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsCounterClockwise';
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
+import { MicrophoneIcon } from '@phosphor-icons/react/dist/ssr/Microphone';
 
 type Props = {
   className?: string;

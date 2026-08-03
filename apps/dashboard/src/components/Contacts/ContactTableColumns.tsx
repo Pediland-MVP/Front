@@ -2,7 +2,9 @@
 'use client';
 
 import { Contact } from '@/types/contact';
-import { TelegramLogoIcon, UserCircleIcon, WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/ssr/UserCircle';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import { ColumnDef } from '@/types/tables';
 
 // UI Imports

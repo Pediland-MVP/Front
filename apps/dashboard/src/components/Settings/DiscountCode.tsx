@@ -11,7 +11,7 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 
 import { Button, Form, FormControl, FormField, FormItem, Input } from '@/components/ui';
 import { TicketIcon, XIcon } from 'lucide-react';
-import { GiftIcon } from '@phosphor-icons/react/dist/ssr';
+import { GiftIcon } from '@phosphor-icons/react/dist/ssr/Gift';
 
 const schema = z.object({
   code: z.string().min(1),

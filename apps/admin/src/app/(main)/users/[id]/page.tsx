@@ -44,14 +44,12 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormField } from '@/components/ui/form';
-import {
-  ChatCenteredTextIcon,
-  CrosshairSimpleIcon,
-  EnvelopeSimpleIcon,
-  InstagramLogoIcon,
-  TelegramLogoIcon,
-  WhatsappLogoIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText';
+import { CrosshairSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrosshairSimple';
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import {
   CheckIcon,
   MessageSquare,

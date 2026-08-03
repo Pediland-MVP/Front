@@ -26,7 +26,7 @@ import {
 } from '@/components/ui';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
-import { UserCirclePlusIcon } from '@phosphor-icons/react';
+import { UserCirclePlusIcon } from '@phosphor-icons/react/dist/csr/UserCirclePlus';
 import SupportButton from '../supportButton';
 import { CustomersSlider } from './customersSlider';
 

@@ -3,7 +3,7 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { ReferralCodeTypeEnum } from '@/types/plans/plans.enum';
 
 import { Card, CardContent } from '@/components/ui';
-import { GiftIcon } from '@phosphor-icons/react/dist/ssr';
+import { GiftIcon } from '@phosphor-icons/react/dist/ssr/Gift';
 
 export const DiscountAlert = () => {
   const {

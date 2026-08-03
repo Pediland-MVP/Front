@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FC } from 'react';
-import { MagnifyingGlass } from '@phosphor-icons/react';
+import { MagnifyingGlass } from '@phosphor-icons/react/dist/csr/MagnifyingGlass';
 import { Input } from '@/components/ui/input';
 import { useTranslations } from 'next-intl';
 

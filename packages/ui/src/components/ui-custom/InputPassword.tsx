@@ -3,7 +3,8 @@ import { cn } from '@/lib/utils';
 import { useLocale } from 'next-intl';
 import * as React from 'react';
 
-import { EyeClosedIcon, EyeIcon } from '@phosphor-icons/react/dist/ssr';
+import { EyeClosedIcon } from '@phosphor-icons/react/dist/ssr/EyeClosed';
+import { EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { Input } from '../ui/input';
 
 interface InputProps extends React.ComponentProps<'input'> {

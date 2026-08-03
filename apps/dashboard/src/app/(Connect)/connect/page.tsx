@@ -17,7 +17,10 @@ import { LogoText } from '@/components/Global/LogoText';
 import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherDialog';
 import { Button, Spinner } from '@/components/ui';
 import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
-import { HeadsetIcon, PlugsIcon, SignOutIcon, ArrowsLeftRight } from '@phosphor-icons/react';
+import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
+import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
+import { SignOutIcon } from '@phosphor-icons/react/dist/csr/SignOut';
+import { ArrowsLeftRight } from '@phosphor-icons/react/dist/csr/ArrowsLeftRight';
 import {
   ClipboardCopyIcon,
   CopyIcon,

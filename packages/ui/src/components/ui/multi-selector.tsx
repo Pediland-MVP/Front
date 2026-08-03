@@ -8,7 +8,8 @@ import { forwardRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
-import { X, XCircle } from '@phosphor-icons/react/dist/ssr';
+import { X } from '@phosphor-icons/react/dist/ssr/X';
+import { XCircle } from '@phosphor-icons/react/dist/ssr/XCircle';
 import { XIcon } from 'lucide-react';
 
 export interface Option {

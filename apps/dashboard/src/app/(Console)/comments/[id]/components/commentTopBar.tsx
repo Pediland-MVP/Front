@@ -1,5 +1,5 @@
 import { Info, Phone, Video } from 'lucide-react';
-import { X } from '@phosphor-icons/react/dist/ssr';
+import { X } from '@phosphor-icons/react/dist/ssr/X';
 import { useRouter } from 'next/navigation';
 import { CommentNamespace } from '@/types/comments/comment.namespace';
 import { useTranslations } from 'next-intl';

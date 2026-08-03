@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { EnvelopeSimpleIcon, ArrowsLeftRight, Trash } from '@phosphor-icons/react';
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/csr/EnvelopeSimple';
+import { ArrowsLeftRight } from '@phosphor-icons/react/dist/csr/ArrowsLeftRight';
+import { Trash } from '@phosphor-icons/react/dist/csr/Trash';
 import { Pencil, Plus } from 'lucide-react';
 import { WorkspaceForm } from '@/components/Settings/WorkspaceForm';
 import { TeamManager } from '@/components/Settings/TeamManager';

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import RadialProgress from '@/components/ui-custom/radial.progress';
 
 import axios, { AxiosProgressEvent } from 'axios';
-import { UploadSimple } from '@phosphor-icons/react/dist/ssr';
+import { UploadSimple } from '@phosphor-icons/react/dist/ssr/UploadSimple';
 
 interface ImageUploadProps {
   onUploadComplete?: (url: string) => void;

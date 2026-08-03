@@ -25,7 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui';
-import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 import { ContentPromotionDialog } from './ContentPromotionDialog';
 
 export const ContentPromotion = () => {

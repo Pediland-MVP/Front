@@ -5,13 +5,11 @@ import useSWR from 'swr';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { MessageSquare } from 'lucide-react';
-import {
-  PhoneCallIcon,
-  WhatsappLogoIcon,
-  TelegramLogoIcon,
-  InstagramLogoIcon,
-  TrashIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { PhoneCallIcon } from '@phosphor-icons/react/dist/ssr/PhoneCall';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 
 import api, { fetcher } from '@/hooks/swr/api-client';
 import { useKams } from '@/hooks/use-kams';

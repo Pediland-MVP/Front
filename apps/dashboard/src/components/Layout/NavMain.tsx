@@ -1,7 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { CircleNotchIcon, Icon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import type { Icon } from '@phosphor-icons/react/dist/lib/types';
 import Link, { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -20,7 +21,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '../ui';
-import { CaretLeftIcon } from '@phosphor-icons/react';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/csr/CaretLeft';
 
 const NavItemIcon = ({ icon: ItemIcon }: { icon: Icon }) => {
   const { pending } = useLinkStatus();

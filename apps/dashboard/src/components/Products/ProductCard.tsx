@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 
 import { Button, Card, CardContent, CardFooter } from '@/components/ui';
-import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { CircleXIcon, PencilIcon } from 'lucide-react';
 import { CardImage } from '../Global/CardImage';
 

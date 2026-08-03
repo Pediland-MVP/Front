@@ -21,7 +21,9 @@ import {
   Switch,
 } from '@/components/ui';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
-import { PlusCircleIcon, TextboxIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
+import { TextboxIcon } from '@phosphor-icons/react/dist/ssr/Textbox';
+import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 
 export const CommentReplies = () => {
   const { watch, control, setValue, clearErrors } = useFormContext();

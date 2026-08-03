@@ -33,15 +33,13 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  ChatCenteredTextIcon,
-  CrosshairSimpleIcon,
-  InstagramLogoIcon,
-  PencilSimpleLineIcon,
-  TelegramLogoIcon,
-  TrashIcon,
-  WhatsappLogoIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText';
+import { CrosshairSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrosshairSimple';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { PencilSimpleLineIcon } from '@phosphor-icons/react/dist/ssr/PencilSimpleLine';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import { CheckIcon, PhoneCallIcon } from 'lucide-react';
 import { Action } from '@/types/actions';
 import { SendSMSDialog } from '@/components/table/dialog-sms';

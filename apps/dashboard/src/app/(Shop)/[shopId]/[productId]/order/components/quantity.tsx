@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Minus, Plus, Spinner } from '@phosphor-icons/react/dist/ssr';
+import { Minus } from '@phosphor-icons/react/dist/ssr/Minus';
+import { Plus } from '@phosphor-icons/react/dist/ssr/Plus';
+import { Spinner } from '@phosphor-icons/react/dist/ssr/Spinner';
 import { useCheckout } from '../useCheckout';
 import { useCanQuantityUp } from '../hooks/useCanQuantityUp';
 import useQuantityUpDown from '../hooks/useQuantityUpDown';

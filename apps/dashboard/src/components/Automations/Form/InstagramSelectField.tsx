@@ -4,7 +4,7 @@ import { fetcher } from '@/hooks/swr/api-client';
 import { cn } from '@/lib/utils';
 import { toggleInstagramSelection } from '@/lib/instagramMultiSelect';
 import { InstagramNamespace } from '@/types/instagram';
-import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
 // src/components/lead/DeleteItem.tsx
 
-import { TrashIcon } from '@phosphor-icons/react/dist/ssr';
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { Button } from '@/components/ui/button';
 import api from '@/hooks/swr/api-client';
 import { toast } from 'sonner';

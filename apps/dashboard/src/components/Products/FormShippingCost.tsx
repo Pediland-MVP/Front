@@ -18,7 +18,7 @@ import {
   FormMessage,
   Input,
 } from '@/components/ui';
-import { TruckIcon } from '@phosphor-icons/react/dist/ssr';
+import { TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 
 export const FormShippingCost = () => {
   const { control, watch, setValue } = useFormContext();

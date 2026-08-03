@@ -2,7 +2,8 @@
 import React from 'react';
 import pipline from '@/public/kommo-profile.png';
 import Image, { StaticImageData } from 'next/image';
-import { ArrowArcRight, ArrowLeft } from '@phosphor-icons/react';
+import { ArrowArcRight } from '@phosphor-icons/react/dist/csr/ArrowArcRight';
+import { ArrowLeft } from '@phosphor-icons/react/dist/csr/ArrowLeft';
 interface ExplainFeaturesProps {
   bg: string;
   picCoverBg: string;

@@ -9,7 +9,8 @@ import Link from 'next/link';
 // UI Imports
 import { useSidebar } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { PlugIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { PlugIcon } from '@phosphor-icons/react/dist/ssr/Plug';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 interface SetupWarningProps {
   subscriptionWarningText?: string;

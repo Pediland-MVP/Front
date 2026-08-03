@@ -14,6 +14,16 @@ const nextConfig = {
     root: path.resolve(__dirname, '../../'),
   },
 
+  experimental: {
+    // `@phosphor-icons/react` has no per-icon entry in Next's built-in optimize
+    // list, and its barrel re-exports ~3025 modules (1512 CSR + 1513 SSR). Dev
+    // does not tree-shake, so every one of our ~119 import sites pulled the whole
+    // set. Listing it here makes Next rewrite the barrel import to the single
+    // icon module instead. `@befroosh/ui` gets the same treatment for its
+    // 29-component barrel behind the `@/components/ui` alias.
+    optimizePackageImports: ['@phosphor-icons/react', '@befroosh/ui'],
+  },
+
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.fbcdn.net' },

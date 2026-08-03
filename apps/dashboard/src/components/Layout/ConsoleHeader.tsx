@@ -5,7 +5,9 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { HeadsetIcon, ListIcon, SlidersIcon } from '@phosphor-icons/react';
+import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
+import { ListIcon } from '@phosphor-icons/react/dist/csr/List';
+import { SlidersIcon } from '@phosphor-icons/react/dist/csr/Sliders';
 import { LogoSlogan } from '../Global/LogoSlogan';
 import { LogoText } from '../Global/LogoText';
 import { SidebarTrigger, useSidebar } from '../ui';

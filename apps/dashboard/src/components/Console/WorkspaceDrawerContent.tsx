@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage, Spinner } from '@/components/ui';
 import { Separator } from '@/components/ui/separator';
 import { PageCoverageBadge } from '@/components/Settings/PageCoverageBadge';
 import { LogOutIcon, CheckIcon, UserCircleIcon, PencilIcon, XIcon, PlusIcon } from 'lucide-react';
-import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 
 interface WorkspaceDrawerContentProps {
   onClose: () => void;

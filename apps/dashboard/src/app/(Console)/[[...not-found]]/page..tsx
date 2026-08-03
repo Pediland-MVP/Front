@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Question } from '@phosphor-icons/react/dist/ssr';
+import { Question } from '@phosphor-icons/react/dist/ssr/Question';
 
 export default function NotFound() {
   return (

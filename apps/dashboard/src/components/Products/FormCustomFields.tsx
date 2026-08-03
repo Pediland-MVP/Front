@@ -19,7 +19,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { TextboxIcon } from '@phosphor-icons/react/dist/ssr';
+import { TextboxIcon } from '@phosphor-icons/react/dist/ssr/Textbox';
 import { CirclePlusIcon } from 'lucide-react';
 import { SortableFieldItem } from './SortableFieldItem';
 

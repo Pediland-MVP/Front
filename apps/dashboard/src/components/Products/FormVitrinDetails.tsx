@@ -14,7 +14,7 @@ import {
   Input,
   Textarea,
 } from '@/components/ui';
-import { StorefrontIcon } from '@phosphor-icons/react/dist/ssr';
+import { StorefrontIcon } from '@phosphor-icons/react/dist/ssr/Storefront';
 
 export const FormVitrinDetails = () => {
   const form = useFormContext();

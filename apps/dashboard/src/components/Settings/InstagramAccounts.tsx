@@ -14,7 +14,9 @@ import { mutate } from 'swr';
 import { InstagramNamespace } from '@/types/instagram';
 
 import { Button, Card, CardContent } from '@/components/ui';
-import { CopyIcon, InstagramLogoIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { CopyIcon } from '@phosphor-icons/react/dist/ssr/Copy';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { Plug2Icon, Trash2Icon } from 'lucide-react';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';

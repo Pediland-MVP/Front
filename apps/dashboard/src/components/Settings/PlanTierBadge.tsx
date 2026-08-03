@@ -1,6 +1,6 @@
 'use client';
 
-import { UsersThreeIcon } from '@phosphor-icons/react/dist/ssr';
+import { UsersThreeIcon } from '@phosphor-icons/react/dist/ssr/UsersThree';
 import { cn } from '@/lib/utils';
 
 interface PlanTierBadgeProps {

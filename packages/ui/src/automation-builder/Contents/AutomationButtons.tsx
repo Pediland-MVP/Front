@@ -23,7 +23,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui';
-import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr';
+import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr/RadioButton';
 import { ButtonContentItem } from './ContentButtonsItem';
 import React, { useEffect } from 'react';
 
