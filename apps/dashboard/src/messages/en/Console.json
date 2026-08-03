@@ -66,6 +66,14 @@
     "loading": "Loading...",
     "noData": "No workspaces found",
     "yourWorkspaces": "Your Workspaces",
-    "accountSettings": "Account Settings"
+    "accountSettings": "Account Settings",
+    "WorkspaceDrawer": {
+      "connectedPages": "Businesses & Connected Pages ({count})",
+      "addPage": "Add Page",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "close": "Close",
+      "editProfile": "Edit Profile"
+    }
   }
 }
