@@ -203,4 +203,19 @@ describe('AutomationBuilder (shared, mode=template)', () => {
     expect(typeof receivedHelpers?.setError).toBe('function');
     expect(typeof receivedHelpers?.setFocus).toBe('function');
   });
+
+  it('renders helpSlots.titleAndEnabled next to the TitleAndEnabled title field (mode=automation only)', () => {
+    render(
+      <AutomationBuilder
+        mode="automation"
+        apiClient={{ upload: vi.fn(), get: vi.fn().mockResolvedValue({ data: {} }) }}
+        initialValue={validInitialValue}
+        onSubmit={vi.fn()}
+        submitLabel="ذخیره"
+        cancelLabel="انصراف"
+        helpSlots={{ titleAndEnabled: <span data-testid="title-help-slot">?</span> }}
+      />,
+    );
+    expect(screen.getByTestId('title-help-slot')).toBeInTheDocument();
+  });
 });

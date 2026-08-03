@@ -75,6 +75,9 @@ type ContentsProps = {
   /** Rendered next to the `StartAutomationMessage` header label. Replaces the
    * dashboard-only `HelpMeDialog` that used to be hardcoded there. */
   commentTriggerHelpSlot?: React.ReactNode;
+  /** Per-content-type help affordances, keyed by `AutomationContentTypesEnum`. Forwarded
+   * to each `ContentItem` and rendered next to that item's own type label. */
+  contentTypeHelpSlots?: Partial<Record<AutomationContentTypesEnum, React.ReactNode>>;
 };
 
 // `GET /templates?search=` (core's `readTemplates`) returns a `PaginatedResult` body —
@@ -92,6 +95,7 @@ export const Contents = ({
   helpSlot,
   builderMode = 'automation',
   commentTriggerHelpSlot,
+  contentTypeHelpSlots,
 }: ContentsProps) => {
   const t = useTranslations('Automations.Contents');
   const t_contentTypes = useTranslations('Automations.Contents.Types');
@@ -390,6 +394,7 @@ export const Contents = ({
                       appendContents={appendContents}
                       content={content as FieldArrayWithId<z.infer<typeof ContentItemSchema>>}
                       apiClient={apiClient}
+                      helpSlot={contentTypeHelpSlots?.[content.type as AutomationContentTypesEnum]}
                     />
                   </ContentsUploaderContextProvider>
                 ))}
