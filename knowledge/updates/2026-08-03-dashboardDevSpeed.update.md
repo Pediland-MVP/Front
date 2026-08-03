@@ -85,7 +85,9 @@ Static analysis (no dev server was run) found three causes:
 - `apps/dashboard/.d.ts` — dropped the now-dead `declare module 'log4js-json-layout'`.
 
 ## Verification
-**Static verification passed; runtime timing still not measured.**
+**Static + typecheck passed. Runtime timing still not measured.**
+
+Static:
 - Every one of the 150 unique deep specifiers resolves to a real file on disk
   (`dist/<path>.es.js` or `.d.ts`) — 0 missing.
 - All 264 import bindings were checked against the target module's actual export
@@ -94,8 +96,25 @@ Static analysis (no dev server was run) found three causes:
 - The diff is import-only: of 286 added lines, 263 are Phosphor imports and the
   other 23 are the intentional edits listed above.
 
-Timing still needs a `pnpm install` in the worktree or applying the diff in the
-main checkout. No tests were changed.
+Typecheck (`npx tsc --noEmit` in `apps/dashboard`), compared against a true
+baseline built in a throwaway worktree at the parent commit `327be292`:
+- **211 errors before, 211 after.** Normalising away line/column numbers, the two
+  error sets are identical — **0 introduced, 0 fixed**. The only textual
+  differences are the worktree path inside two messages and TypeScript's
+  non-deterministic key ordering when printing Zod object types.
+- All 211 are pre-existing and unrelated (Zod v3/v4 resolver mismatches, `Badge`
+  `children`/`className` props, `next/image` and `next/link` unresolved inside
+  `packages/ui`, TS4111 index-signature access). `next.config.mjs` sets
+  `typescript.ignoreBuildErrors: true`, so these do not block a build.
+- Notably **no** `TS2307 Cannot find module '@phosphor-icons/react/dist/...'`,
+  which is exactly what a mistyped deep import would produce.
+
+Lockfile: `pnpm install` after the dep removal is purely subtractive — comparing
+the full set of resolved `pkg@version` entries gives **0 newly added versions and
+624 removed**, taking the graph from 1363 distinct packages to 739. The large
+line count also comes from pnpm re-keying peer-dependency hashes across the file.
+
+Timing still needs `next dev` to be run and compared. No tests were changed.
 
 ## Gotchas found while doing this
 - **`motion` is not a newer `framer-motion`.** `motion/react` is literally
@@ -124,5 +143,9 @@ main checkout. No tests were changed.
   `Front/apps/admin/.next` (277 MB), `Site/.next` (210 MB).
 - **`packages/ui/src/components/ui-custom/phosphore-icons.ts`** is a 4-line
   re-export with no consumers — dead code, left in place.
+- **`node_modules` is partly tracked in git** — `git ls-files` shows 51 files
+  under `packages/ui/node_modules/` (committed in `240fe94f`). `pnpm install`
+  rewrites 5 of those symlinks, so they show as modified after any install.
+  Left uncommitted here; worth `git rm --cached`-ing on its own branch.
 - Deps verified **still used, do not remove**: `react-icons` (2 uses, via the
   efficient `/fa6` and `/im` subpaths), `@emoji-mart/*` (2), `jalaliday` (1).
