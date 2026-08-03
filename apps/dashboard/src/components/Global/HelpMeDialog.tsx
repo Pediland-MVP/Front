@@ -9,12 +9,10 @@ import { fetcher } from '@/hooks/swr/api-client';
 import { escapeMarkdownHtml, sanitizeUrl } from '@befroosh/ui/lib/markdown';
 
 import {
-  Button,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui';
@@ -38,7 +36,7 @@ type Position =
 interface HelpDialogProps {
   title: string;
   description?: string;
-  videoSrc: string;
+  videoSrc?: string;
   videoPoster?: string;
   position?: Position;
   className?: string;
@@ -111,6 +109,7 @@ export const AutoAspectPlayer = ({
         src={src}
         poster={poster}
         controls
+        playsInline
         preload="metadata"
         className="h-full w-full object-contain"
         onLoadedMetadata={handleLoadedMetadata}
@@ -267,6 +266,12 @@ export const HelpMeDialog = ({
               </DialogDescription>
             )}
           </div>
+          <DialogClose
+            aria-label={t('close') || 'بستن'}
+            className="absolute top-4 left-4 rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 md:top-5 md:left-5"
+          >
+            <X size={18} />
+          </DialogClose>
         </div>
 
         {/* Content Body */}
@@ -282,13 +287,6 @@ export const HelpMeDialog = ({
             />
           )}
         </div>
-
-        {/* Custom Footer */}
-        <DialogFooter className="flex justify-end gap-2 rounded-b-2xl border-t border-slate-100 bg-slate-50/50 p-4">
-          <Button onClick={() => setOpen(false)} className="w-[120px] font-bold">
-            {t('close') || 'بستن'}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
