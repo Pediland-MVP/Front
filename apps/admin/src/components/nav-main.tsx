@@ -14,8 +14,8 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { CaretLeftIcon } from '@phosphor-icons/react';
-import { type Icon as PhosphorIcon } from '@phosphor-icons/react';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/csr/CaretLeft';
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react/dist/lib/types';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 

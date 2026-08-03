@@ -1,6 +1,6 @@
 // src/components/fetch-error.tsx
 
-import { CloudSlashIcon } from '@phosphor-icons/react/dist/ssr';
+import { CloudSlashIcon } from '@phosphor-icons/react/dist/ssr/CloudSlash';
 import { useTranslations } from 'next-intl';
 
 export const FetchError = () => {
