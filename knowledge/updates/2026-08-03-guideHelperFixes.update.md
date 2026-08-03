@@ -11,9 +11,9 @@ overlapped the delete button instead of sitting next to its label; and newly add
 locations had no way to be managed from the Admin CMS.
 
 ## Solution
-- Moved the close control to a `DialogClose` + `X` icon in the dialog's top-right corner
-  (the header already reserved that space via `pl-6`); removed the old bottom "بستن"
-  button.
+- Moved the close control to a `DialogClose` + `X` icon in the dialog's top-left corner
+  (matching this RTL dialog's layout — the header already reserved that space via `pl-6`
+  on the title column); removed the old bottom "بستن" button.
 - Added `playsInline` to the guide's `<video>` element — iOS Safari auto-fullscreens any
   `<video>` without it.
 - Extended the shared `AutomationBuilder` package's slot system: `TitleAndEnabled` and

@@ -70,15 +70,7 @@ const getPositionClasses = (position: Position, noAbsolute: boolean = false): st
 };
 
 // Auto-detecting video player aspect ratio
-export const AutoAspectPlayer = ({
-  src,
-  poster,
-  labelClose,
-}: {
-  src: string;
-  poster?: string;
-  labelClose?: string;
-}) => {
+export const AutoAspectPlayer = ({ src, poster }: { src: string; poster?: string }) => {
   const [aspect, setAspect] = useState<'video' | 'square' | 'vertical'>('video');
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
@@ -255,7 +247,7 @@ export const HelpMeDialog = ({
         dir="rtl"
       >
         {/* Custom Header */}
-        <div className="relative flex items-start justify-between rounded-t-2xl border-b border-slate-100 bg-slate-50/50 p-5 md:p-6">
+        <div className="relative flex items-start rounded-t-2xl border-b border-slate-100 bg-slate-50/50 p-5 md:p-6">
           <div className="flex flex-col gap-1 pl-6 text-right">
             <DialogTitle className="flex items-center justify-start gap-2 text-base font-black text-slate-800">
               <MonitorPlayIcon size={22} className="text-blue-600" /> {resolvedTitle}

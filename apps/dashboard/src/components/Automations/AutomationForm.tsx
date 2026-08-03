@@ -543,17 +543,21 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   // to its title"), keyed by `AutomationContentTypesEnum`. Unlike the other help props
   // above, these are brand-new guide locations with nothing hardcoded — content only
   // ever comes from the Admin-managed `/guides/:helpId` CMS (see `guides-table.tsx`).
-  const contentTypeHelpSlots = Object.fromEntries(
-    Object.values(AutomationContentTypesEnum).map((type) => [
-      type,
-      <HelpMeDialog
-        key={type}
-        helpId={`automation_content_${type}`}
-        title={t(`Contents.Types.buttons.descriptions.${type}`)}
-        noAbsolute
-      />,
-    ]),
-  ) as Partial<Record<AutomationContentTypesEnum, React.ReactNode>>;
+  const contentTypeHelpSlots = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.values(AutomationContentTypesEnum).map((type) => [
+          type,
+          <HelpMeDialog
+            key={type}
+            helpId={`automation_content_${type}`}
+            title={t(`Contents.Types.buttons.descriptions.${type}`)}
+            noAbsolute
+          />,
+        ]),
+      ) as Partial<Record<AutomationContentTypesEnum, React.ReactNode>>,
+    [t],
+  );
 
   const isReady =
     !isAutomationLoading && !isTemplateLoading && !isLoading && !isAutomationDefaultsLoading;
