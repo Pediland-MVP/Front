@@ -69,6 +69,14 @@
     "loading": "در حال بارگذاری...",
     "noData": "فضای کاری یافت نشد",
     "yourWorkspaces": "فضاهای کاری شما",
-    "accountSettings": "تنظیمات حساب کاربری"
+    "accountSettings": "تنظیمات حساب کاربری",
+    "WorkspaceDrawer": {
+      "connectedPages": "کسب‌وکارها و پیج‌های متصل ({count})",
+      "addPage": "افزودن پیج",
+      "connected": "متصل",
+      "disconnected": "قطع شده",
+      "close": "بستن",
+      "editProfile": "ویرایش پروفایل"
+    }
   }
 }
