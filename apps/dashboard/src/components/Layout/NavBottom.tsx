@@ -74,7 +74,6 @@ export const NavBottom = () => {
       icon: PlusCircleIcon,
       labelKey: 'add',
       isActive: (path: string) => path.startsWith('/automations/add'),
-      size: 32, // Specific size for the 'Add' button as per original code
     },
     {
       href: '/orders',
@@ -86,7 +85,6 @@ export const NavBottom = () => {
       isProfile: true,
       icon: UserCircleIcon,
       labelKey: 'profile',
-      size: 30, // Specific size for Profile as per original code
     },
   ];
 
@@ -100,12 +98,12 @@ export const NavBottom = () => {
               <WorkspaceDrawer key={item.labelKey}>
                 <button className="text-secondary flex cursor-pointer flex-col items-center justify-center border-0 bg-transparent p-0">
                   <div className="relative">
-                    <item.icon size={item.size || 28} weight="duotone" className="text-secondary" />
+                    <item.icon size={28} weight="duotone" className="text-secondary" />
                     {pendingCount > 0 && (
                       <span className="absolute start-0 top-0 h-2 w-2 rounded-full bg-blue-500" />
                     )}
                   </div>
-                  <span className="text-secondary mt-0.5 max-w-[75px] truncate text-[10px]">
+                  <span className="text-secondary mt-1 max-w-[75px] truncate text-xs">
                     {currentWorkspace?.name || t(item.labelKey)}
                   </span>
                 </button>
@@ -115,7 +113,6 @@ export const NavBottom = () => {
 
           // Render Standard Links
           const isActive = item.isActive(pathname);
-          const iconSize = item.size || 28;
 
           return (
             <Link
@@ -125,7 +122,7 @@ export const NavBottom = () => {
             >
               <NavItemIcon
                 icon={item.icon}
-                size={iconSize}
+                size={28}
                 className={cn('text-muted-foreground', isActive && 'text-primary')}
               />
               <span
