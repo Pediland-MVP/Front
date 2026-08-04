@@ -11,7 +11,7 @@ import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
 import { ExcelExportContactsDrawer } from './components/excelExportContacts.drawer';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { DownloadIcon } from 'lucide-react';
 import { usePermissions } from '@/hooks/usePermissions';
 
 export default function Page() {
@@ -29,30 +29,29 @@ export default function Page() {
   const normalized = debouncedSearch.trim();
   const effectiveSearch = normalized.length >= 2 ? normalized : '';
 
-  const HeaderButton = useMemo(
-    () => (
-      <SearchToggleButton
-        isSearchVisible={isSearchVisible}
-        setIsSearchVisible={setIsSearchVisible}
-      />
-    ),
-    [isSearchVisible, setIsSearchVisible],
-  );
-
   const { can } = usePermissions();
 
-  const HeaderTools = useMemo(
+  const HeaderButton = useMemo(
     () => (
-      <div className="flex items-center gap-2">
-        <SearchInput value={search} onChange={setSearch} visible={isSearchVisible} />
+      <>
+        <SearchToggleButton
+          isSearchVisible={isSearchVisible}
+          setIsSearchVisible={setIsSearchVisible}
+        />
         {can('lead:export') && (
-          <Button variant="outline" size="icon" onClick={() => setIsExportOpen(true)}>
-            <Download className="h-4 w-4" />
+          <Button type="button" size="md" onClick={() => setIsExportOpen(true)}>
+            {t('ExcelExport.title')}
+            <DownloadIcon />
           </Button>
         )}
-      </div>
+      </>
     ),
-    [search, isSearchVisible, setSearch, can],
+    [isSearchVisible, setIsSearchVisible, can, t],
+  );
+
+  const HeaderTools = useMemo(
+    () => <SearchInput value={search} onChange={setSearch} visible={isSearchVisible} />,
+    [search, isSearchVisible, setSearch],
   );
 
   useEffect(() => {
