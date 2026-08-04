@@ -88,8 +88,14 @@ export const ContactsList = ({ search }: { search: string }) => {
   const blockControls = isLoading || !!error;
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-4">
-      <InstagramFilter selectedIds={selectedInstagramIds} onChange={setSelectedInstagramIds} />
+    <div className="flex h-full min-h-0 flex-1 flex-col">
+      {/* `empty:hidden` keeps this row from leaving a padded gap when the filter renders
+          nothing (workspaces with a single Instagram account). The table below stays
+          full-bleed on purpose — every pixel counts for its horizontal scroll on mobile. */}
+      <div className="shrink-0 px-3 py-3 empty:hidden md:px-4">
+        <InstagramFilter selectedIds={selectedInstagramIds} onChange={setSelectedInstagramIds} />
+      </div>
+
       <ContactDetailsDialog open={open} setOpen={setOpen} contactId={contactId} />
 
       <DataTable
