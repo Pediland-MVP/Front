@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { MegaphoneSimpleIcon } from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
 import { SparkleIcon } from '@phosphor-icons/react/dist/ssr/Sparkle';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 
 interface PagePromotionAlertProps {
   instagramId: string;

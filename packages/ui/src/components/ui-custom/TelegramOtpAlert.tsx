@@ -1,6 +1,6 @@
 'use client';
 
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
 

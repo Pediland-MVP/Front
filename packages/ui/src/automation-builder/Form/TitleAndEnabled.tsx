@@ -4,7 +4,9 @@ import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 import { Control } from 'react-hook-form';
 
-import { FormControl, FormField, FormItem, FormLabel, Input, Switch } from '@/components/ui';
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 
 type TitleAndEnabledProps = {
   control: Control<AutomationFormType>;

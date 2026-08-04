@@ -9,7 +9,9 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 
-import { Button, Form, FormControl, FormField, FormItem, Input } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { TicketIcon, XIcon } from 'lucide-react';
 import { GiftIcon } from '@phosphor-icons/react/dist/ssr/Gift';
 

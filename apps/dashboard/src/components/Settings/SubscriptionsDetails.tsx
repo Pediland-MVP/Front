@@ -8,7 +8,8 @@ import { Instagram } from '@/types/user';
 import { formatNumber } from '@/utils/formatNumber';
 import { useTranslations } from 'next-intl';
 
-import { Button, CardContent } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { CardContent } from '@/components/ui/card';
 import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown';
 import { ClockIcon, MoveLeftIcon, ShoppingCartIcon } from 'lucide-react';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';

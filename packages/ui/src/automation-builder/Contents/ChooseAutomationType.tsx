@@ -1,6 +1,7 @@
 'use client';
 
-import { Alert, AlertTitle, Button } from '@/components/ui';
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { ContentTypeOption, contentTypeOptions } from './ContentTypeOptions';
 

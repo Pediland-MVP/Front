@@ -1,10 +1,7 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Form,
   FormControl,
   FormDescription,
@@ -12,13 +9,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
-  Switch,
-  Textarea,
-} from '@/components/ui';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { useFormContext } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { onInputP2EHandler } from '@/utils/p2eNumber';

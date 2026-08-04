@@ -5,15 +5,15 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
 import { InstagramNamespace } from '@/types/instagram';
 import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';
 import { CopyIcon, PlugIcon, TvMinimalPlayIcon } from 'lucide-react';

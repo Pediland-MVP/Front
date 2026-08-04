@@ -12,18 +12,16 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { LayoutSettings } from '@/components/Layout/LayoutSettings';
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/ui';
+} from '@/components/ui/form';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { CounterDown } from '@/components/ui-custom/CounterDown';
 import { InputPassword } from '@/components/ui-custom/InputPassword';

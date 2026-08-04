@@ -12,7 +12,8 @@ import { toast } from 'sonner';
 import useSWR, { useSWRConfig } from 'swr';
 import { z } from 'zod';
 
-import { Form, FormControl, FormField, FormItem, FormMessage, Input } from '@/components/ui';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { isSafeInternalPath } from '@/utils/safeInternalPath';

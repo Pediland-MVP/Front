@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 
 import { cn } from '@/lib/utils';
-import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { CrosshairIcon } from '@phosphor-icons/react/dist/ssr/Crosshair';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { CircleXIcon, CopyIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';

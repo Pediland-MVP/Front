@@ -12,7 +12,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/components/ui';
+} from '@/components/ui/breadcrumb';
 
 // تشخیص UUID (برای سگمنت‌های داینامیک)
 const isUUID = (s: string) =>

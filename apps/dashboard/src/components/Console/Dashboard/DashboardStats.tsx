@@ -9,7 +9,7 @@ import useUser from '@/hooks/useUser';
 // TODO: Should Refactor
 import { OverallStats } from '@/types/stats';
 
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import {
   Select,

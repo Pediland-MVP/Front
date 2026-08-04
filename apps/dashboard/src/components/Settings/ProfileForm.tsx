@@ -21,19 +21,15 @@ import { CityNamespace } from '@/types/city';
 import { ProvinceNamespace } from '@/types/province';
 import { UserNamespace } from '@/types/user';
 
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { ButtonLoading } from '../ui-custom/ButtonLoading';
 

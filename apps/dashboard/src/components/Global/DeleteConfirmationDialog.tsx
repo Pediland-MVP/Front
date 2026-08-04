@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui';
+} from '@/components/ui/alert-dialog';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 interface DeleteConfirmationDialogProps {

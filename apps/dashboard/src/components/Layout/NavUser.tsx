@@ -2,14 +2,8 @@
 
 import { UserNamespace } from '@/types/user';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { UserCircleIcon } from '@phosphor-icons/react/dist/csr/UserCircle';
 import { EllipsisVerticalIcon } from 'lucide-react';
 import { UserDropdownMenu } from '../Console/UserDropdownMenu';

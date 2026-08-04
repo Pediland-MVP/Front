@@ -13,9 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Spinner,
-  useSidebar,
-} from '@/components/ui';
+} from '@/components/ui/dropdown-menu';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Spinner } from '@/components/ui/spinner';
 import { CrownIcon, LogOutIcon, UserRoundPenIcon } from 'lucide-react';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { hasOnlyFreeCredit } from '@/utils/subscription';

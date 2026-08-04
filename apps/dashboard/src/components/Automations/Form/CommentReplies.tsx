@@ -6,20 +6,18 @@ import { useAutomationDefaults } from '@/hooks/useAutomationDefaults';
 import { WizardVideoLinks } from '../wizardVideoLinks.conf';
 
 import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Button,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
-  Switch,
-} from '@/components/ui';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { TextboxIcon } from '@phosphor-icons/react/dist/ssr/Textbox';

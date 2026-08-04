@@ -7,7 +7,7 @@ import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react/dist/lib/types';
 
 import { CardSimple } from '@/components/ui-custom/CardSimple';
-import { CardContent, CardFooter } from '@/components/ui';
+import { CardContent, CardFooter } from '@/components/ui/card';
 
 interface ItemsStatisticCardProps {
   data: {

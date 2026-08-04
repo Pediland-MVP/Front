@@ -5,20 +5,17 @@ import { ProductFieldTypeEnum } from '@/types/product.enum';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
+import { Button } from '@/components/ui/button';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
-  Button,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ArrowsVerticalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsVertical';

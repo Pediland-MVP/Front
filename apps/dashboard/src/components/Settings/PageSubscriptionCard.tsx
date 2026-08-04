@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { CircleIcon } from '@phosphor-icons/react/dist/ssr/Circle';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '../ui-custom/CardSimple';
 import { ProgressRadial } from '../Console/ProgressRadial';
 import { PlanTierBadge } from './PlanTierBadge';

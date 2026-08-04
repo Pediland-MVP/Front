@@ -10,7 +10,8 @@ import { toast } from 'sonner';
 import { mutate } from 'swr';
 import { z } from 'zod';
 
-import { Button, Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { InputPassword } from '@/components/ui-custom/InputPassword';
 import { PasswordIcon } from '@phosphor-icons/react/dist/csr/Password';

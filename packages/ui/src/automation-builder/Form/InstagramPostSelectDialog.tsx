@@ -10,8 +10,8 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -19,8 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Skeleton,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
 const PAGE_SIZE = 9;

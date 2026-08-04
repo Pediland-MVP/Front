@@ -1,13 +1,11 @@
+import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import {
-  FormControl,
-  FormField,
-  FormItem,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationFormType, ContentItemType } from '../schemas/automationForm';
 import {

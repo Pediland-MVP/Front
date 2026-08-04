@@ -8,7 +8,7 @@ import api from '@/hooks/swr/api-client';
 import { useIncomingTransfers } from '@/hooks/useIncomingTransfers';
 import { isSafeInternalPath } from '@/utils/safeInternalPath';
 import { IncomingTransfer } from '@/types/ownershipTransfer';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import {

@@ -8,7 +8,7 @@ import useSWRImmutable from 'swr/immutable';
 
 import { LayoutCard } from '@/components/Layout/LayoutCard';
 import { ProducstCardList } from '@/components/Products/ProducstCardList';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
 import { CircleFadingPlusIcon } from 'lucide-react';

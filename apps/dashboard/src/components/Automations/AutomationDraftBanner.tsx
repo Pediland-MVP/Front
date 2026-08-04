@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Alert, AlertDescription, Button } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 interface AutomationDraftBannerProps {
   onResume: () => void;

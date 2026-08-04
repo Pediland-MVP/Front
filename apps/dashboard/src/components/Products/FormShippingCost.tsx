@@ -7,17 +7,9 @@ import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-} from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 
 export const FormShippingCost = () => {

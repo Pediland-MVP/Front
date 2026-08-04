@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { AutomationsCardList } from '@/components/Automations/AutomationsCardList';
 import { LayoutCard } from '@/components/Layout/LayoutCard';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
 import { CircleFadingPlusIcon } from 'lucide-react';

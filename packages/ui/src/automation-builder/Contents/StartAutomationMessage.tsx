@@ -14,14 +14,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  Button,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Textarea,
-} from '@/components/ui';
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
 import { TrashIcon } from 'lucide-react';
 

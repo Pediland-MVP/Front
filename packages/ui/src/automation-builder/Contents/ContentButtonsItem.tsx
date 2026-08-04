@@ -24,21 +24,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  FormField,
-  FormItem,
-  FormMessage,
-  Input,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';

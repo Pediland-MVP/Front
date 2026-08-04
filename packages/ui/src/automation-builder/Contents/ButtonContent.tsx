@@ -6,7 +6,8 @@ import { AutomationContentModeEnum } from '../constants/automationContent.enum';
 import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 
-import { FormField, FormItem, FormLabel, Textarea } from '@/components/ui';
+import { FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
 import { AutomationButtons } from './AutomationButtons';

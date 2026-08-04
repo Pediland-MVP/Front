@@ -7,7 +7,8 @@ import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import { InstagramPostSelectDialog } from './InstagramPostSelectDialog';
 
-import { FormControl, FormField, FormItem, FormLabel, Switch } from '@/components/ui';
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { toast } from 'sonner';
 import { ConditionTypesEnum } from './Conditions';

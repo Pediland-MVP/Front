@@ -18,7 +18,8 @@ import type { AutomationFormType, ContentItemSchema } from '../schemas/automatio
 import type { UploadedFile } from '@/types/fileUploader';
 import { ButtonTypeEnum } from '../types/buttons.enum';
 
-import { Alert, AlertDescription, AlertTitle, Button } from '@/components/ui';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import type { DragEndEvent } from '@dnd-kit/core';
 import {

@@ -8,25 +8,26 @@ import api, { fetcher } from '@/hooks/swr/api-client';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import Link from 'next/link';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Input,
+} from '@/components/ui/dialog';
+import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Checkbox,
-  Badge,
-  Avatar,
-  AvatarFallback,
-} from '@/components/ui';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Trash } from '@phosphor-icons/react/dist/csr/Trash';
 import { Shield } from '@phosphor-icons/react/dist/csr/Shield';
 import { Plus } from '@phosphor-icons/react/dist/csr/Plus';
@@ -114,7 +115,6 @@ export function TeamManager() {
           permissions: z.array(z.string()).min(1, { message: t('select_permissions_error') }),
           message: z.string().max(500).optional(),
         }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
       ]),
     [],
   );
@@ -169,7 +169,6 @@ export function TeamManager() {
         setTimeout(() => resetInviteForm(), 300);
       }
       setInviteOpen(open);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     [resetInviteForm],
   );

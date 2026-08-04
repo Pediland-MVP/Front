@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 
-import { Button, Card, CardContent, CardFooter } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { CircleXIcon, PencilIcon } from 'lucide-react';
 import { CardImage } from '../Global/CardImage';

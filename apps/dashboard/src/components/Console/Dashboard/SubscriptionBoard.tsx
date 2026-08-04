@@ -13,7 +13,9 @@ import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscription
 import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { useIsWebView } from '@/hooks/useIsWebView';
 
-import { Alert, AlertTitle, Button, CardContent } from '@/components/ui';
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import { PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
 import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';

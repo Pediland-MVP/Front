@@ -9,7 +9,8 @@ import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
 import { GraduationCap } from '@phosphor-icons/react/dist/ssr/GraduationCap';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Button, Card, CardContent } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { usePathname } from 'next/navigation';
 
 type ContactMethod = {

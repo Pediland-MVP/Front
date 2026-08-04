@@ -21,26 +21,23 @@ import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
 import api from '@/hooks/swr/api-client';
 import { toast } from 'sonner';
 import { mutate as globalMutate } from 'swr';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
-  Avatar,
-  AvatarFallback,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+} from '@/components/ui/dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 
 export default function WorkspacePage() {
   const tWorkspace = useTranslations('Settings.Workspace');

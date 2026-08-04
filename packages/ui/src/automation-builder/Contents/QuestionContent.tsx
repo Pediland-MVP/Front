@@ -3,17 +3,16 @@ import { ValidationTypeEnum } from '../types/validationType.enum';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 
+import { FormField, FormItem } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import {
-  FormField,
-  FormItem,
-  Label,
-  Textarea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationButtons } from './AutomationButtons';

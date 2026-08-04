@@ -22,7 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr/RadioButton';
 import { ButtonContentItem } from './ContentButtonsItem';
 import React, { useEffect } from 'react';

@@ -9,7 +9,7 @@ import { CloudSlashIcon } from '@phosphor-icons/react/dist/csr/CloudSlash';
 import { CloudXIcon } from '@phosphor-icons/react/dist/csr/CloudX';
 import { CoffeeIcon } from '@phosphor-icons/react/dist/csr/Coffee';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 
 function NotFoundContent() {
   const params = useSearchParams();

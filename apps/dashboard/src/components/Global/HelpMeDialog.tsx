@@ -15,7 +15,7 @@ import {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
 import { MonitorPlayIcon, X } from 'lucide-react';
 
 type Position =

@@ -7,6 +7,7 @@ import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import api from '@/hooks/swr/api-client';
 import { useActiveTransfer } from '@/hooks/useActiveTransfer';
 import useUser from '@/hooks/useUser';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,12 +15,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Button,
-  Input,
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { Input } from '@/components/ui/input';
 import {
   AlertDialog,
   AlertDialogAction,

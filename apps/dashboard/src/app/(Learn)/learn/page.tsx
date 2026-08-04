@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { fetcher } from '@/hooks/swr/api-client';
 import { cn } from '@/lib/utils';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import React, { useState, Suspense } from 'react';
 import {
@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
 import { BookOpenIcon } from '@phosphor-icons/react/dist/csr/BookOpen';
 import { PlayCircleIcon } from '@phosphor-icons/react/dist/csr/PlayCircle';
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/csr/CaretLeft';

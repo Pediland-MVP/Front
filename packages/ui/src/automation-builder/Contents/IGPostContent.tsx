@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { IGPostContentDialog } from './IGPostContentDialog';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationBuilderApiClient } from '../types/apiClient';

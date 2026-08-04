@@ -11,7 +11,8 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { cn } from '@/lib/utils';
 
-import { Avatar, AvatarFallback, AvatarImage, Spinner } from '@/components/ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Spinner } from '@/components/ui/spinner';
 import { Separator } from '@/components/ui/separator';
 import { PageCoverageBadge } from '@/components/Settings/PageCoverageBadge';
 import { LogOutIcon, CheckIcon, UserCircleIcon, PencilIcon, XIcon, PlusIcon } from 'lucide-react';

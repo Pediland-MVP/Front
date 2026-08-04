@@ -1,5 +1,5 @@
 'use client';
-import { Alert, AlertDescription } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';

@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button, Form } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { Conditions, ConditionTypesEnum } from './Form/Conditions';
 import { Triggers } from './Form/Triggers';

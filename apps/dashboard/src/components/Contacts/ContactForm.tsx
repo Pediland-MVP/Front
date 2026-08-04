@@ -13,15 +13,15 @@ import { z } from 'zod';
 import api from '@/hooks/swr/api-client';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
-  Button,
-  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';

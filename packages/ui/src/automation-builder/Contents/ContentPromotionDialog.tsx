@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
 import { CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrownSimple';
 
 interface ContentPromotionDialogProps {

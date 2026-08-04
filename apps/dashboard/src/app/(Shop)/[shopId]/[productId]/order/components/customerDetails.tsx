@@ -12,15 +12,9 @@ import useUpdateContact from '../hooks/useUpdateContact';
 import { useCheckout } from '../useCheckout';
 
 import { orderFormSchema } from '@/components/Shop/CheckoutPage';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Textarea,
-} from '@/components/ui';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { UserRectangleIcon } from '@phosphor-icons/react/dist/ssr/UserRectangle';

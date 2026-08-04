@@ -9,7 +9,7 @@ import { LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 import { InstagramAccounts } from '@/components/Settings/InstagramAccounts';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
 

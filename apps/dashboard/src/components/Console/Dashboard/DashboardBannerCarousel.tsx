@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import {
   StableCarousel,

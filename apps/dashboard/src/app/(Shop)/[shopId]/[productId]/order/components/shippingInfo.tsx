@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { Card, CardContent } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface ShippingInfoProps {

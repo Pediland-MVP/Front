@@ -7,16 +7,16 @@ import { DeviceTabletIcon } from '@phosphor-icons/react/dist/csr/DeviceTablet';
 import { InfoIcon } from '@phosphor-icons/react/dist/csr/Info';
 import { QuestionIcon } from '@phosphor-icons/react/dist/csr/Question';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  Badge,
-  Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui';
+} from '@/components/ui/table';
 import {
   AlertDialog,
   AlertDialogAction,

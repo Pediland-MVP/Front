@@ -15,9 +15,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Form,
-} from '@/components/ui';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 

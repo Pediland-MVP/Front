@@ -10,21 +10,12 @@ import { Controller, useFormContext } from 'react-hook-form';
 // TODO: Refactor Types & Schemas
 import { AutomationFormType } from '../schemas/automationForm';
 
-import {
-  Checkbox,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Label,
-  Textarea,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 import { ContentPromotionDialog } from './ContentPromotionDialog';
 
