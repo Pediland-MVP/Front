@@ -49,6 +49,11 @@ vi.mock('@/store/subscriptionStore', () => ({
   }),
 }));
 
+let isWebView = false;
+vi.mock('@/hooks/useIsWebView', () => ({
+  useIsWebView: () => isWebView,
+}));
+
 function renderContent(onClose = vi.fn()) {
   render(
     <NextIntlClientProvider locale="fa" messages={messages}>
@@ -62,6 +67,7 @@ describe('WorkspaceDrawerContent', () => {
   beforeEach(() => {
     push.mockClear();
     changeWorkspace.mockClear();
+    isWebView = false;
     workspacesData = [
       {
         id: 'ws-1',
@@ -219,6 +225,72 @@ describe('WorkspaceDrawerContent', () => {
     expect(
       screen.queryByText(messages.Console.WorkspaceDrawer.pendingActivation),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows no (broken) subscription text when the backend response is missing the new fields entirely', () => {
+    // Simulates Front deploying before the paired Back change: the account object has
+    // no subscriptionDaysLeft/hasCreditCoverage/hasReservedSubscription keys at all.
+    workspacesData = [
+      {
+        id: 'ws-1',
+        name: 'کافه رستوران طهرانی',
+        ownerId: 'u1',
+        isPersonal: false,
+        category: null,
+        instagrams: [
+          {
+            id: 'ig-1',
+            username: 'tehrani_cafe_bistro',
+            isIgTokenValid: true,
+            profilePicture: null,
+          },
+        ],
+      },
+    ];
+    renderContent();
+    expect(screen.queryByText(/اعتبار/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(messages.Console.WorkspaceDrawer.coveredByCredit),
+    ).not.toBeInTheDocument();
+  });
+
+  it('hides the credit-covered and pending-activation labels inside the Android WebView', () => {
+    isWebView = true;
+    workspacesData = [
+      {
+        id: 'ws-1',
+        name: 'کافه رستوران طهرانی',
+        ownerId: 'u1',
+        isPersonal: false,
+        category: null,
+        hasCreditCoverage: true,
+        instagrams: [
+          {
+            id: 'ig-1',
+            username: 'tehrani_cafe_bistro',
+            isIgTokenValid: true,
+            profilePicture: null,
+            subscriptionDaysLeft: null,
+            hasReservedSubscription: true,
+          },
+        ],
+      },
+    ];
+    renderContent();
+    expect(
+      screen.queryByText(messages.Console.WorkspaceDrawer.coveredByCredit),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(messages.Console.WorkspaceDrawer.pendingActivation),
+    ).not.toBeInTheDocument();
+  });
+
+  it('still shows days-left inside the Android WebView (only the CTA-adjacent labels are gated)', () => {
+    isWebView = true;
+    renderContent();
+    expect(
+      screen.getByText(messages.Console.WorkspaceDrawer.daysLeft.replace('{count}', '54')),
+    ).toBeInTheDocument();
   });
 
   it('switches workspace and closes the drawer when tapping an Instagram account row', () => {
