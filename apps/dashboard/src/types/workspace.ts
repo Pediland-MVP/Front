@@ -9,6 +9,8 @@ export interface WorkspaceInstagramAccount {
   username: string;
   isIgTokenValid: boolean;
   profilePicture: { url: string } | null;
+  subscriptionDaysLeft: number | null;
+  hasReservedSubscription: boolean;
 }
 
 export interface Workspace {
@@ -17,6 +19,7 @@ export interface Workspace {
   ownerId: string;
   isPersonal: boolean;
   category: WorkspaceCategoryRef | null;
+  hasCreditCoverage: boolean;
   instagrams: WorkspaceInstagramAccount[];
 }
 

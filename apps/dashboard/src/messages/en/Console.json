@@ -73,7 +73,10 @@
       "connected": "Connected",
       "disconnected": "Disconnected",
       "close": "Close",
-      "editProfile": "Edit Profile"
+      "editProfile": "Edit Profile",
+      "daysLeft": "{count} days left",
+      "coveredByCredit": "Covered by credit",
+      "pendingActivation": "Pending activation"
     }
   }
 }

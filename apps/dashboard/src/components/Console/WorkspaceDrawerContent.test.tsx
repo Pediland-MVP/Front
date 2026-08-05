@@ -49,12 +49,6 @@ vi.mock('@/store/subscriptionStore', () => ({
   }),
 }));
 
-vi.mock('@/components/Settings/PageCoverageBadge', () => ({
-  PageCoverageBadge: ({ instagramId }: { instagramId: string }) => (
-    <div data-testid={`coverage-${instagramId}`} />
-  ),
-}));
-
 function renderContent(onClose = vi.fn()) {
   render(
     <NextIntlClientProvider locale="fa" messages={messages}>
@@ -75,12 +69,15 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
+        hasCreditCoverage: false,
         instagrams: [
           {
             id: 'ig-1',
             username: 'tehrani_cafe_bistro',
             isIgTokenValid: true,
             profilePicture: null,
+            subscriptionDaysLeft: 54,
+            hasReservedSubscription: false,
           },
         ],
       },
@@ -90,8 +87,16 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
+        hasCreditCoverage: false,
         instagrams: [
-          { id: 'ig-2', username: 'zenofashion.ir', isIgTokenValid: false, profilePicture: null },
+          {
+            id: 'ig-2',
+            username: 'zenofashion.ir',
+            isIgTokenValid: false,
+            profilePicture: null,
+            subscriptionDaysLeft: 29,
+            hasReservedSubscription: false,
+          },
         ],
       },
     ];
@@ -123,13 +128,97 @@ describe('WorkspaceDrawerContent', () => {
     expect(screen.getByText(messages.Console.WorkspaceDrawer.disconnected)).toBeInTheDocument();
   });
 
-  it('only renders PageCoverageBadge for the active workspace account, not for other workspaces', () => {
+  it('shows remaining subscription days for every workspace, not just the active one', () => {
     renderContent();
-    // ws-1 is the active workspace (usePermissions mock returns workspaceId: 'ws-1')
-    expect(screen.getByTestId('coverage-ig-1')).toBeInTheDocument();
-    // ws-2 is not active, so its account must not get a subscription badge
-    // (that data was never fetched for a non-active workspace and would be wrong/misleading)
-    expect(screen.queryByTestId('coverage-ig-2')).not.toBeInTheDocument();
+    // ws-1 (active) and ws-2 (not active) both come from the backend now, so both show their own days.
+    expect(
+      screen.getByText(messages.Console.WorkspaceDrawer.daysLeft.replace('{count}', '54')),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(messages.Console.WorkspaceDrawer.daysLeft.replace('{count}', '29')),
+    ).toBeInTheDocument();
+  });
+
+  it('shows the credit-covered label when subscriptionDaysLeft is null but the workspace has credit coverage', () => {
+    workspacesData = [
+      {
+        id: 'ws-1',
+        name: 'کافه رستوران طهرانی',
+        ownerId: 'u1',
+        isPersonal: false,
+        category: null,
+        hasCreditCoverage: true,
+        instagrams: [
+          {
+            id: 'ig-1',
+            username: 'tehrani_cafe_bistro',
+            isIgTokenValid: true,
+            profilePicture: null,
+            subscriptionDaysLeft: null,
+            hasReservedSubscription: false,
+          },
+        ],
+      },
+    ];
+    renderContent();
+    expect(screen.getByText(messages.Console.WorkspaceDrawer.coveredByCredit)).toBeInTheDocument();
+  });
+
+  it('shows the pending-activation label when there is only a reserved (not yet active) subscription', () => {
+    workspacesData = [
+      {
+        id: 'ws-1',
+        name: 'کافه رستوران طهرانی',
+        ownerId: 'u1',
+        isPersonal: false,
+        category: null,
+        hasCreditCoverage: false,
+        instagrams: [
+          {
+            id: 'ig-1',
+            username: 'tehrani_cafe_bistro',
+            isIgTokenValid: true,
+            profilePicture: null,
+            subscriptionDaysLeft: null,
+            hasReservedSubscription: true,
+          },
+        ],
+      },
+    ];
+    renderContent();
+    expect(
+      screen.getByText(messages.Console.WorkspaceDrawer.pendingActivation),
+    ).toBeInTheDocument();
+  });
+
+  it('shows no subscription text when there is no active, reserved, or credit coverage', () => {
+    workspacesData = [
+      {
+        id: 'ws-1',
+        name: 'کافه رستوران طهرانی',
+        ownerId: 'u1',
+        isPersonal: false,
+        category: null,
+        hasCreditCoverage: false,
+        instagrams: [
+          {
+            id: 'ig-1',
+            username: 'tehrani_cafe_bistro',
+            isIgTokenValid: true,
+            profilePicture: null,
+            subscriptionDaysLeft: null,
+            hasReservedSubscription: false,
+          },
+        ],
+      },
+    ];
+    renderContent();
+    expect(
+      screen.queryByText(messages.Console.WorkspaceDrawer.coveredByCredit),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(messages.Console.WorkspaceDrawer.pendingActivation),
+    ).not.toBeInTheDocument();
   });
 
   it('switches workspace and closes the drawer when tapping an Instagram account row', () => {

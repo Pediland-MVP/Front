@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Spinner } from '@/components/ui/spinner';
 import { Separator } from '@/components/ui/separator';
-import { PageCoverageBadge } from '@/components/Settings/PageCoverageBadge';
 import { LogOutIcon, CheckIcon, UserCircleIcon, PencilIcon, XIcon, PlusIcon } from 'lucide-react';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 
@@ -167,11 +166,15 @@ export const WorkspaceDrawerContent = ({ onClose }: WorkspaceDrawerContentProps)
                             {instagram.isIgTokenValid ? t('connected') : t('disconnected')}
                           </span>
                         </div>
-                        {isActive && (
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <PageCoverageBadge instagramId={instagram.id} />
-                          </div>
-                        )}
+                        {instagram.subscriptionDaysLeft !== null ? (
+                          <span className="text-xs text-gray-500">
+                            {t('daysLeft', { count: instagram.subscriptionDaysLeft })}
+                          </span>
+                        ) : ws.hasCreditCoverage ? (
+                          <span className="text-xs text-gray-500">{t('coveredByCredit')}</span>
+                        ) : instagram.hasReservedSubscription ? (
+                          <span className="text-xs text-gray-500">{t('pendingActivation')}</span>
+                        ) : null}
                       </div>
                       <span className="truncate text-xs text-gray-600">{instagram.username}</span>
                       <div className="shrink-0 overflow-hidden rounded-full border border-white bg-gray-100">
