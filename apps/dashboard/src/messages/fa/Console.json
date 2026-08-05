@@ -76,7 +76,10 @@
       "connected": "متصل",
       "disconnected": "قطع شده",
       "close": "بستن",
-      "editProfile": "ویرایش پروفایل"
+      "editProfile": "ویرایش پروفایل",
+      "daysLeft": "اعتبار: {count} روز",
+      "coveredByCredit": "تحت پوشش اعتبار",
+      "pendingActivation": "در صف فعال‌سازی"
     }
   }
 }
