@@ -73,6 +73,28 @@ findings, all addressed:
   staleness quirk; and confirming "پیام جدید" has no undo, matching the ticket's spec as
   written) — no changes made for either.
 
+## Follow-up (2026-08-04): banner grouped into one element
+
+The first version rendered as **two** stacked blocks — an amber `Alert` with the copy, and a
+separate row of two buttons *below/outside* it — so it did not read as one alert.
+
+`AutomationDraftBanner.tsx` now renders a **single `Alert`** that holds the icon, the copy,
+and both actions:
+
+- The outer `space-y-2` wrapper `<div>` is gone; the `Alert` itself is the root element.
+- `Alert` is overridden to `flex-col items-stretch gap-3 sm:flex-row sm:items-center
+  sm:justify-between` — copy and actions sit on one line on `sm`+, and stack (full-width
+  buttons) on mobile.
+- `AlertDescription` gets `min-w-0 flex-1` so long Persian copy wraps instead of squashing
+  the buttons.
+- Buttons are `size="sm"` and now match the alert's amber theme: "ادامه ویرایش" is the solid
+  primary action (`bg-amber-600 text-white hover:bg-amber-700`), "پیام جدید" stays `ghost`
+  with amber text. Previously they were the generic `outline` / `ghost` grey styles, which
+  clashed with the amber note.
+
+No behavior change — the same `onResume` / `onCreateNew` props and the same i18n keys.
+`AutomationDraftBanner.test.tsx` asserts by text, not by structure, so it is unchanged.
+
 ## Verification
 
 - Targeted `vitest run` (`pnpm install` run once in this fresh worktree first), all passing:
