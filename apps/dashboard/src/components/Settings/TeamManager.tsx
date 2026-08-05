@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { onInputP2EHandler } from '@/utils/p2eNumber';
 import { Trash } from '@phosphor-icons/react/dist/csr/Trash';
 import { Shield } from '@phosphor-icons/react/dist/csr/Shield';
 import { Plus } from '@phosphor-icons/react/dist/csr/Plus';
@@ -339,7 +340,13 @@ export function TeamManager() {
                         <FormItem>
                           <FormLabel>{t('mobile')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="09123456789" dir="ltr" {...field} />
+                            <Input
+                              placeholder="09123456789"
+                              dir="ltr"
+                              inputMode="numeric"
+                              onInput={onInputP2EHandler}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
