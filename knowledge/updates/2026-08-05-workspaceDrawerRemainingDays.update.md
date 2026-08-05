@@ -1,4 +1,4 @@
-# Workspace Drawer: Remaining Days for Every Workspace (2026-08-03)
+# Workspace Drawer: Remaining Days for Every Workspace (2026-08-05)
 
 Follow-up to `2026-08-03-workspaceDrawerRedesign.update.md`.
 Paired Back branch: `fix/workspace-drawer-remaining-days` (same branch name).
