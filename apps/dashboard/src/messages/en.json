@@ -2023,7 +2023,6 @@
       "analytics": "Analytics",
       "billing": "Billing",
       "team": "Team",
-      "contentCycle": "Content Cycle",
       "general": "General"
     },
     "product": {
@@ -2099,16 +2098,6 @@
       "manage_desc": "Change access levels for team members",
       "remove": "Remove Member",
       "remove_desc": "Remove members from the workspace"
-    },
-    "contentCycle": {
-      "view": "View Content Cycle",
-      "view_desc": "View the content cycle list and details",
-      "create": "Create Content Cycle",
-      "create_desc": "Create new content cycles",
-      "edit": "Edit Content Cycle",
-      "edit_desc": "Edit existing content cycles",
-      "delete": "Delete Content Cycle",
-      "delete_desc": "Permanently delete content cycles"
     }
   }
 }
