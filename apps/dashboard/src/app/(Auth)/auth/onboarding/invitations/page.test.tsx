@@ -50,6 +50,7 @@ describe('OnboardingInvitationsPage', () => {
     userState = {
       mutate: vi.fn(),
       isOnboarding: true,
+      user: { mobile: '09123456789', email: null },
     };
   });
 
@@ -149,5 +150,54 @@ describe('OnboardingInvitationsPage', () => {
     expect(screen.getByText('تستی')).toBeInTheDocument();
     expect(screen.getByText('دومی')).toBeInTheDocument();
     expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(2);
+  });
+
+  it("shows the signed-in user's mobile so they can confirm it's the right account", () => {
+    userState.user = { mobile: '09123456789', email: null };
+    swrResponses['/invitations/pending'] = {
+      data: {
+        items: [
+          {
+            id: 'inv-1',
+            workspace: { id: 'ws-1', name: 'تستی' },
+            inviter: { firstname: 'سینا', lastname: 'پیران' },
+            status: 'pending',
+            message: null,
+            permissions: ['product:view'],
+          },
+        ],
+        meta: { totalItems: 1 },
+      },
+      isLoading: false,
+    };
+
+    renderPage();
+
+    expect(screen.getByText('09123456789')).toBeInTheDocument();
+  });
+
+  it('falls back to email when the user has no mobile on file', () => {
+    userState.user = { mobile: null, email: 'sina@example.com' };
+    swrResponses['/invitations/pending'] = {
+      data: {
+        items: [
+          {
+            id: 'inv-1',
+            workspace: { id: 'ws-1', name: 'تستی' },
+            inviter: { firstname: 'سینا', lastname: 'پیران' },
+            status: 'pending',
+            message: null,
+            permissions: ['product:view'],
+          },
+        ],
+        meta: { totalItems: 1 },
+      },
+      isLoading: false,
+    };
+
+    renderPage();
+
+    expect(screen.getByText('sina@example.com')).toBeInTheDocument();
+    expect(screen.queryByText('09123456789')).not.toBeInTheDocument();
   });
 });

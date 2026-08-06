@@ -26,6 +26,8 @@ import { ChatCircleIcon } from '@phosphor-icons/react/dist/csr/ChatCircle';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/csr/CheckCircle';
 import { CircleIcon } from '@phosphor-icons/react/dist/csr/Circle';
 import { HandshakeIcon } from '@phosphor-icons/react/dist/csr/Handshake';
+import { DeviceMobileIcon } from '@phosphor-icons/react/dist/csr/DeviceMobile';
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/csr/EnvelopeSimple';
 
 // Shared read-out for one invitation's details — used by both the single
 // (non-clickable) confirmation card and each option in the multi-invite list.
@@ -65,7 +67,7 @@ export default function OnboardingInvitationsPage() {
   const searchParams = useSearchParams();
   const t = useTranslations('Auth.Invitations');
   const t_ec = useTranslations('ERROR_CODES');
-  const { mutate: mutateUser, isOnboarding } = useUser();
+  const { mutate: mutateUser, isOnboarding, user } = useUser();
   const { mutate: globalMutate } = useSWRConfig();
 
   // returnTo is set by AuthProvider when routing a connect-flow (State B) user here
@@ -206,11 +208,24 @@ export default function OnboardingInvitationsPage() {
         <h1 className="text-primary mb-1 text-lg font-semibold">
           {isSingle ? t('title_single') : t('title')}
         </h1>
-        <p className="text-muted-foreground mb-5 text-center text-sm">
+        <p className="text-muted-foreground mb-3 text-center text-sm">
           {isSingle
             ? t('description_single', { workspace: invitations[0].workspace?.name ?? '' })
             : t('description')}
         </p>
+
+        {/* Which account this picker belongs to — helpful context when the person
+            might be signed in with a mobile/email different from what they expect. */}
+        {(user?.mobile || user?.email) && (
+          <div className="text-muted-foreground bg-muted/50 mb-5 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs tracking-wide">
+            {user?.mobile ? (
+              <DeviceMobileIcon size={14} className="shrink-0" />
+            ) : (
+              <EnvelopeSimpleIcon size={14} className="shrink-0" />
+            )}
+            <span>{user?.mobile || user?.email}</span>
+          </div>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
