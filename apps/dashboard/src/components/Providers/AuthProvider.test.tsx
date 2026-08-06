@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, act } from '@testing-library/react';
 import { AuthProvider } from './AuthProvider';
 
 const push = vi.fn();
@@ -114,6 +114,55 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
 
     await waitFor(() => {
       expect(replace).toHaveBeenCalledWith('/auth/onboarding/transfer?returnTo=/connect');
+    });
+  });
+
+  // otp/page.tsx does `router.push('/auth/onboarding')` after a successful OTP
+  // verification — a client-side transition inside the same (Auth) layout, so
+  // AuthProvider never unmounts. This reproduces that exact sequence: the same
+  // provider instance re-rendering as `isOnboarding` flips true and the pathname
+  // changes, instead of a fresh mount that already starts with the right props.
+  it('picks up a pending invitation across a live post-OTP transition, without remounting', async () => {
+    pathname = '/auth/otp';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: undefined,
+    };
+
+    const { rerender } = renderProvider();
+
+    await waitFor(() => {
+      expect(replace).not.toHaveBeenCalled();
+    });
+
+    // Simulate what otp/page.tsx does: sign-in resolves, `/users/me` is mutated
+    // in the SWR cache (isOnboarding flips true), then `router.push('/auth/onboarding')`.
+    pathname = '/auth/onboarding';
+    userState = {
+      error: undefined,
+      isOnboarding: true,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+    swrResponses['/invitations/pending'] = {
+      data: { items: [{ id: 'inv-1' }], meta: { totalItems: 1 } },
+      isLoading: false,
+    };
+
+    act(() => {
+      rerender(
+        <AuthProvider>
+          <div>console</div>
+        </AuthProvider>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith('/auth/onboarding/invitations');
     });
   });
 });

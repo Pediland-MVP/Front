@@ -1,15 +1,15 @@
 'use client';
 
-import api, { fetcher } from '@/hooks/swr/api-client';
-import { setAccessToken } from '@/hooks/swr/api-client';
+import api, { setAccessToken } from '@/hooks/swr/api-client';
 import useUser from '@/hooks/useUser';
+import { useInvitations } from '@/hooks/useInvitations';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import useSWR, { useSWRConfig } from 'swr';
+import { useSWRConfig } from 'swr';
 import { z } from 'zod';
 
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -17,14 +17,6 @@ import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { isSafeInternalPath } from '@/utils/safeInternalPath';
-
-type Invitation = {
-  id: string;
-  workspace: { id: string; name: string };
-  inviter: { firstname: string | null; lastname: string | null };
-  message: string | null;
-  permissions: string[];
-};
 
 export default function OnboardingInvitationsPage() {
   const router = useRouter();
@@ -46,15 +38,7 @@ export default function OnboardingInvitationsPage() {
       ? '/auth/onboarding'
       : '/connect';
 
-  const { data, isLoading } = useSWR<{ data?: Invitation[] } | Invitation[]>(
-    '/invitations/pending',
-    fetcher,
-  );
-
-  const invitations: Invitation[] = useMemo(() => {
-    if (!data) return [];
-    return Array.isArray(data) ? data : (data.data ?? []);
-  }, [data]);
+  const { invitations, isLoading } = useInvitations();
 
   // Schema adapts to the user's lifecycle state:
   // - ONBOARDING users haven't provided their name yet → required name fields
