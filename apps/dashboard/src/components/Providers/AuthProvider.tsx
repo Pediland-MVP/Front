@@ -46,9 +46,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     { data?: PendingInvitation[] } | PendingInvitation[]
   >(shouldFetchInvitations ? '/invitations/pending' : null, fetcher);
 
+  // The backend returns a PaginatedResult (`{ items, meta }`), not `{ data }` — see
+  // useInvitations.ts, which parses the same `/invitations/pending` endpoint the same way.
   const pendingInvitations: PendingInvitation[] = Array.isArray(pendingRaw)
     ? pendingRaw
-    : (pendingRaw?.data ?? []);
+    : ((pendingRaw as { items?: PendingInvitation[] })?.items ?? pendingRaw?.data ?? []);
   const hasPendingInvitations = pendingInvitations.length > 0;
 
   const dismissedTransfer =
@@ -63,9 +65,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     { data?: PendingTransfer[] } | PendingTransfer[]
   >(shouldFetchTransfers ? '/ownership-transfers/incoming' : null, fetcher);
 
+  // Same PaginatedResult shape as `/invitations/pending` above — `/ownership-transfers/incoming`
+  // also returns `{ items, meta }`, not `{ data }`.
   const pendingTransfers: PendingTransfer[] = Array.isArray(transferRaw)
     ? transferRaw
-    : (transferRaw?.data ?? []);
+    : ((transferRaw as { items?: PendingTransfer[] })?.items ?? transferRaw?.data ?? []);
   const hasPendingTransfers = pendingTransfers.length > 0;
 
   // When the pathname changes, immediately drop the isAllowed flag so we never
