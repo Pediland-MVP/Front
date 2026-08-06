@@ -2,11 +2,11 @@
 
 import api, { setAccessToken } from '@/hooks/swr/api-client';
 import useUser from '@/hooks/useUser';
-import { useInvitations } from '@/hooks/useInvitations';
+import { useInvitations, type Invitation } from '@/hooks/useInvitations';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useSWRConfig } from 'swr';
@@ -17,6 +17,48 @@ import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { isSafeInternalPath } from '@/utils/safeInternalPath';
+import { cn } from '@/lib/utils';
+
+import { BuildingsIcon } from '@phosphor-icons/react/dist/csr/Buildings';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/csr/UserCircle';
+import { ShieldCheckIcon } from '@phosphor-icons/react/dist/csr/ShieldCheck';
+import { ChatCircleIcon } from '@phosphor-icons/react/dist/csr/ChatCircle';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/csr/CheckCircle';
+import { CircleIcon } from '@phosphor-icons/react/dist/csr/Circle';
+import { HandshakeIcon } from '@phosphor-icons/react/dist/csr/Handshake';
+
+// Shared read-out for one invitation's details — used by both the single
+// (non-clickable) confirmation card and each option in the multi-invite list.
+function InvitationDetails({ inv }: { inv: Invitation }) {
+  const t = useTranslations('Auth.Invitations');
+  return (
+    <div className="min-w-0 flex-1 space-y-1.5">
+      <div className="flex items-center gap-2">
+        <BuildingsIcon size={18} weight="duotone" className="text-primary shrink-0" />
+        <span className="truncate font-medium">{inv.workspace?.name ?? '—'}</span>
+      </div>
+      <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <UserCircleIcon size={16} className="shrink-0" />
+        <span className="truncate">
+          {t('invited_by')} {inv.inviter?.firstname ?? ''} {inv.inviter?.lastname ?? ''}
+        </span>
+      </div>
+      <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <ShieldCheckIcon size={16} className="shrink-0" />
+        <span>{t('permissions_count', { count: inv.permissions?.length ?? 0 })}</span>
+      </div>
+      {inv.message ? (
+        <div className="text-muted-foreground flex items-start gap-2 pt-1 text-xs">
+          <ChatCircleIcon size={16} className="mt-0.5 shrink-0" />
+          <span>
+            <span className="text-foreground/80">{t('message_label')}: </span>
+            {inv.message}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export default function OnboardingInvitationsPage() {
   const router = useRouter();
@@ -62,6 +104,16 @@ export default function OnboardingInvitationsPage() {
     mode: 'onBlur',
     defaultValues: { invitationId: '', firstname: '', lastname: '' },
   });
+
+  const isSingle = invitations.length === 1;
+
+  // With exactly one invitation there's nothing to pick — auto-select it so the
+  // picker reads as a confirmation to accept/skip, not a choice the user has to make.
+  useEffect(() => {
+    if (isSingle) {
+      form.setValue('invitationId', invitations[0].id, { shouldValidate: true });
+    }
+  }, [isSingle, invitations, form]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSkipping, setIsSkipping] = useState(false);
@@ -148,8 +200,17 @@ export default function OnboardingInvitationsPage() {
   return (
     <div className="flex h-lvh w-full flex-col items-center justify-start overflow-x-hidden px-6 pt-12">
       <div className="flex w-full max-w-md flex-1 flex-col items-center justify-start">
-        <h1 className="text-primary mb-1 text-lg font-semibold">{t('title')}</h1>
-        <p className="text-muted-foreground mb-5 text-center text-sm">{t('description')}</p>
+        <div className="bg-primary/10 mb-3 flex size-12 items-center justify-center rounded-full">
+          <HandshakeIcon size={26} weight="duotone" className="text-primary" />
+        </div>
+        <h1 className="text-primary mb-1 text-lg font-semibold">
+          {isSingle ? t('title_single') : t('title')}
+        </h1>
+        <p className="text-muted-foreground mb-5 text-center text-sm">
+          {isSingle
+            ? t('description_single', { workspace: invitations[0].workspace?.name ?? '' })
+            : t('description')}
+        </p>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
@@ -159,48 +220,56 @@ export default function OnboardingInvitationsPage() {
               render={({ field }) => (
                 <FormItem>
                   <div className="space-y-2">
-                    {invitations.map((inv) => {
-                      const checked = field.value === inv.id;
-                      return (
-                        <label
-                          key={inv.id}
-                          className={`flex cursor-pointer flex-col rounded-md border p-3 transition ${
-                            checked ? 'border-primary bg-primary/5' : 'border-muted'
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
+                    {isSingle ? (
+                      // A single invitation is a confirmation, not a decision — no
+                      // radio, no hover/click affordance, just the details plus a
+                      // checkmark showing it's already selected for the form.
+                      <div className="border-primary/40 bg-primary/5 flex items-start gap-3 rounded-lg border p-3.5">
+                        <InvitationDetails inv={invitations[0]} />
+                        <CheckCircleIcon
+                          size={20}
+                          weight="fill"
+                          className="text-primary mt-0.5 shrink-0"
+                        />
+                      </div>
+                    ) : (
+                      invitations.map((inv) => {
+                        const checked = field.value === inv.id;
+                        return (
+                          <label
+                            key={inv.id}
+                            className={cn(
+                              'flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition',
+                              checked
+                                ? 'border-primary bg-primary/5'
+                                : 'border-muted hover:border-primary/40',
+                            )}
+                          >
                             <input
                               type="radio"
                               name="invitationId"
                               value={inv.id}
                               checked={checked}
                               onChange={() => field.onChange(inv.id)}
-                              className="mt-1"
+                              className="sr-only"
                             />
-                            <div className="flex-1">
-                              <div className="font-medium">{inv.workspace?.name ?? '—'}</div>
-                              <div className="text-muted-foreground text-xs">
-                                {t('invited_by')} {inv.inviter?.firstname ?? ''}{' '}
-                                {inv.inviter?.lastname ?? ''}
-                              </div>
-                              <div className="text-muted-foreground mt-1 text-xs">
-                                {t('permissions_count', {
-                                  count: inv.permissions?.length ?? 0,
-                                })}
-                              </div>
-                              {inv.message ? (
-                                <div className="mt-2 text-xs">
-                                  <span className="text-muted-foreground">
-                                    {t('message_label')}:{' '}
-                                  </span>
-                                  {inv.message}
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        </label>
-                      );
-                    })}
+                            <InvitationDetails inv={inv} />
+                            {checked ? (
+                              <CheckCircleIcon
+                                size={20}
+                                weight="fill"
+                                className="text-primary mt-0.5 shrink-0"
+                              />
+                            ) : (
+                              <CircleIcon
+                                size={20}
+                                className="text-muted-foreground/40 mt-0.5 shrink-0"
+                              />
+                            )}
+                          </label>
+                        );
+                      })
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>

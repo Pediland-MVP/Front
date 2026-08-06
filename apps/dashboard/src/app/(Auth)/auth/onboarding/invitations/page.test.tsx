@@ -87,4 +87,67 @@ describe('OnboardingInvitationsPage', () => {
 
     expect(screen.getByText(messages.Auth.Invitations.no_invitations)).toBeInTheDocument();
   });
+
+  it('renders a single invitation as a non-clickable confirmation, not a pick-one radio list', () => {
+    swrResponses['/invitations/pending'] = {
+      data: {
+        items: [
+          {
+            id: 'inv-1',
+            workspace: { id: 'ws-1', name: 'تستی' },
+            inviter: { firstname: 'سینا', lastname: 'پیران' },
+            status: 'pending',
+            message: null,
+            permissions: ['product:view'],
+          },
+        ],
+        meta: { totalItems: 1 },
+      },
+      isLoading: false,
+    };
+
+    const { container } = renderPage();
+
+    // Singular copy, not the plural "you have invitations" title.
+    expect(screen.getByText(messages.Auth.Invitations.title_single)).toBeInTheDocument();
+    expect(
+      screen.getByText(messages.Auth.Invitations.description_single.replace('{workspace}', 'تستی')),
+    ).toBeInTheDocument();
+    // No radio input — there's nothing to choose between.
+    expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(0);
+  });
+
+  it('renders multiple invitations as a selectable radio list', () => {
+    swrResponses['/invitations/pending'] = {
+      data: {
+        items: [
+          {
+            id: 'inv-1',
+            workspace: { id: 'ws-1', name: 'تستی' },
+            inviter: { firstname: 'سینا', lastname: 'پیران' },
+            status: 'pending',
+            message: null,
+            permissions: ['product:view'],
+          },
+          {
+            id: 'inv-2',
+            workspace: { id: 'ws-2', name: 'دومی' },
+            inviter: { firstname: 'رضا', lastname: 'محمدی' },
+            status: 'pending',
+            message: null,
+            permissions: ['team:invite'],
+          },
+        ],
+        meta: { totalItems: 2 },
+      },
+      isLoading: false,
+    };
+
+    const { container } = renderPage();
+
+    expect(screen.getByText(messages.Auth.Invitations.title)).toBeInTheDocument();
+    expect(screen.getByText('تستی')).toBeInTheDocument();
+    expect(screen.getByText('دومی')).toBeInTheDocument();
+    expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(2);
+  });
 });
