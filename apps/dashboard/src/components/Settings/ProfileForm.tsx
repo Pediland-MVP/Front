@@ -114,13 +114,14 @@ export function ProfileForm() {
   });
 
   const resetWithUserData = () => {
-    if (!userData || userError) return;
-    const cityId = userData.city?.id?.toString();
-    const state = userData.city?.province?.id?.toString();
+    if (!userData?.data || userError) return;
+    const user = userData.data;
+    const cityId = user.city?.id?.toString();
+    const state = user.city?.province?.id?.toString();
     form.reset({
-      ...userData,
-      ...(userData.birthDate && {
-        birthDate: new Date(userData.birthDate).getTime().toString(),
+      ...user,
+      ...(user.birthDate && {
+        birthDate: new Date(user.birthDate).getTime().toString(),
       }),
       ...(cityId && { cityId }),
       ...(state && { state }),
