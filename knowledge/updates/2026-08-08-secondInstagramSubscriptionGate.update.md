@@ -18,10 +18,12 @@ letting a second account bind.
   workspace has **no available subscription slot** for another account. Flow:
   username check → Instagram follower-count lookup → either a matched plan
   (buy directly) or a manual fallback (pick any plan) → purchase.
-- Gated by a new `hasAvailableSubscriptionSlot: boolean` flag added to
-  `IUser.data` (from `GET /users/me`) — `connect/page.tsx` branches the
-  connect button: with an available slot, the existing plain Instagram OAuth
-  link renders unchanged; without one, the new dialog's CTA renders instead.
+- Gated by a new `hasAvailableSubscriptionSlot: boolean` flag (originally on
+  `IUser.data` from `GET /users/me`, **moved to `GET /workspaces` on
+  2026-08-08** — see `2026-08-08-workspaceScopedSubscriptionSlot.update.md`)
+  — `connect/page.tsx` branches the connect button: with an available slot,
+  the existing plain Instagram OAuth link renders unchanged; without one,
+  the new dialog's CTA renders instead.
 - After a **pooled** subscription purchase (paid but not yet bound to a
   specific Instagram account) completes, the payment-verify page now
   redirects to `/connect` instead of `/settings/instagram` — so the user

@@ -56,7 +56,7 @@ export default function ConnectPage() {
   const code = searchParams.get('code');
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
-  const { user, hasInstagram, canConnectInstagram, hasAvailableSubscriptionSlot } = useUser();
+  const { user, hasInstagram, canConnectInstagram } = useUser();
   const { workspaces } = useWorkspaces();
   const { workspaceId, can, isLoading: isPermissionsLoading } = usePermissions();
   // While workspaceId is set but the effective-permissions fetch hasn't resolved yet,
@@ -67,6 +67,11 @@ export default function ConnectPage() {
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
   const atInstagramLimit = instagramCount >= 5;
+  // Sourced from GET /workspaces (keyed by real membership), not GET /users/me (keyed by
+  // the workspaceId baked into the JWT access token, which can go stale relative to the
+  // workspace actually selected in the UI — see knowledge/updates for the incident this
+  // fixed). A workspace not yet loaded/matched is treated as "no slot" (safer default).
+  const hasAvailableSubscriptionSlot = currentWorkspace?.hasAvailableSubscriptionSlot ?? false;
   const needsSubscriptionSetup = hasInstagram && !hasAvailableSubscriptionSlot;
 
   useEffect(() => {

@@ -12,7 +12,8 @@ vi.mock('@/hooks/swr/api-client', () => ({ useLogout: () => vi.fn(), default: {}
 vi.mock('@/hooks/useConnectInstagram', () => ({
   default: () => ({ callbackIG: vi.fn(), isCallbackIGLoading: false }),
 }));
-vi.mock('@/hooks/useWorkspaces', () => ({ useWorkspaces: () => ({ workspaces: [] }) }));
+const useWorkspacesMock = vi.fn();
+vi.mock('@/hooks/useWorkspaces', () => ({ useWorkspaces: () => useWorkspacesMock() }));
 vi.mock('@/hooks/usePermissions', () => ({
   usePermissions: () => ({ workspaceId: 'ws1', can: () => true, isLoading: false }),
 }));
@@ -42,6 +43,7 @@ const renderPage = () =>
 describe('ConnectPage — second Instagram subscription gate', () => {
   beforeEach(() => {
     push.mockReset();
+    useWorkspacesMock.mockReturnValue({ workspaces: [] });
   });
 
   it('shows the subscription setup CTA instead of the raw connect link for a 2nd account with no available slot', () => {
@@ -49,7 +51,9 @@ describe('ConnectPage — second Instagram subscription gate', () => {
       user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
       hasInstagram: true,
       canConnectInstagram: true,
-      hasAvailableSubscriptionSlot: false,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: false }],
     });
 
     renderPage();
@@ -63,7 +67,9 @@ describe('ConnectPage — second Instagram subscription gate', () => {
       user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
       hasInstagram: true,
       canConnectInstagram: true,
-      hasAvailableSubscriptionSlot: true,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
     });
 
     renderPage();
@@ -77,12 +83,27 @@ describe('ConnectPage — second Instagram subscription gate', () => {
       user: { instagrams: [], mobile: '0912' },
       hasInstagram: false,
       canConnectInstagram: true,
-      hasAvailableSubscriptionSlot: false,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: false }],
     });
 
     renderPage();
 
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
+  });
+
+  it('treats a missing/not-yet-loaded current workspace as no available slot (shows the setup CTA, not a crash)', () => {
+    useUserMock.mockReturnValue({
+      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+    });
+    useWorkspacesMock.mockReturnValue({ workspaces: [] });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Connect.setup_second_instagram_cta)).toBeInTheDocument();
   });
 
   it('shows a reminder for the pending username and clears the cookie after reading it', () => {
@@ -91,7 +112,9 @@ describe('ConnectPage — second Instagram subscription gate', () => {
       user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
       hasInstagram: true,
       canConnectInstagram: true,
-      hasAvailableSubscriptionSlot: true,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
     });
 
     renderPage();
