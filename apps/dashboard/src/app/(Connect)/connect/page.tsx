@@ -18,6 +18,7 @@ import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherD
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
+import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
 import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
 import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
 import { SignOutIcon } from '@phosphor-icons/react/dist/csr/SignOut';
@@ -43,12 +44,13 @@ export default function ConnectPage() {
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
+  const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
 
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
-  const { user, hasInstagram, canConnectInstagram } = useUser();
+  const { user, hasInstagram, canConnectInstagram, hasAvailableSubscriptionSlot } = useUser();
   const { workspaces } = useWorkspaces();
   const { workspaceId, can, isLoading: isPermissionsLoading } = usePermissions();
   // While workspaceId is set but the effective-permissions fetch hasn't resolved yet,
@@ -59,6 +61,7 @@ export default function ConnectPage() {
   const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
   const atInstagramLimit = instagramCount >= 5;
+  const needsSubscriptionSetup = hasInstagram && !hasAvailableSubscriptionSlot;
 
   useEffect(() => {
     const submitCode = async (code: string) => {
@@ -115,6 +118,7 @@ export default function ConnectPage() {
 
       <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
         <HowToConnectDialog open={isDialogOpen} setOpen={setDialogOpen} />
+        <SetupInstagramDialog open={isSetupDialogOpen} onOpenChange={setIsSetupDialogOpen} />
 
         <div className="container mx-auto flex h-full flex-col justify-around px-5 md:max-w-sm">
           <div className="flex flex-col items-center space-y-4">
@@ -163,6 +167,10 @@ export default function ConnectPage() {
                   <p className="mb-1 font-medium">{t('no_connect_permission_title')}</p>
                   <p className="text-xs">{t('no_connect_permission_description')}</p>
                 </div>
+              ) : needsSubscriptionSetup ? (
+                <Button className="w-full" onClick={() => setIsSetupDialogOpen(true)}>
+                  {t('setup_second_instagram_cta')}
+                </Button>
               ) : (
                 <>
                   <Button className="w-full" disabled={isCallbackIGLoading} asChild>
