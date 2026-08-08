@@ -9,23 +9,34 @@ import { LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 import { InstagramAccounts } from '@/components/Settings/InstagramAccounts';
+import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
 import { Button } from '@/components/ui/button';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useWorkspaces } from '@/hooks/useWorkspaces';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 
 export default function Page() {
   const t = useTranslations('Settings.Accounts');
-  const { can, isLoading: permissionsLoading } = usePermissions();
+  const { can, workspaceId, isLoading: permissionsLoading } = usePermissions();
+  const { workspaces } = useWorkspaces();
   const [accountCount, setAccountCount] = useState<number>(0);
+  const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
 
   const canView = can('instagram:view');
   const canManage = can('instagram:manage');
   const atLimit = accountCount >= MAX_INSTAGRAM_ACCOUNTS;
+  const hasInstagram = accountCount > 0;
+  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
+  // Sourced from GET /workspaces (real membership), not GET /users/me — see
+  // apps/dashboard/src/app/(Connect)/connect/page.tsx for why.
+  const hasAvailableSubscriptionSlot = currentWorkspace?.hasAvailableSubscriptionSlot ?? false;
+  const needsSubscriptionSetup = hasInstagram && !hasAvailableSubscriptionSlot;
 
   return (
     <div className="_instagram-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
+      <SetupInstagramDialog open={isSetupDialogOpen} onOpenChange={setIsSetupDialogOpen} />
       <div className="flex h-full flex-col gap-4 px-4 py-5 md:pt-0">
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-gray-100 pb-4">
@@ -44,12 +55,22 @@ export default function Page() {
               <span className="text-primary inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold">
                 {t('count_badge', { count: accountCount, max: MAX_INSTAGRAM_ACCOUNTS })}
               </span>
-              <Button size="sm" disabled={atLimit || !canManage} asChild={!atLimit && canManage}>
+              <Button
+                size="sm"
+                disabled={atLimit || !canManage}
+                asChild={!atLimit && canManage && !needsSubscriptionSetup}
+                onClick={needsSubscriptionSetup ? () => setIsSetupDialogOpen(true) : undefined}
+              >
                 {atLimit || !canManage ? (
                   <span className="flex items-center gap-1.5">
                     <PlusIcon className="size-4" />
                     {t('addAccount')}
                   </span>
+                ) : needsSubscriptionSetup ? (
+                  <>
+                    <PlusIcon className="size-4" />
+                    {t('addAccount')}
+                  </>
                 ) : (
                   <Link href="/connect">
                     <PlusIcon className="size-4" />
