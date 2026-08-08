@@ -124,8 +124,11 @@ describe('SetupInstagramDialog', () => {
     fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
 
     await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('befroosh'));
-    expect(screen.getByText('یک ماهه').closest('button')).toBeDisabled();
-    expect(screen.getByText('سه ماهه').closest('button')).toBeDisabled();
+    expect(screen.getByText('یک ماهه')).toBeInTheDocument();
+    expect(screen.getByText('سه ماهه')).toBeInTheDocument();
+    const buyButtons = screen.getAllByText(messages.Subscription.buy);
+    expect(buyButtons).toHaveLength(2);
+    buyButtons.forEach((label) => expect(label.closest('button')).toBeDisabled());
   });
 
   it('disables every manual-fallback plan tile while a purchase is in flight', async () => {
