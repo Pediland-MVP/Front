@@ -115,7 +115,11 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       title: t('settings'),
       url: '/settings',
       icon: SlidersIcon,
-      isActive: true,
+      isActive: false,
+      items: [
+        { title: t('settingsHub'), url: '/settings' },
+        { title: t('teamMembers'), url: '/settings/team' },
+      ],
     },
     ...(isMobile
       ? [
