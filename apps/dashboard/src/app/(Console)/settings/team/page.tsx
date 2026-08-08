@@ -8,11 +8,13 @@ import { LayoutCard } from '@/components/Layout/LayoutCard';
 import { TeamManager } from '@/components/Settings/TeamManager';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
 
 export default function Page() {
   const t = useTranslations('Settings.Team');
-  const { can } = usePermissions();
+  const { can, isLoading: isLoadingPermissions } = usePermissions();
+  const canView = can('team:view');
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
   const [effectiveSearch, setEffectiveSearch] = useState<string>('');
@@ -47,9 +49,10 @@ export default function Page() {
   );
 
   useEffect(() => {
+    if (!canView) return;
     setButtons(HeaderButton);
     setTools(HeaderTools);
-  }, [HeaderButton, HeaderTools, setButtons, setTools]);
+  }, [canView, HeaderButton, HeaderTools, setButtons, setTools]);
 
   useEffect(() => {
     return () => {
@@ -58,7 +61,15 @@ export default function Page() {
     };
   }, [clearButtons, clearTools]);
 
-  if (!can('team:view')) return null;
+  if (isLoadingPermissions) {
+    return (
+      <div className="flex min-h-[280px] flex-1 items-center justify-center">
+        <LoaderSpin />
+      </div>
+    );
+  }
+
+  if (!canView) return null;
 
   return (
     <LayoutCard className="_team-members">
