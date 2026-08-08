@@ -11,6 +11,7 @@ import { DevicesIcon } from '@phosphor-icons/react/dist/csr/Devices';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/csr/InstagramLogo';
 import { PasswordIcon } from '@phosphor-icons/react/dist/csr/Password';
 import { UserCircleIcon } from '@phosphor-icons/react/dist/csr/UserCircle';
+import { UsersThreeIcon } from '@phosphor-icons/react/dist/csr/UsersThree';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -24,6 +25,7 @@ export const SettingsOptions = () => {
   const { subscriptions } = useSubscriptionStore();
 
   const canViewBilling = can('billing:view');
+  const canViewTeam = can('team:view');
 
   const items = [
     {
@@ -31,6 +33,15 @@ export const SettingsOptions = () => {
       url: '/settings/instagram',
       icon: InstagramLogoIcon,
     },
+    ...(canViewTeam
+      ? [
+          {
+            title: t('team'),
+            url: '/settings/team',
+            icon: UsersThreeIcon,
+          },
+        ]
+      : []),
     ...(!isWebView && !hasOnlyFreeCredit(subscriptions) && canViewBilling
       ? [
           {

@@ -40,6 +40,7 @@ interface NavMainProps {
     items?: {
       title: string;
       url: string;
+      exact?: boolean;
     }[];
   }[];
 }
@@ -53,7 +54,9 @@ export const NavMain = ({ items }: NavMainProps) => {
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          const isSubMenuActive = item.items?.some((subItem) => pathname.startsWith(subItem.url));
+          const isSubMenuActive = item.items?.some((subItem) =>
+            subItem.exact ? pathname === subItem.url : pathname.startsWith(subItem.url),
+          );
 
           const isOpen = openMenu === item.title || item.isActive || isSubMenuActive;
 
@@ -129,27 +132,33 @@ export const NavMain = ({ items }: NavMainProps) => {
 
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              className={cn(
-                                'border border-dashed border-transparent',
-                                pathname.startsWith(subItem.url)
-                                  ? 'text-primary hover:text-primary active:text-primary active:bg-transparent'
-                                  : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
-                              )}
-                              onClick={() => {
-                                setOpenMenu(item.title);
-                                if (isMobile) toggleSidebar();
-                              }}
-                            >
-                              <Link href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
+                        {item.items.map((subItem) => {
+                          const isSubItemActive = subItem.exact
+                            ? pathname === subItem.url
+                            : pathname.startsWith(subItem.url);
+
+                          return (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                className={cn(
+                                  'border border-dashed border-transparent',
+                                  isSubItemActive
+                                    ? 'text-primary hover:text-primary active:text-primary active:bg-transparent'
+                                    : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
+                                )}
+                                onClick={() => {
+                                  setOpenMenu(item.title);
+                                  if (isMobile) toggleSidebar();
+                                }}
+                              >
+                                <Link href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </>

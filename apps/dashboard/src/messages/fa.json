@@ -1455,7 +1455,9 @@
       "member": "عضو",
       "mobile_required": "شماره همراه الزامی است",
       "invite_by_mobile": "شماره موبایل",
-      "invite_by_email": "ایمیل"
+      "invite_by_email": "ایمیل",
+      "permission_denied_title": "دسترسی ندارید",
+      "permission_denied_description": "برای دیدن اعضای تیم این فضای کاری، از مدیر خود دسترسی بگیرید."
     },
     "Password": {
       "title": "مدیریت رمز عبور",
@@ -2072,6 +2074,7 @@
     "detail": "جزئیات",
     "directs": "لیست دایرکت‌ها",
     "instagram": "مدیریت اکانت اینستاگرام",
+    "team": "اعضای تیم",
     "account_session_management": "دستگاه‌های فعال",
     "new": "ایجاد",
     "orders": "لیست سفارشات",

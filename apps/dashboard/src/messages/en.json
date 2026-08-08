@@ -41,6 +41,7 @@
     "detail": "Details",
     "directs": "Direct Messages List",
     "instagram": "Instagram Account Management",
+    "team": "Team",
     "new": "Create",
     "orders": "Orders List",
     "password": "Password Management",
@@ -1323,7 +1324,9 @@
       "manage_permissions": "Manage Permissions",
       "owner": "Owner",
       "member": "Member",
-      "mobile_required": "Mobile number is required"
+      "mobile_required": "Mobile number is required",
+      "permission_denied_title": "Access denied",
+      "permission_denied_description": "Ask your workspace admin for access to view this workspace's team members."
     },
     "Password": {
       "title": "Password Management",

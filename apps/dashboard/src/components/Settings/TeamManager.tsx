@@ -70,6 +70,10 @@ export function TeamManager({ search }: { search: string }) {
   const [limit, setLimit] = useState<number>(15);
   const debouncedSearchTerm = useDebounce(search, 500);
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchTerm]);
+
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
   const ownerId = activeWorkspace?.ownerId;
 

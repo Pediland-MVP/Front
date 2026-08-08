@@ -51,6 +51,8 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'instagram';
     case 'card':
       return 'card';
+    case 'team':
+      return 'team';
     case 'zarinpal':
       return 'zarinpal';
     case 'upgrade':
