@@ -1912,7 +1912,8 @@
   },
   "ERROR_CODES": {
     "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "این اتوماسیون به یک پست خاص متصل است و فقط می‌تواند یک پیج داشته باشد",
-    "UPLOAD_SOURCE_IS_NOT_AN_IMAGE": "آدرس داده‌شده عکس نبود. لطفا دوباره تلاش کنید"
+    "UPLOAD_SOURCE_IS_NOT_AN_IMAGE": "آدرس داده‌شده عکس نبود. لطفا دوباره تلاش کنید",
+    "SECOND_INSTAGRAM_REQUIRES_SUBSCRIPTION": "برای اتصال اکانت اینستاگرام دوم به این فضای کاری، ابتدا باید یک اشتراک متناسب بخرید"
   },
   "Lorem": {
     "title": "لورم ایپسوم متن ساختگی  تولید سادگی نامفهوم از صنعت چاپ",
