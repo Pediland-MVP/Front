@@ -78,6 +78,7 @@
     "back_to_home": "بازگشت به خانه",
     "instagram_limit": "شما به حداکثر تعداد ۵ اکانت اینستاگرام رسیده‌اید",
     "setup_second_instagram_cta": "تنظیم اشتراک برای اتصال اکانت جدید",
+    "pending_username_reminder": "حالا اکانت @{username} رو متصل کن",
     "no_connect_permission_title": "دسترسی لازم را ندارید",
     "no_connect_permission_description": "برای اتصال اینستاگرام در این فضای کاری، باید دسترسی «مدیریت اینستاگرام» داشته باشید. با صاحب فضای کاری تماس بگیرید."
   },

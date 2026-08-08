@@ -84,4 +84,23 @@ describe('ConnectPage — second Instagram subscription gate', () => {
 
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
   });
+
+  it('shows a reminder for the pending username and clears the cookie after reading it', () => {
+    document.cookie = 'pending_ig_username=befroosh; path=/';
+    useUserMock.mockReturnValue({
+      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+      hasAvailableSubscriptionSlot: true,
+    });
+
+    renderPage();
+
+    const expectedText = messages.Connect.pending_username_reminder.replace(
+      '{username}',
+      'befroosh',
+    );
+    expect(screen.getByText(expectedText)).toBeInTheDocument();
+    expect(document.cookie).not.toContain('pending_ig_username=befroosh');
+  });
 });
