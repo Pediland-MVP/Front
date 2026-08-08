@@ -19,8 +19,9 @@ vi.mock('../../app/(Connect)/connect/hooks/useAllVisiblePlans', () => ({
 }));
 
 const payMock = vi.fn();
+const usePayPlanMock = vi.fn();
 vi.mock('@/app/(Console)/settings/subscription/hooks/usePayPlan', () => ({
-  default: () => ({ pay: payMock, isPayLoading: false }),
+  default: () => usePayPlanMock(),
 }));
 
 vi.mock('@/store/subscriptionStore', () => ({
@@ -42,6 +43,7 @@ describe('SetupInstagramDialog', () => {
     plansByFollowersMock.mockReset().mockReturnValue({ plan: undefined, isLoading: false });
     allVisiblePlansMock.mockReset().mockReturnValue({ plans: undefined, isLoading: false });
     payMock.mockReset();
+    usePayPlanMock.mockReset().mockReturnValue({ pay: payMock, isPayLoading: false });
   });
 
   it('shows the matched plan after a successful follower-count check', async () => {
@@ -95,5 +97,67 @@ describe('SetupInstagramDialog', () => {
       screen.getByText(messages.SetupInstagramDialog.apify_error_description),
     ).toBeInTheDocument();
     expect(screen.getByText('۲۵K تا ۱۰۰K فالور')).toBeInTheDocument();
+  });
+
+  it('disables every matched-plan duration button while a purchase is in flight', async () => {
+    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 1,
+        name: '۱K تا ۲۵K فالور',
+        durations: [
+          { id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 },
+          { id: 11, name: 'سه ماهه', durationDays: 90, price: 250000 },
+        ],
+      },
+      isLoading: false,
+    });
+    usePayPlanMock.mockReturnValue({ pay: payMock, isPayLoading: true });
+
+    renderDialog();
+    fireEvent.change(
+      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
+      {
+        target: { value: 'befroosh' },
+      },
+    );
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+
+    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('befroosh'));
+    expect(screen.getByText('یک ماهه').closest('button')).toBeDisabled();
+    expect(screen.getByText('سه ماهه').closest('button')).toBeDisabled();
+  });
+
+  it('disables every manual-fallback plan tile while a purchase is in flight', async () => {
+    lookupMock.mockRejectedValue(new Error('APIFY_ERROR'));
+    allVisiblePlansMock.mockReturnValue({
+      plans: [
+        {
+          id: 2,
+          name: '۲۵K تا ۱۰۰K فالور',
+          durations: [{ id: 20, name: 'یک ماهه', durationDays: 30, price: 200000 }],
+        },
+        {
+          id: 3,
+          name: '۱۰۰K تا ۵۰۰K فالور',
+          durations: [{ id: 30, name: 'یک ماهه', durationDays: 30, price: 300000 }],
+        },
+      ],
+      isLoading: false,
+    });
+    usePayPlanMock.mockReturnValue({ pay: payMock, isPayLoading: true });
+
+    renderDialog();
+    fireEvent.change(
+      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
+      {
+        target: { value: 'someone' },
+      },
+    );
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+
+    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('someone'));
+    expect(screen.getByText('۲۵K تا ۱۰۰K فالور').closest('button')).toBeDisabled();
+    expect(screen.getByText('۱۰۰K تا ۵۰۰K فالور').closest('button')).toBeDisabled();
   });
 });

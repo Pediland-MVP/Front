@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -119,8 +118,9 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                     <button
                       key={plan.id}
                       type="button"
+                      disabled={isPayLoading}
                       onClick={() => longestDuration && onBuy(plan.id, longestDuration.id)}
-                      className="rounded-xl border border-slate-200 p-4 text-right hover:border-violet-300"
+                      className="rounded-xl border border-slate-200 p-4 text-right hover:border-violet-300 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <PlanTierBadge plan={{ name: plan.name }} />
                     </button>
@@ -141,6 +141,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                   <ButtonLoading
                     key={duration.id}
                     isLoading={isPayLoading && buyingDurationId === duration.id}
+                    disabled={isPayLoading}
                     onClick={() => onBuy(matchedPlan.id, duration.id)}
                     className="w-full justify-between"
                     variant="outline"
