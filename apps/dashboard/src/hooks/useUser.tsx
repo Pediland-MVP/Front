@@ -12,6 +12,7 @@ export default function useUser() {
     hasInstagram: Boolean(user?.data.instagrams?.length),
     hasSubscription: Boolean(user?.data.subscriptions?.length),
     canConnectInstagram: Boolean((user?.data as any)?.canConnectInstagram),
+    hasAvailableSubscriptionSlot: Boolean(user?.data.hasAvailableSubscriptionSlot),
     isAuthenticated: !!user && !error,
     isError: !!error,
     isLoading: !user && !error,

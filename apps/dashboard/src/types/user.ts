@@ -21,6 +21,7 @@ export interface IUser {
     firstname: string;
     gender: GENDERS_ENUM;
     havePassword: boolean;
+    hasAvailableSubscriptionSlot: boolean;
     id: string;
     instagrams: Instagram[];
     isDeleteFlages: boolean;
