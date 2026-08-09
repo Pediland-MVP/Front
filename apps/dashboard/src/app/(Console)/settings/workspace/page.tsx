@@ -143,7 +143,7 @@ export default function Page() {
 
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="flex items-center gap-2">
+              <Button size="sm">
                 <Plus className="h-4 w-4 shrink-0" />
                 <span>{t('new_workspace')}</span>
               </Button>

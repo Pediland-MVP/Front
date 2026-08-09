@@ -1,6 +1,6 @@
 # 2026-08-09 — Settings Design Consistency
 
-Full spec: `docs/superpowers/specs/2026-08-09-settings-design-consistency-design.md`
+Full spec: `docs/superpowers/specs/2026-08-09-settings-design-consistency-design.md` (outer MVP repo).
 
 ## Problem
 
@@ -37,8 +37,11 @@ None — Front-only styling fix.
 
 ## Verification
 
-- `cd apps/dashboard && npx vitest run src/app/\(Console\)/settings/workspace/page.test.tsx`
-  — all existing tests still pass.
-- Manual: `/settings/workspace`, `/settings/card`, `/settings/subscription`
-  visually compared side by side; input widths and button shapes/radii now
-  match across all three and match `/settings/instagram`.
+This is a styling-only change, so the primary verification is manual visual
+comparison across `/settings/workspace`, `/settings/card`,
+`/settings/subscription`, and `/settings/instagram` — confirming input
+widths and button shapes/radii now match. The existing automated test for
+`apps/dashboard/src/app/(Console)/settings/workspace/page.tsx` passing
+confirms no regression in that page's composition/gating logic; it does not
+open the create-workspace dialog and makes no styling/className assertions,
+so it does not verify the styling change itself.
