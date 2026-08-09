@@ -15,3 +15,9 @@ const NextLinkStub = ({
 );
 
 export default NextLinkStub;
+
+// Real `next/link` also exports `useLinkStatus` (a hook that reports prefetch/navigation
+// pending state). Components that call it unconditionally (e.g. NavMain's NavItemIcon)
+// need this stub to export something callable too, or the hook call throws under test.
+// This stand-in never enters a pending state.
+export const useLinkStatus = () => ({ pending: false });

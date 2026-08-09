@@ -31,7 +31,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { toJalaliDateTime } from '@/utils/jalali';
 import { AccountSessionItem, AccountSessionNamespace } from '@/types/accountSession';
-import { useTerminateSession } from './hooks/useTerminateSession';
+import { useTerminateSession } from './useTerminateSession';
 
 const deviceIcon: Record<AccountSessionNamespace.DeviceType, typeof DesktopIcon> = {
   mobile: DeviceMobileIcon,

@@ -3,17 +3,16 @@
 import { useTranslations } from 'next-intl';
 import { DevicesIcon } from '@phosphor-icons/react/dist/csr/Devices';
 
-import { LayoutSettings } from '@/components/Layout/LayoutSettings';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
-import { useAccountSessions } from './hooks/useAccountSessions';
-import { AccountSessionsTable } from './account-sessions-table';
+import { useAccountSessions } from './useAccountSessions';
+import { AccountSessionsTable } from './AccountSessionsTable';
 
-export default function AccountSessionManagementPage() {
+export function AccountSessionsTab() {
   const t = useTranslations('Settings.AccountSessions');
   const { sessions, error, isLoading, mutate } = useAccountSessions();
 
   return (
-    <LayoutSettings className="_account-sessions-page">
+    <div className="flex flex-col">
       <div className="mb-5">
         <h2 className="text-primary mb-1 font-semibold">{t('title')}</h2>
         <div className="text-muted-foreground inline-flex flex-wrap items-center gap-1 text-sm">
@@ -33,6 +32,6 @@ export default function AccountSessionManagementPage() {
           <AccountSessionsTable sessions={sessions} onTerminated={() => mutate()} />
         )}
       </div>
-    </LayoutSettings>
+    </div>
   );
 }

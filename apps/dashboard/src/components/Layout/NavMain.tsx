@@ -41,6 +41,8 @@ interface NavMainProps {
       title: string;
       url: string;
       exact?: boolean;
+      icon?: Icon;
+      badge?: number;
     }[];
   }[];
 }
@@ -153,6 +155,17 @@ export const NavMain = ({ items }: NavMainProps) => {
                                 }}
                               >
                                 <Link href={subItem.url}>
+                                  {subItem.icon ? (
+                                    <div className="relative">
+                                      <subItem.icon size={18} weight="duotone" />
+                                      {subItem.badge && subItem.badge > 0 ? (
+                                        <span
+                                          data-testid="nav-sub-badge"
+                                          className="absolute -start-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-500"
+                                        />
+                                      ) : null}
+                                    </div>
+                                  ) : null}
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>

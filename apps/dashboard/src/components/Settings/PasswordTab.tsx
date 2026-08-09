@@ -11,7 +11,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { LayoutSettings } from '@/components/Layout/LayoutSettings';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -51,7 +50,7 @@ const formSchema = z
     path: ['confirmPassword'],
   });
 
-export default function PasswordPage() {
+export function PasswordTab() {
   const t = useTranslations('Settings.Password');
   const t_ec = useTranslations('ERROR_CODES');
 
@@ -152,7 +151,7 @@ export default function PasswordPage() {
   };
 
   return (
-    <LayoutSettings className="_password-page">
+    <div className="flex flex-col">
       <div className="mb-5">
         <h2 className="text-primary mb-1 font-semibold">{t('title')}</h2>
         <div className="text-muted-foreground inline-flex flex-wrap items-center gap-1 text-sm">
@@ -284,6 +283,6 @@ export default function PasswordPage() {
           </div>
         )}
       </div>
-    </LayoutSettings>
+    </div>
   );
 }

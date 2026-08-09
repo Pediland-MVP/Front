@@ -1,19 +1,7 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useTranslations } from 'next-intl';
-
-import { SettingsOptions } from '@/components/Settings/SettingsOptions';
-
-export default function SettingsPage() {
-  const t = useTranslations('Settings');
-
-  return (
-    <div className="flex w-full justify-center rounded-t-3xl md:items-center md:rounded-t-none">
-      <p className="text-muted-foreground hidden text-sm md:block">{t('choose_one_option')}</p>
-
-      <div className="w-full md:hidden">
-        <SettingsOptions />
-      </div>
-    </div>
-  );
+// Settings no longer has a hub screen — the sidebar's sub-items are the only
+// navigation. Land on the first sub-item instead of showing an empty shell.
+export default function Page() {
+  redirect('/settings/workspace');
 }
