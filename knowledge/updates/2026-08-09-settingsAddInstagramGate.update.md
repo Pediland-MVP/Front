@@ -100,6 +100,38 @@ matching one) and nothing else, so the new tests do guard the actual fix.
 
 Not smoke-tested in a browser.
 
+## Follow-up (same day) — «ادامه با همین اشتراک» routes via `/connect`
+
+The dialog's continue button used to link straight to `IG_OAUTH_URL`, dropping
+the user on Instagram from wherever they happened to be. It now goes to
+`/connect` instead, so they get that page's instructions and help video first.
+
+A plain `<Link href="/connect">` would have **looped**: the dialog also renders
+*on* `/connect`, and that page's own unbound-plan gate is still unanswered, so
+it would immediately reopen the same dialog with no way through to OAuth. The
+button therefore carries the answer with it:
+
+- `CONTINUE_WITH_PLAN_HREF` = `/connect?continueWithPlan=1`, exported from
+  `useAddInstagramGate.ts` so page and dialog cannot drift on the param name.
+- `useAddInstagramGate(hasInstagram, { unboundPlanAccepted })` clears **only**
+  `hasUnboundPlan`. `needsSubscriptionSetup` still gates regardless — a
+  workspace with no coverage at all has nothing to run on, and no query param
+  should talk it past that.
+- `/connect` reads the param and passes it in, so it shows the normal connect
+  button rather than the setup CTA.
+- The button also calls `onOpenChange(false)`. Navigating `/connect` →
+  `/connect?continueWithPlan=1` keeps the route mounted, so the parent's `open`
+  state survives the click and the dialog would otherwise sit over the page.
+
+Files: `hooks/useAddInstagramGate.ts`, `components/Connect/SetupInstagramDialog.tsx`
+(no longer imports `IG_OAUTH_URL`; `/connect` still uses it),
+`app/(Connect)/connect/page.tsx`, plus both test files.
+
+Verified: **33 passed** (12 settings + 10 connect page + 11 dialog) — 3 new
+cases: the continue button's href, that it closes on the way out, and that
+`/connect` honours the flag for the unbound question but still gates a
+workspace with no coverage at all.
+
 ## Known gaps (not fixed here)
 
 - `SetupInstagramDialog` still collapses every lookup failure into one manual

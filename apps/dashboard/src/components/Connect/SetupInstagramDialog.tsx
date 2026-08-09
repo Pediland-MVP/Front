@@ -14,7 +14,7 @@ import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { setPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { getUnboundActiveSubscriptions } from '@/utils/subscription';
-import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
+import { CONTINUE_WITH_PLAN_HREF } from '@/hooks/useAddInstagramGate';
 import { formatNumber } from '@/utils/formatNumber';
 import { cn } from '@/lib/utils';
 import { useInstagramFollowersLookup } from '../../app/(Connect)/connect/hooks/useInstagramFollowersLookup';
@@ -166,7 +166,15 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                   className="w-full rounded-xl bg-violet-600 py-5 shadow-lg hover:bg-violet-700 active:scale-95"
                   asChild
                 >
-                  <Link href={IG_OAUTH_URL}>{t('continue_with_unbound')}</Link>
+                  {/* Goes to /connect rather than straight into OAuth, so the user gets
+                      that page's instructions and help video instead of being dropped on
+                      Instagram. The query flag tells /connect this question is already
+                      answered — without it its own gate would reopen this same dialog.
+                      Closing here matters for the /connect → /connect case, where the
+                      route stays mounted and the dialog would otherwise cover the page. */}
+                  <Link href={CONTINUE_WITH_PLAN_HREF} onClick={() => onOpenChange(false)}>
+                    {t('continue_with_unbound')}
+                  </Link>
                 </Button>
                 <Button
                   variant="outline"
@@ -302,21 +310,21 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                           <span className="text-slate-400">{tSub('total_price')}:</span>
                           <div className="flex items-center gap-1.5 font-semibold text-slate-700">
                             {hasDiscount && (
-                              <span className="text-[11px] text-slate-350 line-through decoration-slate-300">
+                              <span className="text-slate-350 text-[11px] line-through decoration-slate-300">
                                 {formatNumber(Number(duration.price))}
                               </span>
                             )}
                             <span className="font-bold text-slate-800 tabular-nums">
                               {formatNumber(unitPrice)}
                             </span>
-                            <span className="text-[10px] font-normal text-slate-450">
+                            <span className="text-slate-450 text-[10px] font-normal">
                               {tSub('toman')}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex shrink-0 flex-col justify-center border-t border-slate-150 bg-slate-50/50 p-3 sm:w-32 sm:border-t-0 sm:border-r sm:border-dashed">
+                      <div className="border-slate-150 flex shrink-0 flex-col justify-center border-t bg-slate-50/50 p-3 sm:w-32 sm:border-t-0 sm:border-r sm:border-dashed">
                         <ButtonLoading
                           isLoading={isBuying}
                           type="button"
@@ -325,7 +333,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                           className={cn(
                             'w-full gap-1.5 rounded-xl py-5 text-xs font-bold shadow-xs transition-all duration-300 hover:shadow-md active:scale-95',
                             isRecommended
-                              ? 'border-0 bg-gradient-to-r from-violet-600 to-indigo-650 text-white hover:from-violet-750 hover:to-indigo-700'
+                              ? 'to-indigo-650 hover:from-violet-750 border-0 bg-gradient-to-r from-violet-600 text-white hover:to-indigo-700'
                               : 'border-slate-200 text-slate-700 hover:bg-slate-100',
                           )}
                           onClick={() => onBuy(matchedPlan.id, duration.id)}

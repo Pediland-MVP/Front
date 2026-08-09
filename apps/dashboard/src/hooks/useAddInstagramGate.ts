@@ -6,6 +6,17 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { getUnboundActiveSubscriptions } from '@/utils/subscription';
 
 /**
+ * Set on `/connect` once the user has answered the unbound-plan question with "continue
+ * with this one". Without it, `SetupInstagramDialog`'s continue button — which now sends
+ * the user to `/connect` rather than straight into OAuth — would land them on a page whose
+ * gate is still unanswered, reopening the same dialog forever.
+ */
+export const CONTINUE_WITH_PLAN_PARAM = 'continueWithPlan';
+
+/** Where the dialog's "ادامه با همین اشتراک" button goes, from any surface. */
+export const CONTINUE_WITH_PLAN_HREF = `/connect?${CONTINUE_WITH_PLAN_PARAM}=1`;
+
+/**
  * Decides whether adding another Instagram account may go straight to the OAuth
  * handshake, or has to pass through `SetupInstagramDialog` first.
  *
@@ -32,8 +43,15 @@ import { getUnboundActiveSubscriptions } from '@/utils/subscription';
  * @param hasInstagram Whether the workspace already has at least one connected account.
  *   Callers source this differently (`/connect` from `useUser`, settings from the accounts
  *   list), so it stays a parameter. The first account is never gated.
+ * @param options.unboundPlanAccepted The user already answered the unbound-plan question
+ *   with "continue with this one" (see `CONTINUE_WITH_PLAN_HREF`). Clears *only* that
+ *   reason — a workspace with no coverage at all still has nothing to run on, so
+ *   `needsSubscriptionSetup` keeps gating regardless.
  */
-export function useAddInstagramGate(hasInstagram: boolean) {
+export function useAddInstagramGate(
+  hasInstagram: boolean,
+  { unboundPlanAccepted = false }: { unboundPlanAccepted?: boolean } = {},
+) {
   const { workspaceId } = usePermissions();
   const { workspaces, isLoading: isWorkspacesLoading } = useWorkspaces();
   const { subscriptions, isLoading: isSubscriptionsLoading } = useSubscriptionStore();
@@ -47,13 +65,14 @@ export function useAddInstagramGate(hasInstagram: boolean) {
 
   const needsSubscriptionSetup = hasInstagram && !hasAvailableSubscriptionSlot;
   const hasUnboundPlan = hasInstagram && getUnboundActiveSubscriptions(subscriptions).length > 0;
+  const unboundPlanNeedsAnswer = hasUnboundPlan && !unboundPlanAccepted;
 
   return {
     currentWorkspace,
     hasAvailableSubscriptionSlot,
     needsSubscriptionSetup,
     hasUnboundPlan,
-    requiresSetupDialog: needsSubscriptionSetup || hasUnboundPlan,
+    requiresSetupDialog: needsSubscriptionSetup || unboundPlanNeedsAnswer,
     // Both inputs decide the gate, and both default to "no slot" / "no unbound plan" while
     // in flight — which is the *ungated* answer for `hasUnboundPlan`. Callers that can hold
     // the button back should wait on this rather than act on a half-loaded answer.

@@ -4,7 +4,7 @@ import { useLogout } from '@/hooks/swr/api-client';
 import useConnectInstagram from '@/hooks/useConnectInstagram';
 import useUser from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useAddInstagramGate } from '@/hooks/useAddInstagramGate';
+import { useAddInstagramGate, CONTINUE_WITH_PLAN_PARAM } from '@/hooks/useAddInstagramGate';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -53,6 +53,10 @@ export default function ConnectPage() {
 
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
+  // Set by the dialog's "ادامه با همین اشتراک" button, which now routes here instead of
+  // straight into OAuth. It answers the unbound-plan question so this page shows the
+  // normal connect button rather than reopening the dialog the user just came from.
+  const unboundPlanAccepted = searchParams.get(CONTINUE_WITH_PLAN_PARAM) === '1';
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
@@ -66,7 +70,9 @@ export default function ConnectPage() {
   const atInstagramLimit = instagramCount >= 5;
   // Shared with the "افزودن اکانت" button on /settings/instagram so the two entry points
   // into this journey cannot drift — see the hook for why each reason gates.
-  const { currentWorkspace, requiresSetupDialog } = useAddInstagramGate(hasInstagram);
+  const { currentWorkspace, requiresSetupDialog } = useAddInstagramGate(hasInstagram, {
+    unboundPlanAccepted,
+  });
 
   useEffect(() => {
     const submitCode = async (code: string) => {

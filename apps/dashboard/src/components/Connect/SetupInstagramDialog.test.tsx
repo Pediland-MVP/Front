@@ -218,15 +218,36 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     expect(screen.getByText('۱K تا ۲۵K فالور')).toBeInTheDocument();
   });
 
-  it('offers the OAuth link to continue with the plan already owned', () => {
+  it('sends the user to /connect to continue with the plan already owned', () => {
     withUnbound();
 
     renderDialog();
 
+    const link = screen.getByText(messages.SetupInstagramDialog.continue_with_unbound).closest('a');
+    // Not straight into OAuth: /connect carries the instructions and help video, and the
+    // flag tells it this question is answered so it does not reopen this dialog.
+    expect(link).toHaveAttribute('href', '/connect?continueWithPlan=1');
+  });
+
+  it('closes itself on the way to /connect, so it cannot cover that page', () => {
+    withUnbound();
+    const onOpenChange = vi.fn();
+
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <SetupInstagramDialog open onOpenChange={onOpenChange} />
+      </NextIntlClientProvider>,
+    );
     const link = screen
       .getByText(messages.SetupInstagramDialog.continue_with_unbound)
-      .closest('a');
-    expect(link).toHaveAttribute('href', expect.stringContaining('instagram.com/oauth/authorize'));
+      .closest('a')!;
+    // jsdom cannot navigate and logs an error if the click is left to its default.
+    link.addEventListener('click', (e) => e.preventDefault());
+    fireEvent.click(link);
+
+    // Navigating /connect → /connect keeps the route mounted, so the parent's `open`
+    // state survives the click and would leave the dialog sitting over the page.
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
   it('falls through to the username flow after choosing to buy a different plan', () => {

@@ -4,9 +4,10 @@ import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
 
 const push = vi.fn();
+const searchParamsMock = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace: vi.fn() }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => searchParamsMock(),
 }));
 vi.mock('@/hooks/swr/api-client', () => ({ useLogout: () => vi.fn(), default: {} }));
 vi.mock('@/hooks/useConnectInstagram', () => ({
@@ -60,6 +61,7 @@ const renderPage = () =>
 describe('ConnectPage — second Instagram subscription gate', () => {
   beforeEach(() => {
     push.mockReset();
+    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
     useWorkspacesMock.mockReturnValue({ workspaces: [] });
     useSubscriptionStoreMock.mockReturnValue({ subscriptions: [] });
   });
@@ -149,6 +151,7 @@ describe('ConnectPage — second Instagram subscription gate', () => {
 describe('ConnectPage — unbound plan opens the dialog', () => {
   beforeEach(() => {
     push.mockReset();
+    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
     useWorkspacesMock.mockReturnValue({ workspaces: [] });
     useSubscriptionStoreMock.mockReturnValue({ subscriptions: [] });
   });
@@ -191,5 +194,52 @@ describe('ConnectPage — unbound plan opens the dialog', () => {
     renderPage();
 
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
+  });
+});
+
+describe('ConnectPage — arriving with the unbound plan already accepted', () => {
+  beforeEach(() => {
+    push.mockReset();
+    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams('continueWithPlan=1'));
+    useWorkspacesMock.mockReturnValue({ workspaces: [] });
+    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [] });
+  });
+
+  const withSlot = () => {
+    useUserMock.mockReturnValue({
+      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
+    });
+  };
+
+  it('shows the connect link instead of reopening the dialog the user just answered', () => {
+    withSlot();
+    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub()] });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
+    // Without the flag this same state renders the CTA — that is the loop it prevents.
+    expect(screen.queryByText(messages.Connect.setup_second_instagram_cta)).not.toBeInTheDocument();
+  });
+
+  it('still gates a workspace with no coverage at all — the flag only answers the unbound question', () => {
+    useUserMock.mockReturnValue({
+      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: false }],
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Connect.setup_second_instagram_cta)).toBeInTheDocument();
+    expect(screen.queryByText(messages.Connect.connect_account)).not.toBeInTheDocument();
   });
 });
