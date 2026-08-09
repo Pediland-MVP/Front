@@ -85,11 +85,7 @@
     "title1": "To use Befroosh services,",
     "title2": "please connect your Instagram account first.",
     "back_to_home": "Back to Home",
-    "instagram_limit": "You have reached the maximum limit of 5 Instagram accounts",
-    "unbound_choice_title": "You have an unassigned subscription",
-    "unbound_choice_description": "If the new account's follower count fits this plan, it will be applied right away. If you're not sure, buy the plan that matches that account.",
-    "continue_with_unbound_cta": "Continue with this plan",
-    "buy_another_plan_cta": "Buy a different plan"
+    "instagram_limit": "You have reached the maximum limit of 5 Instagram accounts"
   },
   "Helpme": {
     "close": "Close",
@@ -2103,5 +2099,11 @@
       "remove": "Remove Member",
       "remove_desc": "Remove members from the workspace"
     }
+  },
+  "SetupInstagramDialog": {
+    "unbound_warning_title": "You have an unassigned subscription",
+    "unbound_warning_description": "This subscription only activates on an account whose follower count falls inside its range. If the new account is outside that range the connection will fail, and you'll need to buy a plan that matches it.",
+    "continue_with_unbound": "Continue with this plan",
+    "buy_another_plan": "Buy a different plan"
   }
 }

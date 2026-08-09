@@ -1,9 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
@@ -11,6 +13,8 @@ import { PlanTierBadge } from '@/components/Settings/PlanTierBadge';
 import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { setPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
+import { getUnboundActiveSubscriptions } from '@/utils/subscription';
+import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 import { formatNumber } from '@/utils/formatNumber';
 import { cn } from '@/lib/utils';
 import { useInstagramFollowersLookup } from '../../app/(Connect)/connect/hooks/useInstagramFollowersLookup';
@@ -29,13 +33,29 @@ interface SetupInstagramDialogProps {
 export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialogProps) {
   const t = useTranslations('SetupInstagramDialog');
   const tSub = useTranslations('Subscription');
-  const { setActive } = useSubscriptionStore();
+  const { setActive, subscriptions } = useSubscriptionStore();
 
   const [username, setUsername] = useState('');
   const [checkedUsername, setCheckedUsername] = useState<string | null>(null);
   const [followersCount, setFollowersCount] = useState<number | undefined>(undefined);
   const [lookupFailed, setLookupFailed] = useState(false);
   const [buyingDurationId, setBuyingDurationId] = useState<number | null>(null);
+  // Set when the user answers the unbound-plan step with "buy a different plan", which drops
+  // them into the normal username → follower-lookup → plan flow below.
+  const [dismissedUnboundStep, setDismissedUnboundStep] = useState(false);
+
+  // A plan bought but never attached to a page. `hasAvailableSubscriptionSlot` — the flag that
+  // decides whether this dialog opens at all — is tier-blind: it cannot know whether that plan's
+  // follower range fits the page about to be added, because the page isn't connected yet. The
+  // real check runs server-side in bindOnConnect *after* the Instagram OAuth round-trip, and a
+  // mismatch there throws SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT and rolls everything
+  // back — leaving the user with a toast telling them to buy a fitting plan and no way to do it.
+  // So when such a plan exists, show it first and let the user pick which way to go.
+  //
+  // getUnboundActiveSubscriptions excludes credit by design, which is right: credit coverage is
+  // workspace-wide and follower-count-blind, so it can never mismatch and needs no decision.
+  const unboundSubscriptions = getUnboundActiveSubscriptions(subscriptions);
+  const showUnboundStep = unboundSubscriptions.length > 0 && !dismissedUnboundStep;
 
   const { lookup, isLookupLoading } = useInstagramFollowersLookup();
   const { plan: matchedPlan, isLoading: isMatchedPlanLoading } =
@@ -65,6 +85,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     setFollowersCount(undefined);
     setLookupFailed(false);
     setBuyingDurationId(null);
+    setDismissedUnboundStep(false);
   };
 
   const onCheckUsername = async () => {
@@ -116,7 +137,47 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
         </div>
 
         <div className="p-6">
-          {!checkedUsername ? (
+          {showUnboundStep ? (
+            <div className="space-y-4">
+              <div className="flex items-start gap-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-800">
+                <WarningCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0" />
+                <div className="space-y-1">
+                  <p className="font-bold">{t('unbound_warning_title')}</p>
+                  <p className="leading-relaxed">{t('unbound_warning_description')}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {unboundSubscriptions.map((sub) => (
+                  <div
+                    key={sub.id}
+                    className="rounded-xl border border-dashed border-blue-200/80 bg-blue-50/50 px-4 py-3"
+                  >
+                    <div className="text-sm font-medium text-slate-700">
+                      {sub.planDuration.name}
+                    </div>
+                    <PlanTierBadge plan={sub.planDuration.plan} className="mt-1.5" />
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <Button
+                  className="w-full rounded-xl bg-violet-600 py-5 shadow-lg hover:bg-violet-700 active:scale-95"
+                  asChild
+                >
+                  <Link href={IG_OAUTH_URL}>{t('continue_with_unbound')}</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl py-5"
+                  onClick={() => setDismissedUnboundStep(true)}
+                >
+                  {t('buy_another_plan')}
+                </Button>
+              </div>
+            </div>
+          ) : !checkedUsername ? (
             <div className="space-y-4">
               <Input
                 placeholder={t('username_placeholder')}
