@@ -150,6 +150,11 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                   <p className="leading-relaxed">
                     {t('unbound_warning_description', { count: unboundSubscriptions.length })}
                   </p>
+                  {/* Softens the caution above: the user does not pick which plan binds to
+                      the new page — the server matches it on follower count at connect. */}
+                  <p className="border-t border-amber-200/70 pt-1.5 leading-relaxed">
+                    {t('unbound_auto_match_note')}
+                  </p>
                 </div>
               </div>
 

@@ -157,6 +157,12 @@ passed vacuously. They now match on wording common to every plural branch.
 Verified: **35 passed** (13 dialog + 10 connect page + 12 settings), 2 new cases
 pinning the singular and the counted wording.
 
+A third line was added to the same amber box (`unbound_auto_match_note`,
+`fa` + `en`): «سیستم به صورت خودکار اشتراک متناسب با صفحه شما را فعال می‌کند.»
+It softens the caution above — the user does not choose which plan binds to the
+new page, the server matches it on follower count during connect. Separated
+from the two lines above by a hairline top border. Not plural-dependent.
+
 ## Known gaps (not fixed here)
 
 - `SetupInstagramDialog` still collapses every lookup failure into one manual

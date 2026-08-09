@@ -2103,6 +2103,7 @@
   "SetupInstagramDialog": {
     "unbound_warning_title": "{count, plural, one {You have an unassigned subscription} other {You have # unassigned subscriptions}}",
     "unbound_warning_description": "{count, plural, one {This subscription only activates on an account whose follower count falls inside its range. If the new account is outside that range the connection will fail, and you'll need to buy a plan that matches it.} other {Each of these subscriptions only activates on an account whose follower count falls inside that subscription's range. If the new account is outside all of them the connection will fail, and you'll need to buy a plan that matches it.}}",
+    "unbound_auto_match_note": "The system automatically activates the subscription that matches your page.",
     "continue_with_unbound": "Continue with this plan",
     "buy_another_plan": "Buy a different plan"
   }

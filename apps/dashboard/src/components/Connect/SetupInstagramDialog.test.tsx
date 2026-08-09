@@ -205,6 +205,10 @@ describe('SetupInstagramDialog — unbound plan step', () => {
 
     expect(warningTitle()).toBeInTheDocument();
     expect(screen.getByText(/فقط روی پیجی فعال می‌شود/)).toBeInTheDocument();
+    // Reassures the user that they do not have to pick which plan binds to the new page.
+    expect(
+      screen.getByText(messages.SetupInstagramDialog.unbound_auto_match_note),
+    ).toBeInTheDocument();
     // The username flow must not be reachable until the user answers this step.
     expect(
       screen.queryByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
