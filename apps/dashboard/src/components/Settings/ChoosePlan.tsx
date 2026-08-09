@@ -288,7 +288,9 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
       {!creditSubscription &&
         pageSubscriptions.length === 0 &&
         unboundActiveSubscriptions.length === 0 && (
-          <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
+          <div className="flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 py-14 text-center">
+            <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
+          </div>
         )}
 
       <DiscountAlert />
@@ -307,10 +309,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
           }}
         >
           <DialogTrigger asChild>
-            <Button
-              size="lg"
-              className="rounded-xl bg-violet-600 shadow-lg transition-all hover:bg-violet-700 active:scale-95"
-            >
+            <Button size="lg">
               <ShoppingCartIcon className="h-5 w-5" />
               {t('buy_subscription')}
             </Button>
@@ -666,12 +665,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                                       isLoading={isBuying}
                                       type="button"
                                       variant={isRecommended ? 'default' : 'outline'}
-                                      className={cn(
-                                        'w-full gap-1.5 rounded-xl py-5 text-xs font-bold shadow-xs transition-all duration-300 hover:shadow-md active:scale-95',
-                                        isRecommended
-                                          ? 'to-indigo-650 hover:from-violet-750 border-0 bg-gradient-to-r from-violet-600 text-white hover:to-indigo-700'
-                                          : 'border-slate-200 text-slate-700 hover:bg-slate-100',
-                                      )}
+                                      className="w-full gap-1.5"
                                       onClick={() => selectPlanHandler(duration.id)}
                                     >
                                       <ShoppingBagIcon className="h-4 w-4" />
