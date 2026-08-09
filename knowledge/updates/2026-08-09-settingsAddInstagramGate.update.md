@@ -132,6 +132,31 @@ cases: the continue button's href, that it closes on the way out, and that
 `/connect` honours the flag for the unbound question but still gates a
 workspace with no coverage at all.
 
+## Follow-up (same day) — the unbound warning counts the plans
+
+`unbound_warning_title` was hardcoded to one plan ("شما **یک** اشتراک
+تخصیص‌داده‌نشده دارید"), but the dialog already lists `unboundSubscriptions` as
+an array and a workspace can hold several. `unbound_warning_description` had
+the same singular assumption ("**این اشتراک**" — *this* subscription), so both
+lines became ICU plurals on `count`:
+
+```
+"{count, plural, one {شما یک اشتراک تخصیص‌داده‌نشده دارید} other {شما # اشتراک تخصیص‌داده‌نشده دارید}}"
+```
+
+`#` formats per locale, so `fa` renders Persian digits (۳). The many-plans
+description also drops "این اشتراک" for wording that says each plan carries its
+own follower range, which is the actual rule. Both `fa.json` and `en.json`
+updated (the keys already existed in both).
+
+Note for future edits: the tests could no longer compare against
+`messages.SetupInstagramDialog.unbound_warning_title` — a raw ICU string never
+matches rendered text, and the two *negative* assertions using it would have
+passed vacuously. They now match on wording common to every plural branch.
+
+Verified: **35 passed** (13 dialog + 10 connect page + 12 settings), 2 new cases
+pinning the singular and the counted wording.
+
 ## Known gaps (not fixed here)
 
 - `SetupInstagramDialog` still collapses every lookup failure into one manual

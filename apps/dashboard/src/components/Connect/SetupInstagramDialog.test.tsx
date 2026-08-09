@@ -192,21 +192,45 @@ describe('SetupInstagramDialog — unbound plan step', () => {
   const withUnbound = () =>
     subscriptionStoreMock.mockReturnValue({ setActive: vi.fn(), subscriptions: [sub()] });
 
+  /**
+   * Both warning lines are ICU plurals now, so the raw message string no longer matches
+   * what renders. Match on the wording common to every branch instead.
+   */
+  const warningTitle = () => screen.queryByText(/اشتراک تخصیص‌داده‌نشده دارید/);
+
   it('warns about the unassigned plan before asking for a username', () => {
     withUnbound();
 
     renderDialog();
 
-    expect(
-      screen.getByText(messages.SetupInstagramDialog.unbound_warning_title),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(messages.SetupInstagramDialog.unbound_warning_description),
-    ).toBeInTheDocument();
+    expect(warningTitle()).toBeInTheDocument();
+    expect(screen.getByText(/فقط روی پیجی فعال می‌شود/)).toBeInTheDocument();
     // The username flow must not be reachable until the user answers this step.
     expect(
       screen.queryByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
     ).not.toBeInTheDocument();
+  });
+
+  it('says "one" for a single unassigned plan', () => {
+    withUnbound();
+
+    renderDialog();
+
+    expect(screen.getByText('شما یک اشتراک تخصیص‌داده‌نشده دارید')).toBeInTheDocument();
+  });
+
+  it('counts them, in Persian digits, when more than one is unassigned', () => {
+    subscriptionStoreMock.mockReturnValue({
+      setActive: vi.fn(),
+      subscriptions: [sub(), sub({ id: 'sub2' }), sub({ id: 'sub3' })],
+    });
+
+    renderDialog();
+
+    expect(screen.getByText('شما ۳ اشتراک تخصیص‌داده‌نشده دارید')).toBeInTheDocument();
+    // The description drops "این اشتراک" (this subscription) for the many-plans wording,
+    // since each one carries its own follower range.
+    expect(screen.getByText(/هرکدام از این اشتراک‌ها/)).toBeInTheDocument();
   });
 
   it('names the unassigned plan and its follower tier', () => {
@@ -259,9 +283,7 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     expect(
       screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText(messages.SetupInstagramDialog.unbound_warning_title),
-    ).not.toBeInTheDocument();
+    expect(warningTitle()).not.toBeInTheDocument();
   });
 
   it('skips the step entirely for credit coverage, which can never mismatch', () => {
@@ -275,9 +297,7 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     expect(
       screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText(messages.SetupInstagramDialog.unbound_warning_title),
-    ).not.toBeInTheDocument();
+    expect(warningTitle()).not.toBeInTheDocument();
   });
 
   it('skips the step for a plan already bound to a page', () => {

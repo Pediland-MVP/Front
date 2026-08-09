@@ -142,8 +142,14 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
               <div className="flex items-start gap-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-800">
                 <WarningCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0" />
                 <div className="space-y-1">
-                  <p className="font-bold">{t('unbound_warning_title')}</p>
-                  <p className="leading-relaxed">{t('unbound_warning_description')}</p>
+                  {/* A workspace can hold more than one unassigned plan, and each has its
+                      own follower range — so both lines are ICU plurals on the count. */}
+                  <p className="font-bold">
+                    {t('unbound_warning_title', { count: unboundSubscriptions.length })}
+                  </p>
+                  <p className="leading-relaxed">
+                    {t('unbound_warning_description', { count: unboundSubscriptions.length })}
+                  </p>
                 </div>
               </div>
 
