@@ -13,26 +13,33 @@ import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog'
 import { Button } from '@/components/ui/button';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { useAddInstagramGate } from '@/hooks/useAddInstagramGate';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 
 export default function Page() {
   const t = useTranslations('Settings.Accounts');
-  const { can, workspaceId, isLoading: permissionsLoading } = usePermissions();
-  const { workspaces } = useWorkspaces();
-  const [accountCount, setAccountCount] = useState<number>(0);
+  const { can, isLoading: permissionsLoading } = usePermissions();
+  // `null` until the accounts list resolves — see the note on `isAddBlocked` below.
+  const [accountCount, setAccountCount] = useState<number | null>(null);
   const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
 
   const canView = can('instagram:view');
   const canManage = can('instagram:manage');
-  const atLimit = accountCount >= MAX_INSTAGRAM_ACCOUNTS;
-  const hasInstagram = accountCount > 0;
-  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
-  // Sourced from GET /workspaces (real membership), not GET /users/me — see
-  // apps/dashboard/src/app/(Connect)/connect/page.tsx for why.
-  const hasAvailableSubscriptionSlot = currentWorkspace?.hasAvailableSubscriptionSlot ?? false;
-  const needsSubscriptionSetup = hasInstagram && !hasAvailableSubscriptionSlot;
+  const knownAccountCount = accountCount ?? 0;
+  const atLimit = knownAccountCount >= MAX_INSTAGRAM_ACCOUNTS;
+  const hasInstagram = knownAccountCount > 0;
+
+  // Same rule as /connect, from the same hook, so the two entry points into the
+  // "add another account" journey cannot drift: the first account goes straight to
+  // /connect, while a second or later one stops at SetupInstagramDialog whenever the
+  // workspace has no unused coverage *or* holds a paid plan not yet bound to a page.
+  const { requiresSetupDialog, isLoading: isGateLoading } = useAddInstagramGate(hasInstagram);
+
+  // Hold the button back until both the account count and the gate inputs are known.
+  // Acting early would answer "first account, no plan to worry about" — the one answer
+  // that skips every check — and send the user into OAuth past the subscription step.
+  const isAddBlocked = atLimit || !canManage || accountCount === null || isGateLoading;
 
   return (
     <div className="_instagram-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
@@ -53,20 +60,24 @@ export default function Page() {
           {canView && (
             <div className="flex items-center gap-2.5">
               <span className="text-primary inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold">
-                {t('count_badge', { count: accountCount, max: MAX_INSTAGRAM_ACCOUNTS })}
+                {t('count_badge', { count: knownAccountCount, max: MAX_INSTAGRAM_ACCOUNTS })}
               </span>
               <Button
                 size="sm"
-                disabled={atLimit || !canManage}
-                asChild={!atLimit && canManage && !needsSubscriptionSetup}
-                onClick={needsSubscriptionSetup ? () => setIsSetupDialogOpen(true) : undefined}
+                disabled={isAddBlocked}
+                asChild={!isAddBlocked && !requiresSetupDialog}
+                onClick={
+                  !isAddBlocked && requiresSetupDialog
+                    ? () => setIsSetupDialogOpen(true)
+                    : undefined
+                }
               >
-                {atLimit || !canManage ? (
+                {isAddBlocked ? (
                   <span className="flex items-center gap-1.5">
                     <PlusIcon className="size-4" />
                     {t('addAccount')}
                   </span>
-                ) : needsSubscriptionSetup ? (
+                ) : requiresSetupDialog ? (
                   <>
                     <PlusIcon className="size-4" />
                     {t('addAccount')}
