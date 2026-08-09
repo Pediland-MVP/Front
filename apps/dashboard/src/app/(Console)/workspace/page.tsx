@@ -8,7 +8,6 @@ import { ArrowsLeftRight } from '@phosphor-icons/react/dist/csr/ArrowsLeftRight'
 import { Trash } from '@phosphor-icons/react/dist/csr/Trash';
 import { Pencil, Plus } from 'lucide-react';
 import { WorkspaceForm } from '@/components/Settings/WorkspaceForm';
-import { TeamManager } from '@/components/Settings/TeamManager';
 import { WorkspaceDeleteDialog } from '@/components/Settings/WorkspaceDeleteDialog';
 import { TransferOwnershipDialog } from '@/components/Settings/TransferOwnershipDialog';
 import { IncomingTransferBanner } from '@/components/Settings/IncomingTransferBanner';
@@ -23,7 +22,6 @@ import { toast } from 'sonner';
 import { mutate as globalMutate } from 'swr';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -41,7 +39,6 @@ import {
 
 export default function WorkspacePage() {
   const tWorkspace = useTranslations('Settings.Workspace');
-  const tTeam = useTranslations('Settings.Team');
   const t_ec = useTranslations('ERROR_CODES');
   const { pendingCount, isLoading: isInvitationsLoading } = useInvitations();
   const { workspaceId, userId, isLoading: isLoadingPermissions, can } = usePermissions();
@@ -229,7 +226,7 @@ export default function WorkspacePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-6">
           {activeWorkspace && (
             <div className="from-primary/5 group relative flex flex-col items-center gap-3 rounded-2xl border bg-gradient-to-b to-white px-4 py-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               {/* Edit Workspace Dialog in Top-Left Corner */}
@@ -298,23 +295,6 @@ export default function WorkspacePage() {
                 <PendingTransferNotice workspaceId={activeWorkspace.id} onChange={() => mutate()} />
               )}
             </div>
-          )}
-
-          {/* Team Manager Section */}
-          {can('team:view') && (
-            <Card className="overflow-hidden border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] md:col-span-2">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold text-gray-900">
-                  {tTeam('title')}
-                </CardTitle>
-                <CardDescription className="text-muted-foreground text-xs">
-                  {tTeam('description')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="border-t border-gray-50 pt-4">
-                <TeamManager />
-              </CardContent>
-            </Card>
           )}
         </div>
       </div>

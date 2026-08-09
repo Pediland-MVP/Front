@@ -3,8 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
 import { toast } from 'sonner';
 import api, { fetcher } from '@/hooks/swr/api-client';
+import { useDebounce } from '@/hooks/useDebounce';
+import { PageMeta } from '@/schemas/pageMeta';
+import { ItemsPagination } from '@/components/Console/ItemsPagination';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import Link from 'next/link';
@@ -52,7 +56,7 @@ type WorkspaceMember = {
   };
 };
 
-export function TeamManager() {
+export function TeamManager({ search }: { search: string }) {
   const t = useTranslations('Settings.Team');
   const tPerms = useTranslations('Permissions');
   const t_ec = useTranslations('ERROR_CODES');
@@ -62,18 +66,43 @@ export function TeamManager() {
   const canInvite = can('team:invite');
   const canRemove = can('team:remove');
 
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(15);
+  const debouncedSearchTerm = useDebounce(search, 500);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchTerm]);
+
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
   const ownerId = activeWorkspace?.ownerId;
 
+  const searchParam = debouncedSearchTerm ? `&search=${debouncedSearchTerm}` : '';
+  const membersUrl =
+    workspaceId && can('team:view')
+      ? `/workspaces/${workspaceId}/members?page=${page}&limit=${limit}${searchParam}`
+      : null;
   const {
     data: membersRes,
     isLoading: isLoadingMembers,
     mutate: mutateMembers,
-  } = useSWR<any>(
-    workspaceId && can('team:view') ? `/workspaces/${workspaceId}/members` : null,
-    fetcher,
-  );
+  } = useSWRImmutable<any>(membersUrl, fetcher, { revalidateOnMount: true });
   const members: WorkspaceMember[] = membersRes?.items || membersRes?.data || membersRes || [];
+
+  const defaultMeta: PageMeta = {
+    currentPage: page,
+    itemsPerPage: limit,
+    itemCount: 0,
+    totalItems: 0,
+    totalPages: 1,
+  };
+  const meta: PageMeta = membersRes?.meta ?? defaultMeta;
+
+  const onPageChange = useCallback((newPage: number) => setPage(Math.max(1, newPage)), []);
+  const onLimitChange = useCallback((newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1);
+  }, []);
 
   const { data: availablePermissionsRes } = useSWR<any>(
     workspaceId && can('team:view') && canInvite
@@ -504,6 +533,16 @@ export function TeamManager() {
           })
         )}
       </div>
+      <ItemsPagination
+        isLoading={isLoadingMembers}
+        onPageChange={onPageChange}
+        onLimitChange={onLimitChange}
+        totalCount={meta.totalItems}
+        serverPage={meta.currentPage}
+        serverPerPage={meta.itemsPerPage}
+        serverItemCount={meta.itemCount}
+        serverTotalPages={meta.totalPages}
+      />
 
       {/* Pending Invitations Section */}
       {pendingInvitations.length > 0 && (
