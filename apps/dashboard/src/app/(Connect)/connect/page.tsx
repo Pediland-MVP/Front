@@ -19,6 +19,9 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
 import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
+import { PlanTierBadge } from '@/components/Settings/PlanTierBadge';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { getUnboundActiveSubscriptions } from '@/utils/subscription';
 import { readAndClearPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
 import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
@@ -37,6 +40,10 @@ import { cn } from '@/lib/utils';
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
+
+// Built once so the two entry points that start the OAuth handshake (the plain connect
+// button and the "continue with the plan I already own" button) can never drift apart.
+const IG_OAUTH_URL = `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`;
 
 export default function ConnectPage() {
   const t = useTranslations('Connect');
@@ -73,6 +80,23 @@ export default function ConnectPage() {
   // fixed). A workspace not yet loaded/matched is treated as "no slot" (safer default).
   const hasAvailableSubscriptionSlot = currentWorkspace?.hasAvailableSubscriptionSlot ?? false;
   const needsSubscriptionSetup = hasInstagram && !hasAvailableSubscriptionSlot;
+
+  // `hasAvailableSubscriptionSlot` is tier-blind: it only asks whether the workspace holds
+  // *some* unused coverage, never whether that coverage fits the page about to be added —
+  // it cannot, because the page isn't connected yet. The follower-range check happens later,
+  // server-side in bindOnConnect, and a mismatch there throws
+  // SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT *after* the Instagram OAuth round-trip.
+  // Since nothing on this page changed, the user would land back on the same lone connect
+  // button with no way to buy the plan the error just told them to buy. So whenever the
+  // coverage is an unbound paid plan, show it and offer both exits instead of assuming.
+  //
+  // getUnboundActiveSubscriptions excludes credit subs by design, which is exactly right:
+  // credit coverage is workspace-wide and follower-count-blind, so it can never mismatch
+  // and must keep going straight to OAuth.
+  const { subscriptions } = useSubscriptionStore();
+  const unboundSubscriptions = getUnboundActiveSubscriptions(subscriptions);
+  const showUnboundPlanChoice =
+    hasInstagram && hasAvailableSubscriptionSlot && unboundSubscriptions.length > 0;
 
   useEffect(() => {
     const submitCode = async (code: string) => {
@@ -182,12 +206,55 @@ export default function ConnectPage() {
                 <Button className="w-full" onClick={() => setIsSetupDialogOpen(true)}>
                   {t('setup_second_instagram_cta')}
                 </Button>
+              ) : showUnboundPlanChoice ? (
+                <div className="w-full space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-secondary text-center text-sm font-medium">
+                      {t('unbound_choice_title')}
+                    </p>
+                    <p className="text-muted-foreground text-center text-xs leading-relaxed">
+                      {t('unbound_choice_description')}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    {unboundSubscriptions.map((sub) => (
+                      <div
+                        key={sub.id}
+                        className="rounded-xl border border-dashed border-blue-200/80 bg-blue-50/50 px-4 py-3"
+                      >
+                        <div className="text-secondary/80 text-sm font-medium">
+                          {sub.planDuration.name}
+                        </div>
+                        <PlanTierBadge plan={sub.planDuration.plan} className="mt-1.5" />
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button className="w-full" disabled={isCallbackIGLoading} asChild>
+                    <Link href={IG_OAUTH_URL}>
+                      {isCallbackIGLoading ? (
+                        <>
+                          <Spinner className="size-5" /> {t('connecting_account')}
+                        </>
+                      ) : (
+                        t('continue_with_unbound_cta')
+                      )}
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setIsSetupDialogOpen(true)}
+                  >
+                    {t('buy_another_plan_cta')}
+                  </Button>
+                </div>
               ) : (
                 <>
                   <Button className="w-full" disabled={isCallbackIGLoading} asChild>
-                    <Link
-                      href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
-                    >
+                    <Link href={IG_OAUTH_URL}>
                       {isCallbackIGLoading ? (
                         <>
                           <Spinner className="size-5" /> {t('connecting_account')}
