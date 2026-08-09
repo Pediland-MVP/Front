@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
 
@@ -146,57 +146,14 @@ describe('ConnectPage — second Instagram subscription gate', () => {
   });
 });
 
-describe('ConnectPage — unbound plan choice', () => {
-  const withUnboundPlan = () => {
-    useUserMock.mockReturnValue({
-      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
-      hasInstagram: true,
-      canConnectInstagram: true,
-    });
-    useWorkspacesMock.mockReturnValue({
-      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
-    });
-    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub()] });
-  };
-
+describe('ConnectPage — unbound plan opens the dialog', () => {
   beforeEach(() => {
     push.mockReset();
     useWorkspacesMock.mockReturnValue({ workspaces: [] });
     useSubscriptionStoreMock.mockReturnValue({ subscriptions: [] });
   });
 
-  it('offers continue-or-buy instead of the lone connect link when an unbound paid plan exists', () => {
-    withUnboundPlan();
-
-    renderPage();
-
-    expect(screen.getByText(messages.Connect.continue_with_unbound_cta)).toBeInTheDocument();
-    expect(screen.getByText(messages.Connect.buy_another_plan_cta)).toBeInTheDocument();
-    // The lone connect button is what trapped the user in the retry loop.
-    expect(screen.queryByText(messages.Connect.connect_account)).not.toBeInTheDocument();
-  });
-
-  it('names the unbound plan and its follower tier so the user can judge the fit', () => {
-    withUnboundPlan();
-
-    renderPage();
-
-    expect(screen.getByText('شش ماهه')).toBeInTheDocument();
-    expect(screen.getByText('۱K تا ۲۵K فالوور')).toBeInTheDocument();
-  });
-
-  it('opens the setup dialog from "buy a different plan" — the exit that did not exist', () => {
-    withUnboundPlan();
-
-    renderPage();
-    expect(screen.queryByText('setup-dialog-open')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText(messages.Connect.buy_another_plan_cta));
-
-    expect(screen.getByText('setup-dialog-open')).toBeInTheDocument();
-  });
-
-  it('keeps the plain connect link when the only coverage is credit, which can never mismatch', () => {
+  const withSlot = () => {
     useUserMock.mockReturnValue({
       user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
       hasInstagram: true,
@@ -205,28 +162,34 @@ describe('ConnectPage — unbound plan choice', () => {
     useWorkspacesMock.mockReturnValue({
       workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
     });
+  };
+
+  it('routes an unbound paid plan into the setup dialog instead of straight to OAuth', () => {
+    withSlot();
+    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub()] });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Connect.setup_second_instagram_cta)).toBeInTheDocument();
+    // The lone connect button is what trapped the user in the retry loop.
+    expect(screen.queryByText(messages.Connect.connect_account)).not.toBeInTheDocument();
+  });
+
+  it('keeps the plain connect link when the only coverage is credit, which can never mismatch', () => {
+    withSlot();
     useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub({ type: 'credit' })] });
 
     renderPage();
 
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
-    expect(screen.queryByText(messages.Connect.continue_with_unbound_cta)).not.toBeInTheDocument();
   });
 
   it('ignores a plan already bound to a page', () => {
-    useUserMock.mockReturnValue({
-      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
-      hasInstagram: true,
-      canConnectInstagram: true,
-    });
-    useWorkspacesMock.mockReturnValue({
-      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
-    });
+    withSlot();
     useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub({ instagramId: 'ig1' })] });
 
     renderPage();
 
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
-    expect(screen.queryByText(messages.Connect.continue_with_unbound_cta)).not.toBeInTheDocument();
   });
 });
