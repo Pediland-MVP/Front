@@ -2,6 +2,10 @@
 
 import useUser from '@/hooks/useUser';
 import { useInvitations } from '@/hooks/useInvitations';
+import { useIsWebView } from '@/hooks/useIsWebView';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
@@ -33,7 +37,12 @@ const NavUser = dynamic(() => import('./NavUser'), {
   ssr: false,
 });
 
-const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => ({
+const generateData = (
+  t: any,
+  isMobile: boolean,
+  pendingInvitations: number,
+  canShowBuySubscription: boolean,
+) => ({
   navMain: [
     {
       title: t('dashboard'),
@@ -114,7 +123,15 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
           badge: pendingInvitations || undefined,
         },
         { title: t('connectedPages'), url: '/settings/instagram', icon: InstagramLogoIcon },
-        { title: t('buySubscription'), url: '/settings/subscription', icon: CrownSimpleIcon },
+        ...(canShowBuySubscription
+          ? [
+              {
+                title: t('buySubscription'),
+                url: '/settings/subscription',
+                icon: CrownSimpleIcon,
+              },
+            ]
+          : []),
         { title: t('teamMembers'), url: '/settings/team', icon: UsersThreeIcon },
         { title: t('bankInfo'), url: '/settings/card', icon: CreditCardIcon },
       ],
@@ -149,7 +166,12 @@ export const ConsoleSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar
   const locale = useLocale();
   const { isMobile, toggleSidebar } = useSidebar();
   const { pendingCount } = useInvitations();
-  const data = generateData(t, isMobile, pendingCount);
+  const { can } = usePermissions();
+  const isWebView = useIsWebView();
+  const { subscriptions } = useSubscriptionStore();
+  const canShowBuySubscription =
+    !isWebView && !hasOnlyFreeCredit(subscriptions) && can('billing:view');
+  const data = generateData(t, isMobile, pendingCount, canShowBuySubscription);
 
   const { user: userData, error: userError, isLoading: userIsLoading } = useUser();
 

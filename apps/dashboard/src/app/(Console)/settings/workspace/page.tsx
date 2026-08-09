@@ -42,7 +42,7 @@ export default function Page() {
   const t = useTranslations('Settings.Workspace');
   const t_ec = useTranslations('ERROR_CODES');
   const { pendingCount, isLoading: isInvitationsLoading } = useInvitations();
-  const { workspaceId, userId, isLoading: isLoadingPermissions } = usePermissions();
+  const { workspaceId, userId, can, isLoading: isLoadingPermissions } = usePermissions();
   const { workspaces, isLoading: workspacesIsLoading, changeWorkspace, mutate } = useWorkspaces();
   const { categories } = useWorkspaceCategories();
 
@@ -57,6 +57,7 @@ export default function Page() {
   const activeWorkspace = workspaces.find((w: any) => w.id === workspaceId);
   const isOwner = !!activeWorkspace && activeWorkspace.ownerId === userId;
   const canDelete = isOwner && !activeWorkspace?.isPersonal;
+  const canManage = can('team:manage');
 
   const handleCreateWorkspace = async () => {
     if (!createWorkspaceName.trim() || !createWorkspaceCategoryId) return;
@@ -214,9 +215,11 @@ export default function Page() {
           </Dialog>
         </div>
 
-        <div className="rounded-xl border border-gray-100 p-4">
-          <WorkspaceForm />
-        </div>
+        {canManage && (
+          <div className="rounded-xl border border-gray-100 p-4">
+            <WorkspaceForm />
+          </div>
+        )}
 
         <div className="rounded-xl border border-gray-100 p-4">
           <WorkspaceCategoryForm />

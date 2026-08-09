@@ -112,6 +112,19 @@ describe('Settings › Workspace page', () => {
     expect(screen.getByText(messages.Settings.Workspace.view)).toBeInTheDocument();
   });
 
+  it('hides the rename form from a user without team:manage', () => {
+    usePermissionsMock.mockReturnValue({
+      workspaceId: 'ws1',
+      userId: 'u1',
+      can: (permission: string) => permission !== 'team:manage',
+      isLoading: false,
+    });
+    renderPage();
+
+    expect(screen.queryByText('workspace-form')).not.toBeInTheDocument();
+    expect(screen.getByText('workspace-category-form')).toBeInTheDocument();
+  });
+
   it('renders a spinner while workspaces are loading', () => {
     useWorkspacesMock.mockReturnValue({
       workspaces: [],
