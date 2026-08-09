@@ -22,6 +22,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, useSidebar } fro
 import { NavMain } from './NavMain';
 import { NavUserSkeleton } from './NavUser.skeleton';
 import { UserDetailsCard } from './UserDetailsCard';
+import { WorkspaceProfileChip } from './WorkspaceProfileChip';
 import { cn } from '@/lib/utils';
 
 const NavUser = dynamic(() => import('./NavUser'), {
@@ -115,7 +116,11 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       title: t('settings'),
       url: '/settings',
       icon: SlidersIcon,
-      isActive: true,
+      isActive: false,
+      items: [
+        { title: t('settingsHub'), url: '/settings' },
+        { title: t('teamMembers'), url: '/settings/team' },
+      ],
     },
     ...(isMobile
       ? [
@@ -153,11 +158,12 @@ export const ConsoleSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar
 
   return (
     <Sidebar variant="inset" collapsible="offcanvas" {...props}>
-      <SidebarHeader className="flex-row gap-2">
+      <SidebarHeader className="gap-2">
         <div className={cn('flex items-center gap-1.5', locale !== 'fa' && 'pl-2')}>
           {locale === 'fa' && <LogoSlogan />}
           <LogoText size="md" />
         </div>
+        <WorkspaceProfileChip />
       </SidebarHeader>
 
       <SidebarContent>

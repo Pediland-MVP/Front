@@ -4,55 +4,32 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useLogout } from '@/hooks/swr/api-client';
-import useUser from '@/hooks/useUser';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { useIsWebView } from '@/hooks/useIsWebView';
 import { cn } from '@/lib/utils';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Spinner } from '@/components/ui/spinner';
 import { Separator } from '@/components/ui/separator';
-import { LogOutIcon, CheckIcon, UserCircleIcon, PencilIcon, XIcon, PlusIcon } from 'lucide-react';
+import { CheckIcon, XIcon, PlusIcon } from 'lucide-react';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 
 interface WorkspaceDrawerContentProps {
   onClose: () => void;
+  isDialog?: boolean;
 }
 
-export const WorkspaceDrawerContent = ({ onClose }: WorkspaceDrawerContentProps) => {
+export const WorkspaceDrawerContent = ({ onClose, isDialog }: WorkspaceDrawerContentProps) => {
   const router = useRouter();
-  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
-  const logout = useLogout();
-  const { user: userData } = useUser();
   const { workspaces, isLoading: isWorkspacesLoading, changeWorkspace } = useWorkspaces();
   const { workspaceId } = usePermissions();
   const isWebView = useIsWebView();
 
   const t = useTranslations('Console.WorkspaceDrawer');
-  const tSidebar = useTranslations('Console.Sidebar');
 
   const totalConnectedPages = workspaces.reduce((sum, ws) => sum + (ws.instagrams?.length ?? 0), 0);
-
-  const logoutHandler = async () => {
-    setIsLogoutLoading(true);
-    try {
-      await logout();
-      const subStore = useSubscriptionStore.getState();
-      subStore.setSubscriptions([]);
-      subStore.setPlans([]);
-      subStore.setPlansData(undefined);
-      router.replace('/auth');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setIsLogoutLoading(false);
-    }
-  };
 
   const selectWorkspace = (wsId: string) => {
     onClose();
@@ -62,7 +39,9 @@ export const WorkspaceDrawerContent = ({ onClose }: WorkspaceDrawerContentProps)
   };
 
   return (
-    <div className="font-Yekan flex flex-col bg-white px-4 pb-6">
+    <div
+      className={cn('font-Yekan flex flex-col bg-white px-4 pb-6', isDialog && 'px-6 pt-6 pb-8')}
+    >
       <div className="mb-2 flex justify-end">
         <button
           onClick={onClose}
@@ -73,41 +52,17 @@ export const WorkspaceDrawerContent = ({ onClose }: WorkspaceDrawerContentProps)
         </button>
       </div>
 
-      {userData && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-gray-100 bg-linear-to-r from-gray-50 to-white p-3 text-right">
-          <button
-            onClick={() => {
-              onClose();
-              router.push('/settings');
-            }}
-            className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-gray-50 p-2 text-gray-500 hover:bg-gray-100"
-            aria-label={t('editProfile')}
-          >
-            <PencilIcon className="size-4" />
-          </button>
-          <div className="flex flex-1 flex-col text-right">
-            <span className="text-base leading-tight font-bold text-gray-800">
-              {userData.firstname} {userData.lastname}
-            </span>
-            <span className="text-muted-foreground mt-1 text-xs tracking-wider">
-              {userData.mobile || userData.email}
-            </span>
-          </div>
-          <Avatar className="border-primary/20 h-12 w-12 rounded-full border-2">
-            <AvatarImage src={undefined} alt={userData.firstname} />
-            <AvatarFallback className="bg-primary/5 text-primary flex items-center justify-center">
-              <UserCircleIcon size={32} className="stroke-[1.5]" />
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      )}
-
       <div className="flex flex-col gap-2">
         <h3 className="mb-1 pr-1 text-right text-xs font-semibold text-gray-500">
           {t('connectedPages', { count: totalConnectedPages })}
         </h3>
 
-        <div className="flex max-h-72 flex-col gap-3 overflow-y-auto pr-1">
+        <div
+          className={cn(
+            'flex flex-col gap-3 overflow-y-auto pr-1',
+            isDialog ? 'max-h-[32rem]' : 'max-h-72',
+          )}
+        >
           {isWorkspacesLoading ? (
             <div className="text-secondary flex items-center justify-center py-6 text-sm">
               <Spinner className="ml-2 h-4 w-4" />
@@ -218,19 +173,6 @@ export const WorkspaceDrawerContent = ({ onClose }: WorkspaceDrawerContentProps)
         >
           <PlusIcon className="size-4" />
           {t('addPage')}
-        </button>
-
-        <button
-          onClick={logoutHandler}
-          disabled={isLogoutLoading}
-          className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl p-3 text-sm text-red-600 transition-all hover:bg-red-50 active:bg-red-100"
-        >
-          {isLogoutLoading ? (
-            <Spinner className="size-5" />
-          ) : (
-            <LogOutIcon className="size-5 stroke-[1.8] text-red-500" />
-          )}
-          <span className="font-semibold">{tSidebar('logout')}</span>
         </button>
       </div>
     </div>

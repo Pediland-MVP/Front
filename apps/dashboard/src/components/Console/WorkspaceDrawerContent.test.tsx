@@ -28,27 +28,6 @@ vi.mock('@/hooks/usePermissions', () => ({
   usePermissions: () => ({ workspaceId: 'ws-1' }),
 }));
 
-vi.mock('@/hooks/useUser', () => ({
-  default: () => ({
-    user: { firstname: 'نوید', lastname: 'طهرانی', mobile: '09123456789', email: null },
-  }),
-}));
-
-const logout = vi.fn().mockResolvedValue(undefined);
-vi.mock('@/hooks/swr/api-client', () => ({
-  useLogout: () => logout,
-}));
-
-vi.mock('@/store/subscriptionStore', () => ({
-  useSubscriptionStore: Object.assign(vi.fn(), {
-    getState: () => ({
-      setSubscriptions: vi.fn(),
-      setPlans: vi.fn(),
-      setPlansData: vi.fn(),
-    }),
-  }),
-}));
-
 let isWebView = false;
 vi.mock('@/hooks/useIsWebView', () => ({
   useIsWebView: () => isWebView,
@@ -106,12 +85,6 @@ describe('WorkspaceDrawerContent', () => {
         ],
       },
     ];
-  });
-
-  it('renders the profile name and mobile', () => {
-    renderContent();
-    expect(screen.getByText('نوید طهرانی')).toBeInTheDocument();
-    expect(screen.getByText('09123456789')).toBeInTheDocument();
   });
 
   it('shows the total connected-pages count across all workspaces', () => {
@@ -320,16 +293,14 @@ describe('WorkspaceDrawerContent', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('navigates to /settings and closes when the pencil edit button is clicked', () => {
-    const { onClose } = renderContent();
-    fireEvent.click(screen.getByLabelText(messages.Console.WorkspaceDrawer.editProfile));
-    expect(push).toHaveBeenCalledWith('/settings');
-    expect(onClose).toHaveBeenCalledTimes(1);
-  });
-
   it('calls onClose when the close (X) button is clicked', () => {
     const { onClose } = renderContent();
     fireEvent.click(screen.getByLabelText(messages.Console.WorkspaceDrawer.close));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('never renders a logout button', () => {
+    renderContent();
+    expect(screen.queryByText(messages.Console.Sidebar.logout)).not.toBeInTheDocument();
   });
 });
