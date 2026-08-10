@@ -29,6 +29,27 @@ vi.mock('@/store/subscriptionStore', () => ({
   useSubscriptionStore: () => subscriptionStoreMock(),
 }));
 
+const usePermissionsMock = vi.fn();
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => usePermissionsMock(),
+}));
+
+const changeWorkspaceMock = vi.fn();
+const useWorkspacesMock = vi.fn();
+vi.mock('@/hooks/useWorkspaces', () => ({
+  useWorkspaces: () => useWorkspacesMock(),
+}));
+
+const useWorkspaceCategoriesMock = vi.fn();
+vi.mock('@/hooks/useWorkspaceCategories', () => ({
+  useWorkspaceCategories: () => useWorkspaceCategoriesMock(),
+}));
+
+const apiPostMock = vi.fn();
+vi.mock('@/hooks/swr/api-client', () => ({
+  default: { post: (...args: any[]) => apiPostMock(...args) },
+}));
+
 import { SetupInstagramDialog } from './SetupInstagramDialog';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
@@ -58,10 +79,37 @@ describe('SetupInstagramDialog', () => {
     payMock.mockReset();
     usePayPlanMock.mockReset().mockReturnValue({ pay: payMock, isPayLoading: false });
     subscriptionStoreMock.mockReset().mockReturnValue({ setActive: vi.fn(), subscriptions: [] });
+    usePermissionsMock.mockReset().mockReturnValue({ workspaceId: 'ws-current' });
+    changeWorkspaceMock.mockReset();
+    useWorkspacesMock.mockReset().mockReturnValue({
+      workspaces: [
+        { id: 'ws-current', name: 'کسب و کار فعلی' },
+        { id: 'ws-other', name: 'کسب و کار دیگر' },
+      ],
+      changeWorkspace: changeWorkspaceMock,
+    });
+    useWorkspaceCategoriesMock.mockReset().mockReturnValue({
+      categories: [{ id: 'cat1', nameEn: 'Retail', nameFa: 'خرده‌فروشی' }],
+    });
+    apiPostMock.mockReset();
   });
 
-  it('shows the matched plan after a successful follower-count check', async () => {
-    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+  const checkUsername = async (username: string) => {
+    fireEvent.change(
+      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
+      { target: { value: username } },
+    );
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith(username));
+  };
+
+  it('shows the matched plan and profile card after a successful follower-count check', async () => {
+    lookupMock.mockResolvedValue({
+      username: 'befroosh',
+      followersCount: 5000,
+      profilePicUrl: 'https://apify.example/pic.jpg',
+      fullName: 'Befroosh',
+    });
     plansByFollowersMock.mockReturnValue({
       plan: {
         id: 1,
@@ -72,16 +120,11 @@ describe('SetupInstagramDialog', () => {
     });
 
     renderDialog();
-    fireEvent.change(
-      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
-      {
-        target: { value: 'befroosh' },
-      },
-    );
-    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+    await checkUsername('befroosh');
 
-    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('befroosh'));
     expect(screen.getByText('۱K تا ۲۵K فالور')).toBeInTheDocument();
+    expect(screen.getByText('@befroosh')).toBeInTheDocument();
+    expect(screen.getByText('5,000')).toBeInTheDocument();
   });
 
   it('falls back to the manual plan list when the follower-count check fails', async () => {
@@ -98,54 +141,39 @@ describe('SetupInstagramDialog', () => {
     });
 
     renderDialog();
-    fireEvent.change(
-      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
-      {
-        target: { value: 'someone' },
-      },
-    );
-    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+    await checkUsername('someone');
 
-    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('someone'));
     expect(
       screen.getByText(messages.SetupInstagramDialog.apify_error_description),
     ).toBeInTheDocument();
     expect(screen.getByText('۲۵K تا ۱۰۰K فالور')).toBeInTheDocument();
   });
 
-  it('disables every matched-plan duration button while a purchase is in flight', async () => {
+  it('selecting a plan duration enables the next-step button and advances to the workspace step', async () => {
     lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
     plansByFollowersMock.mockReturnValue({
       plan: {
         id: 1,
         name: '۱K تا ۲۵K فالور',
-        durations: [
-          { id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 },
-          { id: 11, name: 'سه ماهه', durationDays: 90, price: 250000 },
-        ],
+        durations: [{ id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 }],
       },
       isLoading: false,
     });
-    usePayPlanMock.mockReturnValue({ pay: payMock, isPayLoading: true });
 
     renderDialog();
-    fireEvent.change(
-      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
-      {
-        target: { value: 'befroosh' },
-      },
-    );
-    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+    await checkUsername('befroosh');
 
-    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('befroosh'));
-    expect(screen.getByText('یک ماهه')).toBeInTheDocument();
-    expect(screen.getByText('سه ماهه')).toBeInTheDocument();
-    const buyButtons = screen.getAllByText(messages.Subscription.buy);
-    expect(buyButtons).toHaveLength(2);
-    buyButtons.forEach((label) => expect(label.closest('button')).toBeDisabled());
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).toBeDisabled();
+    fireEvent.click(screen.getByText('یک ماهه'));
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).not.toBeDisabled();
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.next_step));
+
+    expect(screen.getByText(messages.SetupInstagramDialog.option_new_title)).toBeInTheDocument();
+    expect(payMock).not.toHaveBeenCalled();
   });
 
-  it('disables every manual-fallback plan tile while a purchase is in flight', async () => {
+  it('selecting a manual-fallback plan also enables the next-step button', async () => {
     lookupMock.mockRejectedValue(new Error('APIFY_ERROR'));
     allVisiblePlansMock.mockReturnValue({
       plans: [
@@ -154,28 +182,70 @@ describe('SetupInstagramDialog', () => {
           name: '۲۵K تا ۱۰۰K فالور',
           durations: [{ id: 20, name: 'یک ماهه', durationDays: 30, price: 200000 }],
         },
-        {
-          id: 3,
-          name: '۱۰۰K تا ۵۰۰K فالور',
-          durations: [{ id: 30, name: 'یک ماهه', durationDays: 30, price: 300000 }],
-        },
       ],
       isLoading: false,
     });
-    usePayPlanMock.mockReturnValue({ pay: payMock, isPayLoading: true });
 
     renderDialog();
-    fireEvent.change(
-      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
-      {
-        target: { value: 'someone' },
-      },
-    );
-    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.check_button));
+    await checkUsername('someone');
 
-    await waitFor(() => expect(lookupMock).toHaveBeenCalledWith('someone'));
-    expect(screen.getByText('۲۵K تا ۱۰۰K فالور').closest('button')).toBeDisabled();
-    expect(screen.getByText('۱۰۰K تا ۵۰۰K فالور').closest('button')).toBeDisabled();
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).toBeDisabled();
+    fireEvent.click(screen.getByText('۲۵K تا ۱۰۰K فالور'));
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).not.toBeDisabled();
+  });
+
+  it('defaults the workspace step to the current workspace and pays directly, without creating or switching', async () => {
+    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 1,
+        name: '۱K تا ۲۵K فالور',
+        durations: [{ id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 }],
+      },
+      isLoading: false,
+    });
+
+    renderDialog();
+    await checkUsername('befroosh');
+    fireEvent.click(screen.getByText('یک ماهه'));
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.next_step));
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.finalize_pay));
+
+    await waitFor(() =>
+      expect(payMock).toHaveBeenCalledWith(
+        { planId: 1, durationId: 10 },
+        expect.any(Function),
+        expect.any(Function),
+      ),
+    );
+    expect(apiPostMock).not.toHaveBeenCalled();
+    expect(changeWorkspaceMock).not.toHaveBeenCalled();
+  });
+
+  it('the prev-step button returns from the workspace step to the plan step', async () => {
+    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 1,
+        name: '۱K تا ۲۵K فالور',
+        durations: [{ id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 }],
+      },
+      isLoading: false,
+    });
+
+    renderDialog();
+    await checkUsername('befroosh');
+    fireEvent.click(screen.getByText('یک ماهه'));
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.next_step));
+    expect(screen.getByText(messages.SetupInstagramDialog.option_new_title)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.prev_step));
+
+    expect(screen.getByText('۱K تا ۲۵K فالور')).toBeInTheDocument();
+    expect(
+      screen.queryByText(messages.SetupInstagramDialog.option_new_title),
+    ).not.toBeInTheDocument();
   });
 });
 
