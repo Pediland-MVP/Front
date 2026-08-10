@@ -23,7 +23,14 @@ import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { PlanTierBadge } from '@/components/Settings/PlanTierBadge';
 import { WizardStepsHeader } from './WizardStepsHeader';
 import { useWorkspaceTargetStep } from './useWorkspaceTargetStep';
-import { useInstagramWizardResume } from './useInstagramWizardResume';
+import {
+  useInstagramWizardResume,
+  IGW_RESUME_PARAM,
+  IGW_PLAN_ID_PARAM,
+  IGW_DURATION_ID_PARAM,
+  IGW_USERNAME_PARAM,
+  IGW_TARGET_WS_PARAM,
+} from './useInstagramWizardResume';
 import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { setPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
@@ -84,9 +91,16 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     onResolved: ({ planId, durationId, username }) => {
       if (username) setCheckedUsername(username);
       setStep('workspace');
-      void onBuy(planId, durationId);
+      void onBuy(planId, durationId, username ?? undefined);
     },
-    onMismatch: () => {
+    onMismatch: ({ planId, durationId, username }) => {
+      // The switch itself failed, but the plan/duration the user picked is still valid — restore
+      // them (same as onResolved) so step 3's "پرداخت" button is a real retry: it defaults back
+      // to the current workspace (the switch never happened) and pays into it instead of leaving
+      // the user stuck on an inert, looks-clickable button.
+      setSelectedPlanId(planId);
+      setSelectedDurationId(durationId);
+      if (username) setCheckedUsername(username);
       toast.error(t('workspace_switch_mismatch_error'));
       setStep('workspace');
     },
@@ -157,19 +171,24 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     setStep('plan');
   };
 
-  const onBuy = async (planId: number, durationId: number) => {
+  // usernameOverride lets a caller pass the username explicitly instead of relying on the
+  // `checkedUsername` state variable, which matters on the resume path: onResolved calls
+  // setCheckedUsername and onBuy in the same tick, and the async state update would not be
+  // visible yet in this render's closure when onBeforeRedirect below actually runs.
+  const onBuy = async (planId: number, durationId: number, usernameOverride?: string) => {
     await pay({ planId, durationId }, setActive, () => {
-      if (checkedUsername) setPendingInstagramUsername(checkedUsername);
+      const usernameForCookie = usernameOverride ?? checkedUsername;
+      if (usernameForCookie) setPendingInstagramUsername(usernameForCookie);
     });
   };
 
   const stampResumeStateOnUrl = (targetWorkspaceId: string, planId: number, durationId: number) => {
     const url = new URL(window.location.href);
-    url.searchParams.set('igwResume', '1');
-    url.searchParams.set('igwPlanId', String(planId));
-    url.searchParams.set('igwDurationId', String(durationId));
-    if (checkedUsername) url.searchParams.set('igwUsername', checkedUsername);
-    url.searchParams.set('igwTargetWs', targetWorkspaceId);
+    url.searchParams.set(IGW_RESUME_PARAM, '1');
+    url.searchParams.set(IGW_PLAN_ID_PARAM, String(planId));
+    url.searchParams.set(IGW_DURATION_ID_PARAM, String(durationId));
+    if (checkedUsername) url.searchParams.set(IGW_USERNAME_PARAM, checkedUsername);
+    url.searchParams.set(IGW_TARGET_WS_PARAM, targetWorkspaceId);
     window.history.replaceState(null, '', url.toString());
   };
 
@@ -179,9 +198,13 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   // "the switch succeeded" (targetWorkspaceId still equals the never-changed current one).
   const clearStampedResumeParams = () => {
     const url = new URL(window.location.href);
-    ['igwResume', 'igwPlanId', 'igwDurationId', 'igwUsername', 'igwTargetWs'].forEach((key) =>
-      url.searchParams.delete(key),
-    );
+    [
+      IGW_RESUME_PARAM,
+      IGW_PLAN_ID_PARAM,
+      IGW_DURATION_ID_PARAM,
+      IGW_USERNAME_PARAM,
+      IGW_TARGET_WS_PARAM,
+    ].forEach((key) => url.searchParams.delete(key));
     window.history.replaceState(null, '', url.toString());
   };
 

@@ -66,7 +66,7 @@ describe('useInstagramWizardResume', () => {
       useInstagramWizardResume({ currentWorkspaceId: 'ws1', onResolved, onMismatch }),
     );
 
-    expect(onMismatch).toHaveBeenCalled();
+    expect(onMismatch).toHaveBeenCalledWith({ planId: 1, durationId: 10, username: null });
     expect(onResolved).not.toHaveBeenCalled();
     expect(window.location.search).toBe('');
   });

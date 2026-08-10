@@ -1,7 +1,20 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
+
+// Radix's Select uses pointer-capture APIs jsdom does not implement, and calls
+// scrollIntoView on the item it wants to highlight when opening. Neither exists on jsdom's
+// Element prototype, so without these no-op shims any interaction with the Select in this
+// file throws. Scoped to this file only — not added to the shared vitest.setup.ts.
+beforeAll(() => {
+  if (!Element.prototype.hasPointerCapture) {
+    Element.prototype.hasPointerCapture = () => false;
+  }
+  if (!Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = () => {};
+  }
+});
 
 const lookupMock = vi.fn();
 vi.mock('../../app/(Connect)/connect/hooks/useInstagramFollowersLookup', () => ({
@@ -304,6 +317,75 @@ describe('SetupInstagramDialog', () => {
       ),
     );
     expect(window.location.search).toBe('');
+  });
+
+  it('switches to a different existing workspace: stamps resume state and calls changeWorkspace, but does not pay yet', async () => {
+    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 1,
+        name: '۱K تا ۲۵K فالور',
+        durations: [{ id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 }],
+      },
+      isLoading: false,
+    });
+
+    renderDialog();
+    await checkUsername('befroosh');
+    fireEvent.click(screen.getByText('یک ماهه'));
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.next_step));
+
+    // "existing" is selected by default; open its Select and pick the other workspace.
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(await screen.findByText('کسب و کار دیگر'));
+
+    fireEvent.click(
+      await screen.findByText(messages.SetupInstagramDialog.finalize_switch_and_continue),
+    );
+
+    await waitFor(() => expect(changeWorkspaceMock).toHaveBeenCalledWith('ws-other'));
+    expect(apiPostMock).not.toHaveBeenCalled();
+    expect(payMock).not.toHaveBeenCalled();
+  });
+
+  it('creates a new workspace: posts /workspaces then calls changeWorkspace with the returned id', async () => {
+    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 1,
+        name: '۱K تا ۲۵K فالور',
+        durations: [{ id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 }],
+      },
+      isLoading: false,
+    });
+    apiPostMock.mockResolvedValue({ data: { data: { id: 'ws-brand-new' } } });
+
+    renderDialog();
+    await checkUsername('befroosh');
+    fireEvent.click(screen.getByText('یک ماهه'));
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.next_step));
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.option_new_title));
+
+    fireEvent.change(
+      screen.getByPlaceholderText(messages.SetupInstagramDialog.new_workspace_name_placeholder),
+      { target: { value: 'کسب‌وکار جدید یا هر نامی که وارد کردید' } },
+    );
+
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(await screen.findByText('خرده‌فروشی'));
+
+    fireEvent.click(
+      await screen.findByText(messages.SetupInstagramDialog.finalize_switch_and_continue),
+    );
+
+    await waitFor(() =>
+      expect(apiPostMock).toHaveBeenCalledWith('/workspaces', {
+        name: 'کسب‌وکار جدید یا هر نامی که وارد کردید',
+        categoryId: 'cat1',
+      }),
+    );
+    await waitFor(() => expect(changeWorkspaceMock).toHaveBeenCalledWith('ws-brand-new'));
   });
 
   it('shows a mismatch error and does not pay when the resumed workspace does not match', async () => {

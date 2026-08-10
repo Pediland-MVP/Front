@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
 import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
+import { IGW_RESUME_PARAM } from '@/components/Connect/useInstagramWizardResume';
 import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 import { readAndClearPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
@@ -53,7 +54,7 @@ export default function ConnectPage() {
 
   const searchParams = useSearchParams();
   useEffect(() => {
-    if (searchParams.get('igwResume') === '1') setIsSetupDialogOpen(true);
+    if (searchParams.get(IGW_RESUME_PARAM) === '1') setIsSetupDialogOpen(true);
   }, [searchParams]);
   const code = searchParams.get('code');
   // Set by the dialog's "ادامه با همین اشتراک" button, which now routes here instead of
