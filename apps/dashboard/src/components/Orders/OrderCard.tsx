@@ -7,7 +7,9 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 
-import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   AlertTriangleIcon,
   BarcodeIcon,

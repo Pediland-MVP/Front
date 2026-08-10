@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui';
+} from '@/components/ui/alert-dialog';
 import { useTranslations } from 'next-intl';
 
 interface DelayBudgetExhaustedDialogProps {

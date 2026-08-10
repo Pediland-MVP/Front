@@ -2,6 +2,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { AddressBookTabsIcon } from '@phosphor-icons/react/dist/csr/AddressBookTabs';
 
 import { ContactForm } from './ContactForm';
 import {
@@ -26,7 +27,7 @@ export const ContactDetailsDialog = ({ open, setOpen, contactId }: ContactDetail
     <DialogStyled open={open} onOpenChange={setOpen}>
       <DialogStyledContent showCloseButton={false}>
         <DialogStyledHeader>
-          <DialogStyledTitle icon={'AddressBookTabsIcon'}>{t('detailsInfo')}</DialogStyledTitle>
+          <DialogStyledTitle icon={AddressBookTabsIcon}>{t('detailsInfo')}</DialogStyledTitle>
           <DialogStyledDescription></DialogStyledDescription>
         </DialogStyledHeader>
         <DialogStyledBody>

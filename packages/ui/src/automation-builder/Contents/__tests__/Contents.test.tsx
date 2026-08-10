@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
 import { Contents } from '../Contents';
 import {
   AutomationContentModeEnum,
@@ -15,11 +15,23 @@ import type { AutomationBuilderMode } from '../../AutomationBuilder.types';
 // add button by, which we resolve to their real Persian copy. With an empty `contents`
 // array the empty-state CTA (`add_step`) is what opens the type chooser; the inline
 // `add_content` button only renders once there's at least one step.
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) =>
-    key === 'add_content' ? 'افزودن محتوا' : key === 'add_step' ? 'افزودن مرحله' : key,
-  useLocale: () => 'fa',
-}));
+//
+// `t.rich` also needs a stub: `TextContent`/`QuestionContent` call it for a "you can use
+// variables" hint. Earlier tests in this file never fully render those bodies (they only
+// exercise the add-content dialog/flow), so this gap was latent until the auto-CONSENT
+// tests below render real TEXT/QUESTION content items.
+vi.mock('next-intl', () => {
+  const makeT = () => {
+    const t = ((key: string) =>
+      key === 'add_content' ? 'افزودن محتوا' : key === 'add_step' ? 'افزودن مرحله' : key) as any;
+    t.rich = (key: string) => key;
+    return t;
+  };
+  return {
+    useTranslations: () => makeT(),
+    useLocale: () => 'fa',
+  };
+});
 
 // ChooseAutomationType uses `useMediaQuery`, which calls `matchMedia` — jsdom doesn't
 // implement it, so stub a "not mobile" result.
@@ -43,11 +55,13 @@ function Wrapper({
   builderMode,
   mode,
   initialContents,
+  contentTypeHelpSlots,
 }: {
   apiClient?: AutomationBuilderApiClient;
   builderMode?: AutomationBuilderMode;
   mode?: AutomationContentModeEnum;
   initialContents?: any[];
+  contentTypeHelpSlots?: Partial<Record<AutomationContentTypesEnum, React.ReactNode>>;
 }) {
   const form = useForm({ defaultValues: { contents: initialContents ?? [], reminders: [] } });
   return (
@@ -57,6 +71,7 @@ function Wrapper({
         apiClient={apiClient ?? { upload: vi.fn(), get: vi.fn() }}
         helpSlot={<span data-testid="help-slot">help</span>}
         builderMode={builderMode}
+        contentTypeHelpSlots={contentTypeHelpSlots}
       />
     </FormProvider>
   );
@@ -72,6 +87,21 @@ describe('Contents (shared, mode=automation)', () => {
     render(<Wrapper />);
     fireEvent.click(screen.getByText('افزودن مرحله'));
     expect(screen.getAllByRole('button').length).toBeGreaterThan(1);
+  });
+
+  it("renders the matching contentTypeHelpSlots entry next to a content item, keyed by that item's type", () => {
+    render(
+      <Wrapper
+        initialContents={[{ type: AutomationContentTypesEnum.TEXT }]}
+        contentTypeHelpSlots={{
+          [AutomationContentTypesEnum.TEXT]: <span data-testid="text-help-slot">?</span>,
+          [AutomationContentTypesEnum.VITRIN]: <span data-testid="vitrin-help-slot">?</span>,
+        }}
+      />,
+    );
+    expect(screen.getByTestId('text-help-slot')).toBeInTheDocument();
+    // Only the TEXT item is rendered, so the VITRIN-keyed slot must not appear.
+    expect(screen.queryByTestId('vitrin-help-slot')).not.toBeInTheDocument();
   });
 });
 
@@ -277,5 +307,298 @@ describe('Contents — DELAY content-type shared 23h budget (Add-content flow)',
 
     await waitFor(() => expect(get).toHaveBeenCalledWith('/templates/t1'));
     await waitFor(() => expect(screen.getByText('budget_exhausted_title')).toBeInTheDocument());
+  });
+});
+
+describe('Contents — StartAutomationMessage (read-only comment-start preview)', () => {
+  function CommentStartWrapper({
+    isComment,
+    justFollowers,
+    initialContents,
+  }: {
+    isComment?: boolean;
+    justFollowers?: boolean;
+    initialContents?: any[];
+  }) {
+    const form = useForm({
+      defaultValues: {
+        contents: initialContents ?? [],
+        reminders: [],
+        isComment: isComment ?? false,
+        justFollowers: justFollowers ?? false,
+      },
+    });
+    return (
+      <FormProvider {...form}>
+        <Contents
+          mode={AutomationContentModeEnum.AUTOMATION}
+          apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        />
+      </FormProvider>
+    );
+  }
+
+  // Under the next-intl mock at the top of this file, every key echoes back verbatim
+  // regardless of namespace, so `t('start_request_message')` from the
+  // `Automations.CommentConsent` namespace resolves to the literal key.
+  const HEADER_TEXT = 'start_request_message';
+
+  it('shows the read-only start-message card when isComment=true, justFollowers=false, and there is more than one content', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+  });
+
+  it('hides the card when justFollowers is on, even with isComment=true and multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('hides the card when there is only a single, non-PRODUCT content', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[{ type: AutomationContentTypesEnum.TEXT }]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('shows the card for a single PRODUCT content even though contents.length is 1', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[{ type: AutomationContentTypesEnum.PRODUCT }]}
+      />,
+    );
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+  });
+
+  it('hides the card entirely when isComment is false', () => {
+    render(
+      <CommentStartWrapper
+        isComment={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  // BEF-162: content[0] can already force the user to tap/answer something itself,
+  // making the separate start-request card redundant.
+  it('hides the card when content[0] is TEXT with a quick reply, even with multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ id: 'qr-1', title: 'حله' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('hides the card when content[0] is QUESTION, even with multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.QUESTION },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('still shows the card when content[0] is TEXT with NO quick replies, even with multiple contents', () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, quickReplies: [] },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+  });
+});
+
+describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () => {
+  // Dumps the live `contents` form state to the DOM so tests can assert on it without
+  // reaching into the `useForm` instance directly. `useWatch`/`getValues` here reflect
+  // real form state (not `useFieldArray`'s render-only `fields`), so no RHF-injected
+  // `_xid` key ends up in these values.
+  function ContentsDump() {
+    const { control } = useFormContext();
+    const watched = useWatch({ name: 'contents', control });
+    return <div data-testid="contents-dump">{JSON.stringify(watched ?? [])}</div>;
+  }
+
+  function AutoConsentWrapper({ initialContents }: { initialContents: any[] }) {
+    const form = useForm({ defaultValues: { contents: initialContents, reminders: [] } });
+    return (
+      <FormProvider {...form}>
+        <Contents
+          mode={AutomationContentModeEnum.AUTOMATION}
+          apiClient={{ upload: vi.fn(), get: vi.fn() }}
+        />
+        <ContentsDump />
+      </FormProvider>
+    );
+  }
+
+  function dumpedQuickReplies(index: number) {
+    const dump = JSON.parse(screen.getByTestId('contents-dump').textContent ?? '[]');
+    return dump[index].quickReplies;
+  }
+
+  it('inserts a CONSENT quick reply at index 0 when a TEXT content with quick replies is not the last content', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    // Under the next-intl mock at the top of this file, `t_button('CONSENT.auto_title')`
+    // echoes back the literal key.
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'CONSENT.auto_title', postbackPayloadType: 'CONSENT' },
+      { title: 'x', postbackPayloadType: 'TEXT' },
+    ]);
+  });
+
+  it('does not insert a duplicate CONSENT button when one already exists (user-added or from a prior auto-insert)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'already there', postbackPayloadType: 'CONSENT' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'already there', postbackPayloadType: 'CONSENT' },
+    ]);
+  });
+
+  it('does not insert when the content is already at the 13 quick-reply cap', () => {
+    const thirteen = Array.from({ length: 13 }, (_, i) => ({
+      title: `b${i}`,
+      postbackPayloadType: 'TEXT',
+    }));
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, quickReplies: thirteen },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    const quickReplies = dumpedQuickReplies(0);
+    expect(quickReplies).toHaveLength(13);
+    expect(quickReplies[0].postbackPayloadType).toBe('TEXT');
+  });
+
+  it('does not insert for a content with no quick replies at all (nothing to preserve)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, quickReplies: [] },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([]);
+  });
+
+  it('does not insert for non-TEXT content types, even with quick replies and a following content', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.QUESTION,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+          { type: AutomationContentTypesEnum.TEXT },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([{ title: 'x', postbackPayloadType: 'TEXT' }]);
+  });
+
+  it('does not insert for the last content in the list (nothing follows it)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([{ title: 'x', postbackPayloadType: 'TEXT' }]);
+  });
+
+  it('leaves an existing CONSENT button in place when the content is last (no auto-removal, regardless of how it got there)', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'existing consent title', postbackPayloadType: 'CONSENT' }],
+          },
+        ]}
+      />,
+    );
+
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'existing consent title', postbackPayloadType: 'CONSENT' },
+    ]);
   });
 });

@@ -1,15 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import {
-  AndroidLogoIcon,
-  AppleLogoIcon,
-  CheckCircleIcon,
-  ExportIcon,
-  PlusSquareIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { AndroidLogoIcon } from '@phosphor-icons/react/dist/ssr/AndroidLogo';
+import { AppleLogoIcon } from '@phosphor-icons/react/dist/ssr/AppleLogo';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { ExportIcon } from '@phosphor-icons/react/dist/ssr/Export';
+import { PlusSquareIcon } from '@phosphor-icons/react/dist/ssr/PlusSquare';
 import Link from 'next/link';
-import { Button, Card, CardContent } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useDeviceOS } from '@/hooks/useDeviceOS';
 
 const CAFEBAZAAR_URL = 'https://cafebazaar.ir/app/app.befroosh';

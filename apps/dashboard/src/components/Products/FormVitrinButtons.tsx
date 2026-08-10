@@ -1,5 +1,6 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
-import { DresserIcon } from '@phosphor-icons/react/dist/ssr';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DresserIcon } from '@phosphor-icons/react/dist/ssr/Dresser';
 import { ButtonTypeEnum } from '@/types/buttons.enum';
 import { CirclePlusIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';

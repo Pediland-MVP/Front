@@ -2,28 +2,34 @@
 
 import useUser from '@/hooks/useUser';
 import { useInvitations } from '@/hooks/useInvitations';
+import { useIsWebView } from '@/hooks/useIsWebView';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
-import {
-  AddressBookIcon,
-  BriefcaseIcon,
-  CubeIcon,
-  DownloadSimpleIcon,
-  GraduationCap,
-  HouseIcon,
-  InstagramLogoIcon,
-  LifebuoyIcon,
-  LightningIcon,
-  ShoppingBagIcon,
-  SlidersIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { AddressBookIcon } from '@phosphor-icons/react/dist/ssr/AddressBook';
+import { BriefcaseIcon } from '@phosphor-icons/react/dist/ssr/Briefcase';
+import { CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrownSimple';
+import { CubeIcon } from '@phosphor-icons/react/dist/ssr/Cube';
+import { DownloadSimpleIcon } from '@phosphor-icons/react/dist/ssr/DownloadSimple';
+import { GraduationCap } from '@phosphor-icons/react/dist/ssr/GraduationCap';
+import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { LifebuoyIcon } from '@phosphor-icons/react/dist/ssr/Lifebuoy';
+import { LightningIcon } from '@phosphor-icons/react/dist/ssr/Lightning';
+import { ShoppingBagIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBag';
+import { SlidersIcon } from '@phosphor-icons/react/dist/ssr/Sliders';
+import { UsersThreeIcon } from '@phosphor-icons/react/dist/ssr/UsersThree';
 import { LogoSlogan } from '../Global/LogoSlogan';
 import { LogoText } from '../Global/LogoText';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, useSidebar } from '../ui';
 import { NavMain } from './NavMain';
 import { NavUserSkeleton } from './NavUser.skeleton';
 import { UserDetailsCard } from './UserDetailsCard';
+import { WorkspaceProfileChip } from './WorkspaceProfileChip';
 import { cn } from '@/lib/utils';
 
 const NavUser = dynamic(() => import('./NavUser'), {
@@ -31,7 +37,12 @@ const NavUser = dynamic(() => import('./NavUser'), {
   ssr: false,
 });
 
-const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => ({
+const generateData = (
+  t: any,
+  isMobile: boolean,
+  pendingInvitations: number,
+  canShowBuySubscription: boolean,
+) => ({
   navMain: [
     {
       title: t('dashboard'),
@@ -63,20 +74,6 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       icon: ShoppingBagIcon,
       isActive: true,
     },
-    {
-      title: t('workspace'),
-      url: '/workspace',
-      icon: BriefcaseIcon,
-      isActive: true,
-      badge: pendingInvitations || undefined,
-    },
-    {
-      title: t('accounts'),
-      url: '/settings/instagram',
-      icon: InstagramLogoIcon,
-      isActive: true,
-    },
-
     // {
     //   title: t("instagramConnections"),
     //   url: "#",
@@ -117,7 +114,27 @@ const generateData = (t: any, isMobile: boolean, pendingInvitations: number) => 
       title: t('settings'),
       url: '/settings',
       icon: SlidersIcon,
-      isActive: true,
+      isActive: false,
+      items: [
+        {
+          title: t('businessInfo'),
+          url: '/settings/workspace',
+          icon: BriefcaseIcon,
+          badge: pendingInvitations || undefined,
+        },
+        { title: t('connectedPages'), url: '/settings/instagram', icon: InstagramLogoIcon },
+        ...(canShowBuySubscription
+          ? [
+              {
+                title: t('buySubscription'),
+                url: '/settings/subscription',
+                icon: CrownSimpleIcon,
+              },
+            ]
+          : []),
+        { title: t('teamMembers'), url: '/settings/team', icon: UsersThreeIcon },
+        { title: t('bankInfo'), url: '/settings/card', icon: CreditCardIcon },
+      ],
     },
     ...(isMobile
       ? [
@@ -149,17 +166,23 @@ export const ConsoleSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar
   const locale = useLocale();
   const { isMobile, toggleSidebar } = useSidebar();
   const { pendingCount } = useInvitations();
-  const data = generateData(t, isMobile, pendingCount);
+  const { can } = usePermissions();
+  const isWebView = useIsWebView();
+  const { subscriptions } = useSubscriptionStore();
+  const canShowBuySubscription =
+    !isWebView && !hasOnlyFreeCredit(subscriptions) && can('billing:view');
+  const data = generateData(t, isMobile, pendingCount, canShowBuySubscription);
 
   const { user: userData, error: userError, isLoading: userIsLoading } = useUser();
 
   return (
     <Sidebar variant="inset" collapsible="offcanvas" {...props}>
-      <SidebarHeader className="flex-row gap-2">
+      <SidebarHeader className="gap-2">
         <div className={cn('flex items-center gap-1.5', locale !== 'fa' && 'pl-2')}>
           {locale === 'fa' && <LogoSlogan />}
           <LogoText size="md" />
         </div>
+        <WorkspaceProfileChip />
       </SidebarHeader>
 
       <SidebarContent>

@@ -20,6 +20,7 @@ export default function usePayPlan() {
   const pay = async (
     values: { planId: number; durationId: number; discountCode?: string; instagramId?: string },
     setActive: SubscriptionContext['setActive'],
+    onBeforeRedirect?: () => void,
   ) => {
     setIsPayLoading(true);
     await api
@@ -35,6 +36,7 @@ export default function usePayPlan() {
           });
           return;
         }
+        onBeforeRedirect?.();
         router.push(res.data.data.link);
         return;
       })

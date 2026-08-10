@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { PlusCircle, Trash } from '@phosphor-icons/react/dist/ssr';
+import { PlusCircle } from '@phosphor-icons/react/dist/ssr/PlusCircle';
+import { Trash } from '@phosphor-icons/react/dist/ssr/Trash';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 export default function ConditionWordForm({ control, remove }: any) {

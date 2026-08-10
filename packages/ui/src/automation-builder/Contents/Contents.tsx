@@ -18,7 +18,8 @@ import type { AutomationFormType, ContentItemSchema } from '../schemas/automatio
 import type { UploadedFile } from '@/types/fileUploader';
 import { ButtonTypeEnum } from '../types/buttons.enum';
 
-import { Alert, AlertDescription, AlertTitle, Button } from '@/components/ui';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import type { DragEndEvent } from '@dnd-kit/core';
 import {
@@ -41,8 +42,9 @@ import { ContentsContext } from './ContentsContext';
 import { ContentsUploaderContextProvider } from './ContentsUploaderContext';
 import { ValidationTypeEnum } from '../types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
-import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
+import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr/FilePlus';
 import { ChooseAutomationType } from './ChooseAutomationType';
+import { StartAutomationMessage } from './StartAutomationMessage';
 import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
 import {
   delayUnitOptionsCount,
@@ -71,6 +73,12 @@ type ContentsProps = {
    * render `Contents` directly outside `AutomationBuilder` (e.g. the dashboard's own
    * `Form/Reminder.tsx`), which are never in template mode. */
   builderMode?: AutomationBuilderMode;
+  /** Rendered next to the `StartAutomationMessage` header label. Replaces the
+   * dashboard-only `HelpMeDialog` that used to be hardcoded there. */
+  commentTriggerHelpSlot?: React.ReactNode;
+  /** Per-content-type help affordances, keyed by `AutomationContentTypesEnum`. Forwarded
+   * to each `ContentItem` and rendered next to that item's own type label. */
+  contentTypeHelpSlots?: Partial<Record<AutomationContentTypesEnum, React.ReactNode>>;
 };
 
 // `GET /templates?search=` (core's `readTemplates`) returns a `PaginatedResult` body —
@@ -87,15 +95,19 @@ export const Contents = ({
   isPromotion,
   helpSlot,
   builderMode = 'automation',
+  commentTriggerHelpSlot,
+  contentTypeHelpSlots,
 }: ContentsProps) => {
   const t = useTranslations('Automations.Contents');
   const t_contentTypes = useTranslations('Automations.Contents.Types');
   const t_err = useTranslations('Automations.Contents.Errors');
   const t_templatePicker = useTranslations('Automations.TemplatePicker');
+  const t_button = useTranslations('Automations.Contents.Button');
 
   const {
     control,
     trigger,
+    setValue,
     clearErrors,
     formState: { errors },
   } = useFormContext<AutomationFormType>();
@@ -130,6 +142,42 @@ export const Contents = ({
       clearErrors(arrayName);
     }
   }, [hasItems, arrayName, clearErrors, errors]);
+
+  // Instagram hides a TEXT content's quick-reply buttons once another content follows
+  // it — unless one of those quick replies is the CONSENT ("مکث و ادامه" / pause-and-
+  // continue) type, which is what makes the send loop stop and wait for a tap
+  // (`shouldPauseForConsent` in `contentCycle.service.ts`). Auto-insert that button at
+  // index 0 for any TEXT content that has quick replies, isn't the last content
+  // anymore, and doesn't already have a CONSENT button — the "already has one" check
+  // is what stops this from ever inserting a duplicate, whether that existing button
+  // was added by the user or by this same effect a moment earlier. Scoped to the
+  // `contents` array only (not `reminders`, which has its own separate shape).
+  useEffect(() => {
+    if (arrayName !== 'contents') return;
+
+    const list = (watched ?? []) as ContentItemType[];
+    list.forEach((content, index) => {
+      if (index === list.length - 1) return;
+      if (content.type !== AutomationContentTypesEnum.TEXT) return;
+
+      const quickReplies = content.quickReplies ?? [];
+      if (quickReplies.length === 0 || quickReplies.length >= 13) return;
+
+      const hasConsent = quickReplies.some(
+        (qr) => qr?.postbackPayloadType === ButtonTypeEnum.CONSENT,
+      );
+      if (hasConsent) return;
+
+      setValue(
+        `contents.${index}.quickReplies` as any,
+        [
+          { title: t_button('CONSENT.auto_title'), postbackPayloadType: ButtonTypeEnum.CONSENT },
+          ...quickReplies,
+        ],
+        { shouldDirty: true },
+      );
+    });
+  }, [watched, arrayName, setValue, t_button]);
 
   // Configure sensors for drag and drop
   const sensors = useSensors(
@@ -299,7 +347,11 @@ export const Contents = ({
   return (
     <ContentsContext.Provider value={{ contents, updateContents, removeContents, builderMode }}>
       <div className="_content-item flex flex-col gap-3">
-        {contents.length === 0 && (
+        {mode === AutomationContentModeEnum.AUTOMATION && (
+          <StartAutomationMessage helpSlot={commentTriggerHelpSlot} />
+        )}
+
+        {contents.length === 0 && !isChoosingType && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
             <p className="font-bold text-gray-500">{t('no_content_title')}</p>
@@ -343,6 +395,7 @@ export const Contents = ({
                       appendContents={appendContents}
                       content={content as FieldArrayWithId<z.infer<typeof ContentItemSchema>>}
                       apiClient={apiClient}
+                      helpSlot={contentTypeHelpSlots?.[content.type as AutomationContentTypesEnum]}
                     />
                   </ContentsUploaderContextProvider>
                 ))}

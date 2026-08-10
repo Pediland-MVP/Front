@@ -4,13 +4,15 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import {
   StableCarousel,
   StableCarouselApi,
   StableCarouselContent,
   StableCarouselItem,
+  StableCarouselNext,
+  StableCarouselPrevious,
   useStableCarousel,
 } from '@/components/ui/stable-carousel';
 import { useActiveBanners, ActiveBanner } from '@/hooks/useActiveBanners';
@@ -63,18 +65,56 @@ function BannerCarouselDots() {
   );
 }
 
+// Tiered instead of a single fixed size: a long admin-authored title/description
+// would otherwise wrap onto many lines at the same size as a short punchy one,
+// blowing up this slide's height — since all slides in the flex track stretch to
+// match the tallest one, that one long banner would inflate every other banner's
+// card too. Picking a smaller tier as length grows keeps line count (and so
+// height) roughly consistent across whatever banners happen to be shuffled in.
+function fluidTextSizeClass(length: number, tiers: { maxLength: number; className: string }[]) {
+  return (tiers.find((tier) => length <= tier.maxLength) ?? tiers[tiers.length - 1]).className;
+}
+
+const TITLE_SIZE_TIERS = [
+  { maxLength: 24, className: 'text-sm md:text-lg' },
+  { maxLength: 45, className: 'text-xs md:text-base' },
+  { maxLength: Infinity, className: 'text-xs md:text-sm' },
+];
+
+const DESCRIPTION_SIZE_TIERS = [
+  { maxLength: 60, className: 'text-xs md:text-base' },
+  { maxLength: 120, className: 'text-[11px] md:text-sm' },
+  { maxLength: Infinity, className: 'text-[11px] md:text-xs' },
+];
+
 function BannerSlide({ banner, locale }: { banner: ActiveBanner; locale: string }) {
   const title = locale === 'fa' ? banner.titleFa : banner.titleEn;
   const description = locale === 'fa' ? banner.descriptionFa : banner.descriptionEn;
+  // Prev/next are absolutely positioned over the card's edges, so reserve a
+  // matching inline gutter here whenever they're rendered (2+ banners) —
+  // otherwise long titles/buttons sit directly under the arrows.
+  const { totalItems } = useStableCarousel();
+  const hasNav = totalItems > 1;
 
   return (
     <CardSimple className="my-2 bg-linear-to-bl" style={{ borderColor: banner.color }}>
-      <CardContent className="flex flex-col gap-3 p-3.5 md:gap-4 md:p-6">
-        <p className="text-sm font-bold md:text-lg" style={{ color: banner.color }}>
+      <CardContent
+        className={cn(
+          'flex flex-col gap-3 py-3.5 md:gap-4 md:py-6',
+          hasNav ? 'ps-11 pe-11 md:ps-13 md:pe-13' : 'ps-3.5 pe-3.5 md:ps-6 md:pe-6',
+        )}
+      >
+        <p
+          className={cn(fluidTextSizeClass(title.length, TITLE_SIZE_TIERS), 'font-bold')}
+          style={{ color: banner.color }}
+        >
           {title}
         </p>
         <p
-          className="text-xs leading-relaxed font-medium md:text-base"
+          className={cn(
+            fluidTextSizeClass(description.length, DESCRIPTION_SIZE_TIERS),
+            'leading-relaxed font-medium',
+          )}
           style={{ color: banner.color }}
         >
           {description}
@@ -155,6 +195,8 @@ export const DashboardBannerCarousel = () => {
             </StableCarouselItem>
           ))}
         </StableCarouselContent>
+        <StableCarouselPrevious />
+        <StableCarouselNext />
         <BannerCarouselDots />
       </StableCarousel>
     </div>

@@ -156,6 +156,10 @@
     "OTP_SEND_FAILED": "ارسال کد تایید ناموفق بود. لطفاً دوباره تلاش کنید.",
     "SESSION_NOT_FOUND": "نشست موردنظر پیدا نشد.",
     "CANNOT_TERMINATE_CURRENT_SESSION": "نمی‌توانید نشست فعلی خود را ببندید.",
-    "CANNOT_TERMINATE_RECENT_SESSION": "فقط نشست‌هایی که بیش از ۵ روز از ورودشان گذشته قابل بستن هستند."
+    "CANNOT_TERMINATE_RECENT_SESSION": "فقط نشست‌هایی که بیش از ۵ روز از ورودشان گذشته قابل بستن هستند.",
+
+    "SECOND_INSTAGRAM_REQUIRES_SUBSCRIPTION": "برای اتصال اکانت اینستاگرام دوم به این فضای کاری، ابتدا باید یک اشتراک متناسب بخرید",
+    "USERNAME_REQUIRED": "نام کاربری اینستاگرام را وارد کنید",
+    "INSTAGRAM_LOOKUP_COOLDOWN": "لطفاً کمی صبر کنید و دوباره تلاش کنید"
   }
 }

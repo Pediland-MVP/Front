@@ -2,8 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { MegaphoneSimpleIcon, SparkleIcon } from '@phosphor-icons/react/dist/ssr';
-import { Button } from '@/components/ui';
+import { MegaphoneSimpleIcon } from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
+import { SparkleIcon } from '@phosphor-icons/react/dist/ssr/Sparkle';
+import { Button } from '@/components/ui/button';
 
 interface PagePromotionAlertProps {
   instagramId: string;

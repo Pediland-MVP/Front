@@ -22,12 +22,10 @@ import OrderProcessing from '../../app/(Shop)/[shopId]/[productId]/order/compone
 // UI
 import { Card } from '@/components/ui/card';
 import { FormStep, FormStepperProvider } from '@/components/ui/formStepper';
-import {
-  HouseIcon,
-  UserIcon,
-  CreditCardIcon,
-  UploadSimpleIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
+import { UserIcon } from '@phosphor-icons/react/dist/ssr/User';
+import { CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import { CheckoutContext } from '../../app/(Shop)/[shopId]/[productId]/order/useCheckout';
 import useSWRImmutable from 'swr/immutable';
 import { ProductNamespace } from '@/types/product';

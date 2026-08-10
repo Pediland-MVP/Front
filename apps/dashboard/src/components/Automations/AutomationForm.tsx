@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -25,12 +25,19 @@ import { useInstagramFilterStore } from '@/lib/stores/useInstagramFilterStore';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import type { IResponseMessage } from '@/types/responseMessage';
 import { InstagramNamespace } from '@/types/instagram';
+import {
+  clearAutomationDraft,
+  getCurrentWorkspaceId,
+  readAutomationDraft,
+} from '@/utils/automationDraft';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 
 import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
+import { AutomationDraftBanner } from './AutomationDraftBanner';
+import { AutomationDraftWatcher } from './AutomationDraftWatcher';
 import { ConnectInstagramAlert } from './ConnectInstagramAlert';
 import { FreeQuotaWarningDialog } from './FreeQuotaWarningDialog';
 import { CommentReplies } from './Form/CommentReplies';
@@ -93,6 +100,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
 
   const automationSourceId = id ?? copyFromId;
+  const workspaceId = getCurrentWorkspaceId();
   const automationKey = isUUID(automationSourceId) ? `/contentCycle/${automationSourceId}` : null;
   // Only consulted for a brand-new automation that isn't already sourced from `id`/`copyFromId` —
   // those two take priority (mirrors the page-level guard: `?templateId=` is only meaningful on
@@ -156,9 +164,18 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     for (const instagramId of instagramIds) {
       const account = accounts.find((a) => a.id === instagramId);
       if (!account) continue;
+      // Exact equality, not `>=`: the backend's sticky `freeAutomationQuotaExceeded` flag
+      // is only guaranteed to flip on links created through the normal save/update path
+      // (see FreeAutomationQuotaService) — a page whose live count already sits above the
+      // limit for any other reason (e.g. pre-existing links from before this feature
+      // shipped) would keep failing the `!freeAutomationQuotaExceeded` check and re-show
+      // this dialog on every single submission. Matching only the exact boundary value
+      // means the dialog can only ever fire once per page — the one submission that takes
+      // it from `limit` to `limit + 1` — and self-heals once the live count moves past it,
+      // regardless of whether the sticky flag caught up.
       if (
         !account.freeAutomationQuotaExceeded &&
-        account.automationCount >= account.freeAutomationLimit
+        account.automationCount === account.freeAutomationLimit
       ) {
         return { usedCount: account.automationCount, limit: account.freeAutomationLimit };
       }
@@ -168,6 +185,14 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
 
   const { defaults: automationDefaults, isLoading: isAutomationDefaultsLoading } =
     useAutomationDefaults(!id);
+
+  // Draft-restored banner: `showDraftBanner` starts true only when `initialValue` below
+  // was actually seeded from a stored draft. `draftDismissedForBlank` and `formResetKey`
+  // together implement the banner's "پیام جدید" (new message) action — see
+  // `handleDraftCreateNew` below.
+  const [showDraftBanner, setShowDraftBanner] = useState(false);
+  const [draftDismissedForBlank, setDraftDismissedForBlank] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
 
   const transformButtons = (buttons: any[]) => {
     return buttons?.map((b: any) => {
@@ -254,7 +279,10 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   // `initialValue` — it's only consumed by `AutomationBuilder`'s own `useForm` at mount, so
   // (unlike the pre-refactor `form.reset(...)` call) it must already be correct by the time
   // `AutomationBuilder` first renders, not patched in afterwards.
-  const initialValue = useMemo((): Partial<AutomationFormType> | undefined => {
+  const { value: initialValue, isFromDraft } = useMemo((): {
+    value: Partial<AutomationFormType> | undefined;
+    isFromDraft: boolean;
+  } => {
     if (source) {
       const transformedAutomation = {
         ...source,
@@ -273,31 +301,70 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
       };
 
       return {
-        ...transformedAutomation,
-        instagramIds:
-          source.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
-        ...(transformedAutomation.reminders?.length > 0 && {
-          isRemindersEnabled: true,
-        }),
-        reminderTime: source.reminderTime ? `${source.reminderTime}` : undefined,
-        isReplyCommentEnabled: !!source.commentTexts?.length,
-        isCommentContentTargetEnabled: !!source.instagramPost,
+        value: {
+          ...transformedAutomation,
+          instagramIds:
+            source.instagramLinks?.map((l: { instagramId: string }) => l.instagramId) ?? [],
+          ...(transformedAutomation.reminders?.length > 0 && {
+            isRemindersEnabled: true,
+          }),
+          reminderTime: source.reminderTime ? `${source.reminderTime}` : undefined,
+          isReplyCommentEnabled: !!source.commentTexts?.length,
+          isCommentContentTargetEnabled: !!source.instagramPost,
+        },
+        isFromDraft: false,
       };
+    }
+
+    // Brand-new automation with no copy/template source: a stored local draft (if any)
+    // takes priority over blank defaults — this is the resume path. `draftDismissedForBlank`
+    // is flipped by `handleDraftCreateNew` ("پیام جدید" on the draft banner), which forces
+    // this branch to fall through to the blank defaults below instead.
+    if (!id && !copyFromId && !templateId && workspaceId && !draftDismissedForBlank) {
+      const draft = readAutomationDraft(workspaceId);
+      if (draft) return { value: draft, isFromDraft: true };
     }
 
     // Brand-new automation: seed the page filter's selection plus the workspace's
     // remembered default texts (falls back to the same hardcoded copy the old form used).
     return {
-      instagramIds: filterSelectedIds.length ? filterSelectedIds : [],
-      commentStartText: automationDefaults?.commentStartText || t('comment_start_text'),
-      commentStartTitle: automationDefaults?.commentStartTitle || t('comment_start_title'),
-      followCheckMessage: automationDefaults?.followCheckMessage || t('follow_check_message'),
+      value: {
+        instagramIds: filterSelectedIds.length ? filterSelectedIds : [],
+        commentStartText: automationDefaults?.commentStartText || t('comment_start_text'),
+        commentStartTitle: automationDefaults?.commentStartTitle || t('comment_start_title'),
+        followCheckMessage: automationDefaults?.followCheckMessage || t('follow_check_message'),
+      },
+      isFromDraft: false,
     };
-    // Only recomputed when the source data changes — `AutomationBuilder` reads this once,
-    // so recomputing on every keystroke elsewhere is both unnecessary and would (if it were
-    // re-passed) fight the user's own edits.
+    // Only recomputed when the source data (or `draftDismissedForBlank`) changes —
+    // `AutomationBuilder` reads this once per mount (remounted via `formResetKey` when the
+    // draft is dismissed as "new"), so recomputing on every keystroke elsewhere is both
+    // unnecessary and would (if it were re-passed) fight the user's own edits. `workspaceId`
+    // is derived from the JWT and is stable for the component's lifetime, so it's
+    // intentionally excluded here too.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source]);
+  }, [source, draftDismissedForBlank]);
+
+  useEffect(() => {
+    if (isFromDraft) setShowDraftBanner(true);
+  }, [isFromDraft]);
+
+  const handleDraftResume = () => {
+    setShowDraftBanner(false);
+  };
+
+  const handleDraftCreateNew = () => {
+    if (workspaceId) clearAutomationDraft(workspaceId);
+    setShowDraftBanner(false);
+    setDraftDismissedForBlank(true);
+    setFormResetKey((key) => key + 1);
+  };
+
+  // Stable reference: `AutomationDraftWatcher` includes `onDirty` in its debounce-save
+  // effect's dependency array, so a new function identity on every render would reset
+  // that debounce timer on every unrelated `AutomationForm` re-render, not just on
+  // actual form changes.
+  const handleDraftDirty = useCallback(() => setShowDraftBanner(false), []);
 
   useEffect(() => {
     // Only the `copyFromId` path confirms with a toast — nothing is persisted yet for either
@@ -332,6 +399,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     })
       .then(() => {
         toast.success(id ? t('Toast.updated') : t('Toast.created'));
+        if (workspaceId) clearAutomationDraft(workspaceId);
         router.push('/automations');
         mutate(mutateIncludeStringKey('/contentCycle'));
         automationMutate();
@@ -511,8 +579,27 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     title: t('CommentConsent.Help.title'),
     description: t('CommentConsent.Help.description'),
     videoSrc: WizardVideoLinks.Automations.Hints.CommentConsent.video,
-    position: 'left' as const,
   };
+
+  // One guide per content type (BEF-140 item 4: "every content type needs a guide next
+  // to its title"), keyed by `AutomationContentTypesEnum`. Unlike the other help props
+  // above, these are brand-new guide locations with nothing hardcoded — content only
+  // ever comes from the Admin-managed `/guides/:helpId` CMS (see `guides-table.tsx`).
+  const contentTypeHelpSlots = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.values(AutomationContentTypesEnum).map((type) => [
+          type,
+          <HelpMeDialog
+            key={type}
+            helpId={`automation_content_${type}`}
+            title={t(`Contents.Types.buttons.descriptions.${type}`)}
+            noAbsolute
+          />,
+        ]),
+      ) as Partial<Record<AutomationContentTypesEnum, React.ReactNode>>,
+    [t],
+  );
 
   const isReady =
     !isAutomationLoading && !isTemplateLoading && !isLoading && !isAutomationDefaultsLoading;
@@ -523,6 +610,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
 
       {isReady && (
         <AutomationBuilder
+          key={formResetKey}
           mode="automation"
           apiClient={dashboardAutomationApiClient}
           initialValue={initialValue}
@@ -538,7 +626,16 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
           commentRepliesSlot={<CommentReplies />}
           headerSlot={
             <>
+              {!id && showDraftBanner && (
+                <AutomationDraftBanner
+                  onResume={handleDraftResume}
+                  onCreateNew={handleDraftCreateNew}
+                />
+              )}
               <InstagramPromotionWatcher accounts={accounts} onChange={setIsPromotion} />
+              {!id && (
+                <AutomationDraftWatcher workspaceId={workspaceId} onDirty={handleDraftDirty} />
+              )}
               {!hasInstagram && <ConnectInstagramAlert />}
               <InstagramSelectField />
             </>
@@ -552,15 +649,29 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
                 title={t('Contents.Help.title')}
                 description={t('Contents.Help.description')}
                 videoSrc={WizardVideoLinks.Automations.Hints.Contents.video}
+                noAbsolute
               />
             ),
             justFollowers: (
               <HelpMeDialog helpId="automation_just_followers" {...justFollowersHelpProps} />
             ),
             commentTrigger: (
-              <HelpMeDialog helpId="automation_comment_triggers" {...commentTriggerHelpProps} />
+              <HelpMeDialog
+                helpId="automation_comment_triggers"
+                {...commentTriggerHelpProps}
+                noAbsolute
+              />
+            ),
+            titleAndEnabled: (
+              <HelpMeDialog
+                helpId="automation_title"
+                title={t('TitleAndEnabled.Help.title')}
+                description={t('TitleAndEnabled.Help.description')}
+                noAbsolute
+              />
             ),
           }}
+          contentTypeHelpSlots={contentTypeHelpSlots}
         />
       )}
 

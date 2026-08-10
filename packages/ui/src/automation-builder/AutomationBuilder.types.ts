@@ -1,6 +1,7 @@
 import type { FieldErrors, UseFormSetError, UseFormSetFocus } from 'react-hook-form';
 import type { AutomationBuilderApiClient } from './types/apiClient';
 import type { AutomationFormType } from './schemas/automationForm';
+import type { AutomationContentTypesEnum } from './constants/automationContent.enum';
 
 /** Handed to `beforeSubmit` as its second argument so a caller-side cross-field check
  * (one not expressible in `AutomationFormSchema` itself) can still highlight/focus the
@@ -18,7 +19,8 @@ export type AutomationBuilderHelpSlotKey =
   | 'conditions'
   | 'contents'
   | 'justFollowers'
-  | 'commentTrigger';
+  | 'commentTrigger'
+  | 'titleAndEnabled';
 
 export interface AutomationBuilderProps {
   /**
@@ -46,6 +48,11 @@ export interface AutomationBuilderProps {
   /** Per-section help affordances (e.g. a dashboard-only `HelpMeDialog`), replacing the
    * hardcoded dialogs each Form section used to render internally. */
   helpSlots?: Partial<Record<AutomationBuilderHelpSlotKey, React.ReactNode>>;
+  /** Per-content-type help affordances, keyed by `AutomationContentTypesEnum` — rendered
+   * next to each content item's own type label inside `ContentItem`'s header (e.g. next
+   * to "storefront"/"button"/"text"). Separate from `helpSlots` because this is keyed by
+   * content type, not by a single fixed section. */
+  contentTypeHelpSlots?: Partial<Record<AutomationContentTypesEnum, React.ReactNode>>;
   /** Runs after schema validation succeeds but before `onSubmit` — return/resolve `false`
    * to abort (e.g. the dashboard's free-quota warning dialog intercepting submission).
    * The second argument exposes `setError`/`setFocus` on the internal form instance, so a
@@ -70,7 +77,7 @@ export interface AutomationBuilderProps {
    * `hasInstagram`. */
   isPromotion?: boolean;
   /** Rendered inside the automation-only section, between `JustFollowers` and
-   * `CommentTriggerInputs` — the same position the dashboard-only `CommentReplies`
+   * `CommentLimitAlert` — the same position the dashboard-only `CommentReplies`
    * component (workspace comment-reply defaults) occupied before the automation-builder
    * move. Not rendered in `mode="template"`. */
   commentRepliesSlot?: React.ReactNode;

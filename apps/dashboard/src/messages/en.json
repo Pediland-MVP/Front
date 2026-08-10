@@ -4,7 +4,8 @@
     "list": "List",
     "add": "Add",
     "orders": "Orders",
-    "profile": "Profile"
+    "profile": "Profile",
+    "business": "Business"
   },
   "Onboarding": {
     "customersSlider": {
@@ -40,6 +41,7 @@
     "detail": "Details",
     "directs": "Direct Messages List",
     "instagram": "Instagram Account Management",
+    "team": "Team",
     "new": "Create",
     "orders": "Orders List",
     "password": "Password Management",
@@ -543,6 +545,7 @@
         }
       },
       "Button": {
+        "you_can_use_vars": "Use <name>#Name</name> to insert the user’s name.",
         "add": "Add Button",
         "text": {
           "label": "Text",
@@ -595,7 +598,7 @@
             },
             "audio": {
               "text": "Voice/Music: Max size 25 MB",
-              "formats": "Supported formats: aac, m4a, wav, mp4"
+              "formats": "Supported formats: aac, m4a, wav, mp4, mp3"
             }
           }
         }
@@ -670,9 +673,12 @@
       "comment_start_title_placeholder": "Start",
       "comment_start_title": "Start Button Text",
       "comment_start_text": "To receive the message, please tap the Receive Message button 🌟",
-      "start_request_message": "Start Request Message",
+      "start_request_message": "Start Conversation With Comment",
       "message_text": "Message Text",
-      "system_description": "This step is added automatically due to Instagram's rules. If a user enters the conversation through a comment, this message is sent to them first. Once they tap the button, the automation runs. If a user sends a direct message instead, this step is not shown and the automation starts from its first step.",
+      "system_description": "So you can send several messages to the user after a comment, this step is created automatically based on Instagram's rules.",
+      "delete_locked_title": "This message cannot be deleted",
+      "delete_locked_description": "To send more than one message in reply to a comment, this step is required by Instagram's rules. If you want it removed, see the help guide for this section.",
+      "delete_locked_close": "Got it",
       "Help": {
         "title": "Start Request Message",
         "description": "This section activates when your automation works on comments and includes at least two messages."
@@ -806,7 +812,6 @@
     "choose_page_description": "Matching plans are shown based on that page's follower count.",
     "no_pages_connected": "You haven't connected any Instagram page yet.",
     "connect_page_cta": "Add a page",
-    "renewal_will_queue_notice": "This page already has an active subscription. The new one will be queued and will activate automatically once the current one ends.",
     "no_plan_for_followers": "No matching plan was found for this page's follower count. Please contact support.",
     "back": "Back",
     "subscriptionStatus": "Here you can view your active and reserved subscriptions.",
@@ -1319,7 +1324,9 @@
       "manage_permissions": "Manage Permissions",
       "owner": "Owner",
       "member": "Member",
-      "mobile_required": "Mobile number is required"
+      "mobile_required": "Mobile number is required",
+      "permission_denied_title": "Access denied",
+      "permission_denied_description": "Ask your workspace admin for access to view this workspace's team members."
     },
     "Password": {
       "title": "Password Management",
@@ -2019,7 +2026,6 @@
       "analytics": "Analytics",
       "billing": "Billing",
       "team": "Team",
-      "contentCycle": "Content Cycle",
       "general": "General"
     },
     "product": {
@@ -2095,16 +2101,13 @@
       "manage_desc": "Change access levels for team members",
       "remove": "Remove Member",
       "remove_desc": "Remove members from the workspace"
-    },
-    "contentCycle": {
-      "view": "View Content Cycle",
-      "view_desc": "View the content cycle list and details",
-      "create": "Create Content Cycle",
-      "create_desc": "Create new content cycles",
-      "edit": "Edit Content Cycle",
-      "edit_desc": "Edit existing content cycles",
-      "delete": "Delete Content Cycle",
-      "delete_desc": "Permanently delete content cycles"
     }
+  },
+  "SetupInstagramDialog": {
+    "unbound_warning_title": "{count, plural, one {You have an unassigned subscription} other {You have # unassigned subscriptions}}",
+    "unbound_warning_description": "{count, plural, one {This subscription only activates on an account whose follower count falls inside its range. If the new account is outside that range the connection will fail, and you'll need to buy a plan that matches it.} other {Each of these subscriptions only activates on an account whose follower count falls inside that subscription's range. If the new account is outside all of them the connection will fail, and you'll need to buy a plan that matches it.}}",
+    "unbound_auto_match_note": "The system automatically activates the subscription that matches your page.",
+    "continue_with_unbound": "Continue with this plan",
+    "buy_another_plan": "Buy a different plan"
   }
 }

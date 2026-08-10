@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { LayoutCard } from '@/components/Layout/LayoutCard';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
 import { DownloadIcon } from 'lucide-react';

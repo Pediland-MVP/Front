@@ -7,7 +7,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
-import { CreditCardIcon, GiftIcon, PlantIcon, SignOutIcon, UsersIcon } from '@phosphor-icons/react';
+import { CreditCardIcon } from '@phosphor-icons/react/dist/csr/CreditCard';
+import { GiftIcon } from '@phosphor-icons/react/dist/csr/Gift';
+import { PlantIcon } from '@phosphor-icons/react/dist/csr/Plant';
+import { SignOutIcon } from '@phosphor-icons/react/dist/csr/SignOut';
+import { UsersIcon } from '@phosphor-icons/react/dist/csr/Users';
 
 const navItems = [
   { href: '/users', icon: UsersIcon, labelKey: 'customers' as const },

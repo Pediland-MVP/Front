@@ -3,16 +3,15 @@ import { ValidationTypeEnum } from '../types/validationType.enum';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 
+import { FormField, FormItem } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import {
-  FormField,
-  FormItem,
-  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
 import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
@@ -58,6 +57,10 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
         return 'کد ملی شما درست نیست';
       case ValidationTypeEnum.Number:
         return 'عدد وارد شده صحیح نیست';
+      case ValidationTypeEnum.Image:
+        return 'لطفا یک تصویر ارسال کنید';
+      case ValidationTypeEnum.PostalCode:
+        return 'کد پستی شما صحیح نیست';
       case ValidationTypeEnum.Text:
       default:
         return QuestionTextErrorMessage;

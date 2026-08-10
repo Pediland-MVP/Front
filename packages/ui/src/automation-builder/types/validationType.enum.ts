@@ -5,4 +5,6 @@ export enum ValidationTypeEnum {
   Text = 'text',
   Number = 'number',
   Selectbox = 'selectbox',
+  Image = 'image',
+  PostalCode = 'postalCode',
 }

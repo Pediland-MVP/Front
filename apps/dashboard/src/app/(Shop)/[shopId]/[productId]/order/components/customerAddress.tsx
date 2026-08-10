@@ -3,7 +3,7 @@
 import { CityNamespace } from '@/types/city';
 import { ProvinceNamespace } from '@/types/province';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
-import { TruckIcon } from '@phosphor-icons/react/dist/ssr';
+import { TruckIcon } from '@phosphor-icons/react/dist/ssr/Truck';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';

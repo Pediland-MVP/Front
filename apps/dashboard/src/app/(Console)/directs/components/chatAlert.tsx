@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { RocketIcon, Cross1Icon } from '@radix-ui/react-icons';
-import { WarningCircle } from '@phosphor-icons/react';
+import { WarningCircle } from '@phosphor-icons/react/dist/csr/WarningCircle';
 
 export function ChatAlert() {
   const [visible, setVisible] = useState(true);

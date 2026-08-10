@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button, Form } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { Conditions, ConditionTypesEnum } from './Form/Conditions';
 import { Triggers } from './Form/Triggers';
 import { JustFollowers } from './Form/JustFollowers';
-import { CommentTriggerInputs } from './Form/CommentTriggerInputs';
 import { CommentLimitAlert } from './Form/CommentLimitAlert';
 import { TargetPostComment } from './Form/TargetPostComment';
 import { TitleAndEnabled } from './Form/TitleAndEnabled';
@@ -29,6 +29,7 @@ export function AutomationBuilder({
   cancelLabel,
   headerSlot,
   helpSlots,
+  contentTypeHelpSlots,
   beforeSubmit,
   onInvalid,
   hasInstagram,
@@ -105,6 +106,8 @@ export function AutomationBuilder({
             isPromotion={isPromotion}
             helpSlot={helpSlots?.contents}
             builderMode={mode}
+            commentTriggerHelpSlot={helpSlots?.commentTrigger}
+            contentTypeHelpSlots={contentTypeHelpSlots}
           />
         </div>
 
@@ -118,14 +121,13 @@ export function AutomationBuilder({
               helpSlot={helpSlots?.justFollowers}
             />
             {commentRepliesSlot}
-            <CommentTriggerInputs helpSlot={helpSlots?.commentTrigger} />
             <CommentLimitAlert />
           </div>
         )}
 
         {mode === 'automation' && (
           <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-            <TitleAndEnabled control={form.control} />
+            <TitleAndEnabled control={form.control} helpSlot={helpSlots?.titleAndEnabled} />
           </div>
         )}
 

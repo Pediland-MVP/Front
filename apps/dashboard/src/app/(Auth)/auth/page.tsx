@@ -2,6 +2,7 @@
 
 import api, { setAccessToken } from '@/hooks/swr/api-client';
 import { useSWRConfig } from 'swr';
+import { resolvePostAuthDestination } from '@/utils/resolvePostAuthDestination';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GoogleLogin } from '@react-oauth/google';
@@ -13,15 +14,9 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 import { LogoText } from '@/components/Global/LogoText';
-import {
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Input,
-} from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { MoveLeftIcon } from 'lucide-react';
 import SupportButton from './supportButton';
@@ -61,11 +56,7 @@ export default function AuthPage() {
       // Clear stale SWR cache (pre-auth 401 errors) so all subsequent fetches use the new token
       await globalMutate(() => true, undefined, { revalidate: false });
       const me = await api.get('/users/me');
-      if (me?.data?.data?.status === 'onboarding') {
-        router.push('/auth/onboarding');
-      } else {
-        router.push('/');
-      }
+      router.push(await resolvePostAuthDestination(me?.data?.data?.status));
     } catch (error) {
       toast.error(t_ec(error?.response?.data?.code) || t_ec('INVALID_GOOGLE_TOKEN'));
       setIsLoading(false);

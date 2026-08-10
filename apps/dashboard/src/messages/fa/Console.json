@@ -7,6 +7,7 @@
       "automation": "پیام خودکار",
       "day": "روز",
       "details": "جـزئـیـات",
+      "edit": "ویرایش",
       "instagram": "اینستاگرام",
       "leads": "مخاطب",
       "million": "م",
@@ -43,8 +44,12 @@
       "learn": "راهنما و آموزش",
       "accounts": "مدیریت اکانت‌های اینستاگرام",
       "automations": "پیام‌های خودکار",
+      "bankInfo": "اطلاعات بانکی",
+      "businessInfo": "اطلاعات کسب‌وکار",
+      "buySubscription": "خرید اشتراک",
       "cardToCard": "مدیریت حساب‌های بانکی",
       "comments": "کامنت‌ها",
+      "connectedPages": "پیج‌های متصل",
       "contacts": "مخاطبین",
       "dashboard": "داشبورد",
       "description": "دستیار هوشمند",
@@ -55,9 +60,11 @@
       "name": "بِـفـروش",
       "ordersList": "سفارشات",
       "workspace": "کسب‌وکار",
-      "products": "کالاها - ویترین‌ها",
+      "products": "کالا و خدمات",
       "profile": "حساب کاربری",
       "settings": "تنظیمات",
+      "settingsHub": "تنظیمات عمومی",
+      "teamMembers": "اعضای تیم",
       "shop": "فروشگاه",
       "soon": "بزودی",
       "support": "پشتیبانی",
@@ -69,6 +76,16 @@
     "loading": "در حال بارگذاری...",
     "noData": "فضای کاری یافت نشد",
     "yourWorkspaces": "فضاهای کاری شما",
-    "accountSettings": "تنظیمات حساب کاربری"
+    "accountSettings": "تنظیمات حساب کاربری",
+    "WorkspaceDrawer": {
+      "connectedPages": "کسب‌وکارها و پیج‌های متصل ({count})",
+      "addPage": "افزودن پیج",
+      "connected": "متصل",
+      "disconnected": "قطع شده",
+      "close": "بستن",
+      "daysLeft": "اعتبار: {count} روز",
+      "coveredByCredit": "تحت پوشش اعتبار",
+      "pendingActivation": "در صف فعال‌سازی"
+    }
   }
 }

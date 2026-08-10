@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { fetcher } from '@/hooks/swr/api-client';
 import { cn } from '@/lib/utils';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import React, { useState, Suspense } from 'react';
 import {
@@ -16,16 +16,14 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui';
-import {
-  BookOpenIcon,
-  PlayCircleIcon,
-  CaretLeftIcon,
-  CaretRightIcon,
-  MagnifyingGlassIcon,
-  XCircleIcon,
-  ArrowRightIcon,
-} from '@phosphor-icons/react';
+} from '@/components/ui/dialog';
+import { BookOpenIcon } from '@phosphor-icons/react/dist/csr/BookOpen';
+import { PlayCircleIcon } from '@phosphor-icons/react/dist/csr/PlayCircle';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/csr/CaretLeft';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/csr/CaretRight';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/csr/MagnifyingGlass';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/csr/ArrowRight';
 import { AutoAspectPlayer } from '@/components/Global/HelpMeDialog';
 import { parseMarkdownToHtml } from '@befroosh/ui/lib/markdown';
 

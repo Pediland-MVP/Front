@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { SidebarIcon } from '@phosphor-icons/react/dist/ssr';
+import { SidebarIcon } from '@phosphor-icons/react/dist/ssr/Sidebar';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -298,8 +298,14 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        'relative flex max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-auto md:max-h-screen md:border',
-        'overflow-hidden pb-14 md:pb-0 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0',
+        // The height cap has to apply on mobile too, not only at `md`. Without a definite
+        // height here, `h-full` further down (e.g. LayoutTable) resolves to `auto`, the
+        // whole column grows to content height, and any inner `overflow-auto` region ends
+        // up taller than the screen — parking its scrollbar below the fold.
+        // Mobile scrolls here instead of on `body`, so pages without their own scroll
+        // container still reach all their content rather than being clipped.
+        'relative flex max-h-svh max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-x-hidden overflow-y-auto md:max-h-screen md:overflow-hidden md:border',
+        'pb-14 md:pb-0 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0',
         className,
       )}
       {...props}
@@ -356,7 +362,18 @@ function SidebarContent({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="sidebar-content"
       data-sidebar="content"
-      className={cn('flex min-h-0 flex-1 flex-col gap-3 overflow-hidden', className)}
+      className={cn(
+        // Scrolls on its own so the header/footer stay pinned. Without
+        // overflow-y-auto, an opened parent menu that outgrows the sidebar
+        // height gets clipped with no way to reach the hidden items.
+        // overflow-x-hidden keeps the submenu indent from causing sideways
+        // scroll; overscroll-contain stops the page behind from scrolling
+        // once the sidebar hits its end.
+        'scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent flex min-h-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto overscroll-contain',
+        // In icon mode there is nothing to scroll — keep it clipped.
+        'group-data-[collapsible=icon]:overflow-hidden',
+        className,
+      )}
       {...props}
     />
   );

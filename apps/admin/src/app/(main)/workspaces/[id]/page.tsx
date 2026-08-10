@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { SubscriptionStatusBadge } from '@/components/table/subscription-status-badge';
 import { formatNumber } from '@/lib/formatNumber';
 import { WorkspaceDetail } from '@/types/workspace';
-import { ArrowSquareOutIcon, InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 
 export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

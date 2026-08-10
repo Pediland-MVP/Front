@@ -14,7 +14,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowUp, Eye } from '@phosphor-icons/react';
+import { ArrowUp } from '@phosphor-icons/react/dist/csr/ArrowUp';
+import { Eye } from '@phosphor-icons/react/dist/csr/Eye';
 import Image from 'next/image';
 type Lead = {
   profile: string;

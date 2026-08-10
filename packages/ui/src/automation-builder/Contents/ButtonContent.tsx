@@ -6,7 +6,7 @@ import { AutomationContentModeEnum } from '../constants/automationContent.enum';
 import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 
-import { FormField, FormItem, FormLabel } from '@/components/ui';
+import { FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
@@ -38,7 +38,11 @@ export const ButtonContent = ({ contentIndex, mode, apiClient }: ButtonContentPr
         name={`${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.buttonTemplate.text`}
         render={({ field, fieldState: { error } }) => (
           <FormItem>
-            <FormLabel>{t('text.label')}</FormLabel>
+            <FormLabel>
+              {t.rich('you_can_use_vars', {
+                name: (chunks) => <span className="text-blue-500">{chunks}</span>,
+              })}
+            </FormLabel>
             <AutoResizeTextarea
               {...field}
               maxLength={640}

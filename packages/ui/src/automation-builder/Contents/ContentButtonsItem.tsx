@@ -8,32 +8,41 @@ import { cn } from '@/lib/utils';
 import { AutomationFormType } from '../schemas/automationForm';
 import { ButtonTypeEnum } from '../types/buttons.enum';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { Control, useFormContext, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { AutomationSearchSelect } from './AutomationSearchSelect';
 import { useContentsContext } from './ContentsContext';
 import { AutomationBuilderApiClient } from '../types/apiClient';
+import { InstagramPostSelectDialog } from '../Form/InstagramPostSelectDialog';
 import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  FormField,
-  FormItem,
-  FormMessage,
-  Input,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import { MoveVerticalIcon, TrashIcon } from 'lucide-react';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { AutomationButtonsContentTypes } from './AutomationButtons';
 
 type ButtonContentItemProps = {
@@ -47,6 +56,13 @@ type ButtonContentItemProps = {
   control: Control<AutomationFormType>;
   apiClient: AutomationBuilderApiClient;
 };
+
+const buttonTemplateTypeOrder: ButtonTypeEnum[] = [
+  ButtonTypeEnum.URL,
+  ButtonTypeEnum.START_AUTOMATION,
+  ButtonTypeEnum.INSTAGRAM_POST,
+  ButtonTypeEnum.TEXT,
+];
 
 const contentTypePayloadType: Record<
   | 'buttonTemplate'
@@ -64,6 +80,7 @@ const contentTypePayloadType: Record<
     startAutomation: true,
     text: true,
     url: true,
+    instagram_post: true,
   },
   question: {
     text: true,
@@ -89,12 +106,27 @@ export const ButtonContentItem = ({
   const form = useFormContext<AutomationFormType>();
   const { builderMode } = useContentsContext();
 
-  // Templates (admin builder) can't offer a "start automation" button: there is no
-  // workspace automation to target, and the id would dangle once a user creates an
-  // automation from the template. Hide it from the type picker in template mode.
+  const t = useTranslations('Automations.Contents.Button');
+  const t_ec = useTranslations('Automations.Contents.Button.Errors');
+  const t_post = useTranslations('Automations.InstagramPostSelectDialog');
+  const t_guard = useTranslations('Automations.TargetPostComment.Errors');
+
+  // Templates (admin builder) can't offer a "start automation" button or an "Instagram
+  // Post" button: there is no workspace automation to target, and no fixed Instagram
+  // account to fetch posts from. Hide both from the type picker in template mode.
   const isButtonTypeAllowed = (buttonType: ButtonTypeEnum) =>
     !!contentTypePayloadType[contentType][buttonType] &&
-    !(builderMode === 'template' && buttonType === ButtonTypeEnum.START_AUTOMATION);
+    !(
+      builderMode === 'template' &&
+      (buttonType === ButtonTypeEnum.START_AUTOMATION ||
+        buttonType === ButtonTypeEnum.INSTAGRAM_POST)
+    );
+
+  const allowedButtonTypes = Object.values(ButtonTypeEnum).filter(isButtonTypeAllowed);
+  const orderedButtonTypes =
+    contentType === 'buttonTemplate'
+      ? buttonTemplateTypeOrder.filter((buttonType) => allowedButtonTypes.includes(buttonType))
+      : allowedButtonTypes;
 
   // ── محاسبه مسیر پویا (اینجا فیکس اصلی است) ──
   type DefaultFieldNameType =
@@ -102,17 +134,80 @@ export const ButtonContentItem = ({
   const defaultFieldName: DefaultFieldNameType = `${mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders'}.${contentIndex}.${contentType === 'text' || contentType === 'question' ? 'quickReplies' : contentType === 'vitrin' ? 'buttons' : 'buttonTemplate.buttons'}`;
   const fieldPath = fieldNameOverride ?? defaultFieldName;
 
-  const selectedType = useWatch({
+  const postbackPayloadType = useWatch({
     name: `${fieldPath}.${index}.postbackPayloadType` as any,
     control,
   });
 
+  // The saved form only ever stores `postbackPayloadType: 'url'` for both the plain URL
+  // button and the "Instagram Post" button (the latter is a URL button under the hood —
+  // see docs/superpowers/specs/2026-07-17-instagram-post-button-design.md). They can't be
+  // told apart from the form value alone, so which one the dropdown *displays* is tracked
+  // separately, seeded once from the saved value. Reopening a saved automation always
+  // shows a previously-post-picked button as a plain URL button — that's expected.
+  const [uiButtonType, setUiButtonType] = useState<ButtonTypeEnum | ''>(postbackPayloadType ?? '');
+  const [isPostDialogOpen, setIsPostDialogOpen] = useState(false);
+  const [isConsentLockedDialogOpen, setIsConsentLockedDialogOpen] = useState(false);
+
+  // A CONSENT quick reply on a TEXT content that has a following content is required —
+  // removing it would bring back Instagram's own bug of hiding this content's buttons
+  // once another content follows (see Contents.tsx's auto-insert effect, which is what
+  // adds this button in the first place). Lock it regardless of whether the button was
+  // auto-added or the user added it manually; the risk is identical either way.
+  const parentArrayName = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
+  const parentContents = useWatch({ name: parentArrayName, control }) as
+    | { quickReplies?: ({ postbackPayloadType?: ButtonTypeEnum } | undefined)[] }[]
+    | undefined;
+  const hasNextContent =
+    mode === AutomationContentModeEnum.AUTOMATION &&
+    (parentContents?.length ?? 0) > contentIndex + 1;
+
+  // ...but the CONSENT button only ever protects the content's OTHER quick replies. Once
+  // the user has deleted every one of them, there is nothing left for Instagram to hide,
+  // so keeping the lock on just traps them with a button they can never remove — BEF-142.
+  // (`contentType === 'text'` always reads `contents.N.quickReplies`: the only caller that
+  // passes `fieldNameOverride` is `VitrinContent`, and it passes `contentType="vitrin"`.)
+  // A quick reply with no `postbackPayloadType` yet is a row the user just added and has
+  // not typed — it still counts as something to protect.
+  const hasProtectedQuickReply = (parentContents?.[contentIndex]?.quickReplies ?? []).some(
+    (quickReply) => quickReply?.postbackPayloadType !== ButtonTypeEnum.CONSENT,
+  );
+
+  const isLockedConsentButton =
+    contentType === 'text' &&
+    postbackPayloadType === ButtonTypeEnum.CONSENT &&
+    hasNextContent &&
+    hasProtectedQuickReply;
+
+  const removeHandler = () => {
+    if (isLockedConsentButton) {
+      setIsConsentLockedDialogOpen(true);
+      return;
+    }
+    remove(index);
+  };
+
+  const typeSelectHandler = (value: ButtonTypeEnum) => {
+    setUiButtonType(value);
+    form.setValue(
+      `${fieldPath}.${index}.postbackPayloadType` as any,
+      value === ButtonTypeEnum.INSTAGRAM_POST ? ButtonTypeEnum.URL : value,
+      { shouldValidate: true },
+    );
+  };
+
+  const openPostPickerHandler = () => {
+    const instagramIds = form.getValues('instagramIds') ?? [];
+    if (instagramIds.length > 1) {
+      toast.error(t_guard('specific_post_requires_single_instagram'));
+      return;
+    }
+    setIsPostDialogOpen(true);
+  };
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });
-
-  const t = useTranslations('Automations.Contents.Button');
-  const t_ec = useTranslations('Automations.Contents.Button.Errors');
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -128,15 +223,9 @@ export const ButtonContentItem = ({
         isDragging && 'z-10',
       )}
     >
-      <Card
-        className={cn(
-          'w-full gap-0 p-3',
-          index !== 0 && 'pt-4',
-          isDragging && 'ring-primary ring-1',
-        )}
-      >
-        <CardHeader className="-mt-2 p-0">
-          <div className="flex items-center justify-between">
+      <Card className={cn('w-full gap-3 p-4', isDragging && 'ring-primary ring-1')}>
+        <CardHeader className="p-0">
+          <div className="flex min-h-5 items-center justify-between">
             {index !== 0 ? (
               <Button
                 variant="link"
@@ -158,7 +247,7 @@ export const ButtonContentItem = ({
                 size="icon"
                 className="text-destructive size-5! p-0"
                 type="button"
-                onClick={() => remove(index)}
+                onClick={removeHandler}
               >
                 <TrashIcon />
               </Button>
@@ -166,27 +255,30 @@ export const ButtonContentItem = ({
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-wrap gap-2 p-0">
+        <CardContent className="flex flex-wrap gap-3 p-0">
           {/* نوع دکمه */}
           <FormField
             control={form.control}
             name={`${fieldPath}.${index}.postbackPayloadType` as any}
-            render={({ field: typeField, fieldState: { error } }) => (
-              <FormItem className="w-full space-y-0 sm:w-auto">
-                {Object.values(ButtonTypeEnum).filter(isButtonTypeAllowed).length > 1 && (
-                  <Select value={typeField.value ?? ''} onValueChange={typeField.onChange}>
+            render={({ fieldState: { error } }) => (
+              <FormItem
+                className={cn(
+                  'w-full space-y-0',
+                  allowedButtonTypes.length > 1 ? 'sm:w-52 sm:shrink-0' : 'sm:w-auto',
+                )}
+              >
+                {allowedButtonTypes.length > 1 && (
+                  <Select value={uiButtonType || ''} onValueChange={typeSelectHandler}>
                     <SelectTrigger className="gap-1 pr-2 pl-1.5">
                       <SelectValue placeholder={t('button_type')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {Object.values(ButtonTypeEnum).map((buttonType) => {
-                          return isButtonTypeAllowed(buttonType) ? (
-                            <SelectItem key={buttonType} value={buttonType}>
-                              {t(`${buttonType}.label`)}
-                            </SelectItem>
-                          ) : null;
-                        })}
+                        {orderedButtonTypes.map((buttonType) => (
+                          <SelectItem key={buttonType} value={buttonType}>
+                            {t(`${buttonType}.label`)}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -199,41 +291,17 @@ export const ButtonContentItem = ({
           />
 
           {/* عنوان دکمه */}
-          {selectedType && (
+          {uiButtonType && (
             <FormField
               control={form.control}
               name={`${fieldPath}.${index}.title` as any}
               render={({ field, fieldState: { error } }) => (
-                <FormItem className="flex w-full flex-1">
-                  <div className="w-full space-y-1">
-                    <Input
-                      {...field}
-                      maxLength={35}
-                      aria-invalid={!!error}
-                      placeholder={t(`${selectedType}.placeholder`)}
-                    />
-                    {error && <ErrorMessage>{error.message}</ErrorMessage>}
-                  </div>
-                </FormItem>
-              )}
-            />
-          )}
-
-          {/* URL (فقط وقتی نوع URL انتخاب شده) */}
-          {selectedType === ButtonTypeEnum.URL && (
-            <FormField
-              control={form.control}
-              name={`${fieldPath}.${index}.url` as any}
-              render={({ field, fieldState: { error } }) => (
-                <FormItem className="w-full">
+                <FormItem className="w-full min-w-0 space-y-1 sm:w-auto sm:flex-1">
                   <Input
-                    type="url"
-                    dir="ltr"
-                    className="text-left"
                     {...field}
-                    value={field.value ?? ''}
+                    maxLength={35}
                     aria-invalid={!!error}
-                    placeholder={t('url.placeholder')}
+                    placeholder={t(`${uiButtonType}.placeholder`)}
                   />
                   {error && <ErrorMessage>{error.message}</ErrorMessage>}
                 </FormItem>
@@ -241,8 +309,69 @@ export const ButtonContentItem = ({
             />
           )}
 
+          {/* URL (وقتی نوع URL یا پست اینستاگرام انتخاب شده) */}
+          {(uiButtonType === ButtonTypeEnum.URL ||
+            uiButtonType === ButtonTypeEnum.INSTAGRAM_POST) && (
+            <FormField
+              control={form.control}
+              name={`${fieldPath}.${index}.url` as any}
+              render={({ field, fieldState: { error } }) => {
+                const isInstagramPost = uiButtonType === ButtonTypeEnum.INSTAGRAM_POST;
+                const hasSelectedPost = isInstagramPost && !!field.value;
+                const showPickerOnly = isInstagramPost && !hasSelectedPost;
+
+                return (
+                  <FormItem className="w-full space-y-1">
+                    <div className="flex items-center gap-2">
+                      {!showPickerOnly && (
+                        <Input
+                          type="url"
+                          dir="ltr"
+                          className="text-left"
+                          {...field}
+                          value={field.value ?? ''}
+                          aria-invalid={!!error}
+                          placeholder={
+                            isInstagramPost ? t('instagram_post.placeholder') : t('url.placeholder')
+                          }
+                        />
+                      )}
+                      {isInstagramPost && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size={showPickerOnly ? 'default' : 'icon'}
+                          className={showPickerOnly ? 'w-full' : 'size-10! shrink-0'}
+                          aria-label={t_post('select_post')}
+                          onClick={openPostPickerHandler}
+                        >
+                          <InstagramLogoIcon />
+                          {showPickerOnly && t_post('select_post')}
+                        </Button>
+                      )}
+                    </div>
+                    {error && <ErrorMessage>{error.message}</ErrorMessage>}
+                    {isInstagramPost && (
+                      <InstagramPostSelectDialog
+                        index={index}
+                        mode={mode}
+                        apiClient={apiClient}
+                        open={isPostDialogOpen}
+                        onOpenChange={setIsPostDialogOpen}
+                        onSelect={(post) => {
+                          field.onChange(post.permalink ?? '');
+                          setIsPostDialogOpen(false);
+                        }}
+                      />
+                    )}
+                  </FormItem>
+                );
+              }}
+            />
+          )}
+
           {/* انتخاب اتوماسیون (فقط وقتی نوع START_AUTOMATION انتخاب شده) */}
-          {selectedType === ButtonTypeEnum.START_AUTOMATION && (
+          {uiButtonType === ButtonTypeEnum.START_AUTOMATION && (
             <FormField
               control={form.control}
               name={`${fieldPath}.${index}.destinationContentCycleId` as any}
@@ -272,6 +401,20 @@ export const ButtonContentItem = ({
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={isConsentLockedDialogOpen} onOpenChange={setIsConsentLockedDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('consent_locked_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('consent_locked_description')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsConsentLockedDialogOpen(false)}>
+              {t('consent_locked_close')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import type { IconProps } from '@phosphor-icons/react';
+import type { IconProps } from '@phosphor-icons/react/dist/lib/types';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 

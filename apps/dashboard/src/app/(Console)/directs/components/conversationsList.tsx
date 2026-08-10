@@ -10,7 +10,8 @@ import { Card } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useSidebar } from '@/components/ui/sidebar';
-import { ArrowLeft, Sidebar } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeft } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
+import { Sidebar } from '@phosphor-icons/react/dist/ssr/Sidebar';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 
 import { ConversationNamespace } from '@/types/conversations/conversation.namespace';

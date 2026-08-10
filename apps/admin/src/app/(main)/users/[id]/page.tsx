@@ -44,14 +44,12 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormField } from '@/components/ui/form';
-import {
-  ChatCenteredTextIcon,
-  CrosshairSimpleIcon,
-  EnvelopeSimpleIcon,
-  InstagramLogoIcon,
-  TelegramLogoIcon,
-  WhatsappLogoIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText';
+import { CrosshairSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrosshairSimple';
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import {
   CheckIcon,
   MessageSquare,
@@ -440,16 +438,27 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
           </h3>
 
           <div className="space-y-2 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-500">بسته فعال:</span>
-              <span className="text-right font-semibold text-slate-800">
-                {(() => {
-                  const activeSub = customer?.subscriptions?.find((s) => s.status === 'active');
-                  if (!activeSub) return 'ندارد';
-                  return `${activeSub?.planDuration?.name}، ${formatNumber(activeSub?.planDuration.price)} ریال`;
-                })()}
-              </span>
-            </div>
+            {(() => {
+              const activeSubs =
+                customer?.subscriptions?.filter((s) => s.status === 'active') ?? [];
+              if (activeSubs.length === 0) {
+                return (
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">بسته فعال:</span>
+                    <span className="text-right font-semibold text-slate-800">ندارد</span>
+                  </div>
+                );
+              }
+              return activeSubs.map((sub) => (
+                <div key={sub.id} className="flex items-center justify-between">
+                  <span className="text-slate-500">بسته فعال:</span>
+                  <span className="text-right font-semibold text-slate-800">
+                    {`${sub.planDuration?.name}، ${formatNumber(sub.planDuration?.price)} ریال`}
+                    {` (${sub.isPersonalWorkspace ? 'شخصی' : sub.workspaceName})`}
+                  </span>
+                </div>
+              ));
+            })()}
 
             {customer?.subscriptions?.find((s) => s.status === 'active') && (
               <div className="flex items-center justify-between">
@@ -480,16 +489,27 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
               </div>
             )}
 
-            <div className="flex items-center justify-between">
-              <span className="text-slate-500">بسته رزرو:</span>
-              <span className="text-right font-semibold text-slate-800">
-                {(() => {
-                  const activeSub = customer?.subscriptions?.find((s) => s.status === 'reserved');
-                  if (!activeSub) return 'ندارد';
-                  return `${Math.floor(activeSub?.planDuration.durationDays / 30)} ماهه، ${formatNumber(activeSub?.invoices[0]?.amount)} ریال`;
-                })()}
-              </span>
-            </div>
+            {(() => {
+              const reservedSubs =
+                customer?.subscriptions?.filter((s) => s.status === 'reserved') ?? [];
+              if (reservedSubs.length === 0) {
+                return (
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">بسته رزرو:</span>
+                    <span className="text-right font-semibold text-slate-800">ندارد</span>
+                  </div>
+                );
+              }
+              return reservedSubs.map((sub) => (
+                <div key={sub.id} className="flex items-center justify-between">
+                  <span className="text-slate-500">بسته رزرو:</span>
+                  <span className="text-right font-semibold text-slate-800">
+                    {`${Math.floor(sub.planDuration.durationDays / 30)} ماهه، ${formatNumber(sub.invoices[0]?.amount)} ریال`}
+                    {` (${sub.isPersonalWorkspace ? 'شخصی' : sub.workspaceName})`}
+                  </span>
+                </div>
+              ));
+            })()}
           </div>
 
           {user?.role !== 'kam' && (

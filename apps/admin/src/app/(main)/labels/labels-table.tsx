@@ -16,7 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PlusIcon, ArrowsClockwiseIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react';
+import { PlusIcon } from '@phosphor-icons/react/dist/csr/Plus';
+import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/csr/ArrowsClockwise';
+import { PencilSimpleIcon } from '@phosphor-icons/react/dist/csr/PencilSimple';
+import { TrashIcon } from '@phosphor-icons/react/dist/csr/Trash';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { scheduleSummary } from './schedule-summary';
 import type { LabelListItem } from './types';

@@ -15,9 +15,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Form,
-} from '@/components/ui';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 
@@ -67,7 +67,7 @@ export function WorkspaceForm({ onSuccess }: { onSuccess?: () => void }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-1/2">
         <div className="grid gap-2">
           <FormField
             control={form.control}

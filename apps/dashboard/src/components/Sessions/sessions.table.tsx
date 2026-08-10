@@ -8,15 +8,15 @@ import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 // Just UI Imports Below
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui';
+} from '@/components/ui/table';
 import { InstagramFilter } from '@/components/ui-custom/InstagramFilter';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import useSWR from 'swr';

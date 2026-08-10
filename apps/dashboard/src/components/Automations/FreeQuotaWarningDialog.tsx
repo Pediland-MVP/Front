@@ -11,9 +11,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui';
+} from '@/components/ui/alert-dialog';
 import { Progress } from '@/components/ui/progress';
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 interface FreeQuotaWarningDialogProps {
   isOpen: boolean;

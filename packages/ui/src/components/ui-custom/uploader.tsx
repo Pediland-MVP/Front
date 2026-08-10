@@ -1,4 +1,4 @@
-import { UploadSimple } from '@phosphor-icons/react/dist/ssr';
+import { UploadSimple } from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import React, { useState } from 'react';
 
 const FileUploader: React.FC = () => {

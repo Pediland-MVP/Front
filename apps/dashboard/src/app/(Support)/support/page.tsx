@@ -1,17 +1,16 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import {
-  TelegramLogoIcon,
-  WhatsappLogoIcon,
-  PhoneCallIcon,
-  EnvelopeIcon,
-  InstagramLogoIcon,
-  GraduationCap,
-} from '@phosphor-icons/react/dist/ssr';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
+import { PhoneCallIcon } from '@phosphor-icons/react/dist/ssr/PhoneCall';
+import { EnvelopeIcon } from '@phosphor-icons/react/dist/ssr/Envelope';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { GraduationCap } from '@phosphor-icons/react/dist/ssr/GraduationCap';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Button, Card, CardContent } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { usePathname } from 'next/navigation';
 
 type ContactMethod = {

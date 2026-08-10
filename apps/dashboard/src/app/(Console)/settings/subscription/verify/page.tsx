@@ -11,7 +11,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { mutate } from 'swr';
-import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/csr/CheckCircle';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
 
 const REDIRECT_DELAY_SEC = 4;
 
@@ -22,6 +23,7 @@ function VerifyContent() {
   const t_ec = useTranslations('ERROR_CODES');
 
   const [refId, setRefId] = useState<string | null>(null);
+  const [pooled, setPooled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState<ExceptionMessage | null>(null);
@@ -51,6 +53,7 @@ function VerifyContent() {
       .get(`/payments/subscription/${gatewayType}/verify?${searchParams.toString()}`)
       .then(async (res) => {
         setRefId(res.data?.data?.ref_id ?? null);
+        setPooled(Boolean(res.data?.data?.pooled));
         setVerified(true);
         setIsLoading(false);
         // The subscription is already activated server-side by this point
@@ -67,12 +70,12 @@ function VerifyContent() {
   useEffect(() => {
     if (!verified) return;
     if (secondsLeft <= 0) {
-      router.push(`/settings/instagram?isAfterPurchasingPlan`);
+      router.push(pooled ? '/connect' : '/settings/instagram?isAfterPurchasingPlan');
       return;
     }
     const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(timer);
-  }, [verified, secondsLeft, router]);
+  }, [verified, pooled, secondsLeft, router]);
 
   const redirectProgress = ((REDIRECT_DELAY_SEC - secondsLeft) / REDIRECT_DELAY_SEC) * 100;
 

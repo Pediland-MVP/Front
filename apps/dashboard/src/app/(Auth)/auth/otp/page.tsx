@@ -2,6 +2,7 @@
 
 import api, { setAccessToken } from '@/hooks/swr/api-client';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
+import { resolvePostAuthDestination } from '@/utils/resolvePostAuthDestination';
 import { onInputP2EHandler } from '@/utils/p2eNumber';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
@@ -13,21 +14,14 @@ import { toast } from 'sonner';
 import { mutate } from 'swr';
 import { z } from 'zod';
 
-import {
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { CounterDown } from '@/components/ui-custom/CounterDown';
 import { TelegramOtpInlineLink } from '@/components/ui-custom/TelegramOtpInlineLink';
-import { CircleNotchIcon, NumpadIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import { NumpadIcon } from '@phosphor-icons/react/dist/csr/Numpad';
 import { RefreshCwIcon } from 'lucide-react';
 import SupportButton from '../supportButton';
 
@@ -88,8 +82,7 @@ export default function OtpPage() {
       await mutate(mutateIncludeStringKey('/users/me'));
       sessionStorage.removeItem('prelogin_mobile');
 
-      if (me?.data?.data?.status === 'onboarding') router.push('/auth/onboarding');
-      else router.push('/');
+      router.push(await resolvePostAuthDestination(me?.data?.data?.status));
     } catch (error) {
       console.error('❌ API Error:', error.response?.data);
       toast.error(t_ec(error.response?.data?.code));

@@ -31,6 +31,14 @@ export default defineConfig({
         replacement: path.resolve(dirname, '../../packages/ui/src/automation-builder'),
       },
       { find: '@', replacement: path.resolve(dirname, './src') },
+      // tsconfig.json also maps the bare `@components/*` specifier (no slash after `@`)
+      // to `./src/components/*` — used by a handful of older imports (e.g.
+      // `connect/page.tsx`'s `HowToConnectDialog`). Same tsc-vs-vite gap as above: add it
+      // explicitly so those specifiers (and `vi.mock` on them) resolve under vitest.
+      {
+        find: '@components',
+        replacement: path.resolve(dirname, './src/components'),
+      },
       // `packages/ui` (a workspace package, not a Next.js app) doesn't declare `next` as
       // a dependency, so pnpm's strict resolution means `next/image`/`next/link` 404 when
       // vitest loads its files (e.g. InstagramPostSelectDialog.tsx) — even though the

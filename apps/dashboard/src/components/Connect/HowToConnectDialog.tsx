@@ -4,16 +4,16 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui';
-import { InstagramLogoIcon } from '@phosphor-icons/react';
-import { PlugsIcon } from '@phosphor-icons/react';
+} from '@/components/ui/dialog';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/csr/InstagramLogo';
+import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
 import { cn } from '@/lib/utils';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;

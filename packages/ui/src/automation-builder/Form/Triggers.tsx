@@ -4,7 +4,8 @@ import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 import { Control, Form, useFormContext, UseFormGetValues } from 'react-hook-form';
 
-import { FormField, FormLabel, Switch } from '@/components/ui';
+import { FormField, FormLabel } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { toast } from 'sonner';
 import { ConditionTypesEnum } from './Conditions';

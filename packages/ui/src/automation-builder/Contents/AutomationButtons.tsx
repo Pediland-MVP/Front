@@ -22,8 +22,8 @@ import {
 } from '@dnd-kit/sortable';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui';
-import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr';
+import { Button } from '@/components/ui/button';
+import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr/RadioButton';
 import { ButtonContentItem } from './ContentButtonsItem';
 import React, { useEffect } from 'react';
 
@@ -86,6 +86,7 @@ export const AutomationButtons = ({
       append({
         title: '',
         ...(contentType === 'question' && { postbackPayloadType: ButtonTypeEnum.TEXT }),
+        ...(contentType === 'buttonTemplate' && { postbackPayloadType: ButtonTypeEnum.URL }),
       });
     }
   };

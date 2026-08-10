@@ -3,8 +3,8 @@
 import { useLogout } from '@/hooks/swr/api-client';
 import useConnectInstagram from '@/hooks/useConnectInstagram';
 import useUser from '@/hooks/useUser';
-import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useAddInstagramGate, CONTINUE_WITH_PLAN_PARAM } from '@/hooks/useAddInstagramGate';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,9 +15,16 @@ import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
 import { LogoSlogan } from '@/components/Global/LogoSlogan';
 import { LogoText } from '@/components/Global/LogoText';
 import { WorkspaceSwitcherDialog } from '@/components/Console/WorkspaceSwitcherDialog';
-import { Button, Spinner } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
-import { HeadsetIcon, PlugsIcon, SignOutIcon, ArrowsLeftRight } from '@phosphor-icons/react';
+import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
+import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
+import { readAndClearPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
+import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
+import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
+import { SignOutIcon } from '@phosphor-icons/react/dist/csr/SignOut';
+import { ArrowsLeftRight } from '@phosphor-icons/react/dist/csr/ArrowsLeftRight';
 import {
   ClipboardCopyIcon,
   CopyIcon,
@@ -29,8 +36,6 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 const SITE_URL = process.env.NEXT_PUBLIC_LANDING_URL;
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
-const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export default function ConnectPage() {
   const t = useTranslations('Connect');
@@ -39,18 +44,35 @@ export default function ConnectPage() {
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
+  const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
+  const [pendingUsername, setPendingUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingUsername(readAndClearPendingInstagramUsername());
+  }, []);
 
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
+  // Set by the dialog's "ادامه با همین اشتراک" button, which now routes here instead of
+  // straight into OAuth. It answers the unbound-plan question so this page shows the
+  // normal connect button rather than reopening the dialog the user just came from.
+  const unboundPlanAccepted = searchParams.get(CONTINUE_WITH_PLAN_PARAM) === '1';
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
-  const { workspaces } = useWorkspaces();
-  const { workspaceId, can } = usePermissions();
+  const { workspaceId, can, isLoading: isPermissionsLoading } = usePermissions();
+  // While workspaceId is set but the effective-permissions fetch hasn't resolved yet,
+  // `can()` reads an empty permission set and would report "not granted" even for an
+  // owner/member who actually has instagram:manage — wait for the fetch instead.
+  const isCheckingPermission = Boolean(workspaceId) && isPermissionsLoading;
   const canConnect = canConnectInstagram && (workspaceId ? can('instagram:manage') : true);
-  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
   const instagramCount = user?.instagrams?.length ?? 0;
   const atInstagramLimit = instagramCount >= 5;
+  // Shared with the "افزودن اکانت" button on /settings/instagram so the two entry points
+  // into this journey cannot drift — see the hook for why each reason gates.
+  const { currentWorkspace, requiresSetupDialog } = useAddInstagramGate(hasInstagram, {
+    unboundPlanAccepted,
+  });
 
   useEffect(() => {
     const submitCode = async (code: string) => {
@@ -107,6 +129,7 @@ export default function ConnectPage() {
 
       <div className="flex-1 rounded-t-3xl bg-violet-50 py-6">
         <HowToConnectDialog open={isDialogOpen} setOpen={setDialogOpen} />
+        <SetupInstagramDialog open={isSetupDialogOpen} onOpenChange={setIsSetupDialogOpen} />
 
         <div className="container mx-auto flex h-full flex-col justify-around px-5 md:max-w-sm">
           <div className="flex flex-col items-center space-y-4">
@@ -144,6 +167,10 @@ export default function ConnectPage() {
                 <div className="w-full rounded-xl bg-violet-50 px-4 py-3 text-center text-sm text-violet-700">
                   {t('instagram_limit')}
                 </div>
+              ) : isCheckingPermission ? (
+                <div className="flex w-full items-center justify-center py-4">
+                  <Spinner className="size-6" />
+                </div>
               ) : !canConnect ? (
                 // Sub-scenario B.2 — member lacks instagram:manage permission.
                 // Backend already blocks the connect; this surfaces the reason in the UI.
@@ -151,12 +178,14 @@ export default function ConnectPage() {
                   <p className="mb-1 font-medium">{t('no_connect_permission_title')}</p>
                   <p className="text-xs">{t('no_connect_permission_description')}</p>
                 </div>
+              ) : requiresSetupDialog ? (
+                <Button className="w-full" onClick={() => setIsSetupDialogOpen(true)}>
+                  {t('setup_second_instagram_cta')}
+                </Button>
               ) : (
                 <>
                   <Button className="w-full" disabled={isCallbackIGLoading} asChild>
-                    <Link
-                      href={`https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`}
-                    >
+                    <Link href={IG_OAUTH_URL}>
                       {isCallbackIGLoading ? (
                         <>
                           <Spinner className="size-5" /> {t('connecting_account')}
@@ -199,6 +228,12 @@ export default function ConnectPage() {
                   {t('how_to_connect')}
                 </Button>
               </HelpMeDialog>
+
+              {pendingUsername && (
+                <p className="text-muted-foreground mt-2 text-center text-xs">
+                  {t('pending_username_reminder', { username: pendingUsername })}
+                </p>
+              )}
 
               {hasInstagram && (
                 <Button variant="outline" className="mt-4 w-full" asChild>

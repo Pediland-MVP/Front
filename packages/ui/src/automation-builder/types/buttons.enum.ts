@@ -3,4 +3,5 @@ export enum ButtonTypeEnum {
   TEXT = 'text',
   URL = 'url',
   CONSENT = 'CONSENT',
+  INSTAGRAM_POST = 'instagram_post',
 }

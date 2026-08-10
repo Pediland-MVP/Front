@@ -1,4 +1,5 @@
-import { CheckCircle, CheckCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { CheckCircle } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 

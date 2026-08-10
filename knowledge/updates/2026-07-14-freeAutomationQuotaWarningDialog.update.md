@@ -22,6 +22,12 @@ The backend's free-automation-quota feature (`Back` branch `feat/free-automation
 
 The dialog's trigger condition is a live-count comparison done client-side; it does not re-derive `freeAutomationQuotaExceeded` from scratch, only reads what the backend already computed. This is intentionally simple — no new backend endpoint, no new computation duplicated on the frontend.
 
+## Fix (2026-07-18): dialog re-showed on every submission past the boundary
+
+`fix/free-quota-dialog-repeat` — `getFreeQuotaWarning` originally gated on `automationCount >= freeAutomationLimit` plus `!freeAutomationQuotaExceeded`. Confirmed against the local dev DB that a page's live `automationCount` can get ahead of the backend's sticky `freeAutomationQuotaExceeded` flag (any `ContentCycleInstagram` row created outside `ContentCycleService.save()`/`update()` — e.g. the seeded dev-DB fixtures had `automationLinkCount=0` while their live count already sat at the limit, see `packages/entities/src/_seeder/seed.entities.ts`). While the flag lags, `>=` keeps matching on every subsequent submission instead of just the one that crosses the boundary.
+
+Changed the comparison to exact equality (`automationCount === freeAutomationLimit`): the dialog now only fires on the single submission that takes a page from `limit` to `limit + 1`, and stops matching on its own once the live count moves past that value — regardless of whether the sticky flag ever catches up. No backend change needed.
+
 ## Verification
 
-Not yet run — per the user's explicit instruction this session, no `tsc`/`next build`/broad `jest` run has been executed without asking first. Manual read-through of the diff (imports, prop shapes, JSX structure, translation key paths) was done in place of compiling. **Pending**: `npx tsc --noEmit` in `apps/dashboard` and a manual browser check of the actual dialog flow, both to be run only with explicit permission.
+Not yet run for the 2026-07-14 feature itself. The 2026-07-18 fix added `AutomationForm.freeQuota.test.tsx` (3 cases: dialog shows exactly at the boundary; does not re-show once the live count is already past the limit but unflagged; does not show once the sticky flag is set) — not run this session either, per the user's explicit instruction that tests only run with permission each time; the user opted to test manually instead. **Pending**: run `AutomationForm.freeQuota.test.tsx` and a manual browser check of the actual dialog flow.

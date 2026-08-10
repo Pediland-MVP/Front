@@ -33,9 +33,11 @@ The component measures in a `useLayoutEffect` keyed on the `value` prop. An `onC
 
 Total: 81 unit tests passing (73 pre-existing + 8 new in `AutoResizeTextarea.tsx`, including the width-change/ResizeObserver test added in review).
 
+**Updated 2026-08-10 (merge into `merged-admin`):** by the time this branch merged, `4b6d78f1` had removed `CommentTriggerInputs.tsx` entirely and moved its `commentStartText` field into the new `Contents/StartAutomationMessage.tsx` (the read-only comment-start preview card). The auto-resize swap moved with it — `StartAutomationMessage.tsx`'s `commentStartText` field now uses `AutoResizeTextarea` with `minRows={3}` (was `rows={3}`); `commentStartTitle` stays a plain `Input`, unaffected. Two other call sites also picked up the same swap already: `ButtonContent.tsx`'s text field kept its `#نام`-hint label (from `fd5101dd`) with `AutoResizeTextarea` swapped in, and `VitrinContent.tsx`'s description field kept its 5-row floor as `minRows={5}` (was `rows={5}`, from `ced3fe11`).
+
 ## Explicitly out of scope
 
-- `Form/CommentTriggerInputs.tsx:82` (`commentStartTitle`) — the start button's label, a short one-line field. Not auto-resizing.
+- `Contents/StartAutomationMessage.tsx` `commentStartTitle` field (formerly `Form/CommentTriggerInputs.tsx:82`) — the start button's label, a short one-line field. Not auto-resizing.
 - `Contents/ContentPromotion.tsx:136` — read-only (disabled) promo block, not form-bound. Not changed.
 - The hardcoded-Persian i18n bug at `QuestionContent.tsx:139` — a known separate defect. This work changes that field's height only.
 

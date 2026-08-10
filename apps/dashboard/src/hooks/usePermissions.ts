@@ -1,32 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import useSWR from 'swr';
-import { fetcher, getAccessToken } from '@/hooks/swr/api-client';
+import { fetcher } from '@/hooks/swr/api-client';
 import { Permission } from '@/types/workspace';
 import { IResponseMessage } from '@/types/responseMessage';
-
-function decodeJwtPayload(): { workspaceId: string | null; userId: string | null } {
-  let token = getAccessToken();
-
-  if (!token && typeof document !== 'undefined') {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; token=`);
-    if (parts.length === 2) {
-      token = parts.pop()?.split(';').shift() || null;
-    }
-  }
-
-  if (!token) return { workspaceId: null, userId: null };
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return {
-      workspaceId: payload.workspaceId || null,
-      userId: payload.sub || null,
-    };
-  } catch (e) {
-    return { workspaceId: null, userId: null };
-  }
-}
+import { decodeJwtPayload } from '@/utils/jwt';
 
 export function usePermissions() {
   const { workspaceId, userId } = decodeJwtPayload();
@@ -45,16 +22,7 @@ export function usePermissions() {
 
   const can = useCallback(
     (slug: string) => {
-      return permissions.some((p) => {
-        if (p.slug === slug) return true;
-        if (slug.startsWith('automation:')) {
-          return p.slug === slug.replace('automation:', 'contentCycle:');
-        }
-        if (slug.startsWith('contentCycle:')) {
-          return p.slug === slug.replace('contentCycle:', 'automation:');
-        }
-        return false;
-      });
+      return permissions.some((p) => p.slug === slug);
     },
     [permissions],
   );

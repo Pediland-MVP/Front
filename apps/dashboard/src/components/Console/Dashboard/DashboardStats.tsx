@@ -9,7 +9,7 @@ import useUser from '@/hooks/useUser';
 // TODO: Should Refactor
 import { OverallStats } from '@/types/stats';
 
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import {
   Select,
@@ -18,7 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CircleNotchIcon, PlusCircleIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import { PlusCircleIcon } from '@phosphor-icons/react/dist/csr/PlusCircle';
+import { LightningIcon } from '@phosphor-icons/react/dist/csr/Lightning';
+import { AddressBookIcon } from '@phosphor-icons/react/dist/csr/AddressBook';
+import { CubeIcon } from '@phosphor-icons/react/dist/csr/Cube';
+import { ShoppingBagIcon } from '@phosphor-icons/react/dist/csr/ShoppingBag';
+import { CoinsIcon } from '@phosphor-icons/react/dist/csr/Coins';
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react/dist/lib/types';
 import { ItemsStatisticCard } from './ItemsStatisticCard';
 import { DashboardStatsSkeleton } from './DashboardStats.skeleton';
 
@@ -40,7 +47,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 interface HomeItems {
   title: string;
   total: number | React.ReactNode;
-  icon: string;
+  icon: PhosphorIcon;
   link: string;
 }
 
@@ -80,31 +87,31 @@ export const DashboardStats = () => {
     {
       title: t('automation'),
       total: stats?.contentCycles?.count,
-      icon: 'Lightning',
+      icon: LightningIcon,
       link: '/automations',
     },
     {
       title: t('leads'),
       total: stats?.leads?.count,
-      icon: 'AddressBook',
+      icon: AddressBookIcon,
       link: '/contacts',
     },
     {
       title: isAccountView ? `${t('products')} *` : t('products'),
       total: stats?.products?.count,
-      icon: 'Cube',
+      icon: CubeIcon,
       link: '/products',
     },
     {
       title: t('orders'),
       total: stats?.sales?.count,
-      icon: 'ShoppingBag',
+      icon: ShoppingBagIcon,
       link: '/orders',
     },
     {
       title: t('sales'),
       total: rlsPriceFormat(stats?.sales?.total),
-      icon: 'Coins',
+      icon: CoinsIcon,
       link: '/orders',
     },
   ];

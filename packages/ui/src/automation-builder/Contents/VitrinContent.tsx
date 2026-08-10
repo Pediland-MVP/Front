@@ -17,7 +17,10 @@ import {
   Cross1Icon,
 } from '@radix-ui/react-icons';
 
-import { Button, Input, Label, FormField, FormItem } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { FormField, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { Progress } from '@/components/ui/progress';
 import { AutomationButtons } from './AutomationButtons';
@@ -217,6 +220,7 @@ function VitrinItemCard({
             <AutoResizeTextarea
               {...field}
               placeholder={t('fields.description.placeholder')}
+              minRows={5}
               value={field.value || ''}
             />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}

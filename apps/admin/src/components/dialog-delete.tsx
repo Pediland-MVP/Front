@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 

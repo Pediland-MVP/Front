@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import LeadForm from './form-lead';
-import { PlusCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { PlusCircleIcon } from '@phosphor-icons/react/dist/ssr/PlusCircle';
 import { MarketingLead } from '@/types/lead';
 
 export default function DialogFormLead({

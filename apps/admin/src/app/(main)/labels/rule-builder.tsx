@@ -12,7 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { onInputP2EHandler } from '@/lib/p2eNumber';
-import { PlusIcon, TrashIcon } from '@phosphor-icons/react';
+import { PlusIcon } from '@phosphor-icons/react/dist/csr/Plus';
+import { TrashIcon } from '@phosphor-icons/react/dist/csr/Trash';
 import { ConditionGroup, ConditionLeaf, isGroup, LabelFieldDef, ComparisonOperator } from './types';
 
 function defaultLeafFor(fields: LabelFieldDef[]): ConditionLeaf {

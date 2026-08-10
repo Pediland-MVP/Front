@@ -4,9 +4,11 @@ import { IResponseMessage } from '@/types/responseMessage';
 
 export type Invitation = {
   id: string;
-  workspace: { name: string };
-  inviter: { firstname: string; lastname: string };
+  workspace: { id: string; name: string };
+  inviter: { firstname: string | null; lastname: string | null };
   status: string;
+  message: string | null;
+  permissions: string[];
 };
 
 export function useInvitations() {

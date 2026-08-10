@@ -15,7 +15,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { ChatCenteredTextIcon, SpinnerIcon } from '@phosphor-icons/react/dist/ssr';
+import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText';
+import { SpinnerIcon } from '@phosphor-icons/react/dist/ssr/Spinner';
 import { SmsData } from '@/types/sms';
 
 interface SendSMSDialogProps {

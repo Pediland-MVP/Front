@@ -1,7 +1,8 @@
 import { AutomationContentModeEnum } from '../constants/automationContent.enum';
 import { useTranslations } from 'next-intl';
 
-import { FormField, FormItem, Label } from '@/components/ui';
+import { FormField, FormItem } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
 import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';

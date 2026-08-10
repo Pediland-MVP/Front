@@ -16,15 +16,15 @@ import {
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import {
-  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui';
+} from '@/components/ui/table';
 
 // Define props for the generic DataTable component
 interface DataTableProps<TData, TValue> {

@@ -27,12 +27,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { toast } from 'sonner';
-import {
-  CaretRightIcon,
-  CaretLeftIcon,
-  PencilIcon,
-  TrashIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
+import { PencilIcon } from '@phosphor-icons/react/dist/ssr/Pencil';
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import { ExceptionMessage } from '@/types/exceptionMessage';
 import CardToCardAlert from './cardToCard.alert';
 import useSWRImmutable from 'swr/immutable';

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import { Inter } from 'next/font/google';
+import { RadixDirectionProvider } from '@/components/RadixDirectionProvider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -52,7 +53,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={locale} dir={locale === 'fa' ? 'rtl' : 'ltr'} className={className}>
-      <body>{children}</body>
+      <body>
+        <RadixDirectionProvider dir={locale === 'fa' ? 'rtl' : 'ltr'}>
+          {children}
+        </RadixDirectionProvider>
+      </body>
     </html>
   );
 }

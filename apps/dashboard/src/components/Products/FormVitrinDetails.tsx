@@ -1,20 +1,11 @@
 import { useFormContext } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Textarea,
-} from '@/components/ui';
-import { StorefrontIcon } from '@phosphor-icons/react/dist/ssr';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { StorefrontIcon } from '@phosphor-icons/react/dist/ssr/Storefront';
 
 export const FormVitrinDetails = () => {
   const form = useFormContext();

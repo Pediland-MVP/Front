@@ -4,7 +4,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ColumnHeader } from '@/components/table/column-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react/dist/ssr';
+import { PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple';
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
 import dayjs from '@/lib/dayjs-jalali';
 import { useTranslations } from 'next-intl';
 

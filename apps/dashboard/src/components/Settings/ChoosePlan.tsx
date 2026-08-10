@@ -8,13 +8,11 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { Instagram } from '@/types/user';
 import { formatNumber } from '@/utils/formatNumber';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  CircleIcon,
-  ClockCountdownIcon,
-  InstagramLogoIcon,
-  WarningCircleIcon,
-  TrendDownIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { CircleIcon } from '@phosphor-icons/react/dist/ssr/Circle';
+import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import { TrendDownIcon } from '@phosphor-icons/react/dist/ssr/TrendDown';
 import {
   MoveLeftIcon,
   ShoppingBagIcon,
@@ -145,9 +143,6 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
     ? instagramById.get(selectedInstagramId)
     : undefined;
   const isSelectedIgTokenInvalid = selectedInstagram?.isIgTokenValid === false;
-  const isSelectedPageAlreadyCovered = selectedInstagramId
-    ? pageSubscriptions.some((sub) => sub.instagramId === selectedInstagramId)
-    : false;
 
   const {
     plan: currentPlan,
@@ -293,7 +288,9 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
       {!creditSubscription &&
         pageSubscriptions.length === 0 &&
         unboundActiveSubscriptions.length === 0 && (
-          <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
+          <div className="flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 py-14 text-center">
+            <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
+          </div>
         )}
 
       <DiscountAlert />
@@ -312,10 +309,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
           }}
         >
           <DialogTrigger asChild>
-            <Button
-              size="lg"
-              className="bg-violet-650 rounded-xl shadow-lg transition-all hover:bg-violet-700 active:scale-95"
-            >
+            <Button size="lg">
               <ShoppingCartIcon className="h-5 w-5" />
               {t('buy_subscription')}
             </Button>
@@ -377,12 +371,9 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                       <h4 className="mb-1 text-sm font-semibold text-slate-800">
                         {t('no_pages_connected')}
                       </h4>
-                      <Link
-                        href="/connect"
-                        className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2 text-xs font-semibold text-white shadow-md transition-all hover:bg-violet-700"
-                      >
-                        {t('connect_page_cta')}
-                      </Link>
+                      <Button asChild size="sm" className="mt-3">
+                        <Link href="/connect">{t('connect_page_cta')}</Link>
+                      </Button>
                     </div>
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2">
@@ -472,7 +463,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                         onClick={() => setSelectedInstagramId(undefined)}
                         variant="ghost"
                         size="sm"
-                        className="h-8 gap-1 rounded-xl text-xs text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        className="text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                       >
                         <ArrowRight className="h-3.5 w-3.5" />
                         {t('back')}
@@ -549,28 +540,11 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                               </p>
                             )}
                           </div>
-
-                          {/* Desktop-only Coupon / Promo section */}
-                          <div className="border-slate-150 hidden rounded-2xl border bg-white p-4 shadow-xs md:block">
-                            <DiscountCode />
-                          </div>
-
-                          {/* Desktop-only Discount alert if code applied */}
-                          <div className="hidden md:block">
-                            <DiscountAlert />
-                          </div>
                         </div>
 
                         {/* LEFT COLUMN: Duration and Payment Cards (7 columns on desktop) */}
                         <div className="space-y-4 md:col-span-7">
                           {/* Warning Messages */}
-                          {isSelectedPageAlreadyCovered && (
-                            <div className="flex gap-2 rounded-xl border border-blue-100 bg-blue-50/70 p-3 text-xs text-blue-800">
-                              <span className="mt-1.5 h-2 w-2 shrink-0 animate-pulse rounded-full bg-blue-500" />
-                              <p className="leading-relaxed">{t('renewal_will_queue_notice')}</p>
-                            </div>
-                          )}
-
                           <div className="flex items-center gap-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-800">
                             <WarningCircleIcon
                               size={16}
@@ -578,16 +552,6 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                               className="text-amber-550 shrink-0"
                             />
                             <p className="leading-none">{t('vpnAlert')}</p>
-                          </div>
-
-                          {/* Mobile-only Coupon / Promo section */}
-                          <div className="border-slate-150 block rounded-2xl border bg-white p-4 shadow-xs md:hidden">
-                            <DiscountCode />
-                          </div>
-
-                          {/* Mobile-only Discount alert if code applied */}
-                          <div className="block md:hidden">
-                            <DiscountAlert />
                           </div>
 
                           <h4 className="mb-1 flex items-center gap-1.5 text-sm font-bold text-slate-800">
@@ -698,12 +662,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                                       isLoading={isBuying}
                                       type="button"
                                       variant={isRecommended ? 'default' : 'outline'}
-                                      className={cn(
-                                        'w-full gap-1.5 rounded-xl py-5 text-xs font-bold shadow-xs transition-all duration-300 hover:shadow-md active:scale-95',
-                                        isRecommended
-                                          ? 'to-indigo-650 hover:from-violet-750 border-0 bg-gradient-to-r from-violet-600 text-white hover:to-indigo-700'
-                                          : 'border-slate-200 text-slate-700 hover:bg-slate-100',
-                                      )}
+                                      className="w-full gap-1.5"
                                       onClick={() => selectPlanHandler(duration.id)}
                                     >
                                       <ShoppingBagIcon className="h-4 w-4" />
@@ -714,6 +673,14 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
                               );
                             })}
                           </div>
+
+                          {/* Coupon / Promo section — kept last so it doesn't distract from
+                              plan selection; showing it first drove support tickets asking
+                              for a discount code before users even chose a plan. */}
+                          <div className="border-slate-150 rounded-2xl border bg-white p-4 shadow-xs">
+                            <DiscountCode />
+                          </div>
+                          <DiscountAlert />
                         </div>
                       </div>
                     )}
@@ -728,7 +695,7 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
           <Button
             onClick={() => setActive({ choosePlan: false, subscriptionInfo: true })}
             variant="link"
-            className="group flex items-center gap-1 font-normal text-violet-600 hover:text-violet-700"
+            className="group flex items-center gap-1 font-normal"
           >
             اشتراک‌های رزرو شده
             <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />

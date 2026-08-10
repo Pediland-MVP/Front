@@ -5,19 +5,18 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Control, useFieldArray, useFormContext, UseFormGetValues } from 'react-hook-form';
 
+import { Button } from '@/components/ui/button';
+import { FormField, FormItem } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
-  Button,
-  FormField,
-  FormItem,
-  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
-import { XCircleIcon } from '@phosphor-icons/react';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
 import { toast } from 'sonner';
 
 // The same 3-way union `@/types/contentCycles/conditions#ContentCycleConditionTypes` held

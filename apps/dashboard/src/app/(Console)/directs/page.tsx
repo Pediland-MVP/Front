@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { ExcelExportDirectsDrawer } from './components/excelExportDirects.drawer';
 
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 
 export default function page() {
   const t = useTranslations('Directs');

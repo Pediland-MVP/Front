@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from '@/hooks/useDebounce';
 import { fetcher } from '@/hooks/swr/api-client';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { TemplatePicker, type TemplateSummary } from '@/automation-builder';
 
 interface CreateAutomationTemplateDialogProps {

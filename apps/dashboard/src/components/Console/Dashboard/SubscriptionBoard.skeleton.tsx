@@ -1,4 +1,4 @@
-import { CardContent } from '@/components/ui';
+import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
 import { Skeleton } from '@/components/ui/skeleton';
 

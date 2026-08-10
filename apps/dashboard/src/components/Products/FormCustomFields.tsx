@@ -4,7 +4,8 @@ import { ProductFieldTypeEnum } from '@/types/product.enum';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   closestCenter,
   DndContext,
@@ -19,7 +20,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { TextboxIcon } from '@phosphor-icons/react/dist/ssr';
+import { TextboxIcon } from '@phosphor-icons/react/dist/ssr/Textbox';
 import { CirclePlusIcon } from 'lucide-react';
 import { SortableFieldItem } from './SortableFieldItem';
 

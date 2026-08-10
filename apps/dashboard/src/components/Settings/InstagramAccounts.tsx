@@ -7,14 +7,17 @@ import { formatNumber } from '@/utils/formatNumber';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import useSWRImmutable from 'swr/immutable';
 import { mutate } from 'swr';
 import { InstagramNamespace } from '@/types/instagram';
 
-import { Button, Card, CardContent } from '@/components/ui';
-import { CopyIcon, InstagramLogoIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CopyIcon } from '@phosphor-icons/react/dist/ssr/Copy';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { Plug2Icon, Trash2Icon } from 'lucide-react';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
@@ -28,7 +31,13 @@ const MAX_INSTAGRAM_ACCOUNTS = 5;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 interface InstagramAccountsProps {
-  onCountChange?: (count: number) => void;
+  /**
+   * Called with the number of connected accounts, or `null` while that number is still
+   * unknown (the list is loading). The parent gates the "افزودن اکانت" button on the
+   * count, and a loading state that reported `0` would read as "first account" and wave
+   * the user straight through to /connect, skipping the subscription check.
+   */
+  onCountChange?: (count: number | null) => void;
 }
 
 export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => {
@@ -51,8 +60,15 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
     mutate: mutateLocal,
   } = useSWRImmutable<InstagramNamespace.GET['Accounts']>(apiUrl, {
     revalidateOnMount: true,
-    onSuccess: (data) => onCountChange?.(data?.data?.length ?? 0),
   });
+
+  // Driven off the loading flag rather than SWR's `onSuccess` so a *failed* fetch also
+  // resolves the parent's "unknown" state (to 0) instead of leaving it pending forever.
+  useEffect(() => {
+    onCountChange?.(isInstagramPagesLoading ? null : (instagramPages?.data?.length ?? 0));
+    // `onCountChange` is a setter from the parent; re-running on its identity would loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInstagramPagesLoading, instagramPages]);
 
   const handleDelete = useCallback((id: string) => {
     setItemToDelete(id);

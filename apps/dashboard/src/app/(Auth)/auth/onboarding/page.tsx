@@ -10,23 +10,19 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
-} from '@/components/ui';
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
-import { UserCirclePlusIcon } from '@phosphor-icons/react';
+import { UserCirclePlusIcon } from '@phosphor-icons/react/dist/csr/UserCirclePlus';
 import SupportButton from '../supportButton';
 import { CustomersSlider } from './customersSlider';
 

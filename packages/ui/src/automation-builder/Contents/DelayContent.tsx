@@ -1,13 +1,11 @@
+import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import {
-  FormControl,
-  FormField,
-  FormItem,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationFormType, ContentItemType } from '../schemas/automationForm';
 import {
@@ -76,32 +74,6 @@ export function DelayContent({ index }: DelayContentProps) {
 
   return (
     <div className="flex items-center justify-center gap-x-2">
-      {/* No unit affordable at all (this item's remaining budget is under 1 second) — there
-          is nothing a unit switch could accomplish, so the control is removed rather than
-          left as an empty, unusable dropdown. The magnitude select below already surfaces
-          `DelayBudgetExhaustedDialog` in this same state via its own `isMagnitudeExhausted`
-          check. */}
-      {unitOptions.length > 0 && (
-        <FormField
-          name={delayUnitNameKey}
-          control={control}
-          render={({ field }) => (
-            <Select onValueChange={delayUnitChangeHandler} defaultValue={field.value}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('selectTimeUnit')} />
-              </SelectTrigger>
-              <SelectContent>
-                {unitOptions.map((tKey) => (
-                  <SelectItem key={tKey} value={tKey}>
-                    {t(`timeUnits.${tKey}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-      )}
-
       <FormField
         name={delayMsNameKey}
         control={control}
@@ -149,6 +121,32 @@ export function DelayContent({ index }: DelayContentProps) {
           </FormItem>
         )}
       />
+
+      {/* No unit affordable at all (this item's remaining budget is under 1 second) — there
+          is nothing a unit switch could accomplish, so the control is removed rather than
+          left as an empty, unusable dropdown. The magnitude select above already surfaces
+          `DelayBudgetExhaustedDialog` in this same state via its own `isMagnitudeExhausted`
+          check. */}
+      {unitOptions.length > 0 && (
+        <FormField
+          name={delayUnitNameKey}
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={delayUnitChangeHandler} defaultValue={field.value}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('selectTimeUnit')} />
+              </SelectTrigger>
+              <SelectContent>
+                {unitOptions.map((tKey) => (
+                  <SelectItem key={tKey} value={tKey}>
+                    {t(`timeUnits.${tKey}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+      )}
 
       <DelayBudgetExhaustedDialog open={isBudgetDialogOpen} onOpenChange={setIsBudgetDialogOpen} />
     </div>

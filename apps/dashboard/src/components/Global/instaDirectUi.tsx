@@ -1,12 +1,12 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage, Button, Textarea } from '@/components/ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { useContentStore, useCurrentTextAreaValue } from '@/store/contentCycleStore';
-import {
-  CameraIcon,
-  CaretLeftIcon,
-  PhoneIcon,
-  VideoCameraIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { CameraIcon } from '@phosphor-icons/react/dist/ssr/Camera';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
+import { PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone';
+import { VideoCameraIcon } from '@phosphor-icons/react/dist/ssr/VideoCamera';
 
 export default function InstaDirectUi() {
   const { adminContentCycle } = useContentStore();
