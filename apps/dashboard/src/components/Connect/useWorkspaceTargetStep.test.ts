@@ -79,7 +79,7 @@ describe('useWorkspaceTargetStep', () => {
     expect(targetId).toBe('ws-new');
   });
 
-  it('reset restores every field to its initial value', () => {
+  it('reset clears user-input fields (name/category/finalizing) but re-applies the current-workspace default', () => {
     const { result } = renderHook(() =>
       useWorkspaceTargetStep({ active: true, currentWorkspaceId: 'ws-current' }),
     );
@@ -93,7 +93,28 @@ describe('useWorkspaceTargetStep', () => {
     expect(result.current.targetMode).toBe('existing');
     expect(result.current.newWorkspaceName).toBe('');
     expect(result.current.newWorkspaceCategoryId).toBe('');
-    expect(result.current.selectedExistingWorkspaceId).toBe('');
+    // Since the step remains active and currentWorkspaceId is still 'ws-current',
+    // the effect re-applies the default after reset clears it
+    expect(result.current.selectedExistingWorkspaceId).toBe('ws-current');
     expect(result.current.isFinalizing).toBe(false);
+  });
+
+  it('re-applies the current-workspace default after reset as long as the step remains active', () => {
+    const { result } = renderHook(() =>
+      useWorkspaceTargetStep({ active: true, currentWorkspaceId: 'ws-current' }),
+    );
+    // Confirm initial default applied
+    expect(result.current.selectedExistingWorkspaceId).toBe('ws-current');
+
+    // Manually switch to a different workspace
+    act(() => result.current.setSelectedExistingWorkspaceId('ws-other'));
+    expect(result.current.selectedExistingWorkspaceId).toBe('ws-other');
+
+    // Reset clears the selection; the effect should re-fire and re-apply the default
+    // because selectedExistingWorkspaceId is now empty again and active is still true
+    act(() => result.current.reset());
+
+    // The effect should have re-applied the default
+    expect(result.current.selectedExistingWorkspaceId).toBe('ws-current');
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type WorkspaceTargetMode = 'new' | 'existing';
 
@@ -14,14 +14,10 @@ export function useWorkspaceTargetStep({ active, currentWorkspaceId }: UseWorksp
   const [newWorkspaceCategoryId, setNewWorkspaceCategoryId] = useState('');
   const [selectedExistingWorkspaceId, setSelectedExistingWorkspaceId] = useState('');
   const [isFinalizing, setIsFinalizing] = useState(false);
-  const hasAppliedInitialDefaultRef = useRef(false);
 
   useEffect(() => {
-    if (active && currentWorkspaceId && !hasAppliedInitialDefaultRef.current) {
-      if (!selectedExistingWorkspaceId) {
-        setSelectedExistingWorkspaceId(currentWorkspaceId);
-        hasAppliedInitialDefaultRef.current = true;
-      }
+    if (active && !selectedExistingWorkspaceId && currentWorkspaceId) {
+      setSelectedExistingWorkspaceId(currentWorkspaceId);
     }
   }, [active, currentWorkspaceId, selectedExistingWorkspaceId]);
 
