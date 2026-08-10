@@ -129,6 +129,8 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   const onCheckUsername = async () => {
     if (!username.trim()) return;
     setLookupFailed(false);
+    setSelectedPlanId(null);
+    setSelectedDurationId(null);
     try {
       const result = await lookup(username.trim());
       setCheckedUsername(result.username);

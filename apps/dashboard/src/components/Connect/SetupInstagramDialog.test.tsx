@@ -247,6 +247,38 @@ describe('SetupInstagramDialog', () => {
       screen.queryByText(messages.SetupInstagramDialog.option_new_title),
     ).not.toBeInTheDocument();
   });
+
+  it('clears the stale plan/duration selection when the user goes back and checks a different username', async () => {
+    lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 1,
+        name: '۱K تا ۲۵K فالور',
+        durations: [{ id: 10, name: 'یک ماهه', durationDays: 30, price: 100000 }],
+      },
+      isLoading: false,
+    });
+
+    renderDialog();
+    await checkUsername('befroosh');
+    fireEvent.click(screen.getByText('یک ماهه'));
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).not.toBeDisabled();
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.prev_step));
+
+    lookupMock.mockResolvedValue({ username: 'someone-else', followersCount: 50000 });
+    plansByFollowersMock.mockReturnValue({
+      plan: {
+        id: 2,
+        name: '۲۵K تا ۱۰۰K فالور',
+        durations: [{ id: 20, name: 'شش ماهه', durationDays: 180, price: 400000 }],
+      },
+      isLoading: false,
+    });
+    await checkUsername('someone-else');
+
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).toBeDisabled();
+  });
 });
 
 describe('SetupInstagramDialog — unbound plan step', () => {
