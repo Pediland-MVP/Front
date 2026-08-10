@@ -23,6 +23,7 @@ import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { PlanTierBadge } from '@/components/Settings/PlanTierBadge';
 import { WizardStepsHeader } from './WizardStepsHeader';
 import { useWorkspaceTargetStep } from './useWorkspaceTargetStep';
+import { useInstagramWizardResume } from './useInstagramWizardResume';
 import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { setPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
@@ -76,6 +77,19 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   const workspaceStep = useWorkspaceTargetStep({
     active: step === 'workspace',
     currentWorkspaceId,
+  });
+
+  useInstagramWizardResume({
+    currentWorkspaceId,
+    onResolved: ({ planId, durationId, username }) => {
+      if (username) setCheckedUsername(username);
+      setStep('workspace');
+      void onBuy(planId, durationId);
+    },
+    onMismatch: () => {
+      toast.error(t('workspace_switch_mismatch_error'));
+      setStep('workspace');
+    },
   });
 
   // A plan bought but never attached to a page. `hasAvailableSubscriptionSlot` — the flag that
@@ -159,6 +173,18 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     window.history.replaceState(null, '', url.toString());
   };
 
+  // Undoes stampResumeStateOnUrl. Needed when changeWorkspace's request throws right after
+  // stamping: no reload happens in that case, so the igw* params would otherwise sit on the
+  // URL and let a later, unrelated page refresh be misread by useInstagramWizardResume as
+  // "the switch succeeded" (targetWorkspaceId still equals the never-changed current one).
+  const clearStampedResumeParams = () => {
+    const url = new URL(window.location.href);
+    ['igwResume', 'igwPlanId', 'igwDurationId', 'igwUsername', 'igwTargetWs'].forEach((key) =>
+      url.searchParams.delete(key),
+    );
+    window.history.replaceState(null, '', url.toString());
+  };
+
   const onFinalizeWorkspaceStep = async () => {
     if (selectedPlanId == null || selectedDurationId == null) return;
 
@@ -176,6 +202,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
       stampResumeStateOnUrl(targetId, selectedPlanId, selectedDurationId);
       await changeWorkspace(targetId);
     } catch (e) {
+      clearStampedResumeParams();
       const code = (e as AxiosError<ExceptionMessage>).response?.data?.code;
       toast.error(t_ec(code) || t('workspace_switch_error'));
       workspaceStep.setIsFinalizing(false);

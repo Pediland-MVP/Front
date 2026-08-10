@@ -52,6 +52,9 @@ export default function ConnectPage() {
   }, []);
 
   const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get('igwResume') === '1') setIsSetupDialogOpen(true);
+  }, [searchParams]);
   const code = searchParams.get('code');
   // Set by the dialog's "ادامه با همین اشتراک" button, which now routes here instead of
   // straight into OAuth. It answers the unbound-plan question so this page shows the

@@ -50,6 +50,11 @@ vi.mock('@/hooks/swr/api-client', () => ({
   default: { post: (...args: any[]) => apiPostMock(...args) },
 }));
 
+let resumeSearchParams = new URLSearchParams();
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => resumeSearchParams,
+}));
+
 import { SetupInstagramDialog } from './SetupInstagramDialog';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
@@ -92,6 +97,8 @@ describe('SetupInstagramDialog', () => {
       categories: [{ id: 'cat1', nameEn: 'Retail', nameFa: 'خرده‌فروشی' }],
     });
     apiPostMock.mockReset();
+    resumeSearchParams = new URLSearchParams();
+    window.history.replaceState(null, '', '/settings/instagram');
   });
 
   const checkUsername = async (username: string) => {
@@ -279,6 +286,42 @@ describe('SetupInstagramDialog', () => {
 
     expect(screen.getByText(messages.SetupInstagramDialog.next_step)).toBeDisabled();
   });
+
+  it('resumes after a workspace-switch reload and pays automatically once the switch is verified', async () => {
+    resumeSearchParams = new URLSearchParams(
+      'igwResume=1&igwTargetWs=ws-current&igwPlanId=1&igwDurationId=10&igwUsername=befroosh',
+    );
+    window.history.replaceState(null, '', '/settings/instagram?' + resumeSearchParams.toString());
+    usePermissionsMock.mockReturnValue({ workspaceId: 'ws-current' });
+
+    renderDialog();
+
+    await waitFor(() =>
+      expect(payMock).toHaveBeenCalledWith(
+        { planId: 1, durationId: 10 },
+        expect.any(Function),
+        expect.any(Function),
+      ),
+    );
+    expect(window.location.search).toBe('');
+  });
+
+  it('shows a mismatch error and does not pay when the resumed workspace does not match', async () => {
+    resumeSearchParams = new URLSearchParams(
+      'igwResume=1&igwTargetWs=ws-other&igwPlanId=1&igwDurationId=10',
+    );
+    window.history.replaceState(null, '', '/settings/instagram?' + resumeSearchParams.toString());
+    usePermissionsMock.mockReturnValue({ workspaceId: 'ws-current' });
+
+    renderDialog();
+
+    // `toast.error` (sonner) renders outside this component tree, so the mismatch is verified
+    // through its actual effect instead: no payment fires, and the dialog lands on step 3.
+    await waitFor(() =>
+      expect(screen.getByText(messages.SetupInstagramDialog.option_new_title)).toBeInTheDocument(),
+    );
+    expect(payMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('SetupInstagramDialog — unbound plan step', () => {
@@ -288,6 +331,11 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     allVisiblePlansMock.mockReset().mockReturnValue({ plans: undefined, isLoading: false });
     payMock.mockReset();
     usePayPlanMock.mockReset().mockReturnValue({ pay: payMock, isPayLoading: false });
+    // resumeSearchParams/window.location are module-level state shared with the describe
+    // block above — reset them here too, or a leftover igwResume=1 from that block's last
+    // test would make useInstagramWizardResume fire (mismatch/resolve) on mount here.
+    resumeSearchParams = new URLSearchParams();
+    window.history.replaceState(null, '', '/settings/instagram');
     subscriptionStoreMock.mockReset().mockReturnValue({ setActive: vi.fn(), subscriptions: [] });
   });
 

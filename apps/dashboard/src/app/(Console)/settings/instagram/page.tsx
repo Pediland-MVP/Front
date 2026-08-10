@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { PlusIcon } from 'lucide-react';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
@@ -23,6 +24,11 @@ export default function Page() {
   // `null` until the accounts list resolves — see the note on `isAddBlocked` below.
   const [accountCount, setAccountCount] = useState<number | null>(null);
   const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
+
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get('igwResume') === '1') setIsSetupDialogOpen(true);
+  }, [searchParams]);
 
   const canView = can('instagram:view');
   const canManage = can('instagram:manage');

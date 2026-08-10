@@ -110,7 +110,8 @@
     "new_workspace_category_placeholder": "دسته‌بندی کسب‌وکار",
     "select_workspace_placeholder": "یک کسب‌وکار را انتخاب کنید",
     "current_workspace_suffix": "فعلی",
-    "workspace_switch_error": "تغییر کسب‌وکار انجام نشد. دوباره تلاش کنید."
+    "workspace_switch_error": "تغییر کسب‌وکار انجام نشد. دوباره تلاش کنید.",
+    "workspace_switch_mismatch_error": "کسب‌وکار به‌درستی تغییر نکرد. لطفاً دوباره تلاش کنید."
   },
   "DataTable": {
     "noResults": "رکوردی برای نمایش وجود ندارد."

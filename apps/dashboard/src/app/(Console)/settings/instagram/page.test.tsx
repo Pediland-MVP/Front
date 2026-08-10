@@ -3,6 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
 
+// The page reads `igwResume` off the URL (to reopen SetupInstagramDialog after a
+// workspace-switch reload); without this mock the real next/navigation hook returns null
+// outside an app-router context, and `searchParams.get(...)` throws on every render.
+const searchParamsMock = vi.fn();
+vi.mock('next/navigation', () => ({ useSearchParams: () => searchParamsMock() }));
+
 const usePermissionsMock = vi.fn();
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => usePermissionsMock() }));
 
@@ -76,6 +82,7 @@ describe('Settings › Instagram — add-account gate', () => {
     });
     withSlot(false);
     useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
+    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
   });
 
   it('sends a workspace connecting its first account straight to /connect', () => {
@@ -163,6 +170,7 @@ describe('Settings › Instagram — the button waits for what it gates on', () 
     });
     withSlot(false);
     useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
+    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
   });
 
   it('stays disabled while the account count is still unknown', () => {
@@ -208,6 +216,7 @@ describe('Settings › Instagram — limits and permissions still win', () => {
     });
     withSlot(false);
     useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
+    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
   });
 
   it('disables the button at the 5-account limit', () => {
