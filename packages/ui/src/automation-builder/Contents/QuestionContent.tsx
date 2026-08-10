@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationButtons } from './AutomationButtons';
 import { ButtonTypeEnum } from '../types/buttons.enum';
@@ -95,8 +95,7 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
                 name: (chunks) => <span className="text-blue-500">{chunks}</span>,
               })}
             </Label>
-            <Textarea
-              rows={1}
+            <AutoResizeTextarea
               maxLength={1000}
               {...field}
               aria-invalid={!!error}
@@ -140,10 +139,9 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
           render={({ field, fieldState: { error } }) => (
             <FormItem className="w-full">
               <Label>پیام خطای اعتبارسنجی</Label>
-              <Textarea
+              <AutoResizeTextarea
                 {...field}
                 placeholder="پیام خطا برای اعتبارسنجی"
-                rows={1}
                 className="w-full"
               />
               {}

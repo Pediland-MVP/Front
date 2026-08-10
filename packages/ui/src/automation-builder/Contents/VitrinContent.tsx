@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { Progress } from '@/components/ui/progress';
 import { AutomationButtons } from './AutomationButtons';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -217,10 +217,10 @@ function VitrinItemCard({
         control={control}
         render={({ field, fieldState: { error } }) => (
           <FormItem>
-            <Textarea
+            <AutoResizeTextarea
               {...field}
               placeholder={t('fields.description.placeholder')}
-              rows={5}
+              minRows={5}
               value={field.value || ''}
             />
             {error && <ErrorMessage>{error.message}</ErrorMessage>}

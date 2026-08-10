@@ -37,7 +37,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('webhooks'), url: '/webhooks' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('jobs'), url: '/jobs' }] : []),
-      ...(user?.role !== 'kam' ? [{ title: t('automationErrors'), url: '/automation-errors' }] : []),
+      ...(user?.role !== 'kam'
+        ? [{ title: t('automationErrors'), url: '/automation-errors' }]
+        : []),
       { title: t('banners'), url: '/banners' },
       { title: t('templates'), url: '/templates' },
       { title: t('aiAgent'), url: '/aiagent' },

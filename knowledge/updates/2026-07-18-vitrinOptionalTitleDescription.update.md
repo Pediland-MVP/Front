@@ -33,3 +33,8 @@ so the frontend schema needed to match.
 
 - No dedicated test suite covers `VitrinItemSchema` required-field behavior; change
   reviewed by inspection against the matching backend DTO relaxation.
+
+**Updated 2026-08-10:** merging `feat/automation-textarea-autogrow` swapped the
+description field's plain `Textarea` for `AutoResizeTextarea`, carrying the 5-row
+floor forward as `minRows={5}` (was `rows={5}`). See
+`2026-07-17-automationTextareaAutogrow.update.md`.

@@ -439,7 +439,8 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
 
           <div className="space-y-2 text-xs">
             {(() => {
-              const activeSubs = customer?.subscriptions?.filter((s) => s.status === 'active') ?? [];
+              const activeSubs =
+                customer?.subscriptions?.filter((s) => s.status === 'active') ?? [];
               if (activeSubs.length === 0) {
                 return (
                   <div className="flex items-center justify-between">
@@ -489,7 +490,8 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
             )}
 
             {(() => {
-              const reservedSubs = customer?.subscriptions?.filter((s) => s.status === 'reserved') ?? [];
+              const reservedSubs =
+                customer?.subscriptions?.filter((s) => s.status === 'reserved') ?? [];
               if (reservedSubs.length === 0) {
                 return (
                   <div className="flex items-center justify-between">

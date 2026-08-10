@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
 import { TrashIcon } from 'lucide-react';
 
@@ -106,11 +106,11 @@ export const StartAutomationMessage = ({ helpSlot }: StartAutomationMessageProps
           render={({ field, fieldState: { error } }) => (
             <FormItem>
               <FormLabel>{t('message_text')}</FormLabel>
-              <Textarea
+              <AutoResizeTextarea
                 {...field}
                 value={field.value ?? ''}
                 placeholder={t('comment_placeholder')}
-                rows={3}
+                minRows={3}
               />
               {error && <FormMessage>{error.message}</FormMessage>}
             </FormItem>
