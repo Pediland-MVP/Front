@@ -14,8 +14,6 @@ import { PlusCircleIcon } from '@phosphor-icons/react/dist/csr/PlusCircle';
 import { ShoppingBagIcon } from '@phosphor-icons/react/dist/csr/ShoppingBag';
 import type { Icon, IconProps } from '@phosphor-icons/react/dist/lib/types';
 import { WorkspaceDrawer } from '../Console/WorkspaceDrawer';
-import { usePermissions } from '@/hooks/usePermissions';
-import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { useInvitations } from '@/hooks/useInvitations';
 
 // Interface kept for reference or external use if needed, but internal logic uses a specific shape
@@ -47,10 +45,7 @@ export const NavBottom = () => {
   const pathname = usePathname();
   const t = useTranslations('NavBottom');
 
-  const { workspaceId } = usePermissions();
-  const { workspaces } = useWorkspaces();
   const { pendingCount } = useInvitations();
-  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
 
   // Defined navigation items array
   const navItems = [
@@ -101,7 +96,7 @@ export const NavBottom = () => {
                     )}
                   </div>
                   <span className="text-secondary mt-1 max-w-[75px] truncate text-xs">
-                    {currentWorkspace?.name || t(item.labelKey)}
+                    {t(item.labelKey)}
                   </span>
                 </button>
               </WorkspaceDrawer>
