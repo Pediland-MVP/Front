@@ -93,7 +93,25 @@
     "unbound_warning_description": "{count, plural, one {این اشتراک فقط روی پیجی فعال می‌شود که تعداد فالوورهایش با محدوده‌ی آن بخواند. اگر پیج جدید در این محدوده نباشد، اتصال انجام نمی‌شود و باید پلن متناسب با آن را بخرید.} other {هرکدام از این اشتراک‌ها فقط روی پیجی فعال می‌شود که تعداد فالوورهایش با محدوده‌ی همان اشتراک بخواند. اگر پیج جدید در محدوده‌ی هیچ‌کدام نباشد، اتصال انجام نمی‌شود و باید پلن متناسب با آن را بخرید.}}",
     "unbound_auto_match_note": "سیستم به صورت خودکار اشتراک متناسب با صفحه شما را فعال می‌کند.",
     "continue_with_unbound": "ادامه با همین اشتراک",
-    "buy_another_plan": "خرید پلن دیگر"
+    "buy_another_plan": "خرید پلن دیگر",
+    "step_username_title": "آیدی اینستاگرام",
+    "step_plan_title": "بررسی اطلاعات و هزینه",
+    "step_workspace_title": "انتخاب کسب و کار",
+    "prev_step": "مرحله قبل",
+    "next_step": "مرحله بعد",
+    "finalize_pay": "پرداخت",
+    "finalize_switch_and_continue": "تغییر کسب‌وکار و ادامه",
+    "followers_unit": "فالوور",
+    "option_new_title": "ایجاد کسب و کار جدید و مستقل",
+    "option_new_description": "اگر فعالیت پیج شما یک کسب و کار جداگانه است این گزینه را انتخاب کنید",
+    "option_existing_title": "ادغام در کسب و کار فعلی",
+    "option_existing_description": "اگر فعالیت پیج شما مشابه قبلی است و میخواهید پیام های پیج ها را یکجا ببینید و اتوماسیون ها را یکجا تعریف کنید این گزینه را انتخاب کنید",
+    "new_workspace_name_placeholder": "نام کسب‌وکار جدید",
+    "new_workspace_category_placeholder": "دسته‌بندی کسب‌وکار",
+    "select_workspace_placeholder": "یک کسب‌وکار را انتخاب کنید",
+    "current_workspace_suffix": "فعلی",
+    "workspace_switch_error": "تغییر کسب‌وکار انجام نشد. دوباره تلاش کنید.",
+    "workspace_switch_mismatch_error": "کسب‌وکار به‌درستی تغییر نکرد. لطفاً دوباره تلاش کنید."
   },
   "DataTable": {
     "noResults": "رکوردی برای نمایش وجود ندارد."
