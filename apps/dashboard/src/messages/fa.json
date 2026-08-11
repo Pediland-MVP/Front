@@ -2102,7 +2102,12 @@
     "verify": "تایید اشتراک",
     "workspace": "اطلاعات کسب‌وکار",
     "permissions": "مدیریت دسترسی‌های کاربر",
-    "zarinpal": "مدیریت زرین پال"
+    "zarinpal": "مدیریت زرین پال",
+    "edit": "ویرایش",
+    "support": "تماس با پشتیبانی",
+    "install": "نصب اپلیکیشن",
+    "invitations": "دعوت‌نامه‌ها",
+    "sendAll": "ارسال به همه"
   },
   "Notfound": {
     "title": "Page Not Found",
