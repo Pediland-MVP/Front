@@ -21,7 +21,6 @@ import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
 import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
 import { IGW_RESUME_PARAM } from '@/components/Connect/useInstagramWizardResume';
 import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
-import { readAndClearPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
 import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
 import { SignOutIcon } from '@phosphor-icons/react/dist/csr/SignOut';
@@ -46,11 +45,6 @@ export default function ConnectPage() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
   const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
-  const [pendingUsername, setPendingUsername] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPendingUsername(readAndClearPendingInstagramUsername());
-  }, []);
 
   const searchParams = useSearchParams();
   useEffect(() => {
@@ -232,12 +226,6 @@ export default function ConnectPage() {
                   {t('how_to_connect')}
                 </Button>
               </HelpMeDialog>
-
-              {pendingUsername && (
-                <p className="text-muted-foreground mt-2 text-center text-xs">
-                  {t('pending_username_reminder', { username: pendingUsername })}
-                </p>
-              )}
 
               {hasInstagram && (
                 <Button variant="outline" className="mt-4 w-full" asChild>

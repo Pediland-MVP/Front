@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { RESUME_PARAM_KEYS } from '@/components/Connect/useInstagramWizardResume';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -179,7 +180,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (isInstagramPage && searchParams.get('code')) {
           setIsAllowed(true);
         } else {
-          redirect = connectFlowPendingDest ?? '/connect';
+          // A brand-new workspace has zero connected Instagram accounts, which lands here
+          // right after the wizard's create-workspace-and-switch reload — the exact moment
+          // SetupInstagramDialog needs `/connect`'s own resume effect to pick up the igw*
+          // params it stamped on the URL before the reload. Without forwarding them here,
+          // this redirect (a bare router.replace) silently drops them and the pending
+          // purchase is lost. See useInstagramWizardResume for what these params mean.
+          const target = connectFlowPendingDest ?? '/connect';
+          const igwParams = new URLSearchParams();
+          RESUME_PARAM_KEYS.forEach((key) => {
+            const value = searchParams.get(key);
+            if (value) igwParams.set(key, value);
+          });
+          const igwSuffix = igwParams.toString();
+          redirect = igwSuffix
+            ? `${target}${target.includes('?') ? '&' : '?'}${igwSuffix}`
+            : target;
         }
       } else {
         setIsAllowed(true);

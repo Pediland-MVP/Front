@@ -5,11 +5,12 @@ import { AuthProvider } from './AuthProvider';
 const push = vi.fn();
 const replace = vi.fn();
 let pathname = '/auth/onboarding';
+let searchParamsString = '';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace }),
   usePathname: () => pathname,
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new URLSearchParams(searchParamsString),
 }));
 
 let userState: any = {};
@@ -48,6 +49,7 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
     replace.mockClear();
     sessionStorage.clear();
     swrResponses = {};
+    searchParamsString = '';
   });
 
   it('redirects an onboarding user with a pending invitation to the invitation picker', async () => {
@@ -163,6 +165,50 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
 
     await waitFor(() => {
       expect(replace).toHaveBeenCalledWith('/auth/onboarding/invitations');
+    });
+  });
+
+  it('redirects a fresh no-instagram workspace to /connect with no params to preserve', async () => {
+    pathname = '/settings/instagram';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+
+    renderProvider();
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith('/connect');
+    });
+  });
+
+  // Reproduces the bug found when a user picks "create a new workspace" mid-purchase in
+  // SetupInstagramDialog's wizard: the workspace-switch reload lands on
+  // /settings/instagram?igwResume=1&... , but that workspace has zero Instagram accounts
+  // (it was just created), so this redirect fires before the page's own resume effect can
+  // read the params. Losing them here silently drops the pending purchase — see
+  // useInstagramWizardResume for what each param means.
+  it('preserves igw resume params when redirecting a fresh workspace to /connect', async () => {
+    pathname = '/settings/instagram';
+    searchParamsString =
+      'igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+
+    renderProvider();
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith(
+        '/connect?igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2',
+      );
     });
   });
 });
