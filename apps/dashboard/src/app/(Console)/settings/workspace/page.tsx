@@ -227,8 +227,8 @@ export default function Page() {
           <div className="border-destructive/30 space-y-4 rounded-xl border p-4">
             <h3 className="text-destructive text-sm font-semibold">{t('danger_zone')}</h3>
 
-            {isOwner && (
-              <>
+            <div className="flex flex-wrap gap-3">
+              {isOwner && (
                 <Button
                   variant="outline"
                   className="border-destructive/40 text-destructive hover:bg-destructive/5 w-full md:w-auto"
@@ -236,21 +236,21 @@ export default function Page() {
                 >
                   {t('transfer_ownership_button')}
                 </Button>
-                <PendingTransferNotice
-                  workspaceId={activeWorkspace!.id}
-                  onChange={() => mutate()}
-                />
-              </>
-            )}
+              )}
 
-            {canDelete && (
-              <Button
-                variant="destructive"
-                className="w-full md:w-auto"
-                onClick={() => setIsDeleteDialogOpen(true)}
-              >
-                {t('delete_button')}
-              </Button>
+              {canDelete && (
+                <Button
+                  variant="destructive"
+                  className="w-full md:w-auto"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  {t('delete_button')}
+                </Button>
+              )}
+            </div>
+
+            {isOwner && (
+              <PendingTransferNotice workspaceId={activeWorkspace!.id} onChange={() => mutate()} />
             )}
           </div>
         )}
