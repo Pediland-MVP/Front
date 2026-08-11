@@ -211,4 +211,38 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
       );
     });
   });
+
+  // Reproduces a bug found in code review: when the workspace-switch reload lands on a
+  // user who *also* has an unreviewed pending invitation, `target` becomes the invitations
+  // picker URL (`/auth/onboarding/invitations?returnTo=/connect`) instead of `/connect`
+  // directly. The picker only reads `returnTo`'s own value and `router.push`es straight to
+  // it, so appending the igw suffix as a sibling query param on the picker's URL — instead
+  // of nesting it inside `returnTo` — would get silently dropped one hop later.
+  it('nests igw resume params inside returnTo when also routing through the invitations picker', async () => {
+    pathname = '/settings/instagram';
+    searchParamsString =
+      'igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+    swrResponses['/invitations/pending'] = {
+      data: { items: [{ id: 'inv-1' }], meta: { totalItems: 1 } },
+      isLoading: false,
+    };
+
+    renderProvider();
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith(
+        '/auth/onboarding/invitations?returnTo=' +
+          encodeURIComponent(
+            '/connect?igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2',
+          ),
+      );
+    });
+  });
 });

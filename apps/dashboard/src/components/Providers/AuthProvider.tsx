@@ -193,9 +193,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
             if (value) igwParams.set(key, value);
           });
           const igwSuffix = igwParams.toString();
-          redirect = igwSuffix
-            ? `${target}${target.includes('?') ? '&' : '?'}${igwSuffix}`
-            : target;
+          if (!igwSuffix) {
+            redirect = target;
+          } else {
+            // `target` can itself be the invitations/transfer picker carrying a
+            // `returnTo=/connect` param (when the user also has an unreviewed pending
+            // invitation/transfer) — those pages read only `returnTo`'s own value and
+            // `router.push` straight to it, dropping any sibling params appended to the
+            // picker's own URL. So the igw suffix has to live *inside* that nested
+            // `returnTo` value, not appended alongside it, or it's lost one hop later.
+            const [path, query = ''] = target.split('?');
+            const params = new URLSearchParams(query);
+            const nestedReturnTo = params.get('returnTo');
+            if (nestedReturnTo) {
+              const nestedSep = nestedReturnTo.includes('?') ? '&' : '?';
+              params.set('returnTo', `${nestedReturnTo}${nestedSep}${igwSuffix}`);
+              redirect = `${path}?${params.toString()}`;
+            } else {
+              redirect = `${target}${target.includes('?') ? '&' : '?'}${igwSuffix}`;
+            }
+          }
         }
       } else {
         setIsAllowed(true);
