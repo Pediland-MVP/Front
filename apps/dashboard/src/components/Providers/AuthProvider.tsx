@@ -110,6 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isTransferPickerPage = pathname === '/auth/onboarding/transfer';
     const isConnectPage = pathname === '/connect';
     const isInstagramPage = pathname === '/settings/instagram';
+    const isSubscriptionVerifyPage = pathname === '/settings/subscription/verify';
 
     // Where should an onboarding user land?
     const onboardingDestination =
@@ -178,6 +179,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
         redirect = onboardingDestination;
       } else if (!hasInstagram) {
         if (isInstagramPage && searchParams.get('code')) {
+          setIsAllowed(true);
+        } else if (
+          isSubscriptionVerifyPage &&
+          (searchParams.get('trackId') ||
+            (searchParams.get('Authority') && searchParams.get('Status')))
+        ) {
+          // A "pooled" (unbound) subscription purchase can happen before the user has
+          // connected any Instagram account — e.g. mid-wizard in SetupInstagramDialog.
+          // The payment gateway (Zarinpal `Authority`+`Status`, Zibal `trackId`) redirects
+          // back here; without this, `!hasInstagram` would bounce the user away before the
+          // page's own effect gets to call the backend verify endpoint, silently dropping
+          // the payment confirmation. See VerifyContent in
+          // settings/subscription/verify/page.tsx for the same gateway-detection logic.
           setIsAllowed(true);
         } else {
           // A brand-new workspace has zero connected Instagram accounts, which lands here

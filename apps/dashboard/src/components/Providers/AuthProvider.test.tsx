@@ -245,4 +245,65 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
       );
     });
   });
+
+  // User-reported: a "pooled" (unbound) subscription purchase can happen before the user
+  // has connected any Instagram account, so hasInstagram is still false when the payment
+  // gateway redirects back to /settings/subscription/verify. Without an allowlist entry the
+  // !hasInstagram branch bounced the user away before the verify page's own effect could
+  // call the backend verify endpoint, silently dropping the payment confirmation.
+  describe('/settings/subscription/verify payment-gateway callback', () => {
+    it('allows the page through for a Zarinpal callback even with zero Instagram accounts', async () => {
+      pathname = '/settings/subscription/verify';
+      searchParamsString = 'Authority=A00000000000000000000000000000012345&Status=OK';
+      userState = {
+        error: undefined,
+        isOnboarding: false,
+        hasInstagram: false,
+        isLoading: false,
+        user: { id: 'u1' },
+      };
+
+      const { findByText } = renderProvider();
+
+      // Asserts the children (the verify page's own content/effects) actually mounted,
+      // not just that replace happened not to be called yet.
+      await findByText('console');
+      expect(replace).not.toHaveBeenCalled();
+    });
+
+    it('allows the page through for a Zibal callback even with zero Instagram accounts', async () => {
+      pathname = '/settings/subscription/verify';
+      searchParamsString = 'trackId=123456789';
+      userState = {
+        error: undefined,
+        isOnboarding: false,
+        hasInstagram: false,
+        isLoading: false,
+        user: { id: 'u1' },
+      };
+
+      const { findByText } = renderProvider();
+
+      await findByText('console');
+      expect(replace).not.toHaveBeenCalled();
+    });
+
+    it('still redirects a direct, param-less visit with zero Instagram accounts', async () => {
+      pathname = '/settings/subscription/verify';
+      searchParamsString = '';
+      userState = {
+        error: undefined,
+        isOnboarding: false,
+        hasInstagram: false,
+        isLoading: false,
+        user: { id: 'u1' },
+      };
+
+      renderProvider();
+
+      await waitFor(() => {
+        expect(replace).toHaveBeenCalledWith('/connect');
+      });
+    });
+  });
 });
