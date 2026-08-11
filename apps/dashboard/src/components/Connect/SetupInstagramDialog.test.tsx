@@ -167,6 +167,7 @@ describe('SetupInstagramDialog', () => {
     expect(
       screen.getByText(messages.SetupInstagramDialog.apify_error_description),
     ).toBeInTheDocument();
+    expect(screen.getByText(messages.SetupInstagramDialog.apify_error_warning)).toBeInTheDocument();
     expect(screen.getByText('۲۵K تا ۱۰۰K فالور')).toBeInTheDocument();
   });
 
@@ -234,11 +235,7 @@ describe('SetupInstagramDialog', () => {
     fireEvent.click(screen.getByText(messages.SetupInstagramDialog.finalize_pay));
 
     await waitFor(() =>
-      expect(payMock).toHaveBeenCalledWith(
-        { planId: 1, durationId: 10 },
-        expect.any(Function),
-        expect.any(Function),
-      ),
+      expect(payMock).toHaveBeenCalledWith({ planId: 1, durationId: 10 }, expect.any(Function)),
     );
     expect(apiPostMock).not.toHaveBeenCalled();
     expect(changeWorkspaceMock).not.toHaveBeenCalled();
@@ -311,16 +308,12 @@ describe('SetupInstagramDialog', () => {
     renderDialog();
 
     await waitFor(() =>
-      expect(payMock).toHaveBeenCalledWith(
-        { planId: 1, durationId: 10 },
-        expect.any(Function),
-        expect.any(Function),
-      ),
+      expect(payMock).toHaveBeenCalledWith({ planId: 1, durationId: 10 }, expect.any(Function)),
     );
     expect(window.location.search).toBe('');
   });
 
-  it('switches to a different existing workspace: stamps resume state and calls changeWorkspace, but does not pay yet', async () => {
+  it('switches to a different existing workspace: calls /auth/changeWorkspace directly and navigates to the resume URL, but does not pay yet', async () => {
     lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
     plansByFollowersMock.mockReturnValue({
       plan: {
@@ -330,6 +323,7 @@ describe('SetupInstagramDialog', () => {
       },
       isLoading: false,
     });
+    apiPostMock.mockResolvedValue({ data: {} });
 
     renderDialog();
     await checkUsername('befroosh');
@@ -344,12 +338,20 @@ describe('SetupInstagramDialog', () => {
       await screen.findByText(messages.SetupInstagramDialog.finalize_switch_and_continue),
     );
 
-    await waitFor(() => expect(changeWorkspaceMock).toHaveBeenCalledWith('ws-other'));
-    expect(apiPostMock).not.toHaveBeenCalled();
+    // Not useWorkspaces().changeWorkspace() — the dialog calls /auth/changeWorkspace directly
+    // and navigates straight to the resume URL, so its own resume effect never sees the igw*
+    // params mid-flow (the bug this rewrite fixes: a same-page URL stamp was visible to this
+    // same dialog instance before the real switch landed, misreading it as a mismatch).
+    await waitFor(() =>
+      expect(apiPostMock).toHaveBeenCalledWith('/auth/changeWorkspace', {
+        workspaceId: 'ws-other',
+      }),
+    );
+    expect(changeWorkspaceMock).not.toHaveBeenCalled();
     expect(payMock).not.toHaveBeenCalled();
   });
 
-  it('creates a new workspace: posts /workspaces then calls changeWorkspace with the returned id', async () => {
+  it('creates a new workspace: posts /workspaces, calls /auth/changeWorkspace with the returned id, then navigates to the resume URL', async () => {
     lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
     plansByFollowersMock.mockReturnValue({
       plan: {
@@ -359,7 +361,11 @@ describe('SetupInstagramDialog', () => {
       },
       isLoading: false,
     });
-    apiPostMock.mockResolvedValue({ data: { data: { id: 'ws-brand-new' } } });
+    apiPostMock.mockImplementation((url: string) =>
+      url === '/workspaces'
+        ? Promise.resolve({ data: { data: { id: 'ws-brand-new' } } })
+        : Promise.resolve({ data: {} }),
+    );
 
     renderDialog();
     await checkUsername('befroosh');
@@ -386,7 +392,12 @@ describe('SetupInstagramDialog', () => {
         categoryId: 'cat1',
       }),
     );
-    await waitFor(() => expect(changeWorkspaceMock).toHaveBeenCalledWith('ws-brand-new'));
+    await waitFor(() =>
+      expect(apiPostMock).toHaveBeenCalledWith('/auth/changeWorkspace', {
+        workspaceId: 'ws-brand-new',
+      }),
+    );
+    expect(changeWorkspaceMock).not.toHaveBeenCalled();
   });
 
   it('shows a mismatch error and does not pay when the resumed workspace does not match', async () => {
