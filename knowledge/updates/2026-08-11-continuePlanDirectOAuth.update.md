@@ -143,3 +143,55 @@ whitespace, none of which the igw values or a `?`/`&`-bearing path introduce.
 
 Verified: `vitest run AuthProvider.test.tsx SetupInstagramDialog.test.tsx "connect/page.test.tsx"`
 — **34 passed** (7 AuthProvider + 20 dialog + 7 connect page).
+
+## Follow-up: payment verify was silently skipped for zero-Instagram users
+
+User-reported after testing this branch: "This new change skipped the payment
+verify step." Investigated by mapping every redirect in `proxy.ts` (Next
+middleware) and `AuthProvider.tsx` end to end (not just the two files this
+branch had already touched) before changing anything, per the user's explicit
+ask — each redirect branch can hide a case another branch depends on.
+
+Root cause: `/settings/subscription/verify` (`VerifyContent` in
+`settings/subscription/verify/page.tsx`) is gated by `AuthProvider` like every
+other `(Console)` page. Its "everything else" bucket has a
+`!hasInstagram → redirect` branch with one existing allowlist entry
+(`/settings/instagram?code=...`, the OAuth callback) — `verify` had no
+equivalent entry, so a zero-Instagram user landing there from the payment
+gateway got bounced to `connectFlowPendingDest ?? /connect` **before**
+`VerifyContent`'s own effect (the one that calls
+`GET /payments/subscription/:gateway/verify`) ever mounted — `AuthProvider`
+renders a blocking spinner instead of `children` until it decides to allow the
+page through. The payment confirmation was silently dropped.
+
+This condition is **not new** — the same `!hasInstagram` branch shape existed
+before any of today's changes (checked against `d99e6d2f`, the commit this
+branch started from). It became load-bearing today because a "pooled"
+(unbound) purchase — buy a plan via the wizard before connecting any Instagram
+account — is exactly the flow that leaves `hasInstagram` false at the moment
+the gateway redirects back. `(Shop)/payments/verify` (a separate, unrelated
+public checkout) already gets the equivalent protection by being excluded from
+the middleware matcher entirely; `/settings/subscription/verify` never got
+either form of protection.
+
+Fixed the same way `/settings/instagram` is already handled: allowlist the
+verify page in `AuthProvider`'s `!hasInstagram` branch, gated on the URL
+actually carrying a real gateway callback param (Zarinpal `Authority`+`Status`,
+Zibal `trackId` — mirrors `VerifyContent`'s own gateway-detection logic) so a
+bare/direct visit still redirects as before.
+
+### Changes (this follow-up)
+
+- `apps/dashboard/src/components/Providers/AuthProvider.tsx` — new
+  `isSubscriptionVerifyPage` check; allowlisted alongside the existing
+  `isInstagramPage && code` case.
+- `apps/dashboard/src/components/Providers/AuthProvider.test.tsx` — 3 new
+  cases: allows a Zarinpal callback through, allows a Zibal callback through,
+  still redirects a param-less direct visit.
+
+### Verification (this follow-up)
+
+`vitest run AuthProvider.test.tsx SetupInstagramDialog.test.tsx "connect/page.test.tsx"`
+— **37 passed** (10 AuthProvider + 20 dialog + 7 connect page).
+
+Not smoke-tested against a real Zarinpal/Zibal sandbox callback.
