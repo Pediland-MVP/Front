@@ -113,3 +113,33 @@ Three bundled fixes, none related to the OAuth-redirect change above:
 — **33 passed** (20 dialog + 7 connect page + 6 AuthProvider).
 
 Not smoke-tested in a browser.
+
+## Follow-up: code review found the redirect fix (2) had a gap
+
+`/code-review medium` on this branch flagged that AuthProvider's igw-forwarding
+fix (addendum item 2) only worked when the redirect target was `/connect`
+directly. When the target was instead the invitations or ownership-transfer
+picker (`connectFlowPendingDest`, e.g.
+`/auth/onboarding/invitations?returnTo=/connect` — set when the user *also*
+has an unreviewed pending invitation/transfer), the igw suffix was appended as
+a **sibling** query param on the picker's own URL. But
+`invitations/page.tsx`/`transfer/page.tsx` read only `returnTo`'s own value
+and `router.push(returnTo)` straight to it — so the sibling params never made
+the trip, silently reproducing the exact bug addendum item 2 was written to
+fix, one hop later. Confirmed by reading both picker pages.
+
+Fixed by nesting the igw suffix **inside** the `returnTo` value instead of
+appending it alongside: `target`'s own `returnTo` param (if present) gets the
+igw suffix appended to it first, then the whole thing is re-encoded as a
+single query param. `isSafeInternalPath` (used by both picker pages to guard
+`returnTo`) still accepts the result — it only rejects `//`, `/\`, and
+whitespace, none of which the igw values or a `?`/`&`-bearing path introduce.
+
+- `apps/dashboard/src/components/Providers/AuthProvider.tsx` — the igw-suffix
+  branch now special-cases a `target` with a nested `returnTo`.
+- `apps/dashboard/src/components/Providers/AuthProvider.test.tsx` — new case:
+  `nests igw resume params inside returnTo when also routing through the
+  invitations picker`.
+
+Verified: `vitest run AuthProvider.test.tsx SetupInstagramDialog.test.tsx "connect/page.test.tsx"`
+— **34 passed** (7 AuthProvider + 20 dialog + 7 connect page).
