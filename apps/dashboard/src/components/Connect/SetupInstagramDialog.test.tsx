@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
+import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 
 // Radix's Select uses pointer-capture APIs jsdom does not implement, and calls
 // scrollIntoView on the item it wants to highlight when opening. Neither exists on jsdom's
@@ -478,18 +479,16 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     expect(screen.getByText('۱K تا ۲۵K فالور')).toBeInTheDocument();
   });
 
-  it('sends the user to /connect to continue with the plan already owned', () => {
+  it('sends the user straight into OAuth to continue with the plan already owned, same as the plain connect button', () => {
     withUnbound();
 
     renderDialog();
 
     const link = screen.getByText(messages.SetupInstagramDialog.continue_with_unbound).closest('a');
-    // Not straight into OAuth: /connect carries the instructions and help video, and the
-    // flag tells it this question is answered so it does not reopen this dialog.
-    expect(link).toHaveAttribute('href', '/connect?continueWithPlan=1');
+    expect(link).toHaveAttribute('href', IG_OAUTH_URL);
   });
 
-  it('closes itself on the way to /connect, so it cannot cover that page', () => {
+  it('closes itself on the way into OAuth', () => {
     withUnbound();
     const onOpenChange = vi.fn();
 
@@ -505,8 +504,6 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     link.addEventListener('click', (e) => e.preventDefault());
     fireEvent.click(link);
 
-    // Navigating /connect → /connect keeps the route mounted, so the parent's `open`
-    // state survives the click and would leave the dialog sitting over the page.
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 

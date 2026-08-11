@@ -35,7 +35,7 @@ import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { setPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { getUnboundActiveSubscriptions } from '@/utils/subscription';
-import { CONTINUE_WITH_PLAN_HREF } from '@/hooks/useAddInstagramGate';
+import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
@@ -307,13 +307,9 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                   className="w-full rounded-xl bg-violet-600 py-5 shadow-lg hover:bg-violet-700 active:scale-95"
                   asChild
                 >
-                  {/* Goes to /connect rather than straight into OAuth, so the user gets
-                      that page's instructions and help video instead of being dropped on
-                      Instagram. The query flag tells /connect this question is already
-                      answered — without it its own gate would reopen this same dialog.
-                      Closing here matters for the /connect → /connect case, where the
-                      route stays mounted and the dialog would otherwise cover the page. */}
-                  <Link href={CONTINUE_WITH_PLAN_HREF} onClick={() => onOpenChange(false)}>
+                  {/* Same destination as the plain "اتصال اکانت" button — straight into
+                      OAuth, no detour through /connect. */}
+                  <Link href={IG_OAUTH_URL} onClick={() => onOpenChange(false)}>
                     {t('continue_with_unbound')}
                   </Link>
                 </Button>
