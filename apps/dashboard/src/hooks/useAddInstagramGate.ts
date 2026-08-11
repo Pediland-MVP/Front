@@ -6,6 +6,13 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { getUnboundActiveSubscriptions } from '@/utils/subscription';
 
 /**
+ * Query param that tells `/settings/instagram` to auto-trigger the "افزودن پیج" button on
+ * mount — the same click path a user would take manually, just kicked off from another entry
+ * point (e.g. the workspace drawer in mobile nav) instead of a page you're already on.
+ */
+export const AUTO_OPEN_ADD_PARAM = 'openAdd';
+
+/**
  * Decides whether adding another Instagram account may go straight to the OAuth
  * handshake, or has to pass through `SetupInstagramDialog` first.
  *

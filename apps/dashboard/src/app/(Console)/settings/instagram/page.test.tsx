@@ -7,7 +7,11 @@ import messages from '@/messages/fa.json';
 // workspace-switch reload); without this mock the real next/navigation hook returns null
 // outside an app-router context, and `searchParams.get(...)` throws on every render.
 const searchParamsMock = vi.fn();
-vi.mock('next/navigation', () => ({ useSearchParams: () => searchParamsMock() }));
+const push = vi.fn();
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => searchParamsMock(),
+  useRouter: () => ({ push }),
+}));
 
 const usePermissionsMock = vi.fn();
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => usePermissionsMock() }));
@@ -40,6 +44,7 @@ vi.mock('@/components/Settings/InstagramAccounts', async () => {
 
 import Page from './page';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
+import { AUTO_OPEN_ADD_PARAM } from '@/hooks/useAddInstagramGate';
 
 /** Reported by the mocked accounts list. Set per test before rendering. */
 let accountCount: number | null = 0;
@@ -83,6 +88,7 @@ describe('Settings › Instagram — add-account gate', () => {
     withSlot(false);
     useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
     searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
+    push.mockClear();
   });
 
   it('sends a workspace connecting its first account straight to /connect', () => {
@@ -171,6 +177,7 @@ describe('Settings › Instagram — the button waits for what it gates on', () 
     withSlot(false);
     useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
     searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
+    push.mockClear();
   });
 
   it('stays disabled while the account count is still unknown', () => {
@@ -206,6 +213,65 @@ describe('Settings › Instagram — the button waits for what it gates on', () 
   });
 });
 
+// The mobile workspace drawer's "افزودن پیج" button routes here with ?openAdd=1 instead of
+// duplicating the Add button's open-dialog-or-go-to-connect branching in its own component.
+describe('Settings › Instagram — ?openAdd=1 auto-triggers the Add button', () => {
+  beforeEach(() => {
+    accountCount = 0;
+    usePermissionsMock.mockReset().mockReturnValue({
+      workspaceId: 'ws1',
+      can: () => true,
+      isLoading: false,
+    });
+    withSlot(false);
+    useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
+    push.mockClear();
+  });
+
+  it('opens the setup dialog on mount when the gate requires it', () => {
+    accountCount = 1;
+    withSlot(false);
+    searchParamsMock.mockReturnValue(new URLSearchParams(`${AUTO_OPEN_ADD_PARAM}=1`));
+
+    renderPage();
+
+    expect(screen.getByText('setup-dialog-open')).toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it('pushes straight to /connect on mount when the gate does not require the dialog', () => {
+    accountCount = 0;
+    searchParamsMock.mockReturnValue(new URLSearchParams(`${AUTO_OPEN_ADD_PARAM}=1`));
+
+    renderPage();
+
+    expect(push).toHaveBeenCalledWith('/connect');
+    expect(screen.queryByText('setup-dialog-open')).not.toBeInTheDocument();
+  });
+
+  it('waits for the gate to resolve before acting', () => {
+    accountCount = 1;
+    withSlot(true);
+    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [], isLoading: true });
+    searchParamsMock.mockReturnValue(new URLSearchParams(`${AUTO_OPEN_ADD_PARAM}=1`));
+
+    renderPage();
+
+    expect(push).not.toHaveBeenCalled();
+    expect(screen.queryByText('setup-dialog-open')).not.toBeInTheDocument();
+  });
+
+  it('does nothing without the param', () => {
+    accountCount = 0;
+    searchParamsMock.mockReturnValue(new URLSearchParams());
+
+    renderPage();
+
+    expect(push).not.toHaveBeenCalled();
+    expect(screen.queryByText('setup-dialog-open')).not.toBeInTheDocument();
+  });
+});
+
 describe('Settings › Instagram — limits and permissions still win', () => {
   beforeEach(() => {
     accountCount = 0;
@@ -217,6 +283,7 @@ describe('Settings › Instagram — limits and permissions still win', () => {
     withSlot(false);
     useSubscriptionStoreMock.mockReset().mockReturnValue({ subscriptions: [], isLoading: false });
     searchParamsMock.mockReset().mockReturnValue(new URLSearchParams());
+    push.mockClear();
   });
 
   it('disables the button at the 5-account limit', () => {

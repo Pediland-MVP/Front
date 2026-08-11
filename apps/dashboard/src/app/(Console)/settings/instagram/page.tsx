@@ -1,8 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { PlusIcon } from 'lucide-react';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
@@ -15,12 +15,13 @@ import { IGW_RESUME_PARAM } from '@/components/Connect/useInstagramWizardResume'
 import { Button } from '@/components/ui/button';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useAddInstagramGate } from '@/hooks/useAddInstagramGate';
+import { AUTO_OPEN_ADD_PARAM, useAddInstagramGate } from '@/hooks/useAddInstagramGate';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 
 export default function Page() {
   const t = useTranslations('Settings.Accounts');
+  const router = useRouter();
   const { can, isLoading: permissionsLoading } = usePermissions();
   // `null` until the accounts list resolves — see the note on `isAddBlocked` below.
   const [accountCount, setAccountCount] = useState<number | null>(null);
@@ -47,6 +48,25 @@ export default function Page() {
   // Acting early would answer "first account, no plan to worry about" — the one answer
   // that skips every check — and send the user into OAuth past the subscription step.
   const isAddBlocked = atLimit || !canManage || accountCount === null || isGateLoading;
+
+  // Lets another entry point (e.g. the "افزودن پیج" button in the mobile workspace drawer)
+  // land here and auto-trigger the exact same click the Add button itself would run, instead
+  // of duplicating that button's open-dialog-or-go-to-connect branching elsewhere. Waits for
+  // isAddBlocked to resolve out of its loading state before acting, and never re-fires once
+  // it has (a still-true isAddBlocked afterward means atLimit/!canManage, not "not ready yet").
+  const autoOpenHandled = useRef(false);
+  useEffect(() => {
+    if (autoOpenHandled.current) return;
+    if (searchParams.get(AUTO_OPEN_ADD_PARAM) !== '1') return;
+    if (isAddBlocked) return;
+
+    autoOpenHandled.current = true;
+    if (requiresSetupDialog) {
+      setIsSetupDialogOpen(true);
+    } else {
+      router.push('/connect');
+    }
+  }, [searchParams, isAddBlocked, requiresSetupDialog, router]);
 
   return (
     <div className="_instagram-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
