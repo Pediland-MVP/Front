@@ -21,8 +21,9 @@ export function AppBreadcrumb() {
   const t = useTranslations('Sidebar');
 
   const segmentLabel = (seg: string): string => {
-    if (isUUID(seg)) return 'جزئیات';
+    if (isUUID(seg)) return t('detail');
     const map: Record<string, string> = {
+      add: t('add'),
       users: t('myCustomers'),
       leads: t('myLeads'),
       subscriptions: t('subscriptions'),

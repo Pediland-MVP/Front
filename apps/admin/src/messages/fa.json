@@ -30,7 +30,9 @@
     "automationErrors": "خطاهای اتوماسیون",
     "helpGuides": "مدیریت راهنماها",
     "templates": "قالب‌ها",
-    "jobs": "کران‌جاب‌ها"
+    "jobs": "کران‌جاب‌ها",
+    "detail": "جزئیات",
+    "add": "ایجاد"
   },
   "Dashboard": {
     "title": "آمار کلی پلتفرم",

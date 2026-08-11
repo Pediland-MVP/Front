@@ -1980,7 +1980,7 @@
     "title": "مدیریت اشتراک کاربری",
     "no_active_subscription": "هیچ اشتراک فعالی وجود ندارد. ",
     "page_coverage_title": "پیج‌های تحت پوشش",
-    "unassigned_active_subscription": "این اشتراک هنوز به پیجی تخصیص داده نشده است",
+    "unassigned_active_subscription": "این اشتراک هنوز به پیجی تخصیص داده نشده است. به محض اتصال صفحه جدید، به صورت خودکار اعمال میشه",
     "covered_page": "پیج",
     "plan_title": "اشتراک مناسب پیج خود را انتخاب کنید",
     "package_title": "اشتراک مناسب پیج خود را انتخاب کنید",
@@ -2120,7 +2120,12 @@
     "verify": "تایید اشتراک",
     "workspace": "اطلاعات کسب‌وکار",
     "permissions": "مدیریت دسترسی‌های کاربر",
-    "zarinpal": "مدیریت زرین پال"
+    "zarinpal": "مدیریت زرین پال",
+    "edit": "ویرایش",
+    "support": "تماس با پشتیبانی",
+    "install": "نصب اپلیکیشن",
+    "invitations": "دعوت‌نامه‌ها",
+    "sendAll": "ارسال به همه"
   },
   "Notfound": {
     "title": "Page Not Found",
