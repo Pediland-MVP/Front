@@ -69,6 +69,14 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'workspace';
     case 'permissions':
       return 'permissions';
+    case 'support':
+      return 'support';
+    case 'install':
+      return 'install';
+    case 'invitations':
+      return 'invitations';
+    case 'sendAll':
+      return 'sendAll';
     default:
       return null;
   }
