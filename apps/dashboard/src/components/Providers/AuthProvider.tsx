@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
+import { RESUME_PARAM_KEYS } from '@/components/Connect/useInstagramWizardResume';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -109,6 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isTransferPickerPage = pathname === '/auth/onboarding/transfer';
     const isConnectPage = pathname === '/connect';
     const isInstagramPage = pathname === '/settings/instagram';
+    const isSubscriptionVerifyPage = pathname === '/settings/subscription/verify';
 
     // Where should an onboarding user land?
     const onboardingDestination =
@@ -178,8 +180,53 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else if (!hasInstagram) {
         if (isInstagramPage && searchParams.get('code')) {
           setIsAllowed(true);
+        } else if (
+          isSubscriptionVerifyPage &&
+          (searchParams.get('trackId') ||
+            (searchParams.get('Authority') && searchParams.get('Status')))
+        ) {
+          // A "pooled" (unbound) subscription purchase can happen before the user has
+          // connected any Instagram account — e.g. mid-wizard in SetupInstagramDialog.
+          // The payment gateway (Zarinpal `Authority`+`Status`, Zibal `trackId`) redirects
+          // back here; without this, `!hasInstagram` would bounce the user away before the
+          // page's own effect gets to call the backend verify endpoint, silently dropping
+          // the payment confirmation. See VerifyContent in
+          // settings/subscription/verify/page.tsx for the same gateway-detection logic.
+          setIsAllowed(true);
         } else {
-          redirect = connectFlowPendingDest ?? '/connect';
+          // A brand-new workspace has zero connected Instagram accounts, which lands here
+          // right after the wizard's create-workspace-and-switch reload — the exact moment
+          // SetupInstagramDialog needs `/connect`'s own resume effect to pick up the igw*
+          // params it stamped on the URL before the reload. Without forwarding them here,
+          // this redirect (a bare router.replace) silently drops them and the pending
+          // purchase is lost. See useInstagramWizardResume for what these params mean.
+          const target = connectFlowPendingDest ?? '/connect';
+          const igwParams = new URLSearchParams();
+          RESUME_PARAM_KEYS.forEach((key) => {
+            const value = searchParams.get(key);
+            if (value) igwParams.set(key, value);
+          });
+          const igwSuffix = igwParams.toString();
+          if (!igwSuffix) {
+            redirect = target;
+          } else {
+            // `target` can itself be the invitations/transfer picker carrying a
+            // `returnTo=/connect` param (when the user also has an unreviewed pending
+            // invitation/transfer) — those pages read only `returnTo`'s own value and
+            // `router.push` straight to it, dropping any sibling params appended to the
+            // picker's own URL. So the igw suffix has to live *inside* that nested
+            // `returnTo` value, not appended alongside it, or it's lost one hop later.
+            const [path, query = ''] = target.split('?');
+            const params = new URLSearchParams(query);
+            const nestedReturnTo = params.get('returnTo');
+            if (nestedReturnTo) {
+              const nestedSep = nestedReturnTo.includes('?') ? '&' : '?';
+              params.set('returnTo', `${nestedReturnTo}${nestedSep}${igwSuffix}`);
+              redirect = `${path}?${params.toString()}`;
+            } else {
+              redirect = `${target}${target.includes('?') ? '&' : '?'}${igwSuffix}`;
+            }
+          }
         }
       } else {
         setIsAllowed(true);

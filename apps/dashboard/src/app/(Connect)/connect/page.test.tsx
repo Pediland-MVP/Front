@@ -125,27 +125,6 @@ describe('ConnectPage — second Instagram subscription gate', () => {
 
     expect(screen.getByText(messages.Connect.setup_second_instagram_cta)).toBeInTheDocument();
   });
-
-  it('shows a reminder for the pending username and clears the cookie after reading it', () => {
-    document.cookie = 'pending_ig_username=befroosh; path=/';
-    useUserMock.mockReturnValue({
-      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
-      hasInstagram: true,
-      canConnectInstagram: true,
-    });
-    useWorkspacesMock.mockReturnValue({
-      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
-    });
-
-    renderPage();
-
-    const expectedText = messages.Connect.pending_username_reminder.replace(
-      '{username}',
-      'befroosh',
-    );
-    expect(screen.getByText(expectedText)).toBeInTheDocument();
-    expect(document.cookie).not.toContain('pending_ig_username=befroosh');
-  });
 });
 
 describe('ConnectPage — unbound plan opens the dialog', () => {
@@ -194,52 +173,5 @@ describe('ConnectPage — unbound plan opens the dialog', () => {
     renderPage();
 
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
-  });
-});
-
-describe('ConnectPage — arriving with the unbound plan already accepted', () => {
-  beforeEach(() => {
-    push.mockReset();
-    searchParamsMock.mockReset().mockReturnValue(new URLSearchParams('continueWithPlan=1'));
-    useWorkspacesMock.mockReturnValue({ workspaces: [] });
-    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [] });
-  });
-
-  const withSlot = () => {
-    useUserMock.mockReturnValue({
-      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
-      hasInstagram: true,
-      canConnectInstagram: true,
-    });
-    useWorkspacesMock.mockReturnValue({
-      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
-    });
-  };
-
-  it('shows the connect link instead of reopening the dialog the user just answered', () => {
-    withSlot();
-    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub()] });
-
-    renderPage();
-
-    expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
-    // Without the flag this same state renders the CTA — that is the loop it prevents.
-    expect(screen.queryByText(messages.Connect.setup_second_instagram_cta)).not.toBeInTheDocument();
-  });
-
-  it('still gates a workspace with no coverage at all — the flag only answers the unbound question', () => {
-    useUserMock.mockReturnValue({
-      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
-      hasInstagram: true,
-      canConnectInstagram: true,
-    });
-    useWorkspacesMock.mockReturnValue({
-      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: false }],
-    });
-
-    renderPage();
-
-    expect(screen.getByText(messages.Connect.setup_second_instagram_cta)).toBeInTheDocument();
-    expect(screen.queryByText(messages.Connect.connect_account)).not.toBeInTheDocument();
   });
 });

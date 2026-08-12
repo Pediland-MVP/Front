@@ -31,7 +31,7 @@ export const IGW_DURATION_ID_PARAM = 'igwDurationId';
 export const IGW_USERNAME_PARAM = 'igwUsername';
 export const IGW_TARGET_WS_PARAM = 'igwTargetWs';
 
-const RESUME_PARAM_KEYS = [
+export const RESUME_PARAM_KEYS = [
   IGW_RESUME_PARAM,
   IGW_PLAN_ID_PARAM,
   IGW_DURATION_ID_PARAM,
@@ -40,10 +40,12 @@ const RESUME_PARAM_KEYS = [
 ];
 
 /**
- * Reads the resume state SetupInstagramDialog stamps onto the URL right before a
- * workspace-switch reload, verifies the switch actually landed (the safety check that keeps a
+ * Reads the resume state SetupInstagramDialog put on the URL when it navigated here right
+ * after a workspace switch, verifies the switch actually landed (the safety check that keeps a
  * failed/racy switch from ever triggering payment into the wrong workspace), and always strips
- * the params afterward so a later manual refresh can't re-trigger anything.
+ * the params afterward so a later manual refresh can't re-trigger anything. This must only ever
+ * run on the fresh page the switch navigated to — see SetupInstagramDialog's buildResumeUrl for
+ * why the params are never written onto the *current* page's URL before navigating away.
  */
 export function useInstagramWizardResume({
   currentWorkspaceId,

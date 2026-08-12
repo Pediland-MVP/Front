@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 
@@ -33,9 +33,8 @@ import {
 } from './useInstagramWizardResume';
 import usePayPlan from '@/app/(Console)/settings/subscription/hooks/usePayPlan';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { setPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { getUnboundActiveSubscriptions } from '@/utils/subscription';
-import { CONTINUE_WITH_PLAN_HREF } from '@/hooks/useAddInstagramGate';
+import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
@@ -66,7 +65,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   const t_ec = useTranslations('ERROR_CODES');
   const { setActive, subscriptions } = useSubscriptionStore();
   const { workspaceId: currentWorkspaceId } = usePermissions();
-  const { workspaces, changeWorkspace } = useWorkspaces();
+  const { workspaces } = useWorkspaces();
   const { categories } = useWorkspaceCategories();
 
   const [step, setStep] = useState<WizardStep>('username');
@@ -91,7 +90,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     onResolved: ({ planId, durationId, username }) => {
       if (username) setCheckedUsername(username);
       setStep('workspace');
-      void onBuy(planId, durationId, username ?? undefined);
+      void onBuy(planId, durationId);
     },
     onMismatch: ({ planId, durationId, username }) => {
       // The switch itself failed, but the plan/duration the user picked is still valid — restore
@@ -124,6 +123,28 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     usePlansByFollowers(followersCount);
   const { plans: allPlans, isLoading: isAllPlansLoading } = useAllVisiblePlans(lookupFailed);
   const { pay, isPayLoading } = usePayPlan();
+
+  // The step content area has a fixed height and scrolls internally when a step's content
+  // (mainly step 2's duration cards) overflows it. These inset shadows are the only hint that
+  // there's more to scroll to — the fixed-height box hides the plain browser scrollbar enough
+  // (styled thin/transparent below) that a hard content cut-off would otherwise look accidental.
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [scrollShadow, setScrollShadow] = useState({ top: false, bottom: false });
+
+  const updateScrollShadow = () => {
+    const el = scrollAreaRef.current;
+    if (!el) return;
+    setScrollShadow({
+      top: el.scrollTop > 4,
+      bottom: el.scrollTop + el.clientHeight < el.scrollHeight - 4,
+    });
+  };
+
+  // Content height changes with the step (and within step 2, with lookupFailed/matchedPlan),
+  // which can flip whether it overflows at all — recompute once the new content has painted.
+  useEffect(() => {
+    updateScrollShadow();
+  }, [step, showUnboundStep, lookupFailed, matchedPlan, workspaceStep.targetMode]);
 
   // Durations sorted shortest-first, mirroring ChoosePlan's buy dialog so returning users
   // see the same "best value" / monthly-price framing they already know from Settings.
@@ -171,41 +192,27 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     setStep('plan');
   };
 
-  // usernameOverride lets a caller pass the username explicitly instead of relying on the
-  // `checkedUsername` state variable, which matters on the resume path: onResolved calls
-  // setCheckedUsername and onBuy in the same tick, and the async state update would not be
-  // visible yet in this render's closure when onBeforeRedirect below actually runs.
-  const onBuy = async (planId: number, durationId: number, usernameOverride?: string) => {
-    await pay({ planId, durationId }, setActive, () => {
-      const usernameForCookie = usernameOverride ?? checkedUsername;
-      if (usernameForCookie) setPendingInstagramUsername(usernameForCookie);
-    });
+  const onBuy = async (planId: number, durationId: number) => {
+    await pay({ planId, durationId }, setActive);
   };
 
-  const stampResumeStateOnUrl = (targetWorkspaceId: string, planId: number, durationId: number) => {
+  // Builds the URL this same dialog should resume on after the workspace-switch reload — a
+  // pure computation, not a URL mutation. Earlier this stamped the *current* page's URL via
+  // history.replaceState before reloading, but that mutation is visible to this same,
+  // still-mounted dialog's own useInstagramWizardResume effect immediately (React re-renders
+  // during the changeWorkspace await are enough to pick it up) — while the old workspace is
+  // still active, which reads as a mismatch and strips the params before the real reload ever
+  // happens. Navigating straight to the fully-built URL below (one atomic browser navigation)
+  // means this page's own dialog never observes the params — only the fresh page after the
+  // real switch does, which is the only place that should ever evaluate them.
+  const buildResumeUrl = (targetWorkspaceId: string, planId: number, durationId: number) => {
     const url = new URL(window.location.href);
     url.searchParams.set(IGW_RESUME_PARAM, '1');
     url.searchParams.set(IGW_PLAN_ID_PARAM, String(planId));
     url.searchParams.set(IGW_DURATION_ID_PARAM, String(durationId));
     if (checkedUsername) url.searchParams.set(IGW_USERNAME_PARAM, checkedUsername);
     url.searchParams.set(IGW_TARGET_WS_PARAM, targetWorkspaceId);
-    window.history.replaceState(null, '', url.toString());
-  };
-
-  // Undoes stampResumeStateOnUrl. Needed when changeWorkspace's request throws right after
-  // stamping: no reload happens in that case, so the igw* params would otherwise sit on the
-  // URL and let a later, unrelated page refresh be misread by useInstagramWizardResume as
-  // "the switch succeeded" (targetWorkspaceId still equals the never-changed current one).
-  const clearStampedResumeParams = () => {
-    const url = new URL(window.location.href);
-    [
-      IGW_RESUME_PARAM,
-      IGW_PLAN_ID_PARAM,
-      IGW_DURATION_ID_PARAM,
-      IGW_USERNAME_PARAM,
-      IGW_TARGET_WS_PARAM,
-    ].forEach((key) => url.searchParams.delete(key));
-    window.history.replaceState(null, '', url.toString());
+    return url.toString();
   };
 
   const onFinalizeWorkspaceStep = async () => {
@@ -222,10 +229,13 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
         const res = await api.post('/workspaces', { name, categoryId });
         return res.data?.data?.id ?? res.data?.id;
       });
-      stampResumeStateOnUrl(targetId, selectedPlanId, selectedDurationId);
-      await changeWorkspace(targetId);
+      const resumeUrl = buildResumeUrl(targetId, selectedPlanId, selectedDurationId);
+      // Not useWorkspaces().changeWorkspace() — that helper reloads the current URL, which is
+      // exactly the race this rewrite avoids. Navigate straight to resumeUrl once the switch
+      // itself has actually succeeded.
+      await api.post('/auth/changeWorkspace', { workspaceId: targetId });
+      window.location.href = resumeUrl;
     } catch (e) {
-      clearStampedResumeParams();
       const code = (e as AxiosError<ExceptionMessage>).response?.data?.code;
       toast.error(t_ec(code) || t('workspace_switch_error'));
       workspaceStep.setIsFinalizing(false);
@@ -246,8 +256,8 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
         if (!next) reset();
       }}
     >
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-hidden overflow-y-auto rounded-2xl border border-slate-100 bg-white p-0 text-right shadow-2xl">
-        <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-7 text-white">
+      <DialogContent className="flex h-[min(760px,88vh)] max-w-lg flex-col gap-0 overflow-hidden rounded-2xl border border-slate-100 bg-white p-0 text-right shadow-2xl">
+        <div className="relative shrink-0 overflow-hidden bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-7 text-white">
           <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-violet-400/20 blur-2xl" />
           <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-indigo-400/20 blur-2xl" />
 
@@ -266,9 +276,21 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="flex min-h-0 flex-1 flex-col p-6">
           {showUnboundStep ? (
-            <div className="space-y-4">
+            <div
+              ref={scrollAreaRef}
+              onScroll={updateScrollShadow}
+              className="scrollbar-thin scrollbar-thumb-violet-200 scrollbar-track-transparent min-h-0 flex-1 space-y-4 overflow-y-auto pe-1 transition-shadow duration-200"
+              style={{
+                boxShadow: [
+                  scrollShadow.top && 'inset 0 8px 6px -6px rgba(15,23,42,0.10)',
+                  scrollShadow.bottom && 'inset 0 -8px 6px -6px rgba(15,23,42,0.10)',
+                ]
+                  .filter(Boolean)
+                  .join(', '),
+              }}
+            >
               <div className="flex items-start gap-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-800">
                 <WarningCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0" />
                 <div className="space-y-1">
@@ -307,13 +329,9 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                   className="w-full rounded-xl bg-violet-600 py-5 shadow-lg hover:bg-violet-700 active:scale-95"
                   asChild
                 >
-                  {/* Goes to /connect rather than straight into OAuth, so the user gets
-                      that page's instructions and help video instead of being dropped on
-                      Instagram. The query flag tells /connect this question is already
-                      answered — without it its own gate would reopen this same dialog.
-                      Closing here matters for the /connect → /connect case, where the
-                      route stays mounted and the dialog would otherwise cover the page. */}
-                  <Link href={CONTINUE_WITH_PLAN_HREF} onClick={() => onOpenChange(false)}>
+                  {/* Same destination as the plain "اتصال اکانت" button — straight into
+                      OAuth, no detour through /connect. */}
+                  <Link href={IG_OAUTH_URL} onClick={() => onOpenChange(false)}>
                     {t('continue_with_unbound')}
                   </Link>
                 </Button>
@@ -328,291 +346,314 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
             </div>
           ) : (
             <>
-              <WizardStepsHeader titles={stepTitles} currentIndex={STEP_INDEX[step]} />
+              <div className="shrink-0">
+                <WizardStepsHeader titles={stepTitles} currentIndex={STEP_INDEX[step]} />
+              </div>
 
-              {step === 'username' && (
-                <div className="space-y-4">
-                  <Input
-                    placeholder={t('username_placeholder')}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="h-11 rounded-xl"
-                  />
-                  <ButtonLoading
-                    type="button"
-                    isLoading={isLookupLoading}
-                    className="w-full rounded-xl bg-violet-600 py-5 shadow-lg hover:bg-violet-700 active:scale-95"
-                    onClick={onCheckUsername}
-                  >
-                    {t('check_button')}
-                  </ButtonLoading>
-                </div>
-              )}
+              <div
+                ref={scrollAreaRef}
+                onScroll={updateScrollShadow}
+                className="scrollbar-thin scrollbar-thumb-violet-200 scrollbar-track-transparent min-h-0 flex-1 overflow-y-auto pe-1 transition-shadow duration-200"
+                style={{
+                  boxShadow: [
+                    scrollShadow.top && 'inset 0 8px 6px -6px rgba(15,23,42,0.10)',
+                    scrollShadow.bottom && 'inset 0 -8px 6px -6px rgba(15,23,42,0.10)',
+                  ]
+                    .filter(Boolean)
+                    .join(', '),
+                }}
+              >
+                {step === 'username' && (
+                  <div className="flex h-full flex-col justify-center space-y-4">
+                    <Input
+                      placeholder={t('username_placeholder')}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="h-11 rounded-xl"
+                    />
+                    <ButtonLoading
+                      type="button"
+                      isLoading={isLookupLoading}
+                      className="w-full rounded-xl bg-violet-600 py-5 shadow-lg hover:bg-violet-700 active:scale-95"
+                      onClick={onCheckUsername}
+                    >
+                      {t('check_button')}
+                    </ButtonLoading>
+                  </div>
+                )}
 
-              {step === 'plan' && (
-                <div className="space-y-4">
-                  {lookupFailed ? (
-                    <div className="space-y-3">
-                      <p className="text-muted-foreground text-sm">
-                        {t('apify_error_description')}
-                      </p>
-                      {isAllPlansLoading ? (
+                {step === 'plan' && (
+                  <div className="space-y-4">
+                    {lookupFailed ? (
+                      <div className="space-y-3">
+                        <p className="text-muted-foreground text-sm">
+                          {t('apify_error_description')}
+                        </p>
+                        <div className="flex items-start gap-2 rounded-xl border border-amber-100 bg-amber-50/70 p-3 text-xs text-amber-800">
+                          <WarningCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0" />
+                          <p className="leading-relaxed">{t('apify_error_warning')}</p>
+                        </div>
+                        {isAllPlansLoading ? (
+                          <LoaderSpin />
+                        ) : (
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            {allPlans?.map((plan) => {
+                              const longestDuration = [...plan.durations].sort(
+                                (a, b) => b.durationDays - a.durationDays,
+                              )[0];
+                              const isSelected = selectedPlanId === plan.id;
+                              return (
+                                <button
+                                  key={plan.id}
+                                  type="button"
+                                  onClick={() => {
+                                    if (!longestDuration) return;
+                                    setSelectedPlanId(plan.id);
+                                    setSelectedDurationId(longestDuration.id);
+                                  }}
+                                  className={cn(
+                                    'group rounded-xl border p-4 text-right transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md',
+                                    isSelected
+                                      ? 'border-violet-500 bg-violet-50/50 ring-1 ring-violet-200'
+                                      : 'border-slate-200 hover:border-violet-300',
+                                  )}
+                                >
+                                  <PlanTierBadge plan={{ name: plan.name }} />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ) : isMatchedPlanLoading ? (
+                      <div className="flex flex-col items-center justify-center gap-3 py-10">
                         <LoaderSpin />
-                      ) : (
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          {allPlans?.map((plan) => {
-                            const longestDuration = [...plan.durations].sort(
-                              (a, b) => b.durationDays - a.durationDays,
-                            )[0];
-                            const isSelected = selectedPlanId === plan.id;
+                      </div>
+                    ) : matchedPlan ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
+                          <Avatar className="h-11 w-11">
+                            <AvatarImage src={profilePicUrl} alt={checkedUsername ?? ''} />
+                            <AvatarFallback>
+                              <InstagramLogoIcon size={18} weight="bold" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 text-right">
+                            <p dir="ltr" className="truncate text-sm font-bold text-slate-800">
+                              @{checkedUsername}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              <span>{formatNumber(followersCount)}</span> {t('followers_unit')}
+                            </p>
+                          </div>
+                        </div>
+
+                        <PlanTierBadge plan={{ name: matchedPlan.name }} />
+
+                        <div className="space-y-3">
+                          {sortedDurations.map((duration) => {
+                            const hasDiscount = Number(duration.discountPrice) > 0;
+                            const unitPrice = hasDiscount
+                              ? Number(duration.discountPrice)
+                              : Number(duration.price);
+                            const months =
+                              duration.durationDays === 365
+                                ? 12
+                                : Math.max(1, Math.round(duration.durationDays / 30));
+                            const monthlyPrice = Math.round(unitPrice / months);
+                            const savingsPct =
+                              monthlyBaselinePrice && monthlyBaselinePrice > monthlyPrice
+                                ? Math.round((1 - monthlyPrice / monthlyBaselinePrice) * 100)
+                                : 0;
+                            const isRecommended = duration.id === recommendedDurationId;
+                            const isSelected = selectedDurationId === duration.id;
+                            const totalDiscountPct = hasDiscount
+                              ? Math.round(
+                                  (1 - Number(duration.discountPrice) / Number(duration.price)) *
+                                    100,
+                                )
+                              : 0;
+
                             return (
                               <button
-                                key={plan.id}
+                                key={duration.id}
                                 type="button"
                                 onClick={() => {
-                                  if (!longestDuration) return;
-                                  setSelectedPlanId(plan.id);
-                                  setSelectedDurationId(longestDuration.id);
+                                  setSelectedPlanId(matchedPlan.id);
+                                  setSelectedDurationId(duration.id);
                                 }}
                                 className={cn(
-                                  'group rounded-xl border p-4 text-right transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md',
+                                  'relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl border text-right transition-all duration-300 sm:flex-row',
                                   isSelected
-                                    ? 'border-violet-500 bg-violet-50/50 ring-1 ring-violet-200'
-                                    : 'border-slate-200 hover:border-violet-300',
+                                    ? 'border-violet-500 bg-gradient-to-l from-violet-50/40 to-indigo-50/10 shadow-lg ring-1 shadow-violet-100/50 ring-violet-200'
+                                    : 'border-slate-200 bg-white hover:border-violet-300 hover:shadow-md',
                                 )}
                               >
-                                <PlanTierBadge plan={{ name: plan.name }} />
+                                {isRecommended && (
+                                  <div className="absolute top-0 left-0 flex items-center gap-1 rounded-br-xl bg-violet-600 px-3 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                                    <Sparkles className="h-3.5 w-3.5 fill-violet-200" />
+                                    {tSub('best_value')}
+                                  </div>
+                                )}
+
+                                <div className="flex flex-1 flex-col justify-between p-4 text-right">
+                                  <div>
+                                    <div className="mb-1.5 flex items-center gap-2">
+                                      <span className="text-sm font-bold text-slate-800">
+                                        {duration.name}
+                                      </span>
+                                      {totalDiscountPct > 0 && (
+                                        <span className="inline-flex items-center gap-0.5 rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600">
+                                          {totalDiscountPct}٪ تخفیف
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    <div className="flex items-baseline gap-1">
+                                      <span className="text-xl font-extrabold tracking-tight text-slate-800 tabular-nums">
+                                        {formatNumber(monthlyPrice)}
+                                      </span>
+                                      <span className="text-xs font-medium text-slate-400">
+                                        {tSub('per_month_unit')}
+                                      </span>
+                                    </div>
+
+                                    {savingsPct > 0 && (
+                                      <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                                        <TrendDownIcon size={14} weight="bold" />
+                                        <span>
+                                          {tSub('cheaper_than_monthly', { percent: savingsPct })}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100/80 pt-2.5 text-xs">
+                                    <span className="text-slate-400">{tSub('total_price')}:</span>
+                                    <div className="flex items-center gap-1.5 font-semibold text-slate-700">
+                                      {hasDiscount && (
+                                        <span className="text-slate-350 text-[11px] line-through decoration-slate-300">
+                                          {formatNumber(Number(duration.price))}
+                                        </span>
+                                      )}
+                                      <span className="font-bold text-slate-800 tabular-nums">
+                                        {formatNumber(unitPrice)}
+                                      </span>
+                                      <span className="text-slate-450 text-[10px] font-normal">
+                                        {tSub('toman')}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
                               </button>
                             );
                           })}
                         </div>
-                      )}
-                    </div>
-                  ) : isMatchedPlanLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-3 py-10">
-                      <LoaderSpin />
-                    </div>
-                  ) : matchedPlan ? (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
-                        <Avatar className="h-11 w-11">
-                          <AvatarImage src={profilePicUrl} alt={checkedUsername ?? ''} />
-                          <AvatarFallback>
-                            <InstagramLogoIcon size={18} weight="bold" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 text-right">
-                          <p dir="ltr" className="truncate text-sm font-bold text-slate-800">
-                            @{checkedUsername}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm">{t('no_matching_plan')}</p>
+                    )}
+                  </div>
+                )}
+
+                {step === 'workspace' && (
+                  <div className="space-y-4">
+                    <RadioGroup
+                      value={workspaceStep.targetMode}
+                      onValueChange={(v) => workspaceStep.setTargetMode(v as 'new' | 'existing')}
+                    >
+                      <label
+                        className={cn(
+                          'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+                          workspaceStep.targetMode === 'new'
+                            ? 'border-violet-500 bg-violet-50/50'
+                            : 'border-slate-200 hover:border-violet-200',
+                        )}
+                      >
+                        <RadioGroupItem value="new" className="mt-1" />
+                        <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-violet-600" />
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">
+                            {t('option_new_title')}
                           </p>
-                          <p className="text-xs text-slate-500">
-                            <span>{formatNumber(followersCount)}</span> {t('followers_unit')}
+                          <p className="mt-0.5 text-xs text-slate-500">
+                            {t('option_new_description')}
                           </p>
                         </div>
+                      </label>
+
+                      <label
+                        className={cn(
+                          'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
+                          workspaceStep.targetMode === 'existing'
+                            ? 'border-violet-500 bg-violet-50/50'
+                            : 'border-slate-200 hover:border-violet-200',
+                        )}
+                      >
+                        <RadioGroupItem value="existing" className="mt-1" />
+                        <GitMerge className="mt-0.5 h-5 w-5 shrink-0 text-violet-600" />
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">
+                            {t('option_existing_title')}
+                          </p>
+                          <p className="mt-0.5 text-xs text-slate-500">
+                            {t('option_existing_description')}
+                          </p>
+                        </div>
+                      </label>
+                    </RadioGroup>
+
+                    {workspaceStep.targetMode === 'new' ? (
+                      <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
+                        <Input
+                          value={workspaceStep.newWorkspaceName}
+                          onChange={(e) => workspaceStep.setNewWorkspaceName(e.target.value)}
+                          placeholder={t('new_workspace_name_placeholder')}
+                          className="h-11 rounded-xl"
+                          disabled={workspaceStep.isFinalizing}
+                        />
+                        <Select
+                          value={workspaceStep.newWorkspaceCategoryId}
+                          onValueChange={workspaceStep.setNewWorkspaceCategoryId}
+                          disabled={workspaceStep.isFinalizing}
+                        >
+                          <SelectTrigger className="h-11 rounded-xl">
+                            <SelectValue placeholder={t('new_workspace_category_placeholder')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.nameFa}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-
-                      <PlanTierBadge plan={{ name: matchedPlan.name }} />
-
-                      <div className="space-y-3">
-                        {sortedDurations.map((duration) => {
-                          const hasDiscount = Number(duration.discountPrice) > 0;
-                          const unitPrice = hasDiscount
-                            ? Number(duration.discountPrice)
-                            : Number(duration.price);
-                          const months =
-                            duration.durationDays === 365
-                              ? 12
-                              : Math.max(1, Math.round(duration.durationDays / 30));
-                          const monthlyPrice = Math.round(unitPrice / months);
-                          const savingsPct =
-                            monthlyBaselinePrice && monthlyBaselinePrice > monthlyPrice
-                              ? Math.round((1 - monthlyPrice / monthlyBaselinePrice) * 100)
-                              : 0;
-                          const isRecommended = duration.id === recommendedDurationId;
-                          const isSelected = selectedDurationId === duration.id;
-                          const totalDiscountPct = hasDiscount
-                            ? Math.round(
-                                (1 - Number(duration.discountPrice) / Number(duration.price)) * 100,
-                              )
-                            : 0;
-
-                          return (
-                            <button
-                              key={duration.id}
-                              type="button"
-                              onClick={() => {
-                                setSelectedPlanId(matchedPlan.id);
-                                setSelectedDurationId(duration.id);
-                              }}
-                              className={cn(
-                                'relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl border text-right transition-all duration-300 sm:flex-row',
-                                isSelected
-                                  ? 'border-violet-500 bg-gradient-to-l from-violet-50/40 to-indigo-50/10 shadow-lg ring-1 shadow-violet-100/50 ring-violet-200'
-                                  : 'border-slate-200 bg-white hover:border-violet-300 hover:shadow-md',
-                              )}
-                            >
-                              {isRecommended && (
-                                <div className="absolute top-0 left-0 flex items-center gap-1 rounded-br-xl bg-violet-600 px-3 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                                  <Sparkles className="h-3.5 w-3.5 fill-violet-200" />
-                                  {tSub('best_value')}
-                                </div>
-                              )}
-
-                              <div className="flex flex-1 flex-col justify-between p-4 text-right">
-                                <div>
-                                  <div className="mb-1.5 flex items-center gap-2">
-                                    <span className="text-sm font-bold text-slate-800">
-                                      {duration.name}
-                                    </span>
-                                    {totalDiscountPct > 0 && (
-                                      <span className="inline-flex items-center gap-0.5 rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600">
-                                        {totalDiscountPct}٪ تخفیف
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className="flex items-baseline gap-1">
-                                    <span className="text-xl font-extrabold tracking-tight text-slate-800 tabular-nums">
-                                      {formatNumber(monthlyPrice)}
-                                    </span>
-                                    <span className="text-xs font-medium text-slate-400">
-                                      {tSub('per_month_unit')}
-                                    </span>
-                                  </div>
-
-                                  {savingsPct > 0 && (
-                                    <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                                      <TrendDownIcon size={14} weight="bold" />
-                                      <span>
-                                        {tSub('cheaper_than_monthly', { percent: savingsPct })}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100/80 pt-2.5 text-xs">
-                                  <span className="text-slate-400">{tSub('total_price')}:</span>
-                                  <div className="flex items-center gap-1.5 font-semibold text-slate-700">
-                                    {hasDiscount && (
-                                      <span className="text-slate-350 text-[11px] line-through decoration-slate-300">
-                                        {formatNumber(Number(duration.price))}
-                                      </span>
-                                    )}
-                                    <span className="font-bold text-slate-800 tabular-nums">
-                                      {formatNumber(unitPrice)}
-                                    </span>
-                                    <span className="text-slate-450 text-[10px] font-normal">
-                                      {tSub('toman')}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">{t('no_matching_plan')}</p>
-                  )}
-                </div>
-              )}
-
-              {step === 'workspace' && (
-                <div className="space-y-4">
-                  <RadioGroup
-                    value={workspaceStep.targetMode}
-                    onValueChange={(v) => workspaceStep.setTargetMode(v as 'new' | 'existing')}
-                  >
-                    <label
-                      className={cn(
-                        'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
-                        workspaceStep.targetMode === 'new'
-                          ? 'border-violet-500 bg-violet-50/50'
-                          : 'border-slate-200 hover:border-violet-200',
-                      )}
-                    >
-                      <RadioGroupItem value="new" className="mt-1" />
-                      <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-violet-600" />
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">{t('option_new_title')}</p>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          {t('option_new_description')}
-                        </p>
-                      </div>
-                    </label>
-
-                    <label
-                      className={cn(
-                        'flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors',
-                        workspaceStep.targetMode === 'existing'
-                          ? 'border-violet-500 bg-violet-50/50'
-                          : 'border-slate-200 hover:border-violet-200',
-                      )}
-                    >
-                      <RadioGroupItem value="existing" className="mt-1" />
-                      <GitMerge className="mt-0.5 h-5 w-5 shrink-0 text-violet-600" />
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">
-                          {t('option_existing_title')}
-                        </p>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          {t('option_existing_description')}
-                        </p>
-                      </div>
-                    </label>
-                  </RadioGroup>
-
-                  {workspaceStep.targetMode === 'new' ? (
-                    <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
-                      <Input
-                        value={workspaceStep.newWorkspaceName}
-                        onChange={(e) => workspaceStep.setNewWorkspaceName(e.target.value)}
-                        placeholder={t('new_workspace_name_placeholder')}
-                        className="h-11 rounded-xl"
-                        disabled={workspaceStep.isFinalizing}
-                      />
+                    ) : (
                       <Select
-                        value={workspaceStep.newWorkspaceCategoryId}
-                        onValueChange={workspaceStep.setNewWorkspaceCategoryId}
+                        value={workspaceStep.selectedExistingWorkspaceId}
+                        onValueChange={workspaceStep.setSelectedExistingWorkspaceId}
                         disabled={workspaceStep.isFinalizing}
                       >
                         <SelectTrigger className="h-11 rounded-xl">
-                          <SelectValue placeholder={t('new_workspace_category_placeholder')} />
+                          <SelectValue placeholder={t('select_workspace_placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
-                          {categories.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              {c.nameFa}
+                          {workspaces.map((ws) => (
+                            <SelectItem key={ws.id} value={ws.id}>
+                              {ws.id === currentWorkspaceId
+                                ? `${ws.name} (${t('current_workspace_suffix')})`
+                                : ws.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                  ) : (
-                    <Select
-                      value={workspaceStep.selectedExistingWorkspaceId}
-                      onValueChange={workspaceStep.setSelectedExistingWorkspaceId}
-                      disabled={workspaceStep.isFinalizing}
-                    >
-                      <SelectTrigger className="h-11 rounded-xl">
-                        <SelectValue placeholder={t('select_workspace_placeholder')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {workspaces.map((ws) => (
-                          <SelectItem key={ws.id} value={ws.id}>
-                            {ws.id === currentWorkspaceId
-                              ? `${ws.name} (${t('current_workspace_suffix')})`
-                              : ws.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
+              </div>
 
-              <div className="mt-6 flex items-center justify-between gap-3">
+              <div className="mt-4 flex shrink-0 items-center justify-between gap-3 border-t border-slate-100 pt-4">
                 {step !== 'username' ? (
                   <Button
                     type="button"

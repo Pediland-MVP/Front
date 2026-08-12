@@ -5,11 +5,12 @@ import { AuthProvider } from './AuthProvider';
 const push = vi.fn();
 const replace = vi.fn();
 let pathname = '/auth/onboarding';
+let searchParamsString = '';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace }),
   usePathname: () => pathname,
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new URLSearchParams(searchParamsString),
 }));
 
 let userState: any = {};
@@ -48,6 +49,7 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
     replace.mockClear();
     sessionStorage.clear();
     swrResponses = {};
+    searchParamsString = '';
   });
 
   it('redirects an onboarding user with a pending invitation to the invitation picker', async () => {
@@ -163,6 +165,145 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
 
     await waitFor(() => {
       expect(replace).toHaveBeenCalledWith('/auth/onboarding/invitations');
+    });
+  });
+
+  it('redirects a fresh no-instagram workspace to /connect with no params to preserve', async () => {
+    pathname = '/settings/instagram';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+
+    renderProvider();
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith('/connect');
+    });
+  });
+
+  // Reproduces the bug found when a user picks "create a new workspace" mid-purchase in
+  // SetupInstagramDialog's wizard: the workspace-switch reload lands on
+  // /settings/instagram?igwResume=1&... , but that workspace has zero Instagram accounts
+  // (it was just created), so this redirect fires before the page's own resume effect can
+  // read the params. Losing them here silently drops the pending purchase — see
+  // useInstagramWizardResume for what each param means.
+  it('preserves igw resume params when redirecting a fresh workspace to /connect', async () => {
+    pathname = '/settings/instagram';
+    searchParamsString =
+      'igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+
+    renderProvider();
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith(
+        '/connect?igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2',
+      );
+    });
+  });
+
+  // Reproduces a bug found in code review: when the workspace-switch reload lands on a
+  // user who *also* has an unreviewed pending invitation, `target` becomes the invitations
+  // picker URL (`/auth/onboarding/invitations?returnTo=/connect`) instead of `/connect`
+  // directly. The picker only reads `returnTo`'s own value and `router.push`es straight to
+  // it, so appending the igw suffix as a sibling query param on the picker's URL — instead
+  // of nesting it inside `returnTo` — would get silently dropped one hop later.
+  it('nests igw resume params inside returnTo when also routing through the invitations picker', async () => {
+    pathname = '/settings/instagram';
+    searchParamsString =
+      'igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2';
+    userState = {
+      error: undefined,
+      isOnboarding: false,
+      hasInstagram: false,
+      isLoading: false,
+      user: { id: 'u1' },
+    };
+    swrResponses['/invitations/pending'] = {
+      data: { items: [{ id: 'inv-1' }], meta: { totalItems: 1 } },
+      isLoading: false,
+    };
+
+    renderProvider();
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith(
+        '/auth/onboarding/invitations?returnTo=' +
+          encodeURIComponent(
+            '/connect?igwResume=1&igwPlanId=5&igwDurationId=10&igwUsername=someuser&igwTargetWs=ws-2',
+          ),
+      );
+    });
+  });
+
+  // User-reported: a "pooled" (unbound) subscription purchase can happen before the user
+  // has connected any Instagram account, so hasInstagram is still false when the payment
+  // gateway redirects back to /settings/subscription/verify. Without an allowlist entry the
+  // !hasInstagram branch bounced the user away before the verify page's own effect could
+  // call the backend verify endpoint, silently dropping the payment confirmation.
+  describe('/settings/subscription/verify payment-gateway callback', () => {
+    it('allows the page through for a Zarinpal callback even with zero Instagram accounts', async () => {
+      pathname = '/settings/subscription/verify';
+      searchParamsString = 'Authority=A00000000000000000000000000000012345&Status=OK';
+      userState = {
+        error: undefined,
+        isOnboarding: false,
+        hasInstagram: false,
+        isLoading: false,
+        user: { id: 'u1' },
+      };
+
+      const { findByText } = renderProvider();
+
+      // Asserts the children (the verify page's own content/effects) actually mounted,
+      // not just that replace happened not to be called yet.
+      await findByText('console');
+      expect(replace).not.toHaveBeenCalled();
+    });
+
+    it('allows the page through for a Zibal callback even with zero Instagram accounts', async () => {
+      pathname = '/settings/subscription/verify';
+      searchParamsString = 'trackId=123456789';
+      userState = {
+        error: undefined,
+        isOnboarding: false,
+        hasInstagram: false,
+        isLoading: false,
+        user: { id: 'u1' },
+      };
+
+      const { findByText } = renderProvider();
+
+      await findByText('console');
+      expect(replace).not.toHaveBeenCalled();
+    });
+
+    it('still redirects a direct, param-less visit with zero Instagram accounts', async () => {
+      pathname = '/settings/subscription/verify';
+      searchParamsString = '';
+      userState = {
+        error: undefined,
+        isOnboarding: false,
+        hasInstagram: false,
+        isLoading: false,
+        user: { id: 'u1' },
+      };
+
+      renderProvider();
+
+      await waitFor(() => {
+        expect(replace).toHaveBeenCalledWith('/connect');
+      });
     });
   });
 });

@@ -4,7 +4,7 @@ import { useLogout } from '@/hooks/swr/api-client';
 import useConnectInstagram from '@/hooks/useConnectInstagram';
 import useUser from '@/hooks/useUser';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useAddInstagramGate, CONTINUE_WITH_PLAN_PARAM } from '@/hooks/useAddInstagramGate';
+import { useAddInstagramGate } from '@/hooks/useAddInstagramGate';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,7 +21,6 @@ import { HowToConnectDialog } from '@components/Connect/HowToConnectDialog';
 import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
 import { IGW_RESUME_PARAM } from '@/components/Connect/useInstagramWizardResume';
 import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
-import { readAndClearPendingInstagramUsername } from '@/utils/pendingInstagramConnect';
 import { HeadsetIcon } from '@phosphor-icons/react/dist/csr/Headset';
 import { PlugsIcon } from '@phosphor-icons/react/dist/csr/Plugs';
 import { SignOutIcon } from '@phosphor-icons/react/dist/csr/SignOut';
@@ -46,21 +45,12 @@ export default function ConnectPage() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
   const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
-  const [pendingUsername, setPendingUsername] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPendingUsername(readAndClearPendingInstagramUsername());
-  }, []);
 
   const searchParams = useSearchParams();
   useEffect(() => {
     if (searchParams.get(IGW_RESUME_PARAM) === '1') setIsSetupDialogOpen(true);
   }, [searchParams]);
   const code = searchParams.get('code');
-  // Set by the dialog's "ادامه با همین اشتراک" button, which now routes here instead of
-  // straight into OAuth. It answers the unbound-plan question so this page shows the
-  // normal connect button rather than reopening the dialog the user just came from.
-  const unboundPlanAccepted = searchParams.get(CONTINUE_WITH_PLAN_PARAM) === '1';
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
@@ -74,9 +64,7 @@ export default function ConnectPage() {
   const atInstagramLimit = instagramCount >= 5;
   // Shared with the "افزودن اکانت" button on /settings/instagram so the two entry points
   // into this journey cannot drift — see the hook for why each reason gates.
-  const { currentWorkspace, requiresSetupDialog } = useAddInstagramGate(hasInstagram, {
-    unboundPlanAccepted,
-  });
+  const { currentWorkspace, requiresSetupDialog } = useAddInstagramGate(hasInstagram);
 
   useEffect(() => {
     const submitCode = async (code: string) => {
@@ -232,12 +220,6 @@ export default function ConnectPage() {
                   {t('how_to_connect')}
                 </Button>
               </HelpMeDialog>
-
-              {pendingUsername && (
-                <p className="text-muted-foreground mt-2 text-center text-xs">
-                  {t('pending_username_reminder', { username: pendingUsername })}
-                </p>
-              )}
 
               {hasInstagram && (
                 <Button variant="outline" className="mt-4 w-full" asChild>

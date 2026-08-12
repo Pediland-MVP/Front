@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
+import { IG_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 
 // Radix's Select uses pointer-capture APIs jsdom does not implement, and calls
 // scrollIntoView on the item it wants to highlight when opening. Neither exists on jsdom's
@@ -166,6 +167,7 @@ describe('SetupInstagramDialog', () => {
     expect(
       screen.getByText(messages.SetupInstagramDialog.apify_error_description),
     ).toBeInTheDocument();
+    expect(screen.getByText(messages.SetupInstagramDialog.apify_error_warning)).toBeInTheDocument();
     expect(screen.getByText('۲۵K تا ۱۰۰K فالور')).toBeInTheDocument();
   });
 
@@ -233,11 +235,7 @@ describe('SetupInstagramDialog', () => {
     fireEvent.click(screen.getByText(messages.SetupInstagramDialog.finalize_pay));
 
     await waitFor(() =>
-      expect(payMock).toHaveBeenCalledWith(
-        { planId: 1, durationId: 10 },
-        expect.any(Function),
-        expect.any(Function),
-      ),
+      expect(payMock).toHaveBeenCalledWith({ planId: 1, durationId: 10 }, expect.any(Function)),
     );
     expect(apiPostMock).not.toHaveBeenCalled();
     expect(changeWorkspaceMock).not.toHaveBeenCalled();
@@ -310,16 +308,12 @@ describe('SetupInstagramDialog', () => {
     renderDialog();
 
     await waitFor(() =>
-      expect(payMock).toHaveBeenCalledWith(
-        { planId: 1, durationId: 10 },
-        expect.any(Function),
-        expect.any(Function),
-      ),
+      expect(payMock).toHaveBeenCalledWith({ planId: 1, durationId: 10 }, expect.any(Function)),
     );
     expect(window.location.search).toBe('');
   });
 
-  it('switches to a different existing workspace: stamps resume state and calls changeWorkspace, but does not pay yet', async () => {
+  it('switches to a different existing workspace: calls /auth/changeWorkspace directly and navigates to the resume URL, but does not pay yet', async () => {
     lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
     plansByFollowersMock.mockReturnValue({
       plan: {
@@ -329,6 +323,7 @@ describe('SetupInstagramDialog', () => {
       },
       isLoading: false,
     });
+    apiPostMock.mockResolvedValue({ data: {} });
 
     renderDialog();
     await checkUsername('befroosh');
@@ -343,12 +338,20 @@ describe('SetupInstagramDialog', () => {
       await screen.findByText(messages.SetupInstagramDialog.finalize_switch_and_continue),
     );
 
-    await waitFor(() => expect(changeWorkspaceMock).toHaveBeenCalledWith('ws-other'));
-    expect(apiPostMock).not.toHaveBeenCalled();
+    // Not useWorkspaces().changeWorkspace() — the dialog calls /auth/changeWorkspace directly
+    // and navigates straight to the resume URL, so its own resume effect never sees the igw*
+    // params mid-flow (the bug this rewrite fixes: a same-page URL stamp was visible to this
+    // same dialog instance before the real switch landed, misreading it as a mismatch).
+    await waitFor(() =>
+      expect(apiPostMock).toHaveBeenCalledWith('/auth/changeWorkspace', {
+        workspaceId: 'ws-other',
+      }),
+    );
+    expect(changeWorkspaceMock).not.toHaveBeenCalled();
     expect(payMock).not.toHaveBeenCalled();
   });
 
-  it('creates a new workspace: posts /workspaces then calls changeWorkspace with the returned id', async () => {
+  it('creates a new workspace: posts /workspaces, calls /auth/changeWorkspace with the returned id, then navigates to the resume URL', async () => {
     lookupMock.mockResolvedValue({ username: 'befroosh', followersCount: 5000 });
     plansByFollowersMock.mockReturnValue({
       plan: {
@@ -358,7 +361,11 @@ describe('SetupInstagramDialog', () => {
       },
       isLoading: false,
     });
-    apiPostMock.mockResolvedValue({ data: { data: { id: 'ws-brand-new' } } });
+    apiPostMock.mockImplementation((url: string) =>
+      url === '/workspaces'
+        ? Promise.resolve({ data: { data: { id: 'ws-brand-new' } } })
+        : Promise.resolve({ data: {} }),
+    );
 
     renderDialog();
     await checkUsername('befroosh');
@@ -385,7 +392,12 @@ describe('SetupInstagramDialog', () => {
         categoryId: 'cat1',
       }),
     );
-    await waitFor(() => expect(changeWorkspaceMock).toHaveBeenCalledWith('ws-brand-new'));
+    await waitFor(() =>
+      expect(apiPostMock).toHaveBeenCalledWith('/auth/changeWorkspace', {
+        workspaceId: 'ws-brand-new',
+      }),
+    );
+    expect(changeWorkspaceMock).not.toHaveBeenCalled();
   });
 
   it('shows a mismatch error and does not pay when the resumed workspace does not match', async () => {
@@ -478,18 +490,16 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     expect(screen.getByText('۱K تا ۲۵K فالور')).toBeInTheDocument();
   });
 
-  it('sends the user to /connect to continue with the plan already owned', () => {
+  it('sends the user straight into OAuth to continue with the plan already owned, same as the plain connect button', () => {
     withUnbound();
 
     renderDialog();
 
     const link = screen.getByText(messages.SetupInstagramDialog.continue_with_unbound).closest('a');
-    // Not straight into OAuth: /connect carries the instructions and help video, and the
-    // flag tells it this question is answered so it does not reopen this dialog.
-    expect(link).toHaveAttribute('href', '/connect?continueWithPlan=1');
+    expect(link).toHaveAttribute('href', IG_OAUTH_URL);
   });
 
-  it('closes itself on the way to /connect, so it cannot cover that page', () => {
+  it('closes itself on the way into OAuth', () => {
     withUnbound();
     const onOpenChange = vi.fn();
 
@@ -505,8 +515,6 @@ describe('SetupInstagramDialog — unbound plan step', () => {
     link.addEventListener('click', (e) => e.preventDefault());
     fireEvent.click(link);
 
-    // Navigating /connect → /connect keeps the route mounted, so the parent's `open`
-    // state survives the click and would leave the dialog sitting over the page.
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 

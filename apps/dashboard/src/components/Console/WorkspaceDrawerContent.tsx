@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useIsWebView } from '@/hooks/useIsWebView';
+import { AUTO_OPEN_ADD_PARAM } from '@/hooks/useAddInstagramGate';
 import { cn } from '@/lib/utils';
 
 import { Spinner } from '@/components/ui/spinner';
@@ -167,7 +168,7 @@ export const WorkspaceDrawerContent = ({ onClose, isDialog }: WorkspaceDrawerCon
         <button
           onClick={() => {
             onClose();
-            router.push('/connect');
+            router.push(`/settings/instagram?${AUTO_OPEN_ADD_PARAM}=1`);
           }}
           className="bg-primary flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl p-3 text-sm font-semibold text-white"
         >

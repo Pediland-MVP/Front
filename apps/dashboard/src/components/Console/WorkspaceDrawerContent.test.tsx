@@ -286,10 +286,10 @@ describe('WorkspaceDrawerContent', () => {
     expect(changeWorkspace).not.toHaveBeenCalled();
   });
 
-  it('navigates to /connect and closes when the add-page button is clicked', () => {
+  it('navigates to /settings/instagram with the auto-open param and closes when the add-page button is clicked', () => {
     const { onClose } = renderContent();
     fireEvent.click(screen.getByText(messages.Console.WorkspaceDrawer.addPage));
-    expect(push).toHaveBeenCalledWith('/connect');
+    expect(push).toHaveBeenCalledWith('/settings/instagram?openAdd=1');
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
