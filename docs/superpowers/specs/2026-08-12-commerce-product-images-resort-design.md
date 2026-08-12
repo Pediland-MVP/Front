@@ -81,8 +81,10 @@ dropzone/remove-button busy gating.
 - `reorderHandle`: "جابجایی {name}"
 
 ## Testing
-`ProductEditorPage.test.tsx` already covers `handleAddMedia`/`handleRemoveMedia` in both
-modes — add equivalent cases for `handleReorderMedia`:
+`ProductEditorPage.test.tsx` exists but currently has **no** coverage of
+`handleAddMedia`/`handleRemoveMedia` in either mode (verified while writing the implementation
+plan — corrected from an earlier draft of this spec, which assumed coverage that isn't there).
+This plan adds first-time coverage of the media-handler pattern via `handleReorderMedia`:
 - Create mode: dragging reorders `media` locally, `shouldDirty: true`, no API call.
 - Edit mode success: PATCH called with the new id order; cache `mutate` invoked; no error
   toast.
