@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
-import type { CommerceProductDetail } from '@/types/commerce';
+import type { CommerceProductDetail, CommerceProductMedia } from '@/types/commerce';
 
 /**
  * The shell's own test. The nine sections, the grid, the rail and the dialogs each have their
@@ -20,7 +20,7 @@ vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => ({ can: mockCan
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const { api } = vi.hoisted(() => ({
-  api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+  api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() },
 }));
 vi.mock('@/hooks/swr/api-client', () => ({ default: api }));
 
@@ -38,9 +38,14 @@ beforeAll(() => {
       unobserve() {}
       disconnect() {}
     };
+  URL.createObjectURL = vi.fn(() => 'blob:mock');
+  URL.revokeObjectURL = vi.fn();
 });
 
+import { mutate } from 'swr';
+import { toast } from 'sonner';
 import messages from '@/messages/fa.json';
+import { dragEndRef } from './testUtils/dndKitTestMocks';
 import { ProductEditorPage } from './ProductEditorPage';
 
 const ATTR = messages.Commerce.Editor.Attributes;
@@ -86,6 +91,25 @@ const detail = (over: Partial<CommerceProductDetail> = {}): CommerceProductDetai
     ...over,
   }) as CommerceProductDetail;
 
+const twoMedia: CommerceProductMedia[] = [
+  {
+    id: 'media-1',
+    type: 'image',
+    position: 0,
+    alt: null,
+    url: 'https://cdn/1.png',
+    posterUrl: null,
+  },
+  {
+    id: 'media-2',
+    type: 'image',
+    position: 1,
+    alt: null,
+    url: 'https://cdn/2.png',
+    posterUrl: null,
+  },
+];
+
 /** `useProductLoad` fires four `useSWRImmutable` calls; answer each by its key. */
 function stubReads(product: CommerceProductDetail | undefined) {
   mockUseSWRImmutable.mockImplementation((key: string | null) => {
@@ -103,6 +127,22 @@ function renderEditor(props: { mode: 'create' | 'edit'; productId?: string }) {
       <ProductEditorPage {...props} />
     </NextIntlClientProvider>,
   );
+}
+
+// `dragEndRef.current` is the mocked `@dnd-kit/core`'s captured `onDragEnd`, invoked directly
+// rather than through a simulated pointer sequence. That bypasses React's synthetic-event
+// batching, so the resulting `setValue` calls need an explicit `act()` — otherwise React warns
+// about a state update outside of `act` even though the assertions below are still correct.
+function fireMediaDragEnd(activeId: string, overId: string) {
+  act(() => {
+    dragEndRef.current?.({ active: { id: activeId }, over: { id: overId } });
+  });
+}
+
+function mediaTileIds() {
+  return screen
+    .getAllByTestId(/^media-tile-/)
+    .map((el) => el.getAttribute('data-testid')!.replace('media-tile-', ''));
 }
 
 /** Adds one axis in step ۷ and pushes a comma-separated list of values into it. */
@@ -228,5 +268,73 @@ describe('ProductEditorPage', () => {
       ).toBeInTheDocument(),
     );
     expect(screen.getByTestId('category-path').parentElement).toHaveAttribute('data-bad', 'empty');
+  });
+
+  describe('media reorder', () => {
+    it('reorders pending media locally in create mode, without an API call', async () => {
+      stubReads(undefined);
+      renderEditor({ mode: 'create' });
+
+      const fileInput = screen
+        .getByTestId('media-dropzone')
+        .querySelector('input[type="file"]') as HTMLInputElement;
+      const fileA = new File(['a'], 'a.png', { type: 'image/png' });
+      const fileB = new File(['b'], 'b.png', { type: 'image/png' });
+      fireEvent.change(fileInput, { target: { files: [fileA, fileB] } });
+
+      await waitFor(() => expect(mediaTileIds()).toHaveLength(2));
+      const [firstId, secondId] = mediaTileIds();
+
+      fireMediaDragEnd(secondId, firstId);
+
+      await waitFor(() => expect(mediaTileIds()).toEqual([secondId, firstId]));
+      expect(api.patch).not.toHaveBeenCalled();
+    });
+
+    it('persists the new order via PATCH and refreshes the cache in edit mode', async () => {
+      stubReads(detail({ media: twoMedia }));
+      api.patch.mockResolvedValue({});
+
+      renderEditor({ mode: 'edit', productId: 'prod-1' });
+      await waitFor(() => expect(mediaTileIds()).toEqual(['media-1', 'media-2']));
+
+      fireMediaDragEnd('media-2', 'media-1');
+
+      await waitFor(() => expect(mediaTileIds()).toEqual(['media-2', 'media-1']));
+      await waitFor(() =>
+        expect(api.patch).toHaveBeenCalledWith('/commerce/products/prod-1/media', {
+          mediaIds: ['media-2', 'media-1'],
+        }),
+      );
+      await waitFor(() => expect(mutate).toHaveBeenCalledWith('/commerce/products/prod-1'));
+    });
+
+    it('rolls back the order and shows an error toast when the PATCH fails', async () => {
+      stubReads(detail({ media: twoMedia }));
+      // Held open rather than `mockRejectedValue`: an already-settled mock promise rejects on
+      // the very next microtask, which can race the optimistic React state flush and collapse
+      // both updates into one commit — this deterministically defers rejection until AFTER the
+      // optimistic order has actually rendered, so the two states are observed in the right order.
+      let rejectPatch!: (error: Error) => void;
+      api.patch.mockImplementation(
+        () =>
+          new Promise((_resolve, reject) => {
+            rejectPatch = reject;
+          }),
+      );
+
+      renderEditor({ mode: 'edit', productId: 'prod-1' });
+      await waitFor(() => expect(mediaTileIds()).toEqual(['media-1', 'media-2']));
+
+      fireMediaDragEnd('media-2', 'media-1');
+      await waitFor(() => expect(mediaTileIds()).toEqual(['media-2', 'media-1']));
+
+      await act(async () => {
+        rejectPatch(new Error('network'));
+      });
+
+      await waitFor(() => expect(mediaTileIds()).toEqual(['media-1', 'media-2']));
+      expect(toast.error).toHaveBeenCalledWith(messages.Commerce.Editor.Media.reorderError);
+    });
   });
 });

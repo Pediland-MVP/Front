@@ -508,6 +508,39 @@ const ProductEditorBody = ({
     [canSubmit, detachMediaFromVariants, getValues, markMediaBusy, productId, setValue, t],
   );
 
+  const handleReorderMedia = useCallback(
+    async (newOrder: EditorMedia[]) => {
+      if (!canSubmit || mediaBusy.current) return;
+
+      // Snapshot for rollback BEFORE the optimistic write below.
+      const previous = getValues('media');
+
+      // Optimistic: a drag needs instant feedback, unlike a button-triggered add/remove where a
+      // brief busy state is acceptable. Create mode has nothing to persist yet (see decision in
+      // the spec), so `shouldDirty: true` there matches how the initial queued files are marked
+      // dirty; edit mode persists immediately, so it is not an "unsaved" change.
+      setValue('media', newOrder, { shouldDirty: !productId });
+
+      if (!productId) return;
+
+      markMediaBusy(true);
+      try {
+        await api.patch(`/commerce/products/${productId}/media`, {
+          mediaIds: newOrder.map((item) => item.id),
+        });
+        // Fire-and-forget, matching handleRemoveMedia: the order is already known locally, this
+        // just keeps the shared SWR cache from going stale for any other consumer.
+        void mutate(productDetailKey(productId));
+      } catch {
+        setValue('media', previous, { shouldDirty: false });
+        toast.error(t('Media.reorderError'));
+      } finally {
+        markMediaBusy(false);
+      }
+    },
+    [canSubmit, getValues, markMediaBusy, productId, setValue, t],
+  );
+
   // ---------------------------------------------------------------- taxonomy creation
 
   /** One reporter for both create calls, so a backend code always reaches the merchant. */
@@ -717,6 +750,7 @@ const ProductEditorBody = ({
             isBusy={isMediaBusy}
             onAdd={(files) => void handleAddMedia(files)}
             onRemove={(item) => void handleRemoveMedia(item)}
+            onReorder={(newOrder) => void handleReorderMedia(newOrder)}
           />
 
           {/* Price and stock sit side by side, exactly as the design draws them — they are two
