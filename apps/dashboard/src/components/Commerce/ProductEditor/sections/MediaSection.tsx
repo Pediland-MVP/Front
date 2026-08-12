@@ -2,13 +2,29 @@
 
 import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { UploadIcon, XIcon } from 'lucide-react';
+import { UploadIcon } from 'lucide-react';
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
 
 import { cn } from '@/lib/utils';
 import e2pNumbers from '@/utils/e2pNumber';
 
 import type { EditorMedia } from '../productEditor.schema';
 import { EditorSection } from '../ui/EditorSection';
+import { SortableMediaTile } from './SortableMediaTile';
 
 /**
  * One tile in the media pool.
@@ -27,10 +43,11 @@ export type { EditorMedia };
 /**
  * Step ۴ — the media pool.
  *
- * Deliberately presentational plus a file picker: it never calls the API. Upload and delete
- * differ between create and edit mode and both need to touch the SWR cache and the variant media
- * ids, so they live in the page (Task 8). This component only says "the merchant chose these
- * files" / "the merchant wants this one gone".
+ * Deliberately presentational plus a file picker: it never calls the API. Upload, delete and
+ * reorder differ between create and edit mode and both need to touch the SWR cache and the
+ * variant media ids, so they live in the page (Task 8, extended for reorder). This component only
+ * says "the merchant chose these files" / "the merchant wants this one gone" / "the merchant
+ * dropped this tile in a new spot".
  */
 export const MediaSection = ({
   step = 4,
@@ -39,22 +56,38 @@ export const MediaSection = ({
   isBusy = false,
   onAdd,
   onRemove,
+  onReorder,
 }: {
   step?: number;
   productId?: string;
   media: EditorMedia[];
   /**
-   * An upload or a delete is in flight. In EDIT mode both are real API calls the page makes on
-   * the spot, and they run one file at a time — so without this the dropzone and the ✕ buttons
-   * would keep accepting clicks that the page silently drops on the floor.
+   * An upload, a delete, or a reorder is in flight. In EDIT mode all three are real API calls the
+   * page makes on the spot, and they run one at a time — so without this the dropzone, the ✕
+   * buttons and the drag handles would keep accepting interactions the page silently drops.
    */
   isBusy?: boolean;
   onAdd: (files: File[]) => void;
   onRemove: (item: EditorMedia) => void;
+  onReorder: (newOrder: EditorMedia[]) => void;
 }) => {
   const t = useTranslations('Commerce.Editor.Media');
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = media.findIndex((item) => item.id === active.id);
+    const newIndex = media.findIndex((item) => item.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    onReorder(arrayMove(media, oldIndex, newIndex));
+  };
 
   const take = (list: FileList | null) => {
     if (isBusy) return;
@@ -123,67 +156,27 @@ export const MediaSection = ({
       </div>
 
       {media.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2.5">
-          {media.map((item, index) => (
-            <div key={item.id} className="flex flex-col gap-1.5">
-              <div
-                title={item.name}
-                data-testid={`media-tile-${item.id}`}
-                className={cn(
-                  'border-ln bg-muted relative aspect-square overflow-hidden rounded-lg border',
-                  item.isPending && 'opacity-70',
-                )}
-              >
-                {item.type === 'video' ? (
-                  <video
-                    src={item.url}
-                    poster={item.posterUrl ?? undefined}
-                    muted
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  // Plain <img>: a pending tile's src is a local blob: URL, which next/image
-                  // cannot optimise, and mixing the two components per tile buys nothing.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.url} alt={item.name} className="h-full w-full object-cover" />
-                )}
-
-                {/* Cover is positional, not a flag: whatever sits at index 0 is `position` 0. */}
-                {index === 0 && (
-                  <span className="bg-ink absolute end-1.5 top-1.5 rounded-md px-2 py-px text-xs font-bold text-white">
-                    {t('cover')}
-                  </span>
-                )}
-
-                {item.type === 'video' && (
-                  <span className="bg-ink absolute end-1.5 bottom-1.5 rounded-md px-1.5 py-px text-xs font-bold text-white">
-                    {t('video')}
-                  </span>
-                )}
-
-                {item.isPending && (
-                  <span className="bg-ink/80 absolute inset-x-0 bottom-0 py-0.5 text-center text-xs font-bold text-white">
-                    {t('pending')}
-                  </span>
-                )}
-
-                <button
-                  type="button"
-                  disabled={isBusy}
-                  aria-label={t('remove', { name: item.name })}
-                  data-testid={`media-remove-${item.id}`}
-                  onClick={() => onRemove(item)}
-                  className="hover:bg-dtint hover:text-dtext absolute start-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-white/90 text-black transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <XIcon className="size-3" />
-                </button>
-              </div>
-              <div dir="ltr" className="text-mut truncate text-start text-xs">
-                {item.name}
-              </div>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={media.map((item) => item.id)} strategy={rectSortingStrategy}>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2.5">
+              {media.map((item, index) => (
+                <SortableMediaTile
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  isCover={index === 0}
+                  isBusy={isBusy}
+                  removeLabel={t('remove', { name: item.name })}
+                  reorderLabel={t('reorderHandle', { name: item.name })}
+                  coverLabel={t('cover')}
+                  videoLabel={t('video')}
+                  pendingLabel={t('pending')}
+                  onRemove={onRemove}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
     </EditorSection>
   );
