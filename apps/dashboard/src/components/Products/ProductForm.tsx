@@ -27,6 +27,7 @@ import { Form } from '@/components/ui/form';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { FileUploader } from '@/components/ui-custom/FileUploader';
 import { FormVitrinDetails } from './FormVitrinDetails';
+import { MAX_MONEY_AMOUNT } from '@/constants/money.constant';
 import { FormVitrinButtons } from './FormVitrinButtons';
 
 interface ProductFormProps {
@@ -227,6 +228,17 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
         });
       }
 
+      // Mirrors the backend cap, which rejects anything larger with
+      // PRODUCT_PRICE_TOO_LARGE. Checking it here turns a failed save into
+      // inline feedback while the user is still typing.
+      if (data.price > MAX_MONEY_AMOUNT) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('price.errors.tooLarge', { max: MAX_MONEY_AMOUNT.toLocaleString('en-US') }),
+          path: ['price'],
+        });
+      }
+
       if (data.shippingCost < 1000 && data.shippingCost !== 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -247,6 +259,13 @@ export default function ProductForm({ shouldBeEdit, type }: ProductFormProps) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'قیمت تخفیف نمی‌تواند کمتر از 1000 تومان باشد.',
+            path: ['discountPrice'],
+          });
+        }
+        if (data.discountPrice > MAX_MONEY_AMOUNT) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('discountPrice.errors.tooLarge', { max: MAX_MONEY_AMOUNT.toLocaleString('en-US') }),
             path: ['discountPrice'],
           });
         }
