@@ -75,6 +75,12 @@ export const ProductListPage = () => {
   });
   const products = productsData?.items ?? [];
 
+  // A merchant must have a card-to-card payment method configured before selling —
+  // mirrors the legacy `/products` page's `allowAdd = !!cardToCardData && can('product:create')`.
+  const { data: cardToCardData } = useSWRImmutable(`/payments/cardToCard`, {
+    revalidateOnMount: true,
+  });
+
   // ------- Pagination Start -------
   const defaultMeta: PageMeta = {
     currentPage: page,
@@ -148,7 +154,7 @@ export const ProductListPage = () => {
           <Button
             type="button"
             size="md"
-            disabled={error}
+            disabled={error || !cardToCardData}
             onClick={() => router.push('/products/add')}
           >
             {t('add')}
@@ -157,7 +163,7 @@ export const ProductListPage = () => {
         )}
       </>
     ),
-    [isSearchVisible, can, error, router, t],
+    [isSearchVisible, can, error, router, t, cardToCardData],
   );
 
   const HeaderTools = useMemo(

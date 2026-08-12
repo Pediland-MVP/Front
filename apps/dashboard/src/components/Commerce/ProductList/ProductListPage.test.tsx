@@ -239,6 +239,34 @@ describe('ProductListPage', () => {
     expect(screen.queryByText(messages.Commerce.List.add)).not.toBeInTheDocument();
   });
 
+  it('disables the add button when no card-to-card payment method is configured', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:create');
+    mockUseSWRImmutable.mockImplementation((url: string) =>
+      url === '/payments/cardToCard'
+        ? { data: undefined, error: undefined }
+        : listData(buildItem()),
+    );
+
+    renderPage();
+    renderHeaderButtons();
+
+    expect(screen.getByText(messages.Commerce.List.add).closest('button')).toBeDisabled();
+  });
+
+  it('enables the add button once a card-to-card payment method is configured', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:create');
+    mockUseSWRImmutable.mockImplementation((url: string) =>
+      url === '/payments/cardToCard'
+        ? { data: { id: 'ctc-1' }, error: undefined }
+        : listData(buildItem()),
+    );
+
+    renderPage();
+    renderHeaderButtons();
+
+    expect(screen.getByText(messages.Commerce.List.add).closest('button')).not.toBeDisabled();
+  });
+
   it('renders the card edit button and routes to that product when the viewer can edit', () => {
     mockCan.mockImplementation((slug: string) => slug === 'product:edit');
     mockUseSWRImmutable.mockReturnValue(listData(buildItem({ id: 'prod-7' })));
