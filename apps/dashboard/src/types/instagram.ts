@@ -4,6 +4,12 @@ import { IResponseMessage } from './responseMessage';
 export namespace InstagramNamespace {
   export namespace GET {
     export type RedirectLink = IResponseMessage<{ link: string }>;
+    export type FollowersLookup = IResponseMessage<{
+      username: string;
+      followersCount: number;
+      profilePicUrl?: string;
+      fullName?: string;
+    }>;
   }
   export interface Account {
     id: string;

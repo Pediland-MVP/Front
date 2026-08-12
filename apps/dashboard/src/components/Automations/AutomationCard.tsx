@@ -4,13 +4,22 @@ import { Automation } from '@/schemas/automation';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { memo } from 'react';
+import useSWRImmutable from 'swr/immutable';
 
 import { cn } from '@/lib/utils';
-import { Badge, Button, Card, CardContent, CardFooter } from '@/components/ui';
-import { CrosshairIcon, InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { CrosshairIcon } from '@phosphor-icons/react/dist/ssr/Crosshair';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { CircleXIcon, CopyIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';
 import { CardImage } from '../Global/CardImage';
 import { usePermissions } from '@/hooks/usePermissions';
+import { fetcher } from '@/hooks/swr/api-client';
+import { IResponseMessage } from '@/types/responseMessage';
+import { InstagramNamespace } from '@/types/instagram';
+
+const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 
 interface AutomationCardProps {
   item: Automation;
@@ -22,6 +31,12 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
   const t = useTranslations('Automations.Card');
   const specifiedPost = item.instagramPost?.picture?.url;
   const { can } = usePermissions();
+
+  // Same SWR key InstagramSelectField/AutomationForm use — dedupes, no extra request.
+  const { data: accountsResponse } = useSWRImmutable<
+    IResponseMessage<InstagramNamespace.Account[]>
+  >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
+  const hasMultipleInstagramAccounts = (accountsResponse?.data?.length ?? 0) > 1;
 
   const usernames = item.instagramLinks?.map((l) => l.instagram?.username).filter(Boolean) ?? [];
 
@@ -45,14 +60,16 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
                 )}
               </div>
             )}
-            <div className="flex items-center gap-1 text-[12px] text-gray-400">
-              <InstagramLogoIcon size={13} />
-              <span>
-                {usernames.length > 0
-                  ? usernames.map((u) => `@${u}`).join(', ')
-                  : t('no_instagram_assigned')}
-              </span>
-            </div>
+            {hasMultipleInstagramAccounts && (
+              <div className="flex items-center gap-1 text-[12px] text-gray-400">
+                <InstagramLogoIcon size={13} />
+                <span>
+                  {usernames.length > 0
+                    ? usernames.map((u) => `@${u}`).join(', ')
+                    : t('no_instagram_assigned')}
+                </span>
+              </div>
+            )}
             <div className="flex flex-col gap-1.5">
               <div className="text-secondary flex items-center gap-1 font-medium">
                 <CrosshairIcon size={18} weight="duotone" />

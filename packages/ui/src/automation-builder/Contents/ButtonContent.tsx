@@ -6,7 +6,8 @@ import { AutomationContentModeEnum } from '../constants/automationContent.enum';
 import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 
-import { FormField, FormItem, FormLabel, Textarea } from '@/components/ui';
+import { FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
 import { AutomationButtons } from './AutomationButtons';
@@ -42,7 +43,7 @@ export const ButtonContent = ({ contentIndex, mode, apiClient }: ButtonContentPr
                 name: (chunks) => <span className="text-blue-500">{chunks}</span>,
               })}
             </FormLabel>
-            <Textarea
+            <AutoResizeTextarea
               {...field}
               maxLength={640}
               aria-invalid={!!error}

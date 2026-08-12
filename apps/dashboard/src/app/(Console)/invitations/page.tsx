@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import api from '@/hooks/swr/api-client';
 import { useInvitations, Invitation } from '@/hooks/useInvitations';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,8 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Button,
-} from '@/components/ui';
+} from '@/components/ui/table';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 
 export default function InvitationsPage() {

@@ -20,7 +20,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SignOutIcon, UserCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/ssr/UserCircle';
 import { ChevronsUpDown } from 'lucide-react';
 
 export function NavUser() {

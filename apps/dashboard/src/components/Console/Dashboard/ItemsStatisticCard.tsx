@@ -3,17 +3,20 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { useLinkStatus } from 'next/link';
 
-import * as PhosphorIcons from '@phosphor-icons/react';
-import { CircleNotchIcon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react/dist/lib/types';
 
 import { CardSimple } from '@/components/ui-custom/CardSimple';
-import { CardContent, CardFooter } from '@/components/ui';
+import { CardContent, CardFooter } from '@/components/ui/card';
 
 interface ItemsStatisticCardProps {
   data: {
     title: string;
     total: number | React.ReactNode;
-    icon: string;
+    // The icon component itself, not its name. Resolving a name at runtime
+    // needs `import * as PhosphorIcons`, which drags Phosphor's whole
+    // ~3025-module barrel into the dashboard route.
+    icon: PhosphorIcon;
   };
 }
 
@@ -21,7 +24,7 @@ export const ItemsStatisticCard = ({ data }: ItemsStatisticCardProps) => {
   const t = useTranslations('Console.Dashboard');
   const locale = useLocale();
   const { pending } = useLinkStatus();
-  const Icon = (PhosphorIcons as any)[data?.icon];
+  const Icon = data?.icon;
 
   return (
     <CardSimple className="group duration-300 md:hover:border-blue-200 md:hover:bg-blue-50/50">

@@ -18,7 +18,8 @@ import type { AutomationFormType, ContentItemSchema } from '../schemas/automatio
 import type { UploadedFile } from '@/types/fileUploader';
 import { ButtonTypeEnum } from '../types/buttons.enum';
 
-import { Alert, AlertDescription, AlertTitle, Button } from '@/components/ui';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import type { DragEndEvent } from '@dnd-kit/core';
 import {
@@ -41,7 +42,7 @@ import { ContentsContext } from './ContentsContext';
 import { ContentsUploaderContextProvider } from './ContentsUploaderContext';
 import { ValidationTypeEnum } from '../types/validationType.enum';
 import { QuestionTextErrorMessage } from './QuestionContent';
-import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr';
+import { FilePlusIcon } from '@phosphor-icons/react/dist/ssr/FilePlus';
 import { ChooseAutomationType } from './ChooseAutomationType';
 import { StartAutomationMessage } from './StartAutomationMessage';
 import { DelayBudgetExhaustedDialog } from './DelayBudgetExhaustedDialog';
@@ -75,6 +76,9 @@ type ContentsProps = {
   /** Rendered next to the `StartAutomationMessage` header label. Replaces the
    * dashboard-only `HelpMeDialog` that used to be hardcoded there. */
   commentTriggerHelpSlot?: React.ReactNode;
+  /** Per-content-type help affordances, keyed by `AutomationContentTypesEnum`. Forwarded
+   * to each `ContentItem` and rendered next to that item's own type label. */
+  contentTypeHelpSlots?: Partial<Record<AutomationContentTypesEnum, React.ReactNode>>;
 };
 
 // `GET /templates?search=` (core's `readTemplates`) returns a `PaginatedResult` body —
@@ -92,6 +96,7 @@ export const Contents = ({
   helpSlot,
   builderMode = 'automation',
   commentTriggerHelpSlot,
+  contentTypeHelpSlots,
 }: ContentsProps) => {
   const t = useTranslations('Automations.Contents');
   const t_contentTypes = useTranslations('Automations.Contents.Types');
@@ -346,7 +351,7 @@ export const Contents = ({
           <StartAutomationMessage helpSlot={commentTriggerHelpSlot} />
         )}
 
-        {contents.length === 0 && (
+        {contents.length === 0 && !isChoosingType && (
           <div className="my-4 flex flex-col items-center justify-center">
             <FilePlusIcon size={100} className="mb-3 opacity-10" />
             <p className="font-bold text-gray-500">{t('no_content_title')}</p>
@@ -390,6 +395,7 @@ export const Contents = ({
                       appendContents={appendContents}
                       content={content as FieldArrayWithId<z.infer<typeof ContentItemSchema>>}
                       apiClient={apiClient}
+                      helpSlot={contentTypeHelpSlots?.[content.type as AutomationContentTypesEnum]}
                     />
                   </ContentsUploaderContextProvider>
                 ))}

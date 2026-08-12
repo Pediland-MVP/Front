@@ -7,7 +7,6 @@ vi.mock('@/utils/jwt', () => ({
 import { decodeJwtPayload } from '@/utils/jwt';
 import {
   getCurrentWorkspaceId,
-  hasAutomationDraft,
   readAutomationDraft,
   writeAutomationDraft,
   clearAutomationDraft,
@@ -39,12 +38,11 @@ describe('getCurrentWorkspaceId', () => {
   });
 });
 
-describe('writeAutomationDraft / readAutomationDraft / hasAutomationDraft', () => {
+describe('writeAutomationDraft / readAutomationDraft', () => {
   it('round-trips a full form snapshot', () => {
     const values = { contents: [{ type: 'text', text: 'hi' }], instagramIds: ['ig-1'] } as any;
     writeAutomationDraft(WORKSPACE_ID, values);
 
-    expect(hasAutomationDraft(WORKSPACE_ID)).toBe(true);
     expect(readAutomationDraft(WORKSPACE_ID)).toEqual(values);
   });
 
@@ -65,7 +63,6 @@ describe('writeAutomationDraft / readAutomationDraft / hasAutomationDraft', () =
 
   it('returns null when nothing is stored', () => {
     expect(readAutomationDraft(WORKSPACE_ID)).toBeNull();
-    expect(hasAutomationDraft(WORKSPACE_ID)).toBe(false);
   });
 
   it('returns null and does not throw for corrupted JSON', () => {
@@ -79,6 +76,27 @@ describe('writeAutomationDraft / readAutomationDraft / hasAutomationDraft', () =
       JSON.stringify({ formValues: 'just a string', savedAt: Date.now() }),
     );
     expect(readAutomationDraft(WORKSPACE_ID)).toBeNull();
+  });
+});
+
+describe('draft expiry (2-day TTL)', () => {
+  const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+
+  it('returns a draft saved just under 2 days ago', () => {
+    localStorage.setItem(
+      `automation-draft:${WORKSPACE_ID}`,
+      JSON.stringify({ formValues: { contents: [] }, savedAt: Date.now() - (TWO_DAYS_MS - 1000) }),
+    );
+    expect(readAutomationDraft(WORKSPACE_ID)).toEqual({ contents: [] });
+  });
+
+  it('returns null and clears the entry for a draft older than 2 days', () => {
+    localStorage.setItem(
+      `automation-draft:${WORKSPACE_ID}`,
+      JSON.stringify({ formValues: { contents: [] }, savedAt: Date.now() - (TWO_DAYS_MS + 1000) }),
+    );
+    expect(readAutomationDraft(WORKSPACE_ID)).toBeNull();
+    expect(localStorage.getItem(`automation-draft:${WORKSPACE_ID}`)).toBeNull();
   });
 });
 

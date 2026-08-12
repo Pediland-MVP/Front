@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ArrowsClockwiseIcon } from '@phosphor-icons/react';
+import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/csr/ArrowsClockwise';
 import { useLabelFields } from './use-labels';
 import { ScheduleControl, ScheduleValue } from './schedule-control';
 import { RuleBuilder } from './rule-builder';

@@ -14,15 +14,8 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push }),
 }));
 
-vi.mock('@/utils/automationDraft', () => ({
-  getCurrentWorkspaceId: vi.fn(() => 'ws-1'),
-  hasAutomationDraft: vi.fn(() => false),
-  clearAutomationDraft: vi.fn(),
-}));
-
 import messages from '@/messages/fa.json';
 import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
-import { hasAutomationDraft, clearAutomationDraft } from '@/utils/automationDraft';
 import Page from './page';
 
 function HeaderButtonHost() {
@@ -41,53 +34,15 @@ function renderPage() {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  (hasAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue(false);
   useHeaderFeatures.getState().reset();
 });
 
-describe('Automations list page — draft resume prompt', () => {
-  it('navigates straight to /automations/add when there is no draft', async () => {
+describe('Automations list page', () => {
+  it('navigates straight to /automations/add when "add automation" is clicked', async () => {
     renderPage();
     await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
 
     fireEvent.click(screen.getByText(messages.Automations.add));
-
-    expect(push).toHaveBeenCalledWith('/automations/add');
-    expect(
-      screen.queryByText(messages.Automations.DraftDialog.description),
-    ).not.toBeInTheDocument();
-  });
-
-  it('shows the draft dialog instead when a draft exists', async () => {
-    (hasAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue(true);
-    renderPage();
-    await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
-
-    fireEvent.click(screen.getByText(messages.Automations.add));
-
-    expect(screen.getByText(messages.Automations.DraftDialog.description)).toBeInTheDocument();
-    expect(push).not.toHaveBeenCalled();
-  });
-
-  it('"ساخت اتومیشن جدید" clears the draft and navigates straight to /automations/add', async () => {
-    (hasAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue(true);
-    renderPage();
-    await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
-    fireEvent.click(screen.getByText(messages.Automations.add));
-
-    fireEvent.click(screen.getByText(messages.Automations.DraftDialog.createNew));
-
-    expect(clearAutomationDraft).toHaveBeenCalledWith('ws-1');
-    expect(push).toHaveBeenCalledWith('/automations/add');
-  });
-
-  it('"ادامه قبلی" navigates straight to /automations/add', async () => {
-    (hasAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue(true);
-    renderPage();
-    await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
-    fireEvent.click(screen.getByText(messages.Automations.add));
-
-    fireEvent.click(screen.getByText(messages.Automations.DraftDialog.resume));
 
     expect(push).toHaveBeenCalledWith('/automations/add');
   });

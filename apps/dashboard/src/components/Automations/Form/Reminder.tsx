@@ -10,19 +10,16 @@ import { useFormContext } from 'react-hook-form';
 import { WizardVideoLinks } from '../wizardVideoLinks.conf';
 
 import { HelpMeDialog } from '@/components/Global/HelpMeDialog';
+import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
-} from '@/components/ui';
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { dashboardAutomationApiClient } from '@/lib/automationApiClient';
 import { Contents } from './Contents';

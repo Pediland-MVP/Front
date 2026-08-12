@@ -12,7 +12,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/components/ui';
+} from '@/components/ui/breadcrumb';
 
 // تشخیص UUID (برای سگمنت‌های داینامیک)
 const isUUID = (s: string) =>
@@ -39,6 +39,8 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'automations';
     case 'sessions':
       return 'sessions';
+    case 'account-session-management':
+      return 'account_session_management';
     case 'orders':
       return 'orders';
     case 'products':
@@ -49,6 +51,8 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'instagram';
     case 'card':
       return 'card';
+    case 'team':
+      return 'team';
     case 'zarinpal':
       return 'zarinpal';
     case 'upgrade':
@@ -65,6 +69,14 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'workspace';
     case 'permissions':
       return 'permissions';
+    case 'support':
+      return 'support';
+    case 'install':
+      return 'install';
+    case 'invitations':
+      return 'invitations';
+    case 'sendAll':
+      return 'sendAll';
     default:
       return null;
   }

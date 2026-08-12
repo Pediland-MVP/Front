@@ -4,8 +4,6 @@ import useUser from '@/hooks/useUser';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { LoadingLogo } from '@/components/ui';
-
 export const InstagramGuard = ({ children }: { children: React.ReactNode }) => {
   // const router = useRouter();
   // const pathname = usePathname();

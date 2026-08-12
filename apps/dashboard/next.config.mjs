@@ -14,6 +14,16 @@ const nextConfig = {
     root: path.resolve(__dirname, '../../'),
   },
 
+  experimental: {
+    // `@phosphor-icons/react` has no per-icon entry in Next's built-in optimize
+    // list, and its barrel re-exports ~3025 modules (1512 CSR + 1513 SSR). Dev
+    // does not tree-shake, so every one of our ~119 import sites pulled the whole
+    // set. Listing it here makes Next rewrite the barrel import to the single
+    // icon module instead. `@befroosh/ui` gets the same treatment for its
+    // 29-component barrel behind the `@/components/ui` alias.
+    optimizePackageImports: ['@phosphor-icons/react', '@befroosh/ui'],
+  },
+
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.fbcdn.net' },
@@ -28,6 +38,8 @@ const nextConfig = {
       // Uploaded media. `dl.` is the custom domain on the prod R2 bucket, `dltest.` the one on
       // the test bucket; the backend stores `DL_URL/<key>` as file.url, so every API-provided
       // image URL now lives on one of these. Without them next/image refuses the host outright.
+      // Note: R2's own `<bucket>.<account>.r2.cloudflarestorage.com` S3-API host is NOT listed
+      // on purpose — it needs a signed request, so next/image could never load it anyway.
       { protocol: 'https', hostname: 'dl.befroosh.app' },
       { protocol: 'https', hostname: 'dltest.befroosh.app' },
       // Pre-R2 rows still point at ArvanCloud. The account is dead, so these no longer load,

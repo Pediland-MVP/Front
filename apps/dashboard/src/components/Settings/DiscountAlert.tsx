@@ -2,8 +2,8 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 // TODO: Refactor Types & Schemas
 import { ReferralCodeTypeEnum } from '@/types/plans/plans.enum';
 
-import { Card, CardContent } from '@/components/ui';
-import { GiftIcon } from '@phosphor-icons/react/dist/ssr';
+import { Card, CardContent } from '@/components/ui/card';
+import { GiftIcon } from '@phosphor-icons/react/dist/ssr/Gift';
 
 export const DiscountAlert = () => {
   const {

@@ -1,4 +1,4 @@
-import { CloudXIcon } from '@phosphor-icons/react/dist/ssr';
+import { CloudXIcon } from '@phosphor-icons/react/dist/ssr/CloudX';
 import { useTranslations } from 'next-intl';
 
 export const NoDataError = () => {

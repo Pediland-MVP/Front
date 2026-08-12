@@ -11,7 +11,8 @@ import { useRef, useState } from 'react';
 // UI Imports
 import { DiscountAlert } from '@/components/Settings/DiscountAlert';
 import { Button } from '@/components/ui/button';
-import { PlayIcon, PlugIcon } from '@phosphor-icons/react/dist/ssr';
+import { PlayIcon } from '@phosphor-icons/react/dist/ssr/Play';
+import { PlugIcon } from '@phosphor-icons/react/dist/ssr/Plug';
 
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
 

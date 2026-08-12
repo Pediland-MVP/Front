@@ -9,23 +9,20 @@ import logo from '@/assets/images/befroosh-logo.svg';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
-import {
-  // ChartPieSliceIcon,
-  HouseIcon,
-  PlantIcon,
-  UsersIcon,
-  CreditCardIcon,
-  CurrencyCircleDollarIcon,
-  BarcodeIcon,
-  ChatDotsIcon,
-  UserGearIcon,
-  BuildingsIcon,
-  TagIcon,
-  SlidersHorizontalIcon,
-  BookmarksSimpleIcon,
-  ClipboardTextIcon,
-  InstagramLogoIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
+import { PlantIcon } from '@phosphor-icons/react/dist/ssr/Plant';
+import { UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { CreditCardIcon } from '@phosphor-icons/react/dist/ssr/CreditCard';
+import { CurrencyCircleDollarIcon } from '@phosphor-icons/react/dist/ssr/CurrencyCircleDollar';
+import { BarcodeIcon } from '@phosphor-icons/react/dist/ssr/Barcode';
+import { ChatDotsIcon } from '@phosphor-icons/react/dist/ssr/ChatDots';
+import { UserGearIcon } from '@phosphor-icons/react/dist/ssr/UserGear';
+import { BuildingsIcon } from '@phosphor-icons/react/dist/ssr/Buildings';
+import { TagIcon } from '@phosphor-icons/react/dist/ssr/Tag';
+import { SlidersHorizontalIcon } from '@phosphor-icons/react/dist/ssr/SlidersHorizontal';
+import { BookmarksSimpleIcon } from '@phosphor-icons/react/dist/ssr/BookmarksSimple';
+import { ClipboardTextIcon } from '@phosphor-icons/react/dist/ssr/ClipboardText';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -40,7 +37,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ...(user?.role !== 'kam' ? [{ title: t('plans'), url: '/plans' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('webhooks'), url: '/webhooks' }] : []),
       ...(user?.role !== 'kam' ? [{ title: t('jobs'), url: '/jobs' }] : []),
-      ...(user?.role !== 'kam' ? [{ title: t('automationErrors'), url: '/automation-errors' }] : []),
+      ...(user?.role !== 'kam'
+        ? [{ title: t('automationErrors'), url: '/automation-errors' }]
+        : []),
       { title: t('banners'), url: '/banners' },
       { title: t('templates'), url: '/templates' },
       { title: t('aiAgent'), url: '/aiagent' },

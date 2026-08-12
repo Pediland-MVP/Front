@@ -11,7 +11,8 @@ import { toast } from 'sonner';
 import useSWRImmutable from 'swr/immutable';
 import { z } from 'zod';
 
-import { Form, FormControl, FormField, FormItem, FormLabel, Input } from '@/components/ui';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';

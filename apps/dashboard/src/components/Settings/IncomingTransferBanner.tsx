@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import api from '@/hooks/swr/api-client';
 import { useIncomingTransfers } from '@/hooks/useIncomingTransfers';
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,

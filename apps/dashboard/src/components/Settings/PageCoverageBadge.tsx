@@ -2,8 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { SealCheckIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
-import { Alert, AlertDescription, Button } from '@/components/ui';
+import { SealCheckIcon } from '@phosphor-icons/react/dist/ssr/SealCheck';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { hasActiveCreditSubscription, getRemainingDays } from '@/utils/subscription';

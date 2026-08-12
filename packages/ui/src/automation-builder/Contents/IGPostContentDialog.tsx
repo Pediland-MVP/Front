@@ -9,16 +9,16 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import { Button } from '@/components/ui/button';
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Skeleton,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 
 type IGPostContentDialogProps = {

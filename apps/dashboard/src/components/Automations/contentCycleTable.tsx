@@ -14,13 +14,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import {
-  PencilIcon,
-  TrashIcon,
-  CaretRightIcon,
-  CaretLeftIcon,
-  EnvelopeSimpleIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { PencilIcon } from '@phosphor-icons/react/dist/ssr/Pencil';
+import { TrashIcon } from '@phosphor-icons/react/dist/ssr/Trash';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import { Card } from '@/components/ui/card';
 import useSWRImmutable from 'swr/immutable';
 import api from '@/hooks/swr/api-client';

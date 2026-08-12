@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import useCurrentLead from '@/store/currentLead.store';
 import { WsMessageEvents } from '@/types/conversations/wsMessage.enum';
 import { messagesSocket } from '@/utils/socket';
-import { PaperPlaneRightIcon } from '@phosphor-icons/react/dist/ssr';
+import { PaperPlaneRightIcon } from '@phosphor-icons/react/dist/ssr/PaperPlaneRight';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';

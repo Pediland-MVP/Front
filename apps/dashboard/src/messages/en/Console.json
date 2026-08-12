@@ -6,6 +6,7 @@
       "automation": "Automation",
       "day": "day",
       "details": "Details",
+      "edit": "Edit",
       "instagram": "Instagram",
       "leads": "Leads",
       "million": "M",
@@ -58,6 +59,8 @@
       "productsImport": "Bulk Import",
       "profile": "User Profile",
       "settings": "Settings",
+      "settingsHub": "General Settings",
+      "teamMembers": "Team Members",
       "shop": "Shop",
       "soon": "Coming Soon",
       "support": "Support",
@@ -69,6 +72,16 @@
     "loading": "Loading...",
     "noData": "No workspaces found",
     "yourWorkspaces": "Your Workspaces",
-    "accountSettings": "Account Settings"
+    "accountSettings": "Account Settings",
+    "WorkspaceDrawer": {
+      "connectedPages": "Businesses & Connected Pages ({count})",
+      "addPage": "Add Page",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "close": "Close",
+      "daysLeft": "{count} days left",
+      "coveredByCredit": "Covered by credit",
+      "pendingActivation": "Pending activation"
+    }
   }
 }

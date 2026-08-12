@@ -22,16 +22,7 @@ export function usePermissions() {
 
   const can = useCallback(
     (slug: string) => {
-      return permissions.some((p) => {
-        if (p.slug === slug) return true;
-        if (slug.startsWith('automation:')) {
-          return p.slug === slug.replace('automation:', 'contentCycle:');
-        }
-        if (slug.startsWith('contentCycle:')) {
-          return p.slug === slug.replace('contentCycle:', 'automation:');
-        }
-        return false;
-      });
+      return permissions.some((p) => p.slug === slug);
     },
     [permissions],
   );

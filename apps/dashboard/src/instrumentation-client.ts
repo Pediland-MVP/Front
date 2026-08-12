@@ -4,16 +4,22 @@
 
 import * as Sentry from '@sentry/nextjs';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 Sentry.init({
   dsn: 'https://3840b928a474bc5e496bfebfef3da2ab@o4510601348448256.ingest.de.sentry.io/4510601398911056',
 
+  // Off in dev. Session Replay records DOM mutations continuously, which is
+  // expensive in the browser once HMR starts re-rendering the tree on save.
+  enabled: isProd,
+
   // Add optional integrations for additional features
-  integrations: [Sentry.replayIntegration()],
+  integrations: isProd ? [Sentry.replayIntegration()] : [],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  tracesSampleRate: isProd ? 1 : 0,
   // Enable logs to be sent to Sentry
-  enableLogs: true,
+  enableLogs: isProd,
 
   // Define how likely Replay events are sampled.
   // This sets the sample rate to be 10%. You may want this to be 100% while

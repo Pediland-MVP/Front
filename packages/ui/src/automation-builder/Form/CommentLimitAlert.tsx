@@ -1,5 +1,5 @@
 'use client';
-import { Alert, AlertDescription } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AutomationFormType } from '../schemas/automationForm';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -13,8 +13,10 @@ export const CommentLimitAlert = () => {
   }
 
   return (
-    <Alert variant="note">
-      <AlertDescription icon>{t('note')}</AlertDescription>
+    <Alert variant="note" className="items-start">
+      <AlertDescription icon className="w-full">
+        {t('note')}
+      </AlertDescription>
     </Alert>
   );
 };

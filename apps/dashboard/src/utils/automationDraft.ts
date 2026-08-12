@@ -2,6 +2,7 @@ import { decodeJwtPayload } from '@/utils/jwt';
 import type { AutomationFormType } from '@/automation-builder';
 
 const DRAFT_KEY_PREFIX = 'automation-draft:';
+const DRAFT_TTL_MS = 2 * 24 * 60 * 60 * 1000;
 
 interface StoredAutomationDraft {
   formValues: unknown;
@@ -34,14 +35,16 @@ export function readAutomationDraft(workspaceId: string): Partial<AutomationForm
 
   try {
     const stored = JSON.parse(raw) as StoredAutomationDraft;
+
+    if (Date.now() - stored.savedAt > DRAFT_TTL_MS) {
+      localStorage.removeItem(getAutomationDraftKey(workspaceId));
+      return null;
+    }
+
     return isPlausibleAutomationDraft(stored.formValues) ? stored.formValues : null;
   } catch {
     return null;
   }
-}
-
-export function hasAutomationDraft(workspaceId: string): boolean {
-  return readAutomationDraft(workspaceId) !== null;
 }
 
 export function writeAutomationDraft(workspaceId: string, formValues: AutomationFormType): void {

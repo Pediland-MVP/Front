@@ -1,7 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { CircleNotchIcon, Icon } from '@phosphor-icons/react';
+import { CircleNotchIcon } from '@phosphor-icons/react/dist/csr/CircleNotch';
+import type { Icon } from '@phosphor-icons/react/dist/lib/types';
 import Link, { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -20,7 +21,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '../ui';
-import { CaretLeftIcon } from '@phosphor-icons/react';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/csr/CaretLeft';
 
 const NavItemIcon = ({ icon: ItemIcon }: { icon: Icon }) => {
   const { pending } = useLinkStatus();
@@ -39,6 +40,9 @@ interface NavMainProps {
     items?: {
       title: string;
       url: string;
+      exact?: boolean;
+      icon?: Icon;
+      badge?: number;
     }[];
   }[];
 }
@@ -52,7 +56,9 @@ export const NavMain = ({ items }: NavMainProps) => {
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          const isSubMenuActive = item.items?.some((subItem) => pathname.startsWith(subItem.url));
+          const isSubMenuActive = item.items?.some((subItem) =>
+            subItem.exact ? pathname === subItem.url : pathname.startsWith(subItem.url),
+          );
 
           const isOpen = openMenu === item.title || item.isActive || isSubMenuActive;
 
@@ -128,27 +134,44 @@ export const NavMain = ({ items }: NavMainProps) => {
 
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              className={cn(
-                                'border border-dashed border-transparent',
-                                pathname.startsWith(subItem.url)
-                                  ? 'text-primary hover:text-primary active:text-primary active:bg-transparent'
-                                  : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
-                              )}
-                              onClick={() => {
-                                setOpenMenu(item.title);
-                                if (isMobile) toggleSidebar();
-                              }}
-                            >
-                              <Link href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
+                        {item.items.map((subItem) => {
+                          const isSubItemActive = subItem.exact
+                            ? pathname === subItem.url
+                            : pathname.startsWith(subItem.url);
+
+                          return (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                className={cn(
+                                  'border border-dashed border-transparent',
+                                  isSubItemActive
+                                    ? 'text-primary hover:text-primary active:text-primary active:bg-transparent'
+                                    : 'hover:text-primary active:text-primary text-secondary active:bg-transparent',
+                                )}
+                                onClick={() => {
+                                  setOpenMenu(item.title);
+                                  if (isMobile) toggleSidebar();
+                                }}
+                              >
+                                <Link href={subItem.url}>
+                                  {subItem.icon ? (
+                                    <div className="relative">
+                                      <subItem.icon size={18} weight="duotone" />
+                                      {subItem.badge && subItem.badge > 0 ? (
+                                        <span
+                                          data-testid="nav-sub-badge"
+                                          className="absolute -start-0.5 -top-0.5 h-2 w-2 rounded-full bg-blue-500"
+                                        />
+                                      ) : null}
+                                    </div>
+                                  ) : null}
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </>

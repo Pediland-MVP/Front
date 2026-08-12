@@ -1,7 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ChatCircle } from '@phosphor-icons/react';
+import { CheckCircle } from '@phosphor-icons/react/dist/csr/CheckCircle';
+import { ChatCircle } from '@phosphor-icons/react/dist/csr/ChatCircle';
 import Link from 'next/link';
 import { OrderNamespace } from '@/types/order/order.namespace';
 import { useTranslations } from 'next-intl';

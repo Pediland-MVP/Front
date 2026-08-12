@@ -1,29 +1,56 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { PlusIcon } from 'lucide-react';
-import { InstagramLogoIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/dist/ssr';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 
 import { InstagramAccounts } from '@/components/Settings/InstagramAccounts';
-import { Button } from '@/components/ui';
+import { SetupInstagramDialog } from '@/components/Connect/SetupInstagramDialog';
+import { IGW_RESUME_PARAM } from '@/components/Connect/useInstagramWizardResume';
+import { Button } from '@/components/ui/button';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useAddInstagramGate } from '@/hooks/useAddInstagramGate';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 
 export default function Page() {
   const t = useTranslations('Settings.Accounts');
   const { can, isLoading: permissionsLoading } = usePermissions();
-  const [accountCount, setAccountCount] = useState<number>(0);
+  // `null` until the accounts list resolves — see the note on `isAddBlocked` below.
+  const [accountCount, setAccountCount] = useState<number | null>(null);
+  const [isSetupDialogOpen, setIsSetupDialogOpen] = useState(false);
+
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get(IGW_RESUME_PARAM) === '1') setIsSetupDialogOpen(true);
+  }, [searchParams]);
 
   const canView = can('instagram:view');
   const canManage = can('instagram:manage');
-  const atLimit = accountCount >= MAX_INSTAGRAM_ACCOUNTS;
+  const knownAccountCount = accountCount ?? 0;
+  const atLimit = knownAccountCount >= MAX_INSTAGRAM_ACCOUNTS;
+  const hasInstagram = knownAccountCount > 0;
+
+  // Same rule as /connect, from the same hook, so the two entry points into the
+  // "add another account" journey cannot drift: the first account goes straight to
+  // /connect, while a second or later one stops at SetupInstagramDialog whenever the
+  // workspace has no unused coverage *or* holds a paid plan not yet bound to a page.
+  const { requiresSetupDialog, isLoading: isGateLoading } = useAddInstagramGate(hasInstagram);
+
+  // Hold the button back until both the account count and the gate inputs are known.
+  // Acting early would answer "first account, no plan to worry about" — the one answer
+  // that skips every check — and send the user into OAuth past the subscription step.
+  const isAddBlocked = atLimit || !canManage || accountCount === null || isGateLoading;
 
   return (
     <div className="_instagram-page flex-1 rounded-t-3xl bg-white md:rounded-t-none md:rounded-b-xl">
+      <SetupInstagramDialog open={isSetupDialogOpen} onOpenChange={setIsSetupDialogOpen} />
       <div className="flex h-full flex-col gap-4 px-4 py-5 md:pt-0">
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-gray-100 pb-4">
@@ -40,14 +67,28 @@ export default function Page() {
           {canView && (
             <div className="flex items-center gap-2.5">
               <span className="text-primary inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold">
-                {t('count_badge', { count: accountCount, max: MAX_INSTAGRAM_ACCOUNTS })}
+                {t('count_badge', { count: knownAccountCount, max: MAX_INSTAGRAM_ACCOUNTS })}
               </span>
-              <Button size="sm" disabled={atLimit || !canManage} asChild={!atLimit && canManage}>
-                {atLimit || !canManage ? (
+              <Button
+                size="sm"
+                disabled={isAddBlocked}
+                asChild={!isAddBlocked && !requiresSetupDialog}
+                onClick={
+                  !isAddBlocked && requiresSetupDialog
+                    ? () => setIsSetupDialogOpen(true)
+                    : undefined
+                }
+              >
+                {isAddBlocked ? (
                   <span className="flex items-center gap-1.5">
                     <PlusIcon className="size-4" />
                     {t('addAccount')}
                   </span>
+                ) : requiresSetupDialog ? (
+                  <>
+                    <PlusIcon className="size-4" />
+                    {t('addAccount')}
+                  </>
                 ) : (
                   <Link href="/connect">
                     <PlusIcon className="size-4" />

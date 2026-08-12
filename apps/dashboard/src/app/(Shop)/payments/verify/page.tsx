@@ -4,7 +4,9 @@ import { PaymentNamespace } from '@/types/payments/payment.namespace';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircleIcon, XCircleIcon, CopyIcon } from '@phosphor-icons/react';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/csr/CheckCircle';
+import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
+import { CopyIcon } from '@phosphor-icons/react/dist/csr/Copy';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 

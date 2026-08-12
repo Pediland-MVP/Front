@@ -15,6 +15,7 @@ vi.mock('@/utils/automationDraft', () => ({
   getCurrentWorkspaceId: vi.fn(() => 'ws-1'),
   readAutomationDraft: vi.fn(() => null),
   clearAutomationDraft: vi.fn(),
+  writeAutomationDraft: vi.fn(),
 }));
 
 const post = vi.fn().mockResolvedValue({ data: {} });
@@ -122,5 +123,109 @@ describe('AutomationForm draft integration', () => {
 
     await waitFor(() => expect(post).toHaveBeenCalled());
     await waitFor(() => expect(clearAutomationDraft).toHaveBeenCalledWith('ws-1'));
+  });
+});
+
+describe('AutomationForm draft-restored banner', () => {
+  it('shows the banner when the form was seeded from a stored draft', async () => {
+    (readAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue({
+      title: 'یک عنوان از پیش‌نویس',
+      contents: [],
+      instagramIds: [],
+    });
+
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <AutomationForm />
+      </NextIntlClientProvider>,
+    );
+
+    expect(
+      await screen.findByText(messages.Automations.DraftBanner.description),
+    ).toBeInTheDocument();
+  });
+
+  it('does not show the banner when there is no stored draft', async () => {
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <AutomationForm />
+      </NextIntlClientProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByTestId('automation-builder-root')).toBeInTheDocument());
+    expect(
+      screen.queryByText(messages.Automations.DraftBanner.description),
+    ).not.toBeInTheDocument();
+  });
+
+  it('"ادامه ویرایش" dismisses the banner and keeps the draft values, without clearing storage', async () => {
+    (readAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue({
+      title: 'یک عنوان از پیش‌نویس',
+      contents: [],
+      instagramIds: [],
+    });
+
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <AutomationForm />
+      </NextIntlClientProvider>,
+    );
+
+    await screen.findByText(messages.Automations.DraftBanner.description);
+    fireEvent.click(screen.getByText(messages.Automations.DraftBanner.resume));
+
+    expect(
+      screen.queryByText(messages.Automations.DraftBanner.description),
+    ).not.toBeInTheDocument();
+    expect(screen.getByDisplayValue('یک عنوان از پیش‌نویس')).toBeInTheDocument();
+    expect(clearAutomationDraft).not.toHaveBeenCalled();
+  });
+
+  it('"پیام جدید" clears the draft and resets the form to blank in place', async () => {
+    (readAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue({
+      title: 'یک عنوان از پیش‌نویس',
+      contents: [],
+      instagramIds: [],
+    });
+
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <AutomationForm />
+      </NextIntlClientProvider>,
+    );
+
+    await screen.findByText(messages.Automations.DraftBanner.description);
+    fireEvent.click(screen.getByText(messages.Automations.DraftBanner.createNew));
+
+    expect(clearAutomationDraft).toHaveBeenCalledWith('ws-1');
+    expect(
+      screen.queryByText(messages.Automations.DraftBanner.description),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('یک عنوان از پیش‌نویس')).not.toBeInTheDocument();
+  });
+
+  it('dismisses the banner automatically once the user edits the form directly', async () => {
+    (readAutomationDraft as ReturnType<typeof vi.fn>).mockReturnValue({
+      title: 'یک عنوان از پیش‌نویس',
+      contents: [],
+      instagramIds: [],
+    });
+
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <AutomationForm />
+      </NextIntlClientProvider>,
+    );
+
+    await screen.findByText(messages.Automations.DraftBanner.description);
+
+    const titleInput = screen.getByDisplayValue('یک عنوان از پیش‌نویس');
+    fireEvent.change(titleInput, { target: { value: 'یک عنوان از پیش‌نویس ویرایش‌شده' } });
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(messages.Automations.DraftBanner.description),
+      ).not.toBeInTheDocument(),
+    );
   });
 });

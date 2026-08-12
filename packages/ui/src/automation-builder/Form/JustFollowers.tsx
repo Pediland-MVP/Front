@@ -7,16 +7,10 @@ import { useEffect } from 'react';
 import { Control, useFormContext, UseFormGetValues } from 'react-hook-form';
 import useSWR from 'swr';
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Switch,
-  Textarea,
-} from '@/components/ui';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 
 type AutomationDefaults = {
@@ -101,11 +95,10 @@ export const JustFollowers = ({
               <FormItem>
                 <FormLabel className="">{t('message_text')}</FormLabel>
                 <FormControl>
-                  <Textarea
+                  <AutoResizeTextarea
                     placeholder={t('placeholder')}
                     {...field}
                     value={field.value ?? ''}
-                    rows={3}
                   />
                 </FormControl>
                 {error && <ErrorMessage>{t('Errors.followMessage.required')}</ErrorMessage>}

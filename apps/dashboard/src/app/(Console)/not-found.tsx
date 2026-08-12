@@ -1,7 +1,8 @@
 'use client';
 
 import '@/styles/globals.css';
-import { ArrowLeftIcon, FlyingSaucerIcon } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
+import { FlyingSaucerIcon } from '@phosphor-icons/react/dist/ssr/FlyingSaucer';
 import Link from 'next/link';
 
 export default function NotFound() {

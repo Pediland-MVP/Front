@@ -3,18 +3,17 @@ import { ValidationTypeEnum } from '../types/validationType.enum';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 
+import { FormField, FormItem } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import {
-  FormField,
-  FormItem,
-  Label,
-  Textarea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { InputCounter } from '@/components/ui-custom/InputCounter';
+import { AutoResizeTextarea } from '@/components/ui-custom/AutoResizeTextarea';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { AutomationButtons } from './AutomationButtons';
 import { ButtonTypeEnum } from '../types/buttons.enum';
@@ -58,6 +57,10 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
         return 'کد ملی شما درست نیست';
       case ValidationTypeEnum.Number:
         return 'عدد وارد شده صحیح نیست';
+      case ValidationTypeEnum.Image:
+        return 'لطفا یک تصویر ارسال کنید';
+      case ValidationTypeEnum.PostalCode:
+        return 'کد پستی شما صحیح نیست';
       case ValidationTypeEnum.Text:
       default:
         return QuestionTextErrorMessage;
@@ -92,8 +95,7 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
                 name: (chunks) => <span className="text-blue-500">{chunks}</span>,
               })}
             </Label>
-            <Textarea
-              rows={1}
+            <AutoResizeTextarea
               maxLength={1000}
               {...field}
               aria-invalid={!!error}
@@ -137,10 +139,9 @@ export const QuestionContent = ({ index, mode, control, apiClient }: QuestionCon
           render={({ field, fieldState: { error } }) => (
             <FormItem className="w-full">
               <Label>پیام خطای اعتبارسنجی</Label>
-              <Textarea
+              <AutoResizeTextarea
                 {...field}
                 placeholder="پیام خطا برای اعتبارسنجی"
-                rows={1}
                 className="w-full"
               />
               {}

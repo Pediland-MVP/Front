@@ -5,4 +5,5 @@ export interface ISubscriptionPaymentVerify {
 
 interface Data {
   ref_id: number;
+  pooled: boolean;
 }

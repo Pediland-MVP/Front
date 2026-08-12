@@ -6,19 +6,21 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 import { useWorkspaceCategories } from '@/hooks/useWorkspaceCategories';
 import api from '@/hooks/swr/api-client';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
+} from '@/components/ui/dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Button,
-} from '@/components/ui';
+} from '@/components/ui/select';
 
 // The active workspace's category is nullable for workspaces created before
 // this feature shipped. An owner who lands on such a workspace must pick one

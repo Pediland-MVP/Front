@@ -9,15 +9,13 @@ import { fetcher } from '@/hooks/swr/api-client';
 import { escapeMarkdownHtml, sanitizeUrl } from '@befroosh/ui/lib/markdown';
 
 import {
-  Button,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui';
+} from '@/components/ui/dialog';
 import { MonitorPlayIcon, X } from 'lucide-react';
 
 type Position =
@@ -38,7 +36,7 @@ type Position =
 interface HelpDialogProps {
   title: string;
   description?: string;
-  videoSrc: string;
+  videoSrc?: string;
   videoPoster?: string;
   position?: Position;
   className?: string;
@@ -72,15 +70,7 @@ const getPositionClasses = (position: Position, noAbsolute: boolean = false): st
 };
 
 // Auto-detecting video player aspect ratio
-export const AutoAspectPlayer = ({
-  src,
-  poster,
-  labelClose,
-}: {
-  src: string;
-  poster?: string;
-  labelClose?: string;
-}) => {
+export const AutoAspectPlayer = ({ src, poster }: { src: string; poster?: string }) => {
   const [aspect, setAspect] = useState<'video' | 'square' | 'vertical'>('video');
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
@@ -111,6 +101,7 @@ export const AutoAspectPlayer = ({
         src={src}
         poster={poster}
         controls
+        playsInline
         preload="metadata"
         className="h-full w-full object-contain"
         onLoadedMetadata={handleLoadedMetadata}
@@ -256,7 +247,7 @@ export const HelpMeDialog = ({
         dir="rtl"
       >
         {/* Custom Header */}
-        <div className="relative flex items-start justify-between rounded-t-2xl border-b border-slate-100 bg-slate-50/50 p-5 md:p-6">
+        <div className="relative flex items-start rounded-t-2xl border-b border-slate-100 bg-slate-50/50 p-5 md:p-6">
           <div className="flex flex-col gap-1 pl-6 text-right">
             <DialogTitle className="flex items-center justify-start gap-2 text-base font-black text-slate-800">
               <MonitorPlayIcon size={22} className="text-blue-600" /> {resolvedTitle}
@@ -267,6 +258,12 @@ export const HelpMeDialog = ({
               </DialogDescription>
             )}
           </div>
+          <DialogClose
+            aria-label={t('close') || 'بستن'}
+            className="absolute top-4 left-4 rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 md:top-5 md:left-5"
+          >
+            <X size={18} />
+          </DialogClose>
         </div>
 
         {/* Content Body */}
@@ -282,13 +279,6 @@ export const HelpMeDialog = ({
             />
           )}
         </div>
-
-        {/* Custom Footer */}
-        <DialogFooter className="flex justify-end gap-2 rounded-b-2xl border-t border-slate-100 bg-slate-50/50 p-4">
-          <Button onClick={() => setOpen(false)} className="w-[120px] font-bold">
-            {t('close') || 'بستن'}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

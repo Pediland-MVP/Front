@@ -21,19 +21,15 @@ import { CityNamespace } from '@/types/city';
 import { ProvinceNamespace } from '@/types/province';
 import { UserNamespace } from '@/types/user';
 
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui';
+} from '@/components/ui/select';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { ButtonLoading } from '../ui-custom/ButtonLoading';
 
@@ -118,13 +114,14 @@ export function ProfileForm() {
   });
 
   const resetWithUserData = () => {
-    if (!userData || userError) return;
-    const cityId = userData.city?.id?.toString();
-    const state = userData.city?.province?.id?.toString();
+    if (!userData?.data || userError) return;
+    const user = userData.data;
+    const cityId = user.city?.id?.toString();
+    const state = user.city?.province?.id?.toString();
     form.reset({
-      ...userData,
-      ...(userData.birthDate && {
-        birthDate: new Date(userData.birthDate).getTime().toString(),
+      ...user,
+      ...(user.birthDate && {
+        birthDate: new Date(user.birthDate).getTime().toString(),
       }),
       ...(cityId && { cityId }),
       ...(state && { state }),

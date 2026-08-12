@@ -16,7 +16,8 @@ import {
   useFormContext,
 } from 'react-hook-form';
 
-import { ArrowsOutCardinalIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { ArrowsOutCardinalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsOutCardinal';
+import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 import { ButtonContent } from './ButtonContent';
 import { useContentsContext } from './ContentsContext';
 import { IGPostContent } from './IGPostContent';
@@ -96,6 +97,7 @@ export const ContentItem = ({
   appendContents,
   content,
   apiClient,
+  helpSlot,
 }: {
   id: string;
   index: number;
@@ -106,6 +108,9 @@ export const ContentItem = ({
   appendContents: UseFieldArrayAppend<z.infer<typeof ContentItemSchema>>;
   content: z.infer<typeof ContentItemSchema>;
   apiClient: AutomationBuilderApiClient;
+  /** Rendered next to this item's type label in the header — the per-content-type guide
+   * (e.g. for storefront/button/text) requested by BEF-140. */
+  helpSlot?: React.ReactNode;
 }) => {
   const { control, getValues, setValue, clearErrors, trigger } =
     useFormContext<AutomationFormType>();
@@ -195,11 +200,12 @@ export const ContentItem = ({
           <div {...attributes} {...listeners} className="cursor-move touch-none">
             <ArrowsOutCardinalIcon size={18} className="text-gray-500 hover:text-blue-900" />
           </div>
-          <div className="text-secondary flex gap-2 text-[13px] font-semibold">
+          <div className="text-secondary flex items-center gap-2 text-[13px] font-semibold">
             <div className="bg-secondary flex size-5.5 items-center justify-center rounded-full p-0 text-xs leading-px font-medium text-white">
               {index + 1}
             </div>
             {t_contentTypes(`buttons.descriptions.${typeKey}`)}
+            {helpSlot}
           </div>
         </div>
         <div>

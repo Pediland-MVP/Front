@@ -44,14 +44,12 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormField } from '@/components/ui/form';
-import {
-  ChatCenteredTextIcon,
-  CrosshairSimpleIcon,
-  EnvelopeSimpleIcon,
-  InstagramLogoIcon,
-  TelegramLogoIcon,
-  WhatsappLogoIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ChatCenteredTextIcon } from '@phosphor-icons/react/dist/ssr/ChatCenteredText';
+import { CrosshairSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrosshairSimple';
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { TelegramLogoIcon } from '@phosphor-icons/react/dist/ssr/TelegramLogo';
+import { WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import {
   CheckIcon,
   MessageSquare,
@@ -441,7 +439,8 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
 
           <div className="space-y-2 text-xs">
             {(() => {
-              const activeSubs = customer?.subscriptions?.filter((s) => s.status === 'active') ?? [];
+              const activeSubs =
+                customer?.subscriptions?.filter((s) => s.status === 'active') ?? [];
               if (activeSubs.length === 0) {
                 return (
                   <div className="flex items-center justify-between">
@@ -491,7 +490,8 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
             )}
 
             {(() => {
-              const reservedSubs = customer?.subscriptions?.filter((s) => s.status === 'reserved') ?? [];
+              const reservedSubs =
+                customer?.subscriptions?.filter((s) => s.status === 'reserved') ?? [];
               if (reservedSubs.length === 0) {
                 return (
                   <div className="flex items-center justify-between">

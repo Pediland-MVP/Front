@@ -8,12 +8,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { memo, useState } from 'react';
 
-import {
-  ChatCircleTextIcon,
-  CheckCircleIcon,
-  DotsThreeOutlineIcon,
-  UserCircleIcon,
-} from '@phosphor-icons/react/dist/ssr';
+import { ChatCircleTextIcon } from '@phosphor-icons/react/dist/ssr/ChatCircleText';
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import { DotsThreeOutlineIcon } from '@phosphor-icons/react/dist/ssr/DotsThreeOutline';
+import { UserCircleIcon } from '@phosphor-icons/react/dist/ssr/UserCircle';
 import {
   Badge,
   DropdownMenu,

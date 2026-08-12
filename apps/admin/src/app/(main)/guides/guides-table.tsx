@@ -790,6 +790,39 @@ export default function GuidesTable({
                           <SelectItem value="automation_contents">
                             اتوماسیون - محتوای ربات (Contents)
                           </SelectItem>
+                          <SelectItem value="automation_title">
+                            اتوماسیون - نام پیام خودکار
+                          </SelectItem>
+                          <SelectItem value="automation_content_text">
+                            اتوماسیون - محتوا: متن
+                          </SelectItem>
+                          <SelectItem value="automation_content_button_template">
+                            اتوماسیون - محتوا: دکمه و لینک
+                          </SelectItem>
+                          <SelectItem value="automation_content_vitrin">
+                            اتوماسیون - محتوا: ویترین محصولات
+                          </SelectItem>
+                          <SelectItem value="automation_content_image">
+                            اتوماسیون - محتوا: تصویر
+                          </SelectItem>
+                          <SelectItem value="automation_content_video">
+                            اتوماسیون - محتوا: ویدیو
+                          </SelectItem>
+                          <SelectItem value="automation_content_audio">
+                            اتوماسیون - محتوا: صدا
+                          </SelectItem>
+                          <SelectItem value="automation_content_instagram_post">
+                            اتوماسیون - محتوا: پست اینستاگرام
+                          </SelectItem>
+                          <SelectItem value="automation_content_product">
+                            اتوماسیون - محتوا: فروش مستقیم
+                          </SelectItem>
+                          <SelectItem value="automation_content_question">
+                            اتوماسیون - محتوا: دریافت اطلاعات
+                          </SelectItem>
+                          <SelectItem value="automation_content_delay">
+                            اتوماسیون - محتوا: تأخیر (Delay)
+                          </SelectItem>
                           <SelectItem value="dashboard_general_help">
                             داشبورد - ویدیو راهنمای کلی خانه
                           </SelectItem>

@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button, Form } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
 import { SeperateLine } from '@/components/ui-custom/SeperateLine';
 import { Conditions, ConditionTypesEnum } from './Form/Conditions';
 import { Triggers } from './Form/Triggers';
@@ -28,6 +29,7 @@ export function AutomationBuilder({
   cancelLabel,
   headerSlot,
   helpSlots,
+  contentTypeHelpSlots,
   beforeSubmit,
   onInvalid,
   hasInstagram,
@@ -105,6 +107,7 @@ export function AutomationBuilder({
             helpSlot={helpSlots?.contents}
             builderMode={mode}
             commentTriggerHelpSlot={helpSlots?.commentTrigger}
+            contentTypeHelpSlots={contentTypeHelpSlots}
           />
         </div>
 
@@ -124,7 +127,7 @@ export function AutomationBuilder({
 
         {mode === 'automation' && (
           <div className="grid gap-5 rounded-xl border bg-white p-4 shadow-sm">
-            <TitleAndEnabled control={form.control} />
+            <TitleAndEnabled control={form.control} helpSlot={helpSlots?.titleAndEnabled} />
           </div>
         )}
 

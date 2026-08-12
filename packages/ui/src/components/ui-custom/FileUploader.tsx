@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import AnimatedCircularProgressBar from '../ui/animated-circular-progress-bar';
-import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr';
+import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
 
 const mainVariant = {
   initial: {

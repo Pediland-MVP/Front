@@ -2,15 +2,15 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Button,
-} from '@/components/ui';
-import { ArrowsLeftRight } from '@phosphor-icons/react';
+} from '@/components/ui/dialog';
+import { ArrowsLeftRight } from '@phosphor-icons/react/dist/csr/ArrowsLeftRight';
 import { useWorkspaces } from '@/hooks/useWorkspaces';
 
 interface WorkspaceSwitcherDialogProps {

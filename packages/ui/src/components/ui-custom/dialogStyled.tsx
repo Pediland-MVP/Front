@@ -2,14 +2,16 @@
 
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import * as Icons from '@phosphor-icons/react';
 import { XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type PhosphorIconName = keyof typeof Icons;
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react/dist/lib/types';
 
 type DialogStyledTitleProps = React.ComponentProps<typeof DialogPrimitive.Title> & {
-  icon?: PhosphorIconName;
+  // Takes the icon component itself, not its name. Looking an icon up by name
+  // needs `import * as Icons`, which pulls Phosphor's whole ~3025-module barrel
+  // into every route that renders this dialog.
+  icon?: PhosphorIcon;
 };
 
 function DialogStyled({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -111,9 +113,12 @@ function DialogStyledFooter({ className, ...props }: React.ComponentProps<'div'>
   );
 }
 
-function DialogStyledTitle({ className, icon, children, ...props }: DialogStyledTitleProps) {
-  const IconComponent = icon ? (Icons[icon] as React.ElementType<Icons.IconProps>) : null;
-
+function DialogStyledTitle({
+  className,
+  icon: IconComponent,
+  children,
+  ...props
+}: DialogStyledTitleProps) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
