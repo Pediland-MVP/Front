@@ -25,11 +25,13 @@
 - Create: `apps/dashboard/src/components/Commerce/ProductEditor/sections/SortableMediaTile.tsx`
 - Modify: `apps/dashboard/src/components/Commerce/ProductEditor/sections/MediaSection.tsx`
 - Modify: `apps/dashboard/src/messages/fa.json` (add two keys)
+- Create: `apps/dashboard/src/components/Commerce/ProductEditor/testUtils/dndKitTestMocks.ts`
 - Create: `apps/dashboard/src/components/Commerce/ProductEditor/sections/MediaSection.test.tsx`
 
 **Interfaces:**
 - Produces: `SortableMediaTile` component, props `{ item: EditorMedia, index: number, isCover: boolean, isBusy: boolean, removeLabel: string, reorderLabel: string, coverLabel: string, videoLabel: string, pendingLabel: string, onRemove: (item: EditorMedia) => void }`.
 - Produces: `MediaSection` gains a new required prop `onReorder: (newOrder: EditorMedia[]) => void`. Every other existing prop (`step`, `productId`, `media`, `isBusy`, `onAdd`, `onRemove`) is unchanged.
+- Produces: `testUtils/dndKitTestMocks.ts` exports `dragEndRef: { current: null | ((e: unknown) => void) }` and, as an import side effect, registers `vi.mock` for `@dnd-kit/core` (captures `DndContext`'s `onDragEnd` into `dragEndRef`) and `@dnd-kit/sortable` (`useSortable`/`SortableContext` static passthroughs). **Task 2 imports this same file** — it is the single source of this mock, not duplicated per test file.
 - Consumes: `EditorMedia` type from `../productEditor.schema` (already defined, unchanged).
 
 - [ ] **Step 1: Add the two new i18n keys**
@@ -365,19 +367,16 @@ export const MediaSection = ({
 
 Note the accepted trade-off: for a tile that is both `isPending` and has the drag handle visible, the handle (bottom-start, small circular badge) sits slightly over the pending banner strip (`inset-x-0 bottom-0`) — both are bottom-anchored on a 112px tile and there is no other free corner (top-start is the remove button, top-end is the cover badge, bottom-end is the video badge). This is a minor visual overlap, not a functional bug; revisit only if it is reported as confusing in practice.
 
-- [ ] **Step 4: Write `MediaSection.test.tsx`**
+- [ ] **Step 4: Write the shared dnd-kit test-mock helper**
 
-This mocks `@dnd-kit/core`'s `DndContext` and `@dnd-kit/sortable`'s `useSortable`/`SortableContext` so the test can trigger a drop deterministically (call the real `onDragEnd` handler directly with a synthetic event) instead of simulating real pointer/keyboard drag physics in `jsdom`, which has no layout engine for `@dnd-kit`'s collision math to use. `arrayMove` itself is NOT mocked — it stays real, so the test proves our code calls it correctly.
+Both this task's `MediaSection.test.tsx` (below) and Task 2's `ProductEditorPage.test.tsx` need to trigger a drop deterministically in `jsdom`, which has no layout engine for `@dnd-kit`'s real collision math to run on — instead of simulating real pointer/keyboard drag physics, both mock `@dnd-kit/core`'s `DndContext` (capturing its `onDragEnd` prop so a test can call it directly with a synthetic event) and `@dnd-kit/sortable`'s `useSortable`/`SortableContext` (static passthroughs, so a tile renders without a real `DndContext` provider). Rather than duplicate this ~25-line mock block in both test files, it lives once here; each test file imports it for its side effects (registering the `vi.mock` calls) and to get `dragEndRef`. `arrayMove` and everything else from `@dnd-kit/sortable` stay real.
 
-```tsx
-import { describe, it, expect, vi, beforeAll } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { NextIntlClientProvider } from 'next-intl';
+Create `apps/dashboard/src/components/Commerce/ProductEditor/testUtils/dndKitTestMocks.ts`:
 
-import messages from '@/messages/fa.json';
-import type { EditorMedia } from '../productEditor.schema';
+```ts
+import { vi } from 'vitest';
 
-const { dragEndRef } = vi.hoisted(() => ({
+export const { dragEndRef } = vi.hoisted(() => ({
   dragEndRef: { current: null as null | ((e: unknown) => void) },
 }));
 
@@ -412,6 +411,20 @@ vi.mock('@dnd-kit/sortable', async (importOriginal) => {
     SortableContext: ({ children }: { children: React.ReactNode }) => children,
   };
 });
+```
+
+Import it by side effect wherever the mock is needed — `import '...testUtils/dndKitTestMocks'` alone registers the `vi.mock` calls, but both test files below also need the named `dragEndRef` export, so a plain named import (`import { dragEndRef } from '...'`) covers both at once. Place that import BEFORE the component-under-test import in each file, so the mocks are registered before `@dnd-kit/sortable` is first evaluated via the component's own import chain.
+
+- [ ] **Step 5: Write `MediaSection.test.tsx`**
+
+```tsx
+import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+
+import messages from '@/messages/fa.json';
+import type { EditorMedia } from '../productEditor.schema';
+import { dragEndRef } from '../testUtils/dndKitTestMocks';
 
 beforeAll(() => {
   (globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver =
@@ -473,17 +486,18 @@ describe('MediaSection drag-and-drop reorder', () => {
 });
 ```
 
-- [ ] **Step 5: Run the new test file**
+- [ ] **Step 6: Run the new test file**
 
 Run: `cd apps/dashboard && npx vitest run src/components/Commerce/ProductEditor/sections/MediaSection.test.tsx`
 Expected: PASS, 3/3.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add apps/dashboard/src/components/Commerce/ProductEditor/sections/MediaSection.tsx \
         apps/dashboard/src/components/Commerce/ProductEditor/sections/SortableMediaTile.tsx \
         apps/dashboard/src/components/Commerce/ProductEditor/sections/MediaSection.test.tsx \
+        apps/dashboard/src/components/Commerce/ProductEditor/testUtils/dndKitTestMocks.ts \
         apps/dashboard/src/messages/fa.json
 git commit -m "feat(commerce): drag-and-drop reorder UI in the media pool grid"
 ```
@@ -497,7 +511,7 @@ git commit -m "feat(commerce): drag-and-drop reorder UI in the media pool grid"
 - Test: `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.test.tsx`
 
 **Interfaces:**
-- Consumes: `MediaSection`'s new `onReorder: (newOrder: EditorMedia[]) => void` prop (Task 1). `productDetailKey(productId: string): string` and `CATEGORIES_KEY`/`COLLECTIONS_KEY` already imported from `./useProductLoad`. `EditorMedia` from `./productEditor.schema`. The existing `mediaBusy` ref, `isMediaBusy` state, and `markMediaBusy` callback (already defined at `ProductEditorPage.tsx:389-394`).
+- Consumes: `MediaSection`'s new `onReorder: (newOrder: EditorMedia[]) => void` prop (Task 1). `productDetailKey(productId: string): string` and `CATEGORIES_KEY`/`COLLECTIONS_KEY` already imported from `./useProductLoad`. `EditorMedia` from `./productEditor.schema`. The existing `mediaBusy` ref, `isMediaBusy` state, and `markMediaBusy` callback (already defined at `ProductEditorPage.tsx:389-394`). For the test file: `dragEndRef` from `./testUtils/dndKitTestMocks` (Task 1) — do not redeclare the `@dnd-kit` mocks in this file.
 - Produces: `handleReorderMedia(newOrder: EditorMedia[]): Promise<void>`, wired to `<MediaSection onReorder={...} />`.
 
 - [ ] **Step 1: Add `handleReorderMedia`**
@@ -580,45 +594,15 @@ const { api } = vi.hoisted(() => ({
 }));
 ```
 
-Immediately after the existing `vi.mock('sonner', ...)` block, add the same `@dnd-kit` mocks used in `MediaSection.test.tsx` (Task 1) — needed here too because `ProductEditorPage` renders a real `MediaSection`, which sets up its own `DndContext`:
+Import the shared dnd-kit mock helper Task 1 created — this registers the same `@dnd-kit/core`/`@dnd-kit/sortable` mocks `MediaSection.test.tsx` uses, needed here too because `ProductEditorPage` renders a real `MediaSection`, which sets up its own `DndContext`. Add this import near the file's other top-level imports, before `import { ProductEditorPage } from './ProductEditorPage';` (so the mocks register before `@dnd-kit/sortable` is evaluated via `ProductEditorPage`'s own import chain — do NOT redeclare the `vi.mock` calls in this file, that is exactly the duplication the shared helper avoids):
 
 ```ts
-const { dragEndRef } = vi.hoisted(() => ({
-  dragEndRef: { current: null as null | ((e: unknown) => void) },
-}));
+import { dragEndRef } from './testUtils/dndKitTestMocks';
+```
 
-vi.mock('@dnd-kit/core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@dnd-kit/core')>();
-  return {
-    ...actual,
-    DndContext: ({
-      children,
-      onDragEnd,
-    }: {
-      children: React.ReactNode;
-      onDragEnd: (e: unknown) => void;
-    }) => {
-      dragEndRef.current = onDragEnd;
-      return children;
-    },
-  };
-});
+Add two small local helpers (these stay local — they wrap `dragEndRef` for this file's specific tests, not shared mocking logic):
 
-vi.mock('@dnd-kit/sortable', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@dnd-kit/sortable')>();
-  return {
-    ...actual,
-    useSortable: () => ({
-      attributes: {},
-      listeners: {},
-      setNodeRef: () => {},
-      transform: null,
-      transition: undefined,
-    }),
-    SortableContext: ({ children }: { children: React.ReactNode }) => children,
-  };
-});
-
+```ts
 function fireMediaDragEnd(activeId: string, overId: string) {
   dragEndRef.current?.({ active: { id: activeId }, over: { id: overId } });
 }
