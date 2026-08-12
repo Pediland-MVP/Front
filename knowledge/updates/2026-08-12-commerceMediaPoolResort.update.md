@@ -14,7 +14,7 @@ never called from the frontend.
 ## Solution
 
 Drag-and-drop added to the media pool grid using `@dnd-kit` (already a dependency, already used
-the same way in `components/Products/FormCustomFields.tsx` + `SortableFieldItem.tsx`). No backend
+the same way in `apps/dashboard/src/components/Commerce/Taxonomy/CategoryTree.tsx`). No backend
 change — the existing `MediaService.reorderMedia` is reused as-is.
 
 ## Changes

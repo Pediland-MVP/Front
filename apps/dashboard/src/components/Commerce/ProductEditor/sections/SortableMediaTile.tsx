@@ -10,8 +10,8 @@ import type { EditorMedia } from '../productEditor.schema';
 
 /**
  * One tile in the media pool, now sortable. Split out of `MediaSection.tsx` for the same reason
- * `SortableFieldItem.tsx` is split out of `FormCustomFields.tsx`: `useSortable` must be called
- * once per draggable item, inside that item, not in the parent that maps over all of them.
+ * `CategoryTree.tsx` splits its sortable item into a separate component: `useSortable` must be
+ * called once per draggable item, inside that item, not in the parent that maps over all of them.
  *
  * The drag handle is a SEPARATE element from the existing ✕ remove button — spreading
  * `{...attributes} {...listeners}` on the whole tile would make it fight the remove button for
