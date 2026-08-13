@@ -42,11 +42,16 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
 
   return (
     <Card
-      className={cn('gap-0 border-violet-200 p-0 shadow-violet-200', !item.enabled && 'opacity-60')}
+      className={cn(
+        'h-full gap-0 border-violet-200 p-0 shadow-violet-200',
+        !item.enabled && 'opacity-60',
+      )}
     >
-      <CardContent className="p-2">
-        <div className="flex">
-          <div className="flex-1 space-y-3 p-2 text-sm">
+      {/* flex-1 makes the content area absorb the extra height of the grid row, so the
+          footer always sits on the card's bottom edge no matter how tall the content is. */}
+      <CardContent className="flex-1 p-2">
+        <div className="flex h-full">
+          <div className="min-w-0 flex-1 space-y-3 p-2 text-sm">
             {(item.title || !item.enabled) && (
               <div className="flex items-center gap-2">
                 {item.title && <div className="text-sm font-semibold">{item.title}</div>}
@@ -61,9 +66,11 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
               </div>
             )}
             {hasMultipleInstagramAccounts && (
-              <div className="flex items-center gap-1 text-[12px] text-gray-400">
-                <InstagramLogoIcon size={13} />
-                <span>
+              <div className="flex min-w-0 items-center gap-1 text-[12px] text-gray-400">
+                <InstagramLogoIcon size={13} className="shrink-0" />
+                {/* truncate keeps this to a single line, so a long account list can't
+                    make the card taller than its neighbours. */}
+                <span className="truncate">
                   {usernames.length > 0
                     ? usernames.map((u) => `@${u}`).join(', ')
                     : t('no_instagram_assigned')}
@@ -75,7 +82,9 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
                 <CrosshairIcon size={18} weight="duotone" />
                 {t('conditions')}
               </div>
-              <div className="line-clamp-1 space-x-1.5">
+              {/* min-h-6 = one badge row, so an automation with no conditions keeps the
+                  same height as one with badges. */}
+              <div className="line-clamp-1 min-h-6 space-x-1.5">
                 {item.conditions.map((condition) => (
                   <Badge
                     variant="outline"
@@ -118,7 +127,7 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
           </div>
 
           {item.instagramPost && (
-            <div className="relative h-auto w-20">
+            <div className="relative w-20 shrink-0">
               <CardImage src={item.instagramPost?.picture?.url} />
             </div>
           )}
