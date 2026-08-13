@@ -3,6 +3,7 @@
 
 import api, { fetcher } from '@/hooks/swr/api-client';
 import { useAuth } from '@/hooks/use-auth';
+import { useTranslations } from 'next-intl';
 import { useKams } from '@/hooks/use-kams';
 import dayjs from '@/lib/dayjs-jalali';
 
@@ -98,6 +99,7 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
   const [subsPage, setSubsPage] = useState(1);
 
   const { user } = useAuth();
+  const t = useTranslations('Users');
   const { id } = use(params);
   const router = useRouter();
 
@@ -428,6 +430,18 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
               </div>
             </form>
           </Form>
+        </div>
+
+        {/* Acquisition channel — read-only. Collected once by the dashboard's
+            business-info dialog on automation create, and absent from /settings/profile,
+            so it stays null for users who have not created an automation since it shipped. */}
+        <div className="space-y-3 rounded-2xl border border-slate-100/50 bg-slate-50/80 p-4">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-slate-500">{t('howFoundUs_label')}</span>
+            <span className="text-right font-semibold text-slate-800">
+              {customer?.howFoundUs ? t(`options.${customer.howFoundUs}`) : t('howFoundUs_none')}
+            </span>
+          </div>
         </div>
 
         {/* Subscription Plan Card */}

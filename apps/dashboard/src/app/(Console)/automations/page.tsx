@@ -3,7 +3,6 @@
 import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { AutomationsCardList } from '@/components/Automations/AutomationsCardList';
 import { LayoutCard } from '@/components/Layout/LayoutCard';
@@ -12,13 +11,13 @@ import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { SearchToggleButton } from '@/components/ui-custom/SearchToggleButton';
 import { CircleFadingPlusIcon } from 'lucide-react';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useBusinessInfoGate } from '@/hooks/useBusinessInfoGate';
 
 export default function Page() {
   const t = useTranslations('Automations');
   const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false);
   const [search, setSearch] = useState<string>('');
   const [effectiveSearch, setEffectiveSearch] = useState<string>('');
-  const router = useRouter();
 
   const setTools = useHeaderFeatures((s) => s.setTools);
   const clearTools = useHeaderFeatures((s) => s.clearTools);
@@ -27,9 +26,10 @@ export default function Page() {
   const error = useHeaderFeatures((s) => s.error);
 
   const { can } = usePermissions();
+  const { startAutomationCreate } = useBusinessInfoGate();
 
   const handleCreateAutomationClick = () => {
-    router.push('/automations/add');
+    startAutomationCreate('/automations/add');
   };
 
   const HeaderButton = useMemo(() => {

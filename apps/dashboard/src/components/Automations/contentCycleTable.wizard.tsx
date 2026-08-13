@@ -1,12 +1,16 @@
+'use client';
+
 import { VideoComp } from '@/components/Global/VideoComp';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { Plus } from '@phosphor-icons/react/dist/ssr/Plus';
 import Link from 'next/link';
 import { WizardVideoLinks } from './wizardVideoLinks.conf';
+import { useBusinessInfoGate } from '@/hooks/useBusinessInfoGate';
 
 export function ContnetCycleTableWizard() {
   const t = useTranslations('Automations.TableWizard');
+  const { needsBusinessInfo, startAutomationCreate } = useBusinessInfoGate();
 
   return (
     <div className="flex w-full flex-col items-center justify-start">
@@ -25,7 +29,14 @@ export function ContnetCycleTableWizard() {
           src={WizardVideoLinks.Automations.table.video}
           shape="vertical"
         />
-        <Link href={'/automations/add'}>
+        <Link
+          href={'/automations/add'}
+          onClick={(e) => {
+            if (!needsBusinessInfo) return;
+            e.preventDefault();
+            startAutomationCreate('/automations/add');
+          }}
+        >
           <Button variant={'iconed'} className="w-[260px]">
             <Plus />
             {t('Cta.title')}

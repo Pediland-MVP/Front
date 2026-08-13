@@ -19,7 +19,13 @@ This document maps dashboard frontend pages/components to the backend (`core`) A
 
 | Frontend | Backend Endpoint | Notes |
 |---|---|---|
-| `apps/dashboard/src/hooks/swr/useMe.ts` | `GET /users/me` | Returns the authenticated user profile. **As of per-page subscription binding**, the `instagrams` array inside the response (same as `/instagram/accounts`) now carries `isPromotion: boolean` per page. |
+| `apps/dashboard/src/hooks/swr/useMe.ts` | `GET /users/me` | Returns the authenticated user profile. **As of per-page subscription binding**, the `instagrams` array inside the response (same as `/instagram/accounts`) now carries `isPromotion: boolean` per page. **As of 2026-08-13** it also carries `howFoundUs: string \| null` — `me()` spreads the whole user row, so the column shipped with no backend change. |
+| `apps/dashboard/src/components/Console/BusinessInfoDialog.tsx` | `POST /users` | Body gained an optional `howFoundUs` (enum `google` \| `telegram` \| `instagram` \| `friend` \| `event` \| `sms` \| `other`). This dialog is the **only** writer — the field is deliberately absent from `/settings/profile`, so `ProfileForm` never sends it. Adding an unknown value is a 400. |
+
+> [!IMPORTANT]
+> `GET /users/me` is keyed **twice** in SWR: `useUser` uses `'/users/me'`, `ProfileForm`
+> uses `` `${API_URL}/users/me` ``. Anything that mutates the user must revalidate both, or
+> one half of the app keeps reading stale data.
 
 ---
 
@@ -78,6 +84,16 @@ timeline. It is used in two places: the `/tasks` drawer
 |---|---|---|
 | `apps/admin/src/components/tasks/task-management-panel.tsx` | `POST /actions/status/:id` | Marking a task **done** now opens a confirm dialog first; body is `{ status: 'done', doneNote? }` — `doneNote` (free text, optional) is only sent when the admin typed one. Un-marking a task (back to `todo`) still sends only `{ status: 'todo' }` — the backend keeps the existing `doneDate`/`doneByAdmin`/`doneNote` on reopen instead of clearing them. |
 | `apps/admin/src/components/tasks/task-management-panel.tsx` | `GET /actions/user/:userId?limit=30&page=1` | Each `Action` item now carries `createdByAdmin` (who created the task, may differ from the assignee `admin`), `doneByAdmin` (who marked it done), `doneNote`, and `doneDate` (see `apps/admin/src/types/actions.ts`). The backend now orders the list `createDate DESC` (newest-created first); the frontend still re-sorts client-side by `createDate` as a safety net. The panel renders "Created by" (`createdByAdmin` falling back to `admin`) for every task, and for done tasks also renders Done date, Done by, and Done note (only when each field is present). |
+
+---
+
+## Admin — Users list, detail & excel export
+
+| Frontend | Backend Endpoint | Notes |
+|---|---|---|
+| `apps/admin/src/app/(main)/users/client-page.tsx` | `GET /users?howFoundUs=a,b` | **Added 2026-08-13.** Optional comma-separated acquisition-channel filter, built from `FilterHowFoundUs` in `customer-table.tsx`. Values are the `HOW_FOUND_US` enum; an unknown item is a **400**, not a silent drop. Composes with the existing `categoryIds` / `adminIds` filters — a KAM stays scoped to their own users. |
+| `apps/admin/src/app/(main)/users/customer-table.tsx` | `POST /users/excelExport` | Body gained an optional `howFoundUs: string[]` (a real JSON array here, not a comma string — it is a POST body). Only sent when the table filter is non-empty. The generated sheet has a `چطور با ما آشنا شد` column, `ندارد` when null. |
+| `apps/admin/src/app/(main)/users/[id]/page.tsx` | `GET /users/:id` | Response gained `howFoundUs: string \| null`, rendered read-only in the profile sidebar. No backend filter change was needed — `readUser` runs the same pro stats query, so it picked up the new select column for free. |
 
 ---
 

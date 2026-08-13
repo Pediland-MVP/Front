@@ -30,6 +30,7 @@ export default function CustomersPageClient() {
   const [customersStatus, setCustomersStatus] = useState('');
   const [customerAdmins, setCustomerAdmins] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
+  const [howFoundUs, setHowFoundUs] = useState<string[]>([]);
   const [actionDate, setActionDate] = useState<Date | null>(null);
   const [isIgTokenValid, setIsIgTokenValid] = useState('');
   const [labelId, setLabelId] = useState<string | undefined>(undefined);
@@ -56,6 +57,7 @@ export default function CustomersPageClient() {
   const actionDateQuery = actionDate ? `&actionDate=${fakeUTCISOString(actionDate)}` : '';
 
   const categoryQuery = categories.length > 0 ? `&categoryIds=${categories.join(',')}` : '';
+  const howFoundUsQuery = howFoundUs.length > 0 ? `&howFoundUs=${howFoundUs.join(',')}` : '';
   const igTokenQuery = isIgTokenValid ? `&isIgTokenValid=${isIgTokenValid}` : '';
   const labelIdQuery = labelId ? `&labelId=${labelId}` : '';
   const deleteFlaggedQuery = isAdmin && showDeleteFlagged ? `&showDeleteFlagged=true` : '';
@@ -69,7 +71,7 @@ export default function CustomersPageClient() {
     error: customersError,
     mutate: mutateCustomers,
   } = useSWR(
-    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${actionDateQuery}${igTokenQuery}${labelIdQuery}${deleteFlaggedQuery}${sortQuery}&panelMode=${panelMode}`,
+    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${howFoundUsQuery}${actionDateQuery}${igTokenQuery}${labelIdQuery}${deleteFlaggedQuery}${sortQuery}&panelMode=${panelMode}`,
     fetcher,
     { keepPreviousData: true },
   );
@@ -135,6 +137,8 @@ export default function CustomersPageClient() {
         onAdminChange={setCustomerAdmins}
         categories={categories}
         onCategoryChange={setCategories}
+        howFoundUs={howFoundUs}
+        onHowFoundUsChange={setHowFoundUs}
         actionDate={actionDate}
         onActionDateChange={setActionDate}
         isIgTokenValid={isIgTokenValid}

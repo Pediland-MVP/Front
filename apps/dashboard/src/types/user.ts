@@ -1,4 +1,5 @@
 import { GENDERS_ENUM } from '@/constants/gender.constant';
+import { HOW_FOUND_US_ENUM } from '@/constants/howFoundUs.constant';
 import { ProvinceNamespace } from './province';
 
 export namespace UserNamespace {
@@ -21,6 +22,8 @@ export interface IUser {
     firstname: string;
     gender: GENDERS_ENUM;
     havePassword: boolean;
+    // Null until the business-info dialog is answered; it is the only writer.
+    howFoundUs: HOW_FOUND_US_ENUM | null;
     id: string;
     instagrams: Instagram[];
     isDeleteFlages: boolean;

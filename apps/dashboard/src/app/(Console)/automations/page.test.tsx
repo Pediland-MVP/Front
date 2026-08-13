@@ -14,6 +14,13 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push }),
 }));
 
+// Creating an automation now goes through the business-info gate rather than navigating
+// directly, so the page must never call router.push itself.
+const startAutomationCreate = vi.fn();
+vi.mock('@/hooks/useBusinessInfoGate', () => ({
+  useBusinessInfoGate: () => ({ needsBusinessInfo: false, startAutomationCreate }),
+}));
+
 import messages from '@/messages/fa.json';
 import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
 import Page from './page';
@@ -38,12 +45,21 @@ beforeEach(() => {
 });
 
 describe('Automations list page', () => {
-  it('navigates straight to /automations/add when "add automation" is clicked', async () => {
+  it('asks the business-info gate when "add automation" is clicked', async () => {
     renderPage();
     await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
 
     fireEvent.click(screen.getByText(messages.Automations.add));
 
-    expect(push).toHaveBeenCalledWith('/automations/add');
+    expect(startAutomationCreate).toHaveBeenCalledWith('/automations/add');
+  });
+
+  it('does not navigate directly, so the gate can never be bypassed here', async () => {
+    renderPage();
+    await waitFor(() => expect(screen.getByText(messages.Automations.add)).toBeInTheDocument());
+
+    fireEvent.click(screen.getByText(messages.Automations.add));
+
+    expect(push).not.toHaveBeenCalled();
   });
 });

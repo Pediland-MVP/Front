@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Link, { useLinkStatus } from 'next/link';
 import useSWRImmutable from 'swr/immutable';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useBusinessInfoGate } from '@/hooks/useBusinessInfoGate';
 import useUser from '@/hooks/useUser';
 // TODO: Should Refactor
 import { OverallStats } from '@/types/stats';
@@ -64,6 +65,7 @@ export const DashboardStats = () => {
 
   const canViewAnalytics = can('analytics:view');
   const canCreateAutomation = can('automation:create');
+  const { needsBusinessInfo, startAutomationCreate } = useBusinessInfoGate();
 
   const statsKey = canViewAnalytics
     ? `${API_URL}/stats/overall${isAccountView ? `?instagramId=${selectedIg}` : ''}`
@@ -150,7 +152,14 @@ export const DashboardStats = () => {
 
       <div className="grid grid-cols-3 gap-2 md:grid-cols-6 md:gap-3">
         {canCreateAutomation && (
-          <Link href="/automations/add">
+          <Link
+            href="/automations/add"
+            onClick={(e) => {
+              if (!needsBusinessInfo) return;
+              e.preventDefault();
+              startAutomationCreate('/automations/add');
+            }}
+          >
             <CardSimple className="group h-full border-blue-200 bg-blue-50/50 duration-300">
               <CardContent className="flex flex-1 flex-col items-center justify-center gap-1 p-3 pb-2 md:py-4">
                 <AddAutomationIcon />
