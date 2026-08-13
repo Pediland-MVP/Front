@@ -7,6 +7,7 @@ import { AssignedLabel } from './label';
 export type Customer = {
   id: string;
   gender: string | null;
+  howFoundUs: string | null;
   firstname: string;
   lastname: string;
   mobile?: string | null;

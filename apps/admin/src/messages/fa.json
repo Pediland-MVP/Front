@@ -1498,5 +1498,20 @@
       "userStatus_update": "محاسبهٔ مجدد وضعیت فعال/غیرفعال کاربران",
       "metrics_reconcile": "تطبیق هفتگی متریک‌ها"
     }
+  },
+  "Users": {
+    "howFoundUs_filter": "آشنایی با بفروش",
+    "howFoundUs_label": "چطور با بفروش آشنا شد؟",
+    "howFoundUs_empty": "موردی یافت نشد.",
+    "howFoundUs_none": "ندارد",
+    "options": {
+      "google": "گوگل",
+      "telegram": "تلگرام",
+      "instagram": "اینستاگرام",
+      "friend": "معرفی دوستان",
+      "event": "نمایشگاه، سمینار یا رویداد",
+      "sms": "پیامک",
+      "other": "سایر"
+    }
   }
 }

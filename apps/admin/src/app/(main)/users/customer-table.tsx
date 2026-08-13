@@ -20,6 +20,7 @@ import { SortingState, Table } from '@tanstack/react-table';
 import { columns } from './columns';
 import { FilterAdmin } from '@/components/table/filter-admin';
 import { FilterCategory } from '@/components/table/filter-category';
+import { FilterHowFoundUs } from '@/components/table/filter-how-found-us';
 import { DatePicker } from '@/components/ui/date-picker';
 import { ExportDialog } from '@/components/table/dialog-export';
 import { FilterIgToken } from '@/components/table/filter-ig-token';
@@ -52,6 +53,8 @@ export default function CustomerTable({
   panelMode,
   categories,
   onCategoryChange,
+  howFoundUs,
+  onHowFoundUsChange,
   actionDate,
   onActionDateChange,
   isIgTokenValid,
@@ -83,6 +86,8 @@ export default function CustomerTable({
   setPanelMode: (mode: PanelModeType) => void;
   categories: string[];
   onCategoryChange: (categories: string[]) => void;
+  howFoundUs: string[];
+  onHowFoundUsChange: (howFoundUs: string[]) => void;
   actionDate: Date | null;
   onActionDateChange: (date: Date | null) => void;
   isIgTokenValid: string;
@@ -120,6 +125,10 @@ export default function CustomerTable({
         endDate: data.endDate.toISOString(),
         email: data.email,
         count: data.count,
+        // Carry the table's current selection so the export matches what the admin is
+        // looking at. Spread conditionally — an empty array would be a no-op filter
+        // server-side anyway, but it would still be stored in the export-log options.
+        ...(howFoundUs.length > 0 && { howFoundUs }),
       });
 
       if (response.data) {
@@ -185,6 +194,7 @@ export default function CustomerTable({
             />
 
             <FilterCategory size="sm" value={categories} onChange={onCategoryChange} />
+            <FilterHowFoundUs size="sm" value={howFoundUs} onChange={onHowFoundUsChange} />
 
             <FilterIgToken size="sm" value={isIgTokenValid} onChange={onIgTokenValidChange} />
 
