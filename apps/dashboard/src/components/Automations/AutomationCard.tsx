@@ -15,6 +15,7 @@ import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
 import { CircleXIcon, CopyIcon, MessageSquareMoreIcon, PencilIcon } from 'lucide-react';
 import { CardImage } from '../Global/CardImage';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useBusinessInfoGate } from '@/hooks/useBusinessInfoGate';
 import { fetcher } from '@/hooks/swr/api-client';
 import { IResponseMessage } from '@/types/responseMessage';
 import { InstagramNamespace } from '@/types/instagram';
@@ -28,6 +29,7 @@ interface AutomationCardProps {
 
 const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) => {
   const router = useRouter();
+  const { startAutomationCreate } = useBusinessInfoGate();
   const t = useTranslations('Automations.Card');
   const specifiedPost = item.instagramPost?.picture?.url;
   const { can } = usePermissions();
@@ -164,7 +166,7 @@ const AutomationCardComponent = ({ item, handleDelete }: AutomationCardProps) =>
             variant="ghost"
             type="button"
             size="sm"
-            onClick={() => router.push(`/automations/add?copyFrom=${item.id}`)}
+            onClick={() => startAutomationCreate(`/automations/add?copyFrom=${item.id}`)}
           >
             <CopyIcon className="text-blue-600" />
             {t('copy')}

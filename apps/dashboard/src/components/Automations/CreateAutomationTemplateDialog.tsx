@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import useSWR from 'swr';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useBusinessInfoGate } from '@/hooks/useBusinessInfoGate';
 import { fetcher } from '@/hooks/swr/api-client';
 import { Button } from '@/components/ui/button';
 import { TemplatePicker, type TemplateSummary } from '@/automation-builder';
@@ -25,7 +25,7 @@ export function CreateAutomationTemplateDialog({
   onOpenChange,
 }: CreateAutomationTemplateDialogProps) {
   const t = useTranslations('Automations.TemplatePicker');
-  const router = useRouter();
+  const { startAutomationCreate } = useBusinessInfoGate();
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 400);
 
@@ -42,12 +42,16 @@ export function CreateAutomationTemplateDialog({
       isLoading={isLoading}
       search={search}
       onSearchChange={setSearch}
-      onSelect={(template) => router.push(`/automations/add?templateId=${template.id}`)}
+      onSelect={(template) => startAutomationCreate(`/automations/add?templateId=${template.id}`)}
       searchPlaceholder={t('searchPlaceholder')}
       emptyLabel={t('empty')}
       footerSlot={
         <div className="mt-2 flex justify-center">
-          <Button variant="ghost" type="button" onClick={() => router.push('/automations/add')}>
+          <Button
+            variant="ghost"
+            type="button"
+            onClick={() => startAutomationCreate('/automations/add')}
+          >
             {t('startFromScratch')}
           </Button>
         </div>

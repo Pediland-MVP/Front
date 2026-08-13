@@ -15,6 +15,7 @@ import { ShoppingBagIcon } from '@phosphor-icons/react/dist/csr/ShoppingBag';
 import type { Icon, IconProps } from '@phosphor-icons/react/dist/lib/types';
 import { WorkspaceDrawer } from '../Console/WorkspaceDrawer';
 import { useInvitations } from '@/hooks/useInvitations';
+import { useBusinessInfoGate } from '@/hooks/useBusinessInfoGate';
 
 // Interface kept for reference or external use if needed, but internal logic uses a specific shape
 export interface NavItem {
@@ -46,32 +47,40 @@ export const NavBottom = () => {
   const t = useTranslations('NavBottom');
 
   const { pendingCount } = useInvitations();
+  const { needsBusinessInfo, startAutomationCreate } = useBusinessInfoGate();
 
   // Defined navigation items array
+  // `gated` marks the entries that must pass the business-info gate before navigating.
+  // Spelled out on every item (not just the gated one) so the inferred element type stays
+  // uniform and `item.gated` is always safe to read.
   const navItems = [
     {
       href: '/',
       icon: HouseIcon,
       labelKey: 'home',
       isActive: (path: string) => path === '/',
+      gated: false,
     },
     {
       href: '/automations',
       icon: LightningIcon,
       labelKey: 'list',
       isActive: (path: string) => path === '/automations',
+      gated: false,
     },
     {
       href: '/automations/add',
       icon: PlusCircleIcon,
       labelKey: 'add',
       isActive: (path: string) => path.startsWith('/automations/add'),
+      gated: true,
     },
     {
       href: '/orders',
       icon: ShoppingBagIcon,
       labelKey: 'orders',
       isActive: (path: string) => path === '/orders',
+      gated: false,
     },
     {
       isProfile: true,
@@ -110,6 +119,11 @@ export const NavBottom = () => {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(e) => {
+                if (!item.gated || !needsBusinessInfo) return;
+                e.preventDefault();
+                startAutomationCreate(item.href);
+              }}
               className="flex flex-col items-center justify-center"
             >
               <NavItemIcon
