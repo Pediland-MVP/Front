@@ -315,7 +315,9 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-h-[90vh] overflow-hidden overflow-y-auto rounded-2xl border border-slate-100 bg-white p-0 text-right shadow-2xl sm:max-w-3xl">
+          {/* `dvh`, not `vh`: on a phone `vh` measures the *large* viewport, so a 90vh
+              dialog still overflowed the screen whenever the URL bar was showing. */}
+          <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-2xl border border-slate-100 bg-white p-0 text-right shadow-2xl sm:max-w-3xl">
             {/* Header Section */}
             <div className="via-violet-750 relative overflow-hidden bg-gradient-to-r from-violet-600 to-indigo-700 px-6 py-8 text-white">
               {/* Subtle decorative glow */}

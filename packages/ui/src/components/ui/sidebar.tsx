@@ -304,8 +304,15 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
         // up taller than the screen — parking its scrollbar below the fold.
         // Mobile scrolls here instead of on `body`, so pages without their own scroll
         // container still reach all their content rather than being clipped.
-        'relative flex max-h-svh max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-x-hidden overflow-y-auto md:max-h-screen md:overflow-hidden md:border',
-        'pb-14 md:pb-0 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0',
+        //
+        // The mobile cap subtracts NavBottom's `h-14`, and that subtraction — not a
+        // `pb-14` — is what keeps content clear of the fixed bottom nav. Padding cannot
+        // do that job here: it sits *inside* this `overflow-y-auto` box, so it never
+        // shrinks a height-filling child, and when the overflow comes from an
+        // `overflow:visible` descendant Blink leaves it out of `scrollHeight` too. The
+        // result was a bottom strip of every page that no amount of scrolling reached.
+        'relative flex max-h-[calc(100svh-3.5rem)] max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-x-hidden overflow-y-auto md:max-h-screen md:overflow-hidden md:border',
+        'md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0',
         className,
       )}
       {...props}
