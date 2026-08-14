@@ -13,6 +13,7 @@ import {
   AutomationBuilder,
   AutomationContentTypesEnum,
   ButtonTypeEnum,
+  isCommentStartMessageRequired,
   type AutomationBuilderFormHelpers,
   type AutomationFormType,
 } from '@/automation-builder';
@@ -448,8 +449,6 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   ): Promise<boolean> => {
     let haveError = false;
 
-    const firstType = values.contents[0]?.type;
-
     // TotalDelays should be under 23 hours
     let totalDelaysMs = 0;
     values.contents.forEach((c) => {
@@ -463,12 +462,16 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
       haveError = true;
     }
 
-    if (
-      values.isComment &&
-      (firstType === AutomationContentTypesEnum.PRODUCT || values.contents.length > 1) &&
-      !values.justFollowers &&
-      !values.commentStartText
-    ) {
+    // `isCommentStartMessageRequired` is the shared predicate `StartAutomationMessage`
+    // itself uses to decide whether to render this field at all — asking it here is what
+    // keeps the guard from demanding a value for an automation that never sends the
+    // start-request message. This condition used to be inlined and drifted from the
+    // field's own: for a self-gating content[0] (a QUESTION, or a TEXT with quick
+    // replies) the backend skips the start message entirely (`firstContentSelfGates` in
+    // `handleComment`), so the field hides itself and clears `commentStartText` to '' —
+    // while this guard still rejected the empty value, leaving the user with a toast
+    // about a field that wasn't on screen and no way to submit. BEF-162.
+    if (isCommentStartMessageRequired(values) && !values.commentStartText) {
       // Restores the pre-refactor `AutomationForm`'s own inline `onSubmit` behavior: highlight
       // + scroll to the field, not just a toast, since this is a cross-field business rule
       // that `AutomationFormSchema` itself doesn't (and can't cheaply) express.
