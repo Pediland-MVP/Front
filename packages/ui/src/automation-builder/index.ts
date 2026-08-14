@@ -7,3 +7,4 @@ export * from './AutomationBuilder';
 export * from './AutomationBuilder.types';
 export * from './TemplatePicker/TemplatePicker';
 export * from './utils/useI18nZodErrors';
+export * from './utils/commentStart';
