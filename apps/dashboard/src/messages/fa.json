@@ -1974,8 +1974,6 @@
     "PRODUCT_NOT_FOUND": "محصول یافت نشد",
     "PRODUCT_OUT_OF_STOCK": "محصول موجود نیست",
     "ORDER_NOT_FOUND": "سفارش یافت نشد",
-    "EXCEL_EXPORT_WORKSPACE_REQUIRED": "برای گرفتن خروجی اکسل، فضای کاری مشخص نیست. دوباره تلاش کنید",
-    "WORKSPACE_ID_REQUIRED": "فضای کاری این فروشگاه مشخص نیست. با پشتیبانی تماس بگیرید",
     "ORDER_EXPIRED": "سفارش منقضی شده است",
     "ORDER_SHOP_IS_NOT_VALID": "فروشگاه نامعتبر است",
     "ORDER_INVALID": "سفارش نامعتبر است",
@@ -1985,6 +1983,8 @@
     "NO_INSTAGRAM": "لطفا اکانت اینستاگرام  خود را متصل کنید"
   },
   "ERROR_CODES": {
+    "EXCEL_EXPORT_WORKSPACE_REQUIRED": "برای گرفتن خروجی اکسل، فضای کاری مشخص نیست. دوباره تلاش کنید",
+    "WORKSPACE_ID_REQUIRED": "فضای کاری این فروشگاه مشخص نیست. با پشتیبانی تماس بگیرید",
     "POST_SCOPED_AUTOMATION_REQUIRES_SINGLE_INSTAGRAM": "این اتوماسیون به یک پست خاص متصل است و فقط می‌تواند یک پیج داشته باشد",
     "UPLOAD_SOURCE_IS_NOT_AN_IMAGE": "آدرس داده‌شده عکس نبود. لطفا دوباره تلاش کنید",
     "SECOND_INSTAGRAM_REQUIRES_SUBSCRIPTION": "برای اتصال اکانت اینستاگرام دوم به این فضای کاری، ابتدا باید یک اشتراک متناسب بخرید"
