@@ -1974,6 +1974,8 @@
     "PRODUCT_NOT_FOUND": "محصول یافت نشد",
     "PRODUCT_OUT_OF_STOCK": "محصول موجود نیست",
     "ORDER_NOT_FOUND": "سفارش یافت نشد",
+    "EXCEL_EXPORT_WORKSPACE_REQUIRED": "برای گرفتن خروجی اکسل، فضای کاری مشخص نیست. دوباره تلاش کنید",
+    "WORKSPACE_ID_REQUIRED": "فضای کاری این فروشگاه مشخص نیست. با پشتیبانی تماس بگیرید",
     "ORDER_EXPIRED": "سفارش منقضی شده است",
     "ORDER_SHOP_IS_NOT_VALID": "فروشگاه نامعتبر است",
     "ORDER_INVALID": "سفارش نامعتبر است",
