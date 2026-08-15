@@ -97,9 +97,24 @@ timeline. It is used in two places: the `/tasks` drawer
 
 ---
 
+## Shop checkout & Vitrin
+
+| Frontend | Backend Endpoint | Notes |
+|---|---|---|
+| `apps/dashboard/src/components/Shop/CheckoutPage.tsx` (SWR `${API_URL}/shops/${shopId}`) | `GET /shops/:shopId` | **Payload change 2026-08-15.** Payment details moved `shop.user.paymentDetail` → `shop.workspace.paymentDetail` as part of the user → workspace refactor. `IShop` in `types/shops/shop.ts` and the 8 read sites in `CheckoutPage.tsx` / `order/components/payment.tsx` were updated to match. |
+| `apps/dashboard/src/app/(Console)/products/[id]/product.tsx`, `apps/dashboard/src/components/Products/ProductForm.tsx` | `GET/POST/PUT /vitrin[/:id]` | These routes were accidentally removed on Back `workspace-refactor` (the controller class was committed empty) and 404'd. Restored on Back `fix/shop-workspace-scoping`, now gated by `PRODUCT_CREATE` / `PRODUCT_EDIT` / `PRODUCT_DELETE`. No frontend change needed. |
+| `apps/dashboard/src/app/(Console)/orders/page.tsx` | `GET /orders`, `POST /orders/:id/updateStatus`, `POST /orders/excelExport` | Now scoped by workspace instead of the requesting user, so teammates see the same orders. New error code `EXCEL_EXPORT_WORKSPACE_REQUIRED` added to `fa.json`. |
+
+---
+
 ## Deploy Coupling
 
 The `isPromotion` field on Instagram accounts and the `instagramId` field on `POST /subscriptions/subscribe` require coordinated deployment: **Back and Front MUST ship together — deploying only the Back is NOT safe.**
 
 - **Front-only deploy (old Back):** `isPromotion` is `undefined` in the API response, treated as `false` — no alert is shown. Safe.
 - **Back-only deploy (old Front):** The backend has **dropped the `Instagram.isPromotion` column**. The currently-deployed (old) Front still reads this column, which will break. **Do NOT deploy the Back without also deploying this Front.**
+
+The `GET /shops/:shopId` payment-detail move (`shop.user` → `shop.workspace`, 2026-08-15) is coupled the same way: **Back and Front MUST ship together.**
+
+- **Front-only deploy (old Back):** the old Back still returns `user`, so `shop.workspace` is `undefined` and the checkout shows no payment methods.
+- **Back-only deploy (old Front):** the old Front reads `shop.user`, which the new Back no longer returns — same result.

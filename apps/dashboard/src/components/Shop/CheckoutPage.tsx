@@ -210,11 +210,11 @@ export const CheckoutPage = ({ token, shopId, productId }: CheckoutProps) => {
 
   useEffect(() => {
     if (shop) {
-      if (shop.user.paymentDetail?.zarinpal && !shop.user.paymentDetail?.cardToCard) {
+      if (shop.workspace.paymentDetail?.zarinpal && !shop.workspace.paymentDetail?.cardToCard) {
         setPaymentMethod(ORDER_PAYMENT_METHODS.ZARINPAL);
         return;
       }
-      if (!shop.user.paymentDetail?.zarinpal && shop.user.paymentDetail?.cardToCard) {
+      if (!shop.workspace.paymentDetail?.zarinpal && shop.workspace.paymentDetail?.cardToCard) {
         setPaymentMethod(ORDER_PAYMENT_METHODS.CARD_TO_CARD);
         return;
       }

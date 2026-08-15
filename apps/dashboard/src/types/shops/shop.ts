@@ -4,7 +4,7 @@ export interface IShop {
   firstname: null;
   lastname: null;
   profilePicture: ProfilePicture;
-  user: User;
+  workspace: Workspace;
 }
 
 interface ProfilePicture {
@@ -12,7 +12,7 @@ interface ProfilePicture {
   url: string;
 }
 
-interface User {
+interface Workspace {
   id: string;
   paymentDetail: PaymentDetail;
 }

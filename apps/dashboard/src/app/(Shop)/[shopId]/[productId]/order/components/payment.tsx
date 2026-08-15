@@ -23,7 +23,7 @@ export default function PaymentDetails() {
   const t = useTranslations('Checkout');
   const { shop, product, orderQuantity, pendingOrder, setStep, setPaymentMethod, paymentMethod } =
     useCheckout();
-  const cardToCard = shop?.user.paymentDetail.cardToCard;
+  const cardToCard = shop?.workspace?.paymentDetail.cardToCard;
   const { copyToClipboard } = useCopyToClipboard();
 
   const { prevStep, nextStep } = useCheckoutStep();
@@ -78,12 +78,12 @@ export default function PaymentDetails() {
           dir="rtl"
           className="flex flex-col items-start gap-4"
         >
-          {!!shop?.user?.paymentDetail.zarinpal && (
+          {!!shop?.workspace?.paymentDetail.zarinpal && (
             <div className="flex items-center gap-2">
               <RadioGroupItem
                 value={ORDER_PAYMENT_METHODS.ZARINPAL}
                 id="r1"
-                disabled={!shop?.user?.paymentDetail?.zarinpal}
+                disabled={!shop?.workspace?.paymentDetail?.zarinpal}
               />
               <Label htmlFor="r1" className={`text-black`}>
                 پرداخت اینترنتی
@@ -91,16 +91,16 @@ export default function PaymentDetails() {
             </div>
           )}
 
-          {!!shop?.user.paymentDetail.cardToCard && (
+          {!!shop?.workspace?.paymentDetail.cardToCard && (
             <div className="flex items-center gap-2">
               <RadioGroupItem
                 value={ORDER_PAYMENT_METHODS.CARD_TO_CARD}
                 id="r2"
-                disabled={!shop?.user?.paymentDetail?.cardToCard}
+                disabled={!shop?.workspace?.paymentDetail?.cardToCard}
               />
               <Label
                 htmlFor="r2"
-                className={`text-base ${!shop?.user?.paymentDetail?.cardToCard && 'text-black/30'}`}
+                className={`text-base ${!shop?.workspace?.paymentDetail?.cardToCard && 'text-black/30'}`}
               >
                 کارت به کارت
               </Label>
