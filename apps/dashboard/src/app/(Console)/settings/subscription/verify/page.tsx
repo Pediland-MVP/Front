@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { mutate } from 'swr';
 import { CheckCircleIcon } from '@phosphor-icons/react/dist/csr/CheckCircle';
 import { XCircleIcon } from '@phosphor-icons/react/dist/csr/XCircle';
@@ -28,6 +28,11 @@ function VerifyContent() {
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState<ExceptionMessage | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(REDIRECT_DELAY_SEC);
+  // Verify must fire exactly once per callback. `useSearchParams()` can hand
+  // back a new object identity on re-render, and React StrictMode invokes
+  // effects twice in dev — either one sends a second verify request for the
+  // same payment.
+  const hasFetched = useRef(false);
 
   useEffect(() => {
     mutate(mutateIncludeStringKey('plans'));
@@ -48,6 +53,9 @@ function VerifyContent() {
       setIsLoading(false);
       return;
     }
+
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
     api
       .get(`/payments/subscription/${gatewayType}/verify?${searchParams.toString()}`)
