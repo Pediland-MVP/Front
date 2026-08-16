@@ -78,7 +78,7 @@ export default function ProductDetails() {
     <div className="_product-details flex flex-col items-center md:flex-row md:gap-5">
       <div className="_image relative aspect-square h-full w-full">
         <Image
-          src={product.images?.[0].url || '/placeholder.svg'}
+          src={product.images?.[0]?.url || '/placeholder.svg'}
           sizes="(max-width: 768px) 96px, (max-width: 1024px) 192px, 256px"
           className="rounded-t-xl object-cover sm:rounded-xl sm:rounded-tr-xl"
           alt={product?.title}
