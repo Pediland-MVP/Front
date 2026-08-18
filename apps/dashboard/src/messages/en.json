@@ -129,7 +129,11 @@
       "credit": "Credit",
       "days": "Days",
       "day": "Day",
-      "message": "Message"
+      "message": "Message",
+      "automation": "Free Automation",
+      "automation_line1": "Free",
+      "automation_line2": "Automation",
+      "of": "of"
     },
     "SearchInput": {
       "search_placeholder": "Search..."

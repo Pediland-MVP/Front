@@ -43,7 +43,11 @@
       "credit": "اعـتـبـار",
       "days": "روز",
       "day": "روز",
-      "message": "پیام"
+      "message": "پیام",
+      "automation": "اتوماسیون رایگان",
+      "automation_line1": "اتوماسیون",
+      "automation_line2": "رایگان",
+      "of": "از"
     },
     "SearchInput": {
       "search_placeholder": "جستجو ..."

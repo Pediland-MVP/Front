@@ -17,6 +17,10 @@ import { Alert, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { CardContent } from '@/components/ui/card';
 import { CardSimple } from '@/components/ui-custom/CardSimple';
+import useSWRImmutable from 'swr/immutable';
+import { fetcher } from '@/hooks/swr/api-client';
+import { IResponseMessage } from '@/types/responseMessage';
+import { InstagramNamespace } from '@/types/instagram';
 import { PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
 import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';
 import { ProgressRadial } from '../ProgressRadial';
@@ -32,6 +36,21 @@ export const SubscriptionBoard = () => {
   const { user } = useUser();
   const [isMobile, setIsMobile] = useState(false);
   const isWebView = useIsWebView();
+
+  const { data: accountsResponse } = useSWRImmutable<
+    IResponseMessage<InstagramNamespace.Account[]>
+  >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
+  const accounts = accountsResponse?.data;
+
+  const totalAutomationCount = useMemo(() => {
+    if (!accounts?.length) return 0;
+    return accounts.reduce((sum, acc) => sum + (acc.automationCount ?? 0), 0);
+  }, [accounts]);
+
+  const freeAutomationLimit = useMemo(() => {
+    if (!accounts?.length) return 2;
+    return accounts[0]?.freeAutomationLimit ?? 2;
+  }, [accounts]);
 
   const {
     subscriptions,
@@ -92,16 +111,17 @@ export const SubscriptionBoard = () => {
             <div>
               <ProgressRadial
                 percentage={
-                  isSubscriptionsLoading
-                    ? 0
+                  !hasActiveSubscription
+                    ? totalAutomationCount
                     : showCreditRadial
                       ? (currentSubscription?.credit ?? 0)
                       : totalRemainingDays
                 }
                 size={isMobile ? 85 : 95}
                 strokeWidth={isMobile ? 8 : 9}
-                type={showCreditRadial ? 'credit' : 'days'}
+                type={!hasActiveSubscription ? 'automation' : showCreditRadial ? 'credit' : 'days'}
                 totalDays={totalPurchasedDays}
+                total={freeAutomationLimit}
               />
             </div>
             <div className="text-secondary flex-1 text-sm">

@@ -9,8 +9,10 @@ interface ProgressRadialProps {
   size: number;
   strokeWidth: number;
   id?: string;
-  type?: 'percentage' | 'days' | 'credit';
+  type?: 'percentage' | 'days' | 'credit' | 'automation';
   totalDays?: number;
+  total?: number;
+  label?: string;
 }
 
 export const ProgressRadial = ({
@@ -20,16 +22,23 @@ export const ProgressRadial = ({
   id = 'circular-progress-gradient',
   type = 'percentage',
   totalDays,
+  total,
+  label,
 }: ProgressRadialProps) => {
   const locale = useLocale();
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const t = useTranslations('Components.Progress');
 
-  const actualPercentage =
-    type === 'days' && totalDays ? (percentage / totalDays) * 100 : percentage;
+  const totalValue = total ?? totalDays;
 
-  const strokeDashoffset = circumference - (actualPercentage / 100) * circumference;
+  const actualPercentage =
+    (type === 'days' || type === 'automation') && totalValue
+      ? (percentage / totalValue) * 100
+      : percentage;
+
+  const clampedPercentage = Math.min(100, Math.max(0, actualPercentage));
+  const strokeDashoffset = circumference - (clampedPercentage / 100) * circumference;
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -72,39 +81,84 @@ export const ProgressRadial = ({
         transition={{ duration: 1, ease: 'easeInOut' }}
       />
 
-      <motion.text
-        x="50%"
-        y="39%"
-        textAnchor="middle"
-        dy=".3em"
-        fontSize="12"
-        className={'fill-[theme(colors.gray.400)]'}
-      >
-        {t('credit')}
-      </motion.text>
-      <motion.text
-        x="50%"
-        y="57%"
-        textAnchor="middle"
-        dy=".3em"
-        fontSize="14"
-        fontWeight="bold"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className={cn(
-          actualPercentage < 50
-            ? 'fill-[theme(colors.blue.600)]'
-            : 'fill-[theme(colors.violet.700)]',
-          actualPercentage === 0 && 'fill-[theme(colors.rose.500)]',
-        )}
-      >
-        {type === 'days'
-          ? `${percentage} ${t('days')}`
-          : type === 'credit'
-            ? `${percentage} ${t('message')}`
-            : `${Math.round(actualPercentage)}%`}
-      </motion.text>
+      {type === 'automation' && !label ? (
+        <>
+          <motion.text
+            x="50%"
+            y="30%"
+            textAnchor="middle"
+            dy=".3em"
+            fontSize="11"
+            className={'fill-[theme(colors.gray.400)]'}
+          >
+            {t('automation_line1')}
+          </motion.text>
+          <motion.text
+            x="50%"
+            y="46%"
+            textAnchor="middle"
+            dy=".3em"
+            fontSize="11"
+            className={'fill-[theme(colors.gray.400)]'}
+          >
+            {t('automation_line2')}
+          </motion.text>
+          <motion.text
+            x="50%"
+            y="66%"
+            textAnchor="middle"
+            dy=".3em"
+            fontSize="14"
+            fontWeight="bold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className={cn(
+              actualPercentage < 50
+                ? 'fill-[theme(colors.blue.600)]'
+                : 'fill-[theme(colors.violet.700)]',
+            )}
+          >
+            {`${percentage} ${t('of')} ${totalValue ?? 2}`}
+          </motion.text>
+        </>
+      ) : (
+        <>
+          <motion.text
+            x="50%"
+            y="39%"
+            textAnchor="middle"
+            dy=".3em"
+            fontSize="12"
+            className={'fill-[theme(colors.gray.400)]'}
+          >
+            {label ?? t('credit')}
+          </motion.text>
+          <motion.text
+            x="50%"
+            y="57%"
+            textAnchor="middle"
+            dy=".3em"
+            fontSize="14"
+            fontWeight="bold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className={cn(
+              actualPercentage < 50
+                ? 'fill-[theme(colors.blue.600)]'
+                : 'fill-[theme(colors.violet.700)]',
+              actualPercentage === 0 && type === 'days' && 'fill-[theme(colors.rose.500)]',
+            )}
+          >
+            {type === 'days'
+              ? `${percentage} ${t('days')}`
+              : type === 'credit'
+                ? `${percentage} ${t('message')}`
+                : `${Math.round(actualPercentage)}%`}
+          </motion.text>
+        </>
+      )}
     </svg>
   );
 };
