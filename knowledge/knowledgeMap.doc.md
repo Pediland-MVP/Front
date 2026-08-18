@@ -5,6 +5,7 @@ This document indexes all documentation files inside the `Front/knowledge` direc
 | File Name / Folder | Path | Description |
 |---|---|---|
 | `front-back-relations.md` | `Front/knowledge/front-back-relations.md` | Documents the relationships and API dependencies between the Front and the Back projects. |
+| `2026-08-19-userDetailsMobileScroll.update.md` | `Front/knowledge/updates/2026-08-19-userDetailsMobileScroll.update.md` | Summary of the admin `/users/[id]` mobile scroll fix: `(main)/layout.tsx` forced `overflow-hidden` on `LayoutPage` at all breakpoints, which (via the flex automatic-minimum-size rule) clipped page content below `md:` instead of letting `SidebarInset`'s own mobile scroll container reach it. Fixed to `md:overflow-hidden`. |
 | `knowledgeMap.doc.md` | `Front/knowledge/knowledgeMap.doc.md` | Indexes and describes all documentation files in this folder. |
 | `updates/` | `Front/knowledge/updates/` | Folder containing date-stamped markdown updates for individual features and bug fixes. |
 | `2026-07-12-subscriptionDisplayPolish.update.md` | `Front/knowledge/updates/2026-07-12-subscriptionDisplayPolish.update.md` | Summary of subscription validity merging and reserved subscription UI polish. |
