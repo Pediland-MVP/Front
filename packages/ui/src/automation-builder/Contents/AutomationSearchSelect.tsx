@@ -17,6 +17,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
+import { useFormContext } from 'react-hook-form';
 import useSWR from 'swr';
 
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ import {
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { AutomationFormType } from '../schemas/automationForm';
 import { AutomationBuilderApiClient } from '../types/apiClient';
 
 interface ContentCycleCondition {
@@ -71,6 +73,15 @@ export function AutomationSearchSelect({
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const debouncedSearch = useDebounce(search, 300);
+  // The destination automation list is scoped to the SAME Instagram account(s) this
+  // automation is linked to (backend: InstagramIdsQueryDto, a required, non-empty
+  // array — see contentCycle.controller.ts `getConditions`). `instagramIds` is a
+  // top-level field of the same AutomationBuilder form this component always renders
+  // inside of (ContentButtonsItem only mounts it for mode === 'automation', where the
+  // field is required/non-empty by schema), so no prop-drilling is needed — same
+  // pattern as InstagramPostSelectDialog.
+  const { watch } = useFormContext<AutomationFormType>();
+  const instagramIds = watch('instagramIds') ?? [];
 
   const displayLabel = React.useMemo(() => {
     if (title) return title;
@@ -92,10 +103,19 @@ export function AutomationSearchSelect({
     }
   }, [open]);
 
-  // Fetch conditions when dropdown is open
+  // Fetch conditions when dropdown is open. Gated on instagramIds.length > 0 as well —
+  // an empty array is a guaranteed 400 (`instagramIds should not be empty`), not a
+  // useful "no accounts" request.
   const { data, isLoading } = useSWR<ConditionsResponse>(
-    open
-      ? `/contentCycle/conditions?page=1&limit=30${debouncedSearch ? `&search=${debouncedSearch}` : ''}`
+    open && instagramIds.length > 0
+      ? (() => {
+          const params = new URLSearchParams();
+          params.set('page', '1');
+          params.set('limit', '30');
+          if (debouncedSearch) params.set('search', debouncedSearch);
+          instagramIds.forEach((id) => params.append('instagramIds', id));
+          return `/contentCycle/conditions?${params.toString()}`;
+        })()
       : null,
     (url: string) => apiClient.get(url).then((res) => res.data),
   );
