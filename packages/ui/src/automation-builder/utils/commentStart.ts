@@ -51,23 +51,11 @@ export function firstContentSelfGates(
   const firstContent = contents?.[0];
   if (!firstContent) return false;
 
-  if (firstContent.type === AutomationContentTypesEnum.QUESTION) {
-    return true;
-  }
-
-  if (firstContent.type === AutomationContentTypesEnum.TEXT) {
-    const quickReplies = firstContent.quickReplies ?? [];
-    if (quickReplies.length === 0) return false;
-
-    const hasConsent = quickReplies.some(
-      (qr) => qr?.postbackPayloadType === ButtonTypeEnum.CONSENT,
-    );
-    if (hasConsent) return true;
-
-    return hasNextContentInSameBatch(contents, 0);
-  }
-
-  return false;
+  return (
+    firstContent.type === AutomationContentTypesEnum.QUESTION ||
+    (firstContent.type === AutomationContentTypesEnum.TEXT &&
+      (firstContent.quickReplies?.length ?? 0) > 0)
+  );
 }
 
 /**

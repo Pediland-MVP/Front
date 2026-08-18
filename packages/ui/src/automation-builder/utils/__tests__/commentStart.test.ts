@@ -47,22 +47,9 @@ describe('firstContentSelfGates', () => {
     expect(firstContentSelfGates([question(), text()])).toBe(true);
   });
 
-  it('is true for a TEXT first content carrying quick replies followed by non-DELAY content', () => {
+  it('is true for a TEXT first content carrying quick replies', () => {
     expect(firstContentSelfGates([text([{ title: 'باشه' }]), image()])).toBe(true);
-  });
-
-  it('is true for a TEXT first content that already has an explicit CONSENT button', () => {
-    expect(
-      firstContentSelfGates([
-        text([{ title: 'ادامه', postbackPayloadType: ButtonTypeEnum.CONSENT }]),
-        delay(),
-        text(),
-      ]),
-    ).toBe(true);
-  });
-
-  it('is false for a TEXT first content carrying quick replies when followed by a DELAY', () => {
-    expect(firstContentSelfGates([text([{ title: 'باشه' }]), delay(), text()])).toBe(false);
+    expect(firstContentSelfGates([text([{ title: 'باشه' }]), delay(), text()])).toBe(true);
   });
 
   it('is false for a plain TEXT first content with no quick replies', () => {
@@ -104,15 +91,12 @@ describe('isCommentStartMessageRequired', () => {
     expect(
       isCommentStartMessageRequired({ ...base, contents: [text([{ title: 'باشه' }]), image()] }),
     ).toBe(false);
-  });
-
-  it('IS required when the first content is a TEXT with quick replies but followed by a DELAY', () => {
     expect(
       isCommentStartMessageRequired({
         ...base,
         contents: [text([{ title: 'باشه' }]), delay(), text()],
       }),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it('is NOT required for a single non-PRODUCT content', () => {
