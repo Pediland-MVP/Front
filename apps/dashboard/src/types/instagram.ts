@@ -28,9 +28,17 @@ export namespace InstagramNamespace {
     isIgTokenValid: boolean;
     isPromotion: boolean;
     followersCount?: number;
-    /** Live count of automations currently linked to this page (not the internal
-     * never-decreasing counter — this goes back down if an automation is deleted). */
+    /** Live count of automations currently linked to this page (not the monotonic
+     * never-decreasing counter below — this goes back down if an automation is deleted).
+     * Used to detect the exact moment a new automation would cross the free quota
+     * (`useAddInstagramGate`/`getFreeQuotaWarning`), NOT for the "X of Y used" display. */
     automationCount: number;
+    /** Monotonic counter: total automations this page has EVER used, never decreases even
+     * after deleting one. This is what the "X of Y free automations used" radial
+     * (`SubscriptionBoard.tsx`) shows, so it stays consistent with the sticky
+     * `freeAutomationQuotaExceeded` alert instead of implying quota room that was already
+     * permanently used up. */
+    automationLinkCount: number;
     /** Configured free-automation limit (admin-settable, default 2) — same for every account. */
     freeAutomationLimit: number;
     /** One-way sticky flag: whether this page has ever crossed its free automation quota.

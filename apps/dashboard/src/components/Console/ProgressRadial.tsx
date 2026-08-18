@@ -40,6 +40,11 @@ export const ProgressRadial = ({
   const clampedPercentage = Math.min(100, Math.max(0, actualPercentage));
   const strokeDashoffset = circumference - (clampedPercentage / 100) * circumference;
 
+  // Free automation quota reached/exceeded (current count >= limit) — the ring turns red as a
+  // warning. This is live, not the sticky `freeAutomationQuotaExceeded` flag: deleting an
+  // automation back under the limit must turn the ring back to normal immediately.
+  const isAutomationOverLimit = type === 'automation' && actualPercentage >= 100;
+
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       {/* پس‌زمینه خاکستری */}
@@ -66,7 +71,7 @@ export const ProgressRadial = ({
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke={`url(#${id})`}
+        stroke={isAutomationOverLimit ? '#dc2626' : `url(#${id})`}
         strokeWidth={strokeWidth}
         strokeDasharray={circumference}
         strokeDashoffset={strokeDashoffset}

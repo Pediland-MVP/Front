@@ -42,9 +42,13 @@ export const SubscriptionBoard = () => {
   >(`${API_URL}/instagram/accounts`, fetcher, { revalidateOnMount: true });
   const accounts = accountsResponse?.data;
 
+  // The "X of Y free automations used" radial uses the monotonic automationLinkCount, not
+  // the live automationCount — it must stay consistent with the sticky
+  // freeAutomationQuotaExceeded alert (never resets), not imply quota room that was already
+  // permanently used up just because an automation was later deleted.
   const totalAutomationCount = useMemo(() => {
     if (!accounts?.length) return 0;
-    return accounts.reduce((sum, acc) => sum + (acc.automationCount ?? 0), 0);
+    return accounts.reduce((sum, acc) => sum + (acc.automationLinkCount ?? 0), 0);
   }, [accounts]);
 
   const freeAutomationLimit = useMemo(() => {
@@ -84,9 +88,17 @@ export const SubscriptionBoard = () => {
 
   const currentSubscription = activeSubscription || expiredSubscription;
   // A RESERVED sub is already paid for and queued to activate — the user is NOT on a free
-  // trial just because nothing is ACTIVE yet. The automation-count radial and the "promotion
-  // is active" banner must only show when the user genuinely has no subscription at all.
+  // trial just because nothing is ACTIVE yet. The automation-count radial must only show
+  // when the user genuinely has no subscription at all.
   const hasSubscription = !!activeSubscription || !!reservedSubscription;
+
+  // The "ads are being sent" banner is separate from subscription status: it must only show
+  // for a page that both (1) has no free automation slot left (freeAutomationQuotaExceeded)
+  // and (2) currently has ads enabled (isPromotion). A page can be over the free quota but
+  // NOT promoted if it has its own subscription coverage — isPromotion already reflects
+  // that, but we check both explicitly to match the product rule exactly.
+  const hasPromotedAccount =
+    accounts?.some((acc) => acc.freeAutomationQuotaExceeded && acc.isPromotion) ?? false;
 
   const { workspaceId, can } = usePermissions();
   const { workspaces } = useWorkspaces();
@@ -219,7 +231,7 @@ export const SubscriptionBoard = () => {
             </div>
           </div>
           <div>
-            {!hasSubscription && (
+            {hasPromotedAccount && (
               <Alert variant="destructive" className="col-span-5 mb-3">
                 <AlertTitle className="text-[0.8rem]">{t('promotion_is_active')}</AlertTitle>
               </Alert>
