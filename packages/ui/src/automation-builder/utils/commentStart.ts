@@ -1,5 +1,6 @@
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
 import type { ContentItemType } from '../schemas/automationForm';
+import { ButtonTypeEnum } from '../types/buttons.enum';
 
 type CommentStartContentLike = Pick<ContentItemType, 'type' | 'quickReplies'>;
 
@@ -14,9 +15,29 @@ type CommentStartValuesLike = {
 };
 
 /**
+ * Whether another content follows `contents[index]` in the same execution batch,
+ * i.e., before any DELAY item or the end of the list.
+ *
+ * A DELAY acts as a reset: subsequent messages are paused, so quick-reply buttons on the
+ * message preceding the DELAY will remain visible on Instagram and do NOT need an auto-inserted
+ * CONSENT quick reply.
+ */
+export function hasNextContentInSameBatch(
+  contents: { type?: AutomationContentTypesEnum }[] | null | undefined,
+  index: number,
+): boolean {
+  if (!contents || index < 0 || index >= contents.length - 1) {
+    return false;
+  }
+  const nextItem = contents[index + 1];
+  if (!nextItem) return false;
+  return nextItem.type !== AutomationContentTypesEnum.DELAY;
+}
+
+/**
  * Whether `contents[0]` already forces the lead to tap or answer something by itself —
  * a QUESTION, or a TEXT that carries quick replies (which always include the
- * auto-inserted CONSENT quick reply whenever another content follows, see `Contents.tsx`).
+ * auto-inserted CONSENT quick reply whenever another content follows in the same batch, see `Contents.tsx`).
  *
  * That tap/answer is what opens Instagram's 24h messaging window, so the separate
  * start-request message would be a redundant extra step. Mirrors the backend's own
@@ -30,11 +51,23 @@ export function firstContentSelfGates(
   const firstContent = contents?.[0];
   if (!firstContent) return false;
 
-  return (
-    firstContent.type === AutomationContentTypesEnum.QUESTION ||
-    (firstContent.type === AutomationContentTypesEnum.TEXT &&
-      (firstContent.quickReplies?.length ?? 0) > 0)
-  );
+  if (firstContent.type === AutomationContentTypesEnum.QUESTION) {
+    return true;
+  }
+
+  if (firstContent.type === AutomationContentTypesEnum.TEXT) {
+    const quickReplies = firstContent.quickReplies ?? [];
+    if (quickReplies.length === 0) return false;
+
+    const hasConsent = quickReplies.some(
+      (qr) => qr?.postbackPayloadType === ButtonTypeEnum.CONSENT,
+    );
+    if (hasConsent) return true;
+
+    return hasNextContentInSameBatch(contents, 0);
+  }
+
+  return false;
 }
 
 /**

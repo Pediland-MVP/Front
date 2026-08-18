@@ -585,6 +585,58 @@ describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () =
     expect(dumpedQuickReplies(0)).toEqual([{ title: 'x', postbackPayloadType: 'TEXT' }]);
   });
 
+  it('does not insert a CONSENT quick reply when followed by a DELAY item', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'x', postbackPayloadType: 'TEXT' }],
+          },
+          { type: AutomationContentTypesEnum.DELAY, delayMs: 3600000 },
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'y', postbackPayloadType: 'TEXT' }],
+          },
+        ]}
+      />,
+    );
+
+    // First TEXT is followed by DELAY (so no auto-CONSENT).
+    expect(dumpedQuickReplies(0)).toEqual([{ title: 'x', postbackPayloadType: 'TEXT' }]);
+    // Second TEXT is last in the list (so no auto-CONSENT).
+    expect(dumpedQuickReplies(2)).toEqual([{ title: 'y', postbackPayloadType: 'TEXT' }]);
+  });
+
+  it('inserts CONSENT on a TEXT content followed by another TEXT, but skips it on a TEXT followed by DELAY', () => {
+    render(
+      <AutoConsentWrapper
+        initialContents={[
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'first', postbackPayloadType: 'TEXT' }],
+          },
+          {
+            type: AutomationContentTypesEnum.TEXT,
+            quickReplies: [{ title: 'second', postbackPayloadType: 'TEXT' }],
+          },
+          { type: AutomationContentTypesEnum.DELAY, delayMs: 3600000 },
+          {
+            type: AutomationContentTypesEnum.TEXT,
+          },
+        ]}
+      />,
+    );
+
+    // Index 0 is followed by index 1 (TEXT) in the same batch → gains CONSENT
+    expect(dumpedQuickReplies(0)).toEqual([
+      { title: 'CONSENT.auto_title', postbackPayloadType: 'CONSENT' },
+      { title: 'first', postbackPayloadType: 'TEXT' },
+    ]);
+    // Index 1 is followed by DELAY → no CONSENT
+    expect(dumpedQuickReplies(1)).toEqual([{ title: 'second', postbackPayloadType: 'TEXT' }]);
+  });
+
   it('leaves an existing CONSENT button in place when the content is last (no auto-removal, regardless of how it got there)', () => {
     render(
       <AutoConsentWrapper

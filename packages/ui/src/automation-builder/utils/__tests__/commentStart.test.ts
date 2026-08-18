@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 
 import { AutomationContentTypesEnum } from '../../constants/automationContent.enum';
-import { firstContentSelfGates, isCommentStartMessageRequired } from '../commentStart';
+import { ButtonTypeEnum } from '../../types/buttons.enum';
+import {
+  firstContentSelfGates,
+  hasNextContentInSameBatch,
+  isCommentStartMessageRequired,
+} from '../commentStart';
 
 const text = (quickReplies?: unknown[]) =>
   ({
@@ -9,17 +14,55 @@ const text = (quickReplies?: unknown[]) =>
     quickReplies: quickReplies ?? null,
   }) as never;
 
+const delay = () => ({ type: AutomationContentTypesEnum.DELAY, quickReplies: null }) as never;
 const question = () => ({ type: AutomationContentTypesEnum.QUESTION, quickReplies: null }) as never;
 const product = () => ({ type: AutomationContentTypesEnum.PRODUCT, quickReplies: null }) as never;
 const image = () => ({ type: AutomationContentTypesEnum.IMAGE, quickReplies: null }) as never;
+
+describe('hasNextContentInSameBatch', () => {
+  it('returns true when next content is a non-DELAY content item', () => {
+    expect(hasNextContentInSameBatch([text(), image()], 0)).toBe(true);
+    expect(hasNextContentInSameBatch([text(), product()], 0)).toBe(true);
+    expect(hasNextContentInSameBatch([text(), text()], 0)).toBe(true);
+  });
+
+  it('returns false when next content is a DELAY item', () => {
+    expect(hasNextContentInSameBatch([text(), delay(), text()], 0)).toBe(false);
+  });
+
+  it('returns false when index is the last content item', () => {
+    expect(hasNextContentInSameBatch([text()], 0)).toBe(false);
+    expect(hasNextContentInSameBatch([text(), image()], 1)).toBe(false);
+  });
+
+  it('returns false for null, empty or invalid index', () => {
+    expect(hasNextContentInSameBatch([], 0)).toBe(false);
+    expect(hasNextContentInSameBatch(null, 0)).toBe(false);
+    expect(hasNextContentInSameBatch([text()], -1)).toBe(false);
+  });
+});
 
 describe('firstContentSelfGates', () => {
   it('is true for a QUESTION first content', () => {
     expect(firstContentSelfGates([question(), text()])).toBe(true);
   });
 
-  it('is true for a TEXT first content carrying quick replies', () => {
+  it('is true for a TEXT first content carrying quick replies followed by non-DELAY content', () => {
     expect(firstContentSelfGates([text([{ title: 'باشه' }]), image()])).toBe(true);
+  });
+
+  it('is true for a TEXT first content that already has an explicit CONSENT button', () => {
+    expect(
+      firstContentSelfGates([
+        text([{ title: 'ادامه', postbackPayloadType: ButtonTypeEnum.CONSENT }]),
+        delay(),
+        text(),
+      ]),
+    ).toBe(true);
+  });
+
+  it('is false for a TEXT first content carrying quick replies when followed by a DELAY', () => {
+    expect(firstContentSelfGates([text([{ title: 'باشه' }]), delay(), text()])).toBe(false);
   });
 
   it('is false for a plain TEXT first content with no quick replies', () => {
@@ -61,6 +104,15 @@ describe('isCommentStartMessageRequired', () => {
     expect(
       isCommentStartMessageRequired({ ...base, contents: [text([{ title: 'باشه' }]), image()] }),
     ).toBe(false);
+  });
+
+  it('IS required when the first content is a TEXT with quick replies but followed by a DELAY', () => {
+    expect(
+      isCommentStartMessageRequired({
+        ...base,
+        contents: [text([{ title: 'باشه' }]), delay(), text()],
+      }),
+    ).toBe(true);
   });
 
   it('is NOT required for a single non-PRODUCT content', () => {

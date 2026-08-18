@@ -7,6 +7,7 @@ import {
 import { cn } from '@/lib/utils';
 import { AutomationFormType } from '../schemas/automationForm';
 import { ButtonTypeEnum } from '../types/buttons.enum';
+import { hasNextContentInSameBatch } from '../utils/commentStart';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Control, useFormContext, useWatch } from 'react-hook-form';
@@ -156,11 +157,14 @@ export const ButtonContentItem = ({
   // auto-added or the user added it manually; the risk is identical either way.
   const parentArrayName = mode === AutomationContentModeEnum.AUTOMATION ? 'contents' : 'reminders';
   const parentContents = useWatch({ name: parentArrayName, control }) as
-    | { quickReplies?: ({ postbackPayloadType?: ButtonTypeEnum } | undefined)[] }[]
+    | {
+        type?: AutomationContentTypesEnum;
+        quickReplies?: ({ postbackPayloadType?: ButtonTypeEnum } | undefined)[];
+      }[]
     | undefined;
   const hasNextContent =
     mode === AutomationContentModeEnum.AUTOMATION &&
-    (parentContents?.length ?? 0) > contentIndex + 1;
+    hasNextContentInSameBatch(parentContents as any, contentIndex);
 
   // ...but the CONSENT button only ever protects the content's OTHER quick replies. Once
   // the user has deleted every one of them, there is nothing left for Instagram to hide,
