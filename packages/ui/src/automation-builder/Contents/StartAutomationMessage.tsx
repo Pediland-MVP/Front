@@ -1,10 +1,10 @@
 'use client';
 
-import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
 import type { AutomationFormType } from '../schemas/automationForm';
+import { isCommentStartMessageRequired } from '../utils/commentStart';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 import {
   AlertDialog,
@@ -35,46 +35,42 @@ type StartAutomationMessageProps = {
  * (it always uses `commentStartText` / `commentStartTitle`, submitted separately).
  */
 export const StartAutomationMessage = ({ helpSlot }: StartAutomationMessageProps = {}) => {
-  const { watch, control, getValues, setValue } = useFormContext<AutomationFormType>();
+  const { control, getValues, setValue } = useFormContext<AutomationFormType>();
   const t = useTranslations('Automations.CommentConsent');
 
-  const isComment = watch('isComment');
-  const justFollowers = watch('justFollowers');
-  const contents = watch('contents');
+  const isComment = useWatch({ name: 'isComment', control });
+  const justFollowers = useWatch({ name: 'justFollowers', control });
+  const contents = useWatch({ name: 'contents', control });
+  // Only affects the `justFollowers` branch of `isCommentStartMessageRequired`, but it
+  // must be watched: setting a reminder is what stops `followerGuard` from ever reaching
+  // the start message, so the card has to react to it like any other input.
+  const reminderTime = useWatch({ name: 'reminderTime', control });
 
-  const [isActive, setIsActive] = useState(false);
   const [isDeleteLockedDialogOpen, setIsDeleteLockedDialogOpen] = useState(false);
 
+  const shouldActivate = isCommentStartMessageRequired({
+    isComment,
+    justFollowers,
+    contents,
+    reminderTime,
+  });
+
   useEffect(() => {
-    // If content[0] already forces the user to tap/answer something (a QUESTION, or a
-    // TEXT that already has quick replies — which always get the auto-inserted CONSENT
-    // quick reply in Contents.tsx whenever another content follows), that tap/answer
-    // already opens Instagram's 24h window on its own. The separate start-request
-    // message would just be a redundant extra step. BEF-162.
-    const firstContent = contents?.[0];
-    const firstContentSelfGates =
-      firstContent?.type === AutomationContentTypesEnum.QUESTION ||
-      (firstContent?.type === AutomationContentTypesEnum.TEXT &&
-        (firstContent.quickReplies?.length ?? 0) > 0);
-
-    const shouldActivate =
-      isComment &&
-      !justFollowers &&
-      !firstContentSelfGates &&
-      (contents?.[0]?.type === AutomationContentTypesEnum.PRODUCT || contents?.length > 1);
-
+    // `isCommentStartMessageRequired` is shared with the dashboard's submit-time guard
+    // (`AutomationForm.tsx`'s `handleBeforeSubmit`) precisely so the two can never
+    // disagree. When they did, this effect cleared `commentStartText` for a self-gating
+    // content[0] while that guard still demanded a non-empty value — deadlocking the
+    // submit on a field this component no longer even renders. BEF-162.
     if (shouldActivate) {
       if (!getValues('commentStartText')) {
         setValue('commentStartText', t('comment_start_text'));
       }
-      setIsActive(true);
     } else {
-      setIsActive(false);
       setValue('commentStartText', '');
     }
-  }, [isComment, justFollowers, contents, getValues, setValue, t]);
+  }, [shouldActivate, getValues, setValue, t]);
 
-  if (!isActive) return null;
+  if (!shouldActivate) return null;
 
   return (
     <div className="flex flex-col items-start gap-y-4 rounded-xl border border-dashed border-amber-200/75 bg-amber-50/60 p-3">

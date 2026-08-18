@@ -17,6 +17,7 @@ import type { AutomationBuilderMode } from '../AutomationBuilder.types';
 import type { AutomationFormType, ContentItemSchema } from '../schemas/automationForm';
 import type { UploadedFile } from '@/types/fileUploader';
 import { ButtonTypeEnum } from '../types/buttons.enum';
+import { hasNextContentInSameBatch } from '../utils/commentStart';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -144,11 +145,11 @@ export const Contents = ({
   }, [hasItems, arrayName, clearErrors, errors]);
 
   // Instagram hides a TEXT content's quick-reply buttons once another content follows
-  // it — unless one of those quick replies is the CONSENT ("مکث و ادامه" / pause-and-
+  // it in the same batch — unless one of those quick replies is the CONSENT ("مکث و ادامه" / pause-and-
   // continue) type, which is what makes the send loop stop and wait for a tap
   // (`shouldPauseForConsent` in `contentCycle.service.ts`). Auto-insert that button at
-  // index 0 for any TEXT content that has quick replies, isn't the last content
-  // anymore, and doesn't already have a CONSENT button — the "already has one" check
+  // index 0 for any TEXT content that has quick replies, isn't the last content in its batch
+  // (i.e. another content follows before any DELAY or end of list), and doesn't already have a CONSENT button — the "already has one" check
   // is what stops this from ever inserting a duplicate, whether that existing button
   // was added by the user or by this same effect a moment earlier. Scoped to the
   // `contents` array only (not `reminders`, which has its own separate shape).
@@ -157,7 +158,7 @@ export const Contents = ({
 
     const list = (watched ?? []) as ContentItemType[];
     list.forEach((content, index) => {
-      if (index === list.length - 1) return;
+      if (!hasNextContentInSameBatch(list, index)) return;
       if (content.type !== AutomationContentTypesEnum.TEXT) return;
 
       const quickReplies = content.quickReplies ?? [];

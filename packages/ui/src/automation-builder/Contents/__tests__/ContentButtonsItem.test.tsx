@@ -320,4 +320,29 @@ describe('ButtonContentItem — locked CONSENT quick reply (cannot be removed wh
     expect(removeMock).toHaveBeenCalledWith(0);
     expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
   });
+
+  it('removes a CONSENT quick reply normally when followed by a DELAY item', () => {
+    const removeMock = vi.fn();
+    render(
+      <TextWrapper
+        removeMock={removeMock}
+        contents={[
+          {
+            type: 'text',
+            quickReplies: [
+              { title: 'مکث و ادامه', postbackPayloadType: 'CONSENT' },
+              { title: 'گزینه ۱', postbackPayloadType: 'TEXT' },
+            ],
+          },
+          { type: 'delay' },
+          { type: 'text' },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(removeMock).toHaveBeenCalledWith(0);
+    expect(screen.queryByText('consent_locked_description')).not.toBeInTheDocument();
+  });
 });
