@@ -254,8 +254,11 @@ export function columns(
         accessorFn: (row) => {
           const now = Date.now();
 
-          const validSubs = row.subscriptions?.filter(
-            (s) => ['active', 'reserved'].includes(s.status) && s.expire,
+          // Reserved subs always have `expire = null` (queued, not ticking yet) — don't
+          // require `expire` here or every reserved sub gets dropped before the reduce below
+          // ever gets to use its `planDuration.durationDays` branch.
+          const validSubs = row.subscriptions?.filter((s) =>
+            ['active', 'reserved'].includes(s.status),
           );
 
           if (validSubs.length === 0) return 0;

@@ -13,6 +13,8 @@ import { PlanTierBadge } from './PlanTierBadge';
 import { Subscription } from '@/types/subscriptions/subscriptions';
 import { Instagram } from '@/types/user';
 import { getRemainingDays } from '@/utils/subscription';
+import { useSubscriptionStore } from '@/store/subscriptionStore';
+import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 
 interface PageSubscriptionCardProps {
   subscription: Subscription;
@@ -23,7 +25,21 @@ export const PageSubscriptionCard = ({ subscription, instagram }: PageSubscripti
   const t = useTranslations('Subscription');
   const [imgError, setImgError] = useState(false);
   const labelClass = 'text-muted-foreground text-sm font-me';
-  const remainingDays = getRemainingDays(subscription.expire);
+  const { subscriptions } = useSubscriptionStore();
+
+  // Reserved subs for this page always have `expire = null` (queued, not ticking yet) — their
+  // days come from `planDuration.durationDays` instead. Added to both the active sub's remaining
+  // days and its total duration so the radial still reads as "days left out of days owned".
+  const reservedDays = (subscriptions ?? [])
+    .filter(
+      (sub) =>
+        sub.instagramId === subscription.instagramId &&
+        sub.status === SubscriptionStatusEnum.RESERVED,
+    )
+    .reduce((sum, sub) => sum + (sub.planDuration?.durationDays ?? 0), 0);
+
+  const remainingDays = getRemainingDays(subscription.expire) + reservedDays;
+  const totalDays = subscription.planDuration.durationDays + reservedDays;
 
   return (
     <CardSimple className="border-violet-200 bg-violet-50/50">
@@ -70,7 +86,7 @@ export const PageSubscriptionCard = ({ subscription, instagram }: PageSubscripti
             size={90}
             strokeWidth={8}
             type="days"
-            totalDays={subscription.planDuration.durationDays}
+            totalDays={totalDays}
           />
         </div>
       </CardContent>

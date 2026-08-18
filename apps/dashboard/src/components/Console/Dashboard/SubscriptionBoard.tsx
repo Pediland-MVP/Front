@@ -74,13 +74,19 @@ export const SubscriptionBoard = () => {
     (sub) => sub.status === SubscriptionStatusEnum.ACTIVE,
   );
 
+  const reservedSubscription = subscriptions?.find(
+    (sub) => sub.status === SubscriptionStatusEnum.RESERVED,
+  );
+
   const expiredSubscription = subscriptions?.find(
     (sub) => sub.status === SubscriptionStatusEnum.EXPIRED,
   );
 
   const currentSubscription = activeSubscription || expiredSubscription;
-  const hasActiveSubscription =
-    currentSubscription?.status === SubscriptionStatusEnum.ACTIVE ? true : false;
+  // A RESERVED sub is already paid for and queued to activate — the user is NOT on a free
+  // trial just because nothing is ACTIVE yet. The automation-count radial and the "promotion
+  // is active" banner must only show when the user genuinely has no subscription at all.
+  const hasSubscription = !!activeSubscription || !!reservedSubscription;
 
   const { workspaceId, can } = usePermissions();
   const { workspaces } = useWorkspaces();
@@ -111,7 +117,7 @@ export const SubscriptionBoard = () => {
             <div>
               <ProgressRadial
                 percentage={
-                  !hasActiveSubscription
+                  !hasSubscription
                     ? totalAutomationCount
                     : showCreditRadial
                       ? (currentSubscription?.credit ?? 0)
@@ -119,7 +125,7 @@ export const SubscriptionBoard = () => {
                 }
                 size={isMobile ? 85 : 95}
                 strokeWidth={isMobile ? 8 : 9}
-                type={!hasActiveSubscription ? 'automation' : showCreditRadial ? 'credit' : 'days'}
+                type={!hasSubscription ? 'automation' : showCreditRadial ? 'credit' : 'days'}
                 totalDays={totalPurchasedDays}
                 total={freeAutomationLimit}
               />
@@ -213,7 +219,7 @@ export const SubscriptionBoard = () => {
             </div>
           </div>
           <div>
-            {!hasActiveSubscription && (
+            {!hasSubscription && (
               <Alert variant="destructive" className="col-span-5 mb-3">
                 <AlertTitle className="text-[0.8rem]">{t('promotion_is_active')}</AlertTitle>
               </Alert>

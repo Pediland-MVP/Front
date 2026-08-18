@@ -474,14 +474,17 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
               ));
             })()}
 
-            {customer?.subscriptions?.find((s) => s.status === 'active') && (
+            {customer?.subscriptions?.find((s) => ['active', 'reserved'].includes(s.status)) && (
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">باقی مانده:</span>
                 <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-0.5 font-bold text-emerald-600">
                   {(() => {
                     const now = Date.now();
-                    const validSubs = customer?.subscriptions?.filter(
-                      (s) => ['active', 'reserved'].includes(s.status) && s.expire,
+                    // Reserved subs always have `expire = null` (queued, not ticking yet) —
+                    // don't require `expire` here or every reserved sub gets dropped before the
+                    // reduce below ever gets to use its `planDuration.durationDays` branch.
+                    const validSubs = customer?.subscriptions?.filter((s) =>
+                      ['active', 'reserved'].includes(s.status),
                     );
                     if (validSubs.length === 0) return '0 روز';
                     const totalDays = validSubs.reduce((sum, s) => {
