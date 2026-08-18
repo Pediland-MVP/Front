@@ -452,6 +452,29 @@ describe('Contents — StartAutomationMessage (read-only comment-start preview)'
     );
     expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
   });
+
+  it('hides the consent card dynamically when a quick reply is added to the first content of a multi-content comment automation', async () => {
+    render(
+      <CommentStartWrapper
+        isComment
+        justFollowers={false}
+        initialContents={[
+          { type: AutomationContentTypesEnum.TEXT, text: 'First msg', quickReplies: [] },
+          { type: AutomationContentTypesEnum.TEXT, text: 'Second msg' },
+        ]}
+      />,
+    );
+
+    // Consent start message is initially visible
+    expect(screen.getByText(HEADER_TEXT)).toBeInTheDocument();
+
+    // Click "add" button to add a quick reply to the first content item
+    const addButtons = screen.getAllByRole('button', { name: /add/i });
+    fireEvent.click(addButtons[0]);
+
+    // Consent start message card immediately becomes hidden
+    expect(screen.queryByText(HEADER_TEXT)).not.toBeInTheDocument();
+  });
 });
 
 describe('Contents — auto CONSENT quick reply on non-last TEXT contents', () => {
