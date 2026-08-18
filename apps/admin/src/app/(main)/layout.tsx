@@ -12,7 +12,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <LayoutPage className="overflow-hidden">{children}</LayoutPage>
+          <LayoutPage className="md:overflow-hidden">{children}</LayoutPage>
           <NavBottom />
         </SidebarInset>
       </SidebarProvider>
