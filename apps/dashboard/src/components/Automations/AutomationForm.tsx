@@ -142,6 +142,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   const [freeQuotaWarning, setFreeQuotaWarning] = useState<{
     usedCount: number;
     limit: number;
+    instagramId: string;
   } | null>(null);
   // Resolver for the in-flight `beforeSubmit` promise while the free-quota dialog is open —
   // `onConfirm`/`onClose` resolve it `true`/`false`, letting `AutomationBuilder` continue
@@ -160,7 +161,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
    */
   const getFreeQuotaWarning = (
     instagramIds: string[],
-  ): { usedCount: number; limit: number } | null => {
+  ): { usedCount: number; limit: number; instagramId: string } | null => {
     if (!accounts) return null;
     for (const instagramId of instagramIds) {
       const account = accounts.find((a) => a.id === instagramId);
@@ -178,7 +179,11 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
         !account.freeAutomationQuotaExceeded &&
         account.automationCount === account.freeAutomationLimit
       ) {
-        return { usedCount: account.automationCount, limit: account.freeAutomationLimit };
+        return {
+          usedCount: account.automationCount,
+          limit: account.freeAutomationLimit,
+          instagramId: account.id,
+        };
       }
     }
     return null;
@@ -684,6 +689,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
         isOpen={!!freeQuotaWarning}
         usedCount={freeQuotaWarning?.usedCount ?? 0}
         limit={freeQuotaWarning?.limit ?? 0}
+        instagramId={freeQuotaWarning?.instagramId ?? ''}
         onClose={() => resolveFreeQuotaPromise(false)}
         onConfirm={() => resolveFreeQuotaPromise(true)}
       />
