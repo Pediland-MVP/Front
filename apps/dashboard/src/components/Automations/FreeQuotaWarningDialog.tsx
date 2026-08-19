@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -21,6 +22,7 @@ interface FreeQuotaWarningDialogProps {
   onConfirm: () => void;
   usedCount: number;
   limit: number;
+  instagramId: string;
 }
 
 export const FreeQuotaWarningDialog = ({
@@ -29,9 +31,16 @@ export const FreeQuotaWarningDialog = ({
   onConfirm,
   usedCount,
   limit,
+  instagramId,
 }: FreeQuotaWarningDialogProps) => {
   const t = useTranslations('Automations.FreeQuotaWarningDialog');
+  const router = useRouter();
   const percent = limit > 0 ? Math.min(100, (usedCount / limit) * 100) : 100;
+
+  const handleBuySubscription = () => {
+    onClose();
+    router.push(`/settings/subscription?instagramId=${instagramId}`);
+  };
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -52,8 +61,10 @@ export const FreeQuotaWarningDialog = ({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogAction onClick={onConfirm}>{t('buttons.confirm')}</AlertDialogAction>
-          <AlertDialogCancel onClick={onClose}>{t('buttons.cancel')}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{t('buttons.continueWithAds')}</AlertDialogAction>
+          <AlertDialogCancel onClick={handleBuySubscription}>
+            {t('buttons.buySubscription')}
+          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
