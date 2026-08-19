@@ -89,13 +89,15 @@ const renderAndSubmit = async () => {
 
 describe('AutomationForm free-quota warning dialog', () => {
   it('shows the dialog exactly on the submission that crosses the free limit', async () => {
-    // Live count sits exactly at the limit, not yet flagged — this is the one submission
-    // that would push the page over: the dialog must show and the submit must pause.
+    // The monotonic link count sits exactly at the limit, not yet flagged — this is the
+    // one submission that would push the page over: the dialog must show and the submit
+    // must pause.
     accountsData = {
       data: [
         {
           id: INSTAGRAM_ID,
           automationCount: 2,
+          automationLinkCount: 2,
           freeAutomationLimit: 2,
           freeAutomationQuotaExceeded: false,
         },
@@ -108,16 +110,42 @@ describe('AutomationForm free-quota warning dialog', () => {
     expect(post).not.toHaveBeenCalled();
   });
 
-  it('does not re-show the dialog once the live count is already past the limit (desync regression)', async () => {
-    // Regression for the "always shows" bug: a page whose live automation count is already
-    // past the limit but whose sticky `freeAutomationQuotaExceeded` flag never caught up
-    // (e.g. links created outside the normal save/update path). The old `>=` comparison
-    // re-showed the dialog on every submission in this state; it must not show here.
+  it('shows the dialog even when a prior delete dropped the live count below the limit', async () => {
+    // Regression for the reported bug: user creates 2 automations (limit 2), deletes one
+    // (live automationCount drops to 1, but the monotonic automationLinkCount never
+    // decreases), then creates a new one. This is still the submission that pushes
+    // automationLinkCount from 2 to 3 and would flip the page into promotion mode
+    // server-side — checking the live count alone would miss it entirely.
+    accountsData = {
+      data: [
+        {
+          id: INSTAGRAM_ID,
+          automationCount: 1,
+          automationLinkCount: 2,
+          freeAutomationLimit: 2,
+          freeAutomationQuotaExceeded: false,
+        },
+      ],
+    };
+
+    await renderAndSubmit();
+
+    await waitFor(() => expect(screen.getByText(DIALOG_TITLE)).toBeInTheDocument());
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it('does not re-show the dialog once the link count is already past the limit (desync regression)', async () => {
+    // Regression for the "always shows" bug: a page whose monotonic link count is already
+    // past the limit but whose sticky `freeAutomationQuotaExceeded` flag never caught up.
+    // Exact equality means the dialog can only ever fire once per page — the one
+    // submission that takes the count from `limit` to `limit + 1` — and self-heals once
+    // the count moves past it, regardless of whether the sticky flag caught up.
     accountsData = {
       data: [
         {
           id: INSTAGRAM_ID,
           automationCount: 3,
+          automationLinkCount: 3,
           freeAutomationLimit: 2,
           freeAutomationQuotaExceeded: false,
         },
@@ -136,6 +164,7 @@ describe('AutomationForm free-quota warning dialog', () => {
         {
           id: INSTAGRAM_ID,
           automationCount: 2,
+          automationLinkCount: 2,
           freeAutomationLimit: 2,
           freeAutomationQuotaExceeded: true,
         },
