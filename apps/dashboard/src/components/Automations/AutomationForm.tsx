@@ -131,7 +131,7 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
   const source = automation ?? templateData;
 
   // Same SWR key InstagramSelectField uses — dedupes, no extra request. Carries each
-  // page's `automationCount` (live) + `freeAutomationLimit`, used below to warn before
+  // page's `automationLinkCount` + `freeAutomationLimit`, used below to warn before
   // the automation that would push a page over its free quota.
   const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
   const { data: accountsResponse } = useSWRImmutable<
@@ -156,8 +156,16 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
    * against `freeAutomationQuotaExceeded`, not `isPromotion` — a page can be over quota
    * but not promoted if it has active subscription coverage, and this warning is
    * specifically about the free-quota boundary, not the (separate) subscription state.
-   * Uses the live `automationCount` (not the internal never-decreasing counter), so it
-   * only fires exactly on the automation that would cross the boundary.
+   * Uses the monotonic `automationLinkCount`, not the live `automationCount` — the live
+   * count goes back down when an automation is deleted, so a delete-then-recreate
+   * sequence can walk it right past the boundary value without ever equaling it, silently
+   * skipping this warning on the exact submission that flips the page into promotion mode
+   * server-side (`FreeAutomationQuotaService.applyQuotaFlag` reads/writes
+   * `automationLinkCount`, never the live count, for exactly this reason). Exact equality
+   * (not `>=`/`>`) is still safe here — unlike the live count, `automationLinkCount` only
+   * ever increases by exactly 1 per created link through the normal save path, so it can
+   * never skip the boundary value; matching only that value means the dialog fires once,
+   * on the one submission that takes it from `limit` to `limit + 1`, then self-heals.
    */
   const getFreeQuotaWarning = (
     instagramIds: string[],
@@ -166,21 +174,12 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
     for (const instagramId of instagramIds) {
       const account = accounts.find((a) => a.id === instagramId);
       if (!account) continue;
-      // Exact equality, not `>=`: the backend's sticky `freeAutomationQuotaExceeded` flag
-      // is only guaranteed to flip on links created through the normal save/update path
-      // (see FreeAutomationQuotaService) — a page whose live count already sits above the
-      // limit for any other reason (e.g. pre-existing links from before this feature
-      // shipped) would keep failing the `!freeAutomationQuotaExceeded` check and re-show
-      // this dialog on every single submission. Matching only the exact boundary value
-      // means the dialog can only ever fire once per page — the one submission that takes
-      // it from `limit` to `limit + 1` — and self-heals once the live count moves past it,
-      // regardless of whether the sticky flag caught up.
       if (
         !account.freeAutomationQuotaExceeded &&
-        account.automationCount === account.freeAutomationLimit
+        account.automationLinkCount === account.freeAutomationLimit
       ) {
         return {
-          usedCount: account.automationCount,
+          usedCount: account.automationLinkCount,
           limit: account.freeAutomationLimit,
           instagramId: account.id,
         };
