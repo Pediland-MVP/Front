@@ -60,13 +60,24 @@ interface AddSubscriptionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
+  /**
+   * When provided, the dialog locks to this workspace instead of letting the admin pick
+   * from the user's owned workspaces - used when charging from the workspace details page,
+   * where the workspace is already fixed by the page itself.
+   */
+  workspaceId?: string;
+  /** Instagram pages available for the locked `workspaceId`. Ignored when `workspaceId` is omitted. */
+  workspaceInstagrams?: WorkspaceInstagramOption[];
 }
 
 export const AddSubscriptionDialog = ({
   open,
   onOpenChange,
   userId,
+  workspaceId: lockedWorkspaceId,
+  workspaceInstagrams,
 }: AddSubscriptionDialogProps) => {
+  const isWorkspaceLocked = !!lockedWorkspaceId;
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
 
   const t_ec = useTranslations('ERROR_CODES');
@@ -74,7 +85,7 @@ export const AddSubscriptionDialog = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      workspaceId: '',
+      workspaceId: lockedWorkspaceId ?? '',
       instagramId: '',
       planId: '',
       planDurationId: '',
@@ -85,7 +96,7 @@ export const AddSubscriptionDialog = ({
 
   const { data: workspacesData, isLoading: isWorkspacesLoading } = useSWR<{
     items: WorkspaceOption[];
-  }>(open ? `/users/${userId}/workspaces?page=1&limit=100` : null, fetcher);
+  }>(open && !isWorkspaceLocked ? `/users/${userId}/workspaces?page=1&limit=100` : null, fetcher);
 
   // Only workspaces this customer OWNS. Charging one they merely belong to would credit
   // a different customer's account and show up on that owner's page instead.
@@ -97,8 +108,11 @@ export const AddSubscriptionDialog = ({
   const selectedWorkspaceId = form.watch('workspaceId');
 
   const availableInstagrams = useMemo(
-    () => ownedWorkspaces.find((w) => w.workspaceId === selectedWorkspaceId)?.instagrams ?? [],
-    [ownedWorkspaces, selectedWorkspaceId],
+    () =>
+      isWorkspaceLocked
+        ? (workspaceInstagrams ?? [])
+        : (ownedWorkspaces.find((w) => w.workspaceId === selectedWorkspaceId)?.instagrams ?? []),
+    [isWorkspaceLocked, workspaceInstagrams, ownedWorkspaces, selectedWorkspaceId],
   );
 
   // Which workspaceId we've already resolved the page (instagramId) defaults for. This is
@@ -197,38 +211,40 @@ export const AddSubscriptionDialog = ({
             onSubmit={form.handleSubmit(handleAddSubscription)}
             className="grid gap-x-2 gap-y-3 md:grid-cols-3"
           >
-            <FormField
-              control={form.control}
-              name="workspaceId"
-              render={({ field }) => (
-                <FormItem className="md:col-span-3">
-                  <FormLabel>ورک‌اسپیس</FormLabel>
-                  <Select
-                    disabled={isWorkspacesLoading || ownedWorkspaces.length === 0}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="ورک‌اسپیس را انتخاب کنید" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ownedWorkspaces.map((ws) => (
-                        <SelectItem key={ws.workspaceId} value={ws.workspaceId}>
-                          {ws.workspaceName}
-                          {ws.isPersonal ? ' (شخصی)' : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {!isWorkspacesLoading && ownedWorkspaces.length === 0 && (
-                    <p className="text-xs text-rose-600">
-                      این کاربر هیچ ورک‌اسپیسی ندارد و قابل شارژ نیست.
-                    </p>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isWorkspaceLocked && (
+              <FormField
+                control={form.control}
+                name="workspaceId"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-3">
+                    <FormLabel>ورک‌اسپیس</FormLabel>
+                    <Select
+                      disabled={isWorkspacesLoading || ownedWorkspaces.length === 0}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="ورک‌اسپیس را انتخاب کنید" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ownedWorkspaces.map((ws) => (
+                          <SelectItem key={ws.workspaceId} value={ws.workspaceId}>
+                            {ws.workspaceName}
+                            {ws.isPersonal ? ' (شخصی)' : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {!isWorkspacesLoading && ownedWorkspaces.length === 0 && (
+                      <p className="text-xs text-rose-600">
+                        این کاربر هیچ ورک‌اسپیسی ندارد و قابل شارژ نیست.
+                      </p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -378,7 +394,10 @@ export const AddSubscriptionDialog = ({
             <div className="mt-3 flex gap-2 md:col-span-3">
               <Button
                 type="submit"
-                disabled={form.formState.isSubmitting || ownedWorkspaces.length === 0}
+                disabled={
+                  form.formState.isSubmitting ||
+                  (!isWorkspaceLocked && ownedWorkspaces.length === 0)
+                }
               >
                 {form.formState.isSubmitting ? 'در حال ثبت...' : 'افزودن اشتراک'}
               </Button>
