@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -10,18 +10,30 @@ import { Loading } from '@/components/loading';
 import { FetchError } from '@/components/fetch-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { SubscriptionStatusBadge } from '@/components/table/subscription-status-badge';
 import { formatNumber } from '@/lib/formatNumber';
 import { WorkspaceDetail } from '@/types/workspace';
 import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
+import { Receipt, ArrowRight, ArrowLeft, Wallet } from 'lucide-react';
+import { SubscriptionCard } from '@/components/customer/SubscriptionCard';
+import { AddSubscriptionDialog } from '@/components/customer/AddSubscriptionDialog';
 
 export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const t = useTranslations('Workspaces');
 
+  const [subsPage, setSubsPage] = useState(1);
+  const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState(false);
+
   const { data, isLoading, error } = useSWR(`/workspaces/${id}`, fetcher);
   const workspace: WorkspaceDetail | undefined = data?.data;
+
+  const { data: subsData, isLoading: isSubsLoading } = useSWR(
+    `/workspaces/${id}/subscriptions?page=${subsPage}&limit=5`,
+    fetcher,
+  );
+  const subs = subsData?.items || [];
+  const subsMeta = subsData?.meta;
 
   if (isLoading) return <Loading />;
   if (error) return <FetchError />;
@@ -32,7 +44,7 @@ export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: 
       </p>
     );
 
-  const { meta, members, subscription, resourceCounts, instagrams } = workspace;
+  const { meta, members, resourceCounts, instagrams } = workspace;
 
   const counts: { key: keyof typeof resourceCounts; label: string }[] = [
     { key: 'instagrams', label: t('instagrams') },
@@ -103,51 +115,68 @@ export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: 
             ))}
           </div>
         </div>
-
-        {/* Subscription */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-slate-400">{t('subscription')}</h4>
-          {subscription ? (
-            <div className="space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t('plan')}</span>
-                <span className="font-medium text-slate-700">{subscription.plan?.name ?? '—'}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t('planDuration')}</span>
-                <span className="font-medium text-slate-700">
-                  {subscription.planDuration?.name ?? '—'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t('subscriptionStatus')}</span>
-                <SubscriptionStatusBadge status={subscription.status} />
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t('payDate')}</span>
-                <span className="font-medium text-slate-700">
-                  {subscription.payDate
-                    ? dayjs(subscription.payDate).calendar('jalali').format('YYYY/MM/DD HH:mm')
-                    : '—'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t('expire')}</span>
-                <span className="font-medium text-slate-700">
-                  {dayjs(subscription.expire).calendar('jalali').format('YYYY/MM/DD')}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <p className="shadow-3xs rounded-xl border border-slate-100 bg-white p-3 text-center text-[11px] text-slate-400">
-              {t('noSubscription')}
-            </p>
-          )}
-        </div>
       </div>
 
       {/* Left Column: Main content */}
       <div className="flex flex-1 flex-col gap-6 lg:overflow-y-auto">
+        {/* Subscriptions */}
+        <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800">
+              <Receipt size={18} className="text-indigo-600" />
+              {t('subscriptions')}
+            </h3>
+            <Button size="sm" onClick={() => setSubscriptionDialogOpen(true)}>
+              <Wallet className="ml-1 h-3.5 w-3.5" />
+              {t('manualCharge')}
+            </Button>
+          </div>
+
+          {isSubsLoading ? (
+            <div className="flex justify-center py-10">
+              <Loading />
+            </div>
+          ) : subs.length > 0 ? (
+            <div className="space-y-4">
+              {subs.map((sub: any) => (
+                <SubscriptionCard key={sub.id} subscription={sub} />
+              ))}
+
+              {subsMeta && subsMeta.totalPages > 1 && (
+                <div className="shadow-3xs mt-5 flex items-center justify-between rounded-xl border border-slate-100 bg-white p-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 cursor-pointer rounded-lg text-xs font-semibold"
+                    disabled={subsPage <= 1}
+                    onClick={() => setSubsPage((prev) => Math.max(prev - 1, 1))}
+                  >
+                    <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                    <span>{t('previousPage')}</span>
+                  </Button>
+                  <span className="text-xs font-bold text-slate-500">
+                    {t('pageOf', { current: subsPage, total: subsMeta.totalPages })}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 cursor-pointer rounded-lg text-xs font-semibold"
+                    disabled={subsPage >= subsMeta.totalPages}
+                    onClick={() => setSubsPage((prev) => Math.min(prev + 1, subsMeta.totalPages))}
+                  >
+                    <span>{t('nextPage')}</span>
+                    <ArrowLeft className="mr-1 h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="shadow-3xs rounded-xl border border-slate-100 bg-slate-50 p-3 text-center text-[11px] text-slate-400">
+              {t('noSubscriptionsList')}
+            </p>
+          )}
+        </div>
+
         {/* Instagram accounts */}
         <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
           <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-800">
@@ -256,6 +285,14 @@ export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
       </div>
+
+      <AddSubscriptionDialog
+        open={subscriptionDialogOpen}
+        onOpenChange={setSubscriptionDialogOpen}
+        userId={meta.owner.id || ''}
+        workspaceId={meta.id}
+        workspaceInstagrams={instagrams.map((ig) => ({ id: ig.id, username: ig.username }))}
+      />
     </div>
   );
 }

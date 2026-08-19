@@ -209,7 +209,13 @@
     "mobile": "موبایل",
     "noPermissions": "بدون دسترسی",
     "notFound": "کسب‌وکار یافت نشد",
-    "labels": "برچسب‌ها"
+    "labels": "برچسب‌ها",
+    "subscriptions": "اشتراک‌ها",
+    "manualCharge": "شارژ دستی",
+    "noSubscriptionsList": "هیچ اشتراکی برای این کسب‌وکار ثبت نشده است.",
+    "previousPage": "قبلی",
+    "nextPage": "بعدی",
+    "pageOf": "صفحه {current} از {total}"
   },
   "Instagrams": {
     "title": "اینستاگرام‌ها",
