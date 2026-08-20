@@ -57,7 +57,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
     return new Date(date).toLocaleString('fa-IR');
   };
 
-  if (isSessionsLoading || !sessions) {
+  if (isSessionsLoading) {
     return <LoaderSpin />;
   }
 
@@ -121,7 +121,7 @@ export default function SessionsTable({ contentCycleId }: SessionTableProps) {
               </TableBody>
             </Table>
           </div>
-          {sessions.meta && (
+          {sessions?.meta && (
             <div className="mt-4 flex items-center justify-between">
               <Button variant="outline" onClick={prevPage} disabled={currentPage === 1}>
                 <ChevronRight className="ml-2 h-4 w-4" />
