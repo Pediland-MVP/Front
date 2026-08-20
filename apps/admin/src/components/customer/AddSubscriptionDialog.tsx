@@ -68,6 +68,8 @@ interface AddSubscriptionDialogProps {
   workspaceId?: string;
   /** Instagram pages available for the locked `workspaceId`. Ignored when `workspaceId` is omitted. */
   workspaceInstagrams?: WorkspaceInstagramOption[];
+  /** Called after a successful charge, so the caller can revalidate its own subscription data. */
+  onSuccess?: () => void;
 }
 
 export const AddSubscriptionDialog = ({
@@ -76,6 +78,7 @@ export const AddSubscriptionDialog = ({
   userId,
   workspaceId: lockedWorkspaceId,
   workspaceInstagrams,
+  onSuccess,
 }: AddSubscriptionDialogProps) => {
   const isWorkspaceLocked = !!lockedWorkspaceId;
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
@@ -192,6 +195,7 @@ export const AddSubscriptionDialog = ({
       onOpenChange(false);
       toast.success('اشتراک با موفقیت اضافه شد.');
       form.reset();
+      onSuccess?.();
     } catch (error) {
       const code = (error as { response?: { data?: { code?: string } } })?.response?.data?.code;
       toast.error((code && t_ec(code)) || 'خطا در اضافه کردن اشتراک.');

@@ -25,13 +25,14 @@ export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: 
   const [subsPage, setSubsPage] = useState(1);
   const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState(false);
 
-  const { data, isLoading, error } = useSWR(`/workspaces/${id}`, fetcher);
+  const { data, isLoading, error, mutate: mutateWorkspace } = useSWR(`/workspaces/${id}`, fetcher);
   const workspace: WorkspaceDetail | undefined = data?.data;
 
-  const { data: subsData, isLoading: isSubsLoading } = useSWR(
-    `/workspaces/${id}/subscriptions?page=${subsPage}&limit=5`,
-    fetcher,
-  );
+  const {
+    data: subsData,
+    isLoading: isSubsLoading,
+    mutate: mutateSubs,
+  } = useSWR(`/workspaces/${id}/subscriptions?page=${subsPage}&limit=5`, fetcher);
   const subs = subsData?.items || [];
   const subsMeta = subsData?.meta;
 
@@ -292,6 +293,11 @@ export default function WorkspaceDetailPage({ params }: { params: Promise<{ id: 
         userId={meta.owner.id || ''}
         workspaceId={meta.id}
         workspaceInstagrams={instagrams.map((ig) => ({ id: ig.id, username: ig.username }))}
+        onSuccess={() => {
+          setSubsPage(1);
+          mutateSubs();
+          mutateWorkspace();
+        }}
       />
     </div>
   );

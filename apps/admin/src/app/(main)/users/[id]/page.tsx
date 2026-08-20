@@ -940,6 +940,11 @@ export default function CustomerDetailsPage({ params }: { params: Promise<{ id: 
         open={subscriptionDialogOpen}
         onOpenChange={setSubscriptionDialogOpen}
         userId={customer?.id || ''}
+        onSuccess={() => {
+          setSubsPage(1);
+          mutateSubs();
+          mutateCustomer();
+        }}
       />
     </div>
   );
