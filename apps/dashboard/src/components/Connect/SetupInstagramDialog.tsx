@@ -117,9 +117,6 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   // mismatch there throws SUBSCRIPTION_NOT_COMPATIBLE_WITH_FOLLOWER_COUNT and rolls everything
   // back — leaving the user with a toast telling them to buy a fitting plan and no way to do it.
   // So when such a plan exists, show it first and let the user pick which way to go.
-  //
-  // getUnboundActiveSubscriptions excludes credit by design, which is right: credit coverage is
-  // workspace-wide and follower-count-blind, so it can never mismatch and needs no decision.
   const unboundSubscriptions = getUnboundActiveSubscriptions(subscriptions);
   const showUnboundStep = unboundSubscriptions.length > 0 && !dismissedUnboundStep;
 

@@ -8,14 +8,12 @@ export interface ISubscriptions {
 export interface Subscription {
   activator: string;
   createDate: string;
-  credit: number;
   expire: string;
   id: string;
   instagramId: string | null;
   planDuration: PlanDuration;
   planDurationId: number;
   status: SubscriptionStatusEnum;
-  type: string;
   updateDate: string;
   userId: string;
 }

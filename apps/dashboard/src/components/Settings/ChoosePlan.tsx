@@ -8,7 +8,6 @@ import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { Instagram } from '@/types/user';
 import { formatNumber } from '@/utils/formatNumber';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CircleIcon } from '@phosphor-icons/react/dist/ssr/Circle';
 import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
@@ -46,13 +45,8 @@ import { DiscountCode } from './DiscountCode';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 import { CardSimple } from '../ui-custom/CardSimple';
 import { PageSubscriptionCard } from './PageSubscriptionCard';
-import { ProgressRadial } from '../Console/ProgressRadial';
 import { PlanTierBadge } from './PlanTierBadge';
-import {
-  getActiveCreditSubscription,
-  getActivePageSubscriptions,
-  getUnboundActiveSubscriptions,
-} from '@/utils/subscription';
+import { getActivePageSubscriptions, getUnboundActiveSubscriptions } from '@/utils/subscription';
 
 const planSchema = z.object({
   planId: z.number(),
@@ -117,15 +111,8 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
 
   const { user } = useUser();
 
-  const {
-    active,
-    setActive,
-    subscriptions,
-    isLoading: isSubscriptionsLoading,
-    discountCode,
-  } = useSubscriptionStore();
+  const { active, setActive, subscriptions, discountCode } = useSubscriptionStore();
 
-  const creditSubscription = getActiveCreditSubscription(subscriptions);
   const pageSubscriptions = getActivePageSubscriptions(subscriptions);
   const unboundActiveSubscriptions = getUnboundActiveSubscriptions(subscriptions);
 
@@ -219,35 +206,6 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
 
   return (
     <div className="flex-1 space-y-4">
-      {creditSubscription && (
-        <CardSimple className="border-violet-200 bg-violet-50/50">
-          <CardContent className="flex flex-col gap-2 p-3 text-[15px] md:p-5">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 space-y-0.5">
-                <div className="flex items-center gap-1.5">
-                  <span className={labelClass}>وضعیت:</span>
-                  <span className="text-primary flex items-center gap-1 font-semibold">
-                    {t(creditSubscription.status)}
-                  </span>
-                  <CircleIcon size={10} weight="fill" className="animate-pulse text-green-500" />
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <span className={labelClass}>نوع اشتراک:</span>
-                  <span className="text-primary font-semibold">300 پیام رایگان</span>
-                </div>
-              </div>
-              <ProgressRadial
-                percentage={isSubscriptionsLoading ? 0 : creditSubscription.credit}
-                size={90}
-                strokeWidth={8}
-                type="credit"
-              />
-            </div>
-          </CardContent>
-        </CardSimple>
-      )}
-
       {pageSubscriptions.length > 0 && (
         <div>
           <h3 className="text-secondary mb-2 text-[15px] font-medium">
@@ -285,13 +243,11 @@ export const ChoosePlan = ({ instagramId }: ChoosePlanProps) => {
         </div>
       )}
 
-      {!creditSubscription &&
-        pageSubscriptions.length === 0 &&
-        unboundActiveSubscriptions.length === 0 && (
-          <div className="flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 py-14 text-center">
-            <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
-          </div>
-        )}
+      {pageSubscriptions.length === 0 && unboundActiveSubscriptions.length === 0 && (
+        <div className="flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 px-6 py-14 text-center">
+          <p className="text-muted-foreground text-sm">{t('no_active_subscription')}</p>
+        </div>
+      )}
 
       <DiscountAlert />
 

@@ -54,7 +54,6 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
-        hasCreditCoverage: false,
         instagrams: [
           {
             id: 'ig-1',
@@ -72,7 +71,6 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
-        hasCreditCoverage: false,
         instagrams: [
           {
             id: 'ig-2',
@@ -118,31 +116,6 @@ describe('WorkspaceDrawerContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows the credit-covered label when subscriptionDaysLeft is null but the workspace has credit coverage', () => {
-    workspacesData = [
-      {
-        id: 'ws-1',
-        name: 'کافه رستوران طهرانی',
-        ownerId: 'u1',
-        isPersonal: false,
-        category: null,
-        hasCreditCoverage: true,
-        instagrams: [
-          {
-            id: 'ig-1',
-            username: 'tehrani_cafe_bistro',
-            isIgTokenValid: true,
-            profilePicture: null,
-            subscriptionDaysLeft: null,
-            hasReservedSubscription: false,
-          },
-        ],
-      },
-    ];
-    renderContent();
-    expect(screen.getByText(messages.Console.WorkspaceDrawer.coveredByCredit)).toBeInTheDocument();
-  });
-
   it('shows the pending-activation label when there is only a reserved (not yet active) subscription', () => {
     workspacesData = [
       {
@@ -151,7 +124,6 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
-        hasCreditCoverage: false,
         instagrams: [
           {
             id: 'ig-1',
@@ -170,7 +142,7 @@ describe('WorkspaceDrawerContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows no subscription text when there is no active, reserved, or credit coverage', () => {
+  it('shows no subscription text when there is no active or reserved coverage', () => {
     workspacesData = [
       {
         id: 'ws-1',
@@ -178,7 +150,6 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
-        hasCreditCoverage: false,
         instagrams: [
           {
             id: 'ig-1',
@@ -193,16 +164,13 @@ describe('WorkspaceDrawerContent', () => {
     ];
     renderContent();
     expect(
-      screen.queryByText(messages.Console.WorkspaceDrawer.coveredByCredit),
-    ).not.toBeInTheDocument();
-    expect(
       screen.queryByText(messages.Console.WorkspaceDrawer.pendingActivation),
     ).not.toBeInTheDocument();
   });
 
   it('shows no (broken) subscription text when the backend response is missing the new fields entirely', () => {
     // Simulates Front deploying before the paired Back change: the account object has
-    // no subscriptionDaysLeft/hasCreditCoverage/hasReservedSubscription keys at all.
+    // no subscriptionDaysLeft/hasReservedSubscription keys at all.
     workspacesData = [
       {
         id: 'ws-1',
@@ -222,12 +190,9 @@ describe('WorkspaceDrawerContent', () => {
     ];
     renderContent();
     expect(screen.queryByText(/اعتبار/)).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(messages.Console.WorkspaceDrawer.coveredByCredit),
-    ).not.toBeInTheDocument();
   });
 
-  it('hides the credit-covered and pending-activation labels inside the Android WebView', () => {
+  it('hides the pending-activation label inside the Android WebView', () => {
     isWebView = true;
     workspacesData = [
       {
@@ -236,7 +201,6 @@ describe('WorkspaceDrawerContent', () => {
         ownerId: 'u1',
         isPersonal: false,
         category: null,
-        hasCreditCoverage: true,
         instagrams: [
           {
             id: 'ig-1',
@@ -250,9 +214,6 @@ describe('WorkspaceDrawerContent', () => {
       },
     ];
     renderContent();
-    expect(
-      screen.queryByText(messages.Console.WorkspaceDrawer.coveredByCredit),
-    ).not.toBeInTheDocument();
     expect(
       screen.queryByText(messages.Console.WorkspaceDrawer.pendingActivation),
     ).not.toBeInTheDocument();

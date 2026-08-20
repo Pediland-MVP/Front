@@ -36,7 +36,6 @@ export type Plan = {
   maxFollowers: number;
   minFollowers: number;
   name: string;
-  type: string;
   updateDate: Date;
   durations?: Duration[];
 };
@@ -50,7 +49,6 @@ export type DurationResponse = {
 
 export type Duration = {
   createDate: Date;
-  credit: number;
   durationDays: number;
   id: number;
   monthlyDiscount: number;

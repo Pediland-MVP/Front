@@ -54,7 +54,6 @@ const sub = (over: Partial<Record<string, unknown>> = {}) =>
   ({
     id: 'sub1',
     status: SubscriptionStatusEnum.ACTIVE,
-    type: 'time',
     instagramId: null,
     planDuration: { name: 'شش ماهه', plan: { name: '۱K تا ۲۵K فالوور' } },
     ...over,
@@ -127,19 +126,6 @@ describe('Settings › Instagram — add-account gate', () => {
 
     fireEvent.click(addButton()!);
     expect(screen.getByText('setup-dialog-open')).toBeInTheDocument();
-  });
-
-  it('links straight to /connect when the only coverage is credit, which can never mismatch', () => {
-    accountCount = 1;
-    withSlot(true);
-    useSubscriptionStoreMock.mockReturnValue({
-      subscriptions: [sub({ type: 'credit' })],
-      isLoading: false,
-    });
-
-    renderPage();
-
-    expect(addLink()).toHaveAttribute('href', '/connect');
   });
 
   it('ignores a paid plan already bound to a page', () => {
