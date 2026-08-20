@@ -5,6 +5,7 @@ import dayjs from '@/lib/dayjs-jalali';
 import { formatNumber } from '@/lib/formatNumber';
 import { cn } from '@/lib/utils';
 import { Receipt, ChevronDown, ChevronUp } from 'lucide-react';
+import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import {
   Table,
   TableBody,
@@ -13,6 +14,39 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+
+function SubscriptionAvatar({
+  instagram,
+}: {
+  instagram?: { username: string; profilePictureUrl: string | null } | null;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (instagram?.profilePictureUrl && !imgError) {
+    return (
+      <img
+        src={instagram.profilePictureUrl}
+        alt={instagram.username}
+        className="h-10 w-10 shrink-0 rounded-xl object-cover"
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  if (instagram) {
+    return (
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 text-white shadow-xs">
+        <InstagramLogoIcon size={18} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-xs">
+      <Receipt size={18} className="stroke-[1.8]" />
+    </div>
+  );
+}
 
 export function SubscriptionCard({ subscription }: { subscription: any }) {
   const [expanded, setExpanded] = useState(false);
@@ -53,16 +87,20 @@ export function SubscriptionCard({ subscription }: { subscription: any }) {
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
-          {/* Card Icon */}
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-xs">
-            <Receipt size={18} className="stroke-[1.8]" />
-          </div>
+          <SubscriptionAvatar instagram={subscription.instagram} />
 
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-slate-800">
                 {planName} ({durationName})
               </span>
+              {subscription.instagram ? (
+                <span className="text-xs font-semibold text-pink-600" dir="ltr">
+                  @{subscription.instagram.username}
+                </span>
+              ) : (
+                <span className="text-[10px] font-semibold text-slate-400">(بدون پیج خاص)</span>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px] font-semibold text-slate-400">
               <span>شروع: {createDate}</span>
@@ -97,6 +135,16 @@ export function SubscriptionCard({ subscription }: { subscription: any }) {
                 <span className="block font-bold text-slate-700">{subscription.workspaceName}</span>
               </div>
             )}
+            <div className="space-y-1">
+              <span className="block text-[10px] text-slate-400">پیج اینستاگرام</span>
+              {subscription.instagram ? (
+                <span className="block font-bold text-slate-700" dir="ltr">
+                  @{subscription.instagram.username}
+                </span>
+              ) : (
+                <span className="block font-bold text-slate-700">بدون پیج خاص (استخر)</span>
+              )}
+            </div>
             <div className="space-y-1">
               <span className="block text-[10px] text-slate-400">مبلغ بسته</span>
               <span className="block font-bold text-indigo-700 text-slate-800">
