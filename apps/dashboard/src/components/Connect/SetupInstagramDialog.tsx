@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 
@@ -42,6 +42,7 @@ import api from '@/hooks/swr/api-client';
 import { ExceptionMessage } from '@/types/exceptionMessage';
 import { formatNumber } from '@/utils/formatNumber';
 import { cn } from '@/lib/utils';
+import { IPlan } from '@/types/plans/plans';
 import { useInstagramFollowersLookup } from '../../app/(Connect)/connect/hooks/useInstagramFollowersLookup';
 import { usePlansByFollowers } from '../../app/(Connect)/connect/hooks/usePlansByFollowers';
 import { useAllVisiblePlans } from '../../app/(Connect)/connect/hooks/useAllVisiblePlans';
@@ -76,6 +77,10 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   const [lookupFailed, setLookupFailed] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [selectedDurationId, setSelectedDurationId] = useState<number | null>(null);
+  // Manual-fallback flow only (lookupFailed): the follower-range tier the user picked, before
+  // they've picked a duration within it. Kept separate from selectedPlanId — that one also gates
+  // the next-step button, which must stay disabled until a duration is chosen too.
+  const [selectedFallbackPlanId, setSelectedFallbackPlanId] = useState<number | null>(null);
   // Set when the user answers the unbound-plan step with "buy a different plan", which drops
   // them into the normal username → follower-lookup → plan flow below.
   const [dismissedUnboundStep, setDismissedUnboundStep] = useState(false);
@@ -124,6 +129,10 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
   const { plans: allPlans, isLoading: isAllPlansLoading } = useAllVisiblePlans(lookupFailed);
   const { pay, isPayLoading } = usePayPlan();
 
+  // Manual-fallback flow only: the tier the user picked from allPlans, once picked. Its
+  // durations render the same duration-cards UI the matched-plan flow uses below.
+  const fallbackPlan = allPlans?.find((plan) => plan.id === selectedFallbackPlanId) ?? null;
+
   // The step content area has a fixed height and scrolls internally when a step's content
   // (mainly step 2's duration cards) overflows it. These inset shadows are the only hint that
   // there's more to scroll to — the fixed-height box hides the plain browser scrollbar enough
@@ -140,27 +149,12 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     });
   };
 
-  // Content height changes with the step (and within step 2, with lookupFailed/matchedPlan),
-  // which can flip whether it overflows at all — recompute once the new content has painted.
+  // Content height changes with the step (and within step 2, with lookupFailed/matchedPlan/
+  // fallbackPlan), which can flip whether it overflows at all — recompute once the new content
+  // has painted.
   useEffect(() => {
     updateScrollShadow();
-  }, [step, showUnboundStep, lookupFailed, matchedPlan, workspaceStep.targetMode]);
-
-  // Durations sorted shortest-first, mirroring ChoosePlan's buy dialog so returning users
-  // see the same "best value" / monthly-price framing they already know from Settings.
-  const sortedDurations = useMemo(() => {
-    return [...(matchedPlan?.durations ?? [])].sort((a, b) => a.durationDays - b.durationDays);
-  }, [matchedPlan]);
-  const recommendedDurationId = sortedDurations[sortedDurations.length - 1]?.id;
-  const monthlyBaselinePrice = useMemo(() => {
-    if (!sortedDurations.length) return null;
-    const shortest = sortedDurations[0];
-    const basePrice =
-      Number(shortest.discountPrice) > 0 ? Number(shortest.discountPrice) : Number(shortest.price);
-    const months =
-      shortest.durationDays === 365 ? 12 : Math.max(1, Math.round(shortest.durationDays / 30));
-    return Math.round(basePrice / months);
-  }, [sortedDurations]);
+  }, [step, showUnboundStep, lookupFailed, matchedPlan, fallbackPlan, workspaceStep.targetMode]);
 
   const reset = () => {
     setStep('username');
@@ -171,6 +165,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     setLookupFailed(false);
     setSelectedPlanId(null);
     setSelectedDurationId(null);
+    setSelectedFallbackPlanId(null);
     setDismissedUnboundStep(false);
     workspaceStep.reset();
   };
@@ -180,6 +175,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     setLookupFailed(false);
     setSelectedPlanId(null);
     setSelectedDurationId(null);
+    setSelectedFallbackPlanId(null);
     try {
       const result = await lookup(username.trim());
       setCheckedUsername(result.username);
@@ -247,6 +243,118 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
     t('step_plan_title'),
     t('step_workspace_title'),
   ];
+
+  // Shared between the matched-plan flow (one plan) and the manual-fallback flow (every visible
+  // plan, each with its own duration cards right under its tier badge) — both end on the same
+  // real duration choice per tier, not an auto-picked longest one.
+  const renderDurationCards = (plan: IPlan) => {
+    const sortedDurations = [...(plan.durations ?? [])].sort(
+      (a, b) => a.durationDays - b.durationDays,
+    );
+    const recommendedDurationId = sortedDurations[sortedDurations.length - 1]?.id;
+    const shortest = sortedDurations[0];
+    const monthlyBaselinePrice = shortest
+      ? Math.round(
+          (Number(shortest.discountPrice) > 0
+            ? Number(shortest.discountPrice)
+            : Number(shortest.price)) /
+            (shortest.durationDays === 365
+              ? 12
+              : Math.max(1, Math.round(shortest.durationDays / 30))),
+        )
+      : null;
+
+    return (
+      <div className="space-y-3">
+        {sortedDurations.map((duration) => {
+          const hasDiscount = Number(duration.discountPrice) > 0;
+          const unitPrice = hasDiscount ? Number(duration.discountPrice) : Number(duration.price);
+          const months =
+            duration.durationDays === 365
+              ? 12
+              : Math.max(1, Math.round(duration.durationDays / 30));
+          const monthlyPrice = Math.round(unitPrice / months);
+          const savingsPct =
+            monthlyBaselinePrice && monthlyBaselinePrice > monthlyPrice
+              ? Math.round((1 - monthlyPrice / monthlyBaselinePrice) * 100)
+              : 0;
+          const isRecommended = duration.id === recommendedDurationId;
+          const isSelected = selectedDurationId === duration.id;
+          const totalDiscountPct = hasDiscount
+            ? Math.round((1 - Number(duration.discountPrice) / Number(duration.price)) * 100)
+            : 0;
+
+          return (
+            <button
+              key={duration.id}
+              type="button"
+              onClick={() => {
+                setSelectedPlanId(plan.id);
+                setSelectedDurationId(duration.id);
+              }}
+              className={cn(
+                'relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl border text-right transition-all duration-300 sm:flex-row',
+                isSelected
+                  ? 'border-violet-500 bg-gradient-to-l from-violet-50/40 to-indigo-50/10 shadow-lg ring-1 shadow-violet-100/50 ring-violet-200'
+                  : 'border-slate-200 bg-white hover:border-violet-300 hover:shadow-md',
+              )}
+            >
+              {isRecommended && (
+                <div className="absolute top-0 left-0 flex items-center gap-1 rounded-br-xl bg-violet-600 px-3 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                  <Sparkles className="h-3.5 w-3.5 fill-violet-200" />
+                  {tSub('best_value')}
+                </div>
+              )}
+
+              <div className="flex flex-1 flex-col justify-between p-4 text-right">
+                <div>
+                  <div className="mb-1.5 flex items-center gap-2">
+                    <span className="text-sm font-bold text-slate-800">{duration.name}</span>
+                    {totalDiscountPct > 0 && (
+                      <span className="inline-flex items-center gap-0.5 rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600">
+                        {totalDiscountPct}٪ تخفیف
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-extrabold tracking-tight text-slate-800 tabular-nums">
+                      {formatNumber(monthlyPrice)}
+                    </span>
+                    <span className="text-xs font-medium text-slate-400">
+                      {tSub('per_month_unit')}
+                    </span>
+                  </div>
+
+                  {savingsPct > 0 && (
+                    <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                      <TrendDownIcon size={14} weight="bold" />
+                      <span>{tSub('cheaper_than_monthly', { percent: savingsPct })}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100/80 pt-2.5 text-xs">
+                  <span className="text-slate-400">{tSub('total_price')}:</span>
+                  <div className="flex items-center gap-1.5 font-semibold text-slate-700">
+                    {hasDiscount && (
+                      <span className="text-slate-350 text-[11px] line-through decoration-slate-300">
+                        {formatNumber(Number(duration.price))}
+                      </span>
+                    )}
+                    <span className="font-bold text-slate-800 tabular-nums">
+                      {formatNumber(unitPrice)}
+                    </span>
+                    <span className="text-slate-450 text-[10px] font-normal">{tSub('toman')}</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <Dialog
@@ -395,33 +503,34 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
                         </div>
                         {isAllPlansLoading ? (
                           <LoaderSpin />
-                        ) : (
+                        ) : !fallbackPlan ? (
                           <div className="grid gap-3 sm:grid-cols-2">
-                            {allPlans?.map((plan) => {
-                              const longestDuration = [...plan.durations].sort(
-                                (a, b) => b.durationDays - a.durationDays,
-                              )[0];
-                              const isSelected = selectedPlanId === plan.id;
-                              return (
-                                <button
-                                  key={plan.id}
-                                  type="button"
-                                  onClick={() => {
-                                    if (!longestDuration) return;
-                                    setSelectedPlanId(plan.id);
-                                    setSelectedDurationId(longestDuration.id);
-                                  }}
-                                  className={cn(
-                                    'group rounded-xl border p-4 text-right transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md',
-                                    isSelected
-                                      ? 'border-violet-500 bg-violet-50/50 ring-1 ring-violet-200'
-                                      : 'border-slate-200 hover:border-violet-300',
-                                  )}
-                                >
-                                  <PlanTierBadge plan={{ name: plan.name }} />
-                                </button>
-                              );
-                            })}
+                            {allPlans?.map((plan) => (
+                              <button
+                                key={plan.id}
+                                type="button"
+                                onClick={() => setSelectedFallbackPlanId(plan.id)}
+                                className="group rounded-xl border border-slate-200 p-4 text-right transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
+                              >
+                                <PlanTierBadge plan={{ name: plan.name }} />
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedFallbackPlanId(null);
+                                setSelectedPlanId(null);
+                                setSelectedDurationId(null);
+                              }}
+                              className="block text-xs font-semibold text-violet-600 hover:underline"
+                            >
+                              {t('change_follower_tier')}
+                            </button>
+                            <PlanTierBadge plan={{ name: fallbackPlan.name }} />
+                            {renderDurationCards(fallbackPlan)}
                           </div>
                         )}
                       </div>
@@ -450,105 +559,7 @@ export function SetupInstagramDialog({ open, onOpenChange }: SetupInstagramDialo
 
                         <PlanTierBadge plan={{ name: matchedPlan.name }} />
 
-                        <div className="space-y-3">
-                          {sortedDurations.map((duration) => {
-                            const hasDiscount = Number(duration.discountPrice) > 0;
-                            const unitPrice = hasDiscount
-                              ? Number(duration.discountPrice)
-                              : Number(duration.price);
-                            const months =
-                              duration.durationDays === 365
-                                ? 12
-                                : Math.max(1, Math.round(duration.durationDays / 30));
-                            const monthlyPrice = Math.round(unitPrice / months);
-                            const savingsPct =
-                              monthlyBaselinePrice && monthlyBaselinePrice > monthlyPrice
-                                ? Math.round((1 - monthlyPrice / monthlyBaselinePrice) * 100)
-                                : 0;
-                            const isRecommended = duration.id === recommendedDurationId;
-                            const isSelected = selectedDurationId === duration.id;
-                            const totalDiscountPct = hasDiscount
-                              ? Math.round(
-                                  (1 - Number(duration.discountPrice) / Number(duration.price)) *
-                                    100,
-                                )
-                              : 0;
-
-                            return (
-                              <button
-                                key={duration.id}
-                                type="button"
-                                onClick={() => {
-                                  setSelectedPlanId(matchedPlan.id);
-                                  setSelectedDurationId(duration.id);
-                                }}
-                                className={cn(
-                                  'relative flex w-full flex-col items-stretch overflow-hidden rounded-2xl border text-right transition-all duration-300 sm:flex-row',
-                                  isSelected
-                                    ? 'border-violet-500 bg-gradient-to-l from-violet-50/40 to-indigo-50/10 shadow-lg ring-1 shadow-violet-100/50 ring-violet-200'
-                                    : 'border-slate-200 bg-white hover:border-violet-300 hover:shadow-md',
-                                )}
-                              >
-                                {isRecommended && (
-                                  <div className="absolute top-0 left-0 flex items-center gap-1 rounded-br-xl bg-violet-600 px-3 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                                    <Sparkles className="h-3.5 w-3.5 fill-violet-200" />
-                                    {tSub('best_value')}
-                                  </div>
-                                )}
-
-                                <div className="flex flex-1 flex-col justify-between p-4 text-right">
-                                  <div>
-                                    <div className="mb-1.5 flex items-center gap-2">
-                                      <span className="text-sm font-bold text-slate-800">
-                                        {duration.name}
-                                      </span>
-                                      {totalDiscountPct > 0 && (
-                                        <span className="inline-flex items-center gap-0.5 rounded-full border border-rose-100 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600">
-                                          {totalDiscountPct}٪ تخفیف
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    <div className="flex items-baseline gap-1">
-                                      <span className="text-xl font-extrabold tracking-tight text-slate-800 tabular-nums">
-                                        {formatNumber(monthlyPrice)}
-                                      </span>
-                                      <span className="text-xs font-medium text-slate-400">
-                                        {tSub('per_month_unit')}
-                                      </span>
-                                    </div>
-
-                                    {savingsPct > 0 && (
-                                      <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                                        <TrendDownIcon size={14} weight="bold" />
-                                        <span>
-                                          {tSub('cheaper_than_monthly', { percent: savingsPct })}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100/80 pt-2.5 text-xs">
-                                    <span className="text-slate-400">{tSub('total_price')}:</span>
-                                    <div className="flex items-center gap-1.5 font-semibold text-slate-700">
-                                      {hasDiscount && (
-                                        <span className="text-slate-350 text-[11px] line-through decoration-slate-300">
-                                          {formatNumber(Number(duration.price))}
-                                        </span>
-                                      )}
-                                      <span className="font-bold text-slate-800 tabular-nums">
-                                        {formatNumber(unitPrice)}
-                                      </span>
-                                      <span className="text-slate-450 text-[10px] font-normal">
-                                        {tSub('toman')}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+                        {renderDurationCards(matchedPlan)}
                       </div>
                     ) : (
                       <p className="text-muted-foreground text-sm">{t('no_matching_plan')}</p>

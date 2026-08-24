@@ -148,7 +148,7 @@ describe('SetupInstagramDialog', () => {
     expect(screen.getByText('5,000')).toBeInTheDocument();
   });
 
-  it('falls back to the manual plan list when the follower-count check fails', async () => {
+  it('falls back to the follower-range tier grid when the follower-count check fails, with no durations shown yet', async () => {
     lookupMock.mockRejectedValue(new Error('APIFY_ERROR'));
     allVisiblePlansMock.mockReturnValue({
       plans: [
@@ -156,6 +156,11 @@ describe('SetupInstagramDialog', () => {
           id: 2,
           name: '۲۵K تا ۱۰۰K فالور',
           durations: [{ id: 20, name: 'یک ماهه', durationDays: 30, price: 200000 }],
+        },
+        {
+          id: 3,
+          name: '۱۰۰K تا ۵۰۰K فالور',
+          durations: [{ id: 30, name: 'سه ماهه', durationDays: 90, price: 500000 }],
         },
       ],
       isLoading: false,
@@ -168,7 +173,50 @@ describe('SetupInstagramDialog', () => {
       screen.getByText(messages.SetupInstagramDialog.apify_error_description),
     ).toBeInTheDocument();
     expect(screen.getByText(messages.SetupInstagramDialog.apify_error_warning)).toBeInTheDocument();
+
+    // Both tiers are offered up front...
     expect(screen.getByText('۲۵K تا ۱۰۰K فالور')).toBeInTheDocument();
+    expect(screen.getByText('۱۰۰K تا ۵۰۰K فالور')).toBeInTheDocument();
+    // ...but no duration until one is picked.
+    expect(screen.queryByText('یک ماهه')).not.toBeInTheDocument();
+    expect(screen.queryByText('سه ماهه')).not.toBeInTheDocument();
+  });
+
+  it("shows a tier's durations once it is picked, and lets the user go back to the tier grid", async () => {
+    lookupMock.mockRejectedValue(new Error('APIFY_ERROR'));
+    allVisiblePlansMock.mockReturnValue({
+      plans: [
+        {
+          id: 2,
+          name: '۲۵K تا ۱۰۰K فالور',
+          durations: [
+            { id: 20, name: 'یک ماهه', durationDays: 30, price: 200000 },
+            { id: 21, name: 'یک ساله', durationDays: 365, price: 2000000 },
+          ],
+        },
+        {
+          id: 3,
+          name: '۱۰۰K تا ۵۰۰K فالور',
+          durations: [{ id: 30, name: 'سه ماهه', durationDays: 90, price: 500000 }],
+        },
+      ],
+      isLoading: false,
+    });
+
+    renderDialog();
+    await checkUsername('someone');
+    fireEvent.click(screen.getByText('۲۵K تا ۱۰۰K فالور'));
+
+    // Same duration cards as the matched-plan flow — both must be offered, not just the longest.
+    expect(screen.getByText('یک ماهه')).toBeInTheDocument();
+    expect(screen.getByText('یک ساله')).toBeInTheDocument();
+    expect(screen.queryByText('۱۰۰K تا ۵۰۰K فالور')).not.toBeInTheDocument();
+    expect(screen.getByText(messages.SetupInstagramDialog.next_step)).toBeDisabled();
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.change_follower_tier));
+
+    expect(screen.queryByText('یک ماهه')).not.toBeInTheDocument();
+    expect(screen.getByText('۱۰۰K تا ۵۰۰K فالور')).toBeInTheDocument();
   });
 
   it('selecting a plan duration enables the next-step button and advances to the workspace step', async () => {
@@ -195,7 +243,7 @@ describe('SetupInstagramDialog', () => {
     expect(payMock).not.toHaveBeenCalled();
   });
 
-  it('selecting a manual-fallback plan also enables the next-step button', async () => {
+  it("selecting a duration under a manual-fallback tier pays with that tier's own plan id, not another tier's", async () => {
     lookupMock.mockRejectedValue(new Error('APIFY_ERROR'));
     allVisiblePlansMock.mockReturnValue({
       plans: [
@@ -204,16 +252,29 @@ describe('SetupInstagramDialog', () => {
           name: '۲۵K تا ۱۰۰K فالور',
           durations: [{ id: 20, name: 'یک ماهه', durationDays: 30, price: 200000 }],
         },
+        {
+          id: 3,
+          name: '۱۰۰K تا ۵۰۰K فالور',
+          durations: [{ id: 30, name: 'سه ماهه', durationDays: 90, price: 500000 }],
+        },
       ],
       isLoading: false,
     });
 
     renderDialog();
     await checkUsername('someone');
+    fireEvent.click(screen.getByText('۱۰۰K تا ۵۰۰K فالور'));
 
     expect(screen.getByText(messages.SetupInstagramDialog.next_step)).toBeDisabled();
-    fireEvent.click(screen.getByText('۲۵K تا ۱۰۰K فالور'));
+    fireEvent.click(screen.getByText('سه ماهه'));
     expect(screen.getByText(messages.SetupInstagramDialog.next_step)).not.toBeDisabled();
+
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.next_step));
+    fireEvent.click(screen.getByText(messages.SetupInstagramDialog.finalize_pay));
+
+    await waitFor(() =>
+      expect(payMock).toHaveBeenCalledWith({ planId: 3, durationId: 30 }, expect.any(Function)),
+    );
   });
 
   it('defaults the workspace step to the current workspace and pays directly, without creating or switching', async () => {
