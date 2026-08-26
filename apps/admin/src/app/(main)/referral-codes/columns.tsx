@@ -19,12 +19,18 @@ export type ReferralCode = {
     lastname: string;
     mobile: string;
   };
+  // Only set on PLAN codes - the subscription gifted to the referred user at signup.
+  planDuration?: {
+    id: number;
+    name: string;
+    plan?: { id: number; name: string } | null;
+  } | null;
 };
 
 const typeLabel: Record<string, string> = {
   PERCENTAGE: 'درصدی',
   FIXED: 'مبلغ ثابت',
-  PLAN: 'پلن',
+  PLAN: 'پلن (هدیه)',
 };
 
 export const columns: ColumnDef<ReferralCode>[] = [
@@ -50,11 +56,24 @@ export const columns: ColumnDef<ReferralCode>[] = [
   },
   {
     accessorKey: 'discount',
-    header: ({ column }) => <ColumnHeader column={column} title="تخفیف" />,
+    header: ({ column }) => <ColumnHeader column={column} title="تخفیف / هدیه" />,
     meta: { isNumeric: true },
     cell: ({ row }) => {
       const type = row.original.type;
       const discount = row.getValue('discount') as number;
+
+      // A PLAN code stores discount 0 - show the gifted subscription instead.
+      if (type === 'PLAN') {
+        const planDuration = row.original.planDuration;
+        if (!planDuration) return <span className="text-muted-foreground">—</span>;
+        return (
+          <span>
+            {planDuration.plan?.name ? `${planDuration.plan.name} — ` : ''}
+            {planDuration.name}
+          </span>
+        );
+      }
+
       return <span>{type === 'PERCENTAGE' ? `${discount}٪` : discount.toLocaleString()}</span>;
     },
   },

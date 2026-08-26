@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -35,18 +36,45 @@ import api, { fetcher } from '@/hooks/swr/api-client';
 import { formatNumber } from '@/lib/formatNumber';
 import { onInputP2EHandler } from '@/lib/p2eNumber';
 import { useSelectOnFocus } from '@/hooks/useSelectOnFocus';
+import { DurationResponse, PlanResponse } from '@/types/subscription';
 
-const FormSchema = z
+export const FormSchema = z
   .object({
     code: z.string().min(1, 'کد الزامی است'),
     mobile: z.string().regex(/^(\+98|0)?9\d{9}$/, 'شماره موبایل معتبر نیست'),
-    discount: z.number().positive('تخفیف باید مثبت باشد'),
-    type: z.enum(['PERCENTAGE', 'FIXED']),
+    // PLAN codes gift a subscription instead of discounting one, so they carry no
+    // discount. The "must be positive" rule lives in superRefine rather than here on
+    // purpose: a field-level failure aborts the whole object parse, so a leftover
+    // discount of 0 would block a PLAN submit with an error on a hidden field.
+    discount: z.number().optional(),
+    type: z.enum(['PERCENTAGE', 'FIXED', 'PLAN']),
     maxUsage: z.number().int().min(1).optional(),
     max: z.number().int().nonnegative().optional(),
     atLeast: z.number().int().nonnegative().optional(),
+    planId: z.number().int().positive().optional(),
+    planDurationId: z.number().int().positive().optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.type === 'PLAN') {
+      if (!data.planDurationId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['planDurationId'],
+          message: 'انتخاب مدت اشتراک الزامی است',
+        });
+      }
+      return;
+    }
+
+    if (!data.discount || data.discount <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['discount'],
+        message: 'تخفیف باید مثبت باشد',
+      });
+      return;
+    }
+
     if (data.type === 'PERCENTAGE' && data.discount > 100) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -87,6 +115,7 @@ export default function ReferralCodesTable({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableInstance, setTableInstance] = useState<Table<ReferralCode> | null>(null);
   const { onFocus } = useSelectOnFocus();
+  const t_ec = useTranslations('ERROR_CODES');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -100,6 +129,8 @@ export default function ReferralCodesTable({
   });
 
   const type = form.watch('type');
+  const isPlanType = type === 'PLAN';
+  const planId = form.watch('planId');
   const mobile = form.watch('mobile');
   const [debouncedMobile] = useDebounce(mobile, 500);
   const isMobileValid = /^(\+98|0)?9\d{9}$/.test(debouncedMobile ?? '');
@@ -119,6 +150,23 @@ export default function ReferralCodesTable({
     | undefined;
   const userNotFound = isMobileValid && !isUserLoading && !!userError;
 
+  // Gift-plan picker: plans are only fetched once the admin actually picks the PLAN type,
+  // and durations only once a plan is chosen (same cascade as AddSubscriptionDialog).
+  const { data: plansData, isLoading: isPlansLoading } = useSWR<PlanResponse>(
+    isPlanType ? '/plans' : null,
+    fetcher,
+  );
+
+  const { data: durationsData, isLoading: isDurationsLoading } = useSWR<DurationResponse>(
+    isPlanType && planId ? `/plans/planDurations?planId=${planId}` : null,
+    fetcher,
+  );
+
+  // A duration belongs to one plan, so a stale selection must not survive a plan switch.
+  useEffect(() => {
+    form.setValue('planDurationId', undefined);
+  }, [planId, form]);
+
   const handleSubmit = async (data: FormValues) => {
     if (!foundUser) {
       toast.error('کاربری با این شماره پیدا نشد');
@@ -126,8 +174,19 @@ export default function ReferralCodesTable({
     }
     setIsSubmitting(true);
     try {
+      // planId only drives the duration dropdown - the backend stores planDurationId.
+      const { planId: _planId, ...rest } = data;
       const payload =
-        data.type === 'PERCENTAGE' ? data : { ...data, max: undefined, atLeast: undefined };
+        data.type === 'PLAN'
+          ? {
+              code: rest.code,
+              mobile: rest.mobile,
+              type: rest.type,
+              planDurationId: rest.planDurationId,
+            }
+          : data.type === 'PERCENTAGE'
+            ? { ...rest, planDurationId: undefined }
+            : { ...rest, max: undefined, atLeast: undefined, planDurationId: undefined };
       await api.post('/referral-codes', payload);
       toast.success('کد رفرال با موفقیت ایجاد شد');
       form.reset();
@@ -135,13 +194,7 @@ export default function ReferralCodesTable({
       mutate();
     } catch (err: any) {
       const code = err?.response?.data?.code;
-      toast.error(
-        code === 'REFERRALCODE_ALREADY_EXISTS'
-          ? 'این کد از قبل وجود دارد'
-          : code === 'USER_NOTFOUND'
-            ? 'کاربری با این شماره پیدا نشد'
-            : 'خطا در ایجاد کد رفرال',
-      );
+      toast.error((code && t_ec(code)) || 'خطا در ایجاد کد رفرال');
     } finally {
       setIsSubmitting(false);
     }
@@ -233,33 +286,100 @@ export default function ReferralCodesTable({
                         <SelectContent>
                           <SelectItem value="PERCENTAGE">درصدی</SelectItem>
                           <SelectItem value="FIXED">مبلغ ثابت</SelectItem>
+                          <SelectItem value="PLAN">پلن (هدیه)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="discount"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{type === 'PERCENTAGE' ? 'درصد تخفیف' : 'مبلغ تخفیف'}</FormLabel>
-                      <FormControl>
-                        <Input
-                          onInput={onInputP2EHandler}
-                          onFocus={onFocus}
-                          placeholder="۰"
-                          value={field.value ? formatNumber(field.value) : ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value === '' ? 0 : +e.target.value)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {isPlanType && (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="planId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>پلن</FormLabel>
+                          <Select
+                            disabled={isPlansLoading}
+                            onValueChange={(val) => field.onChange(Number(val))}
+                            value={field.value ? field.value.toString() : undefined}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="پلن را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {plansData?.data.map((plan) => (
+                                <SelectItem key={plan.id} value={plan.id.toString()}>
+                                  {plan.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="planDurationId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>مدت اشتراک هدیه</FormLabel>
+                          <Select
+                            disabled={!planId || isDurationsLoading}
+                            onValueChange={(val) => field.onChange(Number(val))}
+                            value={field.value ? field.value.toString() : undefined}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="مدت را انتخاب کنید" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {durationsData?.data.map((duration) => (
+                                <SelectItem key={duration.id} value={duration.id.toString()}>
+                                  {duration.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      کاربر معرفی‌شده این اشتراک را هنگام ثبت‌نام هدیه می‌گیرد و پس از اتصال
+                      اینستاگرام فعال می‌شود. این کد تخفیف خرید ندارد و یک‌بار مصرف است.
+                    </p>
+                  </>
+                )}
+                {!isPlanType && (
+                  <FormField
+                    control={form.control}
+                    name="discount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{type === 'PERCENTAGE' ? 'درصد تخفیف' : 'مبلغ تخفیف'}</FormLabel>
+                        <FormControl>
+                          <Input
+                            onInput={onInputP2EHandler}
+                            onFocus={onFocus}
+                            placeholder="۰"
+                            value={field.value ? formatNumber(field.value) : ''}
+                            onChange={(e) =>
+                              field.onChange(e.target.value === '' ? 0 : +e.target.value)
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 {type === 'PERCENTAGE' && (
                   <>
                     <FormField
@@ -306,27 +426,29 @@ export default function ReferralCodesTable({
                     />
                   </>
                 )}
-                <FormField
-                  control={form.control}
-                  name="maxUsage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>حداکثر دفعات استفاده</FormLabel>
-                      <FormControl>
-                        <Input
-                          onInput={onInputP2EHandler}
-                          onFocus={onFocus}
-                          placeholder="۱"
-                          value={field.value ? formatNumber(field.value) : ''}
-                          onChange={(e) =>
-                            field.onChange(e.target.value === '' ? undefined : +e.target.value)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {!isPlanType && (
+                  <FormField
+                    control={form.control}
+                    name="maxUsage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>حداکثر دفعات استفاده</FormLabel>
+                        <FormControl>
+                          <Input
+                            onInput={onInputP2EHandler}
+                            onFocus={onFocus}
+                            placeholder="۱"
+                            value={field.value ? formatNumber(field.value) : ''}
+                            onChange={(e) =>
+                              field.onChange(e.target.value === '' ? undefined : +e.target.value)
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                     انصراف
