@@ -8,6 +8,7 @@ import { ExceptionMessage } from '@/types/exceptionMessage';
 import { CommerceProductListItem, CommerceProductStatus, PaginatedResult } from '@/types/commerce';
 import { AxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 
 import api from '@/hooks/swr/api-client';
+import { cn } from '@/lib/utils';
 import { mutateIncludeStringKey } from '@/utils/mutateIncludeStringKey';
 
 import { Button } from '@/components/ui';
@@ -25,7 +27,7 @@ import { DeleteConfirmationDialog } from '@/components/Global/DeleteConfirmation
 import { NoDataError } from '@/components/Global/NoDataError';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { CommerceProductCard } from './CommerceProductCard';
-import { CircleFadingPlusIcon } from 'lucide-react';
+import { CircleFadingPlusIcon, CreditCardIcon } from 'lucide-react';
 
 const STATUS_FILTERS: { value: CommerceProductStatus | undefined; labelKey: string }[] = [
   { value: 'active', labelKey: 'active' },
@@ -40,6 +42,7 @@ export const ProductListPage = () => {
   const router = useRouter();
   const { can } = usePermissions();
   const hasViewPermission = can('product:view');
+  const canCreate = can('product:create');
   const canEdit = can('product:edit');
   const canDelete = can('product:delete');
 
@@ -80,6 +83,11 @@ export const ProductListPage = () => {
   const { data: cardToCardData } = useSWRImmutable(`/payments/cardToCard`, {
     revalidateOnMount: true,
   });
+  const hasCardToCard = Boolean(cardToCardData);
+  // Disabling only the header button left no explanation on the page itself. For anyone who
+  // could otherwise create a product, swap the grid for a read-only notice instead — existing
+  // products stay visible for browsing, but nothing reads as actionable until they're set up.
+  const showCardToCardNotice = canCreate && !hasCardToCard;
 
   // ------- Pagination Start -------
   const defaultMeta: PageMeta = {
@@ -150,11 +158,11 @@ export const ProductListPage = () => {
           setIsSearchVisible={setIsSearchVisible}
         />
 
-        {can('product:create') && (
+        {canCreate && (
           <Button
             type="button"
             size="md"
-            disabled={error || !cardToCardData}
+            disabled={error || !hasCardToCard}
             onClick={() => router.push('/products/add')}
           >
             {t('add')}
@@ -163,7 +171,7 @@ export const ProductListPage = () => {
         )}
       </>
     ),
-    [isSearchVisible, can, error, router, t, cardToCardData],
+    [isSearchVisible, canCreate, error, router, t, hasCardToCard],
   );
 
   const HeaderTools = useMemo(
@@ -218,21 +226,47 @@ export const ProductListPage = () => {
       </div>
 
       <div className="flex-1">
-        {products.length === 0 ? (
+        {products.length === 0 && !showCardToCardNotice ? (
           <div className="flex h-full items-center justify-center">
             <div className="text-muted-foreground text-sm">{t('no_products')}</div>
           </div>
         ) : (
-          <div className="grid gap-3 md:grid-cols-3 2xl:grid-cols-4">
-            {products.map((item) => (
-              <CommerceProductCard
-                key={item.id}
-                product={item}
-                handleDelete={handleDelete}
-                canEdit={canEdit}
-                canDelete={canDelete}
-              />
-            ))}
+          <div className={cn('relative', products.length === 0 && 'min-h-[280px]')}>
+            <div
+              className={cn(
+                'grid gap-3 md:grid-cols-3 2xl:grid-cols-4',
+                showCardToCardNotice && 'pointer-events-none opacity-40 blur-[2px]',
+              )}
+            >
+              {products.map((item) => (
+                <CommerceProductCard
+                  key={item.id}
+                  product={item}
+                  handleDelete={handleDelete}
+                  canEdit={canEdit}
+                  canDelete={canDelete}
+                />
+              ))}
+            </div>
+            {/* Sized to the exact bounding box of the grid above (`absolute inset-0` inside
+                the `relative` wrapper), not a separate card floating on top of it — its
+                height is always whatever height the product table itself has. */}
+            {showCardToCardNotice && (
+              <div className="border-wline bg-card absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl border px-6 py-8 text-center shadow-sm">
+                <div className="bg-wtint text-wtext flex size-14 items-center justify-center rounded-full">
+                  <CreditCardIcon className="size-7" />
+                </div>
+                <div className="max-w-sm">
+                  <p className="text-foreground text-lg font-bold">{t('NoCardToCard.title')}</p>
+                  <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">
+                    {t('NoCardToCard.description')}
+                  </p>
+                </div>
+                <Button asChild className="mt-1">
+                  <Link href="/settings/card">{t('NoCardToCard.action')}</Link>
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

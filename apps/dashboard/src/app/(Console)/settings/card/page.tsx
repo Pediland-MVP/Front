@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { z } from 'zod';
 
@@ -82,6 +83,9 @@ export default function BankCardPage() {
       const res = await api.post('/payments/cardToCard', data);
       if (res.status >= 200 && res.status < 300) {
         toast.success(t('cardToCardUpdated'));
+        // Other pages (e.g. the products list) hold their own `useSWRImmutable('/payments/cardToCard')`
+        // and never revalidate on their own — without this they keep showing the pre-save data.
+        await mutate('/payments/cardToCard');
       } else {
         toast.error(t('cardToCardUpdateFailed'));
       }

@@ -267,6 +267,54 @@ describe('ProductListPage', () => {
     expect(screen.getByText(messages.Commerce.List.add).closest('button')).not.toBeDisabled();
   });
 
+  it('shows the card-to-card notice and locks the grid when the viewer can create but has no card-to-card method', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:create');
+    mockUseSWRImmutable.mockImplementation((url: string) =>
+      url === '/payments/cardToCard'
+        ? { data: undefined, error: undefined }
+        : listData(buildItem()),
+    );
+
+    renderPage();
+
+    expect(
+      screen.getByText(new RegExp(messages.Commerce.List.NoCardToCard.title)),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: messages.Commerce.List.NoCardToCard.action }),
+    ).toHaveAttribute('href', '/settings/card');
+  });
+
+  it('does not show the card-to-card notice once a card-to-card method is configured', () => {
+    mockCan.mockImplementation((slug: string) => slug === 'product:create');
+    mockUseSWRImmutable.mockImplementation((url: string) =>
+      url === '/payments/cardToCard'
+        ? { data: { id: 'ctc-1' }, error: undefined }
+        : listData(buildItem()),
+    );
+
+    renderPage();
+
+    expect(
+      screen.queryByText(new RegExp(messages.Commerce.List.NoCardToCard.title)),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not show the card-to-card notice when the viewer cannot create products', () => {
+    mockCan.mockReturnValue(false);
+    mockUseSWRImmutable.mockImplementation((url: string) =>
+      url === '/payments/cardToCard'
+        ? { data: undefined, error: undefined }
+        : listData(buildItem()),
+    );
+
+    renderPage();
+
+    expect(
+      screen.queryByText(new RegExp(messages.Commerce.List.NoCardToCard.title)),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders the card edit button and routes to that product when the viewer can edit', () => {
     mockCan.mockImplementation((slug: string) => slug === 'product:edit');
     mockUseSWRImmutable.mockReturnValue(listData(buildItem({ id: 'prod-7' })));
