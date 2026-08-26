@@ -3,6 +3,8 @@
 import dayjs from '@/lib/dayjs-jalali';
 import { ColumnDef } from '@tanstack/react-table';
 import { ColumnHeader } from '@/components/table/column-header';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
 
 export type ReferralCode = {
   id: string;
@@ -33,7 +35,13 @@ const typeLabel: Record<string, string> = {
   PLAN: 'پلن (هدیه)',
 };
 
-export const columns: ColumnDef<ReferralCode>[] = [
+const Dash = () => <span className="text-muted-foreground">—</span>;
+
+export const makeColumns = ({
+  onEdit,
+}: {
+  onEdit: (referralCode: ReferralCode) => void;
+}): ColumnDef<ReferralCode>[] => [
   {
     accessorKey: 'createDate',
     header: ({ column }) => <ColumnHeader column={column} title="تاریخ ثبت" />,
@@ -56,25 +64,31 @@ export const columns: ColumnDef<ReferralCode>[] = [
   },
   {
     accessorKey: 'discount',
-    header: ({ column }) => <ColumnHeader column={column} title="تخفیف / هدیه" />,
+    header: ({ column }) => <ColumnHeader column={column} title="تخفیف" />,
     meta: { isNumeric: true },
     cell: ({ row }) => {
       const type = row.original.type;
       const discount = row.getValue('discount') as number;
 
-      // A PLAN code stores discount 0 - show the gifted subscription instead.
-      if (type === 'PLAN') {
-        const planDuration = row.original.planDuration;
-        if (!planDuration) return <span className="text-muted-foreground">—</span>;
-        return (
-          <span>
-            {planDuration.plan?.name ? `${planDuration.plan.name} — ` : ''}
-            {planDuration.name}
-          </span>
-        );
-      }
+      // A PLAN code stores discount 0 and grants a subscription instead - that is shown
+      // in the dedicated gift column, so this one stays empty rather than printing 0.
+      if (type === 'PLAN') return <Dash />;
 
       return <span>{type === 'PERCENTAGE' ? `${discount}٪` : discount.toLocaleString()}</span>;
+    },
+  },
+  {
+    id: 'giftPlan',
+    header: 'پلن هدیه',
+    cell: ({ row }) => {
+      const planDuration = row.original.planDuration;
+      if (row.original.type !== 'PLAN' || !planDuration) return <Dash />;
+      return (
+        <span>
+          {planDuration.plan?.name ? `${planDuration.plan.name} — ` : ''}
+          {planDuration.name}
+        </span>
+      );
     },
   },
   {
@@ -98,5 +112,14 @@ export const columns: ColumnDef<ReferralCode>[] = [
     id: 'userMobile',
     header: 'همراه',
     cell: ({ row }) => <span>{row.original.user?.mobile ?? '-'}</span>,
+  },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) => (
+      <Button variant="ghost" size="icon" aria-label="ویرایش" onClick={() => onEdit(row.original)}>
+        <Pencil className="size-4" />
+      </Button>
+    ),
   },
 ];
