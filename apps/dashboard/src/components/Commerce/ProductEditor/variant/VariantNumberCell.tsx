@@ -63,9 +63,13 @@ export function VariantNumberCell({
   // Name-scoped: this cell re-renders on ITS OWN error appearing, not on any other row's.
   const { errors } = useFormState({ control, name });
   const hasError = Boolean(errors?.variants?.[index]?.[field]);
-  // A zod issue tints with the tone that field's failure means: a missing price is red, a
-  // compare/stock that is present but wrong is amber.
-  const shown: VariantCellTone = hasError ? (field === 'price' ? 'empty' : 'zero') : tone;
+  // A zod issue tints with the tone that field's failure means. `compare` is the ONLY field whose
+  // issue always fires while the value is PRESENT and wrong (`compareInvalid`, not above price),
+  // so it is the only amber one. `stock` fails only for being missing (`stockRequired`) — 0 is a
+  // valid count and never trips it — so it is red; it used to fall into the amber branch by
+  // accident. `price` is red because a blank price is by far its common failure, even though it
+  // also carries `salePriceInvalid`/`amountMax` issues raised on a value that is present.
+  const shown: VariantCellTone = hasError ? (field === 'compare' ? 'zero' : 'empty') : tone;
 
   const registration = register(name, { setValueAs: (raw) => parseAmount(String(raw ?? '')) });
 

@@ -219,6 +219,34 @@ describe('AttributesSection — the "use مشخصات instead" notice', () => {
     expect(marked[0].className).not.toEqual(marked[1].className);
   });
 
+  /*
+   * Regression: the notice used to hand `t.rich`'s output straight to `AlertDescription`, which
+   * is a flex ROW. The five pieces the message compiles to — text, <strong>, text, <strong>,
+   * text — each became their own flex item, so one sentence rendered as five narrow columns side
+   * by side, each wrapping on its own, and the phrases read as if stacked inside one another.
+   *
+   * Asserted on the DOM rather than on styling because that is where the fault actually lives:
+   * as long as every piece of the sentence shares ONE non-flex parent, it flows as inline text.
+   */
+  it('keeps the whole sentence in a single block so it flows as one paragraph', () => {
+    render(<Harness />);
+
+    const notice = screen.getByTestId('attributes-notice');
+    const paragraph = notice.querySelector('p');
+
+    expect(paragraph).not.toBeNull();
+    // The parent of every text run and both <strong>s is the same element, and it is not a flex
+    // container — so no piece of the sentence can be laid out as its own column.
+    expect(paragraph!.className).not.toMatch(/\bflex\b/);
+    const parents = new Set(
+      [...paragraph!.childNodes]
+        .map((node) => node.parentElement)
+        .concat([...notice.querySelectorAll('strong')].map((el) => el.parentElement)),
+    );
+    expect(parents.size).toBe(1);
+    expect([...parents][0]).toBe(paragraph);
+  });
+
   it('stays put once axes exist — it is guidance, not an empty state', () => {
     render(<Harness />);
     fireEvent.click(screen.getByText(copy.addAttribute));

@@ -171,7 +171,14 @@ export const AttributesSection = ({
   const atMax = fields.length >= MAX_ATTRS;
 
   return (
-    <>
+    /*
+      Notice and section are ONE group, not two loose siblings. The page stacks its steps in a
+      `flex-col gap-6`, and a fragment here spilled both children straight into that stack — so
+      the notice floated 24px clear of the heading it belongs to and read as a footnote on the
+      PREVIOUS step (price/stock) instead. The wrapper makes the page see one step, and the tight
+      inner gap says the two belong together.
+    */
+    <div className="flex min-w-0 flex-col gap-2.5">
       {/*
         Sits BEFORE the step heading, not inside the card, because it is meant to be read before
         the merchant starts adding axes — by the time they are looking at the card they have
@@ -183,9 +190,24 @@ export const AttributesSection = ({
         جنس or کشور سازنده produces a product with one meaningless "choice" per fact. That is
         what step ۸ (مشخصات) is for.
       */}
-      <Alert variant="note" className="mb-3" data-testid="attributes-notice">
-        <AlertDescription icon>
+      <Alert variant="note" className="items-start" data-testid="attributes-notice">
+        {/*
+          `items-start` and a non-shrinking icon box, because this message runs to two or three
+          lines: `Alert`/`AlertDescription` both default to `items-center`, which floats the icon
+          halfway down the paragraph, and the icon's wrapper carries no `shrink-0` of its own.
+        */}
+        <AlertDescription
+          icon
+          className="min-w-0 flex-1 items-start gap-2 [&>div:first-child]:shrink-0"
+        >
           {/*
+            The <p> is load-bearing, not decoration. `AlertDescription` is a flex ROW, and
+            `t.rich` returns five siblings — text, <strong>, text, <strong>, text. Returned bare
+            they each became their own flex item, so one sentence was laid out as five narrow
+            side-by-side columns that wrapped independently and read as though the phrases were
+            stacked inside one another. Wrapped, it is a single flex item and flows as normal
+            inline text with the two <strong>s sitting mid-sentence where they belong.
+
             `t.rich`, so the two section names are marked up INSIDE the translated string rather
             than by splitting it into three keys. Persian is RTL and the words sit mid-sentence —
             three keys concatenated in JSX would hard-code an order the copy is free to change.
@@ -194,10 +216,12 @@ export const AttributesSection = ({
             the alert's own amber, `specs` is the thing to use instead and takes the primary
             colour, so the sentence reads "not this → that" without being read word by word.
           */}
-          {t.rich('notice', {
-            attrs: (chunks) => <strong className="font-bold text-amber-900">{chunks}</strong>,
-            specs: (chunks) => <strong className="text-primary font-bold">{chunks}</strong>,
-          })}
+          <p className="m-0 text-pretty">
+            {t.rich('notice', {
+              attrs: (chunks) => <strong className="font-bold text-amber-900">{chunks}</strong>,
+              specs: (chunks) => <strong className="text-primary font-bold">{chunks}</strong>,
+            })}
+          </p>
         </AlertDescription>
       </Alert>
 
@@ -347,6 +371,6 @@ export const AttributesSection = ({
           </div>
         </div>
       </EditorSection>
-    </>
+    </div>
   );
 };
