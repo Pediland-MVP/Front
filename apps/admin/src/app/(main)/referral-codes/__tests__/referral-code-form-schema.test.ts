@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FormSchema } from '../referral-codes-table';
+import { FormSchema } from '../referral-code-form-dialog';
 
 const base = { code: 'GIFT90', mobile: '09123456789' };
 
