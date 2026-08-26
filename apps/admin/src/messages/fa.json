@@ -164,7 +164,8 @@
     "TEMPLATE_NOT_FOUND": "قالب یافت نشد",
     "TEMPLATE_CATEGORY_ASSIGNMENT_REQUIRED": "حداقل یک دسته‌بندی انتخاب کنید یا گزینه «اعمال روی همه دسته‌بندی‌ها» را فعال کنید",
     "WORKSPACE_NOT_OWNED_BY_USER": "این ورک‌اسپیس متعلق به این کاربر نیست",
-    "INSTAGRAM_NOT_IN_WORKSPACE": "این پیج در ورک‌اسپیس انتخاب‌شده وجود ندارد"
+    "INSTAGRAM_NOT_IN_WORKSPACE": "این پیج در ورک‌اسپیس انتخاب‌شده وجود ندارد",
+    "REFERRALCODE_ALREADY_EXISTS": "این کد رفرال از قبل وجود دارد"
   },
   "Workspaces": {
     "title": "کسب‌وکارها",
