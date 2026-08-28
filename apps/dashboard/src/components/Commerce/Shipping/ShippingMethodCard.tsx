@@ -1,0 +1,272 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { PencilIcon, Trash2Icon } from 'lucide-react';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
+import type { ICity } from '@/types/city';
+import type { IProvince } from '@/types/province';
+import type { CommerceShippingKind } from '@/types/shipping';
+import type { ShippingOptionDraft, ShippingOverrideDraft } from '@/utils/commerce/shippingDraft';
+
+import {
+  editorCard,
+  editorIconButton,
+  editorIconButtonDanger,
+  editorInput,
+} from '../ProductEditor/ui/editorChrome';
+import { formatAmount, formatCount } from '../ProductEditor/utils/editorNumber.util';
+import { MoneyField } from './MoneyField';
+import { RateOverrideEditor } from './RateOverrideEditor';
+
+/** Order the kinds are offered in — the two postal services first, since most merchants use them. */
+const KINDS: CommerceShippingKind[] = [
+  'post_pishtaz',
+  'post_sefareshi',
+  'tipax',
+  'courier',
+  'pickup',
+  'other',
+];
+
+interface ShippingMethodCardProps {
+  draft: ShippingOptionDraft;
+  onChange: (patch: Partial<ShippingOptionDraft>) => void;
+  onRemove: () => void;
+  canEdit: boolean;
+  provinces: IProvince[];
+  cities: ICity[];
+  provinceById: Map<number, IProvince>;
+  cityById: Map<number, ICity>;
+}
+
+/**
+ * One shipping method: its switch, its price, and everything that modifies that price.
+ *
+ * The card carries the screen's one real piece of domain translation. The API models pricing as a
+ * single three-way enum (`flat` / `free_over` / `post_kerayeh`), but a merchant does not think in
+ * enums — they think "how much do I charge" plus two yes/no questions. So the card shows two
+ * switches and `pricingOf` folds them back. پس‌کرایه is the mode that swallows the others: when
+ * the courier collects the fare from the buyer, the seller's price, threshold and per-city
+ * exceptions all become meaningless, so they are hidden rather than left on screen contradicting
+ * the mode. The server enforces the same exclusion with a CHECK constraint.
+ */
+export const ShippingMethodCard = ({
+  draft,
+  onChange,
+  onRemove,
+  canEdit,
+  provinces,
+  cities,
+  provinceById,
+  cityById,
+}: ShippingMethodCardProps) => {
+  const t = useTranslations('Commerce.Shipping');
+
+  /**
+   * An inactive method still needs editing — that is how you fix the price before switching it
+   * back on. The design hides the body of an inactive card, which would make a deactivated method
+   * uneditable, so a small "ویرایش" reveals it instead.
+   */
+  const [isForcedOpen, setIsForcedOpen] = useState(false);
+  const isBodyOpen = draft.isActive || isForcedOpen;
+  const isPostKerayeh = draft.postKerayeh;
+
+  const summary = useMemo(() => {
+    if (!draft.isActive) return t('summaryInactive');
+
+    const parts: string[] = [];
+    if (isPostKerayeh) {
+      parts.push(t('summaryPostKerayeh'));
+    } else {
+      parts.push(
+        draft.amount > 0 ? `${formatAmount(draft.amount)} ${t('priceUnit')}` : t('summaryFree'),
+      );
+      if (draft.freeOverEnabled) {
+        parts.push(t('summaryFreeAbove', { amount: formatAmount(draft.freeOverAmount) }));
+      }
+      if (draft.overrides.length > 0) {
+        parts.push(t('summaryExceptions', { count: formatCount(draft.overrides.length) }));
+      }
+    }
+    return parts.join('  ·  ');
+  }, [draft, isPostKerayeh, t]);
+
+  const setOverrides = (next: ShippingOverrideDraft[]) => onChange({ overrides: next });
+
+  return (
+    <div className={editorCard}>
+      <div className="flex items-start gap-3 p-4">
+        <div className="pt-0.5">
+          <Switch
+            checked={draft.isActive}
+            disabled={!canEdit}
+            onCheckedChange={(checked) => onChange({ isActive: checked })}
+            aria-label={draft.title}
+          />
+        </div>
+
+        <div className={cn('flex min-w-0 flex-1 flex-col gap-1', !draft.isActive && 'opacity-55')}>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-base font-bold">{draft.title || t('newMethodTitle')}</span>
+            <span className="bg-tint text-mut rounded px-1.5 py-0.5 text-[10px] font-bold">
+              {t(`kinds.${draft.kind}`)}
+            </span>
+          </div>
+          <div className="text-mut text-xs">{summary}</div>
+        </div>
+
+        <div className="flex flex-none items-center gap-1">
+          {!draft.isActive && (
+            <button
+              type="button"
+              onClick={() => setIsForcedOpen((open) => !open)}
+              aria-label={t('editInactive')}
+              aria-expanded={isForcedOpen}
+              className={editorIconButton}
+            >
+              <PencilIcon className="size-3.5" aria-hidden="true" />
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={!canEdit}
+            onClick={onRemove}
+            aria-label={`${t('remove')} — ${draft.title}`}
+            className={editorIconButtonDanger}
+          >
+            <Trash2Icon className="size-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {isBodyOpen && (
+        <div className="flex flex-col gap-3 px-4 pb-4">
+          <div className="border-ln grid gap-3 border-t pt-3.5 sm:grid-cols-[200px_minmax(0,1fr)]">
+            <div>
+              <label className="text-mut mb-1.5 block text-xs font-bold">{t('kindLabel')}</label>
+              <Select
+                value={draft.kind}
+                disabled={!canEdit}
+                onValueChange={(value) => onChange({ kind: value as CommerceShippingKind })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {KINDS.map((kind) => (
+                    <SelectItem key={kind} value={kind}>
+                      {t(`kinds.${kind}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label
+                htmlFor={`title-${draft.key}`}
+                className="text-mut mb-1.5 block text-xs font-bold"
+              >
+                {t('titleLabel')}
+              </label>
+              <input
+                id={`title-${draft.key}`}
+                type="text"
+                disabled={!canEdit}
+                value={draft.title}
+                onChange={(e) => onChange({ title: e.target.value })}
+                className={cn(editorInput, 'font-semibold')}
+              />
+            </div>
+          </div>
+
+          {!isPostKerayeh && (
+            <>
+              <div className="flex flex-wrap items-end gap-3.5">
+                <div className="w-48">
+                  <label
+                    htmlFor={`price-${draft.key}`}
+                    className="text-mut mb-1.5 block text-xs font-bold"
+                  >
+                    {t('priceLabel')}
+                  </label>
+                  <MoneyField
+                    id={`price-${draft.key}`}
+                    value={draft.amount}
+                    onChange={(next) => onChange({ amount: next ?? 0 })}
+                    disabled={!canEdit}
+                    ariaLabel={t('priceLabel')}
+                    unit={t('priceUnit')}
+                  />
+                </div>
+                <p className="text-mut max-w-72 pb-3 text-xs text-pretty">{t('priceHint')}</p>
+              </div>
+
+              <div className="border-lnv bg-tint flex flex-wrap items-center gap-2.5 rounded-xl border p-3">
+                <Switch
+                  checked={draft.freeOverEnabled}
+                  disabled={!canEdit}
+                  onCheckedChange={(checked) => onChange({ freeOverEnabled: checked })}
+                  aria-label={t('freeOverLabel')}
+                />
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                  <span className="text-sm font-semibold">{t('freeOverLabel')}</span>
+                  {draft.freeOverEnabled ? (
+                    <MoneyField
+                      value={draft.freeOverAmount}
+                      onChange={(next) => onChange({ freeOverAmount: next ?? 0 })}
+                      disabled={!canEdit}
+                      size="sm"
+                      // Distinct from the switch beside it: two controls in the same row must not
+                      // share an accessible name, or a screen reader announces them identically.
+                      ariaLabel={t('freeOverAmountLabel')}
+                      unit={t('priceUnit')}
+                      className="[&_input]:bg-card w-40 [&_input]:h-[34px] [&_input]:text-sm"
+                    />
+                  ) : (
+                    <span className="text-mut text-sm">{t('freeOverDisabled')}</span>
+                  )}
+                </div>
+              </div>
+
+              <RateOverrideEditor
+                overrides={draft.overrides}
+                onChange={setOverrides}
+                disabled={!canEdit}
+                provinces={provinces}
+                cities={cities}
+                provinceById={provinceById}
+                cityById={cityById}
+              />
+            </>
+          )}
+
+          <div className="bg-tint flex items-center gap-2.5 rounded-xl p-3">
+            <Switch
+              checked={isPostKerayeh}
+              disabled={!canEdit}
+              onCheckedChange={(checked) => onChange({ postKerayeh: checked })}
+              aria-label={t('postKerayehLabel')}
+            />
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="text-sm font-semibold">{t('postKerayehLabel')}</span>
+              <span className="text-mut text-xs text-pretty">
+                {isPostKerayeh ? t('postKerayehLocked') : t('postKerayehNote')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

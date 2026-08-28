@@ -81,9 +81,43 @@ timeline. It is used in two places: the `/tasks` drawer
 
 ---
 
+## Commerce — Shipping Methods
+
+The «تنظیمات ارسال پستی» screen (`/products/shipping`) is the only consumer of these routes. Every
+one requires `ORDER_VIEW` to read and `ORDER_MANAGE` to write, matching `ShippingOptionsController`.
+
+| Route | Used by | Notes |
+| --- | --- | --- |
+| `GET /commerce/shipping-options` | `hooks/useShippingOptions.ts` | `PaginatedResult` envelope, one synthetic page, no page/limit. **Each option arrives with its `overrides` eager-loaded** — this is the only way the frontend can read exceptions; there is no `GET :id/overrides`. |
+| `POST /commerce/shipping-options` | same | Response is `ResponseMessage`; the screen reads `data.data.id` to attach the new option's exceptions. |
+| `PATCH /commerce/shipping-options/:id` | same | Partial update — only the keys sent are touched. |
+| `DELETE /commerce/shipping-options/:id` | same | Cascades to the option's overrides. |
+| `PUT /commerce/shipping-options/:id/overrides` | same | **Full replace**, capped at 200 rows. Rejected outright on a `post_kerayeh` option, so the screen sends an empty list when that mode is on. |
+| `GET /cities`, `GET /cities/provinces` | `hooks/useShippingDestinations.ts` | Fetched whole and cached with `useSWRImmutable`. A saved exception stores a bare `cityId`, so the full table is what turns ids back into names. `GET /cities` returns `provinceId` on every row — `types/city.ts` was missing that field. |
+
+**Pricing enum ↔ UI.** The API's `pricing` is three-way and mutually exclusive (`flat` /
+`free_over` / `post_kerayeh`), enforced by `CHK_commerce_shipping_option_pricing`. The screen shows
+two independent switches and folds them back in `utils/commerce/shippingDraft.ts`'s `pricingOf`;
+پس‌کرایه wins over the free-shipping threshold. Any new pricing mode on the Back has to be taught
+to that function — the frontend cannot round-trip an enum value it has no switch for.
+
+**Error codes.** `COMMERCE_SHIPPING_OPTION_NOT_FOUND`, `COMMERCE_SHIPPING_OPTION_UNAVAILABLE`,
+`COMMERCE_SHIPPING_THRESHOLD_REQUIRED`, `COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED`,
+`COMMERCE_SHIPPING_OVERRIDE_TARGET` — all translated in `messages/fa/ErrorCodes.json`.
+
 ## Deploy Coupling
 
 The `isPromotion` field on Instagram accounts and the `instagramId` field on `POST /subscriptions/subscribe` require coordinated deployment: **Back and Front MUST ship together — deploying only the Back is NOT safe.**
 
 - **Front-only deploy (old Back):** `isPromotion` is `undefined` in the API response, treated as `false` — no alert is shown. Safe.
 - **Back-only deploy (old Front):** The backend has **dropped the `Instagram.isPromotion` column**. The currently-deployed (old) Front still reads this column, which will break. **Do NOT deploy the Back without also deploying this Front.**
+
+### Commerce shipping (2026-08-27)
+
+The shipping screen and the Back shipping feature are **deploy-coupled in one direction**: the
+Front calls routes that exist only on `feat/commerce-shipping-methods` (merged into
+`feat/commerce-product-core`).
+
+- **Back-only deploy (old Front):** safe. Nothing on the old Front calls these routes.
+- **Front-only deploy (old Back):** every request 404s and the screen is dead. **Ship the Back
+  first, or ship both together.**

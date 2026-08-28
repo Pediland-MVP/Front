@@ -80,6 +80,10 @@ const generateData = (
           title: t('productsImport'),
           url: '/products/import',
         },
+        {
+          title: t('productsShipping'),
+          url: '/products/shipping',
+        },
       ],
     },
     {
