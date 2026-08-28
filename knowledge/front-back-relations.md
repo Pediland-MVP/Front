@@ -91,8 +91,8 @@ one requires `ORDER_VIEW` to read and `ORDER_MANAGE` to write, matching `Shippin
 | `GET /commerce/shipping-options` | `hooks/useShippingOptions.ts` | `PaginatedResult` envelope, one synthetic page, no page/limit. **Each option arrives with its `overrides` eager-loaded** — this is the only way the frontend can read exceptions; there is no `GET :id/overrides`. |
 | `POST /commerce/shipping-options` | same | Response is `ResponseMessage`; the screen reads `data.data.id` to attach the new option's exceptions. |
 | `PATCH /commerce/shipping-options/:id` | same | Partial update — only the keys sent are touched. |
-| `DELETE /commerce/shipping-options/:id` | same | Cascades to the option's overrides. |
-| `PUT /commerce/shipping-options/:id/overrides` | same | **Full replace**, capped at 200 rows. Rejected outright on a `post_kerayeh` option, so the screen sends an empty list when that mode is on. |
+| `DELETE /commerce/shipping-options/:id` | same | Cascades to the option's overrides. **Refused for a seeded method** (`isSystem`) with `COMMERCE_SHIPPING_OPTION_NOT_DELETABLE`; `ShippingMethodCard` hides the delete button on those, so the code is a safety net rather than a path a merchant can reach through the UI. |
+| `PUT /commerce/shipping-options/:id/overrides` | same | **Full replace**, capped at 200 rows. Rejected outright on any non-`prepaid` settlement, so the screen sends an empty list when the carrier collects. |
 | `GET /cities`, `GET /cities/provinces` | `hooks/useShippingDestinations.ts` | Fetched whole and cached with `useSWRImmutable`. A saved exception stores a bare `cityId`, so the full table is what turns ids back into names. `GET /cities` returns `provinceId` on every row — `types/city.ts` was missing that field. |
 
 **Settlement enum ↔ UI.** The API's `settlement` is three-way and mutually exclusive (`prepaid` /

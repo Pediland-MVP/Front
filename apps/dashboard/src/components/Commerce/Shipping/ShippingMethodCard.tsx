@@ -165,15 +165,23 @@ export const ShippingMethodCard = ({
               <PencilIcon className="size-3.5" aria-hidden="true" />
             )}
           </button>
-          <button
-            type="button"
-            disabled={!canEdit}
-            onClick={onRemove}
-            aria-label={`${t('remove')} — ${draft.title}`}
-            className={editorIconButtonDanger}
-          >
-            <Trash2Icon className="size-3.5" aria-hidden="true" />
-          </button>
+          {/*
+            A seeded method has no delete button at all, rather than a disabled one: the style's
+            `disabled:pointer-events-none` would swallow the tooltip that explains why, leaving a
+            dead icon. The reason is stated inside the open body instead, next to the switch that
+            does what the merchant actually wants.
+          */}
+          {!draft.isSystem && (
+            <button
+              type="button"
+              disabled={!canEdit}
+              onClick={onRemove}
+              aria-label={`${t('remove')} — ${draft.title}`}
+              className={editorIconButtonDanger}
+            >
+              <Trash2Icon className="size-3.5" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -217,6 +225,12 @@ export const ShippingMethodCard = ({
               />
             </div>
           </div>
+
+          {draft.isSystem && (
+            <p className="text-mut border-lnv bg-tint rounded-xl border p-3 text-xs text-pretty">
+              {t('systemMethodNote')}
+            </p>
+          )}
 
           {/*
             A radio group, not switches: the three modes are mutually exclusive, and switches

@@ -247,3 +247,44 @@ still needs to read what a method costs, and every control inside the body carri
   dashboard suite: **500 pass / 60 files**.
 - `npx tsc --noEmit` — 204 errors, identical to baseline, zero in any touched file.
 - **Still not verified in a browser.**
+
+---
+
+# 2026-08-29 — No delete button on a seeded method
+
+## Problem
+
+The backend now refuses to delete a seeded method (`isSystem`,
+`COMMERCE_SHIPPING_OPTION_NOT_DELETABLE`). The card still showed a trash button on those, so the
+merchant's only way to learn the rule was to click it and read a toast.
+
+## Solution
+
+The delete button is **not rendered** for `draft.isSystem`, and the open body carries a line saying
+why and what to do instead: «این یکی از روش‌های پیش‌فرض است و حذف نمی‌شود. اگر نمی‌خواهید ارائه‌اش
+کنید، غیرفعالش کنید؛ قیمت و استثناهایش هم دست‌نخورده می‌ماند.»
+
+Hidden rather than disabled: `editorIconButtonDanger` carries `disabled:pointer-events-none`, which
+swallows the tooltip that would explain a disabled icon — leaving a dead button and no reason. The
+reason belongs next to the switch that does what the merchant actually wants.
+
+Undeletable is not read-only. Every other control on a seeded card behaves exactly as before.
+
+## Changes
+
+- `types/shipping.ts` — `isSystem: boolean` on `CommerceShippingOption`.
+- `utils/commerce/shippingDraft.ts` — the draft carries it; `toDraft` copies it, `newOptionDraft`
+  sets `false`, `toPayload` never sends it (the server hard-codes it on create).
+- `ShippingMethodCard.tsx` — delete button gated on `!draft.isSystem`; the explanatory note.
+- `messages/fa.json` — `systemMethodNote`.
+- `messages/fa/ErrorCodes.json` — `COMMERCE_SHIPPING_OPTION_NOT_DELETABLE`, as a safety net: the
+  screen's delete path already surfaces `ExceptionMessage.code` through `t_ec`.
+
+## Verification
+
+- `npx vitest run src/components/Commerce/Shipping src/utils/commerce/shippingDraft.test.ts` —
+  **65 pass / 4 files** (7 new: no delete button on a seeded method, the note explaining it, a
+  merchant's own method still deletable, a seeded one still fully editable, and three on the draft
+  round-trip).
+- `npx tsc --noEmit` — 204, baseline.
+- **Still not verified in a browser.**

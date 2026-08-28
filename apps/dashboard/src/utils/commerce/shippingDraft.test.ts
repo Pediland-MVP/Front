@@ -20,11 +20,28 @@ const option = (overrides: Partial<CommerceShippingOption> = {}): CommerceShippi
   amount: 45000,
   freeOverAmount: null,
   sortOrder: 0,
+  isSystem: false,
   isActive: true,
   overrides: [],
   createDate: '2026-08-27T00:00:00.000Z',
   updateDate: '2026-08-27T00:00:00.000Z',
   ...overrides,
+});
+
+describe('shippingDraft — who owns the method', () => {
+  it('carries the server flag through, so the card knows to hide its delete button', () => {
+    expect(toDraft(option({ isSystem: true })).isSystem).toBe(true);
+  });
+
+  it('marks a method the merchant is adding as theirs, and therefore deletable', () => {
+    expect(newOptionDraft('پیک موتوری', 3).isSystem).toBe(false);
+  });
+
+  // The server hard-codes `isSystem: false` on create; sending it would be a client claiming a
+  // flag it does not own.
+  it('never sends it to the API', () => {
+    expect(toPayload(toDraft(option({ isSystem: true })))).not.toHaveProperty('isSystem');
+  });
 });
 
 describe('chargesShipping', () => {

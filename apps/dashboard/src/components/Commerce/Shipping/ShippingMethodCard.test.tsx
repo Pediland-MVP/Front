@@ -103,6 +103,38 @@ describe('ShippingMethodCard — closed until asked', () => {
   });
 });
 
+describe('ShippingMethodCard — a seeded method cannot be deleted', () => {
+  const removeLabel = (draft: ShippingOptionDraft) => `${copy.remove} — ${draft.title}`;
+
+  it('offers no delete button at all — a dead disabled icon would explain nothing', () => {
+    const draft = baseDraft({ isSystem: true });
+    renderCard(draft);
+
+    expect(screen.queryByRole('button', { name: removeLabel(draft) })).not.toBeInTheDocument();
+  });
+
+  it('says why, and points at the switch that does what the merchant wants', () => {
+    renderOpenCard(baseDraft({ isSystem: true }));
+
+    expect(screen.getByText(copy.systemMethodNote)).toBeInTheDocument();
+  });
+
+  it('still deletes a method the merchant added themselves', () => {
+    const draft = baseDraft({ isSystem: false });
+    renderCard(draft);
+
+    expect(screen.getByRole('button', { name: removeLabel(draft) })).toBeInTheDocument();
+  });
+
+  it('stays fully editable — undeletable is not read-only', () => {
+    const onChange = renderOpenCard(baseDraft({ isSystem: true }));
+
+    fireEvent.change(screen.getByLabelText(copy.titleLabel), { target: { value: 'پست ویژه' } });
+
+    expect(onChange).toHaveBeenCalledWith({ title: 'پست ویژه' });
+  });
+});
+
 describe('ShippingMethodCard — the three settlement modes are exclusive', () => {
   it('offers exactly three, as radios rather than switches', () => {
     renderOpenCard(baseDraft());

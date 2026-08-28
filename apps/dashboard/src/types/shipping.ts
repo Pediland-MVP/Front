@@ -53,6 +53,12 @@ export interface CommerceShippingOption {
   freeOverAmount: number | null;
   sortOrder: number;
   isActive: boolean;
+  /**
+   * One of the starter methods the platform seeds into every workspace. Editable like any other —
+   * rename, reprice, re-settle, switch off — but the API refuses to DELETE it
+   * (`COMMERCE_SHIPPING_OPTION_NOT_DELETABLE`), so no shop can end up with no way to ship.
+   */
+  isSystem: boolean;
   /** Eager-loaded by `GET /commerce/shipping-options`; there is no separate overrides route. */
   overrides: CommerceShippingRateOverride[];
   createDate: string;

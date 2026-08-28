@@ -38,6 +38,8 @@ export interface ShippingOptionDraft {
   amount: number;
   freeOverAmount: number | null;
   sortOrder: number;
+  /** Seeded by the platform: the merchant may edit it, but the API refuses to delete it. */
+  isSystem: boolean;
   overrides: ShippingOverrideDraft[];
 }
 
@@ -61,6 +63,7 @@ export function toDraft(option: CommerceShippingOption): ShippingOptionDraft {
     amount: option.amount,
     freeOverAmount: option.freeOverAmount,
     sortOrder: option.sortOrder,
+    isSystem: option.isSystem,
     overrides: (option.overrides ?? []).map((o) => ({
       key: o.id,
       kind: o.cityId != null ? 'city' : 'province',
@@ -85,6 +88,9 @@ export function newOptionDraft(title: string, sortOrder: number): ShippingOption
     amount: 0,
     freeOverAmount: null,
     sortOrder,
+    // A method the merchant is adding is theirs, so it stays deletable. The server hard-codes the
+    // same thing on create -- this is never sent.
+    isSystem: false,
     overrides: [],
   };
 }

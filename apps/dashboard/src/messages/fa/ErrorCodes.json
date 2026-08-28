@@ -253,6 +253,7 @@
     "ANALYTICS_WEBHOOK_EVENT_NOT_SUBSCRIBED": "این نوع رویداد فعال نیست.",
     "ANALYTICS_WEBHOOK_REPLAY_NOTFOUND": "درخواست ارسال دوباره پیدا نشد.",
     "INVALID_REPLAY_SCHEDULE": "زمان‌بندی ارسال دوباره معتبر نیست.",
+    "COMMERCE_SHIPPING_OPTION_NOT_DELETABLE": "روش‌های ارسال پیش‌فرض حذف نمی‌شوند. برای اینکه دیگر ارائه نشوند، آن‌ها را غیرفعال کنید.",
     "COMMERCE_SHIPPING_OPTION_NOT_FOUND": "روش ارسال مورد نظر پیدا نشد.",
     "COMMERCE_SHIPPING_OPTION_UNAVAILABLE": "روش ارسال انتخاب‌شده دیگر در دسترس نیست. لطفاً روش دیگری انتخاب کنید.",
     "COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED": "روی این روش ارسال نمی‌توان استثنای قیمتی تعریف کرد، چون کرایه را مأمور پست از مشتری می‌گیرد.",

@@ -60,6 +60,7 @@ const option = (patch: Partial<CommerceShippingOption> = {}): CommerceShippingOp
   amount: 45000,
   freeOverAmount: null,
   sortOrder: 0,
+  isSystem: false,
   isActive: true,
   overrides: [],
   createDate: '2026-08-27T00:00:00.000Z',
