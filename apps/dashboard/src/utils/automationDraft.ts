@@ -27,6 +27,32 @@ function isPlausibleAutomationDraft(value: unknown): value is Partial<Automation
   );
 }
 
+/**
+ * `contents[].fileTemp` / `reminders[].fileTemp` hold the raw `File` the user just picked.
+ * A `File` has no enumerable own properties, so `JSON.stringify` turns it into a bare `{}`:
+ * the saved draft keeps a file-shaped entry that has lost its `type`, `size` and `name` and
+ * can never be uploaded. Restoring one used to crash the whole /automations/add page on
+ * `file.type.split('/')` (Sentry MY-41).
+ *
+ * So drop `fileTemp` entirely — on write, so new drafts never carry it, and on read, so the
+ * drafts already sitting in users' `localStorage` (2-day TTL) are cleaned up too. The content
+ * item itself is kept; the user just re-picks its file.
+ */
+function stripFileTemp(formValues: Partial<AutomationFormType>): Partial<AutomationFormType> {
+  const dropFileTemp = <T extends { fileTemp?: unknown }>(items: T[]): T[] =>
+    items.map((item) => {
+      if (!item || typeof item !== 'object' || !('fileTemp' in item)) return item;
+      const { fileTemp: _fileTemp, ...rest } = item;
+      return rest as T;
+    });
+
+  return {
+    ...formValues,
+    ...(Array.isArray(formValues.contents) && { contents: dropFileTemp(formValues.contents) }),
+    ...(Array.isArray(formValues.reminders) && { reminders: dropFileTemp(formValues.reminders) }),
+  };
+}
+
 export function readAutomationDraft(workspaceId: string): Partial<AutomationFormType> | null {
   if (typeof localStorage === 'undefined') return null;
 
@@ -41,7 +67,7 @@ export function readAutomationDraft(workspaceId: string): Partial<AutomationForm
       return null;
     }
 
-    return isPlausibleAutomationDraft(stored.formValues) ? stored.formValues : null;
+    return isPlausibleAutomationDraft(stored.formValues) ? stripFileTemp(stored.formValues) : null;
   } catch {
     return null;
   }
@@ -50,7 +76,10 @@ export function readAutomationDraft(workspaceId: string): Partial<AutomationForm
 export function writeAutomationDraft(workspaceId: string, formValues: AutomationFormType): void {
   if (typeof localStorage === 'undefined') return;
 
-  const stored: StoredAutomationDraft = { formValues, savedAt: Date.now() };
+  const stored: StoredAutomationDraft = {
+    formValues: stripFileTemp(formValues),
+    savedAt: Date.now(),
+  };
   localStorage.setItem(getAutomationDraftKey(workspaceId), JSON.stringify(stored));
 }
 
