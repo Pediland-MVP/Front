@@ -15,16 +15,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { InstagramNamespace } from '@/types/instagram';
+import { IG_RECONNECT_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 import { PlugsIcon } from '@phosphor-icons/react/dist/ssr/Plugs';
 import { CopyIcon, PlugIcon, TvMinimalPlayIcon } from 'lucide-react';
 import { ButtonLoading } from '../ui-custom/ButtonLoading';
 import { HelpMeDialog } from '../Global/HelpMeDialog';
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
-const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
-
-const MANUAL_CONNECT_LINK =
-  'https://www.instagram.com/oauth/authorize?client_id=2349711835364274&redirect_uri=https://api.befroosh.app/v1/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments';
 
 interface InstagramReconnectDialogProps {
   account: InstagramNamespace.Account | null;
@@ -42,9 +37,7 @@ export const InstagramReconnectDialog = ({
   const username = account ? (account.username ? `@${account.username}` : account.name) : '';
 
   const handleReLogin = () => {
-    router.push(
-      `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
-    );
+    router.push(IG_RECONNECT_OAUTH_URL);
     setIsNavigationLoading(true);
   };
 
@@ -77,7 +70,7 @@ export const InstagramReconnectDialog = ({
             variant="outline"
             className="w-full sm:w-auto"
             onClick={() => {
-              navigator.clipboard.writeText(MANUAL_CONNECT_LINK);
+              navigator.clipboard.writeText(IG_RECONNECT_OAUTH_URL);
               toast.success(t('copy_success'));
             }}
           >

@@ -51,6 +51,12 @@ export default function ConnectPage() {
     if (searchParams.get(IGW_RESUME_PARAM) === '1') setIsSetupDialogOpen(true);
   }, [searchParams]);
   const code = searchParams.get('code');
+  // Set by the backend's redirectToFrontend route only when the OAuth round-trip started
+  // from a "relogin" surface (invalid-token banner, settings reconnect dialog) — see
+  // IG_RECONNECT_OAUTH_URL. Bypasses the add-account gates below (limit/permission/setup
+  // dialog), which are meaningless for a token refresh on an account already in this
+  // workspace and would otherwise show the wrong message while the code is being submitted.
+  const isReconnect = searchParams.get('reconnect') === '1' && Boolean(code);
   const { callbackIG, isCallbackIGLoading } = useConnectInstagram();
   const logout = useLogout();
   const { user, hasInstagram, canConnectInstagram } = useUser();
@@ -155,7 +161,12 @@ export default function ConnectPage() {
             </div>
 
             <div className="flex w-full flex-col items-center justify-center">
-              {atInstagramLimit ? (
+              {isReconnect ? (
+                <div className="flex w-full items-center justify-center gap-3 py-4">
+                  <Spinner className="size-5" />
+                  <span className="text-muted-foreground text-sm">{t('reconnecting_account')}</span>
+                </div>
+              ) : atInstagramLimit ? (
                 <div className="w-full rounded-xl bg-violet-50 px-4 py-3 text-center text-sm text-violet-700">
                   {t('instagram_limit')}
                 </div>

@@ -46,8 +46,21 @@ export const MediaUploader = ({
   const isNewFile = (file: UploadedFile): file is FileWithPreview => 'file' in file;
   const isExistingFile = (file: UploadedFile): file is ExistingFile => 'url' in file;
 
+  /**
+   * The real `File` behind a not-yet-uploaded entry, or `undefined` when there isn't one.
+   *
+   * `'file' in file` is not enough on its own: a draft restored from `localStorage` has
+   * round-tripped through `JSON.stringify`, and a `File` has no enumerable own properties,
+   * so it serializes to a bare `{}`. The restored entry therefore still *looks* like a
+   * `FileWithPreview` while having no `type`, `size` or `name` — which used to crash the
+   * whole /automations/add page on `file.type.split('/')` (Sentry MY-41). Such an entry
+   * can never be previewed or uploaded, so everything below treats it as "no file".
+   */
+  const getFileBlob = (file: UploadedFile): File | undefined =>
+    isNewFile(file) && file.file instanceof Blob ? file.file : undefined;
+
   const getDisplayName = (file: UploadedFile): string => {
-    if (isNewFile(file)) return file.file.name;
+    if (isNewFile(file)) return getFileBlob(file)?.name ?? t('uploaded_file');
     if (isExistingFile(file)) {
       return file.originalName ?? file.url.split('/').pop() ?? t('uploaded_file');
     }
@@ -57,6 +70,9 @@ export const MediaUploader = ({
   const isUploading = (file: UploadedFile): boolean => {
     if (isExistingFile(file)) return false;
     if (isNewFile(file)) {
+      // No real file to upload (see `getFileBlob`) — never report "uploading", otherwise
+      // the row keeps a spinner forever and hides its own delete button.
+      if (!getFileBlob(file)) return false;
       if (file.process !== undefined) return file.process < 100;
       if (file.isUploading) return !!file.isUploading;
       return true;
@@ -66,7 +82,9 @@ export const MediaUploader = ({
 
   const getDisplaySize = (file: UploadedFile): React.ReactNode => {
     if (isNewFile(file)) {
-      return `${(file.file.size / 1024 / 1024).toFixed(2)} ${t('MB')}`;
+      const blob = getFileBlob(file);
+      // No blob → no size to show; `undefined.size` would render a literal "NaN MB".
+      return blob ? `${(blob.size / 1024 / 1024).toFixed(2)} ${t('MB')}` : null;
     }
     if (isExistingFile(file)) {
       return (
@@ -86,6 +104,7 @@ export const MediaUploader = ({
 
   const getProgressText = (file: UploadedFile): React.ReactNode | null => {
     if (isExistingFile(file)) return null;
+    if (isNewFile(file) && !getFileBlob(file)) return null;
     if (isNewFile(file) && file.process !== undefined) {
       const processPercentage = Math.round(file.process);
       return `${processPercentage === 100 ? 98 : processPercentage}%`;
@@ -166,21 +185,25 @@ export const MediaUploader = ({
   );
 
   const renderPreview = (file: UploadedFile) => {
-    const isUploaded = 'url' in file;
-    const { file: uploadedFile } = file as FileWithPreview;
-    const fileType = isUploaded ? file.mimeType?.split('/')[0] : uploadedFile.type.split('/')[0];
+    const blob = getFileBlob(file);
+    const mimeType = isExistingFile(file) ? file.mimeType : blob?.type;
 
-    switch (fileType) {
-      case 'image':
-        return (
-          <Image
-            src={isUploaded ? file.url : URL.createObjectURL(uploadedFile)}
-            alt="Preview"
-            width={64}
-            height={64}
-            className="h-full w-full object-cover"
-          />
-        );
+    switch (mimeType?.split('/')[0]) {
+      case 'image': {
+        const src = isExistingFile(file) ? file.url : blob && URL.createObjectURL(blob);
+        if (src) {
+          return (
+            <Image
+              src={src}
+              alt="Preview"
+              width={64}
+              height={64}
+              className="h-full w-full object-cover"
+            />
+          );
+        }
+        break;
+      }
       case 'video':
         return (
           <div className="bg-muted flex h-full w-full items-center justify-center">
@@ -193,13 +216,13 @@ export const MediaUploader = ({
             <Music size={24} className="text-muted-foreground" />
           </div>
         );
-      default:
-        return (
-          <div className="flex h-full w-full items-center justify-center">
-            <FileIcon size={24} className="text-muted-foreground" />
-          </div>
-        );
     }
+
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <FileIcon size={24} className="text-muted-foreground" />
+      </div>
+    );
   };
 
   const acceptedFormats = {
