@@ -101,6 +101,16 @@ two independent switches and folds them back in `utils/commerce/shippingDraft.ts
 پس‌کرایه wins over the free-shipping threshold. Any new pricing mode on the Back has to be taught
 to that function — the frontend cannot round-trip an enum value it has no switch for.
 
+**Cash-on-delivery.** `GET /payments/cardToCard` returns `codEnabled` and `codMaxOrderValue`
+alongside the card fields, and `POST /payments/cardToCard` writes them — both consumed by
+`app/(Console)/settings/card/page.tsx`. Omitting either field leaves it untouched;
+`codMaxOrderValue: null` explicitly clears the ceiling. The endpoint still 404s for a workspace
+with no card and its DTO still requires the card fields, so a COD-only merchant cannot turn COD on.
+
+**No consumer yet.** `POST /commerce/orders/:id/mark-paid` and `:id/cancel` have no frontend. The
+dashboard's `/orders` screen reads the **legacy** `GET /orders`; nothing calls `/commerce/orders`.
+Until a commerce orders screen exists, a COD order cannot be settled from the dashboard.
+
 **Error codes.** `COMMERCE_SHIPPING_OPTION_NOT_FOUND`, `COMMERCE_SHIPPING_OPTION_UNAVAILABLE`,
 `COMMERCE_SHIPPING_THRESHOLD_REQUIRED`, `COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED`,
 `COMMERCE_SHIPPING_OVERRIDE_TARGET` — all translated in `messages/fa/ErrorCodes.json`.

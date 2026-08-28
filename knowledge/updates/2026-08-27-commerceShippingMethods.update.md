@@ -97,11 +97,46 @@ did for `ProductVariations.dc.html`.
 - `messages/fa/ErrorCodes.json` — the five shipping `COMMERCE_*` codes. Note this file, **not**
   `fa.json`'s shadowed `ERROR_CODES` block.
 
+### Cash-on-delivery toggle (`settings/card`)
+
+پرداخت در محل is a **payment method**, and it is entirely independent of پس‌کرایه, which is a
+*shipping pricing mode* set per method on this screen. All four combinations are valid. The toggle
+lives on the bank-details form because that is the endpoint the Back writes it through
+(`POST /payments/cardToCard`) — the reasoning being that this page is the one place a merchant says
+how their shop gets paid.
+
+Adding it needed a Back fix (`d4189762`): `codEnabled`/`codMaxOrderValue` live on `payment_detail`,
+and neither `getWorkspacePaymentDetailsById`'s `select` nor `readOneCardToCard`'s return included
+them — so the form could set the toggle but never read it back, and it would have rendered off no
+matter what was saved.
+
+**Known limitation, unchanged:** `GET /payments/cardToCard` still 404s for a workspace with no
+card, and `UpdateCardToCardDto` still requires the card fields. A merchant who wants *only* cash on
+delivery therefore cannot switch it on without entering bank details. Fixing that means either a
+COD endpoint of its own or making the card fields optional — a product decision, not a UI one.
+
+### Not built: the order screen's settle and cancel actions
+
+Task 6 of the plan asked for «تسویه شد» and cancel buttons on the order screen, calling
+`POST /commerce/orders/:id/mark-paid` and `:id/cancel`. **It was not built, on purpose.**
+
+The dashboard's `/orders` screen (`OrdersCardList` → `orderDetails.tsx`) reads the **legacy**
+`GET /orders`, not `GET /commerce/orders`. Nothing in the dashboard calls a `/commerce/orders`
+route at all — grep returns zero hits. The two modules have separate tables and separate ids, so
+posting a legacy order's id to a commerce fulfilment route would address the wrong record.
+
+The plan's premise — "modify `orderDetails.tsx`" — is therefore wrong, and the real work is a
+commerce orders screen that does not exist yet. That is a feature in its own right, not part of
+shipping settings. Until it exists, a COD order can be taken but not settled from the dashboard.
+
 ## Verification
 
-- `npx vitest run` — **486 pass / 59 files**, 56 of them new across four files:
+- `npx vitest run` — **491 pass / 60 files**, 61 of them new across five files:
   `shippingDestinations.test.ts` (7), `shippingDraft.test.ts` (19), `ShippingMethodCard.test.tsx`
-  (9), `RateOverrideEditor.test.tsx` (11), `ShippingSettings.test.tsx` (10).
+  (9), `RateOverrideEditor.test.tsx` (11), `ShippingSettings.test.tsx` (10),
+  `settings/card/page.test.tsx` (5).
+- `vitest.setup.ts` gained a no-op `ResizeObserver`. jsdom has none and Radix measures with it, so
+  rendering the card settings page threw before any assertion ran. No existing test had hit it.
 - `npx tsc --noEmit` — 206 errors, **byte-identical to the pre-change baseline**; zero in any
   touched file. (The baseline is pre-existing app-wide noise; `next build` uses
   `ignoreBuildErrors`.)
