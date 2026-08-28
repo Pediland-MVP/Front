@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { ArrowsCounterClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsCounterClockwise';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { MicrophoneIcon } from '@phosphor-icons/react/dist/ssr/Microphone';
@@ -15,13 +16,10 @@ type Props = {
   onRecordingComplete?: (file: File) => void;
 };
 
-type RecordState = {
-  id: number;
-  name: string;
-  file: any;
-};
-
-let recorder: MediaRecorder;
+// Deliberately typed as nullable: it is only assigned once `startRecording` has fully
+// succeeded, so every read has to be guarded. Typing it as a bare `MediaRecorder` is what
+// let `stopRecording` dereference it unchecked (Sentry MY-2B).
+let recorder: MediaRecorder | null = null;
 let recordingChunks: BlobPart[] = [];
 let timerTimeout: NodeJS.Timeout;
 
@@ -98,11 +96,6 @@ export const AudioRecorderWithVisualizer = ({
   const t = useTranslations('AudioRecorderWithVisualizer');
   const [isRecordingFinished, setIsRecordingFinished] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(0);
-  const [currentRecord, setCurrentRecord] = useState<RecordState>({
-    id: -1,
-    name: '',
-    file: null,
-  });
 
   const hours = Math.floor(timer / 3600);
   const minutes = Math.floor((timer % 3600) / 60);
@@ -121,16 +114,32 @@ export const AudioRecorderWithVisualizer = ({
   const mediaRecorderRef = useRef<{
     stream: MediaStream | null;
     analyser: AnalyserNode | null;
-    mediaRecorder: MediaRecorder | null;
     audioContext: AudioContext | null;
   }>({
     stream: null,
     analyser: null,
-    mediaRecorder: null,
     audioContext: null,
   });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<any>(null);
+
+  // Tears down the mic stream, analyser and audio context. Safe to call more than once.
+  function releaseStream() {
+    const { stream, analyser, audioContext } = mediaRecorderRef.current;
+
+    if (analyser) {
+      analyser.disconnect();
+    }
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    if (audioContext && audioContext.state !== 'closed') {
+      // Already-closed contexts reject; nothing to recover from either way.
+      void audioContext.close().catch(() => {});
+    }
+
+    mediaRecorderRef.current = { stream: null, analyser: null, audioContext: null };
+  }
 
   function startRecording(e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) {
     e.stopPropagation();
@@ -140,7 +149,6 @@ export const AudioRecorderWithVisualizer = ({
           audio: true,
         })
         .then((stream) => {
-          setIsRecording(true);
           const AudioContext = window.AudioContext;
           const audioCtx = new AudioContext();
           const analyser = audioCtx.createAnalyser();
@@ -149,46 +157,61 @@ export const AudioRecorderWithVisualizer = ({
           mediaRecorderRef.current = {
             stream,
             analyser,
-            mediaRecorder: null,
             audioContext: audioCtx,
           };
 
-          const mimeType = MediaRecorder.isTypeSupported('audio/mpeg')
-            ? 'audio/mpeg'
-            : MediaRecorder.isTypeSupported('audio/webm')
-              ? 'audio/webm'
-              : 'audio/wav';
-
-          const options = { mimeType };
-          mediaRecorderRef.current.mediaRecorder = new MediaRecorder(stream, options);
-          mediaRecorderRef.current.mediaRecorder.start();
+          // No `mimeType` option on purpose. Every browser supports its own default
+          // container, but an explicit one throws NotSupportedError where it is not
+          // supported — WebKit before 18.4 offers only `audio/mp4`, so the old
+          // mpeg -> webm -> wav fallback landed on an unsupported `audio/wav` and threw
+          // on every iOS device (Sentry MY-2B). Whatever codec the browser picks is
+          // re-encoded to real WAV by `recordingToWavBlob` before upload anyway.
           recordingChunks = [];
-
           recorder = new MediaRecorder(stream);
-          recorder.start();
-          recorder.ondataavailable = (e) => {
-            recordingChunks.push(e.data);
+          recorder.ondataavailable = (event) => {
+            recordingChunks.push(event.data);
           };
+          recorder.start();
+
+          // Only now is there something to stop: entering the recording state any
+          // earlier leaves the Save button wired to a recorder that does not exist.
+          setIsRecording(true);
         })
         .catch((error) => {
-          alert(error);
-          console.log(error);
+          console.error(error);
+          toast.error(t('micError'));
+          releaseStream();
+          setIsRecording(false);
         });
     }
   }
 
   function stopRecording(e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) {
     e.stopPropagation();
-    recorder.onstop = async () => {
-      const recordedBlob = new Blob(recordingChunks, { type: recorder.mimeType });
+
+    const activeRecorder = recorder;
+
+    // `startRecording` may have failed after the UI already flipped into the recording
+    // state. Reset instead of dereferencing a recorder that was never created.
+    if (!activeRecorder || activeRecorder.state === 'inactive') {
+      recordingChunks = [];
+      releaseStream();
+      setIsRecording(false);
+      setTimer(0);
+      clearTimeout(timerTimeout);
+      return;
+    }
+
+    activeRecorder.onstop = async () => {
+      const recordedBlob = new Blob(recordingChunks, { type: activeRecorder.mimeType });
       recordingChunks = [];
 
       let wavBlob: Blob;
       try {
         wavBlob = await recordingToWavBlob(recordedBlob);
       } catch (error) {
-        alert(error);
-        console.log(error);
+        console.error(error);
+        toast.error(t('encodeError'));
         return;
       }
 
@@ -198,28 +221,10 @@ export const AudioRecorderWithVisualizer = ({
         });
         onRecordingComplete(file);
       }
-
-      setCurrentRecord({
-        ...currentRecord,
-        file: window.URL.createObjectURL(wavBlob),
-      });
     };
 
-    recorder.stop();
-
-    const { mediaRecorder, stream, analyser, audioContext } = mediaRecorderRef.current;
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
-    }
-    if (analyser) {
-      analyser.disconnect();
-    }
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-    if (audioContext) {
-      audioContext.close();
-    }
+    activeRecorder.stop();
+    releaseStream();
 
     setIsRecording(false);
     setIsRecordingFinished(true);
@@ -229,26 +234,17 @@ export const AudioRecorderWithVisualizer = ({
 
   function resetRecording(e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) {
     e.stopPropagation();
-    const { mediaRecorder, stream, analyser, audioContext } = mediaRecorderRef.current;
-
-    if (mediaRecorder) {
-      mediaRecorder.onstop = () => {
+    if (recorder && recorder.state !== 'inactive') {
+      // Discard whatever was captured rather than handing it to `onRecordingComplete`.
+      recorder.onstop = () => {
         recordingChunks = [];
       };
-      mediaRecorder.stop();
+      recorder.stop();
     } else {
-      alert('recorder instance is null!');
+      recordingChunks = [];
     }
 
-    if (analyser) {
-      analyser.disconnect();
-    }
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-    if (audioContext) {
-      audioContext.close();
-    }
+    releaseStream();
     setIsRecording(false);
     setIsRecordingFinished(true);
     setTimer(0);

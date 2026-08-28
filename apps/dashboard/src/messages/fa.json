@@ -262,7 +262,9 @@
   "AudioRecorderWithVisualizer": {
     "title": "برای ضبط ویس اینجا کلیک کنید",
     "recordAgain": "ضبط مجدد",
-    "saveRecord": "تایید"
+    "saveRecord": "تایید",
+    "micError": "دسترسی به میکروفون ممکن نشد. لطفاً اجازه دسترسی مرورگر را بررسی کنید.",
+    "encodeError": "پردازش صدای ضبط‌شده ممکن نشد. دوباره تلاش کنید."
   },
   "Directs": {
     "ExcelExport": {
