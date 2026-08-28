@@ -223,10 +223,12 @@ Two deliberate exceptions open a card without the pencil:
 
 - **A draft with `serverId === null`** — a method the merchant just added. Leaving it collapsed
   would make «افزودن روش» look like it did nothing but append a nameless row.
-- **Switching a method ON** (added 2026-08-29) — that is the moment its price starts to matter, and
-  every seeded method starts at 0, so the merchant is about to need the form and may not have
-  realised the rate was zero. Switching OFF deliberately does *not* close an open card: they may be
-  turning it off precisely to fix the price that made them turn it off.
+- **The on/off switch** (added 2026-08-29), which carries the card both ways. ON is the moment a
+  method's price starts to matter — every seeded method starts at 0, so the merchant is about to
+  need the form and may not have realised the rate was zero. OFF says they are done with it, so the
+  form goes rather than sitting open under a method the shop no longer offers. Editing an off
+  method is still one pencil click away, which is the main way a price gets fixed before switching
+  it back on.
 
 The pencil is now always visible and toggles both ways — pencil → ✕, `aria-expanded` following the
 state, and a tinted background while open. It is **not** gated on `canEdit`: a read-only member
@@ -250,7 +252,7 @@ still needs to read what a method costs, and every control inside the body carri
 
 - `npx vitest run src/components/Commerce/Shipping` — **37 pass / 3 files** (was 32); the whole
   dashboard suite: **500 pass / 60 files**. Three more were added on 2026-08-29 for the
-  switch-opens-it rule (opens on ON, an open card survives OFF, a closed one is not opened by OFF).
+  switch rule (opens on ON, closes on OFF, and a closed card is not opened by OFF).
 - `npx tsc --noEmit` — 204 errors, identical to baseline, zero in any touched file.
 - **Still not verified in a browser.**
 

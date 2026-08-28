@@ -88,15 +88,18 @@ describe('ShippingMethodCard — closed until asked', () => {
     expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
   });
 
-  it('leaves an open card open when the method is switched OFF', () => {
+  // The switch carries the card both ways: OFF says the merchant is done with this method, so the
+  // form goes rather than sitting open under something the shop no longer offers. The pencil is
+  // still there to reopen it.
+  it('closes the details when the method is switched OFF', () => {
     const draft = baseDraft({ isActive: true });
     renderCard(draft);
     fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('switch', { name: draft.title }));
 
-    // They may be turning it off precisely to fix the price that made them turn it off.
-    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
   });
 
   it('does not open a closed card when the method is switched OFF', () => {

@@ -96,10 +96,10 @@ export const ShippingMethodCard = ({
    * Closed until the pencil is clicked — for an ACTIVE method as much as an inactive one. Being
    * switched on says the shop offers it, not that the merchant wants to retune it.
    *
-   * Two things open it besides the pencil: a method that has never been saved (`serverId === null`
-   * means the merchant just pressed «افزودن روش», and leaving that row collapsed would make the
-   * button look like it did nothing but append a nameless card), and switching a method ON — see
-   * the `Switch` below.
+   * Two things move it besides the pencil: a method that has never been saved opens itself
+   * (`serverId === null` means the merchant just pressed «افزودن روش», and leaving that row
+   * collapsed would make the button look like it did nothing but append a nameless card), and the
+   * on/off switch carries it open and shut — see the `Switch` below.
    */
   const [isEditing, setIsEditing] = useState(draft.serverId === null);
   const charges = chargesShipping(draft);
@@ -133,15 +133,15 @@ export const ShippingMethodCard = ({
             disabled={!canEdit}
             onCheckedChange={(checked) => {
               onChange({ isActive: checked });
-              // Switching a method ON is the moment its price starts to matter -- and every seeded
-              // method starts at 0, so the merchant is about to need this form. Opening it here
-              // saves the second click and, more to the point, shows them a rate they may not have
-              // realised was zero.
+              // The switch carries the card open and shut. ON is the moment a method's price
+              // starts to matter -- every seeded method starts at 0, so the merchant is about to
+              // need this form and may not have realised the rate was zero. OFF says they are done
+              // with it, so the form goes away rather than sitting open under a method the shop no
+              // longer offers.
               //
-              // Switching OFF deliberately does NOT close: they may be turning it off precisely to
-              // fix the price that made them turn it off, and yanking the form away mid-edit would
-              // be worse than an open card nobody is reading.
-              if (checked) setIsEditing(true);
+              // Editing an OFF method is still perfectly possible -- that is what the pencil is
+              // for, and fixing the price before switching it back on is the main reason to.
+              setIsEditing(checked);
             }}
             aria-label={draft.title}
           />
