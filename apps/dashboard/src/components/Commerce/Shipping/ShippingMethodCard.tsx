@@ -96,9 +96,10 @@ export const ShippingMethodCard = ({
    * Closed until the pencil is clicked — for an ACTIVE method as much as an inactive one. Being
    * switched on says the shop offers it, not that the merchant wants to retune it.
    *
-   * The one exception is a method that has never been saved: `serverId === null` means the
-   * merchant just pressed «افزودن روش», and leaving that row collapsed would make the button look
-   * like it did nothing but append a nameless card. It opens on the field they came here to fill.
+   * Two things open it besides the pencil: a method that has never been saved (`serverId === null`
+   * means the merchant just pressed «افزودن روش», and leaving that row collapsed would make the
+   * button look like it did nothing but append a nameless card), and switching a method ON — see
+   * the `Switch` below.
    */
   const [isEditing, setIsEditing] = useState(draft.serverId === null);
   const charges = chargesShipping(draft);
@@ -130,7 +131,18 @@ export const ShippingMethodCard = ({
           <Switch
             checked={draft.isActive}
             disabled={!canEdit}
-            onCheckedChange={(checked) => onChange({ isActive: checked })}
+            onCheckedChange={(checked) => {
+              onChange({ isActive: checked });
+              // Switching a method ON is the moment its price starts to matter -- and every seeded
+              // method starts at 0, so the merchant is about to need this form. Opening it here
+              // saves the second click and, more to the point, shows them a rate they may not have
+              // realised was zero.
+              //
+              // Switching OFF deliberately does NOT close: they may be turning it off precisely to
+              // fix the price that made them turn it off, and yanking the form away mid-edit would
+              // be worse than an open card nobody is reading.
+              if (checked) setIsEditing(true);
+            }}
             aria-label={draft.title}
           />
         </div>

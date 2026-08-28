@@ -76,6 +76,38 @@ describe('ShippingMethodCard — closed until asked', () => {
     expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
   });
 
+  // Every seeded method starts at 0, so the merchant who just switched one on is about to need
+  // the price field — and may not have realised the rate was zero.
+  it('opens the details when the method is switched ON', () => {
+    const draft = baseDraft({ isActive: false });
+    renderCard(draft);
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('switch', { name: draft.title }));
+
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+  });
+
+  it('leaves an open card open when the method is switched OFF', () => {
+    const draft = baseDraft({ isActive: true });
+    renderCard(draft);
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+
+    fireEvent.click(screen.getByRole('switch', { name: draft.title }));
+
+    // They may be turning it off precisely to fix the price that made them turn it off.
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+  });
+
+  it('does not open a closed card when the method is switched OFF', () => {
+    const draft = baseDraft({ isActive: true });
+    renderCard(draft);
+
+    fireEvent.click(screen.getByRole('switch', { name: draft.title }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+  });
+
   it('opens a never-saved method straight away, or «افزودن روش» would look like it did nothing', () => {
     renderCard(baseDraft({ serverId: null }));
 

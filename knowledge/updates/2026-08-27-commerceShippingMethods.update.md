@@ -219,9 +219,14 @@ The header already answers the at-a-glance question on its own: name, carrier ba
 line carrying the price, the free-shipping threshold and the exception count (or «غیرفعال»,
 «پس‌کرایه», «پرداخت در محل»).
 
-One deliberate exception: a draft with `serverId === null` opens immediately. That is a method the
-merchant just added, and leaving it collapsed would make «افزودن روش» look like it did nothing but
-append a nameless row.
+Two deliberate exceptions open a card without the pencil:
+
+- **A draft with `serverId === null`** — a method the merchant just added. Leaving it collapsed
+  would make «افزودن روش» look like it did nothing but append a nameless row.
+- **Switching a method ON** (added 2026-08-29) — that is the moment its price starts to matter, and
+  every seeded method starts at 0, so the merchant is about to need the form and may not have
+  realised the rate was zero. Switching OFF deliberately does *not* close an open card: they may be
+  turning it off precisely to fix the price that made them turn it off.
 
 The pencil is now always visible and toggles both ways — pencil → ✕, `aria-expanded` following the
 state, and a tinted background while open. It is **not** gated on `canEdit`: a read-only member
@@ -244,7 +249,8 @@ still needs to read what a method costs, and every control inside the body carri
 ## Verification
 
 - `npx vitest run src/components/Commerce/Shipping` — **37 pass / 3 files** (was 32); the whole
-  dashboard suite: **500 pass / 60 files**.
+  dashboard suite: **500 pass / 60 files**. Three more were added on 2026-08-29 for the
+  switch-opens-it rule (opens on ON, an open card survives OFF, a closed one is not opened by OFF).
 - `npx tsc --noEmit` — 204 errors, identical to baseline, zero in any touched file.
 - **Still not verified in a browser.**
 
