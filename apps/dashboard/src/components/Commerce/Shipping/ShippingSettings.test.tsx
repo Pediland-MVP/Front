@@ -81,6 +81,13 @@ const Harness = () => {
 const renderScreen = () => render(<Harness />);
 const saveButton = () => screen.getByRole('button', { name: copy.save });
 
+/**
+ * A method card is collapsed until the merchant clicks its pencil, so any test that touches a
+ * field inside one has to open it first — the same two steps a merchant takes.
+ */
+const openCard = (index = 0) =>
+  fireEvent.click(screen.getAllByRole('button', { name: copy.edit })[index]);
+
 beforeEach(() => {
   vi.clearAllMocks();
   useHeaderFeatures.getState().reset();
@@ -96,6 +103,7 @@ describe('ShippingSettings — nothing is sent until save', () => {
 
   it('enables save once something actually changed', () => {
     renderScreen();
+    openCard();
 
     fireEvent.change(screen.getByLabelText(copy.priceLabel), { target: { value: '50000' } });
 
@@ -104,6 +112,7 @@ describe('ShippingSettings — nothing is sent until save', () => {
 
   it('sends no request while the merchant is still typing', () => {
     renderScreen();
+    openCard();
 
     fireEvent.change(screen.getByLabelText(copy.priceLabel), { target: { value: '50000' } });
 
@@ -113,6 +122,7 @@ describe('ShippingSettings — nothing is sent until save', () => {
 
   it('restores the server values when the edit is cancelled', () => {
     renderScreen();
+    openCard();
 
     fireEvent.change(screen.getByLabelText(copy.priceLabel), { target: { value: '50000' } });
     fireEvent.click(screen.getByRole('button', { name: copy.cancel }));
@@ -126,6 +136,7 @@ describe('ShippingSettings — what save actually writes', () => {
   it('patches only the option that changed', async () => {
     serverOptions = [option(), option({ id: 'opt-2', title: 'تیپاکس', kind: 'tipax' })];
     renderScreen();
+    openCard(0);
 
     fireEvent.change(screen.getAllByLabelText(copy.priceLabel)[0], { target: { value: '50000' } });
     fireEvent.click(saveButton());
@@ -136,6 +147,7 @@ describe('ShippingSettings — what save actually writes', () => {
 
   it('does not rewrite the exceptions of an option whose exceptions did not move', async () => {
     renderScreen();
+    openCard();
 
     fireEvent.change(screen.getByLabelText(copy.priceLabel), { target: { value: '50000' } });
     fireEvent.click(saveButton());
@@ -161,6 +173,7 @@ describe('ShippingSettings — what save actually writes', () => {
 
   it('refuses to save a method with no name, before any request goes out', async () => {
     renderScreen();
+    openCard();
 
     fireEvent.change(screen.getByLabelText(copy.titleLabel), { target: { value: '   ' } });
     fireEvent.click(saveButton());
@@ -178,6 +191,7 @@ describe('ShippingSettings — what save actually writes', () => {
       }),
     ];
     renderScreen();
+    openCard();
 
     fireEvent.click(screen.getByRole('radio', { name: copy.settlements.freight_collect }));
     fireEvent.click(saveButton());

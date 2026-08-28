@@ -198,3 +198,52 @@ needs bank details to enable it, because there is no longer anything to enable t
 - `npx vitest run` — **495 pass / 60 files**.
 - `npx tsc --noEmit` — 204 errors, identical to baseline, zero in any touched file.
 - **Still not verified in a browser.**
+
+---
+
+# 2026-08-29 — The method card opens only on the pencil
+
+## Problem
+
+A card's body was open whenever the method was **active** (`isActive || isForcedOpen`), and the
+pencil existed only to reveal an *inactive* one. That was tolerable while a shop had one or two
+hand-made methods. It stopped being tolerable the moment the backend started seeding **five**
+methods into every workspace: «تنظیمات ارسال پستی» would open as a wall of forms, and the thing the
+screen is actually for — seeing what the shop offers and switching methods on and off — was buried
+under them.
+
+## Solution
+
+Every card starts **collapsed**, active or not, and opens only when the merchant clicks the pencil.
+The header already answers the at-a-glance question on its own: name, carrier badge, and a summary
+line carrying the price, the free-shipping threshold and the exception count (or «غیرفعال»,
+«پس‌کرایه», «پرداخت در محل»).
+
+One deliberate exception: a draft with `serverId === null` opens immediately. That is a method the
+merchant just added, and leaving it collapsed would make «افزودن روش» look like it did nothing but
+append a nameless row.
+
+The pencil is now always visible and toggles both ways — pencil → ✕, `aria-expanded` following the
+state, and a tinted background while open. It is **not** gated on `canEdit`: a read-only member
+still needs to read what a method costs, and every control inside the body carries its own
+`disabled`.
+
+## Changes
+
+- `ShippingMethodCard.tsx` — `isForcedOpen`/`isBodyOpen` become one `isEditing`, seeded from
+  `draft.serverId === null`; the pencil button leaves its `!draft.isActive` guard and gains a close
+  state.
+- `messages/fa.json` — `editInactive` → `edit` («ویرایش روش ارسال»), plus `closeEditor`
+  («بستن ویرایش»). The old key's name described a behaviour that no longer exists.
+- `ShippingMethodCard.test.tsx` — a `renderOpenCard` helper (every body assertion now opens the card
+  first, as a merchant does) and 5 new tests: an active card shows no form, the summary still says
+  everything while closed, the pencil toggles both ways, a never-saved draft opens itself, and a
+  read-only member can open but not edit.
+- `ShippingSettings.test.tsx` — an `openCard(index)` helper; 7 tests reach fields inside a card.
+
+## Verification
+
+- `npx vitest run src/components/Commerce/Shipping` — **37 pass / 3 files** (was 32); the whole
+  dashboard suite: **500 pass / 60 files**.
+- `npx tsc --noEmit` — 204 errors, identical to baseline, zero in any touched file.
+- **Still not verified in a browser.**

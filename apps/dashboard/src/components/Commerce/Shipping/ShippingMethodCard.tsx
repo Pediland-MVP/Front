@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { PencilIcon, Trash2Icon } from 'lucide-react';
+import { PencilIcon, Trash2Icon, XIcon } from 'lucide-react';
 
 import {
   Select,
@@ -65,6 +65,12 @@ interface ShippingMethodCardProps {
 /**
  * One shipping method: its switch, its price, and everything that modifies that price.
  *
+ * The card is COLLAPSED until the merchant asks to edit it. The list is the primary view — every
+ * workspace is seeded with five methods, so five open cards would bury the one thing this screen
+ * is for (seeing at a glance what the shop offers and switching methods on and off) under five
+ * forms nobody asked for. The header alone answers that: name, carrier, and a summary line
+ * carrying the price, the free-shipping threshold and the exception count.
+ *
  * `settlement` is a single three-way choice — prepay, پس‌کرایه, or پرداخت در محل — because a
  * method is exactly one of them and never two at once. It is a radio group rather than switches
  * for the same reason: switches would let a merchant turn on two mutually exclusive things and
@@ -87,12 +93,14 @@ export const ShippingMethodCard = ({
   const t = useTranslations('Commerce.Shipping');
 
   /**
-   * An inactive method still needs editing — that is how you fix the price before switching it
-   * back on. The design hides the body of an inactive card, which would make a deactivated method
-   * uneditable, so a small "ویرایش" reveals it instead.
+   * Closed until the pencil is clicked — for an ACTIVE method as much as an inactive one. Being
+   * switched on says the shop offers it, not that the merchant wants to retune it.
+   *
+   * The one exception is a method that has never been saved: `serverId === null` means the
+   * merchant just pressed «افزودن روش», and leaving that row collapsed would make the button look
+   * like it did nothing but append a nameless card. It opens on the field they came here to fill.
    */
-  const [isForcedOpen, setIsForcedOpen] = useState(false);
-  const isBodyOpen = draft.isActive || isForcedOpen;
+  const [isEditing, setIsEditing] = useState(draft.serverId === null);
   const charges = chargesShipping(draft);
 
   const summary = useMemo(() => {
@@ -140,17 +148,23 @@ export const ShippingMethodCard = ({
         </div>
 
         <div className="flex flex-none items-center gap-1">
-          {!draft.isActive && (
-            <button
-              type="button"
-              onClick={() => setIsForcedOpen((open) => !open)}
-              aria-label={t('editInactive')}
-              aria-expanded={isForcedOpen}
-              className={editorIconButton}
-            >
+          {/*
+            Never disabled by `canEdit`: a member without write access still needs to READ what a
+            method costs, and every control inside the body carries its own `disabled`.
+          */}
+          <button
+            type="button"
+            onClick={() => setIsEditing((open) => !open)}
+            aria-label={isEditing ? t('closeEditor') : t('edit')}
+            aria-expanded={isEditing}
+            className={cn(editorIconButton, isEditing && 'bg-tint2 text-primary')}
+          >
+            {isEditing ? (
+              <XIcon className="size-3.5" aria-hidden="true" />
+            ) : (
               <PencilIcon className="size-3.5" aria-hidden="true" />
-            </button>
-          )}
+            )}
+          </button>
           <button
             type="button"
             disabled={!canEdit}
@@ -163,7 +177,7 @@ export const ShippingMethodCard = ({
         </div>
       </div>
 
-      {isBodyOpen && (
+      {isEditing && (
         <div className="flex flex-col gap-3 px-4 pb-4">
           <div className="border-ln grid gap-3 border-t pt-3.5 sm:grid-cols-[200px_minmax(0,1fr)]">
             <div>

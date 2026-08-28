@@ -39,9 +39,73 @@ const renderCard = (draft: ShippingOptionDraft, onChange = vi.fn()) => {
   return onChange;
 };
 
+/**
+ * The card ships collapsed, so every test about the BODY has to open it first — exactly what a
+ * merchant does. Clicks the last edit button on screen, so the two-render test below still works.
+ */
+const renderOpenCard = (draft: ShippingOptionDraft, onChange = vi.fn()) => {
+  renderCard(draft, onChange);
+  const buttons = screen.getAllByRole('button', { name: copy.edit });
+  fireEvent.click(buttons[buttons.length - 1]);
+  return onChange;
+};
+
+describe('ShippingMethodCard — closed until asked', () => {
+  it('shows no form for an ACTIVE method — being switched on is not a request to retune it', () => {
+    renderCard(baseDraft({ isActive: true }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+  });
+
+  it('still says everything that matters in the summary while closed', () => {
+    renderCard(baseDraft({ isActive: true, amount: 45000, freeOverAmount: 1_500_000 }));
+
+    const summary = screen.getByTestId('method-summary');
+    expect(summary).toHaveTextContent('۴۵٬۰۰۰');
+    expect(summary).toHaveTextContent('۱٬۵۰۰٬۰۰۰');
+  });
+
+  it('opens on the pencil and closes again on the second click', () => {
+    renderCard(baseDraft());
+
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: copy.closeEditor }));
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+  });
+
+  it('opens a never-saved method straight away, or «افزودن روش» would look like it did nothing', () => {
+    renderCard(baseDraft({ serverId: null }));
+
+    expect(screen.getByLabelText(copy.titleLabel)).toBeInTheDocument();
+  });
+
+  it('lets a read-only member open the card — the controls inside carry their own disabled', () => {
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <ShippingMethodCard
+          draft={baseDraft()}
+          onChange={vi.fn()}
+          onRemove={vi.fn()}
+          canEdit={false}
+          provinces={provinces}
+          cities={cities}
+          provinceById={new Map(provinces.map((p) => [p.id, p]))}
+          cityById={new Map(cities.map((c) => [c.id, c]))}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+    expect(screen.getByLabelText(copy.priceLabel)).toBeDisabled();
+  });
+});
+
 describe('ShippingMethodCard — the three settlement modes are exclusive', () => {
   it('offers exactly three, as radios rather than switches', () => {
-    renderCard(baseDraft());
+    renderOpenCard(baseDraft());
 
     const radios = screen.getAllByRole('radio');
     expect(radios).toHaveLength(3);
@@ -49,7 +113,7 @@ describe('ShippingMethodCard — the three settlement modes are exclusive', () =
   });
 
   it('shows the rate, the free-shipping row and the exceptions toggle when prepaid', () => {
-    renderCard(baseDraft({ settlement: 'prepaid' }));
+    renderOpenCard(baseDraft({ settlement: 'prepaid' }));
 
     expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
     expect(screen.getByText(copy.freeOverLabel)).toBeInTheDocument();
@@ -59,7 +123,7 @@ describe('ShippingMethodCard — the three settlement modes are exclusive', () =
   it.each(['freight_collect', 'cash_on_delivery'] as const)(
     'hides all three under %s, where the carrier collects',
     (settlement) => {
-      renderCard(baseDraft({ settlement }));
+      renderOpenCard(baseDraft({ settlement }));
 
       expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
       expect(screen.queryByText(copy.freeOverLabel)).not.toBeInTheDocument();
@@ -70,7 +134,7 @@ describe('ShippingMethodCard — the three settlement modes are exclusive', () =
   );
 
   it('asks the parent to switch mode when another radio is picked', () => {
-    const onChange = renderCard(baseDraft());
+    const onChange = renderOpenCard(baseDraft());
 
     fireEvent.click(screen.getByRole('radio', { name: copy.settlements.cash_on_delivery }));
 
@@ -89,13 +153,13 @@ describe('ShippingMethodCard — the three settlement modes are exclusive', () =
 
 describe('ShippingMethodCard — free shipping threshold', () => {
   it('shows a dash while there is no threshold', () => {
-    renderCard(baseDraft({ freeOverAmount: null }));
+    renderOpenCard(baseDraft({ freeOverAmount: null }));
 
     expect(screen.getByText(copy.freeOverDisabled)).toBeInTheDocument();
   });
 
   it('reveals the amount once the threshold is switched on', () => {
-    renderCard(baseDraft({ freeOverAmount: 1_500_000 }));
+    renderOpenCard(baseDraft({ freeOverAmount: 1_500_000 }));
 
     expect(screen.getByLabelText(copy.freeOverAmountLabel)).toHaveValue('۱٬۵۰۰٬۰۰۰');
   });
@@ -103,28 +167,30 @@ describe('ShippingMethodCard — free shipping threshold', () => {
   // `null` means never waived; `0` means always free. Turning the switch off has to write null,
   // or a shop that never offers free shipping would start offering it on every order.
   it('writes null when switched off, and 0 when switched on', () => {
-    const onChange = renderCard(baseDraft({ freeOverAmount: 500_000 }));
+    const onChange = renderOpenCard(baseDraft({ freeOverAmount: 500_000 }));
     fireEvent.click(screen.getByRole('switch', { name: copy.freeOverLabel }));
     expect(onChange).toHaveBeenCalledWith({ freeOverAmount: null });
 
-    const onChange2 = renderCard(baseDraft({ freeOverAmount: null }));
+    const onChange2 = renderOpenCard(baseDraft({ freeOverAmount: null }));
     fireEvent.click(screen.getAllByRole('switch', { name: copy.freeOverLabel })[1]);
     expect(onChange2).toHaveBeenCalledWith({ freeOverAmount: 0 });
   });
 });
 
 describe('ShippingMethodCard — an inactive method stays editable', () => {
-  it('collapses the body when the method is off', () => {
+  it('says it is off instead of showing a price nobody is being charged', () => {
     renderCard(baseDraft({ isActive: false }));
 
     expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
     expect(screen.getByText(copy.summaryInactive)).toBeInTheDocument();
   });
 
-  it('opens it again through the edit affordance, so a disabled price can still be fixed', () => {
+  // Fixing the price BEFORE switching a method back on is the whole reason an off method must
+  // still open.
+  it('opens through the same pencil, so a disabled price can still be fixed', () => {
     renderCard(baseDraft({ isActive: false }));
 
-    fireEvent.click(screen.getByRole('button', { name: copy.editInactive }));
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
 
     expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
   });
