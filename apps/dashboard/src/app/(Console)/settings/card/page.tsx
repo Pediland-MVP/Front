@@ -14,7 +14,6 @@ import { z } from 'zod';
 
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { MoneyField } from '@/components/Commerce/Shipping/MoneyField';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
@@ -39,13 +38,14 @@ export const bankDetailsSchema = z.object({
       message: 'must be 24 digits',
     }),
   /**
-   * پرداخت در محل. It rides this form because the backend writes it through this same endpoint —
-   * `POST /payments/cardToCard` — on the reasoning that this page is the one place a merchant
-   * says how their shop gets paid. It is a payment method and is entirely independent of
-   * پس‌کرایه, which is a *shipping* pricing mode set per method on /products/shipping.
+   * A ceiling on the order total the merchant will accept پرداخت در محل for — `null` means any
+   * total. It rides this form because the backend writes it through this same endpoint,
+   * `POST /payments/cardToCard`, on the reasoning that this page is the one place a merchant says
+   * how their shop gets paid.
+   *
+   * WHETHER پرداخت در محل is offered is not here: that is the shipping method's own settlement,
+   * set per method on /products/shipping. Only the carrier knows whether it collects.
    */
-  codEnabled: z.boolean(),
-  /** `null` means COD at any order total; a number caps it. */
   codMaxOrderValue: z.number().int().min(0).nullable(),
 });
 
@@ -61,7 +61,6 @@ export default function BankCardPage() {
       cardNumber: '',
       iban: '',
       accountHolder: '',
-      codEnabled: false,
       codMaxOrderValue: null,
     },
     resolver: zodResolver(bankDetailsSchema),
@@ -86,7 +85,6 @@ export default function BankCardPage() {
       cardNumber: cardToCardData.cardNumber ?? '',
       iban: cardToCardData.iban ?? '',
       accountHolder: cardToCardData.accountHolder ?? '',
-      codEnabled: cardToCardData.codEnabled ?? false,
       codMaxOrderValue: cardToCardData.codMaxOrderValue ?? null,
     });
   }, [cardToCardData]);
@@ -241,66 +239,37 @@ export default function BankCardPage() {
                     </div>
 
                     {/*
-                      پرداخت در محل — a payment method, not a shipping mode. The courier collects
-                      the whole order (goods + postage) at the door and the merchant settles it
-                      later from the orders screen. Deliberately NOT the same thing as پس‌کرایه on
-                      /products/shipping, which only covers the postage; the two are orthogonal and
-                      all four combinations are valid.
+                      Only the CEILING lives here. Whether پرداخت در محل is offered at all is the
+                      shipping method's own settlement on /products/shipping — a carrier either
+                      collects at the door or it does not, and this page cannot know which.
                     */}
                     <div className="border-lnv bg-tint mt-6 rounded-xl border p-3">
                       <FormField
                         control={control}
-                        name="codEnabled"
+                        name="codMaxOrderValue"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-start gap-2.5 space-y-0">
+                          <FormItem className="space-y-1.5">
+                            <FormLabel className="text-sm font-semibold">
+                              {t('cod.ceilingLabel')}
+                            </FormLabel>
                             <FormControl>
-                              <Switch
-                                checked={field.value}
+                              <MoneyField
+                                value={field.value}
+                                onChange={field.onChange}
                                 disabled={!canManage}
-                                onCheckedChange={field.onChange}
-                                aria-label={t('cod.label')}
+                                size="sm"
+                                ariaLabel={t('cod.ceilingLabel')}
+                                placeholder={t('cod.ceilingPlaceholder')}
+                                unit={t('cod.unit')}
+                                className="[&_input]:bg-card w-52"
                               />
                             </FormControl>
-                            <div className="flex min-w-0 flex-col gap-0.5">
-                              <FormLabel className="text-sm font-semibold">
-                                {t('cod.label')}
-                              </FormLabel>
-                              <span className="text-muted-foreground text-xs text-pretty">
-                                {t('cod.description')}
-                              </span>
-                            </div>
+                            <span className="text-muted-foreground block text-xs text-pretty">
+                              {t('cod.ceilingHint')}
+                            </span>
                           </FormItem>
                         )}
                       />
-
-                      {form.watch('codEnabled') && (
-                        <FormField
-                          control={control}
-                          name="codMaxOrderValue"
-                          render={({ field }) => (
-                            <FormItem className="mt-3 space-y-1.5">
-                              <FormLabel className="text-muted-foreground text-xs font-bold">
-                                {t('cod.ceilingLabel')}
-                              </FormLabel>
-                              <FormControl>
-                                <MoneyField
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  disabled={!canManage}
-                                  size="sm"
-                                  ariaLabel={t('cod.ceilingLabel')}
-                                  placeholder={t('cod.ceilingPlaceholder')}
-                                  unit={t('cod.unit')}
-                                  className="[&_input]:bg-card w-52"
-                                />
-                              </FormControl>
-                              <span className="text-muted-foreground block text-xs text-pretty">
-                                {t('cod.ceilingHint')}
-                              </span>
-                            </FormItem>
-                          )}
-                        />
-                      )}
                     </div>
 
                     <div className="mt-6">

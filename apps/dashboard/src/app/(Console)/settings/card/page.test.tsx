@@ -38,39 +38,36 @@ beforeEach(() => {
     accountHolder: 'علی علیزاده',
     cardNumber: '1'.repeat(16),
     iban: '2'.repeat(24),
-    codEnabled: false,
     codMaxOrderValue: null,
   };
   post.mockResolvedValue({ status: 200 });
 });
 
-describe('bank details — cash-on-delivery', () => {
-  it('reflects the saved state instead of always rendering off', () => {
-    cardToCardData = { ...cardToCardData, codEnabled: true, codMaxOrderValue: 3_000_000 };
+describe('bank details — the cash-on-delivery ceiling', () => {
+  it('reflects the saved ceiling instead of always rendering empty', () => {
+    cardToCardData = { ...cardToCardData, codMaxOrderValue: 3_000_000 };
     renderPage();
 
-    expect(screen.getByRole('switch', { name: copy.cod.label })).toBeChecked();
     expect(screen.getByLabelText(copy.cod.ceilingLabel)).toHaveValue('۳٬۰۰۰٬۰۰۰');
   });
 
-  it('hides the ceiling field while cash-on-delivery is off', () => {
+  it('renders the field empty when there is no ceiling', () => {
     renderPage();
 
-    expect(screen.queryByLabelText(copy.cod.ceilingLabel)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(copy.cod.ceilingLabel)).toHaveValue('');
   });
 
-  it('reveals the ceiling once the toggle is switched on', () => {
+  // Whether cash on delivery is offered at all is the shipping method's own settlement, set on
+  // /products/shipping. This page only caps how much cash the merchant will accept.
+  it('offers no on/off control here — only the cap', () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole('switch', { name: copy.cod.label }));
-
-    expect(screen.getByLabelText(copy.cod.ceilingLabel)).toBeInTheDocument();
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   });
 
-  it('sends both fields with the bank details, since one endpoint writes them all', async () => {
+  it('sends the ceiling with the bank details, since one endpoint writes them all', async () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole('switch', { name: copy.cod.label }));
     fireEvent.change(screen.getByLabelText(copy.cod.ceilingLabel), {
       target: { value: '3000000' },
     });
@@ -79,24 +76,19 @@ describe('bank details — cash-on-delivery', () => {
     await waitFor(() => expect(post).toHaveBeenCalled());
     expect(post).toHaveBeenCalledWith(
       '/payments/cardToCard',
-      expect.objectContaining({
-        bankName: 'صادرات',
-        codEnabled: true,
-        codMaxOrderValue: 3000000,
-      }),
+      expect.objectContaining({ bankName: 'صادرات', codMaxOrderValue: 3000000 }),
     );
   });
 
-  it('sends a null ceiling, which the API reads as "no cap", when the field is left empty', async () => {
+  it('sends null, which the API reads as "no cap", when the field is left empty', async () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole('switch', { name: copy.cod.label }));
     fireEvent.click(screen.getByRole('button', { name: copy.save }));
 
     await waitFor(() => expect(post).toHaveBeenCalled());
     expect(post).toHaveBeenCalledWith(
       '/payments/cardToCard',
-      expect.objectContaining({ codEnabled: true, codMaxOrderValue: null }),
+      expect.objectContaining({ codMaxOrderValue: null }),
     );
   });
 });

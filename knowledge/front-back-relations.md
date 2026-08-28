@@ -95,17 +95,18 @@ one requires `ORDER_VIEW` to read and `ORDER_MANAGE` to write, matching `Shippin
 | `PUT /commerce/shipping-options/:id/overrides` | same | **Full replace**, capped at 200 rows. Rejected outright on a `post_kerayeh` option, so the screen sends an empty list when that mode is on. |
 | `GET /cities`, `GET /cities/provinces` | `hooks/useShippingDestinations.ts` | Fetched whole and cached with `useSWRImmutable`. A saved exception stores a bare `cityId`, so the full table is what turns ids back into names. `GET /cities` returns `provinceId` on every row — `types/city.ts` was missing that field. |
 
-**Pricing enum ↔ UI.** The API's `pricing` is three-way and mutually exclusive (`flat` /
-`free_over` / `post_kerayeh`), enforced by `CHK_commerce_shipping_option_pricing`. The screen shows
-two independent switches and folds them back in `utils/commerce/shippingDraft.ts`'s `pricingOf`;
-پس‌کرایه wins over the free-shipping threshold. Any new pricing mode on the Back has to be taught
-to that function — the frontend cannot round-trip an enum value it has no switch for.
+**Settlement enum ↔ UI.** The API's `settlement` is three-way and mutually exclusive (`prepaid` /
+`freight_collect` / `cash_on_delivery`), enforced by `CHK_commerce_shipping_option_rate`. The
+screen renders it as a radio group, one control per value, so a new mode added on the Back appears
+as an unlabelled option until `Commerce.Shipping.settlements`/`settlementNotes` gain a key for it.
+Only `prepaid` carries a rate; the other two send `amount: 0`, `freeOverAmount: null` and an empty
+override list.
 
-**Cash-on-delivery.** `GET /payments/cardToCard` returns `codEnabled` and `codMaxOrderValue`
-alongside the card fields, and `POST /payments/cardToCard` writes them — both consumed by
-`app/(Console)/settings/card/page.tsx`. Omitting either field leaves it untouched;
-`codMaxOrderValue: null` explicitly clears the ceiling. The endpoint still 404s for a workspace
-with no card and its DTO still requires the card fields, so a COD-only merchant cannot turn COD on.
+**Cash-on-delivery.** `GET`/`POST /payments/cardToCard` carry `codMaxOrderValue` only — a
+shop-wide ceiling, consumed by `app/(Console)/settings/card/page.tsx`. Omitting it leaves it
+untouched; `null` clears it. Whether COD is offered is NOT here: it is the shipping method's
+`settlement`, which is also why the old "a COD-only merchant needs bank details" gap no longer
+exists.
 
 **No consumer yet.** `POST /commerce/orders/:id/mark-paid` and `:id/cancel` have no frontend. The
 dashboard's `/orders` screen reads the **legacy** `GET /orders`; nothing calls `/commerce/orders`.

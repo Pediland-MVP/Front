@@ -142,3 +142,59 @@ shipping settings. Until it exists, a COD order can be taken but not settled fro
   `ignoreBuildErrors`.)
 - `npx eslint` on every new file — clean.
 - **Not yet verified in a browser.** No manual pass has been done against a running backend.
+
+
+---
+
+# 2026-08-28 — Redesign: one settlement mode per method
+
+> Supersedes this doc's پس‌کرایه/COD UI. Paired Back doc: same date, same file name.
+
+## Problem
+
+The screen showed **two switches** — a پس‌کرایه toggle on each method, and a separate
+پرداخت در محل toggle over on the bank-details page — because the API modelled them as independent
+axes. They are not. They are three mutually exclusive answers to one question, so two switches let
+a merchant turn on a combination that means nothing, and the shop-wide COD switch offered cash on
+delivery for **every** method, including carriers that collect nothing.
+
+## Solution
+
+The two switches become **one radio group** — `prepaid` / `freight_collect` / `cash_on_delivery` —
+because the modes are exclusive and a radio group is the control that says so. Each option carries
+a one-line explanation of who pays what and when, since "پس‌کرایه" alone does not tell a merchant
+that the buyer still prepays the goods.
+
+Only `prepaid` charges a rate, so the price field, the free-shipping threshold and the whole
+per-city exceptions editor are **hidden** under the other two, replaced by a sentence saying why.
+
+`freeOverAmount` is now `null` vs a number rather than a boolean plus a number: turning the
+free-shipping switch off writes `null` (never waived), not `0` (always free). Getting that
+backwards would silently give away free shipping on every order.
+
+`settings/card` keeps **only the ceiling**. The on/off control is gone from that page entirely —
+whether a carrier collects at the door is a property of the carrier, and the bank-details form
+cannot know it. Its hint now points at «تنظیمات ارسال پستی».
+
+The known limitation this closes for free: a merchant who wants only cash on delivery no longer
+needs bank details to enable it, because there is no longer anything to enable there.
+
+## Changes
+
+- `types/shipping.ts` — `CommerceShippingSettlement` replaces `CommerceShippingPricing`; kinds
+  renamed `post_express`/`post_registered`.
+- `utils/commerce/shippingDraft.ts` — the `postKerayeh`/`freeOverEnabled` booleans collapse into
+  one `settlement` value plus a nullable `freeOverAmount`; `pricingOf` is gone, replaced by
+  `chargesShipping`.
+- `ShippingMethodCard.tsx` — radio group, mode-specific notes, rate section gated on `prepaid`.
+  Each radio gets an explicit `aria-label`: the wrapping label also holds the explanation, so the
+  accessible name would otherwise be the mode plus a sentence of prose.
+- `settings/card/page.tsx` — COD toggle removed, ceiling kept.
+- `messages/fa.json` / `messages/fa/ErrorCodes.json` — new settlement copy;
+  `COMMERCE_SHIPPING_THRESHOLD_REQUIRED` dropped (the backend no longer raises it).
+
+## Verification
+
+- `npx vitest run` — **495 pass / 60 files**.
+- `npx tsc --noEmit` — 204 errors, identical to baseline, zero in any touched file.
+- **Still not verified in a browser.**

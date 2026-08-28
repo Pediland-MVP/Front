@@ -36,7 +36,7 @@ const signatureOf = (options: CommerceShippingOption[]) =>
       o.id,
       o.kind,
       o.title,
-      o.pricing,
+      o.settlement,
       o.amount,
       o.freeOverAmount,
       o.sortOrder,
@@ -164,14 +164,6 @@ export const ShippingSettings = () => {
       toast.error(t('titleRequired'));
       return;
     }
-    const missingThreshold = drafts.find(
-      (d) => !d.postKerayeh && d.freeOverEnabled && d.freeOverAmount <= 0,
-    );
-    if (missingThreshold) {
-      toast.error(t('freeOverRequired'));
-      return;
-    }
-
     setIsSaving(true);
     try {
       for (const draft of drafts) {

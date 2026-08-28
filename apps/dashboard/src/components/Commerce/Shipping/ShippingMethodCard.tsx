@@ -11,12 +11,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import type { ICity } from '@/types/city';
 import type { IProvince } from '@/types/province';
-import type { CommerceShippingKind } from '@/types/shipping';
-import type { ShippingOptionDraft, ShippingOverrideDraft } from '@/utils/commerce/shippingDraft';
+import type { CommerceShippingKind, CommerceShippingSettlement } from '@/types/shipping';
+import {
+  chargesShipping,
+  type ShippingOptionDraft,
+  type ShippingOverrideDraft,
+} from '@/utils/commerce/shippingDraft';
 
 import {
   editorCard,
@@ -30,12 +35,20 @@ import { RateOverrideEditor } from './RateOverrideEditor';
 
 /** Order the kinds are offered in — the two postal services first, since most merchants use them. */
 const KINDS: CommerceShippingKind[] = [
-  'post_pishtaz',
-  'post_sefareshi',
+  'post_express',
+  'post_registered',
   'tipax',
   'courier',
   'pickup',
   'other',
+];
+
+/** Ordered cheapest-commitment-first for the merchant: prepay, then the two collect-at-the-door
+ *  modes. Exactly one applies — see `CommerceShippingSettlement`. */
+const SETTLEMENTS: CommerceShippingSettlement[] = [
+  'prepaid',
+  'freight_collect',
+  'cash_on_delivery',
 ];
 
 interface ShippingMethodCardProps {
@@ -52,13 +65,14 @@ interface ShippingMethodCardProps {
 /**
  * One shipping method: its switch, its price, and everything that modifies that price.
  *
- * The card carries the screen's one real piece of domain translation. The API models pricing as a
- * single three-way enum (`flat` / `free_over` / `post_kerayeh`), but a merchant does not think in
- * enums — they think "how much do I charge" plus two yes/no questions. So the card shows two
- * switches and `pricingOf` folds them back. پس‌کرایه is the mode that swallows the others: when
- * the courier collects the fare from the buyer, the seller's price, threshold and per-city
- * exceptions all become meaningless, so they are hidden rather than left on screen contradicting
- * the mode. The server enforces the same exclusion with a CHECK constraint.
+ * `settlement` is a single three-way choice — prepay, پس‌کرایه, or پرداخت در محل — because a
+ * method is exactly one of them and never two at once. It is a radio group rather than switches
+ * for the same reason: switches would let a merchant turn on two mutually exclusive things and
+ * then have the screen quietly pick one.
+ *
+ * Only the prepaid mode has a rate the seller charges, so the price, the free-shipping threshold
+ * and the per-city exceptions are HIDDEN under the other two rather than left on screen
+ * contradicting the mode. The server enforces the same exclusion with a CHECK constraint.
  */
 export const ShippingMethodCard = ({
   draft,
@@ -79,27 +93,25 @@ export const ShippingMethodCard = ({
    */
   const [isForcedOpen, setIsForcedOpen] = useState(false);
   const isBodyOpen = draft.isActive || isForcedOpen;
-  const isPostKerayeh = draft.postKerayeh;
+  const charges = chargesShipping(draft);
 
   const summary = useMemo(() => {
     if (!draft.isActive) return t('summaryInactive');
 
-    const parts: string[] = [];
-    if (isPostKerayeh) {
-      parts.push(t('summaryPostKerayeh'));
-    } else {
-      parts.push(
-        draft.amount > 0 ? `${formatAmount(draft.amount)} ${t('priceUnit')}` : t('summaryFree'),
-      );
-      if (draft.freeOverEnabled) {
-        parts.push(t('summaryFreeAbove', { amount: formatAmount(draft.freeOverAmount) }));
-      }
-      if (draft.overrides.length > 0) {
-        parts.push(t('summaryExceptions', { count: formatCount(draft.overrides.length) }));
-      }
+    if (draft.settlement === 'freight_collect') return t('summaryFreightCollect');
+    if (draft.settlement === 'cash_on_delivery') return t('summaryCashOnDelivery');
+
+    const parts: string[] = [
+      draft.amount > 0 ? `${formatAmount(draft.amount)} ${t('priceUnit')}` : t('summaryFree'),
+    ];
+    if (draft.freeOverAmount != null) {
+      parts.push(t('summaryFreeAbove', { amount: formatAmount(draft.freeOverAmount) }));
+    }
+    if (draft.overrides.length > 0) {
+      parts.push(t('summaryExceptions', { count: formatCount(draft.overrides.length) }));
     }
     return parts.join('  ·  ');
-  }, [draft, isPostKerayeh, t]);
+  }, [draft, t]);
 
   const setOverrides = (next: ShippingOverrideDraft[]) => onChange({ overrides: next });
 
@@ -122,7 +134,9 @@ export const ShippingMethodCard = ({
               {t(`kinds.${draft.kind}`)}
             </span>
           </div>
-          <div className="text-mut text-xs">{summary}</div>
+          <div data-testid="method-summary" className="text-mut text-xs">
+            {summary}
+          </div>
         </div>
 
         <div className="flex flex-none items-center gap-1">
@@ -190,7 +204,49 @@ export const ShippingMethodCard = ({
             </div>
           </div>
 
-          {!isPostKerayeh && (
+          {/*
+            A radio group, not switches: the three modes are mutually exclusive, and switches
+            would let a merchant turn on two of them and leave the screen to quietly pick one.
+          */}
+          <fieldset className="border-lnv bg-tint rounded-xl border p-3">
+            <legend className="text-mut px-1 text-xs font-bold">{t('settlementLabel')}</legend>
+            <RadioGroup
+              value={draft.settlement}
+              disabled={!canEdit}
+              onValueChange={(value) =>
+                onChange({ settlement: value as CommerceShippingSettlement })
+              }
+              className="gap-2"
+            >
+              {SETTLEMENTS.map((mode) => (
+                <label
+                  key={mode}
+                  htmlFor={`settlement-${draft.key}-${mode}`}
+                  className={cn(
+                    'flex cursor-pointer items-start gap-2.5 rounded-lg p-2 transition-colors',
+                    draft.settlement === mode ? 'bg-card' : 'hover:bg-card/60',
+                  )}
+                >
+                  <RadioGroupItem
+                    id={`settlement-${draft.key}-${mode}`}
+                    value={mode}
+                    // The wrapping label also holds the explanation paragraph, so without this the
+                    // accessible name would be the mode plus a sentence of prose.
+                    aria-label={t(`settlements.${mode}`)}
+                    className="mt-0.5"
+                  />
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-sm font-semibold">{t(`settlements.${mode}`)}</span>
+                    <span className="text-mut text-xs text-pretty">
+                      {t(`settlementNotes.${mode}`)}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </RadioGroup>
+          </fieldset>
+
+          {charges ? (
             <>
               <div className="flex flex-wrap items-end gap-3.5">
                 <div className="w-48">
@@ -214,14 +270,17 @@ export const ShippingMethodCard = ({
 
               <div className="border-lnv bg-tint flex flex-wrap items-center gap-2.5 rounded-xl border p-3">
                 <Switch
-                  checked={draft.freeOverEnabled}
+                  // `null` means the seller never waives shipping; a number (0 included) means
+                  // they do. The switch is that distinction, which is why turning it off writes
+                  // null rather than 0 -- 0 would mean "always free".
+                  checked={draft.freeOverAmount != null}
                   disabled={!canEdit}
-                  onCheckedChange={(checked) => onChange({ freeOverEnabled: checked })}
+                  onCheckedChange={(checked) => onChange({ freeOverAmount: checked ? 0 : null })}
                   aria-label={t('freeOverLabel')}
                 />
                 <div className="flex min-w-0 flex-wrap items-center gap-2.5">
                   <span className="text-sm font-semibold">{t('freeOverLabel')}</span>
-                  {draft.freeOverEnabled ? (
+                  {draft.freeOverAmount != null ? (
                     <MoneyField
                       value={draft.freeOverAmount}
                       onChange={(next) => onChange({ freeOverAmount: next ?? 0 })}
@@ -249,22 +308,9 @@ export const ShippingMethodCard = ({
                 cityById={cityById}
               />
             </>
+          ) : (
+            <p className="text-mut text-xs text-pretty">{t('noRateNote')}</p>
           )}
-
-          <div className="bg-tint flex items-center gap-2.5 rounded-xl p-3">
-            <Switch
-              checked={isPostKerayeh}
-              disabled={!canEdit}
-              onCheckedChange={(checked) => onChange({ postKerayeh: checked })}
-              aria-label={t('postKerayehLabel')}
-            />
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-sm font-semibold">{t('postKerayehLabel')}</span>
-              <span className="text-mut text-xs text-pretty">
-                {isPostKerayeh ? t('postKerayehLocked') : t('postKerayehNote')}
-              </span>
-            </div>
-          </div>
         </div>
       )}
     </div>

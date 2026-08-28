@@ -54,9 +54,9 @@ vi.mock('sonner', () => ({
 const option = (patch: Partial<CommerceShippingOption> = {}): CommerceShippingOption => ({
   id: 'opt-1',
   workspaceId: 'ws-1',
-  kind: 'post_pishtaz',
+  kind: 'post_express',
   title: 'پست پیشتاز',
-  pricing: 'flat',
+  settlement: 'prepaid',
   amount: 45000,
   freeOverAmount: null,
   sortOrder: 0,
@@ -169,17 +169,7 @@ describe('ShippingSettings — what save actually writes', () => {
     expect(updateOption).not.toHaveBeenCalled();
   });
 
-  it('refuses free shipping with no threshold, which the DB constraint would reject anyway', async () => {
-    renderScreen();
-
-    fireEvent.click(screen.getByRole('switch', { name: copy.freeOverLabel }));
-    fireEvent.click(saveButton());
-
-    await waitFor(() => expect(toastError).toHaveBeenCalledWith(copy.freeOverRequired));
-    expect(updateOption).not.toHaveBeenCalled();
-  });
-
-  it('switching to پس‌کرایه clears the saved exceptions rather than leaving them behind', async () => {
+  it('switching to a carrier-collected mode clears the saved exceptions', async () => {
     serverOptions = [
       option({
         overrides: [
@@ -189,13 +179,13 @@ describe('ShippingSettings — what save actually writes', () => {
     ];
     renderScreen();
 
-    fireEvent.click(screen.getByRole('switch', { name: copy.postKerayehLabel }));
+    fireEvent.click(screen.getByRole('radio', { name: copy.settlements.freight_collect }));
     fireEvent.click(saveButton());
 
     await waitFor(() => expect(setOverrides).toHaveBeenCalledWith('opt-1', { overrides: [] }));
     expect(updateOption).toHaveBeenCalledWith(
       'opt-1',
-      expect.objectContaining({ pricing: 'post_kerayeh', amount: 0, freeOverAmount: null }),
+      expect.objectContaining({ settlement: 'freight_collect', amount: 0, freeOverAmount: null }),
     );
   });
 });

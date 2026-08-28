@@ -9,21 +9,27 @@
 
 /** Platform-owned and closed: adding a value is a Back migration, never a frontend change. */
 export type CommerceShippingKind =
-  | 'post_pishtaz'
-  | 'post_sefareshi'
+  | 'post_express'
+  | 'post_registered'
   | 'tipax'
   | 'courier'
   | 'pickup'
   | 'other';
 
 /**
- * How one option prices a delivery. Deliberately three-way and mutually exclusive:
- * - `flat` — one default amount, plus any per-city/province overrides.
- * - `free_over` — same, but waived entirely once the basket reaches `freeOverAmount`.
- * - `post_kerayeh` — the courier bills the buyer on delivery. The seller is not party to that
- *   money, so `amount` is forced to 0, `freeOverAmount` to null, and overrides are rejected.
+ * Who pays what, and when. Exactly one per method — a method cannot be two of these at once, which
+ * is why it is one value rather than flags that could contradict each other.
+ *
+ * | mode               | buyer pays at checkout | `shippingTotal` | settled           |
+ * | ------------------ | ---------------------- | --------------- | ----------------- |
+ * | `prepaid`          | goods + shipping       | the quoted rate | at submit         |
+ * | `freight_collect`  | goods only             | 0               | at submit         |
+ * | `cash_on_delivery` | nothing                | 0               | seller marks paid |
+ *
+ * Only `prepaid` has a rate the seller charges, so `amount`, `freeOverAmount` and the whole
+ * per-destination override list are meaningful only there.
  */
-export type CommerceShippingPricing = 'flat' | 'free_over' | 'post_kerayeh';
+export type CommerceShippingSettlement = 'prepaid' | 'freight_collect' | 'cash_on_delivery';
 
 /**
  * A price exception for one destination. Exactly one of `cityId`/`provinceId` is set — the DB
@@ -42,7 +48,7 @@ export interface CommerceShippingOption {
   workspaceId: string;
   kind: CommerceShippingKind;
   title: string;
-  pricing: CommerceShippingPricing;
+  settlement: CommerceShippingSettlement;
   amount: number;
   freeOverAmount: number | null;
   sortOrder: number;
@@ -56,7 +62,7 @@ export interface CommerceShippingOption {
 export interface CreateShippingOptionPayload {
   kind: CommerceShippingKind;
   title: string;
-  pricing: CommerceShippingPricing;
+  settlement: CommerceShippingSettlement;
   amount?: number;
   freeOverAmount?: number | null;
   sortOrder?: number;

@@ -39,55 +39,77 @@ const renderCard = (draft: ShippingOptionDraft, onChange = vi.fn()) => {
   return onChange;
 };
 
-describe('ShippingMethodCard — پس‌کرایه swallows the seller-set price', () => {
-  it('shows the price, the free-shipping row and the exceptions toggle in flat mode', () => {
+describe('ShippingMethodCard — the three settlement modes are exclusive', () => {
+  it('offers exactly three, as radios rather than switches', () => {
     renderCard(baseDraft());
+
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(3);
+    expect(screen.getByRole('radio', { name: copy.settlements.prepaid })).toBeChecked();
+  });
+
+  it('shows the rate, the free-shipping row and the exceptions toggle when prepaid', () => {
+    renderCard(baseDraft({ settlement: 'prepaid' }));
 
     expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
     expect(screen.getByText(copy.freeOverLabel)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.exceptionsAdd })).toBeInTheDocument();
   });
 
-  it('hides all three once the courier collects the fare', () => {
-    renderCard(baseDraft({ postKerayeh: true }));
+  it.each(['freight_collect', 'cash_on_delivery'] as const)(
+    'hides all three under %s, where the carrier collects',
+    (settlement) => {
+      renderCard(baseDraft({ settlement }));
 
-    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
-    expect(screen.queryByText(copy.freeOverLabel)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: copy.exceptionsAdd })).not.toBeInTheDocument();
-  });
+      expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+      expect(screen.queryByText(copy.freeOverLabel)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: copy.exceptionsAdd })).not.toBeInTheDocument();
+      // ...and says why, rather than leaving an unexplained gap.
+      expect(screen.getByText(copy.noRateNote)).toBeInTheDocument();
+    },
+  );
 
-  it('explains why they are gone instead of leaving the row unlabelled', () => {
-    renderCard(baseDraft({ postKerayeh: true }));
-
-    expect(screen.getByText(copy.postKerayehLocked)).toBeInTheDocument();
-  });
-
-  it('reports پس‌کرایه in the summary rather than a price the seller never charges', () => {
-    renderCard(baseDraft({ postKerayeh: true, amount: 45000 }));
-
-    expect(screen.getByText(copy.summaryPostKerayeh)).toBeInTheDocument();
-  });
-
-  it('asks the parent to switch the mode when the پس‌کرایه switch is used', () => {
+  it('asks the parent to switch mode when another radio is picked', () => {
     const onChange = renderCard(baseDraft());
 
-    fireEvent.click(screen.getByRole('switch', { name: copy.postKerayehLabel }));
+    fireEvent.click(screen.getByRole('radio', { name: copy.settlements.cash_on_delivery }));
 
-    expect(onChange).toHaveBeenCalledWith({ postKerayeh: true });
+    expect(onChange).toHaveBeenCalledWith({ settlement: 'cash_on_delivery' });
+  });
+
+  it.each([
+    ['freight_collect', copy.summaryFreightCollect],
+    ['cash_on_delivery', copy.summaryCashOnDelivery],
+  ] as const)('summarises %s by its mode, not by a price it never charges', (settlement, label) => {
+    renderCard(baseDraft({ settlement, amount: 45000 }));
+
+    expect(screen.getByTestId('method-summary')).toHaveTextContent(label);
   });
 });
 
 describe('ShippingMethodCard — free shipping threshold', () => {
-  it('shows a dash instead of an empty box while the threshold is off', () => {
-    renderCard(baseDraft({ freeOverEnabled: false }));
+  it('shows a dash while there is no threshold', () => {
+    renderCard(baseDraft({ freeOverAmount: null }));
 
     expect(screen.getByText(copy.freeOverDisabled)).toBeInTheDocument();
   });
 
-  it('reveals the threshold field once it is switched on', () => {
-    renderCard(baseDraft({ freeOverEnabled: true, freeOverAmount: 1_500_000 }));
+  it('reveals the amount once the threshold is switched on', () => {
+    renderCard(baseDraft({ freeOverAmount: 1_500_000 }));
 
     expect(screen.getByLabelText(copy.freeOverAmountLabel)).toHaveValue('۱٬۵۰۰٬۰۰۰');
+  });
+
+  // `null` means never waived; `0` means always free. Turning the switch off has to write null,
+  // or a shop that never offers free shipping would start offering it on every order.
+  it('writes null when switched off, and 0 when switched on', () => {
+    const onChange = renderCard(baseDraft({ freeOverAmount: 500_000 }));
+    fireEvent.click(screen.getByRole('switch', { name: copy.freeOverLabel }));
+    expect(onChange).toHaveBeenCalledWith({ freeOverAmount: null });
+
+    const onChange2 = renderCard(baseDraft({ freeOverAmount: null }));
+    fireEvent.click(screen.getAllByRole('switch', { name: copy.freeOverLabel })[1]);
+    expect(onChange2).toHaveBeenCalledWith({ freeOverAmount: 0 });
   });
 });
 

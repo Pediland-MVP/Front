@@ -1,7 +1,7 @@
 import type {
   CommerceShippingKind,
   CommerceShippingOption,
-  CommerceShippingPricing,
+  CommerceShippingSettlement,
   CreateShippingOptionPayload,
   SetRateOverridesPayload,
 } from '@/types/shipping';
@@ -19,11 +19,13 @@ export interface ShippingOverrideDraft {
 /**
  * One shipping option while it is being edited.
  *
- * The three-way `pricing` enum is flattened into two independent booleans because that is how the
- * screen presents it: a پس‌کرایه switch and a free-shipping-threshold switch. `pricingOf` folds
- * them back into the single enum the API takes, and enforces the exclusion the DB constraint also
- * enforces — پس‌کرایه wins, because when the courier bills the buyer the seller's own price and
- * threshold are meaningless.
+ * `settlement` is carried through as one value rather than unpacked into booleans. The API models
+ * it as a single exclusive enum precisely so a method cannot claim two modes at once, and
+ * flattening it here would reintroduce the contradiction the enum exists to prevent.
+ *
+ * `freeOverAmount` stays `null` when the seller never waives shipping. That is a real distinction
+ * from `0`, which means always free — so it is a nullable amount, not a checkbox plus a number
+ * that could disagree with it.
  */
 export interface ShippingOptionDraft {
   key: string;
@@ -32,18 +34,20 @@ export interface ShippingOptionDraft {
   kind: CommerceShippingKind;
   title: string;
   isActive: boolean;
-  postKerayeh: boolean;
-  freeOverEnabled: boolean;
+  settlement: CommerceShippingSettlement;
   amount: number;
-  freeOverAmount: number;
+  freeOverAmount: number | null;
   sortOrder: number;
   overrides: ShippingOverrideDraft[];
 }
 
-export function pricingOf(draft: ShippingOptionDraft): CommerceShippingPricing {
-  if (draft.postKerayeh) return 'post_kerayeh';
-  return draft.freeOverEnabled ? 'free_over' : 'flat';
-}
+/**
+ * Whether the seller is the one charging for delivery. Under freight collect the carrier bills the
+ * buyer, and under cash on delivery the carrier collects at the door and keeps the freight — so in
+ * both, a rate, a threshold and per-destination exceptions are all meaningless.
+ */
+export const chargesShipping = (draft: Pick<ShippingOptionDraft, 'settlement'>) =>
+  draft.settlement === 'prepaid';
 
 /** Server row → editable draft. */
 export function toDraft(option: CommerceShippingOption): ShippingOptionDraft {
@@ -53,12 +57,9 @@ export function toDraft(option: CommerceShippingOption): ShippingOptionDraft {
     kind: option.kind,
     title: option.title,
     isActive: option.isActive,
-    postKerayeh: option.pricing === 'post_kerayeh',
-    freeOverEnabled: option.pricing === 'free_over',
+    settlement: option.settlement,
     amount: option.amount,
-    // Keep a usable number in the field even when the mode is off, so flipping the switch on does
-    // not present an empty box. `pricingOf` decides whether it is ever sent.
-    freeOverAmount: option.freeOverAmount ?? 0,
+    freeOverAmount: option.freeOverAmount,
     sortOrder: option.sortOrder,
     overrides: (option.overrides ?? []).map((o) => ({
       key: o.id,
@@ -77,13 +78,12 @@ export function newOptionDraft(title: string, sortOrder: number): ShippingOption
   return {
     key: `draft-${draftCounter}`,
     serverId: null,
-    kind: 'post_pishtaz',
+    kind: 'post_express',
     title,
     isActive: true,
-    postKerayeh: false,
-    freeOverEnabled: false,
+    settlement: 'prepaid',
     amount: 0,
-    freeOverAmount: 0,
+    freeOverAmount: null,
     sortOrder,
     overrides: [],
   };
@@ -92,30 +92,31 @@ export function newOptionDraft(title: string, sortOrder: number): ShippingOption
 /**
  * Draft → create/update body.
  *
- * `amount` and `freeOverAmount` are normalised here as well as on the server: sending an amount
- * alongside `post_kerayeh` would be contradictory input, and the API would silently zero it —
- * better that the request says exactly what the screen means.
+ * The rate is normalised here as well as on the server: an amount sent alongside a carrier that
+ * collects would be contradictory input the API silently zeroes. Better that the request says
+ * exactly what the screen means.
  */
 export function toPayload(draft: ShippingOptionDraft): CreateShippingOptionPayload {
-  const pricing = pricingOf(draft);
+  const charges = chargesShipping(draft);
 
   return {
     kind: draft.kind,
     title: draft.title.trim(),
-    pricing,
-    amount: pricing === 'post_kerayeh' ? 0 : draft.amount,
-    freeOverAmount: pricing === 'free_over' ? draft.freeOverAmount : null,
+    settlement: draft.settlement,
+    amount: charges ? draft.amount : 0,
+    freeOverAmount: charges ? draft.freeOverAmount : null,
     sortOrder: draft.sortOrder,
     isActive: draft.isActive,
   };
 }
 
 /**
- * Draft → overrides body. A پس‌کرایه option sends an empty list: the API rejects overrides on it
- * outright, and any rows left from before the switch was flipped have to be cleared, not kept.
+ * Draft → overrides body. A carrier-collected option sends an empty list: the API rejects
+ * overrides on it outright, and any rows left over from before the mode changed must be cleared,
+ * not kept.
  */
 export function toOverridesPayload(draft: ShippingOptionDraft): SetRateOverridesPayload {
-  if (pricingOf(draft) === 'post_kerayeh') return { overrides: [] };
+  if (!chargesShipping(draft)) return { overrides: [] };
 
   return {
     overrides: draft.overrides.map((o) => ({
@@ -133,7 +134,7 @@ export function isOptionDirty(draft: ShippingOptionDraft, original: CommerceShip
   return (
     payload.kind !== original.kind ||
     payload.title !== original.title ||
-    payload.pricing !== original.pricing ||
+    payload.settlement !== original.settlement ||
     payload.amount !== original.amount ||
     (payload.freeOverAmount ?? null) !== (original.freeOverAmount ?? null) ||
     payload.sortOrder !== original.sortOrder ||
