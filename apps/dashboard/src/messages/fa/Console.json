@@ -70,7 +70,8 @@
       "support": "پشتیبانی",
       "upgrade": "مدیریت اشتراک کاربری",
       "upgradeAccount": "اشتراک کاربری",
-      "zarinpal": "مدیریت زرین پال"
+      "zarinpal": "مدیریت زرین پال",
+      "welcomeMessage": "پیام خوش‌آمدگویی"
     },
     "switchWorkspace": "تغییر فضای کاری",
     "loading": "در حال بارگذاری...",

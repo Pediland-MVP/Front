@@ -118,3 +118,33 @@ The `GET /shops/:shopId` payment-detail move (`shop.user` → `shop.workspace`, 
 
 - **Front-only deploy (old Back):** the old Back still returns `user`, so `shop.workspace` is `undefined` and the checkout shows no payment methods.
 - **Back-only deploy (old Front):** the old Front reads `shop.user`, which the new Back no longer returns — same result.
+
+---
+
+## Ice Breakers — پیام خوش‌آمدگویی (2026-08-28)
+
+New dashboard page `/automations/welcome` (`WelcomeMessageManager.tsx`,
+`useIceBreakers.ts`) calling three endpoints that exist **only on the new Back**:
+
+- `GET /ice-breakers?instagramId=…`
+- `GET /ice-breakers/bindable-automations?instagramId=…`
+- `POST /ice-breakers`
+
+Full request/response contract: `Back/knowledge/front-back-relations.md` →
+"Ice Breakers".
+
+**Deploy coupling — Front must not ship before Back.**
+
+- **Front-only deploy (old Back):** the three routes 404, so the new sidebar entry
+  leads to a page that can never load. The rest of the dashboard is unaffected —
+  the failure is contained to this page.
+- **Back-only deploy (old Front):** safe. The endpoints simply go unused, and no
+  existing Front code reads the new `Instagram.iceBreakerSyncedAt` /
+  `iceBreakerSyncError` columns.
+
+So this pair is **Back-first**, unlike the `isPromotion` and `shop.workspace`
+changes above which must ship simultaneously.
+
+**Save is not publish.** `POST /ice-breakers` stores rows synchronously but pushes
+to Instagram in a background BullMQ job. The response does **not** mean the
+questions are live. Read `syncedAt` / `syncError` from the GET to tell the user.
