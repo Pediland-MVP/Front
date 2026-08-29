@@ -88,19 +88,40 @@ export const WelcomeMessageManager = () => {
   const [showErrors, setShowErrors] = useState(false);
 
   /**
+   * Which page the current draft belongs to.
+   *
+   * State, not a ref, because the Save button has to react to it. A draft may
+   * ONLY be saved against the page it was seeded from — see the reset effect.
+   */
+  const [draftPageId, setDraftPageId] = useState<string | null>(null);
+
+  /**
+   * Drop the previous page's draft the moment the selected page changes.
+   *
+   * Without this, switching page while the new page's GET fails left the old
+   * page's questions on screen bound to the new page's id: `isListLoaded` stays
+   * false so the seeding effect below returns early, but `isLoading` goes false
+   * so Save re-enables — and saving is a FULL REPLACE, so it would wipe the new
+   * page's real list and write the old page's questions over it.
+   */
+  useEffect(() => {
+    setDraftPageId(null);
+    setSlots([]);
+    setShowErrors(false);
+  }, [instagramId]);
+
+  /**
    * Seed the draft from the server list ONCE per page.
    *
    * Deliberately not "whenever `iceBreakers` changes": SWR revalidates on window
    * focus and after every save, and re-seeding on those would throw away whatever
    * the user had half-typed.
    */
-  const seededForPageRef = useRef<string | null>(null);
-
   useEffect(() => {
     if (!instagramId || !isListLoaded) return;
-    if (seededForPageRef.current === instagramId) return;
+    if (draftPageId === instagramId) return;
 
-    seededForPageRef.current = instagramId;
+    setDraftPageId(instagramId);
     setShowErrors(false);
     setSlots(
       iceBreakers.map((iceBreaker) => ({
@@ -110,24 +131,26 @@ export const WelcomeMessageManager = () => {
         conditions: iceBreaker.contentCycle?.conditions ?? [],
       })),
     );
-  }, [instagramId, isListLoaded, iceBreakers]);
+  }, [instagramId, isListLoaded, iceBreakers, draftPageId]);
+
+  /** The draft is only safe to save when it was seeded from the selected page. */
+  const isDraftForSelectedPage = !!instagramId && draftPageId === instagramId;
 
   /**
    * A failed push to Instagram is reported as a toast, never an in-page banner.
    *
-   * The push now runs inside the save request, so a save reports its own outcome
+   * The push runs inside the save request, so a save reports its own outcome
    * directly. This effect only covers the OTHER way a failure appears: the state
-   * left behind by a knock-on re-push (an automation deleted, the account
-   * reconnected), which the user sees when they next open the page.
+   * left by a knock-on re-push (an automation deleted, the account reconnected),
+   * which the user meets when they next open the page.
    *
-   * Two guards. The ref keyed on `instagramId:syncError` stops every SWR
-   * revalidation re-announcing the same failure, and clears once a sync succeeds
-   * so a later recurrence is announced again. `suppressSyncToastRef` covers the
-   * save round-trip, where `handleSave` has already toasted the real outcome and
-   * the refetched `syncError` would otherwise say the same thing twice.
+   * Dedupe is by VALUE, not by a "suppress the next one" flag. A flag was wrong:
+   * it was armed before every save but could only be cleared by this effect
+   * re-running, and after a clean save `syncError` is unchanged — so the effect
+   * never ran, the flag stayed armed, and it ate the next genuine failure.
+   * Recording the marker of whatever has already been shown has no such hole.
    */
   const toastedSyncErrorRef = useRef<string | null>(null);
-  const suppressSyncToastRef = useRef(false);
 
   useEffect(() => {
     if (!instagramId) return;
@@ -141,12 +164,6 @@ export const WelcomeMessageManager = () => {
     if (toastedSyncErrorRef.current === marker) return;
 
     toastedSyncErrorRef.current = marker;
-
-    if (suppressSyncToastRef.current) {
-      suppressSyncToastRef.current = false;
-      return;
-    }
-
     toast.error(t('syncFailed', { error: syncError }));
   }, [instagramId, syncError, t]);
 
@@ -162,16 +179,14 @@ export const WelcomeMessageManager = () => {
   const hasErrors = slots.some((slot) => slotError(slot) !== null);
 
   const handleSave = async () => {
-    if (!instagramId) return;
+    // Never post a draft that belongs to a different page — see the reset effect.
+    if (!instagramId || !isDraftForSelectedPage) return;
     if (hasErrors) {
       setShowErrors(true);
       return;
     }
 
     setIsSaving(true);
-    // handleSave reports the outcome itself; keep the effect above quiet for the
-    // `syncError` this round-trip is about to write.
-    suppressSyncToastRef.current = true;
     try {
       await save({
         instagramId,
@@ -191,6 +206,14 @@ export const WelcomeMessageManager = () => {
       // called with a real code — next-intl renders the raw key path otherwise.
       const translated = data?.code ? t_ec(data.code) : '';
       toast.error(translated || data?.message || t('saveFailed'));
+
+      // The backend stored this same text on `iceBreakerSyncError`, so record it
+      // as already reported — otherwise the next refetch announces it a second
+      // time. A genuinely different failure later has a different marker and is
+      // still announced.
+      if (instagramId && data?.message) {
+        toastedSyncErrorRef.current = `${instagramId}:${data.message}`;
+      }
     } finally {
       setIsSaving(false);
     }
@@ -307,7 +330,12 @@ export const WelcomeMessageManager = () => {
 
           {canEdit && (
             <div className="flex justify-end">
-              <Button type="button" size="md" onClick={handleSave} disabled={isSaving || isLoading}>
+              <Button
+                type="button"
+                size="md"
+                onClick={handleSave}
+                disabled={isSaving || isLoading || !isDraftForSelectedPage}
+              >
                 {isSaving ? t('saving') : t('save')}
               </Button>
             </div>

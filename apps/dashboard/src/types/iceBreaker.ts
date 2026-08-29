@@ -46,9 +46,11 @@ export interface IceBreaker {
 export namespace IceBreakerNamespace {
   export namespace GET {
     /**
-     * `syncedAt` / `syncError` describe the PUSH TO META, not the save. Saving
-     * stores rows immediately and pushes in a background job, so a fresh save
-     * legitimately reads back with a stale `syncedAt`.
+     * `syncedAt` / `syncError` describe the PUSH TO META. The save itself pushes
+     * synchronously, so a successful `POST /ice-breakers` already means the
+     * questions are live. These fields matter for the failures the user did NOT
+     * cause directly — a re-push triggered by deleting an automation or
+     * reconnecting the account, which is deliberately non-fatal.
      */
     export type List = IResponseMessage<{
       items: IceBreaker[];

@@ -127,8 +127,11 @@ New dashboard page `/automations/welcome` (`WelcomeMessageManager.tsx`,
 `useIceBreakers.ts`) calling three endpoints that exist **only on the new Back**:
 
 - `GET /ice-breakers?instagramId=…`
-- `GET /ice-breakers/bindable-automations?instagramId=…`
 - `POST /ice-breakers`
+
+The automation picker does **not** use a bespoke endpoint — it reuses the shared
+`GET /contentCycle/conditions?instagramIds=…` through `AutomationSearchSelect`,
+the same component the START_AUTOMATION button picker uses.
 
 Full request/response contract: `Back/knowledge/front-back-relations.md` →
 "Ice Breakers".
@@ -145,6 +148,9 @@ Full request/response contract: `Back/knowledge/front-back-relations.md` →
 So this pair is **Back-first**, unlike the `isPromotion` and `shop.workspace`
 changes above which must ship simultaneously.
 
-**Save is not publish.** `POST /ice-breakers` stores rows synchronously but pushes
-to Instagram in a background BullMQ job. The response does **not** mean the
-questions are live. Read `syncedAt` / `syncError` from the GET to tell the user.
+**Save IS publish.** `POST /ice-breakers` writes the rows and pushes to Instagram
+in the same request, so a 200 means the questions are live and a 400 means they
+are not (`INSTAGRAM_TOKEN_EXPIRED` for Meta OAuthException 190, else
+`ICE_BREAKER_SYNC_FAILED`). `syncedAt` / `syncError` on the GET cover only the
+failures the user did not cause directly — a non-fatal re-push after an
+automation is deleted or the account is reconnected.

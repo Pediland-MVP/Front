@@ -62,12 +62,17 @@ and per-locale tabs (`default` required, `fa_IR`, `en_US` optional).
 - **Saving is a whole-list replace.** There is no partial update and no per-slot
   delete, because Meta replaces the entire `ice_breakers` field on every push.
   Always send every slot. Reordering is just array order — never send `sortOrder`.
-- **Saving is not publishing.** Rows are stored immediately; the push to Instagram
-  runs in a BullMQ job. The success toast says *"ذخیره شد. ارسال به اینستاگرام
-  چند لحظه طول می‌کشد."* rather than claiming it is live, and `syncedAt` /
-  `syncError` from the GET drive a banner.
-- Only automations that are **direct** and **linked to the selected page** appear
-  in the dropdown; the backend re-checks this on save.
+- **Saving IS publishing.** The push to Instagram runs inside the same request, so
+  a success genuinely means the questions are live — the toast says
+  *"پیام خوش‌آمدگویی ذخیره و روی اینستاگرام منتشر شد."* A failure surfaces as a
+  toast carrying the real reason (`INSTAGRAM_TOKEN_EXPIRED` /
+  `ICE_BREAKER_SYNC_FAILED`), never an in-page banner.
+- `syncedAt` / `syncError` from the GET cover only the failures the user did not
+  cause directly — a non-fatal re-push after an automation is deleted or the
+  account is reconnected.
+- Automations **linked to the selected page** appear in the dropdown; the backend
+  re-checks the linkage on save. `isDirect` is deliberately not required — see the
+  Back update doc.
 
 ## Bug found and fixed after first run (2026-08-29)
 
