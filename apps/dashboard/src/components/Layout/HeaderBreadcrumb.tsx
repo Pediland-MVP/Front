@@ -37,6 +37,8 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'comments';
     case 'automations':
       return 'automations';
+    case 'welcome':
+      return 'welcome';
     case 'sessions':
       return 'sessions';
     case 'account-session-management':

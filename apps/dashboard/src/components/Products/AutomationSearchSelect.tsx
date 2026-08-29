@@ -34,6 +34,15 @@ interface AutomationSearchSelectProps {
   error?: boolean;
   initialData?: DestinationContentCycle;
   title?: string; // ← فیلد جدید
+  /**
+   * Scope the options to specific Instagram accounts. `GET /contentCycle/conditions`
+   * requires a non-empty `instagramIds` (see InstagramIdsQueryDto), so a caller
+   * that knows which account it is editing must pass it. Optional to keep the
+   * existing product-vitrin call site unchanged.
+   */
+  instagramIds?: string[];
+  /** Placeholder shown when nothing is selected yet. */
+  placeholder?: string;
 }
 interface ConditionItem {
   value: string;
@@ -50,18 +59,13 @@ export function AutomationSearchSelect({
   error,
   initialData,
   title,
+  instagramIds,
+  placeholder,
 }: AutomationSearchSelectProps) {
   const t = useTranslations('Products.Form.Vitrin');
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const debouncedSearch = useDebounce(search, 300);
-
-  React.useEffect(() => {
-    console.log(
-      'AutomationSearchSelect Props',
-      JSON.stringify({ value, initialData }, undefined, ' '),
-    );
-  }, []);
 
   const displayLabel = React.useMemo(() => {
     if (title) return title;
@@ -84,9 +88,13 @@ export function AutomationSearchSelect({
   }, [open]);
 
   // Fetch conditions when dropdown is open
+  const instagramIdsQuery = (instagramIds ?? [])
+    .map((id) => `&instagramIds=${encodeURIComponent(id)}`)
+    .join('');
+
   const { data, isLoading } = useSWR<ConditionsResponse>(
     open
-      ? `/contentCycle/conditions?page=1&limit=30${debouncedSearch ? `&search=${debouncedSearch}` : ''}`
+      ? `/contentCycle/conditions?page=1&limit=30${debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ''}${instagramIdsQuery}`
       : null,
   );
 
@@ -170,7 +178,7 @@ export function AutomationSearchSelect({
         >
           {selectedItem && selectedItem.id === value
             ? selectedItem.label
-            : displayLabel || t('search_automation')}
+            : displayLabel || placeholder || t('search_automation')}
           <ChevronsUpDown className="-ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

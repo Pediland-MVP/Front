@@ -16,6 +16,7 @@ import { CrownSimpleIcon } from '@phosphor-icons/react/dist/ssr/CrownSimple';
 import { CubeIcon } from '@phosphor-icons/react/dist/ssr/Cube';
 import { DownloadSimpleIcon } from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import { GraduationCap } from '@phosphor-icons/react/dist/ssr/GraduationCap';
+import { HandWavingIcon } from '@phosphor-icons/react/dist/ssr/HandWaving';
 import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { LifebuoyIcon } from '@phosphor-icons/react/dist/ssr/Lifebuoy';
@@ -51,10 +52,17 @@ const generateData = (
       isActive: true,
     },
     {
+      // Parent is a collapsible trigger, not a link (NavMain renders a <button>
+      // when `items` is non-empty), so the automations list moves into a child.
       title: t('automations'),
       url: '/automations',
       icon: LightningIcon,
-      isActive: true,
+      items: [
+        // `exact` matters: NavMain highlights sub-items with `startsWith` by
+        // default, which would light BOTH rows up on /automations/welcome.
+        { title: t('automations'), url: '/automations', exact: true, icon: LightningIcon },
+        { title: t('welcomeMessage'), url: '/automations/welcome', icon: HandWavingIcon },
+      ],
     },
     {
       title: t('contacts'),
