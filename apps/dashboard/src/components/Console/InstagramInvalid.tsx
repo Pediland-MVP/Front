@@ -1,14 +1,12 @@
 'use client';
 
 import { CardContent } from '@/components/ui/card';
+import { IG_RECONNECT_OAUTH_URL } from '@/utils/instagramOAuthUrl';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui';
 import { CardSimple } from '../ui-custom/CardSimple';
-
-const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
-const INSTAGRAM_CLIENT_ID = process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID;
 
 export const InstagramInvalid = () => {
   const router = useRouter();
@@ -28,11 +26,7 @@ export const InstagramInvalid = () => {
         <div>
           <Button
             className="bg-destructive/90 hover:bg-destructive h-9 text-[13px] text-white"
-            onClick={() =>
-              router.push(
-                `https://www.instagram.com/oauth/authorize?client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${API_URL}/instagram/redirectToFrontend&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments`,
-              )
-            }
+            onClick={() => router.push(IG_RECONNECT_OAUTH_URL)}
           >
             ورود مجدد
           </Button>

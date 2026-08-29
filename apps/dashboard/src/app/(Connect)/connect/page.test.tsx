@@ -175,3 +175,72 @@ describe('ConnectPage — unbound plan opens the dialog', () => {
     expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
   });
 });
+
+describe('ConnectPage — reconnect mode (relogin redirect)', () => {
+  beforeEach(() => {
+    push.mockReset();
+    useWorkspacesMock.mockReturnValue({ workspaces: [] });
+    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [] });
+  });
+
+  it('shows a reconnecting message instead of the instagram-limit wall for a relogin at the account cap', () => {
+    searchParamsMock.mockReturnValue(new URLSearchParams({ code: 'abc', reconnect: '1' }));
+    useUserMock.mockReturnValue({
+      user: { instagrams: Array.from({ length: 5 }, (_, i) => ({ id: `ig${i}` })), mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Connect.reconnecting_account)).toBeInTheDocument();
+    expect(screen.queryByText(messages.Connect.instagram_limit)).not.toBeInTheDocument();
+  });
+
+  it('shows a reconnecting message instead of the setup-second-instagram CTA for a relogin with no free slot', () => {
+    searchParamsMock.mockReturnValue(new URLSearchParams({ code: 'abc', reconnect: '1' }));
+    useUserMock.mockReturnValue({
+      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: false }],
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Connect.reconnecting_account)).toBeInTheDocument();
+    expect(screen.queryByText(messages.Connect.setup_second_instagram_cta)).not.toBeInTheDocument();
+  });
+
+  it('falls back to the normal gates when reconnect=1 arrives without a code', () => {
+    searchParamsMock.mockReturnValue(new URLSearchParams({ reconnect: '1' }));
+    useUserMock.mockReturnValue({
+      user: { instagrams: [{ id: 'ig1' }], mobile: '0912' },
+      hasInstagram: true,
+      canConnectInstagram: true,
+    });
+    useWorkspacesMock.mockReturnValue({
+      workspaces: [{ id: 'ws1', name: 'Acme', hasAvailableSubscriptionSlot: true }],
+    });
+
+    renderPage();
+
+    expect(screen.queryByText(messages.Connect.reconnecting_account)).not.toBeInTheDocument();
+    expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
+  });
+
+  it('does not show the reconnecting message for a plain first-time connect (code without reconnect flag)', () => {
+    searchParamsMock.mockReturnValue(new URLSearchParams({ code: 'abc' }));
+    useUserMock.mockReturnValue({
+      user: { instagrams: [], mobile: '0912' },
+      hasInstagram: false,
+      canConnectInstagram: true,
+    });
+
+    renderPage();
+
+    expect(screen.queryByText(messages.Connect.reconnecting_account)).not.toBeInTheDocument();
+  });
+});
