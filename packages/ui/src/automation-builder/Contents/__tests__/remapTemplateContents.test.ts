@@ -183,6 +183,24 @@ describe('remapTemplateContents', () => {
     expect(result[0].contentProducts).toBeUndefined();
   });
 
+  it('scrubs workspace-scoped product refs from a BUY_IN_DIRECT content item instead of carrying them over', () => {
+    const raw = [
+      {
+        id: 'server-id-8',
+        type: AutomationContentTypesEnum.BUY_IN_DIRECT,
+        buyInDirectProducts: [
+          { id: 'pick-1', contentId: 'server-id-8', productId: 'product-a', position: 0 },
+        ],
+      },
+    ];
+    const result = remapTemplateContents(raw);
+    // Same shape as the PRODUCT case above: the item is kept (an empty "pick a product"
+    // shell), just with the source workspace's picks stripped.
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe(AutomationContentTypesEnum.BUY_IN_DIRECT);
+    expect(result[0].buyInDirectProducts).toBeUndefined();
+  });
+
   it('defensively scrubs account-scoped instagramPost refs (even though templates cannot contain INSTAGRAM_POST content today)', () => {
     const raw = [
       {

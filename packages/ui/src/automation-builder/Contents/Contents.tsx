@@ -338,6 +338,9 @@ export const Contents = ({
         delayMs: 1000 * 60 * 60,
         delayUnit: 'hour',
       }),
+      ...(option.value === AutomationContentTypesEnum.BUY_IN_DIRECT && {
+        buyInDirectProducts: [],
+      }),
     });
     clearErrors(arrayName);
   };

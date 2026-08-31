@@ -9,6 +9,7 @@ export enum AutomationContentTypesEnum {
   QUESTION = 'question',
   VITRIN = 'vitrin',
   DELAY = 'delay',
+  BUY_IN_DIRECT = 'buy_in_direct',
 }
 
 export type AutomationContentFileType =

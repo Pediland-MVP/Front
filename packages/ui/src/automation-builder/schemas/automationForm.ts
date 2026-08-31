@@ -50,6 +50,16 @@ const ProductSchema = z
   .nullable()
   .optional();
 
+// The BUY_IN_DIRECT pick list. Unlike `ProductSchema` above (the legacy PRODUCT type's
+// shape, carrying display data like `images`), this is exactly the backend DTO shape
+// (`BuyInDirectProductDto`, Task 5/12) -- `{ productId }` -- sent in the merchant's chosen
+// display order; the backend derives `position` from the array index. Display data
+// (title/thumbnail) is resolved client-side against the commerce catalog fetch, not
+// carried in form state.
+const BuyInDirectProductSchema = z.object({
+  productId: z.string().min(1),
+});
+
 const ButtonSchema = z.discriminatedUnion('postbackPayloadType', [
   z.object({
     postbackPayloadType: z.literal(ButtonTypeEnum.TEXT),
@@ -136,6 +146,7 @@ export const ContentItemSchema = z.object({
     .nullable()
     .transform((v) => (v ? httpsInText(v) : v)),
   productIds: z.array(z.string()).optional().nullable(),
+  buyInDirectProducts: z.array(BuyInDirectProductSchema).optional().nullable(),
   haveInstagramPost: z
     .boolean()
     .optional()
@@ -206,6 +217,7 @@ export const AutomationFormSchema = z
         file: FileSchema,
         products: z.array(ProductSchema).optional().nullable(),
         productIds: z.array(z.string()).optional().nullable(),
+        buyInDirectProducts: z.array(BuyInDirectProductSchema).optional().nullable(),
         id: z.string().optional().nullable(),
         fileTemp: z
           .object({
@@ -317,6 +329,21 @@ export const AutomationFormSchema = z
         if (selectedProducts.length === 0) {
           ctx.addIssue({
             path: ['contents', index, 'products'],
+            code: 'custom',
+            message: 'required',
+          });
+        }
+      }
+
+      // BUY_IN_DIRECT نیاز به حداقل یک محصول انتخاب شده -- مطابق PRODUCT بالا. برخلاف
+      // PRODUCT، بک‌اند این مورد را در DTO چک نمی‌کند (فقط productIds لگاسی چک می‌شود؛ نگاه
+      // کنید به CreateContentCycleContentDto)، پس این zod check تنها گلوگاه اعتبارسنجی است.
+      if (t === AutomationContentTypesEnum.BUY_IN_DIRECT) {
+        const selectedProducts =
+          content.buyInDirectProducts?.filter((product) => product?.productId) || [];
+        if (selectedProducts.length === 0) {
+          ctx.addIssue({
+            path: ['contents', index, 'buyInDirectProducts'],
             code: 'custom',
             message: 'required',
           });
@@ -443,6 +470,19 @@ export const AutomationFormSchema = z
         if (selectedProducts.length === 0) {
           ctx.addIssue({
             path: ['reminders', index, 'products'],
+            code: 'custom',
+            message: 'required',
+          });
+        }
+      }
+
+      // BUY_IN_DIRECT نیاز به حداقل یک محصول انتخاب شده -- همان چک contents بالا.
+      if (t === AutomationContentTypesEnum.BUY_IN_DIRECT) {
+        const selectedProducts =
+          content.buyInDirectProducts?.filter((product) => product?.productId) || [];
+        if (selectedProducts.length === 0) {
+          ctx.addIssue({
+            path: ['reminders', index, 'buyInDirectProducts'],
             code: 'custom',
             message: 'required',
           });

@@ -271,6 +271,18 @@ export const AutomationForm = ({ id, copyFromId, templateId }: AutomationFormPro
       }
     }
 
+    // `GET /contentCycle/:id` returns `buyInDirectProducts` as the raw
+    // `ContentBuyInDirectProduct` entity rows (`{ id, createDate, contentId, productId,
+    // position }`, ordered by `position ASC` — see `contentCycle.service.ts`), not the
+    // `{ productId }[]` shape `BuyInDirectContent`'s field array / the submit DTO expect.
+    // Strip the entity cruft here so array order alone carries position on the way back
+    // out — same idea as the vitrin/button normalization above, just for this one field.
+    if (content.buyInDirectProducts?.length) {
+      content.buyInDirectProducts = content.buyInDirectProducts.map((p: { productId: string }) => ({
+        productId: p.productId,
+      }));
+    }
+
     return content;
   };
 

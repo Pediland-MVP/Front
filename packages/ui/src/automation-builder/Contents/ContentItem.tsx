@@ -19,6 +19,7 @@ import {
 import { ArrowsOutCardinalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsOutCardinal';
 import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 import { ButtonContent } from './ButtonContent';
+import { BuyInDirectContent } from './BuyInDirectContent';
 import { useContentsContext } from './ContentsContext';
 import { IGPostContent } from './IGPostContent';
 import { MediaContent } from './MediaContent';
@@ -62,6 +63,9 @@ export const ReturnContent = ({
 
     case AutomationContentTypesEnum.PRODUCT:
       return <ProductContentComp mode={mode} index={index} apiClient={apiClient} />;
+
+    case AutomationContentTypesEnum.BUY_IN_DIRECT:
+      return <BuyInDirectContent mode={mode} index={index} apiClient={apiClient} />;
 
     case AutomationContentTypesEnum.BUTTON_TEMPLATE:
       return <ButtonContent mode={mode} contentIndex={index} apiClient={apiClient} />;
