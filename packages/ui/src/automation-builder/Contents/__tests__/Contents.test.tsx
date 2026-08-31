@@ -185,6 +185,26 @@ describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gatin
   });
 });
 
+describe('Contents — "BUY_IN_DIRECT" content-type option (template-mode gating)', () => {
+  it('hides "buy_in_direct" when builderMode="template" (backend TemplateContentDto rejects it — a template has no Instagram/workspace context, so the picker\'s product/cardToCard calls can never resolve)', () => {
+    render(<Wrapper builderMode="template" />);
+
+    fireEvent.click(screen.getByText('افزودن مرحله'));
+
+    expect(screen.queryByText('buttons.titles.buy_in_direct')).not.toBeInTheDocument();
+    // PRODUCT stays available in template mode — the backend DTO does allow it.
+    expect(screen.getByText('buttons.titles.product')).toBeInTheDocument();
+  });
+
+  it('still shows "buy_in_direct" for builderMode="automation" (unchanged behavior)', () => {
+    render(<Wrapper builderMode="automation" />);
+
+    fireEvent.click(screen.getByText('افزودن مرحله'));
+
+    expect(screen.getByText('buttons.titles.buy_in_direct')).toBeInTheDocument();
+  });
+});
+
 describe('Contents — DELAY content-type shared 23h budget (Add-content flow)', () => {
   it('appends a DELAY item normally when the 23h budget still has room', () => {
     render(<Wrapper />);

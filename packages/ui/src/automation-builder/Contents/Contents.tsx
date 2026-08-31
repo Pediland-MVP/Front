@@ -268,9 +268,18 @@ export const Contents = ({
   // 23h budget math are hardcoded to the `contents` array (see the `showTemplateInsert`
   // comment above) — there is no `reminders`-array equivalent, so offering DELAY here would
   // silently write into/corrupt the automation's real `contents` array at the same index.
+  // Also hide `BUY_IN_DIRECT` in `builderMode === 'template'`, same reasoning as
+  // `INSTAGRAM_POST` above: a template has no workspace/Instagram context, so the picker's
+  // `GET /commerce/products` and `GET /payments/cardToCard` calls have nothing to resolve
+  // (the admin app doesn't even expose those routes), and the backend's `TemplateContentDto`
+  // rejects `buy_in_direct` outright — offering it here would just be a guaranteed-fail submit
+  // for the admin.
   const contentTypeOptionsForMode = contentTypeOptions.filter((option) => {
     if (!showTemplateInsert && option.value === 'template') return false;
     if (builderMode === 'template' && option.value === AutomationContentTypesEnum.INSTAGRAM_POST) {
+      return false;
+    }
+    if (builderMode === 'template' && option.value === AutomationContentTypesEnum.BUY_IN_DIRECT) {
       return false;
     }
     if (
