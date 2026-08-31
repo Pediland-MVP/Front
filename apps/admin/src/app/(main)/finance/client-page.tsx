@@ -66,7 +66,7 @@ export default function FinancePageClient() {
   }, [window, statuses, debouncedSearch]);
 
   if (isAuthLoading) return <Loading />;
-  if (user && user.role === 'kam') {
+  if (user && user.role !== 'admin') {
     return (
       <div className="text-muted-foreground flex flex-1 items-center justify-center py-20 text-sm">
         {t('forbidden')}

@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '/subscriptions',
         icon: CreditCardIcon,
       },
-      ...(user?.role !== 'kam'
+      ...(user?.role === 'admin'
         ? [{ title: t('finance'), url: '/finance', icon: CurrencyCircleDollarIcon }]
         : []),
       ...(user?.role !== 'kam'
