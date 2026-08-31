@@ -35,6 +35,7 @@ export function AppBreadcrumb() {
       qa: t('qa'),
       guides: t('guides'),
       chats: t('chats'),
+      'test-chat': t('testChat'),
       workspaces: t('workspaces'),
       'workspace-categories': t('workspaceCategories'),
       banners: t('banners'),

@@ -16,6 +16,7 @@
     "qa": "پرسش و پاسخ",
     "guides": "راهنماها",
     "chats": "چت‌ها",
+    "testChat": "چت آزمایشی",
     "befroosh": "بفروش",
     "adminPortal": "[پورتال مدیریت]",
     "admins": "مدیریت ادمین‌ها",
@@ -123,6 +124,7 @@
     "deleteError": "خطا در حذف ادمین"
   },
   "ERROR_CODES": {
+    "AI_TEST_CHAT_GENERATION_FAILED": "تولید پاسخ هوش مصنوعی ناموفق بود",
     "JOB_NOT_FOUND": "جاب یافت نشد",
     "ADMIN_USERNAME_ALREADY_EXISTS": "نام کاربری از قبل وجود دارد",
     "ADMIN_TELEGRAMID_ALREADY_EXISTS": "شناسه تلگرام از قبل ثبت شده است",

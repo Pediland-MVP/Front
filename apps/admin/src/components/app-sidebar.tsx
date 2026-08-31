@@ -115,6 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: t('qa'), url: '/telegram-automation/qa' },
           { title: t('guides'), url: '/telegram-automation/guides' },
           { title: t('chats'), url: '/telegram-automation/chats' },
+          { title: t('testChat'), url: '/telegram-automation/test-chat' },
         ],
       },
       ...(advancedChildren.length
