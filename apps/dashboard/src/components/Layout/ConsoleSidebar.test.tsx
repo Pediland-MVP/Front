@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/fa.json';
@@ -22,7 +22,10 @@ beforeAll(() => {
       }) as unknown as MediaQueryList);
 });
 
-vi.mock('next/navigation', () => ({ usePathname: () => '/settings/workspace' }));
+// Mutable so a test can put the router on another route — the automations parent
+// is a Collapsible, and Radix does not mount its children while it is closed.
+const routerMock = vi.hoisted(() => ({ pathname: '/settings/workspace' }));
+vi.mock('next/navigation', () => ({ usePathname: () => routerMock.pathname }));
 
 vi.mock('@/hooks/useUser', () => ({
   default: () => ({ user: null, error: null, isLoading: false }),
@@ -154,5 +157,65 @@ describe('ConsoleSidebar — settings sub-items', () => {
     });
     renderSidebar();
     expect(screen.queryByRole('link', { name: new RegExp(sidebar.buySubscription) })).toBeNull();
+  });
+});
+
+describe('ConsoleSidebar — automations parent (پیام خوش‌آمدگویی)', () => {
+  beforeEach(() => {
+    useInvitationsMock.mockReset().mockReturnValue({ pendingCount: 0, isLoading: false });
+    useIsWebViewMock.mockReset().mockReturnValue(false);
+    usePermissionsMock.mockReset().mockReturnValue({ can: () => true });
+    useSubscriptionStoreMock.mockReset().mockReturnValue({
+      subscriptions: [{ status: 'active', type: 'plan' }],
+    });
+    // Ice breakers live at /automations/welcome, which opens the automations
+    // parent so its sub-items are actually mounted.
+    routerMock.pathname = '/automations/welcome';
+  });
+
+  afterEach(() => {
+    routerMock.pathname = '/settings/workspace';
+  });
+
+  it('renders the automations list and the welcome message as sub-items', () => {
+    renderSidebar();
+
+    // The old flat entry became a collapsible parent; the children are the links.
+    const automationsLink = screen.getByRole('link', {
+      name: new RegExp(`^${sidebar.automations}$`),
+    });
+    expect(automationsLink.getAttribute('href')).toBe('/automations');
+
+    const welcomeLink = screen.getByRole('link', {
+      name: new RegExp(sidebar.welcomeMessage),
+    });
+    expect(welcomeLink.getAttribute('href')).toBe('/automations/welcome');
+  });
+
+  it('gives both automations sub-items an icon', () => {
+    renderSidebar();
+
+    for (const label of [`^${sidebar.automations}$`, sidebar.welcomeMessage]) {
+      const link = screen.getByRole('link', { name: new RegExp(label) });
+      expect(link.querySelector('svg')).not.toBeNull();
+    }
+  });
+
+  it('marks only the welcome sub-item active on /automations/welcome', () => {
+    renderSidebar();
+
+    // NavMain matches sub-items with `startsWith` unless `exact` is set, so
+    // without `exact: true` on the /automations child BOTH rows would highlight.
+    const automationsLink = screen.getByRole('link', {
+      name: new RegExp(`^${sidebar.automations}$`),
+    });
+    const welcomeLink = screen.getByRole('link', {
+      name: new RegExp(sidebar.welcomeMessage),
+    });
+
+    // Both states carry `text-primary` (the inactive one only as a hover/active
+    // variant), so `text-secondary` is the reliable "not selected" marker.
+    expect(welcomeLink.className).not.toMatch(/text-secondary/);
+    expect(automationsLink.className).toMatch(/text-secondary/);
   });
 });

@@ -118,3 +118,39 @@ The `GET /shops/:shopId` payment-detail move (`shop.user` → `shop.workspace`, 
 
 - **Front-only deploy (old Back):** the old Back still returns `user`, so `shop.workspace` is `undefined` and the checkout shows no payment methods.
 - **Back-only deploy (old Front):** the old Front reads `shop.user`, which the new Back no longer returns — same result.
+
+---
+
+## Ice Breakers — پیام خوش‌آمدگویی (2026-08-28)
+
+New dashboard page `/automations/welcome` (`WelcomeMessageManager.tsx`,
+`useIceBreakers.ts`) calling three endpoints that exist **only on the new Back**:
+
+- `GET /ice-breakers?instagramId=…`
+- `POST /ice-breakers`
+
+The automation picker does **not** use a bespoke endpoint — it reuses the shared
+`GET /contentCycle/conditions?instagramIds=…` through `AutomationSearchSelect`,
+the same component the START_AUTOMATION button picker uses.
+
+Full request/response contract: `Back/knowledge/front-back-relations.md` →
+"Ice Breakers".
+
+**Deploy coupling — Front must not ship before Back.**
+
+- **Front-only deploy (old Back):** the three routes 404, so the new sidebar entry
+  leads to a page that can never load. The rest of the dashboard is unaffected —
+  the failure is contained to this page.
+- **Back-only deploy (old Front):** safe. The endpoints simply go unused, and no
+  existing Front code reads the new `Instagram.iceBreakerSyncedAt` /
+  `iceBreakerSyncError` columns.
+
+So this pair is **Back-first**, unlike the `isPromotion` and `shop.workspace`
+changes above which must ship simultaneously.
+
+**Save IS publish.** `POST /ice-breakers` writes the rows and pushes to Instagram
+in the same request, so a 200 means the questions are live and a 400 means they
+are not (`INSTAGRAM_TOKEN_EXPIRED` for Meta OAuthException 190, else
+`ICE_BREAKER_SYNC_FAILED`). `syncedAt` / `syncError` on the GET cover only the
+failures the user did not cause directly — a non-fatal re-push after an
+automation is deleted or the account is reconnected.
