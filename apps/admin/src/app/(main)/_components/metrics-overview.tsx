@@ -2,13 +2,18 @@
 
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { usePlatformSeries, usePlatformTotals } from '@/hooks/use-platform-metrics';
+import {
+  useHowFoundUsBreakdown,
+  usePlatformSeries,
+  usePlatformTotals,
+} from '@/hooks/use-platform-metrics';
 import { METRICS } from './metrics.constants';
 import { useViewConfig } from './use-view-config';
 import { CustomizationBar } from './customization-bar';
 import { MetricCard } from './metric-card';
 import { MetricChart } from './metric-chart';
 import { CombinedChart } from './combined-chart';
+import { HowFoundUsChart } from './how-found-us-chart';
 
 export function MetricsOverview() {
   const t = useTranslations('Dashboard');
@@ -17,6 +22,7 @@ export function MetricsOverview() {
 
   const { totals, isLoading: totalsLoading } = usePlatformTotals();
   const { series, byMetric, deltas, isLoading: seriesLoading } = usePlatformSeries(config.range);
+  const { breakdown, isLoading: howFoundUsLoading } = useHowFoundUsBreakdown(config.range);
 
   // The metrics selected for this view, in canonical display order.
   const selectedMetrics = useMemo(
@@ -68,6 +74,9 @@ export function MetricsOverview() {
           ))}
         </div>
       )}
+
+      {/* Categorical breakdown, not a selectable time-series metric — always shown. */}
+      <HowFoundUsChart items={breakdown?.items ?? null} isLoading={howFoundUsLoading} />
     </div>
   );
 }

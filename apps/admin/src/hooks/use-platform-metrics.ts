@@ -26,6 +26,17 @@ export interface PlatformSeries {
   points: SeriesPoint[];
 }
 
+export interface HowFoundUsBreakdownItem {
+  key: string; // a HOW_FOUND_US_ENUM value, or 'not_set'
+  count: number;
+}
+
+export interface HowFoundUsBreakdown {
+  from: string;
+  to: string;
+  items: HowFoundUsBreakdownItem[];
+}
+
 // Responses are ResponseMessage-wrapped (CLAUDE.md §8); the SWR fetcher returns
 // the axios body, so the payload lives under `.data`.
 interface Wrapped<T> {
@@ -41,12 +52,29 @@ export function usePlatformTotals() {
   };
 }
 
-function seriesUrl(range: RangeConfig): string {
+/** `days`/`from`/`to` query params shared by every `/metrics/platform/*` endpoint that takes a range. */
+function rangeParams(range: RangeConfig): URLSearchParams {
   if (range.mode === 'custom') {
-    const params = new URLSearchParams({ from: range.from, to: range.to });
-    return `/metrics/platform/series?${params.toString()}`;
+    return new URLSearchParams({ from: range.from, to: range.to });
   }
-  return `/metrics/platform/series?days=${range.days}`;
+  return new URLSearchParams({ days: String(range.days) });
+}
+
+function seriesUrl(range: RangeConfig): string {
+  return `/metrics/platform/series?${rangeParams(range).toString()}`;
+}
+
+function howFoundUsUrl(range: RangeConfig): string {
+  return `/metrics/platform/how-found-us?${rangeParams(range).toString()}`;
+}
+
+export function useHowFoundUsBreakdown(range: RangeConfig) {
+  const { data, error, isLoading } = useSWR<Wrapped<HowFoundUsBreakdown>>(howFoundUsUrl(range));
+  return {
+    breakdown: data?.data ?? null,
+    isLoading,
+    isError: !!error,
+  };
 }
 
 export function usePlatformSeries(range: RangeConfig) {
