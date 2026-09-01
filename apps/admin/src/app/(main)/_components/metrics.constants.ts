@@ -1,16 +1,19 @@
-// Frontend mirror of the backend MetricType enum (packages/entities/.../metricType.enum.ts).
+// Frontend mirror of the backend MetricType enum (packages/entities/.../metricType.enum.ts),
+// plus `type: 6` for users — not a real MetricType (users aren't part of the CQRS event
+// pipeline), it mirrors the backend's USERS_METRIC_TYPE sentinel (see metricsRead.service.ts).
 // `key` is the i18n key under the "Dashboard" namespace; `totalsField` matches the
 // PlatformTotals payload; `color` is the chart/line color.
 
 export interface MetricMeta {
   type: number;
-  key: 'sessions' | 'comments' | 'messages' | 'leads' | 'leadInstagrams';
+  key: 'sessions' | 'comments' | 'messages' | 'leads' | 'leadInstagrams' | 'users';
   totalsField:
     | 'sessionsCount'
     | 'commentsCount'
     | 'messagesCount'
     | 'leadsCount'
-    | 'leadInstagramsCount';
+    | 'leadInstagramsCount'
+    | 'usersCount';
   color: string;
 }
 
@@ -20,6 +23,7 @@ export const METRICS: MetricMeta[] = [
   { type: 3, key: 'messages', totalsField: 'messagesCount', color: 'rgb(124 58 237)' },
   { type: 4, key: 'leads', totalsField: 'leadsCount', color: 'rgb(5 150 105)' },
   { type: 5, key: 'leadInstagrams', totalsField: 'leadInstagramsCount', color: 'rgb(217 119 6)' },
+  { type: 6, key: 'users', totalsField: 'usersCount', color: 'rgb(8 145 178)' },
 ];
 
 export const ALL_METRIC_TYPES = METRICS.map((m) => m.type);
