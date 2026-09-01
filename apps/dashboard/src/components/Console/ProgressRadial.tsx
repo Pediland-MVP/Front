@@ -9,7 +9,7 @@ interface ProgressRadialProps {
   size: number;
   strokeWidth: number;
   id?: string;
-  type?: 'percentage' | 'days' | 'credit' | 'automation';
+  type?: 'percentage' | 'days' | 'automation';
   totalDays?: number;
   total?: number;
   label?: string;
@@ -156,11 +156,7 @@ export const ProgressRadial = ({
               actualPercentage === 0 && type === 'days' && 'fill-[theme(colors.rose.500)]',
             )}
           >
-            {type === 'days'
-              ? `${percentage} ${t('days')}`
-              : type === 'credit'
-                ? `${percentage} ${t('message')}`
-                : `${Math.round(actualPercentage)}%`}
+            {type === 'days' ? `${percentage} ${t('days')}` : `${Math.round(actualPercentage)}%`}
           </motion.text>
         </>
       )}

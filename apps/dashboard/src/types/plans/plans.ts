@@ -21,7 +21,6 @@ export interface IPlan {
 
 export interface IDuration {
   createDate: Date;
-  credit: number;
   discountPrice?: number;
   durationDays: number;
   id: number;
