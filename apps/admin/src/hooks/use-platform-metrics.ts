@@ -8,6 +8,7 @@ export interface PlatformTotals {
   messagesCount: number;
   leadsCount: number;
   leadInstagramsCount: number;
+  usersCount: number;
 }
 
 export type SeriesResolution = '1h' | '1d';
