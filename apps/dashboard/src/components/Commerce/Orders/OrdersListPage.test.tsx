@@ -129,3 +129,32 @@ describe('OrdersListPage search filter', () => {
     expect(mockReplace).not.toHaveBeenCalled();
   });
 });
+
+describe('OrdersListPage error state', () => {
+  beforeEach(() => {
+    mockReplace.mockClear();
+    mockPush.mockClear();
+    searchParamsRef.current = new URLSearchParams();
+  });
+
+  // `error` and an empty `orders` array look identical from the hook's data shape alone -- a
+  // failed fetch also leaves `orders` as `[]`. The error branch must be checked first, or a 403
+  // (a KAM without `order:view`) or a 500 renders "no orders yet" instead of a failure notice.
+  // This test fails if the two branches are swapped, not just if the error copy is missing.
+  it('shows the load-error copy instead of "no orders yet" when the fetch fails', () => {
+    mockUseCommerceOrders.mockReturnValue({
+      orders: [],
+      meta: undefined,
+      isLoading: false,
+      error: new Error('Request failed with status code 403'),
+      mutate: vi.fn(),
+      key: '',
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Commerce.Orders.loadError)).toBeInTheDocument();
+    expect(screen.queryByText(messages.Commerce.Orders.empty.none)).not.toBeInTheDocument();
+    expect(screen.queryByText(messages.Commerce.Orders.empty.noneHint)).not.toBeInTheDocument();
+  });
+});

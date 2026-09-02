@@ -78,7 +78,7 @@ export function OrdersListPage() {
   const sp = useSearchParams();
 
   const filters = useMemo(() => filtersFromParams(new URLSearchParams(sp.toString())), [sp]);
-  const { orders, meta, isLoading } = useCommerceOrders(filters);
+  const { orders, meta, isLoading, error } = useCommerceOrders(filters);
 
   // The URL only gets the debounced, >=2-char "effective" search (see `SearchInput`) -- every
   // keystroke still needs somewhere to live locally, or the input would visibly lag the URL.
@@ -210,7 +210,15 @@ export function OrdersListPage() {
       </div>
 
       <div className="flex-1">
-        {!isLoading && orders.length === 0 ? (
+        {error ? (
+          // Must come before the empty-state branch below: a failed fetch leaves `orders` as
+          // `[]` too, and without this check a 403 (a KAM without `order:view`) or a 500 would
+          // silently render "no orders yet" -- confidently telling a refused seller their shop
+          // has no orders, which is worse than showing nothing.
+          <div className="flex h-full items-center justify-center text-center">
+            <div className="text-muted-foreground text-sm">{t('loadError')}</div>
+          </div>
+        ) : !isLoading && orders.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
             {hasActiveFilters ? (
               <>
@@ -239,16 +247,18 @@ export function OrdersListPage() {
         )}
       </div>
 
-      <ItemsPagination
-        serverPage={meta?.currentPage}
-        serverPerPage={meta?.itemsPerPage}
-        serverTotalPages={meta?.totalPages}
-        serverItemCount={meta?.itemCount}
-        totalCount={meta?.totalItems}
-        isLoading={isLoading}
-        onPageChange={(p) => setParam('page', String(p))}
-        onLimitChange={(l) => setParam('limit', String(l))}
-      />
+      {!error && (
+        <ItemsPagination
+          serverPage={meta?.currentPage}
+          serverPerPage={meta?.itemsPerPage}
+          serverTotalPages={meta?.totalPages}
+          serverItemCount={meta?.itemCount}
+          totalCount={meta?.totalItems}
+          isLoading={isLoading}
+          onPageChange={(p) => setParam('page', String(p))}
+          onLimitChange={(l) => setParam('limit', String(l))}
+        />
+      )}
     </div>
   );
 }
