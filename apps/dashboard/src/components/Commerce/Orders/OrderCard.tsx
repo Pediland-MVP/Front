@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { formatNumber } from '@/utils/formatNumber';
+import { toJalaliDate } from '@/utils/jalali';
 import type { OrderView } from '@/types/commerceOrders';
 
 import { OrderStatusBadge } from './OrderStatusBadge';
@@ -29,7 +30,9 @@ export function OrderCard({ order, onOpen }: OrderCardProps) {
       <div className="flex flex-col gap-1">
         <span className="font-medium">{order.recipientName ?? t('card.noName')}</span>
         <span className="text-muted-foreground text-xs">
-          {t('card.itemCount', { count: itemCount })}
+          {/* Spec §6: the placed date is on the card because the list is date-sorted -- it is the
+              field the seller scans down when looking for "the one from Tuesday". */}
+          {toJalaliDate(order.placedAt)} · {t('card.itemCount', { count: itemCount })}
         </span>
       </div>
       <div className="flex flex-col items-end gap-1">

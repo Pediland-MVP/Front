@@ -75,4 +75,14 @@ describe('OrderCard', () => {
     fireEvent.click(screen.getByRole('button'));
     expect(onOpen).toHaveBeenCalledWith('o1');
   });
+
+  /**
+   * Spec §6 lists the placed date among the five things a card shows. The list is date-sorted, so
+   * this is the field the seller scans down. Literal Jalali string: 2026-09-02T10:00Z is 12:00 in
+   * `toJalaliDate`'s default Europe/Berlin, which is 1405/06/11.
+   */
+  it('shows the placed date, which is what a date-sorted list is scanned by', () => {
+    renderCard();
+    expect(screen.getByText(/1405\/06\/11/)).toBeInTheDocument();
+  });
 });
