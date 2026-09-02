@@ -2979,6 +2979,11 @@
     "Orders": {
       "title": "سفارش‌های فروشگاه",
       "searchPlaceholder": "جستجوی نام گیرنده یا شماره موبایل",
+      "dateRange": {
+        "from": "از تاریخ",
+        "to": "تا تاریخ",
+        "clear": "حذف تاریخ"
+      },
       "status": {
         "all": "همه",
         "awaiting_review": "در انتظار تایید",
