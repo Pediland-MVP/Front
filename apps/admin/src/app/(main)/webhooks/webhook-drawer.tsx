@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { WebhookFormDialog } from './webhook-form-dialog';
+import { TestEventDialog } from './test-event-dialog';
 import { RevealedSecrets, WebhookDetail } from './types';
 
 type ConfirmKind = 'delete' | 'rotateKey' | 'rotateSecret' | null;
@@ -35,6 +36,7 @@ interface WebhookDrawerProps {
 export function WebhookDrawer({ endpointId, onClose, onListChange, onReveal }: WebhookDrawerProps) {
   const t = useTranslations('Webhooks');
   const [editOpen, setEditOpen] = useState(false);
+  const [testEventOpen, setTestEventOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmKind>(null);
   const [busy, setBusy] = useState(false);
 
@@ -194,6 +196,9 @@ export function WebhookDrawer({ endpointId, onClose, onListChange, onReveal }: W
               <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
                 {t('edit')}
               </Button>
+              <Button size="sm" variant="outline" onClick={() => setTestEventOpen(true)}>
+                {t('testEventButton')}
+              </Button>
               <Button size="sm" variant="outline" onClick={() => setConfirm('rotateKey')}>
                 {t('rotateApiKey')}
               </Button>
@@ -213,6 +218,14 @@ export function WebhookDrawer({ endpointId, onClose, onListChange, onReveal }: W
             onOpenChange={setEditOpen}
             endpoint={endpoint}
             onSaved={refreshAll}
+          />
+        ) : null}
+
+        {endpoint ? (
+          <TestEventDialog
+            open={testEventOpen}
+            onOpenChange={setTestEventOpen}
+            endpointId={endpoint.id}
           />
         ) : null}
 
