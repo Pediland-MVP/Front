@@ -37,6 +37,9 @@ function Field({ label, value }: { label: string; value: ReactNode }) {
  */
 export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
   const t = useTranslations('Commerce.Orders');
+  // Reuses the shipping screen's own wording (`kinds.*` / `settlements.*`) so a merchant who set
+  // the method up on /products/shipping sees the same words here.
+  const tShipping = useTranslations('Commerce.Shipping');
   const isDigital = order.kind === 'digital';
 
   /**
@@ -60,6 +63,51 @@ export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
         return order.paymentMethod;
     }
   })();
+
+  /**
+   * Same guarded-lookup discipline as `paymentMethodLabel`, for the same reason:
+   * `shippingKind`/`shippingSettlement` are plain `string | null` on `OrderView`, and
+   * `tShipping(\`kinds.${value}\`)` would print a raw key path for an unrecognised value. Unlike
+   * payment method, `null` here means "no shipping method recorded" -- that case is handled by
+   * the caller omitting the row entirely (omit, don't dash), so these only need to resolve a
+   * present value; an unrecognised present value still falls back to the raw string, same as
+   * payment method, rather than being swallowed.
+   */
+  const shippingKindLabel = order.shippingKind
+    ? (() => {
+        switch (order.shippingKind) {
+          case 'post_express':
+            return tShipping('kinds.post_express');
+          case 'post_registered':
+            return tShipping('kinds.post_registered');
+          case 'tipax':
+            return tShipping('kinds.tipax');
+          case 'courier':
+            return tShipping('kinds.courier');
+          case 'pickup':
+            return tShipping('kinds.pickup');
+          case 'other':
+            return tShipping('kinds.other');
+          default:
+            return order.shippingKind;
+        }
+      })()
+    : null;
+
+  const shippingSettlementLabel = order.shippingSettlement
+    ? (() => {
+        switch (order.shippingSettlement) {
+          case 'prepaid':
+            return tShipping('settlements.prepaid');
+          case 'freight_collect':
+            return tShipping('settlements.freight_collect');
+          case 'cash_on_delivery':
+            return tShipping('settlements.cash_on_delivery');
+          default:
+            return order.shippingSettlement;
+        }
+      })()
+    : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -109,6 +157,12 @@ export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
               {order.shippingTitle && (
                 <Field label={t('detail.shippingMethod')} value={order.shippingTitle} />
               )}
+              {shippingKindLabel && (
+                <Field label={tShipping('kindLabel')} value={shippingKindLabel} />
+              )}
+              {shippingSettlementLabel && (
+                <Field label={tShipping('settlementLabel')} value={shippingSettlementLabel} />
+              )}
             </>
           )}
         </div>
@@ -123,16 +177,29 @@ export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
               key={line.variantId}
               className="flex items-start justify-between gap-3 border-b pb-3 last:border-b-0 last:pb-0"
             >
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium">{line.title}</span>
-                {line.options.length > 0 && (
-                  <span className="text-muted-foreground text-xs">
-                    {line.options.map((option) => `${option.name}: ${option.value}`).join('، ')}
-                  </span>
+              <div className="flex items-start gap-3">
+                {line.imageUrl ? (
+                  <img
+                    src={line.imageUrl}
+                    alt={line.title}
+                    className="size-12 shrink-0 rounded object-cover"
+                  />
+                ) : (
+                  // No image on file for this variant -- a neutral placeholder box, never a
+                  // broken <img> with an empty src.
+                  <div aria-hidden="true" className="bg-muted size-12 shrink-0 rounded" />
                 )}
-                <span className="text-muted-foreground text-xs">
-                  {line.quantity} × {formatNumber(line.unitPrice)}
-                </span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm font-medium">{line.title}</span>
+                  {line.options.length > 0 && (
+                    <span className="text-muted-foreground text-xs">
+                      {line.options.map((option) => `${option.name}: ${option.value}`).join('، ')}
+                    </span>
+                  )}
+                  <span className="text-muted-foreground text-xs">
+                    {line.quantity} × {formatNumber(line.unitPrice)}
+                  </span>
+                </div>
               </div>
               <span className="text-sm font-semibold">{formatNumber(line.lineTotal)}</span>
             </div>

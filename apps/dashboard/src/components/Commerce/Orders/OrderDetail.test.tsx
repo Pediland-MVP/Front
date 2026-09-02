@@ -8,6 +8,7 @@ import type { OrderDetailView } from '@/types/commerceOrders';
 import { OrderDetail } from './OrderDetail';
 
 const copy = messages.Commerce.Orders;
+const shippingCopy = messages.Commerce.Shipping;
 
 // Copied from OrderCard.test.tsx's `base` fixture rather than imported across test files (per
 // the task brief) -- extended here with the `receipts` field OrderDetailView adds.
@@ -41,8 +42,14 @@ const base: OrderDetailView = {
   unit: '3',
   postalcode: null,
   placedAt: '2026-09-02T10:00:00.000Z',
-  shippingTitle: 'پست پیشتاز',
-  shippingKind: 'post',
+  // The merchant's own name for the method (`detail.shippingMethod`) is deliberately different
+  // from the carrier kind's generic label (`Commerce.Shipping.kinds.post_express` = "پست پیشتاز")
+  // -- in real data these two rarely match, and keeping them distinct here avoids the two rows
+  // colliding on the same text in tests.
+  shippingTitle: 'ارسال ویژه',
+  // The original OrderCard.test.tsx fixture used the placeholder 'post', which isn't one of the
+  // six real CommerceShippingKind values -- corrected here to a real one.
+  shippingKind: 'post_express',
   shippingSettlement: 'prepaid',
   paidAt: null,
   createDate: '2026-09-02T10:00:00.000Z',
@@ -71,6 +78,10 @@ describe('OrderDetail', () => {
     );
     expect(screen.queryByText(copy.detail.address)).not.toBeInTheDocument();
     expect(screen.queryByText(copy.detail.shippingMethod)).not.toBeInTheDocument();
+    // kind/settlement sit in the same !isDigital gate as title/address -- a digital order must
+    // omit them too, even though `base.shippingKind`/`shippingSettlement` are still non-null here.
+    expect(screen.queryByText(shippingCopy.kindLabel)).not.toBeInTheDocument();
+    expect(screen.queryByText(shippingCopy.settlementLabel)).not.toBeInTheDocument();
   });
 
   it('says the payment is not yet confirmed when paidAt is null', () => {
@@ -117,5 +128,35 @@ describe('OrderDetail', () => {
   it('falls back to the raw string for an unrecognised payment method (legacy backfill)', () => {
     renderDetail({ ...base, paymentMethod: 'zarinpal', receipts: [] }, null);
     expect(screen.getByText('zarinpal')).toBeInTheDocument();
+  });
+
+  it('renders the shipping kind and settlement labels for a physical order', () => {
+    renderDetail({ ...base, receipts: [] }, null);
+    expect(screen.getByText(shippingCopy.kinds.post_express)).toBeInTheDocument();
+    expect(screen.getByText(shippingCopy.settlements.prepaid)).toBeInTheDocument();
+  });
+
+  it('omits the shipping kind/settlement row when null rather than a dash', () => {
+    renderDetail({ ...base, shippingKind: null, shippingSettlement: null, receipts: [] }, null);
+    expect(screen.queryByText(shippingCopy.kindLabel)).not.toBeInTheDocument();
+    expect(screen.queryByText(shippingCopy.settlementLabel)).not.toBeInTheDocument();
+  });
+
+  it('renders a line image with the src and the line title as alt text', () => {
+    renderDetail(
+      {
+        ...base,
+        lines: [{ ...base.lines[0], imageUrl: 'https://cdn.example.com/shal.jpg' }],
+        receipts: [],
+      },
+      null,
+    );
+    const image = screen.getByAltText('شال');
+    expect(image).toHaveAttribute('src', 'https://cdn.example.com/shal.jpg');
+  });
+
+  it('renders no broken image for a line with no image on file', () => {
+    renderDetail({ ...base, lines: [{ ...base.lines[0], imageUrl: null }], receipts: [] }, null);
+    expect(screen.queryAllByRole('img')).toHaveLength(0);
   });
 });
