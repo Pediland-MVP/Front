@@ -41,8 +41,14 @@ export function useCommerceOrder(id: string | null) {
      * and SWR's cache legitimately holds several of them at once (the page they came from, plus
      * whatever they browsed before). `isOrdersListKey` lives next to `ordersListKey` so the
      * builder and the matcher cannot drift apart.
+     *
+     * Non-fatal on purpose: SWR's `mutate` rejects if the list's revalidation fetch fails, and
+     * that failure has nothing to do with whether the write above landed. Without the `.catch`,
+     * a successful write followed by a flaky list refetch surfaced as a failure -- an error toast
+     * fired and the reject dialog stayed open, inviting the seller to retry an action that had
+     * already gone through. The write itself is the only thing allowed to decide success.
      */
-    await globalMutate(isOrdersListKey);
+    await globalMutate(isOrdersListKey).catch(() => {});
   };
 
   return {
