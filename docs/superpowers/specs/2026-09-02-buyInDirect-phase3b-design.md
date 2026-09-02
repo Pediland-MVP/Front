@@ -207,6 +207,34 @@ Derived from, verbatim:
 | `complete` | `processing`, `sending` | `completed` |
 | `cancel` | `processing`, `sending` | `cancelled` |
 
+### 5.1.1. A second dimension: product kind (added post-implementation, Task 10)
+
+The table above is **status-only**, and that is an incomplete description of the backend. Back's
+`FulfilmentService.ship` throws `COMMERCE_ORDER_STATUS_CHANGED` ("A digital order is never
+shipped") for `kind === 'digital'`, **before** its conditional UPDATE runs — independent of status.
+A digital order reaches `processing` the normal way (via `approve` or `submitFree`), so a UI that
+only consulted `ACTIONS_BY_STATUS` rendered a `ship` button that could never succeed: clicking it
+reported "status changed" (false), this page's own status-changed handler revalidated, found
+nothing changed, and redrew the same button — an unbreakable retry loop. This was found during
+Task 8's review (Ruling 8) and fixed in the same task.
+
+`ACTIONS_BY_STATUS` stays exactly as documented above — a faithful, status-only mirror of Back's
+`ORDER_TRANSITIONS`. The kind rule is **not** folded into that table. It lives one layer up, in
+`actionsFor` (`components/Commerce/Orders/orderTransitions.ts`), which filters `ship` out of the
+status-derived action list whenever `order.kind === 'digital'`:
+
+```ts
+export function actionsFor(order: OrderView): readonly OrderActionName[] {
+  const actions = ACTIONS_BY_STATUS[order.status] ?? [];
+  if (order.kind === 'digital') return actions.filter((action) => action !== 'ship');
+  return actions;
+}
+```
+
+Keeping the two concerns separate means `ACTIONS_BY_STATUS` can still be read side-by-side with
+Back's `ORDER_TRANSITIONS` as a literal mirror, while the kind exception is documented and tested
+(`orderTransitions.test.ts`) at the one place it actually applies.
+
 ### 5.2. `markPaid` is deliberately outside that table
 
 `FulfilmentService.markPaid` has **no status guard whatsoever**. Its only condition is
