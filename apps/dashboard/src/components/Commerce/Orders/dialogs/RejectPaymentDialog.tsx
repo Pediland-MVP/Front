@@ -58,18 +58,25 @@ export const RejectPaymentDialog = ({
   };
 
   const handleConfirm = async () => {
-    if (reason.length === 0) {
+    // Trim before validating and sending, deliberately STRICTER than the backend's
+    // `RejectPaymentDto` (@MinLength(1)). This text goes to the buyer verbatim as an Instagram
+    // DM, and Meta's send API rejects whitespace-only message text (error 100 / subcode
+    // 2534052, "Empty text") — a space-only reason would silently fail to deliver while the
+    // order is already cancelled and terminal, so the buyer would never learn why. Do not
+    // "simplify" this back to `reason.length === 0` to match the DTO.
+    const trimmed = reason.trim();
+    if (trimmed.length === 0) {
       setError(t('empty'));
       return;
     }
-    if (reason.length > REASON_MAX_LENGTH) {
+    if (trimmed.length > REASON_MAX_LENGTH) {
       setError(t('tooLong'));
       return;
     }
     setError(null);
     setIsSubmitting(true);
     try {
-      await onConfirm(reason);
+      await onConfirm(trimmed);
       reset();
     } finally {
       setIsSubmitting(false);

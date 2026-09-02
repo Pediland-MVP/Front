@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
@@ -41,6 +41,17 @@ describe('RejectPaymentDialog', () => {
     expect(screen.getByText(copy.dialogs.reject.empty)).toBeInTheDocument();
   });
 
+  it('blocks a whitespace-only reason, because it cannot be delivered as an Instagram DM', () => {
+    // Meta's send API rejects whitespace-only text (error 100 / subcode 2534052). A reason of
+    // only spaces would pass the backend's @MinLength(1) but never reach the buyer, while the
+    // order is already cancelled and terminal -- so this dialog is stricter than the DTO.
+    const onConfirm = renderReject();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '   ' } });
+    fireEvent.click(screen.getByRole('button', { name: copy.dialogs.reject.confirm }));
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(screen.getByText(copy.dialogs.reject.empty)).toBeInTheDocument();
+  });
+
   it('blocks a reason over 500 characters', () => {
     const onConfirm = renderReject();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'x'.repeat(501) } });
@@ -49,10 +60,33 @@ describe('RejectPaymentDialog', () => {
     expect(screen.getByText(copy.dialogs.reject.tooLong)).toBeInTheDocument();
   });
 
-  it('sends the typed reason when it is valid', async () => {
+  it('sends the trimmed reason when it is valid', async () => {
+    const onConfirm = renderReject();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '  رسید ناخواناست  ' } });
+    // Wrapped in act so the awaited onConfirm + its finally settle before the test ends,
+    // instead of leaking a pending state update into whichever test runs next.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: copy.dialogs.reject.confirm }));
+    });
+    expect(onConfirm).toHaveBeenCalledWith('رسید ناخواناست');
+  });
+
+  it('re-enables the button and clears the textarea and error once confirm resolves', async () => {
     const onConfirm = renderReject();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'رسید ناخواناست' } });
-    fireEvent.click(screen.getByRole('button', { name: copy.dialogs.reject.confirm }));
-    expect(onConfirm).toHaveBeenCalledWith('رسید ناخواناست');
+
+    // Wrap the click so the confirm button's async handler is allowed to run to completion
+    // (including its `finally`) before we assert -- without this, `isSubmitting`/`reset()`
+    // resolve after the test body has already finished reading the DOM.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: copy.dialogs.reject.confirm }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: copy.dialogs.reject.confirm })).toBeEnabled();
+    });
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    expect(screen.queryByText(copy.dialogs.reject.empty)).not.toBeInTheDocument();
+    expect(screen.queryByText(copy.dialogs.reject.tooLong)).not.toBeInTheDocument();
   });
 });
