@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
@@ -106,9 +106,55 @@ describe('OrderActions', () => {
     expect(screen.getByText(copy.dialogs.reject.buyerSees)).toBeInTheDocument();
   });
 
-  it('approves without a dialog', () => {
+  it('approves without a dialog', async () => {
     const onAction = renderActions({ status: 'awaiting_review', paidAt: null });
     fireEvent.click(screen.getByRole('button', { name: copy.actions.approve }));
-    expect(onAction).toHaveBeenCalledWith('approve');
+    // `await` lets the `busy` state's post-resolve `setBusy(false)` settle inside `waitFor`'s
+    // own `act()` wrapper, instead of firing after the test body returns.
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('approve'));
+  });
+
+  it('shows nothing at all without the order:manage permission', () => {
+    mockCan.mockReturnValueOnce(false);
+    renderActions({ status: 'awaiting_review', paidAt: null });
+    expect(screen.queryByRole('button', { name: copy.actions.approve })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: copy.actions.reject })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: copy.actions.markPaid })).not.toBeInTheDocument();
+  });
+
+  /**
+   * `approve` fires directly with nothing else guarding a repeat click -- `OrderDetailPage`
+   * never actually renders this component with `disabled` set, and the dialog-backed actions
+   * have their own internal `isSubmitting` which does not cover `approve`/`markPaid`. Without a
+   * local `busy` guard, a double-tap sends two POSTs and the second comes back
+   * `COMMERCE_ORDER_STATUS_CHANGED` right after a successful first one.
+   */
+  it('disables approve while the first click is still in flight, so a second click cannot fire it again', async () => {
+    let resolveAction: () => void = () => {};
+    const onAction = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveAction = resolve;
+        }),
+    );
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <OrderActions
+          order={{ ...base, status: 'awaiting_review', paidAt: null }}
+          onAction={onAction}
+          disabled={false}
+        />
+      </NextIntlClientProvider>,
+    );
+    const approveButton = screen.getByRole('button', { name: copy.actions.approve });
+
+    fireEvent.click(approveButton);
+    expect(approveButton).toBeDisabled();
+    fireEvent.click(approveButton);
+
+    expect(onAction).toHaveBeenCalledTimes(1);
+
+    resolveAction();
+    await waitFor(() => expect(approveButton).not.toBeDisabled());
   });
 });

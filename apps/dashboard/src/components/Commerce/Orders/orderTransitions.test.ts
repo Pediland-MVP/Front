@@ -75,6 +75,30 @@ describe('markPaid is gated on paidAt, never on status', () => {
 
 describe('actionsFor', () => {
   it('returns the status list without markPaid, which is separate', () => {
-    expect(actionsFor(order({ status: 'processing' }))).toEqual(['ship', 'complete', 'cancel']);
+    expect(actionsFor(order({ status: 'processing', kind: 'physical' }))).toEqual([
+      'ship',
+      'complete',
+      'cancel',
+    ]);
+  });
+
+  /**
+   * `FulfilmentService.ship` throws `COMMERCE_ORDER_STATUS_CHANGED` for any digital order,
+   * before its conditional UPDATE runs -- so `ship` must never appear here for `kind: 'digital'`,
+   * regardless of status. Offering it would send a request the API always refuses.
+   */
+  it('drops ship on a digital order in processing, which the API always refuses', () => {
+    expect(actionsFor(order({ status: 'processing', kind: 'digital' }))).toEqual([
+      'complete',
+      'cancel',
+    ]);
+  });
+
+  it('keeps ship on a physical order in processing', () => {
+    expect(actionsFor(order({ status: 'processing', kind: 'physical' }))).toEqual([
+      'ship',
+      'complete',
+      'cancel',
+    ]);
   });
 });

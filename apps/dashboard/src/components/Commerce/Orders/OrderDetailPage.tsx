@@ -47,7 +47,15 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
       await run[name]();
     } catch (error: any) {
       const code = error?.response?.data?.code;
-      toast.error(t_ec(code) || error?.response?.data?.message);
+      /**
+       * `code` is only guaranteed on a request that reached the API and came back structured.
+       * On a network error (no response at all) `code` is `undefined`, and next-intl's `t_ec`
+       * still returns the truthy key path `ERROR_CODES.undefined` for a missing key -- so
+       * `t_ec(code) || error?.response?.data?.message` would never reach the server-message
+       * fallback and the toast would show that raw key. Branching on `code` first restores the
+       * intended fallback.
+       */
+      toast.error(code ? t_ec(code) : error?.response?.data?.message);
       if (code === 'COMMERCE_ORDER_STATUS_CHANGED') await mutate();
     }
   };

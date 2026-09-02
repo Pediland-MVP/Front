@@ -22,8 +22,21 @@ export const ACTIONS_BY_STATUS: Record<CommerceOrderStatus, readonly OrderAction
   cancelled: [],
 };
 
+/**
+ * `ACTIONS_BY_STATUS` stays a faithful, status-only mirror of Back's `ORDER_TRANSITIONS` -- the
+ * `kind` rule below is layered on top here rather than folded into the table.
+ *
+ * Back's `FulfilmentService.ship` throws `COMMERCE_ORDER_STATUS_CHANGED` for `kind === 'digital'`
+ * BEFORE its conditional UPDATE -- a digital order can never be shipped, full stop. A digital
+ * order reaches `processing` normally (via `approve` or `submitFree`), so without this guard the
+ * button would render, the click would report "the status changed" (false), and this page's own
+ * status-changed handler would revalidate, find nothing changed, and redraw the same button --
+ * an unbreakable retry loop.
+ */
 export function actionsFor(order: OrderView): readonly OrderActionName[] {
-  return ACTIONS_BY_STATUS[order.status] ?? [];
+  const actions = ACTIONS_BY_STATUS[order.status] ?? [];
+  if (order.kind === 'digital') return actions.filter((action) => action !== 'ship');
+  return actions;
 }
 
 /**

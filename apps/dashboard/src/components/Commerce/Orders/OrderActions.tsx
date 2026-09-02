@@ -35,14 +35,32 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
   const t = useTranslations('Commerce.Orders');
   const { can } = usePermissions();
   const [openDialog, setOpenDialog] = useState<DialogKind | null>(null);
+  /**
+   * `approve` and `markPaid` fire directly, with nothing else guarding a second click --
+   * `OrderDetailPage` never actually renders this component with `disabled` set (its own
+   * `isLoading` gate replaces the whole tree with a loader first, and SWR's `isLoading` stays
+   * false during a revalidation), and the dialog-backed actions have their own internal
+   * `isSubmitting` but that does not cover these two. Without this, a double-tap sends two
+   * POSTs: the first approves, the second comes back `COMMERCE_ORDER_STATUS_CHANGED` and the
+   * seller gets a conflict toast right after a successful action. `busy` closes that gap and is
+   * OR'd into every button below, not just the two direct ones, so a click mid-flight cannot
+   * also pop open a dialog for a different action.
+   */
+  const [busy, setBusy] = useState(false);
 
   if (!can('order:manage')) return null;
 
   const actions = actionsFor(order);
   const showMarkPaid = canMarkPaid(order);
+  const isDisabled = disabled || busy;
 
-  const fireDirect = (name: 'approve' | 'markPaid') => () => {
-    void onAction(name);
+  const fireDirect = (name: 'approve' | 'markPaid') => async () => {
+    setBusy(true);
+    try {
+      await onAction(name);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const closeDialog = () => setOpenDialog(null);
@@ -50,7 +68,7 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {actions.includes('approve') && (
-        <Button type="button" disabled={disabled} onClick={fireDirect('approve')}>
+        <Button type="button" disabled={isDisabled} onClick={() => void fireDirect('approve')()}>
           {t('actions.approve')}
         </Button>
       )}
@@ -58,8 +76,8 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         <Button
           type="button"
           variant="outline"
-          disabled={disabled}
-          onClick={fireDirect('markPaid')}
+          disabled={isDisabled}
+          onClick={() => void fireDirect('markPaid')()}
         >
           {t('actions.markPaid')}
         </Button>
@@ -68,7 +86,7 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         <Button
           type="button"
           variant="outline"
-          disabled={disabled}
+          disabled={isDisabled}
           onClick={() => setOpenDialog('ship')}
         >
           {t('actions.ship')}
@@ -78,7 +96,7 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         <Button
           type="button"
           variant="outline"
-          disabled={disabled}
+          disabled={isDisabled}
           onClick={() => setOpenDialog('complete')}
         >
           {t('actions.complete')}
@@ -88,7 +106,7 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         <Button
           type="button"
           variant="destructive"
-          disabled={disabled}
+          disabled={isDisabled}
           onClick={() => setOpenDialog('reject')}
         >
           {t('actions.reject')}
@@ -98,7 +116,7 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         <Button
           type="button"
           variant="destructive"
-          disabled={disabled}
+          disabled={isDisabled}
           onClick={() => setOpenDialog('cancel')}
         >
           {t('actions.cancel')}
