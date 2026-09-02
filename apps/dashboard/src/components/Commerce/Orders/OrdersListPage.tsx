@@ -1,7 +1,7 @@
 'use client';
 
 import dayjs from 'dayjs';
-import { XIcon } from 'lucide-react';
+import { DownloadIcon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,10 +10,13 @@ import { ItemsPagination } from '@/components/Console/ItemsPagination';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/date-picker';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
+import { usePermissions } from '@/hooks/usePermissions';
 import { useCommerceOrders } from '@/hooks/useCommerceOrders';
+import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
 import type { CommerceOrderStatus, OrdersFilters } from '@/types/commerceOrders';
 
 import { OrderCard } from './OrderCard';
+import { OrdersExportDrawer } from './OrdersExportDrawer';
 
 export const DEFAULT_LIMIT = 20;
 
@@ -128,6 +131,35 @@ export function OrdersListPage() {
 
   const hasActiveFilters = Boolean(filters.status || filters.search || filters.from || filters.to);
 
+  const { can } = usePermissions();
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const setButtons = useHeaderFeatures((s) => s.setButtons);
+  const clearButtons = useHeaderFeatures((s) => s.clearButtons);
+
+  // Mirrors `app/(Console)/orders/page.tsx`'s pattern: a page-level action button lives in the
+  // console header, wired through `useHeaderFeatures`, not inline in this component's own tree.
+  // This does not contradict filters living in the URL (not the header) -- that ruling was about
+  // URL-backed filter state specifically, not a one-shot action trigger.
+  const HeaderButton = useMemo(
+    () =>
+      can('order:manage') ? (
+        <Button type="button" size="md" onClick={() => setExportOpen(true)}>
+          {t('export.title')}
+          <DownloadIcon />
+        </Button>
+      ) : null,
+    [can, t],
+  );
+
+  useEffect(() => {
+    setButtons(HeaderButton);
+  }, [HeaderButton, setButtons]);
+
+  useEffect(() => {
+    return () => clearButtons();
+  }, [clearButtons]);
+
   // No "you don't have access" screen here: `OrdersCardList.tsx` (the legacy `/orders` list)
   // doesn't render one for `!can('order:view')` either -- it just renders the ordinary empty
   // state because the permission check leaves it nothing to fetch. `useCommerceOrders` (Task 2)
@@ -136,6 +168,8 @@ export function OrdersListPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-4">
+      <OrdersExportDrawer open={exportOpen} onOpenChange={setExportOpen} filters={filters} />
+
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput
           value={searchInput}
