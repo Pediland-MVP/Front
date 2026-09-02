@@ -2975,6 +2975,34 @@
       "summaryFreightCollect": "پس‌کرایه",
       "summaryCashOnDelivery": "پرداخت در محل",
       "noRateNote": "برای این روش، قیمت و استثنای شهری معنی ندارد؛ کرایه را مأمور پست از مشتری می‌گیرد."
+    },
+    "Orders": {
+      "title": "سفارش‌های فروشگاه",
+      "searchPlaceholder": "جستجوی نام گیرنده یا شماره موبایل",
+      "status": {
+        "all": "همه",
+        "awaiting_review": "در انتظار تایید",
+        "processing": "در حال آماده‌سازی",
+        "sending": "در حال ارسال",
+        "completed": "تکمیل‌شده",
+        "cancelled": "لغو شده"
+      },
+      "cancelReason": {
+        "payment_rejected": "رسید پرداخت تایید نشد",
+        "delivery_refused": "گیرنده سفارش را تحویل نگرفت",
+        "superseded": "سفارش قدیمی، با سیستم جدید جایگزین شد",
+        "legacy_cancelled": "در سیستم قدیمی لغو شده بود"
+      },
+      "card": {
+        "itemCount": "{count} کالا",
+        "noName": "بدون نام"
+      },
+      "empty": {
+        "none": "هنوز سفارشی ثبت نشده",
+        "noneHint": "سفارش‌هایی که از دایرکت ثبت می‌شوند اینجا می‌آیند.",
+        "noMatch": "سفارشی با این فیلترها پیدا نشد",
+        "clearFilters": "حذف فیلترها"
+      }
     }
   }
 }
