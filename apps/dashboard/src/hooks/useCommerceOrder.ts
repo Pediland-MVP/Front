@@ -1,8 +1,9 @@
 'use client';
 
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 
 import api from '@/hooks/swr/api-client';
+import { isOrdersListKey } from '@/hooks/useCommerceOrders';
 import type { IResponseMessage } from '@/types/responseMessage';
 import type { OrderDetailView } from '@/types/commerceOrders';
 
@@ -24,10 +25,24 @@ export function useCommerceOrder(id: string | null) {
   const { data, error, isLoading, mutate } = useSWR<IResponseMessage<OrderDetailView>>(
     id ? orderDetailKey(id) : null,
   );
+  const { mutate: globalMutate } = useSWRConfig();
 
   const run = async (path: string, body?: unknown) => {
     await api.post(`/commerce/orders/${id}/${path}`, body ?? {});
     await mutate();
+    /**
+     * Spec §11: every order mutation revalidates the detail AND invalidates the list. Revalidating
+     * only the detail left the list holding the pre-action status, so a seller who approved an
+     * order and hit back saw it still sitting in "در انتظار تایید" until something else happened to
+     * trigger a refetch.
+     *
+     * A key PREDICATE, not `mutate(ordersListKey(filters))`: the list key encodes the seller's
+     * whole filter set (page, status, search, date range), this hook has no idea what that set is,
+     * and SWR's cache legitimately holds several of them at once (the page they came from, plus
+     * whatever they browsed before). `isOrdersListKey` lives next to `ordersListKey` so the
+     * builder and the matcher cannot drift apart.
+     */
+    await globalMutate(isOrdersListKey);
   };
 
   return {
