@@ -630,7 +630,9 @@ describe('OrderCard', () => {
     renderCard();
     expect(screen.getByText('علی رضایی')).toBeInTheDocument();
     expect(screen.getByText(copy.status.awaiting_review)).toBeInTheDocument();
-    expect(screen.getByText(/۲۴۰,۰۰۰|240,000/)).toBeInTheDocument();
+    // `formatNumber` is `Intl.NumberFormat('en-US')`, so the output is always ASCII digits with
+    // commas -- assert the exact string rather than a permissive regex.
+    expect(screen.getByText('240,000')).toBeInTheDocument();
   });
 
   it('falls back to a named placeholder when the buyer never gave a name', () => {
