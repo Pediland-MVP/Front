@@ -2999,6 +2999,11 @@
         "superseded": "سفارش قدیمی، با سیستم جدید جایگزین شد",
         "legacy_cancelled": "در سیستم قدیمی لغو شده بود"
       },
+      "paymentMethod": {
+        "card_to_card": "کارت به کارت",
+        "free": "رایگان",
+        "cash_on_delivery": "پرداخت در محل تحویل"
+      },
       "card": {
         "itemCount": "{count} کالا",
         "noName": "بدون نام"

@@ -39,6 +39,28 @@ export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
   const t = useTranslations('Commerce.Orders');
   const isDigital = order.kind === 'digital';
 
+  /**
+   * Backend's `CommercePaymentMethodEnum` has exactly these three values, but the column is
+   * `@Column({ length: 40 })` -- a plain varchar, not a DB enum -- so a row brought in by the
+   * legacy backfill migration can carry a value outside that set. An explicit switch (not
+   * `t(\`paymentMethod.${order.paymentMethod}\`)`) keeps that possible: next-intl would otherwise
+   * render the raw key path (e.g. `Commerce.Orders.paymentMethod.zarinpal`) for a missing key.
+   * Falling back to the raw string instead is deliberate -- not pretty, but it tells whoever is
+   * looking at a migrated legacy order what the value actually is.
+   */
+  const paymentMethodLabel = (() => {
+    switch (order.paymentMethod) {
+      case 'card_to_card':
+        return t('paymentMethod.card_to_card');
+      case 'free':
+        return t('paymentMethod.free');
+      case 'cash_on_delivery':
+        return t('paymentMethod.cash_on_delivery');
+      default:
+        return order.paymentMethod;
+    }
+  })();
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header: status, when it was placed, the grand total. */}
@@ -59,7 +81,7 @@ export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
       {/* Payment: method, confirmation time (or "not confirmed yet"), the receipts sent. */}
       <div className="flex flex-col gap-3 border-t pt-4">
         <h3 className="text-sm font-semibold">{t('detail.payment')}</h3>
-        <span className="text-sm">{order.paymentMethod}</span>
+        <span className="text-sm">{paymentMethodLabel}</span>
         {order.paidAt ? (
           <Field label={t('detail.paidAt')} value={toJalaliDateTime(order.paidAt)} />
         ) : (

@@ -103,4 +103,19 @@ describe('OrderDetail', () => {
     expect(screen.getByText('شال')).toBeInTheDocument();
     expect(screen.getByText(/رنگ/)).toBeInTheDocument();
   });
+
+  it.each([['card_to_card'], ['free'], ['cash_on_delivery']])(
+    'renders the %s payment method label',
+    (method) => {
+      renderDetail({ ...base, paymentMethod: method, receipts: [] }, null);
+      expect(
+        screen.getByText(copy.paymentMethod[method as keyof typeof copy.paymentMethod]),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('falls back to the raw string for an unrecognised payment method (legacy backfill)', () => {
+    renderDetail({ ...base, paymentMethod: 'zarinpal', receipts: [] }, null);
+    expect(screen.getByText('zarinpal')).toBeInTheDocument();
+  });
 });
