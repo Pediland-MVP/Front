@@ -3040,6 +3040,15 @@
         "grandTotal": "مبلغ کل",
         "cancelledBecause": "علت لغو"
       },
+      "actions": {
+        "approve": "تایید پرداخت",
+        "reject": "رد رسید",
+        "ship": "ارسال شد",
+        "complete": "تکمیل شد",
+        "cancel": "لغو سفارش",
+        "markPaid": "علامت‌گذاری به‌عنوان پرداخت‌شده",
+        "done": "انجام شد"
+      },
       "dialogs": {
         "reject": {
           "title": "رد رسید پرداخت",
