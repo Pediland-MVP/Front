@@ -72,7 +72,7 @@ describe('RejectPaymentDialog', () => {
   });
 
   it('re-enables the button and clears the textarea and error once confirm resolves', async () => {
-    const onConfirm = renderReject();
+    renderReject();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'رسید ناخواناست' } });
 
     // Wrap the click so the confirm button's async handler is allowed to run to completion

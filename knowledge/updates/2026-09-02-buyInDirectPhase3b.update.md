@@ -115,6 +115,39 @@ $ python3 -c "import json;[json.load(open(f)) for f in ['apps/dashboard/src/mess
 valid
 ```
 
+```
+$ npx vitest run   # whole apps/dashboard suite
+ Test Files  71 passed (71)
+      Tests  586 passed (586)
+   Duration  50.94s
+```
+
+Zero regressions across the whole dashboard, not just the Orders suite. Worth calling out:
+`src/i18n/messages.test.ts` is among the 71 passing files, and it exercises the message
+files this phase modified — the specific regression risk this phase carried, since more
+than twenty existing test files import `fa.json`.
+
+```
+$ npx eslint apps/dashboard/src/components/Commerce/Orders apps/dashboard/src/app/\(Console\)/products/orders apps/dashboard/src/hooks/useCommerceOrder.ts apps/dashboard/src/hooks/useCommerceOrders.ts apps/dashboard/src/types/commerceOrders.ts
+✖ 3 problems (0 errors, 3 warnings)
+```
+
+The gate is "no errors" — there are none. The three warnings, recorded honestly rather
+than omitted:
+
+- Three `@next/next/no-img-element` warnings (`OrderDetail.tsx:182`,
+  `ReceiptLightbox.tsx:20`, `ReceiptStrip.tsx:38`). Checked against the rest of the app:
+  plain `<img>` is the established pattern here — twelve existing files use it, including
+  the sibling `CommerceProductCard.tsx` — so these match house style rather than
+  introducing drift. Not something to "fix" in isolation on this screen.
+
+A fourth warning (`@typescript-eslint/no-unused-vars` on an unused `onConfirm` binding in
+`dialogs/RejectPaymentDialog.test.tsx:75`) was the one warning this phase actually
+introduced. Fixed by dropping the unused assignment (that test asserts only on DOM state,
+never on `onConfirm` itself) — see the fix-round commit. Re-verified after the fix:
+`npx vitest run src/components/Commerce/Orders/dialogs/` — 2 files, 9/9 tests pass; the
+eslint command above dropped from 4 problems to the 3 shown.
+
 ## Outstanding
 
 - `knowledge/knowledgeMap.doc.md` still needs a row for this doc. Skipped in this task
