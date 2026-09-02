@@ -3014,6 +3014,26 @@
         "none": "هنوز رسیدی فرستاده نشده",
         "attempt": "رسید {n}",
         "close": "بستن"
+      },
+      "detail": {
+        "placedAt": "زمان ثبت",
+        "payment": "پرداخت",
+        "paidAt": "تایید شده در",
+        "notPaid": "هنوز پرداخت تایید نشده",
+        "buyer": "خریدار و آدرس",
+        "recipient": "گیرنده",
+        "mobile": "موبایل",
+        "city": "شهر",
+        "address": "آدرس",
+        "plate": "پلاک",
+        "unit": "واحد",
+        "postalcode": "کد پستی",
+        "shippingMethod": "روش ارسال",
+        "items": "کالاها",
+        "itemsTotal": "جمع کالاها",
+        "shippingTotal": "هزینه ارسال",
+        "grandTotal": "مبلغ کل",
+        "cancelledBecause": "علت لغو"
       }
     }
   }
