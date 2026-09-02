@@ -49,7 +49,10 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
 
-  const className = locale === 'fa' ? 'font-Yekan antialiased' : `${inter.className} antialiased`;
+  const className =
+    locale === 'fa'
+      ? 'font-Yekan antialiased overscroll-y-none'
+      : `${inter.className} antialiased overscroll-y-none`;
 
   return (
     <html lang={locale} dir={locale === 'fa' ? 'rtl' : 'ltr'} className={className}>
