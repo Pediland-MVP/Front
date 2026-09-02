@@ -241,8 +241,23 @@ Back's `ORDER_TRANSITIONS` as a literal mirror, while the kind exception is docu
 `paidAt IS NULL`, and it is intentionally idempotent — a second call is a seller double-tapping,
 not a conflict, so it succeeds rather than erroring.
 
-The UI therefore gates it on **`order.paidAt === null`**, never on status. Putting it in the status
-table would both hide it where it is legal and misrepresent the backend.
+The UI therefore gates it on **`order.paidAt === null`**. Putting it in the status table would both
+hide it where it is legal and misrepresent the backend.
+
+**`completed` MUST stay eligible — it is the button's primary case, not an edge case.** The `paidAt`
+column docstring on `packages/entities/src/commerce/commerceOrder.entity.ts` spells out why: with
+cash-on-delivery the courier collects on handoff and remits to the seller *days later, often batched
+with other orders*, "so an order is routinely `COMPLETED` (fully delivered) and `paidAt IS NULL`
+(not yet settled) at the same time", and `FulfilmentService.markPaid` is "the only writer of this
+column for COD orders". An earlier revision of this section said "never on status", which was read
+as licence to exclude both terminal statuses; that hid the button in exactly the state it exists for
+and left a delivered COD order with no path to settlement, ever.
+
+**`cancelled` is the one exclusion**, and only because no money exists on either route into it:
+`reject` fires before any payment is accepted, and `cancel` is `delivery_refused` — the courier
+handed nothing over and collected nothing. There is no settlement to record.
+
+So the predicate is `order.paidAt === null && order.status !== 'cancelled'`.
 
 ### 5.3. Dialogs
 
