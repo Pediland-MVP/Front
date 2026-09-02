@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
@@ -55,7 +55,8 @@ const base: OrderView = {
 };
 
 const renderActions = (overrides: Partial<OrderView>) => {
-  const onAction = vi.fn().mockResolvedValue(undefined);
+  // `onAction` resolves `true` for "the write landed" -- the dialogs close and reset only on that.
+  const onAction = vi.fn().mockResolvedValue(true);
   render(
     <NextIntlClientProvider locale="fa" messages={messages}>
       <OrderActions order={{ ...base, ...overrides }} onAction={onAction} disabled={false} />
@@ -87,6 +88,26 @@ describe('OrderActions', () => {
     }).forEach((label) =>
       expect(screen.queryByRole('button', { name: label })).not.toBeInTheDocument(),
     );
+  });
+
+  /**
+   * The COD settlement case, and the reason `canMarkPaid` no longer excludes `completed`. Back's
+   * `commerceOrder.entity.ts` `paidAt` docstring: the courier remits days later, "so an order is
+   * routinely COMPLETED (fully delivered) and paidAt IS NULL (not yet settled) at the same time",
+   * and `FulfilmentService.markPaid` is "the only writer of this column for COD orders". With the
+   * button hidden here the seller had no way to ever settle a delivered order.
+   */
+  it('still offers markPaid on a COMPLETED but unpaid order -- its primary use case', () => {
+    renderActions({ status: 'completed', paidAt: null });
+    expect(screen.getByRole('button', { name: copy.actions.markPaid })).toBeInTheDocument();
+    // ...and it is the ONLY button: no lifecycle action survives a terminal status.
+    expect(screen.queryByRole('button', { name: copy.actions.complete })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: copy.actions.cancel })).not.toBeInTheDocument();
+  });
+
+  it('does not offer markPaid on a cancelled order, where no money ever changed hands', () => {
+    renderActions({ status: 'cancelled', paidAt: null });
+    expect(screen.queryByRole('button', { name: copy.actions.markPaid })).not.toBeInTheDocument();
   });
 
   it('offers markPaid on an unpaid awaiting-review order, which no status table would allow', () => {
@@ -133,8 +154,8 @@ describe('OrderActions', () => {
     let resolveAction: () => void = () => {};
     const onAction = vi.fn(
       () =>
-        new Promise<void>((resolve) => {
-          resolveAction = resolve;
+        new Promise<boolean>((resolve) => {
+          resolveAction = () => resolve(true);
         }),
     );
     render(
@@ -156,5 +177,35 @@ describe('OrderActions', () => {
 
     resolveAction();
     await waitFor(() => expect(approveButton).not.toBeDisabled());
+  });
+
+  /**
+   * A transport failure (no `response` on the axios error) used to close the dialog and clear the
+   * textarea, destroying up to 500 characters of buyer-facing text the seller had just written.
+   * `onAction` reporting `false` is what keeps the dialog open and the text intact.
+   */
+  it('keeps the reject dialog open and the typed reason intact when the action fails', async () => {
+    const onAction = vi.fn().mockResolvedValue(false);
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <OrderActions
+          order={{ ...base, status: 'awaiting_review', paidAt: null }}
+          onAction={onAction}
+          disabled={false}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: copy.actions.reject }));
+    const box = screen.getByRole('textbox');
+    fireEvent.change(box, { target: { value: 'رسید ناخواناست' } });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: copy.dialogs.reject.confirm }));
+    });
+
+    expect(onAction).toHaveBeenCalledWith('reject', 'رسید ناخواناست');
+    expect(screen.getByText(copy.dialogs.reject.buyerSees)).toBeInTheDocument();
+    expect(screen.getByRole('textbox')).toHaveValue('رسید ناخواناست');
   });
 });

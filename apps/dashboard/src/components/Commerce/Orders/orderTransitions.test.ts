@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { ACTIONS_BY_STATUS, actionsFor, canMarkPaid } from './orderTransitions';
+import { ACTIONS_BY_STATUS, actionsFor, canMarkPaid, hasAnyAction } from './orderTransitions';
 import type { OrderView } from '@/types/commerceOrders';
 
 const order = (patch: Partial<OrderView>): OrderView =>
@@ -54,8 +54,8 @@ describe('ACTIONS_BY_STATUS mirrors Back ORDER_TRANSITIONS', () => {
   });
 });
 
-describe('markPaid is gated on paidAt, never on status', () => {
-  it('is offered on an unpaid order in any non-terminal status', () => {
+describe('markPaid is gated on paidAt, and on status only for cancelled', () => {
+  it('is offered on an unpaid order in any live status', () => {
     expect(canMarkPaid(order({ status: 'awaiting_review', paidAt: null }))).toBe(true);
     expect(canMarkPaid(order({ status: 'processing', paidAt: null }))).toBe(true);
     expect(canMarkPaid(order({ status: 'sending', paidAt: null }))).toBe(true);
@@ -65,11 +65,45 @@ describe('markPaid is gated on paidAt, never on status', () => {
     expect(canMarkPaid(order({ status: 'processing', paidAt: '2026-09-02T11:00:00.000Z' }))).toBe(
       false,
     );
+    expect(canMarkPaid(order({ status: 'completed', paidAt: '2026-09-02T11:00:00.000Z' }))).toBe(
+      false,
+    );
   });
 
-  it('is not offered on a terminal order even when unpaid', () => {
-    expect(canMarkPaid(order({ status: 'completed', paidAt: null }))).toBe(false);
+  /**
+   * The PRIMARY use case, not an edge case. Back's `commerceOrder.entity.ts` `paidAt` docstring:
+   * with cash-on-delivery the courier remits days later, "so an order is routinely COMPLETED
+   * (fully delivered) and paidAt IS NULL (not yet settled) at the same time". Hiding the button
+   * here left a delivered COD order with no way to ever be settled.
+   */
+  it('IS offered on a completed but unsettled order -- the COD settlement case', () => {
+    expect(canMarkPaid(order({ status: 'completed', paidAt: null }))).toBe(true);
+  });
+
+  /**
+   * `cancelled` is the one status that is excluded, because neither route into it involves money:
+   * `reject` fires before payment is accepted, and `cancel` is `delivery_refused` -- the courier
+   * collected nothing.
+   */
+  it('is not offered on a cancelled order, where no money ever changed hands', () => {
     expect(canMarkPaid(order({ status: 'cancelled', paidAt: null }))).toBe(false);
+  });
+});
+
+describe('hasAnyAction', () => {
+  it('is true for a completed unpaid order, whose only action is markPaid', () => {
+    expect(actionsFor(order({ status: 'completed' }))).toEqual([]);
+    expect(hasAnyAction(order({ status: 'completed', paidAt: null }))).toBe(true);
+  });
+
+  it('is false once a completed order is also settled -- nothing legal is left', () => {
+    expect(hasAnyAction(order({ status: 'completed', paidAt: '2026-09-02T11:00:00.000Z' }))).toBe(
+      false,
+    );
+  });
+
+  it('is false for a cancelled order in every case', () => {
+    expect(hasAnyAction(order({ status: 'cancelled', paidAt: null }))).toBe(false);
   });
 });
 
