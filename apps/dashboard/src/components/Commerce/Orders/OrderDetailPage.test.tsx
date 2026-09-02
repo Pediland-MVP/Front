@@ -69,10 +69,10 @@ const order: OrderDetailView = {
  * `onAction` catch block, not any one specific action, and `approve` is the plain no-dialog path
  * (`OrderActions.test.tsx` already covers `approve` firing at all).
  */
-const setup = (approveImpl: () => Promise<void>) => {
+const setup = (approveImpl: () => Promise<void>, orderOverride?: Partial<OrderDetailView>) => {
   const mutateMock = vi.fn().mockResolvedValue(undefined);
   mockUseCommerceOrder.mockReturnValue({
-    order,
+    order: { ...order, ...orderOverride },
     isLoading: false,
     error: undefined,
     mutate: mutateMock,
@@ -126,5 +126,55 @@ describe('OrderDetailPage status-change recovery', () => {
 
     await waitFor(() => expect(toastError).toHaveBeenCalled());
     expect(mutateMock).not.toHaveBeenCalled();
+  });
+
+  /**
+   * I4: on a transport error axios attaches no `response`, so both `code` and `message` are
+   * `undefined` and `toast.error(undefined)` rendered an EMPTY toast -- the seller saw a blank box
+   * and could not tell whether the action had gone through.
+   */
+  it('toasts a real sentence, not undefined, when the request never reached the API', async () => {
+    const approve = vi.fn().mockRejectedValue(new Error('Network Error'));
+    const mutateMock = setup(approve);
+
+    fireEvent.click(screen.getByRole('button', { name: copy.actions.approve }));
+
+    await waitFor(() => expect(toastError).toHaveBeenCalled());
+    expect(toastError).toHaveBeenCalledWith(copy.errors.unknown);
+    // A transport failure is not a status change -- nothing to revalidate against.
+    expect(mutateMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('OrderDetailPage action bar visibility', () => {
+  beforeEach(() => {
+    toastError.mockClear();
+    mockCan.mockReturnValue(true);
+  });
+
+  /**
+   * M1: `OrderDetail` renders a bordered strip whenever `actions` is truthy, and an
+   * `<OrderActions/>` ELEMENT is truthy even when the component renders `null`. Both of these
+   * used to produce an empty bordered strip.
+   */
+  it('passes no action bar when the viewer cannot manage orders', () => {
+    mockCan.mockReturnValue(false);
+    setup(vi.fn());
+    expect(screen.queryByTestId('order-actions-bar')).not.toBeInTheDocument();
+  });
+
+  it('passes no action bar when the order has no legal action left', () => {
+    setup(vi.fn(), { status: 'completed', paidAt: '2026-09-02T12:00:00.000Z' });
+    expect(screen.queryByTestId('order-actions-bar')).not.toBeInTheDocument();
+  });
+
+  /**
+   * The C1 case end to end: a delivered COD order that has not been settled still has exactly one
+   * legal action, so the bar must appear.
+   */
+  it('shows the action bar for a completed but unsettled order, holding only markPaid', () => {
+    setup(vi.fn(), { status: 'completed', paidAt: null });
+    expect(screen.getByTestId('order-actions-bar')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: copy.actions.markPaid })).toBeInTheDocument();
   });
 });

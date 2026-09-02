@@ -224,8 +224,23 @@ export function OrderDetail({ order, cityName, actions }: OrderDetailProps) {
         </div>
       </div>
 
+      {/* `actions` must be `null` when there is nothing to show -- an `<OrderActions/>` ELEMENT is
+          truthy even when the component renders `null`, so a viewer without `order:manage` (or a
+          settled, terminal order) used to get an empty bordered strip. `OrderDetailPage` decides,
+          via `hasAnyAction` + the permission check, and passes `null` rather than an element.
+
+          Sticky on mobile (spec §7.7): the action bar is the point of this screen and the page is
+          long, so on a phone it stays pinned to the bottom of the viewport instead of making the
+          seller scroll past every line item to approve. `md:static` hands it back to normal flow
+          on a wide screen, where the whole page fits anyway. It needs its own opaque background
+          because content now scrolls underneath it. */}
       {actions && (
-        <div className="flex items-center justify-end gap-2 border-t pt-4">{actions}</div>
+        <div
+          data-testid="order-actions-bar"
+          className="bg-background sticky bottom-0 z-10 flex items-center justify-end gap-2 border-t pt-4 pb-3 md:static md:pb-0"
+        >
+          {actions}
+        </div>
       )}
     </div>
   );

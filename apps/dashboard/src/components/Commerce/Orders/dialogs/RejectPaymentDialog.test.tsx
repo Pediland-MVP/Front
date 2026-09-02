@@ -8,8 +8,9 @@ import { RejectPaymentDialog } from './RejectPaymentDialog';
 
 const copy = messages.Commerce.Orders;
 
-const renderReject = () => {
-  const onConfirm = vi.fn().mockResolvedValue(undefined);
+const renderReject = (result: boolean = true) => {
+  // `true` means "the write landed" -- the dialog clears itself only on that.
+  const onConfirm = vi.fn().mockResolvedValue(result);
   render(
     <NextIntlClientProvider locale="fa" messages={messages}>
       <RejectPaymentDialog open onOpenChange={vi.fn()} onConfirm={onConfirm} />
@@ -88,5 +89,24 @@ describe('RejectPaymentDialog', () => {
     expect(screen.getByRole('textbox')).toHaveValue('');
     expect(screen.queryByText(copy.dialogs.reject.empty)).not.toBeInTheDocument();
     expect(screen.queryByText(copy.dialogs.reject.tooLong)).not.toBeInTheDocument();
+  });
+
+  /**
+   * The failure path this dialog exists to protect. A transport error resolves `false`; the text
+   * the seller typed must survive, because it is up to 500 characters of prose the buyer will
+   * read and there is no way to get it back once cleared.
+   */
+  it('keeps the typed reason when the confirm reports failure', async () => {
+    renderReject(false);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'رسید ناخواناست' } });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: copy.dialogs.reject.confirm }));
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('رسید ناخواناست');
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: copy.dialogs.reject.confirm })).toBeEnabled();
+    });
   });
 });

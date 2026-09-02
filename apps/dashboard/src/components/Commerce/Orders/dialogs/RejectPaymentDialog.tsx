@@ -17,7 +17,12 @@ import {
 interface RejectPaymentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (reason: string) => Promise<void>;
+  /**
+   * Resolves `true` only when the write actually landed. On `false` this dialog keeps the text
+   * the seller typed -- losing up to 500 characters of buyer-facing prose to a dropped connection
+   * is worse than making them close the dialog themselves.
+   */
+  onConfirm: (reason: string) => Promise<boolean>;
 }
 
 const REASON_MAX_LENGTH = 500;
@@ -76,8 +81,8 @@ export const RejectPaymentDialog = ({
     setError(null);
     setIsSubmitting(true);
     try {
-      await onConfirm(trimmed);
-      reset();
+      // Only clear on success -- see `onConfirm`'s docstring.
+      if (await onConfirm(trimmed)) reset();
     } finally {
       setIsSubmitting(false);
     }

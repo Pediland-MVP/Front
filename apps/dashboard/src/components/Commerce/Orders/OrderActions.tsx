@@ -16,7 +16,15 @@ type ActionName = OrderActionName | 'markPaid';
 
 interface OrderActionsProps {
   order: OrderView;
-  onAction: (name: ActionName, reason?: string) => Promise<void>;
+  /**
+   * Resolves `true` when the write actually landed, `false` when it failed (the page has already
+   * toasted). It is NOT `Promise<void>`: a dialog that closes and clears itself on a failure
+   * destroys what the seller typed. `reject` carries up to 500 characters of buyer-facing text,
+   * and a dropped connection used to wipe it with no way back. Every dialog below therefore
+   * closes only on `true`. It resolves rather than rejects so the `void handleConfirm()` call
+   * inside each dialog cannot become an unhandled rejection.
+   */
+  onAction: (name: ActionName, reason?: string) => Promise<boolean>;
   disabled?: boolean;
 }
 
@@ -127,24 +135,23 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         open={openDialog === 'reject'}
         onOpenChange={(open) => setOpenDialog(open ? 'reject' : null)}
         onConfirm={async (reason) => {
-          await onAction('reject', reason);
-          closeDialog();
+          const ok = await onAction('reject', reason);
+          if (ok) closeDialog();
+          return ok;
         }}
       />
       <CancelOrderDialog
         open={openDialog === 'cancel'}
         onOpenChange={(open) => setOpenDialog(open ? 'cancel' : null)}
         onConfirm={async () => {
-          await onAction('cancel');
-          closeDialog();
+          if (await onAction('cancel')) closeDialog();
         }}
       />
       <ConfirmActionDialog
         open={openDialog === 'ship'}
         onOpenChange={(open) => setOpenDialog(open ? 'ship' : null)}
         onConfirm={async () => {
-          await onAction('ship');
-          closeDialog();
+          if (await onAction('ship')) closeDialog();
         }}
         title={t('dialogs.ship.title')}
         description={t('dialogs.ship.description')}
@@ -154,8 +161,7 @@ export function OrderActions({ order, onAction, disabled }: OrderActionsProps) {
         open={openDialog === 'complete'}
         onOpenChange={(open) => setOpenDialog(open ? 'complete' : null)}
         onConfirm={async () => {
-          await onAction('complete');
-          closeDialog();
+          if (await onAction('complete')) closeDialog();
         }}
         title={t('dialogs.complete.title')}
         description={t('dialogs.complete.description')}
