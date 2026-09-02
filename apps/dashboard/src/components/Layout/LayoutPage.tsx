@@ -11,7 +11,7 @@ export const LayoutPage = ({ col = 'full', className, children }: LayoutPageProp
   return (
     <div
       className={cn(
-        'scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-white flex flex-1 flex-col overflow-auto rounded-t-3xl bg-linear-to-t from-white/85 to-white md:rounded-t-none',
+        'scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-white flex flex-1 flex-col overflow-auto overscroll-contain rounded-t-3xl bg-linear-to-t from-white/85 to-white md:rounded-t-none',
         col === 'half' && 'md:pr-3 md:pb-3',
       )}
     >

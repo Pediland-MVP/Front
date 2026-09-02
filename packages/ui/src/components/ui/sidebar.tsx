@@ -311,7 +311,14 @@ function SidebarInset({ className, ...props }: React.ComponentProps<'main'>) {
         // shrinks a height-filling child, and when the overflow comes from an
         // `overflow:visible` descendant Blink leaves it out of `scrollHeight` too. The
         // result was a bottom strip of every page that no amount of scrolling reached.
-        'relative flex max-h-[calc(100svh-3.5rem)] max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-x-hidden overflow-y-auto md:max-h-screen md:overflow-hidden md:border',
+        //
+        // `overscroll-contain`: pages nest a second scroller inside this one (e.g.
+        // LayoutCard, LayoutPage). Without it, once that inner scroller runs out of
+        // content, the swipe gesture chains up through here to `body` — triggering the
+        // browser's native rubber-band bounce (revealing the purple SidebarWrapper
+        // background behind everything) and, at the top of the page, Chrome's
+        // pull-to-refresh. Containing it here stops the chain before it reaches `body`.
+        'relative flex max-h-[calc(100svh-3.5rem)] max-w-[calc(100%-(--sidebar-width)] flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-contain md:max-h-screen md:overflow-hidden md:border',
         'md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:peer-data-[state=collapsed]:mr-0',
         className,
       )}
