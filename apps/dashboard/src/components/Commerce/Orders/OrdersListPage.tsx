@@ -1,14 +1,16 @@
 'use client';
 
-import dayjs from 'dayjs';
 import { DownloadIcon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import DateObject from 'react-date-object';
+import persian from 'react-date-object/calendars/persian';
+import persian_fa from 'react-date-object/locales/persian_fa';
+import DatePicker from 'react-multi-date-picker';
 
 import { ItemsPagination } from '@/components/Console/ItemsPagination';
 import { Button } from '@/components/ui/button';
-import { DatePicker } from '@/components/ui/date-picker';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useCommerceOrders } from '@/hooks/useCommerceOrders';
@@ -32,13 +34,42 @@ const isStatus = (v: string | null): v is CommerceOrderStatus =>
   v !== null && (STATUSES as readonly string[]).includes(v);
 
 /**
- * `from`/`to` travel as plain `YYYY-MM-DD` strings (what `ReadOrdersDto` expects), but the shared
- * `DatePicker` (`@befroosh/ui`) speaks `Date`. Building the `Date` from a local-midnight string
- * (not `new Date(iso)`, which `Date` parses as UTC midnight) keeps the picker showing the exact
- * calendar day that is in the URL, regardless of the browser's UTC offset.
+ * The picker is `react-multi-date-picker`, the same one the three existing export drawers use
+ * (`app/(Console)/orders/components/excelExportOrders.drawer.tsx` and its `contacts`/`directs`
+ * siblings). It is NOT `packages/ui`'s `DatePicker`, and that is load-bearing, not taste:
+ * the `@/components/ui` alias resolves into `packages/ui`, whose `date-picker.tsx` imports
+ * `../../lib/dayjs-jalali`, and that module's BODY runs `dayjs.calendar('jalali')` -- a GLOBAL
+ * default-calendar mutation on the shared dayjs instance, not a per-instance one. Importing it
+ * anywhere in the dashboard silently switched every plain `dayjs()` in the session to Jalali:
+ * `?from=`/`?to=` went out as `1405-06-11` instead of `2026-09-02`, and `utils/jalali.ts`
+ * (which reads `d.year()/month()/date()` expecting Gregorian and feeds them to `toJalaali`)
+ * double-converted and rendered year 784 on the detail screen. Do not reintroduce that import.
+ *
+ * `from`/`to` therefore travel as plain GREGORIAN `YYYY-MM-DD` strings (what `ReadOrdersDto`
+ * expects), formatted from the Date's own local calendar fields rather than through dayjs, so no
+ * plugin can change what they mean. `OrdersListPage.test.tsx` pins both halves.
  */
-const dateFromIso = (iso?: string): Date | null => (iso ? new Date(`${iso}T00:00:00`) : null);
-const isoFromDate = (date?: Date | null): string => (date ? dayjs(date).format('YYYY-MM-DD') : '');
+export const dateFromIso = (iso?: string): Date | null =>
+  // Local midnight, not `new Date(iso)` (which `Date` parses as UTC midnight) -- keeps the picker
+  // showing the exact calendar day that is in the URL, regardless of the browser's UTC offset.
+  iso ? new Date(`${iso}T00:00:00`) : null;
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+export const isoFromDate = (date?: Date | null): string =>
+  date ? `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}` : '';
+
+/**
+ * The picker hands back a `DateObject` on the Persian calendar; `.toDate()` returns the plain
+ * Gregorian `Date` for that day, which `isoFromDate` then formats.
+ */
+const isoFromPicked = (picked: DateObject | DateObject[] | null): string =>
+  picked && !Array.isArray(picked) ? isoFromDate(picked.toDate()) : '';
+
+// Matches the height/border of the filter bar's other controls without pulling in `Input`, which
+// react-multi-date-picker cannot render as its own input element.
+const DATE_INPUT_CLASS =
+  'border-input bg-background text-foreground h-9 w-32 rounded-md border px-2 text-xs';
 
 /**
  * Filters live in the URL, not in `useState` (which is what `ProductListPage` does). Tapping an
@@ -181,8 +212,13 @@ export function OrdersListPage() {
         <div className="flex items-center gap-1">
           <span className="text-muted-foreground text-xs">{t('dateRange.from')}</span>
           <DatePicker
-            date={dateFromIso(filters.from)}
-            onChange={(date) => setParam('from', isoFromDate(date))}
+            value={dateFromIso(filters.from)}
+            onChange={(picked) => setParam('from', isoFromPicked(picked))}
+            calendar={persian}
+            locale={persian_fa}
+            calendarPosition="bottom-right"
+            inputClass={DATE_INPUT_CLASS}
+            placeholder={t('dateRange.from')}
           />
           {filters.from && (
             <Button
@@ -201,8 +237,13 @@ export function OrdersListPage() {
         <div className="flex items-center gap-1">
           <span className="text-muted-foreground text-xs">{t('dateRange.to')}</span>
           <DatePicker
-            date={dateFromIso(filters.to)}
-            onChange={(date) => setParam('to', isoFromDate(date))}
+            value={dateFromIso(filters.to)}
+            onChange={(picked) => setParam('to', isoFromPicked(picked))}
+            calendar={persian}
+            locale={persian_fa}
+            calendarPosition="bottom-right"
+            inputClass={DATE_INPUT_CLASS}
+            placeholder={t('dateRange.to')}
           />
           {filters.to && (
             <Button

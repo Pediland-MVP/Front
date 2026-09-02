@@ -159,4 +159,39 @@ describe('OrderDetail', () => {
     renderDetail({ ...base, lines: [{ ...base.lines[0], imageUrl: null }], receipts: [] }, null);
     expect(screen.queryAllByRole('img')).toHaveLength(0);
   });
+
+  /**
+   * Guards the C2 defect on the rendering side. `utils/jalali.ts` reads `d.year()/month()/date()`
+   * expecting GREGORIAN fields and hands them to `toJalaali()`. If anything in THIS component's
+   * module graph switches dayjs's default calendar to Jalali globally -- which importing
+   * `packages/ui`'s `DatePicker`, or its `@/components/ui` barrel, does -- those getters already
+   * return Jalali fields, the conversion runs twice, and the placed date renders as year 784.
+   *
+   * A literal expectation, not a computed one: 2026-09-02T10:00Z is 12:00 in `toJalaliDateTime`'s
+   * default Europe/Berlin, which is 1405/06/11 -- a plausible current-era Jalali year.
+   */
+  it('renders the placed date converted exactly once, not double-converted to year 784', () => {
+    renderDetail({ ...base, placedAt: '2026-09-02T10:00:00.000Z', receipts: [] }, null);
+    expect(screen.getByText('1405/06/11 12:00')).toBeInTheDocument();
+    expect(screen.queryByText(/^784\//)).not.toBeInTheDocument();
+  });
+
+  /**
+   * M1: `OrderDetail` renders a bordered strip whenever `actions` is truthy. `OrderDetailPage`
+   * passes `null` when there is nothing to put in it (see its own test) -- this pins the other
+   * half of the contract, that `null` really does mean no strip.
+   */
+  it('renders no action strip at all when handed no actions', () => {
+    renderDetail({ ...base, receipts: [] }, null);
+    expect(screen.queryByTestId('order-actions-bar')).not.toBeInTheDocument();
+  });
+
+  it('renders the action strip when handed something to put in it', () => {
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <OrderDetail order={base} cityName={null} actions={<button type="button">x</button>} />
+      </NextIntlClientProvider>,
+    );
+    expect(screen.getByTestId('order-actions-bar')).toBeInTheDocument();
+  });
 });

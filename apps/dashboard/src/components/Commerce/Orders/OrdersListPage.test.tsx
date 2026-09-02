@@ -23,8 +23,16 @@ vi.mock('@/hooks/useCommerceOrders', () => ({
   useCommerceOrders: (...args: unknown[]) => mockUseCommerceOrders(...args),
 }));
 
+import dayjs from 'dayjs';
+
 import messages from '@/messages/fa.json';
-import { filtersFromParams, DEFAULT_LIMIT, OrdersListPage } from './OrdersListPage';
+import {
+  filtersFromParams,
+  dateFromIso,
+  isoFromDate,
+  DEFAULT_LIMIT,
+  OrdersListPage,
+} from './OrdersListPage';
 
 const searchPlaceholder = messages.Commerce.Orders.searchPlaceholder;
 
@@ -156,5 +164,41 @@ describe('OrdersListPage error state', () => {
     expect(screen.getByText(messages.Commerce.Orders.loadError)).toBeInTheDocument();
     expect(screen.queryByText(messages.Commerce.Orders.empty.none)).not.toBeInTheDocument();
     expect(screen.queryByText(messages.Commerce.Orders.empty.noneHint)).not.toBeInTheDocument();
+  });
+});
+
+/**
+ * Regression guard for the defect this screen shipped: it imported `packages/ui`'s `DatePicker`,
+ * which transitively imports `packages/ui/src/lib/dayjs-jalali`, whose module BODY calls
+ * `dayjs.calendar('jalali')` -- a GLOBAL mutation of the shared dayjs default calendar. The old
+ * `isoFromDate` used plain `dayjs(...).format('YYYY-MM-DD')`, so `?from=`/`?to=` and the export
+ * payload went out as `1405-06-11` instead of `2026-09-02`.
+ *
+ * The direct import is gone (see `OrdersListPage.tsx`), but the mutation is NOT: the
+ * `@/components/ui` BARREL re-exports `./date-picker`, and `OrdersExportDrawer` -- which this
+ * screen renders -- imports from that barrel. The first `expect` below pins that, so the test
+ * suite states the real state of the world rather than a comfortable one, and so the rest of this
+ * block is a test of the fix under the hostile condition it actually runs in, not a clean room.
+ */
+describe('the date filter speaks Gregorian to the API', () => {
+  it('runs in a module graph where dayjs HAS been switched to Jalali globally', () => {
+    // Not the fix's job to undo -- `packages/ui`'s barrel owns it, and 24 dashboard files import
+    // that barrel. Asserted so a future contributor who fixes it upstream sees this go red and
+    // knows this whole block can be simplified.
+    expect(dayjs('2026-09-02T00:00:00').format('YYYY-MM-DD')).toBe('1405-06-11');
+  });
+
+  it('round-trips an ISO day back to the same Gregorian YYYY-MM-DD anyway', () => {
+    const picked = dateFromIso('2026-09-02');
+    expect(picked).not.toBeNull();
+    // A literal, not a computed expectation. This is the string `ReadOrdersDto` parses; the old
+    // dayjs-based helper produced '1405-06-11' here, which 400s or silently matches nothing.
+    expect(isoFromDate(picked)).toBe('2026-09-02');
+  });
+
+  it('formats an arbitrary Date from its own calendar fields, not through a dayjs plugin', () => {
+    expect(isoFromDate(new Date(2026, 0, 5))).toBe('2026-01-05');
+    expect(isoFromDate(null)).toBe('');
+    expect(isoFromDate(undefined)).toBe('');
   });
 });
