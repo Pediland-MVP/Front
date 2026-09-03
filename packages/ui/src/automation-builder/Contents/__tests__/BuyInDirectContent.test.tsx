@@ -75,6 +75,22 @@ function Wrapper({
 }
 
 describe('BuyInDirectContent', () => {
+  // Regression: the fetch used to omit `page`, and `ReadCommerceProductsDto` requires it
+  // (no `@IsOptional()`, no default). The route answered 400 "page must be a number
+  // conforming to the specified constraints", the component's `.catch` swallowed it, and
+  // the picker rendered permanently empty with no error shown. Asserted as a literal
+  // rather than against a constant so the constraint cannot drift silently.
+  it('sends `page` on the catalog fetch, which the backend requires', async () => {
+    const apiClient = makeApiClient();
+    render(<Wrapper initialPicks={[]} apiClient={apiClient} />);
+
+    await waitFor(() => {
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/commerce/products?page=1&limit=100&status=active',
+      );
+    });
+  });
+
   it('lists the products the merchant has already picked, in order', async () => {
     render(<Wrapper initialPicks={[{ productId: 'p-b' }, { productId: 'p-a' }]} />);
 

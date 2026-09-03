@@ -154,7 +154,11 @@ export const BuyInDirectContent = ({
     let cancelled = false;
 
     apiClient
-      .get('/commerce/products?limit=100&status=active')
+      // `page` is REQUIRED by `ReadCommerceProductsDto` -- it has no `@IsOptional()` and no
+      // default, so omitting it 400s with "page must be a number conforming to the specified
+      // constraints" and the `.catch` below silently leaves the picker empty. Every other
+      // caller of this route sends it (see `ProductListPage.tsx`).
+      .get('/commerce/products?page=1&limit=100&status=active')
       .then((res) => {
         if (cancelled) return;
         setCatalog((res.data?.items ?? []) as CommerceProductNamespace.Item[]);
