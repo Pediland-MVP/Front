@@ -217,11 +217,47 @@ eslint command above dropped from 4 problems to the 3 shown.
 
 ## Outstanding
 
-- `knowledge/knowledgeMap.doc.md` still needs a row for this doc. Skipped in this task
-  (Ruling 9, `progress.md`): the file carries another live session's uncommitted edits,
-  and staging it risked either committing their work or requiring index surgery to split
-  the changes apart — a class of mistake that has already happened once in this project.
-  Whoever owns that file's current edits should add the row when their work lands.
+- ~~`knowledge/knowledgeMap.doc.md` still needs a row for this doc.~~ **Done 2026-09-03.**
+  Deferred during the task itself (Ruling 9, `progress.md`) because the file carried
+  another live session's uncommitted edits. Resolved without touching their work: the
+  index was written from `HEAD` plus this row only (`git hash-object` +
+  `git update-index --cacheinfo`), leaving their edit unstaged in the working tree. The
+  same commit also repaired the `2026-08-31-buyInDirectAutomationContent.update.md` row,
+  which had only two cells — its file-path column was never written, so the description
+  had slid into it. **Note for whoever maintains that index:** 34 of the 107 files in
+  `knowledge/updates/` have no row at all. That backlog predates this phase and is not
+  this branch's to close.
+
+### `apps/admin` has the same Jalali timezone bug this phase fixed in the dashboard
+
+Not fixed here — different app, outside this branch's scope, and pre-existing. Recorded
+so it is not rediscovered from scratch.
+
+`apps/admin/src/lib/dayjs-jalali.ts` is a **byte-identical copy** of
+`packages/ui/src/lib/dayjs-jalali.ts`, module-body `dayjs.calendar('jalali')` and all. Two
+call sites then chain `.calendar()` *after* `.tz()`:
+
+- `apps/admin/src/lib/task-datetime.ts:39` — `dayjs(iso).tz('Asia/Tehran').calendar('jalali').format('YYYY/MM/DD HH:mm')`
+- `apps/admin/src/app/(main)/users/columns.tsx:34` — same chain, `format('YYYY/MM/DD')`
+
+jalaliday's `.clone()` drops the timezone binding, so `.calendar()` throws away what
+`.tz()` established and the value falls back to the **host** timezone. Confirmed by
+running admin's own installed `dayjs@1.11.19` + `jalaliday` against
+`2026-09-02T09:00:00.000Z` (12:30 in Tehran):
+
+| Host TZ | `.tz('Asia/Tehran').calendar('jalali')` renders | Correct |
+|---|---|---|
+| `Asia/Tehran` | `1405/06/11 12:30` | ✅ (only by luck — host already Tehran) |
+| `UTC` | `1405/06/11 09:00` | ❌ off by 3.5h |
+| `America/New_York` | `1405/06/11 05:00` | ❌ off by 7.5h |
+
+Dropping `.tz()` entirely changes nothing, which is the proof it never applied. The date
+part only shifts when the offset crosses midnight, so this hides well: staff browsing from
+Iran see correct times, and it surfaces on server-rendered output or a non-Tehran host.
+
+The fix used here is in `apps/dashboard/src/utils/jalali.ts` — format the absolute instant
+with `Intl.DateTimeFormat` and an explicit `timeZone`, never dayjs. It needs no change to
+`packages/ui`, which is why this phase touched zero files under `packages/`.
 - Retiring the legacy `/orders` screen is tracked as a cutover item in
   `before-prod-cutover.md` (outer repo), gated on the
   `CommerceOrderCoreData1786960000000` migration having run in production.
