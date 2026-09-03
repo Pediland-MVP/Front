@@ -107,6 +107,10 @@ export const ShippingMethodCard = ({
   const summary = useMemo(() => {
     if (!draft.isActive) return t('summaryInactive');
 
+    // Before the settlement checks: a pickup charges nothing whatever settlement it carries, and
+    // the buyer is told so on the order summary. Without this branch a pickup a merchant left on
+    // «پرداخت آنلاین» printed whatever stale rate the draft still held.
+    if (draft.kind === 'pickup') return t('summaryPickup');
     if (draft.settlement === 'freight_collect') return t('summaryFreightCollect');
     if (draft.settlement === 'cash_on_delivery') return t('summaryCashOnDelivery');
 
@@ -349,7 +353,9 @@ export const ShippingMethodCard = ({
               />
             </>
           ) : (
-            <p className="text-mut text-xs text-pretty">{t('noRateNote')}</p>
+            <p className="text-mut text-xs text-pretty">
+              {t(draft.kind === 'pickup' ? 'pickupRateNote' : 'noRateNote')}
+            </p>
           )}
         </div>
       )}

@@ -46,9 +46,18 @@ describe('shippingDraft — who owns the method', () => {
 
 describe('chargesShipping', () => {
   it('is true only for the prepaid mode', () => {
-    expect(chargesShipping({ settlement: 'prepaid' })).toBe(true);
-    expect(chargesShipping({ settlement: 'freight_collect' })).toBe(false);
-    expect(chargesShipping({ settlement: 'cash_on_delivery' })).toBe(false);
+    expect(chargesShipping({ kind: 'post_express', settlement: 'prepaid' })).toBe(true);
+    expect(chargesShipping({ kind: 'post_express', settlement: 'freight_collect' })).toBe(false);
+    expect(chargesShipping({ kind: 'post_express', settlement: 'cash_on_delivery' })).toBe(false);
+  });
+
+  it('is false for «تحویل حضوری» whatever settlement it carries', () => {
+    // In-person collection has no carrier, so nobody charges freight -- the rate field beside it is
+    // meaningless, and a merchant who set one before switching the kind must not bill a buyer who
+    // is driving over to collect. `ShippingService` enforces the identical rule server-side.
+    expect(chargesShipping({ kind: 'pickup', settlement: 'prepaid' })).toBe(false);
+    expect(chargesShipping({ kind: 'pickup', settlement: 'freight_collect' })).toBe(false);
+    expect(chargesShipping({ kind: 'pickup', settlement: 'cash_on_delivery' })).toBe(false);
   });
 });
 
@@ -117,6 +126,45 @@ describe('toPayload', () => {
 
   it('trims the title', () => {
     expect(toPayload({ ...toDraft(option()), title: '  پست  ' }).title).toBe('پست');
+  });
+});
+
+describe('toPayload — «تحویل حضوری»', () => {
+  it('zeroes a prepaid pickup that still holds a rate and a threshold', () => {
+    const draft = {
+      ...toDraft(option({ amount: 50_000, freeOverAmount: 200_000 })),
+      kind: 'pickup' as const,
+    };
+
+    expect(toPayload(draft)).toMatchObject({
+      kind: 'pickup',
+      // The settlement is sent UNCHANGED: the kind is what makes it free, and rewriting the
+      // merchant's payment choice behind their back would be a different edit than they made.
+      settlement: 'prepaid',
+      amount: 0,
+      freeOverAmount: null,
+    });
+  });
+
+  it('drops per-destination exceptions on a pickup', () => {
+    const draft = {
+      ...toDraft(
+        option({
+          overrides: [
+            {
+              id: 'ov-1',
+              shippingOptionId: 'opt-1',
+              cityId: 5,
+              provinceId: null,
+              amount: 90_000,
+            },
+          ],
+        }),
+      ),
+      kind: 'pickup' as const,
+    };
+
+    expect(toOverridesPayload(draft)).toEqual({ overrides: [] });
   });
 });
 

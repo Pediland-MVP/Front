@@ -47,9 +47,15 @@ export interface ShippingOptionDraft {
  * Whether the seller is the one charging for delivery. Under freight collect the carrier bills the
  * buyer, and under cash on delivery the carrier collects at the door and keeps the freight — so in
  * both, a rate, a threshold and per-destination exceptions are all meaningless.
+ *
+ * `pickup` («تحویل حضوری») is the third case, and it is a KIND rather than a settlement because
+ * the two answer different questions: settlement is who pays the carrier and when, and in-person
+ * collection has no carrier at all. It charges nothing whatever settlement is left on it — the
+ * server enforces the same rule in `ShippingService`, and this mirrors it so the screen never
+ * shows a price the buyer will not be asked for.
  */
-export const chargesShipping = (draft: Pick<ShippingOptionDraft, 'settlement'>) =>
-  draft.settlement === 'prepaid';
+export const chargesShipping = (draft: Pick<ShippingOptionDraft, 'kind' | 'settlement'>) =>
+  draft.kind !== 'pickup' && draft.settlement === 'prepaid';
 
 /** Server row → editable draft. */
 export function toDraft(option: CommerceShippingOption): ShippingOptionDraft {

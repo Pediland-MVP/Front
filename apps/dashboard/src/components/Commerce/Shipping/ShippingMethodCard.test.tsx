@@ -66,6 +66,28 @@ describe('ShippingMethodCard — closed until asked', () => {
     expect(summary).toHaveTextContent('۱٬۵۰۰٬۰۰۰');
   });
 
+  it('summarises «تحویل حضوری» as free, even while the draft still holds a rate', () => {
+    // A merchant can pick the pickup kind on a method that was prepaid with a real price. The rate
+    // only becomes 0 when it is SAVED (`toPayload`), so the closed card would otherwise advertise a
+    // price the buyer is never charged.
+    renderCard(
+      baseDraft({ isActive: true, kind: 'pickup', amount: 50_000, freeOverAmount: 200_000 }),
+    );
+
+    const summary = screen.getByTestId('method-summary');
+    expect(summary).toHaveTextContent(copy.summaryPickup);
+    expect(summary).not.toHaveTextContent('۵۰٬۰۰۰');
+  });
+
+  it('hides the rate, threshold and city exceptions for a pickup, and says why', () => {
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup', amount: 50_000 }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    // Its own note, not the carrier-collects one -- there is no مأمور پست in a pickup.
+    expect(screen.getByText(copy.pickupRateNote)).toBeInTheDocument();
+    expect(screen.queryByText(copy.noRateNote)).not.toBeInTheDocument();
+  });
+
   it('opens on the pencil and closes again on the second click', () => {
     renderCard(baseDraft());
 
