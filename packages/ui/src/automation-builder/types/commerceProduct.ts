@@ -9,6 +9,11 @@ export namespace CommerceProductNamespace {
     id: string;
     title: string;
     coverMediaUrl: string | null;
+    // Variant products span a range, so the list route returns both bounds rather than one
+    // `price` like the legacy `ProductNamespace.Product` the فروش picker reads. Either can be
+    // null (a product with no priced variant yet), so the picker must not assume a number.
+    minPrice: number | null;
+    maxPrice: number | null;
   }
 
   export interface GET {

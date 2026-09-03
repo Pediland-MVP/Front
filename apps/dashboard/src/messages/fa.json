@@ -571,13 +571,23 @@
         }
       },
       "BuyInDirect": {
-        "pickedTitle": "محصولات انتخاب‌شده",
-        "emptyHint": "حداقل یک محصول انتخاب کن",
-        "pickerTitle": "افزودن محصول",
-        "searchPlaceholder": "جستجوی محصول...",
-        "pickerEmpty": "محصولی برای نمایش موجود نیست",
+        "select": "انتخاب",
+        "change": "تـعـویـض",
+        "cover_image_alt": "تصویر کاور",
+        "limit": "حداکثر تعداد آیتم قابل انتخاب در هر پیام ۱۰ عدد است.",
+        "selection_required": "حداقل یک کالا انتخاب کنید.",
         "remove": "حذف",
-        "reorder": "جابجایی"
+        "reorder": "جابجایی",
+        "Dialog": {
+          "select_product": "انتخاب کالا",
+          "select_product_description": "کالاهایی که می‌خواهید در دایرکت فروخته شوند را انتخاب کنید.",
+          "search_placeholder": "جستجوی کالا...",
+          "empty": "کالایی برای نمایش موجود نیست",
+          "no_more": "کالای دیگری موجود نیست.",
+          "price": "{price} تومان",
+          "price_from": "از {price} تومان",
+          "close": "بستن"
+        }
       },
       "Button": {
         "you_can_use_vars": "با وارد کردن <name>#نام</name> اسم کاربر در پیام ثبت می شود.",

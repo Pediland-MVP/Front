@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import {
@@ -26,8 +26,16 @@ vi.mock('next-intl', () => ({
 }));
 
 const PRODUCTS = [
-  { id: 'p-a', title: 'کفش نایک', coverMediaUrl: 'https://cdn/a.jpg' },
-  { id: 'p-b', title: 'کوله پشتی', coverMediaUrl: null },
+  // `p-b` deliberately has no cover and no price: both are nullable on a commerce product,
+  // and both would crash or mis-render if the tile/dialog assumed they exist.
+  {
+    id: 'p-a',
+    title: 'کفش نایک',
+    coverMediaUrl: 'https://cdn/a.jpg',
+    minPrice: 240000,
+    maxPrice: 240000,
+  },
+  { id: 'p-b', title: 'کوله پشتی', coverMediaUrl: null, minPrice: null, maxPrice: null },
 ];
 
 function makeApiClient(hasCardToCard: boolean = true): AutomationBuilderApiClient {
@@ -74,6 +82,13 @@ function Wrapper({
   );
 }
 
+/** The picker is a modal now: every add/replace interaction goes through it. */
+async function openPicker(trigger: HTMLElement) {
+  fireEvent.click(trigger);
+  // The dialog fetches on open; wait for a real product card before acting on it.
+  return await screen.findByRole('button', { name: 'کفش نایک' });
+}
+
 describe('BuyInDirectContent', () => {
   // Regression: the fetch used to omit `page`, and `ReadCommerceProductsDto` requires it
   // (no `@IsOptional()`, no default). The route answered 400 "page must be a number
@@ -91,51 +106,107 @@ describe('BuyInDirectContent', () => {
     });
   });
 
-  it('lists the products the merchant has already picked, in order', async () => {
-    render(<Wrapper initialPicks={[{ productId: 'p-b' }, { productId: 'p-a' }]} />);
+  it('sends `page`, `limit` and `status` on the dialog fetch too', async () => {
+    const apiClient = makeApiClient();
+    render(<Wrapper initialPicks={[]} apiClient={apiClient} />);
 
-    const rows = await screen.findAllByTestId('picked-product');
-    expect(rows).toHaveLength(2);
-    expect(rows[0].textContent).toContain('کوله پشتی');
-    expect(rows[1].textContent).toContain('کفش نایک');
+    await openPicker(await screen.findByRole('button', { name: 'select' }));
+
+    expect(apiClient.get).toHaveBeenCalledWith('/commerce/products?page=1&limit=50&status=active');
   });
 
-  it('adds a product when it is picked', async () => {
+  it('renders each picked product as a tile, in array order', async () => {
+    render(<Wrapper initialPicks={[{ productId: 'p-b' }, { productId: 'p-a' }]} />);
+
+    const tiles = await screen.findAllByTestId('picked-product');
+    expect(tiles).toHaveLength(2);
+    expect(tiles.map((tile) => tile.dataset.productid)).toEqual(['p-b', 'p-a']);
+  });
+
+  it('adds a product through the picker dialog', async () => {
     render(<Wrapper initialPicks={[]} />);
 
-    const pickButton = await screen.findByRole('button', { name: /کفش نایک/ });
-    fireEvent.click(pickButton);
+    expect(screen.queryAllByTestId('picked-product')).toHaveLength(0);
+    fireEvent.click(await openPicker(await screen.findByRole('button', { name: 'select' })));
 
-    const rows = await screen.findAllByTestId('picked-product');
-    expect(rows).toHaveLength(1);
-    expect(rows[0].textContent).toContain('کفش نایک');
+    const tiles = await screen.findAllByTestId('picked-product');
+    expect(tiles).toHaveLength(1);
+    expect(tiles[0].dataset.productid).toBe('p-a');
+  });
+
+  // The tile's hover action REPLACES in place rather than appending -- the reason the
+  // dialog is driven by an `editingIndex` instead of always appending.
+  it('replaces a product in place via the change action, keeping the tile count', async () => {
+    render(<Wrapper initialPicks={[{ productId: 'p-a' }]} />);
+
+    await screen.findAllByTestId('picked-product');
+    fireEvent.click(screen.getByRole('button', { name: 'change' }));
+
+    fireEvent.click(await screen.findByRole('button', { name: 'کوله پشتی' }));
+
+    await waitFor(() => {
+      const tiles = screen.getAllByTestId('picked-product');
+      expect(tiles).toHaveLength(1);
+      expect(tiles[0].dataset.productid).toBe('p-b');
+    });
+  });
+
+  // While replacing tile N, tile N's OWN product must stay selectable -- it is the one
+  // being swapped out. Only the other picks are greyed out.
+  it('keeps the tile being replaced selectable while greying out the other picks', async () => {
+    render(<Wrapper initialPicks={[{ productId: 'p-a' }, { productId: 'p-b' }]} />);
+
+    const tiles = await screen.findAllByTestId('picked-product');
+    fireEvent.click(within(tiles[0]).getByRole('button', { name: 'change' }));
+
+    expect(await screen.findByRole('button', { name: 'کفش نایک' })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: 'کوله پشتی' })).toBeDisabled();
   });
 
   it('removes a picked product', async () => {
     render(<Wrapper initialPicks={[{ productId: 'p-a' }]} />);
 
     await screen.findAllByTestId('picked-product');
-    const removeButton = screen.getByRole('button', { name: 'remove' });
-    fireEvent.click(removeButton);
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
 
     await waitFor(() => {
       expect(screen.queryAllByTestId('picked-product')).toHaveLength(0);
     });
   });
 
-  it('cannot pick the same product twice', async () => {
+  it('cannot pick a product that is already picked', async () => {
     render(<Wrapper initialPicks={[{ productId: 'p-a' }]} />);
 
-    const pickButton = await screen.findByRole('button', { name: /کفش نایک/ });
-    expect(pickButton).toBeDisabled();
+    await screen.findAllByTestId('picked-product');
+    const card = await openPicker(screen.getByRole('button', { name: 'select' }));
+    expect(card).toBeDisabled();
   });
 
-  it('shows the empty-state hint when nothing is picked', async () => {
-    render(<Wrapper initialPicks={[]} />);
+  // Matches ProductContentComp exactly: the add tile disappears at the cap and the limit
+  // message takes over. 10 is Instagram's carousel maximum.
+  it('hides the add tile and shows the limit message at ten products', async () => {
+    const tenPicks = Array.from({ length: 10 }, (_, i) => ({ productId: `p-${i}` }));
+    render(<Wrapper initialPicks={tenPicks} />);
 
-    // Stubbed `useTranslations` echoes the key -- `t('emptyHint')` resolves to
-    // 'حداقل یک محصول انتخاب کن' in the real `fa.json` (Automations.Contents.BuyInDirect).
-    expect(await screen.findByText('emptyHint')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('picked-product')).toHaveLength(10);
+    expect(screen.queryByTestId('add-product-tile')).not.toBeInTheDocument();
+    expect(screen.getByText('limit')).toBeInTheDocument();
+  });
+
+  it('shows the add tile and no limit message below the cap', async () => {
+    render(<Wrapper initialPicks={[{ productId: 'p-a' }]} />);
+
+    expect(await screen.findByTestId('add-product-tile')).toBeInTheDocument();
+    expect(screen.queryByText('limit')).not.toBeInTheDocument();
+  });
+
+  // A product with no cover must not reach `next/image` with a null src -- it throws.
+  it('renders a product with no cover image without crashing', async () => {
+    render(<Wrapper initialPicks={[{ productId: 'p-b' }]} />);
+
+    const tiles = await screen.findAllByTestId('picked-product');
+    expect(tiles).toHaveLength(1);
+    expect(within(tiles[0]).queryByRole('img')).not.toBeInTheDocument();
   });
 
   it('warns when the shop has no card-to-card configured, reusing the ProductListPage copy', async () => {
@@ -150,19 +221,31 @@ describe('BuyInDirectContent', () => {
   it('does not warn when the shop has card-to-card configured', async () => {
     render(<Wrapper initialPicks={[]} apiClient={makeApiClient(true)} />);
 
-    await screen.findAllByRole('button', { name: /کفش نایک|کوله پشتی/ });
+    await screen.findByRole('button', { name: 'select' });
     expect(screen.queryByText('title')).not.toBeInTheDocument();
   });
 
-  it('reorders the picked list on drag end, persisting array order (which becomes `position` on submit)', async () => {
+  // The drag handle is meaningless with one tile, so it only renders from two up.
+  it('shows the drag handle only when more than one product is picked', async () => {
+    const { unmount } = render(<Wrapper initialPicks={[{ productId: 'p-a' }]} />);
+    await screen.findAllByTestId('picked-product');
+    expect(screen.queryByRole('button', { name: 'reorder' })).not.toBeInTheDocument();
+    unmount();
+
+    render(<Wrapper initialPicks={[{ productId: 'p-a' }, { productId: 'p-b' }]} />);
+    await screen.findAllByTestId('picked-product');
+    expect(screen.getAllByRole('button', { name: 'reorder' })).toHaveLength(2);
+  });
+
+  it('reorders the picked tiles on drag end, persisting array order (which becomes `position` on submit)', async () => {
     render(<Wrapper initialPicks={[{ productId: 'p-a' }, { productId: 'p-b' }]} />);
 
-    const rowsBefore = await screen.findAllByTestId('picked-product');
-    expect(rowsBefore[0].textContent).toContain('کفش نایک');
+    const tilesBefore = await screen.findAllByTestId('picked-product');
+    expect(tilesBefore[0].dataset.productid).toBe('p-a');
 
     dragEndRef.current?.({
-      active: { id: rowsBefore[1].dataset.xid },
-      over: { id: rowsBefore[0].dataset.xid },
+      active: { id: tilesBefore[1].dataset.xid },
+      over: { id: tilesBefore[0].dataset.xid },
     });
 
     // The mocked DndContext doesn't actually re-render via a synthetic drag gesture the way
@@ -170,8 +253,8 @@ describe('BuyInDirectContent', () => {
     // ids above don't resolve (e.g. `_xid` isn't exposed as a data attribute), this assertion
     // intentionally documents that gap rather than silently passing on an untested behavior.
     await waitFor(() => {
-      const rowsAfter = screen.getAllByTestId('picked-product');
-      expect(rowsAfter[0].textContent).toContain('کوله پشتی');
+      const tilesAfter = screen.getAllByTestId('picked-product');
+      expect(tilesAfter[0].dataset.productid).toBe('p-b');
     });
   });
 });

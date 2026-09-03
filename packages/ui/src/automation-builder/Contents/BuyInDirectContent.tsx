@@ -1,7 +1,7 @@
 // packages/ui/src/automation-builder/Contents/BuyInDirectContent.tsx
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import {
@@ -14,16 +14,10 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import {
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
-import { ArrowsOutCardinalIcon } from '@phosphor-icons/react/dist/ssr/ArrowsOutCardinal';
-import { ImageIcon } from '@phosphor-icons/react/dist/ssr/Image';
-import { TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
 
 import { Button } from '@/components/ui/button';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
@@ -32,6 +26,8 @@ import { AutomationContentModeEnum } from '../constants/automationContent.enum';
 import type { AutomationFormType } from '../schemas/automationForm';
 import type { AutomationBuilderApiClient } from '../types/apiClient';
 import type { CommerceProductNamespace } from '../types/commerceProduct';
+import { BuyInDirectContentItem } from './BuyInDirectContentItem';
+import { BuyInDirectContentItemDialog } from './BuyInDirectContentItemDialog';
 
 type BuyInDirectContentProps = {
   index: number;
@@ -41,79 +37,35 @@ type BuyInDirectContentProps = {
 
 type BuyInDirectPick = { productId: string; _xid: string };
 
-/**
- * One picked row: draggable (reorder persists as array order, which the backend reads as
- * `position` on save — see `BuyInDirectProductSchema`) with a remove action. Mirrors
- * `ProductContentItem.tsx`'s `useSortable` usage in this same folder — same dnd-kit APIs,
- * same idiom, just a single-column list instead of a grid.
- */
-function PickedProductRow({
-  id,
-  productId,
-  product,
-  onRemove,
-  t,
-}: {
-  id: string;
-  productId: string;
-  product: CommerceProductNamespace.Item | undefined;
-  onRemove: () => void;
-  t: (key: string) => string;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-  const style = { transform: CSS.Transform.toString(transform), transition };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      data-testid="picked-product"
-      data-xid={id}
-      className="border-wline flex items-center gap-2 rounded-lg border p-2"
-    >
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        className="cursor-move touch-none text-gray-400 hover:text-gray-600"
-        aria-label={t('reorder')}
-      >
-        <ArrowsOutCardinalIcon size={16} />
-      </button>
-
-      <div className="relative size-10 shrink-0 overflow-hidden rounded bg-gray-100">
-        {product?.coverMediaUrl ? (
-          <img
-            src={product.coverMediaUrl}
-            alt={product.title}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <ImageIcon className="m-auto h-full text-gray-300" size={18} />
-        )}
-      </div>
-
-      <div className="flex-1 truncate text-sm font-medium">{product?.title ?? productId}</div>
-
-      <Button type="button" variant="ghost" size="icon" onClick={onRemove} aria-label={t('remove')}>
-        <TrashSimpleIcon className="text-destructive" size={16} />
-      </Button>
-    </div>
-  );
-}
+/** Instagram's carousel cap, matching `ProductContentComp`'s own limit of 10. */
+const MAX_PRODUCTS = 10;
+/** Seeds the id→product map used to paint the tiles; the dialog pages separately. */
+const CATALOG_PAGE_SIZE = 100;
 
 /**
- * Editor for the BUY_IN_DIRECT content type (Task 12): the merchant picks which commerce
- * products the Instagram-DM shopping flow shows, in the order they should appear. Follows
- * the same `{ mode, index, apiClient }` + `useFieldArray` convention every other
- * content-type editor in this folder uses (`ProductContentComp` is the closest sibling) —
- * NOT a controlled `value`/`onChange` leaf — so it reads/writes
+ * Editor for the BUY_IN_DIRECT content type: the merchant picks which commerce products
+ * the Instagram-DM shopping flow shows, in the order they should appear. Follows the same
+ * `{ mode, index, apiClient }` + `useFieldArray` convention every other content-type editor
+ * in this folder uses — NOT a controlled `value`/`onChange` leaf — so it reads and writes
  * `contents.<index>.buyInDirectProducts` (or `reminders.<index>...`) directly against the
  * shared `react-hook-form` instance `AutomationBuilder` owns.
  *
- * Data shape note: form state already matches the backend DTO exactly
- * (`{ productId: string }[]`, Task 5) — unlike the legacy PRODUCT type, no
- * `products` -> `productIds` remap is needed anywhere before submit.
+ * The layout is deliberately identical to the فروش content type (`ProductContentComp`):
+ * a square-tile grid, a modal picker behind an «انتخاب» tile, hover-to-change, drag to
+ * reorder, and the same cap of ten.
+ *
+ * ONE deliberate implementation difference from `ProductContentComp`. That component keeps
+ * a real empty `{}` row in the field array as its add-target and relies on the
+ * `products` → `productIds` remap to drop it before submit. This content type has no such
+ * remap — form state IS the backend DTO (`{ productId: string }[]`, Task 5), so an empty
+ * placeholder row would be POSTed verbatim and rejected. The add tile is therefore a
+ * virtual grid cell that is not a field-array entry, and no row exists until a real product
+ * is chosen. Same design, no phantom rows.
+ *
+ * Data shape note: the tiles need `title`/`coverMediaUrl`, which form state does not carry.
+ * They are resolved through `productById`, seeded from one catalog fetch and then augmented
+ * by whatever the dialog returns — so a product picked from beyond the first
+ * `CATALOG_PAGE_SIZE` still paints correctly.
  */
 export const BuyInDirectContent = ({
   index: contentIndex,
@@ -135,7 +87,7 @@ export const BuyInDirectContent = ({
   // `{ productId }` row (its default `keyName`) — same reason `ProductContentComp` uses it,
   // just defensive here too: nothing should ever end up in the submitted payload besides
   // the one field `BuyInDirectProductDto` declares.
-  const { fields, append, remove, move } = useFieldArray({
+  const { fields, append, remove, move, update } = useFieldArray({
     control,
     name: fieldPath as never,
     keyName: '_xid',
@@ -143,28 +95,35 @@ export const BuyInDirectContent = ({
   const pickedFields = fields as unknown as BuyInDirectPick[];
 
   const [catalog, setCatalog] = useState<CommerceProductNamespace.Item[]>([]);
+  // Products the dialog handed back that the seed fetch did not include. Kept separate so a
+  // later catalog refresh cannot drop a tile's image out from under it.
+  const [extraProducts, setExtraProducts] = useState<CommerceProductNamespace.Item[]>([]);
   // Starts `true` (not gating the picker) until the check resolves, then only flips to
   // `false` on a confirmed "no card-to-card" response — a slow/failed check must never
   // block product selection, only inform it. Mirrors `00b3f887`/`b78f6ab4`'s
   // `!!cardToCardData` gate on `ProductListPage.tsx`.
   const [hasCardToCard, setHasCardToCard] = useState(true);
-  const [search, setSearch] = useState('');
+
+  // `editingIndex === null` means the dialog is adding a new tile; a number means it is
+  // replacing that tile. One dialog for the whole grid rather than one per tile.
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
+    // `page` is REQUIRED by `ReadCommerceProductsDto` — it has no `@IsOptional()` and no
+    // default, so omitting it 400s with "page must be a number conforming to the specified
+    // constraints" and the `.catch` below silently leaves the picker empty. Every other
+    // caller of this route sends it (see `ProductListPage.tsx`).
     apiClient
-      // `page` is REQUIRED by `ReadCommerceProductsDto` -- it has no `@IsOptional()` and no
-      // default, so omitting it 400s with "page must be a number conforming to the specified
-      // constraints" and the `.catch` below silently leaves the picker empty. Every other
-      // caller of this route sends it (see `ProductListPage.tsx`).
-      .get('/commerce/products?page=1&limit=100&status=active')
+      .get(`/commerce/products?page=1&limit=${CATALOG_PAGE_SIZE}&status=active`)
       .then((res) => {
         if (cancelled) return;
         setCatalog((res.data?.items ?? []) as CommerceProductNamespace.Item[]);
       })
       .catch(() => {
-        // Keep the picker empty on failure -- mirrors ProductContentItemDialog's swallow.
+        // Keep the grid unresolved on failure -- mirrors ProductContentItemDialog's swallow.
       });
 
     apiClient
@@ -181,12 +140,11 @@ export const BuyInDirectContent = ({
     };
   }, [apiClient]);
 
-  const productById = useMemo(() => new Map(catalog.map((p) => [p.id, p])), [catalog]);
+  const productById = useMemo(
+    () => new Map([...catalog, ...extraProducts].map((p) => [p.id, p])),
+    [catalog, extraProducts],
+  );
   const pickedIds = useMemo(() => new Set(pickedFields.map((f) => f.productId)), [pickedFields]);
-  const filteredCatalog = useMemo(() => {
-    const query = search.trim();
-    return query ? catalog.filter((p) => p.title.includes(query)) : catalog;
-  }, [catalog, search]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -201,11 +159,39 @@ export const BuyInDirectContent = ({
     if (oldIndex !== -1 && newIndex !== -1) move(oldIndex, newIndex);
   };
 
+  const openPicker = (index: number | null) => {
+    setEditingIndex(index);
+    setIsPickerOpen(true);
+  };
+
+  const handleSelect = useCallback(
+    (product: CommerceProductNamespace.Item) => {
+      setExtraProducts((prev) =>
+        prev.some((p) => p.id === product.id) ? prev : [...prev, product],
+      );
+      if (editingIndex === null) {
+        append({ productId: product.id } as never);
+      } else {
+        update(editingIndex, { productId: product.id } as never);
+      }
+    },
+    [append, update, editingIndex],
+  );
+
   const fieldError = (errors as Record<string, any>)?.[arrayName]?.[contentIndex]
     ?.buyInDirectProducts;
 
+  // When replacing a tile, that tile's own product must stay selectable-looking rather than
+  // greyed out as "already picked" — it is the one being replaced.
+  const pickedIdsForDialog = useMemo(() => {
+    if (editingIndex === null) return pickedIds;
+    const next = new Set(pickedIds);
+    next.delete(pickedFields[editingIndex]?.productId);
+    return next;
+  }, [pickedIds, pickedFields, editingIndex]);
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col space-y-3">
       {!hasCardToCard && (
         <div className="border-wline bg-wtint text-wtext rounded-lg border p-3 text-sm">
           <p className="font-bold">{tNoCard('title')}</p>
@@ -213,84 +199,49 @@ export const BuyInDirectContent = ({
         </div>
       )}
 
-      <div>
-        <p className="mb-2 text-sm font-semibold">{t('pickedTitle')}</p>
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-3">
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={pickedFields.map((f) => f._xid)} strategy={rectSortingStrategy}>
+            {pickedFields.map((field, index) => (
+              <BuyInDirectContentItem
+                key={field._xid}
+                id={field._xid}
+                productId={field.productId}
+                product={productById.get(field.productId)}
+                showDragHandle={pickedFields.length > 1}
+                onRemove={() => remove(index)}
+                onChange={() => openPicker(index)}
+                t={t}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
 
-        {pickedFields.length === 0 ? (
-          <p className="text-muted-foreground text-sm">{t('emptyHint')}</p>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={pickedFields.map((f) => f._xid)}
-              strategy={verticalListSortingStrategy}
+        {pickedFields.length < MAX_PRODUCTS && (
+          <div className="relative aspect-square" data-testid="add-product-tile">
+            <Button
+              className="flex aspect-square h-full w-full items-center justify-center bg-gray-200 p-0 hover:bg-gray-300/90 hover:no-underline"
+              type="button"
+              variant="link"
+              onClick={() => openPicker(null)}
             >
-              <div className="flex flex-col gap-2">
-                {pickedFields.map((field, idx) => (
-                  <PickedProductRow
-                    key={field._xid}
-                    id={field._xid}
-                    productId={field.productId}
-                    product={productById.get(field.productId)}
-                    onRemove={() => remove(idx)}
-                    t={t}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
-
-        {fieldError && <ErrorMessage>{t('emptyHint')}</ErrorMessage>}
-      </div>
-
-      <div>
-        <p className="mb-2 text-sm font-semibold">{t('pickerTitle')}</p>
-
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t('searchPlaceholder')}
-          className="border-wline mb-2 w-full rounded-md border px-3 py-1.5 text-sm"
-        />
-
-        {filteredCatalog.length === 0 ? (
-          <p className="text-muted-foreground text-sm">{t('pickerEmpty')}</p>
-        ) : (
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-            {filteredCatalog.map((product) => {
-              const isPicked = pickedIds.has(product.id);
-              return (
-                <Button
-                  key={product.id}
-                  type="button"
-                  variant="outline"
-                  disabled={isPicked}
-                  onClick={() => append({ productId: product.id })}
-                  className="h-auto justify-start gap-2 p-2 text-start font-normal"
-                >
-                  <div className="relative size-8 shrink-0 overflow-hidden rounded bg-gray-100">
-                    {product.coverMediaUrl ? (
-                      <img
-                        src={product.coverMediaUrl}
-                        alt={product.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <ImageIcon className="m-auto h-full text-gray-300" size={16} />
-                    )}
-                  </div>
-                  <span className="truncate">{product.title}</span>
-                </Button>
-              );
-            })}
+              {t('select')}
+            </Button>
           </div>
         )}
       </div>
+
+      {pickedFields.length === MAX_PRODUCTS && <ErrorMessage>{t('limit')}</ErrorMessage>}
+
+      {fieldError && <ErrorMessage>{t('selection_required')}</ErrorMessage>}
+
+      <BuyInDirectContentItemDialog
+        isOpen={isPickerOpen}
+        onOpenChange={setIsPickerOpen}
+        pickedIds={pickedIdsForDialog}
+        onSelect={handleSelect}
+        apiClient={apiClient}
+      />
     </div>
   );
 };
