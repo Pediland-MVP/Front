@@ -353,9 +353,38 @@ export const ShippingMethodCard = ({
               />
             </>
           ) : (
-            <p className="text-mut text-xs text-pretty">
-              {t(draft.kind === 'pickup' ? 'pickupRateNote' : 'noRateNote')}
-            </p>
+            <div className="flex flex-col gap-3">
+              <p className="text-mut text-xs text-pretty">
+                {t(draft.kind === 'pickup' ? 'pickupRateNote' : 'noRateNote')}
+              </p>
+
+              {/*
+                The one field a pickup needs and no other method has. A textarea, not an input:
+                merchants write the street, a landmark, opening hours and a phone number into it,
+                and a single line hides all but the first of those.
+              */}
+              {draft.kind === 'pickup' && (
+                <div>
+                  <label
+                    htmlFor={`pickup-${draft.key}`}
+                    className="text-mut mb-1.5 block text-xs font-bold"
+                  >
+                    {t('pickupAddressLabel')}
+                  </label>
+                  <textarea
+                    id={`pickup-${draft.key}`}
+                    rows={3}
+                    maxLength={500}
+                    disabled={!canEdit}
+                    value={draft.pickupAddress}
+                    placeholder={t('pickupAddressPlaceholder')}
+                    onChange={(e) => onChange({ pickupAddress: e.target.value })}
+                    className={cn(editorInput, 'resize-y')}
+                  />
+                  <p className="text-mut mt-1.5 text-xs text-pretty">{t('pickupAddressHint')}</p>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}

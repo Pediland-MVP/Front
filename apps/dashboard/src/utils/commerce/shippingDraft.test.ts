@@ -19,6 +19,7 @@ const option = (overrides: Partial<CommerceShippingOption> = {}): CommerceShippi
   settlement: 'prepaid',
   amount: 45000,
   freeOverAmount: null,
+  pickupAddress: null,
   sortOrder: 0,
   isSystem: false,
   isActive: true,
@@ -144,6 +145,26 @@ describe('toPayload — «تحویل حضوری»', () => {
       amount: 0,
       freeOverAmount: null,
     });
+  });
+
+  it('sends the collection address on a pickup, trimmed', () => {
+    const draft = { ...toDraft(option()), kind: 'pickup' as const, pickupAddress: '  ولیعصر  ' };
+
+    expect(toPayload(draft)).toMatchObject({ kind: 'pickup', pickupAddress: 'ولیعصر' });
+  });
+
+  it('sends null for a blank address, never an empty string', () => {
+    // `''` satisfies the column while reading as "an address exists" downstream -- which is how
+    // the DM would print «محل تحویل: » with nothing after it.
+    const draft = { ...toDraft(option()), kind: 'pickup' as const, pickupAddress: '   ' };
+
+    expect(toPayload(draft).pickupAddress).toBeNull();
+  });
+
+  it('does not send an address for a method that is not a pickup', () => {
+    const draft = { ...toDraft(option()), kind: 'courier' as const, pickupAddress: 'ولیعصر' };
+
+    expect(toPayload(draft).pickupAddress).toBeNull();
   });
 
   it('drops per-destination exceptions on a pickup', () => {

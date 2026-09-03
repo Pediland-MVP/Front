@@ -51,6 +51,9 @@ export interface CommerceShippingOption {
   settlement: CommerceShippingSettlement;
   amount: number;
   freeOverAmount: number | null;
+  /** Where the buyer collects, for a `pickup` method. `null` on every other kind, and on a pickup
+   *  whose address the merchant has not typed yet. */
+  pickupAddress: string | null;
   sortOrder: number;
   isActive: boolean;
   /**
@@ -71,6 +74,7 @@ export interface CreateShippingOptionPayload {
   settlement: CommerceShippingSettlement;
   amount?: number;
   freeOverAmount?: number | null;
+  pickupAddress?: string | null;
   sortOrder?: number;
   isActive?: boolean;
 }

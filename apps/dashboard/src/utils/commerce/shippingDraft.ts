@@ -37,6 +37,9 @@ export interface ShippingOptionDraft {
   settlement: CommerceShippingSettlement;
   amount: number;
   freeOverAmount: number | null;
+  /** Only meaningful on a `pickup`. Kept on the draft for every kind so switching the kind back
+   *  and forth does not lose what the merchant typed. */
+  pickupAddress: string;
   sortOrder: number;
   /** Seeded by the platform: the merchant may edit it, but the API refuses to delete it. */
   isSystem: boolean;
@@ -68,6 +71,9 @@ export function toDraft(option: CommerceShippingOption): ShippingOptionDraft {
     settlement: option.settlement,
     amount: option.amount,
     freeOverAmount: option.freeOverAmount,
+    // `''` rather than `null` on the draft: it is bound to a text input, and React would treat a
+    // null value as uncontrolled.
+    pickupAddress: option.pickupAddress ?? '',
     sortOrder: option.sortOrder,
     isSystem: option.isSystem,
     overrides: (option.overrides ?? []).map((o) => ({
@@ -93,6 +99,7 @@ export function newOptionDraft(title: string, sortOrder: number): ShippingOption
     settlement: 'prepaid',
     amount: 0,
     freeOverAmount: null,
+    pickupAddress: '',
     sortOrder,
     // A method the merchant is adding is theirs, so it stays deletable. The server hard-codes the
     // same thing on create -- this is never sent.
@@ -110,6 +117,7 @@ export function newOptionDraft(title: string, sortOrder: number): ShippingOption
  */
 export function toPayload(draft: ShippingOptionDraft): CreateShippingOptionPayload {
   const charges = chargesShipping(draft);
+  const address = draft.pickupAddress.trim();
 
   return {
     kind: draft.kind,
@@ -117,6 +125,10 @@ export function toPayload(draft: ShippingOptionDraft): CreateShippingOptionPaylo
     settlement: draft.settlement,
     amount: charges ? draft.amount : 0,
     freeOverAmount: charges ? draft.freeOverAmount : null,
+    // Sent for a pickup only, and as `null` when blank — `''` would satisfy the column while
+    // reading as "an address exists" to everything downstream, which is how the DM would end up
+    // printing «محل تحویل: » with nothing after it.
+    pickupAddress: draft.kind === 'pickup' && address ? address : null,
     sortOrder: draft.sortOrder,
     isActive: draft.isActive,
   };
@@ -148,6 +160,7 @@ export function isOptionDirty(draft: ShippingOptionDraft, original: CommerceShip
     payload.title !== original.title ||
     payload.settlement !== original.settlement ||
     payload.amount !== original.amount ||
+    (payload.pickupAddress ?? null) !== (original.pickupAddress ?? null) ||
     (payload.freeOverAmount ?? null) !== (original.freeOverAmount ?? null) ||
     payload.sortOrder !== original.sortOrder ||
     payload.isActive !== original.isActive

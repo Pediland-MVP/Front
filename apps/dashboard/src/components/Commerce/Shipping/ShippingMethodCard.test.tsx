@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
@@ -86,6 +86,26 @@ describe('ShippingMethodCard — closed until asked', () => {
     // Its own note, not the carrier-collects one -- there is no مأمور پست in a pickup.
     expect(screen.getByText(copy.pickupRateNote)).toBeInTheDocument();
     expect(screen.queryByText(copy.noRateNote)).not.toBeInTheDocument();
+  });
+
+  it('offers the collection address on a pickup, and on nothing else', () => {
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup' }));
+    expect(screen.getByLabelText(copy.pickupAddressLabel)).toBeInTheDocument();
+
+    cleanup();
+    renderOpenCard(baseDraft({ isActive: true, kind: 'post_express' }));
+    expect(screen.queryByLabelText(copy.pickupAddressLabel)).not.toBeInTheDocument();
+  });
+
+  it('reports the typed collection address up', () => {
+    const onChange = vi.fn();
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup' }), onChange);
+
+    fireEvent.change(screen.getByLabelText(copy.pickupAddressLabel), {
+      target: { value: 'تهران، ولیعصر، پلاک ۱۲' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ pickupAddress: 'تهران، ولیعصر، پلاک ۱۲' });
   });
 
   it('opens on the pencil and closes again on the second click', () => {
