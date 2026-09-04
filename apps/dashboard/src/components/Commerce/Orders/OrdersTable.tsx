@@ -78,19 +78,37 @@ const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
                     <span className="text-secondary line-clamp-1 text-sm font-medium">
                       {firstLine?.title}
                     </span>
+                    {/*
+                     * `itemCount` and the `+N` chip were siblings directly inside the `flex-col`
+                     * above, so each stacked onto its own line and the intended " · " separator
+                     * between them was dropped. RTL's `getByText` matches an element's ENTIRE
+                     * text, so the two values cannot share one span -- but nesting each in its
+                     * OWN span inside one inline outer span (default `display: inline`) keeps
+                     * both individually matchable while reading on the same line, same pattern
+                     * `OrderRowCard` already uses for its payment-method/paid-state pair.
+                     */}
                     <span className="text-muted-foreground text-xs">
-                      {t('card.itemCount', { count: itemCount })}
+                      <span>{t('card.itemCount', { count: itemCount })}</span>
+                      {extraLines > 0 && (
+                        <>
+                          {' · '}
+                          <span>{t('card.more', { count: extraLines })}</span>
+                        </>
+                      )}
                     </span>
-                    {extraLines > 0 && (
-                      <span className="text-muted-foreground text-xs">
-                        {t('card.more', { count: extraLines })}
-                      </span>
-                    )}
                   </div>
                 </div>
               </TableCell>
 
-              <TableCell>
+              {/*
+               * `whitespace-nowrap` is `packages/ui`'s `TableCell` default on every cell. Six
+               * columns of long Persian labels sum near 768px before padding, so at `md` the
+               * table likely overflows sideways -- exactly what the phone/desktop split exists to
+               * avoid. Overridden per-cell here (not in `packages/ui`, which is shared) only on
+               * گیرنده and پرداخت, the two text-heavy columns: a wrapped date or amount reads
+               * worse than a slightly taller row, but a wrapped name or payment label does not.
+               */}
+              <TableCell className="whitespace-normal">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm">{order.recipientName ?? t('card.noName')}</span>
                   {order.mobile && (
@@ -108,7 +126,7 @@ const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
                 <span className="text-muted-foreground text-xs">{t('card.tooman')}</span>
               </TableCell>
 
-              <TableCell>
+              <TableCell className="whitespace-normal">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-xs">
                     {paymentMethodKey

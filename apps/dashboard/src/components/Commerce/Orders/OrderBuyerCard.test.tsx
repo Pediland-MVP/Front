@@ -84,4 +84,36 @@ describe('OrderBuyerCard', () => {
     expect(screen.getByText(copy.pickup.addressUnknown)).toBeInTheDocument();
     expect(screen.queryByText('خیابان ولیعصر')).toBeNull();
   });
+
+  // F4: a pickup order's `shippingTitle` (frozen, merchant-authored -- in practice the branch or
+  // pickup point's name) was being suppressed entirely, so the card asserted the collection point
+  // was unknown while the order was in fact carrying words about it.
+  it('shows the merchant-authored shipping title on a pickup order, while still omitting the street address', () => {
+    render(
+      wrap(
+        <OrderBuyerCard
+          order={{ ...physicalOrder, shippingKind: 'pickup', shippingTitle: 'شعبه ولیعصر' }}
+          cityName="تهران"
+        />,
+      ),
+    );
+    expect(screen.getByText(copy.detail.shippingMethod)).toBeInTheDocument();
+    expect(screen.getByText('شعبه ولیعصر')).toBeInTheDocument();
+    expect(screen.getByText(copy.pickup.notice)).toBeInTheDocument();
+    expect(screen.getByText(copy.pickup.addressUnknown)).toBeInTheDocument();
+    expect(screen.queryByText('خیابان ولیعصر')).toBeNull();
+  });
+
+  it('omits the shipping-method row on a pickup order with no title recorded (legacy/backfilled order)', () => {
+    render(
+      wrap(
+        <OrderBuyerCard
+          order={{ ...physicalOrder, shippingKind: 'pickup', shippingTitle: null }}
+          cityName="تهران"
+        />,
+      ),
+    );
+    expect(screen.queryByText(copy.detail.shippingMethod)).toBeNull();
+    expect(screen.getByText(copy.pickup.addressUnknown)).toBeInTheDocument();
+  });
 });

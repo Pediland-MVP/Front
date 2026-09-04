@@ -117,8 +117,69 @@ describe('OrdersTable', () => {
     expect(screen.getByText(copy.card.more.replace('{count}', '1'))).toBeInTheDocument();
   });
 
+  // F6a: the item count and the "+N" chip were siblings in a `flex-col`, stacking each onto its
+  // own line and dropping the intended " · " separator. Both must still be independently
+  // matchable by `getByText` (see the docstring on the component) while reading on one line.
+  it('shows the item count and the +N chip inline, separated by " · ", each independently matchable', () => {
+    renderTable([{ ...base, lines: [base.lines[0], { ...base.lines[0], variantId: 'v2' }] }]);
+    const itemCount = screen.getByText(copy.card.itemCount.replace('{count}', '2'));
+    const chip = screen.getByText(copy.card.more.replace('{count}', '1'));
+    expect(itemCount).toBeInTheDocument();
+    expect(chip).toBeInTheDocument();
+    // Same inline parent, so they read on one line rather than stacking.
+    expect(itemCount.parentElement).toBe(chip.parentElement);
+    expect(itemCount.parentElement?.textContent).toContain(' · ');
+  });
+
   it('shows the placeholder name when the order has no recipient', () => {
     renderTable([{ ...base, recipientName: null }]);
     expect(screen.getByText(copy.card.noName)).toBeInTheDocument();
+  });
+
+  // F1: `OrderThumbs.test.tsx` only ever renders `OrderThumbs` standalone, and no other suite
+  // opened the lightbox INSIDE a real row -- which is exactly why the row-level navigation bug
+  // went unnoticed. Radix portals `ReceiptLightbox` out to `document.body`, but React synthetic
+  // events bubble the COMPONENT tree, not the DOM tree, so a click on the lightbox's close button
+  // still reaches the row's `onClick` unless something inside `OrderThumbs` stops it.
+  it('does not navigate the row when the receipt lightbox is closed from inside it', () => {
+    const onOpen = renderTable([{ ...base, receiptUrl: 'https://cdn/r.jpg', receiptCount: 1 }]);
+
+    fireEvent.click(screen.getByAltText(copy.receipts.thumbAlt));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: copy.receipts.close }));
+
+    expect(onOpen).not.toHaveBeenCalled();
+  });
+
+  // Same seam, the backdrop instead of the close button -- Radix's overlay is a sibling of
+  // `DialogContent` inside the same portal, so it bubbles through the exact same React-tree path.
+  it('does not navigate the row when the lightbox backdrop is clicked', () => {
+    const onOpen = renderTable([{ ...base, receiptUrl: 'https://cdn/r.jpg', receiptCount: 1 }]);
+
+    fireEvent.click(screen.getByAltText(copy.receipts.thumbAlt));
+    const dialog = screen.getByRole('dialog');
+    // The overlay is the dialog's own previous sibling in Radix's DOM output.
+    const overlay = dialog.previousElementSibling as HTMLElement;
+    expect(overlay).toBeTruthy();
+
+    fireEvent.click(overlay);
+
+    expect(onOpen).not.toHaveBeenCalled();
+  });
+
+  // F2: the row's `onKeyDown` calls `preventDefault()` on Enter/Space as it bubbles past, which
+  // cancels a `<button>`'s native default action (the synthetic click Enter/Space would fire) --
+  // so without the receipt button handling the key itself, Enter silently navigates the row away
+  // instead of opening the lightbox.
+  it('opens the lightbox on Enter at the receipt thumbnail, and does not navigate the row', () => {
+    const onOpen = renderTable([{ ...base, receiptUrl: 'https://cdn/r.jpg', receiptCount: 1 }]);
+
+    fireEvent.keyDown(screen.getByAltText(copy.receipts.thumbAlt).closest('button')!, {
+      key: 'Enter',
+    });
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(onOpen).not.toHaveBeenCalled();
   });
 });

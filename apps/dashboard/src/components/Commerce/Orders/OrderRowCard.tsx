@@ -32,7 +32,7 @@ interface OrderRowCardProps {
  */
 const OrderRowCardComponent = ({ order, onOpen }: OrderRowCardProps) => {
   const t = useTranslations('Commerce.Orders');
-  const { firstLine, extraLines, isPaid, paymentMethodKey } = orderRowFields(order);
+  const { firstLine, extraLines, itemCount, isPaid, paymentMethodKey } = orderRowFields(order);
 
   return (
     <div
@@ -54,26 +54,29 @@ const OrderRowCardComponent = ({ order, onOpen }: OrderRowCardProps) => {
 
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <div className="flex items-start justify-between gap-2">
-              {/*
-               * `card.itemCount`/`+N` sibling issue from `OrdersTable`: RTL's `getByText` matches
-               * an element's ENTIRE text, so the title and the "+N" chip cannot share one span --
-               * but a `flex-col` parent around two such spans stacks them onto separate lines and
-               * silently drops the intended " " separator. Here both live in ONE inline `<span>`
-               * (default `display: inline`), with the chip as a nested `<span>`: each is still its
-               * own text node for `getByText`, and they read on the same line because neither
-               * sibling forces a line break.
-               */}
               <span className="text-secondary line-clamp-1 text-sm font-semibold">
                 {firstLine?.title}
-                {extraLines > 0 && (
-                  <span className="text-muted-foreground text-xs">
-                    {' '}
-                    {t('card.more', { count: extraLines })}
-                  </span>
-                )}
               </span>
               <OrderStatusBadge status={order.status} className="shrink-0" />
             </div>
+
+            {/*
+             * F6b: `OrdersTable` shows `card.itemCount`, this card was omitting it entirely --
+             * the one fact the two renderings disagreed on. Matches `OrdersTable`'s inline
+             * treatment (F6a): RTL's `getByText` matches an element's ENTIRE text, so the item
+             * count and the "+N" chip cannot share one span, but nesting each in its OWN span
+             * inside one inline outer span keeps both individually matchable while reading on the
+             * same line, with the intended " · " separator between them.
+             */}
+            <span className="text-muted-foreground text-xs">
+              <span>{t('card.itemCount', { count: itemCount })}</span>
+              {extraLines > 0 && (
+                <>
+                  {' · '}
+                  <span>{t('card.more', { count: extraLines })}</span>
+                </>
+              )}
+            </span>
 
             <span className="text-secondary text-[13px]">
               {order.recipientName ?? t('card.noName')}

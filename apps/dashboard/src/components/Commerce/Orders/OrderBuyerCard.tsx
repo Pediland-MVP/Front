@@ -105,6 +105,17 @@ export function OrderBuyerCard({ order, cityName }: OrderBuyerCardProps) {
            */
           <>
             <p className="text-sm">{t('pickup.notice')}</p>
+            {/*
+             * `shippingTitle` is frozen, merchant-authored words about the collection point --
+             * in practice the branch or pickup point's name. Suppressing it here asserted the
+             * collection point was entirely unknown while the order was, in fact, carrying words
+             * about it. `pickup.addressUnknown` still applies: it is true that no STREET address
+             * is on file (see the class docstring -- there is no path from an order back to
+             * `pickupAddress`), it just must not read as "we know nothing" when a title exists.
+             */}
+            {order.shippingTitle && (
+              <Field label={t('detail.shippingMethod')} value={order.shippingTitle} />
+            )}
             <p className="text-muted-foreground text-sm">{t('pickup.addressUnknown')}</p>
           </>
         ) : (

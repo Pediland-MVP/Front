@@ -123,8 +123,8 @@ The `/products/orders` (list) and `/products/orders/[id]` (detail) merchant scre
 | `GET /commerce/orders/:id` | `apps/dashboard/src/hooks/useCommerceOrder.ts`, consumed by `OrderDetail.tsx`/`OrderSummaryRail.tsx` | Unchanged — still `OrderDetailView` (`OrderView` + `receipts: OrderReceiptView[]`, full trail newest-first). |
 | `POST /commerce/orders/:id/approve` \| `/reject` \| `/ship` \| `/complete` \| `/cancel` \| `/mark-paid` | `OrderStatusUpdater.tsx` | Now driven by a single status `<Select>` (`orderTransitions.ts`'s `targetStatusesFor`/`actionForTransition`) + a transition-specific confirmation dialog, replacing six standalone buttons. `approve` and `mark-paid` now require confirmation (previously one-click). |
 
-**No consumer yet.** Everything above already has a frontend as of this redesign; nothing else on
-`/commerce/orders*` is unconsumed.
+Every `/commerce/orders*` route has a frontend consumer as of this redesign — the table above is
+complete, not partial.
 
 ## Deploy Coupling
 

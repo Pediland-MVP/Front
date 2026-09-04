@@ -31,6 +31,7 @@ export function OrderThumbs({ order }: { order: OrderListView }) {
         <img
           src={firstLine.imageUrl}
           alt={firstLine.title}
+          loading="lazy"
           className="size-11 shrink-0 rounded-md object-cover"
         />
       ) : (
@@ -55,11 +56,27 @@ export function OrderThumbs({ order }: { order: OrderListView }) {
               event.stopPropagation();
               setLightboxOpen(true);
             }}
+            /**
+             * The row's own `onKeyDown` (`OrdersTable`/`OrderRowCard`) calls `preventDefault()`
+             * on Enter/Space as it bubbles past, which cancels a `<button>`'s native default
+             * action -- the synthetic click Enter/Space would otherwise fire -- before it ever
+             * happens. Without handling the key here ourselves and stopping it from bubbling,
+             * Enter/Space on a focused receipt thumbnail silently navigates the row away instead
+             * of opening the lightbox (F2): the button never gets its click.
+             */
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                event.stopPropagation();
+                setLightboxOpen(true);
+              }
+            }}
             className="block"
           >
             <img
               src={order.receiptUrl}
               alt={t('receipts.thumbAlt')}
+              loading="lazy"
               className="size-11 rounded-md border object-cover"
             />
           </button>
@@ -74,11 +91,25 @@ export function OrderThumbs({ order }: { order: OrderListView }) {
       )}
 
       {lightboxOpen && (
-        <ReceiptLightbox
-          receipt={{ id: order.orderId, url: order.receiptUrl!, createDate: order.placedAt }}
-          label={t('receipts.thumbAlt')}
-          onClose={() => setLightboxOpen(false)}
-        />
+        /**
+         * Radix portals `ReceiptLightbox`'s DOM node out to `document.body`, but React synthetic
+         * events bubble the COMPONENT tree, not the DOM tree -- so without this wrapper, a click
+         * (or a bubbled Enter/Space) on the lightbox's close button, backdrop, or image would
+         * still reach the row's `onClick`/`onKeyDown` and navigate away (F1). The opening click's
+         * own `stopPropagation` above only covers the click that OPENS the lightbox; every event
+         * fired from INSIDE it, once open, needs stopping here instead. `ReceiptLightbox` itself
+         * stays untouched -- it is shared with the detail page, which has no row to guard against.
+         */
+        <div
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          <ReceiptLightbox
+            receipt={{ id: order.orderId, url: order.receiptUrl!, createDate: order.placedAt }}
+            label={t('receipts.thumbAlt')}
+            onClose={() => setLightboxOpen(false)}
+          />
+        </div>
       )}
     </div>
   );

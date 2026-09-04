@@ -67,6 +67,25 @@ describe('OrderRowCard', () => {
     expect(screen.getByText(copy.status.awaiting_review)).toBeInTheDocument();
   });
 
+  // F6b: this was the ONE fact `OrdersTable` showed that `OrderRowCard` omitted -- the whole
+  // justification for a second rendering is that the phone loses nothing. Matches the table's
+  // inline treatment (F6a): item count and the "+N" chip each independently matchable, read on
+  // one line, separated by " · ".
+  it('shows the item count, matching the table', () => {
+    renderRow(base);
+    expect(screen.getByText(copy.card.itemCount.replace('{count}', '1'))).toBeInTheDocument();
+  });
+
+  it('shows the item count and the +N chip inline, separated by " · ", each independently matchable', () => {
+    renderRow({ ...base, lines: [base.lines[0], { ...base.lines[0], variantId: 'v2' }] });
+    const itemCount = screen.getByText(copy.card.itemCount.replace('{count}', '2'));
+    const chip = screen.getByText(copy.card.more.replace('{count}', '1'));
+    expect(itemCount).toBeInTheDocument();
+    expect(chip).toBeInTheDocument();
+    expect(itemCount.parentElement).toBe(chip.parentElement);
+    expect(itemCount.parentElement?.textContent).toContain(' · ');
+  });
+
   it('opens the order when tapped', () => {
     const onOpen = renderRow(base);
     fireEvent.click(screen.getByRole('button', { name: copy.table.openOrder }));
@@ -81,5 +100,35 @@ describe('OrderRowCard', () => {
   it('falls back to the raw payment method for an unrecognised value', () => {
     renderRow({ ...base, paymentMethod: 'zarinpal' });
     expect(screen.getByText('zarinpal')).toBeInTheDocument();
+  });
+
+  // F1: same seam as `OrdersTable` -- `OrderThumbs.test.tsx` only renders `OrderThumbs`
+  // standalone, so nothing ever proved the receipt lightbox's own close button doesn't bubble a
+  // click through the React tree (Radix portals it out of the DOM tree, but React synthetic
+  // events bubble the COMPONENT tree) up to this row's `onClick`.
+  it('does not navigate the row when the receipt lightbox is closed from inside it', () => {
+    const onOpen = renderRow({ ...base, receiptUrl: 'https://cdn/r.jpg', receiptCount: 1 });
+
+    fireEvent.click(screen.getByAltText(copy.receipts.thumbAlt));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: copy.receipts.close }));
+
+    expect(onOpen).not.toHaveBeenCalled();
+  });
+
+  // F2: the row's own `onKeyDown` calls `preventDefault()` on Enter/Space as it bubbles past,
+  // cancelling the receipt `<button>`'s native default action before it can fire -- so without
+  // the button handling the key itself, Enter silently navigates the row instead of opening the
+  // lightbox.
+  it('opens the lightbox on Enter at the receipt thumbnail, and does not navigate the row', () => {
+    const onOpen = renderRow({ ...base, receiptUrl: 'https://cdn/r.jpg', receiptCount: 1 });
+
+    fireEvent.keyDown(screen.getByAltText(copy.receipts.thumbAlt).closest('button')!, {
+      key: 'Enter',
+    });
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(onOpen).not.toHaveBeenCalled();
   });
 });

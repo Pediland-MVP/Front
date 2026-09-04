@@ -136,13 +136,19 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
       {/*
         Every dialog below except `reject` closes UNCONDITIONALLY once `runAction` settles, win
         or lose. None of them hold anything the seller typed -- they are pure confirmations -- so
-        there is nothing a failure would destroy by closing. Closing is also what makes the
-        already-fired failure toast (`onAction`'s contract: `false` means "the page already
-        toasted") visible again: the `draft` status stays exactly what the seller chose (the
-        `useEffect` above only resets it when `order.status` itself changes), so the select and
-        the «بروزرسانی» button are right there for another attempt. `RejectPaymentDialog` is the
-        one exception -- it keeps up to 500 characters of buyer-facing text the seller typed, so
-        it alone stays open on failure (see its own docstring).
+        there is nothing a failure would destroy by closing.
+        Closing is NOT what makes an already-fired failure toast visible again -- Sonner's
+        `Toaster` renders above the Radix dialog overlay, so the toast was never hidden by the
+        dialog being open. The real reason to close unconditionally: `OrderDetailPage` revalidates
+        on `COMMERCE_ORDER_STATUS_CHANGED` (the order can move under this component -- the
+        buyer's DM can promote it, another seat can approve it), and when it does, the set of
+        legal transitions changes underneath a still-open, `aria-hidden` select. Closing puts the
+        corrected select back in front of the seller instead of behind a manual dismiss; the
+        `draft` status stays exactly what the seller chose either way (the `useEffect` above only
+        resets it when `order.status` itself changes), so the select and the «بروزرسانی» button
+        are right there for another attempt. `RejectPaymentDialog` is the one exception -- it
+        keeps up to 500 characters of buyer-facing text the seller typed, so it alone stays open
+        on failure (see its own docstring).
       */}
       <ConfirmActionDialog
         open={pendingAction === 'approve'}
