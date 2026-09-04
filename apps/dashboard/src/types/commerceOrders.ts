@@ -62,6 +62,16 @@ export interface OrderView {
   createDate: string;
 }
 
+/**
+ * What `GET /commerce/orders` (the SELLER list) returns — mirrors Back's `OrderListView`.
+ * `receiptUrl` is the newest receipt only; `receiptCount` lets a row mark a re-upload without
+ * shipping every url. The buyer-facing reads return plain `OrderView`.
+ */
+export interface OrderListView extends OrderView {
+  receiptUrl: string | null;
+  receiptCount: number;
+}
+
 export interface OrderReceiptView {
   id: string;
   url: string;

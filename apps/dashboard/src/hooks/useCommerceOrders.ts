@@ -3,7 +3,7 @@
 import useSWR from 'swr';
 
 import type { PaginatedResult } from '@/types/commerce';
-import type { OrderView, OrdersFilters } from '@/types/commerceOrders';
+import type { OrderListView, OrdersFilters } from '@/types/commerceOrders';
 
 /**
  * `GET /commerce/orders` returns the project's `PaginatedResult` envelope directly (CLAUDE.md §9),
@@ -44,7 +44,7 @@ export function isOrdersListKey(key: unknown): boolean {
  */
 export function useCommerceOrders(filters: OrdersFilters) {
   const key = ordersListKey(filters);
-  const { data, error, isLoading, mutate } = useSWR<PaginatedResult<OrderView[]>>(key);
+  const { data, error, isLoading, mutate } = useSWR<PaginatedResult<OrderListView[]>>(key);
 
   return {
     orders: data?.items ?? [],
