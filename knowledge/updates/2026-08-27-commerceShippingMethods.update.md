@@ -59,6 +59,25 @@ than under general settings because the price it sets is a property of what the 
    that already have a row, and caps suggestions at 30. Past 12 rows the list gains its own filter
    and a "show more".
 
+   > [!IMPORTANT]
+   > **Picking is a BATCH, not one-at-a-time (fixed 2026-08-31).** The first cut kept a single
+   > `pending: ShippingDestination | null` slot: picking a suggestion filled the search box with
+   > its name, and the box's own `onChange` cleared `pending` on the very next keystroke — so a
+   > merchant who picked a city and then tried to search for a second one silently lost the first
+   > pick. Also, `GET /cities` with no `provinceId` 400'd (`Back/apps/core/src/cities/dto
+   > /readAllCities.dto.ts`'s `provinceId` was `@IsNumber()` with no `@IsOptional()` — see
+   > `Back/knowledge/updates/2026-08-31-citiesEndpointRequiredProvinceId.update.md`), so `cities`
+   > was silently `[]` and only provinces ever appeared in the dropdown at all, on top of the
+   > pick-loss bug. Now `pending` is a `pendingList: ShippingDestination[]`: picking a suggestion
+   > appends to it and clears the search box (ready to search again) instead of replacing it, each
+   > pick renders as its own removable chip under "انتخاب شد:", and the "افزودن" button commits
+   > every picked destination as its own row, ALL sharing the one price entered — a merchant
+   > pricing five border cities the same enters that price once, not five times. `taken` (the
+   > dedupe set the search filters against) now also excludes whatever is already in
+   > `pendingList`, so a picked destination cannot be picked again. Capacity is checked against the
+   > whole batch (`pendingList.length > MAX_RATE_OVERRIDES - overrides.length`), not just one row
+   > at a time.
+
 4. **`MoneyField.tsx`** — the four price boxes on the screen, with CLAUDE.md §18 in one place:
    text input + `inputMode="numeric"` (a `type="number"` blanks Persian digits before they can be
    converted), `onInput={onInputP2EHandler}`, and `parseAmount`/`formatAmount` reused from the

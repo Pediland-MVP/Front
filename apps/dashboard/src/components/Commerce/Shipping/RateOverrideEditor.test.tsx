@@ -144,6 +144,106 @@ describe('RateOverrideEditor — adding one', () => {
   });
 });
 
+describe('RateOverrideEditor — adding many at once', () => {
+  it('shows a picked destination as a removable chip under "انتخاب شد:"', () => {
+    renderEditor();
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'کیش' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /کیش/ }));
+
+    expect(screen.getByText(copy.exceptionsSelected)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: `${copy.exceptionsClearSelected} — کیش` }),
+    ).toBeInTheDocument();
+  });
+
+  // The bug report this closes: picking a city then editing the search box (even just deleting a
+  // letter, trying to search for the next one) used to silently wipe the pick.
+  it('keeps an already-picked destination after the search box is edited or cleared', () => {
+    renderEditor();
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'کیش' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /کیش/ }));
+
+    // Box is empty again (ready for the next search), not showing "کیش" -- editing/deleting from
+    // here must not touch the already-picked chip.
+    expect(screen.getByLabelText(copy.exceptionsSearchAria)).toHaveValue('');
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'ته' },
+    });
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), { target: { value: '' } });
+
+    expect(
+      screen.getByRole('button', { name: `${copy.exceptionsClearSelected} — کیش` }),
+    ).toBeInTheDocument();
+  });
+
+  it('picks several destinations and commits all of them with one shared price in one click', () => {
+    const onChange = renderEditor();
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'کیش' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /کیش/ }));
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'هرمزگان' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /هرمزگان/ }));
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsPriceAria), {
+      target: { value: '50000' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: copy.exceptionsAddButton }));
+
+    expect(onChange).toHaveBeenCalledWith([
+      expect.objectContaining({ kind: 'city', id: 20, amount: 50000 }),
+      expect.objectContaining({ kind: 'province', id: 2, amount: 50000 }),
+    ]);
+  });
+
+  it('removing one picked chip drops only that destination from the batch', () => {
+    renderEditor();
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'کیش' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /کیش/ }));
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'هرمزگان' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /هرمزگان/ }));
+
+    fireEvent.click(screen.getByRole('button', { name: `${copy.exceptionsClearSelected} — کیش` }));
+
+    expect(
+      screen.queryByRole('button', { name: `${copy.exceptionsClearSelected} — کیش` }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: `${copy.exceptionsClearSelected} — هرمزگان` }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not offer an already-picked destination again in the search results', () => {
+    renderEditor();
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'کیش' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /کیش/ }));
+
+    fireEvent.change(screen.getByLabelText(copy.exceptionsSearchAria), {
+      target: { value: 'کیش' },
+    });
+
+    expect(screen.getByText(copy.exceptionsNoResults)).toBeInTheDocument();
+  });
+});
+
 describe('RateOverrideEditor — removing', () => {
   it('drops just the row whose delete was pressed', () => {
     const onChange = renderEditor([

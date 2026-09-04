@@ -68,17 +68,29 @@ export const RateOverrideEditor = ({
 
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [pending, setPending] = useState<ShippingDestination | null>(null);
+  /**
+   * Every destination picked in the CURRENT batch, not yet committed to `overrides`. Plural on
+   * purpose: a merchant pricing several border cities the same wants to pick all of them, enter
+   * ONE price once, and add them together -- searching again after a pick must never discard the
+   * ones already chosen (that was the bug: the old single `pending` slot was wiped by the very
+   * next keystroke in the search box).
+   */
+  const [pendingList, setPendingList] = useState<ShippingDestination[]>([]);
   const [newAmount, setNewAmount] = useState<number | null>(null);
   const [filter, setFilter] = useState('');
   const [limit, setLimit] = useState(PAGE_SIZE);
 
-  /** Every destination that already has a row, so the search never offers a duplicate. */
-  const taken = useMemo(() => new Set(overrides.map((o) => destinationKey(o))), [overrides]);
+  /** Every destination that already has a row, OR is already picked in this batch -- either way
+   * the search must never offer it again. */
+  const taken = useMemo(() => {
+    const keys = new Set(overrides.map((o) => destinationKey(o)));
+    pendingList.forEach((d) => keys.add(destinationKey(d)));
+    return keys;
+  }, [overrides, pendingList]);
 
   const results = useMemo(
-    () => (pending ? [] : searchDestinations({ provinces, cities, query, taken })),
-    [pending, provinces, cities, query, taken],
+    () => searchDestinations({ provinces, cities, query, taken }),
+    [provinces, cities, query, taken],
   );
 
   /** Resolve a row's stored id back into the names to show. */
@@ -114,21 +126,38 @@ export const RateOverrideEditor = ({
 
   const visible = filtered.slice(0, limit);
   const isFull = overrides.length >= MAX_RATE_OVERRIDES;
-  const canAdd = !disabled && pending != null && newAmount != null && !isFull;
+  /** How many more rows this option can still hold -- caps a batch add, not just a single one. */
+  const remainingCapacity = Math.max(0, MAX_RATE_OVERRIDES - overrides.length);
+  const overCapacity = pendingList.length > remainingCapacity;
+  const canAdd = !disabled && pendingList.length > 0 && newAmount != null && !overCapacity;
 
-  const clearDraftRow = () => {
-    setPending(null);
+  const resetDraft = () => {
+    setPendingList([]);
     setQuery('');
     setNewAmount(null);
   };
 
-  const addRow = () => {
-    if (!canAdd || !pending) return;
-    onChange([
-      { key: nextRowKey(), kind: pending.kind, id: pending.id, amount: newAmount ?? 0 },
-      ...overrides,
-    ]);
-    clearDraftRow();
+  /** A suggestion was clicked: add it to the batch and clear the box so the next search starts
+   * fresh -- the previously picked destinations stay put. */
+  const pickDestination = (destination: ShippingDestination) => {
+    setPendingList((current) => [...current, destination]);
+    setQuery('');
+  };
+
+  const unpickDestination = (key: string) =>
+    setPendingList((current) => current.filter((d) => destinationKey(d) !== key));
+
+  /** Commits every picked destination as its own row, all sharing the one price entered. */
+  const addRows = () => {
+    if (!canAdd) return;
+    const newRows: ShippingOverrideDraft[] = pendingList.map((d) => ({
+      key: nextRowKey(),
+      kind: d.kind,
+      id: d.id,
+      amount: newAmount ?? 0,
+    }));
+    onChange([...newRows, ...overrides]);
+    resetDraft();
   };
 
   const updateRow = (key: string, amount: number | null) =>
@@ -168,11 +197,8 @@ export const RateOverrideEditor = ({
                 disabled={disabled}
                 aria-label={t('exceptionsSearchAria')}
                 placeholder={t('exceptionsSearch')}
-                value={pending ? pending.name : query}
-                onChange={(e) => {
-                  setPending(null);
-                  setQuery(e.target.value);
-                }}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className={cn(editorInputSm, 'bg-card h-[38px] text-sm')}
               />
 
@@ -187,10 +213,7 @@ export const RateOverrideEditor = ({
                     <button
                       key={destinationKey(result)}
                       type="button"
-                      onClick={() => {
-                        setPending(result);
-                        setQuery(result.name);
-                      }}
+                      onClick={() => pickDestination(result)}
                       className={cn(
                         'hover:bg-tint2 flex w-full items-center justify-between gap-2.5',
                         'rounded-lg px-2.5 py-2 text-start transition-colors',
@@ -208,7 +231,7 @@ export const RateOverrideEditor = ({
                 </div>
               )}
 
-              {!pending && query.trim() !== '' && results.length === 0 && (
+              {query.trim() !== '' && results.length === 0 && (
                 <div
                   className={cn(
                     'border-lnv bg-card text-mut absolute inset-x-0 top-11 z-20 rounded-xl',
@@ -234,31 +257,38 @@ export const RateOverrideEditor = ({
             <button
               type="button"
               disabled={!canAdd}
-              onClick={addRow}
+              onClick={addRows}
               className={cn(editorAddButtonSm, 'h-[38px]')}
             >
               {t('exceptionsAddButton')}
             </button>
           </div>
 
-          {pending && (
-            <div className="text-mut mt-2 flex items-center gap-2 text-xs">
+          {pendingList.length > 0 && (
+            <div className="text-mut mt-2 flex flex-wrap items-center gap-2 text-xs">
               <span>{t('exceptionsSelected')}</span>
-              <span className="border-lnv bg-card inline-flex items-center gap-1 rounded-full border py-1 ps-2.5 pe-1 text-xs font-semibold">
-                {pending.kind === 'province' ? `${t('tagProvince')} ${pending.name}` : pending.name}
-                <button
-                  type="button"
-                  onClick={clearDraftRow}
-                  aria-label={t('exceptionsClearSelected')}
-                  className="hover:bg-tint2 grid size-4 place-items-center rounded-full"
+              {pendingList.map((destination) => (
+                <span
+                  key={destinationKey(destination)}
+                  className="border-lnv bg-card inline-flex items-center gap-1 rounded-full border py-1 ps-2.5 pe-1 text-xs font-semibold"
                 >
-                  <XIcon className="size-3" aria-hidden="true" />
-                </button>
-              </span>
+                  {destination.kind === 'province'
+                    ? `${t('tagProvince')} ${destination.name}`
+                    : destination.name}
+                  <button
+                    type="button"
+                    onClick={() => unpickDestination(destinationKey(destination))}
+                    aria-label={`${t('exceptionsClearSelected')} — ${destination.name}`}
+                    className="hover:bg-tint2 grid size-4 place-items-center rounded-full"
+                  >
+                    <XIcon className="size-3" aria-hidden="true" />
+                  </button>
+                </span>
+              ))}
             </div>
           )}
 
-          {isFull && (
+          {(isFull || overCapacity) && (
             <p className="text-wtext mt-2 text-xs">
               {t('exceptionsLimit', { max: formatCount(MAX_RATE_OVERRIDES) })}
             </p>
