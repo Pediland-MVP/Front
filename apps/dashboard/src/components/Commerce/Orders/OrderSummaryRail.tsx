@@ -79,7 +79,11 @@ export function OrderSummaryRail({ order, statusUpdater }: OrderSummaryRailProps
           <ReceiptStrip receipts={order.receipts} />
         </div>
 
-        {statusUpdater && <div className="border-t pt-3">{statusUpdater}</div>}
+        {statusUpdater && (
+          <div data-testid="status-updater-slot" className="border-t pt-3">
+            {statusUpdater}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

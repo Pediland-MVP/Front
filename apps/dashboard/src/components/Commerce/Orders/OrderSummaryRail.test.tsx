@@ -119,4 +119,33 @@ describe('OrderSummaryRail', () => {
     render(wrap(<OrderSummaryRail order={detailOrder} statusUpdater={<button>UPDATER</button>} />));
     expect(screen.getByRole('button', { name: 'UPDATER' })).toBeInTheDocument();
   });
+
+  /**
+   * The render guard is `order.status === 'cancelled' && order.cancelReason`, not
+   * `order.cancelReason` alone -- a cancel reason must never show on a live order. Every other
+   * fixture with a `cancelReason` also has `status: 'cancelled'`, so without this test a future
+   * edit that drops the status half of the guard would still pass all the others.
+   */
+  it('never shows a cancel reason on a non-cancelled order, even if one is recorded', () => {
+    render(
+      wrap(
+        <OrderSummaryRail
+          order={{ ...detailOrder, status: 'awaiting_review', cancelReason: 'payment_rejected' }}
+          statusUpdater={null}
+        />,
+      ),
+    );
+    expect(screen.queryByText(copy.cancelReason.payment_rejected)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Mirrors `OrderDetail`'s own `actions` contract: an element is truthy even when the thing it
+   * renders is `null`, so the empty-bordered-strip defect lived in the CALLER deciding to render
+   * `<OrderActions/>` unconditionally. This pins the other half here -- `statusUpdater={null}`
+   * must not leave a bordered slot in the DOM at all.
+   */
+  it('renders no status-updater slot at all when handed null', () => {
+    render(wrap(<OrderSummaryRail order={detailOrder} statusUpdater={null} />));
+    expect(screen.queryByTestId('status-updater-slot')).not.toBeInTheDocument();
+  });
 });
