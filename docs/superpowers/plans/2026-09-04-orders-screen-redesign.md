@@ -558,7 +558,7 @@ Expected: `keys ok`, and no tsc lines for those two files.
 
 ```bash
 git -C /home/cvexor/Documents/MVP/Front/worktrees/commerce-product-core add apps/dashboard/src/types/commerceOrders.ts apps/dashboard/src/hooks/useCommerceOrders.ts apps/dashboard/src/messages/fa.json
-git -C /home/cvexor/Documents/MVP/Front/worktrees/commerce-product-core commit -m "feat(orders): OrderListView type and the redesign's translation keys
+git -C /home/cvexor/Documents/MVP/Front/worktrees/commerce-product-core commit -m "feat(orders): add the OrderListView type and the redesign's translation keys
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_012WdWeHuzeeo97VCAYd9jEM"
