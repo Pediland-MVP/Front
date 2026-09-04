@@ -70,3 +70,47 @@ export function canMarkPaid(order: OrderView): boolean {
 export function hasAnyAction(order: OrderView): boolean {
   return actionsFor(order).length > 0 || canMarkPaid(order);
 }
+
+/**
+ * The target status each action lands on. The INVERSE of what the seller picks: they choose a
+ * destination, and `actionForTransition` turns the (from, to) pair back into the action.
+ *
+ * This is the one place the asymmetry lives: `cancelled` is reachable by TWO different actions
+ * depending on where the order is now -- `reject` from `awaiting_review` (no money has been
+ * accepted; the buyer is told why, in up to 500 characters) and `cancel` from `processing`/
+ * `sending` (the courier came back with the goods, so stock is restored). A select that offered
+ * one «لغو شده» without resolving which of the two it means would fire the wrong endpoint.
+ */
+const TARGET_BY_ACTION: Record<OrderActionName, CommerceOrderStatus> = {
+  approve: 'processing',
+  reject: 'cancelled',
+  ship: 'sending',
+  complete: 'completed',
+  cancel: 'cancelled',
+};
+
+/**
+ * The statuses this order may legally move to, in the order the select should list them.
+ *
+ * Derived from `actionsFor`, NOT from `ACTIONS_BY_STATUS` directly, so the digital-order `ship`
+ * filter (and the unbreakable retry loop its docstring describes) keeps working with no second
+ * rule to maintain.
+ */
+export function targetStatusesFor(order: OrderView): readonly CommerceOrderStatus[] {
+  return actionsFor(order).map((action) => TARGET_BY_ACTION[action]);
+}
+
+/**
+ * `null` for any pair the state machine does not have -- including `from === to`, which is what
+ * the update button is disabled on.
+ */
+export function actionForTransition(
+  from: CommerceOrderStatus,
+  to: CommerceOrderStatus,
+): OrderActionName | null {
+  if (from === to) return null;
+  const action = (ACTIONS_BY_STATUS[from] ?? []).find(
+    (candidate) => TARGET_BY_ACTION[candidate] === to,
+  );
+  return action ?? null;
+}

@@ -1,32 +1,43 @@
 import { describe, it, expect } from 'vitest';
 
-import { ACTIONS_BY_STATUS, actionsFor, canMarkPaid, hasAnyAction } from './orderTransitions';
+import {
+  ACTIONS_BY_STATUS,
+  actionsFor,
+  canMarkPaid,
+  hasAnyAction,
+  targetStatusesFor,
+  actionForTransition,
+} from './orderTransitions';
 import type { OrderView } from '@/types/commerceOrders';
+
+const baseOrder: OrderView = {
+  orderId: 'o1',
+  status: 'processing',
+  cancelReason: null,
+  kind: 'physical',
+  lines: [],
+  itemsTotal: 0,
+  shippingTotal: 0,
+  grandTotal: 0,
+  paymentMethod: 'card_to_card',
+  recipientName: null,
+  mobile: null,
+  cityId: null,
+  address: null,
+  plate: null,
+  unit: null,
+  postalcode: null,
+  placedAt: '2026-09-02T10:00:00.000Z',
+  shippingTitle: null,
+  shippingKind: null,
+  shippingSettlement: null,
+  paidAt: null,
+  createDate: '2026-09-02T10:00:00.000Z',
+} as OrderView;
 
 const order = (patch: Partial<OrderView>): OrderView =>
   ({
-    orderId: 'o1',
-    status: 'processing',
-    cancelReason: null,
-    kind: 'physical',
-    lines: [],
-    itemsTotal: 0,
-    shippingTotal: 0,
-    grandTotal: 0,
-    paymentMethod: 'card_to_card',
-    recipientName: null,
-    mobile: null,
-    cityId: null,
-    address: null,
-    plate: null,
-    unit: null,
-    postalcode: null,
-    placedAt: '2026-09-02T10:00:00.000Z',
-    shippingTitle: null,
-    shippingKind: null,
-    shippingSettlement: null,
-    paidAt: null,
-    createDate: '2026-09-02T10:00:00.000Z',
+    ...baseOrder,
     ...patch,
   }) as OrderView;
 
@@ -134,5 +145,57 @@ describe('actionsFor', () => {
       'complete',
       'cancel',
     ]);
+  });
+});
+
+describe('targetStatusesFor', () => {
+  const order = (over: Partial<OrderView>): OrderView => ({ ...baseOrder, ...over });
+
+  it('offers approve and reject targets from awaiting_review', () => {
+    expect(targetStatusesFor(order({ status: 'awaiting_review' }))).toEqual([
+      'processing',
+      'cancelled',
+    ]);
+  });
+
+  it('offers ship, complete and cancel targets from processing', () => {
+    expect(targetStatusesFor(order({ status: 'processing' }))).toEqual([
+      'sending',
+      'completed',
+      'cancelled',
+    ]);
+  });
+
+  it('never offers sending for a digital order, which can never be shipped', () => {
+    expect(targetStatusesFor(order({ status: 'processing', kind: 'digital' }))).toEqual([
+      'completed',
+      'cancelled',
+    ]);
+  });
+
+  it('offers nothing on a terminal order', () => {
+    expect(targetStatusesFor(order({ status: 'completed' }))).toEqual([]);
+    expect(targetStatusesFor(order({ status: 'cancelled' }))).toEqual([]);
+  });
+});
+
+describe('actionForTransition', () => {
+  it('maps cancelled to reject from awaiting_review, but cancel from processing', () => {
+    expect(actionForTransition('awaiting_review', 'cancelled')).toBe('reject');
+    expect(actionForTransition('processing', 'cancelled')).toBe('cancel');
+    expect(actionForTransition('sending', 'cancelled')).toBe('cancel');
+  });
+
+  it('maps the forward transitions', () => {
+    expect(actionForTransition('awaiting_review', 'processing')).toBe('approve');
+    expect(actionForTransition('processing', 'sending')).toBe('ship');
+    expect(actionForTransition('processing', 'completed')).toBe('complete');
+    expect(actionForTransition('sending', 'completed')).toBe('complete');
+  });
+
+  it('returns null for a transition the state machine does not have', () => {
+    expect(actionForTransition('awaiting_review', 'completed')).toBeNull();
+    expect(actionForTransition('completed', 'processing')).toBeNull();
+    expect(actionForTransition('processing', 'processing')).toBeNull();
   });
 });
