@@ -10,8 +10,8 @@ import { useShippingDestinations } from '@/hooks/useShippingDestinations';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { NoDataError } from '@/components/Global/NoDataError';
 
-import { OrderActions } from './OrderActions';
 import { OrderDetail } from './OrderDetail';
+import { OrderStatusUpdater } from './OrderStatusUpdater';
 import { hasAnyAction, type OrderActionName } from './orderTransitions';
 
 interface OrderDetailPageProps {
@@ -19,8 +19,8 @@ interface OrderDetailPageProps {
 }
 
 /**
- * Owns everything `OrderDetail` (pure) and `OrderActions` need but do not fetch themselves: the
- * order itself, the city name lookup, and the write handlers.
+ * Owns everything `OrderDetail` (pure) and `OrderStatusUpdater` need but do not fetch themselves:
+ * the order itself, the city name lookup, and the write handlers.
  */
 export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const t = useTranslations('Commerce.Orders');
@@ -81,10 +81,11 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   if (!order) return <NoDataError />;
 
   /**
-   * `OrderDetail` renders a bordered action strip whenever `actions` is truthy, and an
-   * `<OrderActions/>` ELEMENT is truthy even when the component itself renders `null`. So the
-   * decision has to happen HERE, before the element exists: a viewer without `order:manage`, or a
-   * settled terminal order with no legal action left, gets `null` and no empty strip.
+   * `OrderSummaryRail` renders a bordered status-updater slot whenever `statusUpdater` is
+   * truthy, and an `<OrderStatusUpdater/>` ELEMENT is truthy even when the component itself
+   * renders `null`. So the decision has to happen HERE, before the element exists: a viewer
+   * without `order:manage`, or a settled terminal order with no legal action left, gets `null`
+   * and no empty slot.
    */
   const showActions = can('order:manage') && hasAnyAction(order);
 
@@ -92,8 +93,10 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
     <OrderDetail
       order={order}
       cityName={order.cityId ? (cityById.get(order.cityId)?.name ?? null) : null}
-      actions={
-        showActions ? <OrderActions order={order} onAction={onAction} disabled={isLoading} /> : null
+      statusUpdater={
+        showActions ? (
+          <OrderStatusUpdater order={order} onAction={onAction} disabled={isLoading} />
+        ) : null
       }
     />
   );

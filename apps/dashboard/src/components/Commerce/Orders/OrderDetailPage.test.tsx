@@ -1,12 +1,22 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
 import type { OrderDetailView } from '@/types/commerceOrders';
 
+// Radix's Select uses pointer-capture APIs jsdom does not implement, and calls scrollIntoView on
+// the item it wants to highlight when opening. `OrderStatusUpdater` renders one, so this file
+// needs the same shim `OrderStatusUpdater.test.tsx` uses. Scoped to this file only.
+beforeAll(() => {
+  Element.prototype.hasPointerCapture = vi.fn(() => false) as never;
+  Element.prototype.setPointerCapture = vi.fn() as never;
+  Element.prototype.releasePointerCapture = vi.fn() as never;
+  Element.prototype.scrollIntoView = vi.fn() as never;
+});
+
 // This gate is not what this suite is about -- default it open, same convention
-// `OrderActions.test.tsx` uses for `usePermissions`.
+// `OrderStatusUpdater.test.tsx` uses for `usePermissions`.
 const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => ({ can: mockCan }) }));
 
@@ -64,10 +74,20 @@ const order: OrderDetailView = {
   receipts: [],
 };
 
+// Opens the Radix combobox and clicks the named option, then submits. `userEvent` is not a
+// resolvable dependency of this app, so this follows the same `fireEvent` +
+// `findByRole('option', ...)` drive `OrderStatusUpdater.test.tsx` already uses.
+const approveViaStatusUpdater = async () => {
+  fireEvent.click(screen.getByRole('combobox'));
+  fireEvent.click(await screen.findByRole('option', { name: copy.status.processing }));
+  fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
+  fireEvent.click(screen.getByRole('button', { name: copy.dialogs.approve.confirm }));
+};
+
 /**
  * `approve` is the only write this suite drives -- what is under test is `OrderDetailPage`'s
- * `onAction` catch block, not any one specific action, and `approve` is the plain no-dialog path
- * (`OrderActions.test.tsx` already covers `approve` firing at all).
+ * `onAction` catch block, not any one specific action, and `approve` is the plain
+ * single-confirm path (`OrderStatusUpdater.test.tsx` already covers `approve` firing at all).
  */
 const setup = (approveImpl: () => Promise<void>, orderOverride?: Partial<OrderDetailView>) => {
   const mutateMock = vi.fn().mockResolvedValue(undefined);
@@ -102,7 +122,7 @@ describe('OrderDetailPage status-change recovery', () => {
    * the order underneath this page. Toasting alone would leave stale buttons that fail on every
    * retry -- this is the behaviour the task ("...and error handling") is named for, and the most
    * defect-prone line in the diff, so it gets its own direct test rather than relying on
-   * `OrderActions`' unit tests to imply it.
+   * `OrderStatusUpdater`'s unit tests to imply it.
    */
   it('revalidates the order when the action fails with COMMERCE_ORDER_STATUS_CHANGED', async () => {
     const approve = vi
@@ -110,7 +130,7 @@ describe('OrderDetailPage status-change recovery', () => {
       .mockRejectedValue({ response: { data: { code: 'COMMERCE_ORDER_STATUS_CHANGED' } } });
     const mutateMock = setup(approve);
 
-    fireEvent.click(screen.getByRole('button', { name: copy.actions.approve }));
+    await approveViaStatusUpdater();
 
     await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1));
     expect(toastError).toHaveBeenCalled();
@@ -122,7 +142,7 @@ describe('OrderDetailPage status-change recovery', () => {
     });
     const mutateMock = setup(approve);
 
-    fireEvent.click(screen.getByRole('button', { name: copy.actions.approve }));
+    await approveViaStatusUpdater();
 
     await waitFor(() => expect(toastError).toHaveBeenCalled());
     expect(mutateMock).not.toHaveBeenCalled();
@@ -137,7 +157,7 @@ describe('OrderDetailPage status-change recovery', () => {
     const approve = vi.fn().mockRejectedValue(new Error('Network Error'));
     const mutateMock = setup(approve);
 
-    fireEvent.click(screen.getByRole('button', { name: copy.actions.approve }));
+    await approveViaStatusUpdater();
 
     await waitFor(() => expect(toastError).toHaveBeenCalled());
     expect(toastError).toHaveBeenCalledWith(copy.errors.unknown);
@@ -153,28 +173,28 @@ describe('OrderDetailPage action bar visibility', () => {
   });
 
   /**
-   * M1: `OrderDetail` renders a bordered strip whenever `actions` is truthy, and an
-   * `<OrderActions/>` ELEMENT is truthy even when the component renders `null`. Both of these
-   * used to produce an empty bordered strip.
+   * M1: `OrderSummaryRail` renders a bordered status-updater slot whenever `statusUpdater` is
+   * truthy, and an `<OrderStatusUpdater/>` ELEMENT is truthy even when the component renders
+   * `null`. Both of these used to produce an empty bordered strip.
    */
-  it('passes no action bar when the viewer cannot manage orders', () => {
+  it('passes no status control when the viewer cannot manage orders', () => {
     mockCan.mockReturnValue(false);
     setup(vi.fn());
-    expect(screen.queryByTestId('order-actions-bar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('status-updater-slot')).not.toBeInTheDocument();
   });
 
-  it('passes no action bar when the order has no legal action left', () => {
+  it('passes no status control when the order has no legal action left', () => {
     setup(vi.fn(), { status: 'completed', paidAt: '2026-09-02T12:00:00.000Z' });
-    expect(screen.queryByTestId('order-actions-bar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('status-updater-slot')).not.toBeInTheDocument();
   });
 
   /**
    * The C1 case end to end: a delivered COD order that has not been settled still has exactly one
-   * legal action, so the bar must appear.
+   * legal action, so the status control must appear.
    */
-  it('shows the action bar for a completed but unsettled order, holding only markPaid', () => {
+  it('shows the status control for a completed but unsettled order, holding only markPaid', () => {
     setup(vi.fn(), { status: 'completed', paidAt: null });
-    expect(screen.getByTestId('order-actions-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('status-updater-slot')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.actions.markPaid })).toBeInTheDocument();
   });
 });

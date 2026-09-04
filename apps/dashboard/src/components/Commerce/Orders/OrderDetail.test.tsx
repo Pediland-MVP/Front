@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
@@ -9,6 +10,12 @@ import { OrderDetail } from './OrderDetail';
 
 const copy = messages.Commerce.Orders;
 const shippingCopy = messages.Commerce.Shipping;
+
+const wrap = (node: ReactNode) => (
+  <NextIntlClientProvider locale="fa" messages={messages}>
+    {node}
+  </NextIntlClientProvider>
+);
 
 // Copied from OrderCard.test.tsx's `base` fixture rather than imported across test files (per
 // the task brief) -- extended here with the `receipts` field OrderDetailView adds.
@@ -57,11 +64,7 @@ const base: OrderDetailView = {
 };
 
 const renderDetail = (order: OrderDetailView, cityName: string | null) => {
-  render(
-    <NextIntlClientProvider locale="fa" messages={messages}>
-      <OrderDetail order={order} cityName={cityName} actions={null} />
-    </NextIntlClientProvider>,
-  );
+  render(wrap(<OrderDetail order={order} cityName={cityName} statusUpdater={null} />));
 };
 
 describe('OrderDetail', () => {
@@ -84,9 +87,12 @@ describe('OrderDetail', () => {
     expect(screen.queryByText(shippingCopy.settlementLabel)).not.toBeInTheDocument();
   });
 
+  // The payment state now lives on `OrderSummaryRail` (already covered by its own suite), which
+  // renders the short `payment.unpaid` label rather than the old flat body's `detail.notPaid`
+  // sentence -- that key has no renderer left in the new composition.
   it('says the payment is not yet confirmed when paidAt is null', () => {
     renderDetail({ ...base, paidAt: null, receipts: [] }, null);
-    expect(screen.getByText(copy.detail.notPaid)).toBeInTheDocument();
+    expect(screen.getByText(copy.payment.unpaid)).toBeInTheDocument();
   });
 
   it.each([['payment_rejected'], ['delivery_refused'], ['superseded'], ['legacy_cancelled']])(
@@ -176,22 +182,17 @@ describe('OrderDetail', () => {
     expect(screen.queryByText(/^784\//)).not.toBeInTheDocument();
   });
 
-  /**
-   * M1: `OrderDetail` renders a bordered strip whenever `actions` is truthy. `OrderDetailPage`
-   * passes `null` when there is nothing to put in it (see its own test) -- this pins the other
-   * half of the contract, that `null` really does mean no strip.
-   */
-  it('renders no action strip at all when handed no actions', () => {
-    renderDetail({ ...base, receipts: [] }, null);
-    expect(screen.queryByTestId('order-actions-bar')).not.toBeInTheDocument();
+  it('puts the decision rail before the detail columns in the DOM, so it is first on a phone', () => {
+    render(
+      wrap(<OrderDetail order={base} cityName="تهران" statusUpdater={<button>UPDATER</button>} />),
+    );
+    const rail = screen.getByRole('button', { name: 'UPDATER' });
+    const items = screen.getByText(copy.detail.items);
+    expect(rail.compareDocumentPosition(items) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('renders the action strip when handed something to put in it', () => {
-    render(
-      <NextIntlClientProvider locale="fa" messages={messages}>
-        <OrderDetail order={base} cityName={null} actions={<button type="button">x</button>} />
-      </NextIntlClientProvider>,
-    );
-    expect(screen.getByTestId('order-actions-bar')).toBeInTheDocument();
+  it('renders no status control when handed none', () => {
+    render(wrap(<OrderDetail order={base} cityName="تهران" statusUpdater={null} />));
+    expect(screen.queryByRole('button', { name: 'UPDATER' })).toBeNull();
   });
 });

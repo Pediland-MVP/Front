@@ -17,10 +17,15 @@ export interface OrderRowFields {
   isPaid: boolean;
   isPickup: boolean;
   /**
-   * `null` for a value outside `CommercePaymentMethodEnum`. The backend column is a plain
-   * `varchar(40)`, not a DB enum, so a row from the legacy backfill can carry anything --
-   * callers render `order.paymentMethod` raw in that case rather than letting next-intl print a
-   * missing key path like `Commerce.Orders.paymentMethod.zarinpal`.
+   * `null` for a value outside `CommercePaymentMethodEnum`. Backend's enum has exactly the three
+   * `KNOWN_PAYMENT_METHODS` values, but the column is `@Column({ length: 40 })` -- a plain
+   * `varchar(40)`, not a DB enum -- so a row brought in by the legacy backfill migration can carry
+   * a value outside that set. Checking membership here (not `t(\`paymentMethod.${value}\`)` at the
+   * call site) keeps that possible: next-intl would otherwise render the raw key path (e.g.
+   * `Commerce.Orders.paymentMethod.zarinpal`) as visible UI text for a missing key. Callers render
+   * `order.paymentMethod` raw when this is `null` instead -- not pretty, but it tells whoever is
+   * looking at a migrated legacy order what the value actually is. `OrderSummaryRail`,
+   * `OrdersTable` and `OrderRowCard` all branch on it this way.
    */
   paymentMethodKey: KnownPaymentMethod | null;
 }

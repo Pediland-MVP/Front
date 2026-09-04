@@ -38,8 +38,8 @@ export function OrderBuyerCard({ order, cityName }: OrderBuyerCardProps) {
   const { isPickup } = orderRowFields(order);
 
   /**
-   * Same guarded-lookup discipline as `paymentMethodLabel` in `OrderDetail`, for the same reason:
-   * `shippingKind`/`shippingSettlement` are plain `string | null` on `OrderView`, and
+   * Same guarded-lookup discipline as `paymentMethodKey` in `orderRowFields.ts`, for the same
+   * reason: `shippingKind`/`shippingSettlement` are plain `string | null` on `OrderView`, and
    * `tShipping(\`kinds.${value}\`)` would print a raw key path for an unrecognised value. Unlike
    * payment method, `null` here means "no shipping method recorded" -- that case is handled by
    * the caller omitting the row entirely (omit, don't dash), so these only need to resolve a
