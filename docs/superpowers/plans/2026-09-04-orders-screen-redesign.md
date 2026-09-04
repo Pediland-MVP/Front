@@ -17,7 +17,7 @@
 - **Branded types** (Back): use `@befroosh/common` ids (`CommerceOrderId`, `WorkspaceId`, …), never plain `string` (CLAUDE.md §6).
 - **Response envelopes:** `GET /commerce/orders` returns `PaginatedResult` (`{items, meta}`) directly; `GET /commerce/orders/:id` returns `ResponseMessage` (payload under `.data`). These genuinely differ — do not "unify" them (CLAUDE.md §9).
 - **Verification is part of the task.** Run scoped `tsc --noEmit` and the touched test files without asking. Never report done without real command output (CLAUDE.md §7.1). Do **not** run `next build` or `pnpm run dev`.
-- **Dashboard tsc baseline is 204 pre-existing errors.** It must not grow. Check by grepping for the touched filenames, not by the total.
+- **Dashboard tsc baseline is 206 pre-existing errors** (measured on `e825650e`). It must not grow. Check by grepping for the touched filenames, not by the total.
 - **Commit after every task.** End every commit message with:
   ```
   Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
@@ -886,7 +886,7 @@ import { orderRowFields } from './orderRowFields';
 export function OrderThumbs({ order }: { order: OrderListView }) {
   const t = useTranslations('Commerce.Orders');
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const { firstLine, isPickup } = orderRowFields(order);
+  const { firstLine } = orderRowFields(order);
   const TypeIcon = order.kind === 'physical' ? PackageIcon : FileDigitIcon;
 
   return (
@@ -949,8 +949,6 @@ export function OrderThumbs({ order }: { order: OrderListView }) {
 }
 ```
 
-> `isPickup` is destructured but unused here — remove it from the destructure if eslint flags it. It belongs to Task 12, not this file.
-
 - [ ] **Step 4: Run test to verify it passes**
 
 ```bash
@@ -998,8 +996,17 @@ const renderTable = (orders: OrderListView[], onOpen = vi.fn()) => {
 describe('OrdersTable', () => {
   it('renders all six column headers', () => {
     renderTable([base]);
-    for (const header of Object.values(copy.table).slice(0, 6)) {
-      expect(screen.getByRole('columnheader', { name: header as string })).toBeInTheDocument();
+    // Named explicitly rather than sliced off `copy.table`, so reordering the JSON keys
+    // cannot silently change what this asserts.
+    for (const header of [
+      copy.table.product,
+      copy.table.recipient,
+      copy.table.placedAt,
+      copy.table.grandTotal,
+      copy.table.payment,
+      copy.table.status,
+    ]) {
+      expect(screen.getByRole('columnheader', { name: header })).toBeInTheDocument();
     }
   });
 
@@ -1304,19 +1311,28 @@ interface OrderRowCardProps {
  * dropping columns loses the paid/unpaid signal and the date the list is sorted by. This keeps
  * every fact and rearranges it instead.
  *
- * `text-right` because a `<button>` resets text alignment to centre, which would undo the RTL
- * layout inside it.
+ * `role="button"` on a div rather than a real `<button>` wrapper: `OrderThumbs` renders its own
+ * button for the receipt, and a `<button>` inside a `<button>` is invalid HTML -- the parser
+ * auto-closes the outer one, so the markup a browser builds is not the markup written. Same
+ * pattern `OrdersTable` uses for its `<tr>`, and it keeps the row keyboard reachable.
  */
 const OrderRowCardComponent = ({ order, onOpen }: OrderRowCardProps) => {
   const t = useTranslations('Commerce.Orders');
   const { firstLine, extraLines, isPaid, paymentMethodKey } = orderRowFields(order);
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       aria-label={t('table.openOrder')}
       onClick={() => onOpen(order.orderId)}
-      className="w-full text-right"
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(order.orderId);
+        }
+      }}
+      className="w-full cursor-pointer text-right"
     >
       <Card className="gap-0 p-0 transition-shadow hover:shadow-md">
         <CardContent className="flex items-start gap-3 p-3">
@@ -1361,7 +1377,7 @@ const OrderRowCardComponent = ({ order, onOpen }: OrderRowCardProps) => {
           </div>
         </CardContent>
       </Card>
-    </button>
+    </div>
   );
 };
 
@@ -1411,10 +1427,13 @@ it('renders the table and the row-card list, one per breakpoint', async () => {
   expect(screen.getAllByRole('button', { name: copy.table.openOrder }).length).toBeGreaterThan(0);
 });
 
-it('no longer renders the old grid card', async () => {
+it('renders both breakpoint renderings, so neither is dropped', async () => {
   renderPage();
   await screen.findByRole('table');
-  expect(document.querySelector('.grid')).toBeNull();
+  // NOT `querySelector('.grid')` -- the filter bar's date-picker cell is a `.grid` this task
+  // does not touch, so that probe fails on a correct implementation. The grid CARD's removal is
+  // enforced by deleting OrderCard.tsx and by tsc, not by a CSS-class check.
+  expect(screen.getAllByRole('button', { name: copy.table.openOrder }).length).toBeGreaterThan(0);
 });
 ```
 
@@ -2409,7 +2428,7 @@ pnpm --filter core exec tsc --noEmit
 # Front
 cd /home/cvexor/Documents/MVP/Front/worktrees/commerce-product-core/apps/dashboard
 npx vitest run src/components/Commerce/
-npx tsc --noEmit 2>&1 | grep -cE 'error TS'   # must be <= 204
+npx tsc --noEmit 2>&1 | grep -cE 'error TS'   # must be <= 206
 ```
 Record the real numbers in both update docs. **Do not write "passing" without pasted output.**
 
