@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
@@ -64,6 +64,48 @@ describe('ShippingMethodCard — closed until asked', () => {
     const summary = screen.getByTestId('method-summary');
     expect(summary).toHaveTextContent('۴۵٬۰۰۰');
     expect(summary).toHaveTextContent('۱٬۵۰۰٬۰۰۰');
+  });
+
+  it('summarises «تحویل حضوری» as free, even while the draft still holds a rate', () => {
+    // A merchant can pick the pickup kind on a method that was prepaid with a real price. The rate
+    // only becomes 0 when it is SAVED (`toPayload`), so the closed card would otherwise advertise a
+    // price the buyer is never charged.
+    renderCard(
+      baseDraft({ isActive: true, kind: 'pickup', amount: 50_000, freeOverAmount: 200_000 }),
+    );
+
+    const summary = screen.getByTestId('method-summary');
+    expect(summary).toHaveTextContent(copy.summaryPickup);
+    expect(summary).not.toHaveTextContent('۵۰٬۰۰۰');
+  });
+
+  it('hides the rate, threshold and city exceptions for a pickup, and says why', () => {
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup', amount: 50_000 }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    // Its own note, not the carrier-collects one -- there is no مأمور پست in a pickup.
+    expect(screen.getByText(copy.pickupRateNote)).toBeInTheDocument();
+    expect(screen.queryByText(copy.noRateNote)).not.toBeInTheDocument();
+  });
+
+  it('offers the collection address on a pickup, and on nothing else', () => {
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup' }));
+    expect(screen.getByLabelText(copy.pickupAddressLabel)).toBeInTheDocument();
+
+    cleanup();
+    renderOpenCard(baseDraft({ isActive: true, kind: 'post_express' }));
+    expect(screen.queryByLabelText(copy.pickupAddressLabel)).not.toBeInTheDocument();
+  });
+
+  it('reports the typed collection address up', () => {
+    const onChange = vi.fn();
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup' }), onChange);
+
+    fireEvent.change(screen.getByLabelText(copy.pickupAddressLabel), {
+      target: { value: 'تهران، ولیعصر، پلاک ۱۲' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ pickupAddress: 'تهران، ولیعصر، پلاک ۱۲' });
   });
 
   it('opens on the pencil and closes again on the second click', () => {

@@ -1,5 +1,7 @@
 export * from './ButtonContent';
 export * from './BuyInDirectContent';
+export * from './BuyInDirectContentItem';
+export * from './BuyInDirectContentItemDialog';
 export * from './ContentButtonsItem';
 export * from './ContentItem';
 export * from './ContentPromotion';

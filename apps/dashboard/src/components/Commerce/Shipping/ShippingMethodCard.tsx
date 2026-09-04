@@ -107,6 +107,10 @@ export const ShippingMethodCard = ({
   const summary = useMemo(() => {
     if (!draft.isActive) return t('summaryInactive');
 
+    // Before the settlement checks: a pickup charges nothing whatever settlement it carries, and
+    // the buyer is told so on the order summary. Without this branch a pickup a merchant left on
+    // «پرداخت آنلاین» printed whatever stale rate the draft still held.
+    if (draft.kind === 'pickup') return t('summaryPickup');
     if (draft.settlement === 'freight_collect') return t('summaryFreightCollect');
     if (draft.settlement === 'cash_on_delivery') return t('summaryCashOnDelivery');
 
@@ -349,7 +353,38 @@ export const ShippingMethodCard = ({
               />
             </>
           ) : (
-            <p className="text-mut text-xs text-pretty">{t('noRateNote')}</p>
+            <div className="flex flex-col gap-3">
+              <p className="text-mut text-xs text-pretty">
+                {t(draft.kind === 'pickup' ? 'pickupRateNote' : 'noRateNote')}
+              </p>
+
+              {/*
+                The one field a pickup needs and no other method has. A textarea, not an input:
+                merchants write the street, a landmark, opening hours and a phone number into it,
+                and a single line hides all but the first of those.
+              */}
+              {draft.kind === 'pickup' && (
+                <div>
+                  <label
+                    htmlFor={`pickup-${draft.key}`}
+                    className="text-mut mb-1.5 block text-xs font-bold"
+                  >
+                    {t('pickupAddressLabel')}
+                  </label>
+                  <textarea
+                    id={`pickup-${draft.key}`}
+                    rows={3}
+                    maxLength={500}
+                    disabled={!canEdit}
+                    value={draft.pickupAddress}
+                    placeholder={t('pickupAddressPlaceholder')}
+                    onChange={(e) => onChange({ pickupAddress: e.target.value })}
+                    className={cn(editorInput, 'resize-y')}
+                  />
+                  <p className="text-mut mt-1.5 text-xs text-pretty">{t('pickupAddressHint')}</p>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}

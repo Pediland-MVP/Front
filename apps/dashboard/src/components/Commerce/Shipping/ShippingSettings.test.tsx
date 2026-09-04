@@ -59,6 +59,7 @@ const option = (patch: Partial<CommerceShippingOption> = {}): CommerceShippingOp
   settlement: 'prepaid',
   amount: 45000,
   freeOverAmount: null,
+  pickupAddress: null,
   sortOrder: 0,
   isSystem: false,
   isActive: true,
