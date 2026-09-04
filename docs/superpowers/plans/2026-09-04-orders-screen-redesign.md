@@ -2091,7 +2091,12 @@ export function OrderSummaryRail({ order, statusUpdater }: OrderSummaryRailProps
         <div className="flex items-center justify-between gap-3">
           <OrderStatusBadge status={order.status} />
           <span className="text-lg font-semibold">
-            {formatNumber(order.grandTotal)}{' '}
+            {/* The amount gets its OWN span. React Testing Library's `getByText` matches an
+                element's ENTIRE text, so a bare `{formatNumber(...)}` glued next to a nested
+                <span> leaves no element whose text is just the amount -- the assertion below
+                cannot match it. Both spans stay inline (the parent is a <span>, an inline
+                formatting context), so this changes nothing visually. */}
+            <span>{formatNumber(order.grandTotal)}</span>{' '}
             <span className="text-muted-foreground text-xs font-medium">{t('card.tooman')}</span>
           </span>
         </div>
