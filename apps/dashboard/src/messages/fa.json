@@ -3006,7 +3006,9 @@
       },
       "card": {
         "itemCount": "{count} کالا",
-        "noName": "بدون نام"
+        "noName": "بدون نام",
+        "more": "+{count} کالای دیگر",
+        "tooman": "تومان"
       },
       "empty": {
         "none": "هنوز سفارشی ثبت نشده",

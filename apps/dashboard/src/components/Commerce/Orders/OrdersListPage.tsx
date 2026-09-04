@@ -9,8 +9,12 @@ import persian from 'react-date-object/calendars/persian';
 import persian_fa from 'react-date-object/locales/persian_fa';
 import DatePicker from 'react-multi-date-picker';
 
+import { cn } from '@/lib/utils';
+
 import { ItemsPagination } from '@/components/Console/ItemsPagination';
+import { NoDataError } from '@/components/Global/NoDataError';
 import { Button } from '@/components/ui/button';
+import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { SearchInput } from '@/components/ui-custom/SearchInput';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useCommerceOrders } from '@/hooks/useCommerceOrders';
@@ -67,9 +71,62 @@ const isoFromPicked = (picked: DateObject | DateObject[] | null): string =>
   picked && !Array.isArray(picked) ? isoFromDate(picked.toDate()) : '';
 
 // Matches the height/border of the filter bar's other controls without pulling in `Input`, which
-// react-multi-date-picker cannot render as its own input element.
+// react-multi-date-picker cannot render as its own input element. `w-full sm:w-32`: on a phone the
+// two pickers share a 2-column grid and each fills its cell, instead of being pinned to 128px and
+// leaving the row looking half-empty.
 const DATE_INPUT_CLASS =
-  'border-input bg-background text-foreground h-9 w-32 rounded-md border px-2 text-xs';
+  'border-input bg-card text-foreground h-9 w-full sm:w-32 rounded-md border px-2 text-xs';
+
+interface DateFilterCellProps {
+  label: string;
+  clearLabel: string;
+  value?: string;
+  onPick: (iso: string) => void;
+}
+
+/**
+ * One labelled date picker plus its clear button.
+ *
+ * The clear button keeps its slot when there is no date (`invisible`, not unmounted). Mounting it
+ * only when a date is set made the whole filter row jump sideways by ~28px the moment a date was
+ * picked or cleared -- and the button the seller had just aimed at moved out from under the
+ * cursor. `aria-hidden`/`tabIndex={-1}` keep the placeholder out of the accessibility tree and the
+ * tab order, so it costs nothing when it is not usable.
+ *
+ * Module-level, not defined inside `OrdersListPage`: a component declared in a render body is a
+ * new type on every render, which would unmount and remount the picker (closing its calendar
+ * popover) on every keystroke in the search box.
+ */
+function DateFilterCell({ label, clearLabel, value, onPick }: DateFilterCellProps) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-1.5">
+      <span className="text-muted-foreground shrink-0 text-xs">{label}</span>
+      <div className="flex min-w-0 items-center gap-0.5">
+        <DatePicker
+          value={dateFromIso(value)}
+          onChange={(picked) => onPick(isoFromPicked(picked))}
+          calendar={persian}
+          locale={persian_fa}
+          calendarPosition="bottom-right"
+          inputClass={DATE_INPUT_CLASS}
+          placeholder={label}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className={cn('size-7 shrink-0', !value && 'invisible')}
+          aria-hidden={!value}
+          tabIndex={value ? 0 : -1}
+          onClick={() => onPick('')}
+        >
+          <span className="sr-only">{clearLabel}</span>
+          <XIcon className="size-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Filters live in the URL, not in `useState` (which is what `ProductListPage` does). Tapping an
@@ -197,142 +254,162 @@ export function OrdersListPage() {
   // has no way to skip its own fetch, so there is nothing left to gate on the client; the API
   // itself is the enforcement point, same as it is for every other endpoint here.
 
+  const listRegion = error ? (
+    // Must come before every other branch: a failed fetch leaves `orders` as `[]` AND can leave
+    // `isLoading` true on a retry, so without this check a 403 (a KAM without `order:view`) or a
+    // 500 would silently render "no orders yet" -- confidently telling a refused seller their shop
+    // has no orders -- or a spinner that never resolves, which reads as a hang rather than a
+    // failure. `NoDataError` carries the orders-specific copy rather than the generic
+    // `ERROR_CODES.FETCH_DATA`, so the seller is told WHAT failed.
+    <NoDataError message={t('loadError')} />
+  ) : isLoading ? (
+    // `orders` is `[]` during the first fetch exactly as it is for a shop with no orders. Without
+    // this branch the panel was simply blank until the response landed.
+    <LoaderSpin />
+  ) : orders.length === 0 ? (
+    <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+      {hasActiveFilters ? (
+        <>
+          <div className="text-muted-foreground text-sm">{t('empty.noMatch')}</div>
+          <Button type="button" variant="outline" size="sm" onClick={clearFilters}>
+            {t('empty.clearFilters')}
+          </Button>
+        </>
+      ) : (
+        <>
+          <div className="text-muted-foreground text-sm">{t('empty.none')}</div>
+          <div className="text-muted-foreground text-xs">{t('empty.noneHint')}</div>
+        </>
+      )}
+    </div>
+  ) : (
+    // Same breakpoints as the legacy `/orders` grid, one step wider than `/products` because an
+    // order card carries less text than a product card.
+    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      {orders.map((order) => (
+        <OrderCard
+          key={order.orderId}
+          order={order}
+          onOpen={(orderId) => router.push(`/products/orders/${orderId}`)}
+        />
+      ))}
+    </div>
+  );
+
+  /**
+   * Three bands. From `md` up only the middle one scrolls: `page.tsx` hands this component a
+   * `LayoutCard` with `md:overflow-hidden`, so the filters stay put while the seller pages through
+   * orders instead of scrolling away above them, and the pager stays reachable without scrolling
+   * to the bottom. `md:min-h-0` on the root and on the list band is what allows that band to
+   * shrink below its content height -- without it a flex child refuses to, and the whole column
+   * overflows again.
+   *
+   * Below `md` every band is a plain block and the page scrolls as a whole, which is what
+   * `SidebarInset` already does for the rest of the app on a phone. Pinning there would hand the
+   * list about one card's worth of height on a short screen.
+   */
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-4">
+    <div className="flex flex-col gap-3 md:h-full md:min-h-0">
       <OrdersExportDrawer open={exportOpen} onOpenChange={setExportOpen} filters={filters} />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <SearchInput
-          value={searchInput}
-          onChange={setSearchInput}
-          onEffectiveSearchChange={handleEffectiveSearchChange}
-          placeholder={t('searchPlaceholder')}
-        />
+      <div className="flex shrink-0 flex-col gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+          <div className="w-full sm:max-w-xs">
+            <SearchInput
+              value={searchInput}
+              onChange={setSearchInput}
+              onEffectiveSearchChange={handleEffectiveSearchChange}
+              placeholder={t('searchPlaceholder')}
+            />
+          </div>
 
-        <div className="flex items-center gap-1">
-          <span className="text-muted-foreground text-xs">{t('dateRange.from')}</span>
-          <DatePicker
-            value={dateFromIso(filters.from)}
-            onChange={(picked) => setParam('from', isoFromPicked(picked))}
-            calendar={persian}
-            locale={persian_fa}
-            calendarPosition="bottom-right"
-            inputClass={DATE_INPUT_CLASS}
-            placeholder={t('dateRange.from')}
-          />
-          {filters.from && (
+          {/* Two equal cells on a phone, natural width from `sm` up. Previously both pickers were
+              `w-32` at every size and crowded the search box off the row. */}
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+            <DateFilterCell
+              label={t('dateRange.from')}
+              clearLabel={t('dateRange.clear')}
+              value={filters.from}
+              onPick={(iso) => setParam('from', iso)}
+            />
+            <DateFilterCell
+              label={t('dateRange.to')}
+              clearLabel={t('dateRange.clear')}
+              value={filters.to}
+              onPick={(iso) => setParam('to', iso)}
+            />
+          </div>
+
+          {/* Before this, the only reset lived in the EMPTY state -- so a filtered list that DID
+              match something had no way back except unsetting each control one at a time. */}
+          {hasActiveFilters && (
             <Button
               type="button"
               variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => setParam('from', '')}
+              size="sm"
+              onClick={clearFilters}
+              className="text-muted-foreground self-start"
             >
-              <span className="sr-only">{t('dateRange.clear')}</span>
               <XIcon className="size-3.5" />
+              {t('empty.clearFilters')}
             </Button>
           )}
         </div>
 
-        <div className="flex items-center gap-1">
-          <span className="text-muted-foreground text-xs">{t('dateRange.to')}</span>
-          <DatePicker
-            value={dateFromIso(filters.to)}
-            onChange={(picked) => setParam('to', isoFromPicked(picked))}
-            calendar={persian}
-            locale={persian_fa}
-            calendarPosition="bottom-right"
-            inputClass={DATE_INPUT_CLASS}
-            placeholder={t('dateRange.to')}
-          />
-          {filters.to && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={() => setParam('to', '')}
-            >
-              <span className="sr-only">{t('dateRange.clear')}</span>
-              <XIcon className="size-3.5" />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant={!filters.status ? 'default' : 'outline'}
-          className="rounded-full"
-          onClick={() => setParam('status', '')}
-        >
-          {t('status.all')}
-        </Button>
-        {STATUSES.map((status) => (
+        {/* Six chips wrap to three lines on a phone and eat the viewport. Below `sm` they scroll
+            sideways in one row instead; the negative margin lets the row bleed to the card edge so
+            the last chip is visibly cut off, which is what signals it scrolls. */}
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           <Button
-            key={status}
             type="button"
             size="sm"
-            variant={filters.status === status ? 'default' : 'outline'}
-            className="rounded-full"
-            onClick={() => setParam('status', status)}
+            variant={!filters.status ? 'default' : 'outline'}
+            className="shrink-0 rounded-full"
+            onClick={() => setParam('status', '')}
           >
-            {t(`status.${status}`)}
+            {t('status.all')}
           </Button>
-        ))}
+          {STATUSES.map((status) => (
+            <Button
+              key={status}
+              type="button"
+              size="sm"
+              variant={filters.status === status ? 'default' : 'outline'}
+              className="shrink-0 rounded-full"
+              onClick={() => setParam('status', status)}
+            >
+              {t(`status.${status}`)}
+            </Button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1">
-        {error ? (
-          // Must come before the empty-state branch below: a failed fetch leaves `orders` as
-          // `[]` too, and without this check a 403 (a KAM without `order:view`) or a 500 would
-          // silently render "no orders yet" -- confidently telling a refused seller their shop
-          // has no orders, which is worse than showing nothing.
-          <div className="flex h-full items-center justify-center text-center">
-            <div className="text-muted-foreground text-sm">{t('loadError')}</div>
-          </div>
-        ) : !isLoading && orders.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            {hasActiveFilters ? (
-              <>
-                <div className="text-muted-foreground text-sm">{t('empty.noMatch')}</div>
-                <Button type="button" variant="outline" size="sm" onClick={clearFilters}>
-                  {t('empty.clearFilters')}
-                </Button>
-              </>
-            ) : (
-              <>
-                <div className="text-muted-foreground text-sm">{t('empty.none')}</div>
-                <div className="text-muted-foreground text-xs">{t('empty.noneHint')}</div>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {orders.map((order) => (
-              <OrderCard
-                key={order.orderId}
-                order={order}
-                onOpen={(orderId) => router.push(`/products/orders/${orderId}`)}
-              />
-            ))}
-          </div>
-        )}
+      {/*
+        `-mx-1 px-1` so a card's hover shadow and focus ring are not clipped by the scroll box.
+
+        `min-h-[280px]` matters only on mobile, where this band is a plain auto-height block: the
+        loader, the empty state and `NoDataError` all centre themselves with `h-full`, which
+        against an auto-height parent collapses to their own content height and leaves them
+        crammed against the filter bar. From `md` up the band is a flex child with a real height,
+        so the floor is dropped.
+      */}
+      <div className="-mx-1 min-h-[280px] px-1 md:min-h-0 md:flex-1 md:overflow-y-auto">
+        {listRegion}
       </div>
 
       {!error && (
-        <ItemsPagination
-          serverPage={meta?.currentPage}
-          serverPerPage={meta?.itemsPerPage}
-          serverTotalPages={meta?.totalPages}
-          serverItemCount={meta?.itemCount}
-          totalCount={meta?.totalItems}
-          isLoading={isLoading}
-          onPageChange={(p) => setParam('page', String(p))}
-          onLimitChange={(l) => setParam('limit', String(l))}
-        />
+        <div className="shrink-0 border-t pt-2">
+          <ItemsPagination
+            serverPage={meta?.currentPage}
+            serverPerPage={meta?.itemsPerPage}
+            serverTotalPages={meta?.totalPages}
+            serverItemCount={meta?.itemCount}
+            totalCount={meta?.totalItems}
+            isLoading={isLoading}
+            onPageChange={(p) => setParam('page', String(p))}
+            onLimitChange={(l) => setParam('limit', String(l))}
+          />
+        </div>
       )}
     </div>
   );

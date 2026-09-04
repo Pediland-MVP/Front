@@ -167,6 +167,140 @@ describe('OrdersListPage error state', () => {
   });
 });
 
+describe('OrdersListPage loading state', () => {
+  beforeEach(() => {
+    mockReplace.mockClear();
+    mockPush.mockClear();
+    searchParamsRef.current = new URLSearchParams();
+  });
+
+  /**
+   * `orders` is `[]` while the first fetch is still in flight, exactly as it is for a shop with no
+   * orders. The page used to render nothing at all in that window -- the empty state is guarded on
+   * `!isLoading`, and there was no loading branch -- so opening the screen showed a blank panel
+   * until the response landed. Assert the spinner is up AND that neither empty-state copy leaks.
+   */
+  it('shows a spinner instead of a blank panel while the first fetch is in flight', () => {
+    mockUseCommerceOrders.mockReturnValue({
+      orders: [],
+      meta: undefined,
+      isLoading: true,
+      error: undefined,
+      mutate: vi.fn(),
+      key: '',
+    });
+
+    renderPage();
+
+    // `Spinner` renders a `Loader2Icon` with `role="status"` -- no test id, so this is the handle.
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.queryByText(messages.Commerce.Orders.empty.none)).not.toBeInTheDocument();
+    expect(screen.queryByText(messages.Commerce.Orders.empty.noMatch)).not.toBeInTheDocument();
+  });
+
+  /**
+   * The error branch must still win over the loading branch: SWR keeps `isLoading` true on a
+   * retrying request that has already failed once, and a spinner that never resolves reads as a
+   * hang rather than a failure.
+   */
+  it('prefers the load error over the spinner when the fetch has already failed', () => {
+    mockUseCommerceOrders.mockReturnValue({
+      orders: [],
+      meta: undefined,
+      isLoading: true,
+      error: new Error('boom'),
+      mutate: vi.fn(),
+      key: '',
+    });
+
+    renderPage();
+
+    expect(screen.getByText(messages.Commerce.Orders.loadError)).toBeInTheDocument();
+  });
+});
+
+describe('OrdersListPage filter clearing', () => {
+  /**
+   * A NON-EMPTY result set is load-bearing for this block. The empty state renders its own
+   * `empty.clearFilters` button, so with `orders: []` these tests would pass against the old code
+   * and prove nothing -- the point is that a filtered list WITH results also gets a reset.
+   */
+  const oneOrder = {
+    orderId: 'o1',
+    status: 'processing',
+    cancelReason: null,
+    kind: 'physical',
+    lines: [
+      {
+        variantId: 'v1',
+        productId: 'p1',
+        title: 'شال',
+        options: [],
+        imageUrl: null,
+        unitPrice: 1000,
+        compareAtPrice: null,
+        quantity: 1,
+        lineTotal: 1000,
+      },
+    ],
+    itemsTotal: 1000,
+    shippingTotal: 0,
+    grandTotal: 1000,
+    paymentMethod: 'card_to_card',
+    recipientName: 'علی رضایی',
+    mobile: null,
+    cityId: null,
+    address: null,
+    plate: null,
+    unit: null,
+    postalcode: null,
+    placedAt: '2026-09-02T10:00:00.000Z',
+    shippingTitle: null,
+    shippingKind: null,
+    shippingSettlement: null,
+    paidAt: null,
+    createDate: '2026-09-02T10:00:00.000Z',
+  };
+
+  beforeEach(() => {
+    mockReplace.mockClear();
+    mockPush.mockClear();
+    mockUseCommerceOrders.mockReturnValue({
+      orders: [oneOrder],
+      meta: undefined,
+      isLoading: false,
+      error: undefined,
+      mutate: vi.fn(),
+      key: '',
+    });
+  });
+
+  /**
+   * The only way to drop a status/date filter used to be to unset each control one at a time, or
+   * to reach the empty state's own clear button -- which does not exist when the filters DO match
+   * something. A filtered list with results therefore had no reset.
+   */
+  it('offers a clear-all control in the filter bar whenever a filter is active', () => {
+    searchParamsRef.current = new URLSearchParams('status=processing');
+    renderPage();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: messages.Commerce.Orders.empty.clearFilters }),
+    );
+
+    expect(mockReplace).toHaveBeenCalledWith('/products/orders');
+  });
+
+  it('hides the clear-all control when no filter is set', () => {
+    searchParamsRef.current = new URLSearchParams('page=2');
+    renderPage();
+
+    expect(
+      screen.queryByRole('button', { name: messages.Commerce.Orders.empty.clearFilters }),
+    ).not.toBeInTheDocument();
+  });
+});
+
 /**
  * Regression guard for the defect this screen shipped: it imported `packages/ui`'s `DatePicker`,
  * which transitively imports `packages/ui/src/lib/dayjs-jalali`, whose module BODY calls

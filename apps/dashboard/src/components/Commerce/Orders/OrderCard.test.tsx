@@ -76,6 +76,29 @@ describe('OrderCard', () => {
     expect(onOpen).toHaveBeenCalledWith('o1');
   });
 
+  it('shows the title of the first line, which is what the card is recognised by', () => {
+    renderCard();
+    expect(screen.getByText('شال')).toBeInTheDocument();
+  });
+
+  /**
+   * A card only has room for one line's title. With several lines the seller must still be able
+   * to tell, from the grid alone, that the order is bigger than the one product shown -- otherwise
+   * a 3-product order is indistinguishable from a 1-product one until it is opened.
+   */
+  it('flags the remaining lines when the order has more than one', () => {
+    renderCard({
+      ...base,
+      lines: [base.lines[0], { ...base.lines[0], variantId: 'v2', title: 'کلاه' }],
+    });
+    expect(screen.getByText(copy.card.more.replace('{count}', '1'))).toBeInTheDocument();
+  });
+
+  it('shows no "more" chip for a single-line order', () => {
+    renderCard();
+    expect(screen.queryByText(/کالای دیگر/)).not.toBeInTheDocument();
+  });
+
   /**
    * Spec §6 lists the placed date among the five things a card shows. The list is date-sorted, so
    * this is the field the seller scans down. Literal Jalali string: 2026-09-02T10:00Z is 12:00 in
