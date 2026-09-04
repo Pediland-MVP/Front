@@ -21,8 +21,9 @@ import { useCommerceOrders } from '@/hooks/useCommerceOrders';
 import { useHeaderFeatures } from '@/lib/stores/useHeaderFeaturesStore';
 import type { CommerceOrderStatus, OrdersFilters } from '@/types/commerceOrders';
 
-import { OrderCard } from './OrderCard';
+import { OrderRowCard } from './OrderRowCard';
 import { OrdersExportDrawer } from './OrdersExportDrawer';
+import { OrdersTable } from './OrdersTable';
 
 export const DEFAULT_LIMIT = 20;
 
@@ -283,17 +284,28 @@ export function OrdersListPage() {
       )}
     </div>
   ) : (
-    // Same breakpoints as the legacy `/orders` grid, one step wider than `/products` because an
-    // order card carries less text than a product card.
-    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-      {orders.map((order) => (
-        <OrderCard
-          key={order.orderId}
-          order={order}
+    /**
+     * Both renderings are always in the DOM and CSS picks one. A `useMediaQuery` hook would paint
+     * the wrong layout on the first render and visibly flash. At the default `limit` of 20 this is
+     * 40 light rows; the seller-set maximum is 200.
+     */
+    <>
+      <div className="hidden md:block">
+        <OrdersTable
+          orders={orders}
           onOpen={(orderId) => router.push(`/products/orders/${orderId}`)}
         />
-      ))}
-    </div>
+      </div>
+      <div className="flex flex-col gap-2 md:hidden">
+        {orders.map((order) => (
+          <OrderRowCard
+            key={order.orderId}
+            order={order}
+            onOpen={(orderId) => router.push(`/products/orders/${orderId}`)}
+          />
+        ))}
+      </div>
+    </>
   );
 
   /**

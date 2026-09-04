@@ -34,7 +34,8 @@ import {
   OrdersListPage,
 } from './OrdersListPage';
 
-const searchPlaceholder = messages.Commerce.Orders.searchPlaceholder;
+const copy = messages.Commerce.Orders;
+const searchPlaceholder = copy.searchPlaceholder;
 
 function renderPage() {
   return render(
@@ -298,6 +299,78 @@ describe('OrdersListPage filter clearing', () => {
     expect(
       screen.queryByRole('button', { name: messages.Commerce.Orders.empty.clearFilters }),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe('OrdersListPage list rendering', () => {
+  // Same shape `OrdersTable.test.tsx`/`OrderRowCard.test.tsx` use for `OrderListView` -- both
+  // renderings must be able to consume it without the mock hiding a real type mismatch.
+  const oneOrder = {
+    orderId: 'o1',
+    status: 'processing',
+    cancelReason: null,
+    kind: 'physical',
+    lines: [
+      {
+        variantId: 'v1',
+        productId: 'p1',
+        title: 'شال',
+        options: [],
+        imageUrl: null,
+        unitPrice: 1000,
+        compareAtPrice: null,
+        quantity: 1,
+        lineTotal: 1000,
+      },
+    ],
+    itemsTotal: 1000,
+    shippingTotal: 0,
+    grandTotal: 1000,
+    paymentMethod: 'card_to_card',
+    recipientName: 'علی رضایی',
+    mobile: null,
+    cityId: null,
+    address: null,
+    plate: null,
+    unit: null,
+    postalcode: null,
+    placedAt: '2026-09-02T10:00:00.000Z',
+    shippingTitle: null,
+    shippingKind: null,
+    shippingSettlement: null,
+    paidAt: null,
+    createDate: '2026-09-02T10:00:00.000Z',
+    receiptUrl: null,
+    receiptCount: 0,
+  };
+
+  beforeEach(() => {
+    mockReplace.mockClear();
+    mockPush.mockClear();
+    searchParamsRef.current = new URLSearchParams();
+    mockUseCommerceOrders.mockReturnValue({
+      orders: [oneOrder],
+      meta: undefined,
+      isLoading: false,
+      error: undefined,
+      mutate: vi.fn(),
+      key: '',
+    });
+  });
+
+  it('renders the table and the row-card list, one per breakpoint', async () => {
+    renderPage();
+    expect(await screen.findByRole('table')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: copy.table.openOrder }).length).toBeGreaterThan(0);
+  });
+
+  it('renders both breakpoint renderings, so neither is dropped', async () => {
+    renderPage();
+    await screen.findByRole('table');
+    // Both `OrdersTable` and `OrderRowCard` render a `role="button"` with the same
+    // `table.openOrder` label for one order -- exactly two means both are mounted, CSS just
+    // picks which one is visible. One would mean the other rendering got dropped.
+    expect(screen.getAllByRole('button', { name: copy.table.openOrder })).toHaveLength(2);
   });
 });
 
