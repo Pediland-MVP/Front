@@ -108,13 +108,23 @@ untouched; `null` clears it. Whether COD is offered is NOT here: it is the shipp
 `settlement`, which is also why the old "a COD-only merchant needs bank details" gap no longer
 exists.
 
-**No consumer yet.** `POST /commerce/orders/:id/mark-paid` and `:id/cancel` have no frontend. The
-dashboard's `/orders` screen reads the **legacy** `GET /orders`; nothing calls `/commerce/orders`.
-Until a commerce orders screen exists, a COD order cannot be settled from the dashboard.
-
 **Error codes.** `COMMERCE_SHIPPING_OPTION_NOT_FOUND`, `COMMERCE_SHIPPING_OPTION_UNAVAILABLE`,
 `COMMERCE_SHIPPING_THRESHOLD_REQUIRED`, `COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED`,
 `COMMERCE_SHIPPING_OVERRIDE_TARGET` — all translated in `messages/fa/ErrorCodes.json`.
+
+## Commerce — Orders
+
+The `/products/orders` (list) and `/products/orders/[id]` (detail) merchant screens, redesigned
+2026-09-04 — see `knowledge/updates/2026-09-04-ordersScreenRedesign.update.md`.
+
+| Route | Used by | Notes |
+| --- | --- | --- |
+| `GET /commerce/orders` | `apps/dashboard/src/hooks/useCommerceOrders.ts`, consumed by `components/Commerce/Orders/OrdersTable.tsx` and `OrderRowCard.tsx` | **As of 2026-09-04**, returns `OrderListView` (`OrderView` + `receiptUrl: string \| null`, `receiptCount: number`) instead of plain `OrderView`. `receiptUrl` is the newest کارت‌به‌کارت receipt (`null` if none was ever sent, or its file row is gone); `receiptCount` is how many receipts exist, so the row can mark a re-upload without shipping every url. Rendered via `OrderThumbs.tsx` alongside the first line's product image, opening `ReceiptLightbox` in place. Back doc: `Back/knowledge/updates/2026-09-04-orderListViewReceipts.update.md`. |
+| `GET /commerce/orders/:id` | `apps/dashboard/src/hooks/useCommerceOrder.ts`, consumed by `OrderDetail.tsx`/`OrderSummaryRail.tsx` | Unchanged — still `OrderDetailView` (`OrderView` + `receipts: OrderReceiptView[]`, full trail newest-first). |
+| `POST /commerce/orders/:id/approve` \| `/reject` \| `/ship` \| `/complete` \| `/cancel` \| `/mark-paid` | `OrderStatusUpdater.tsx` | Now driven by a single status `<Select>` (`orderTransitions.ts`'s `targetStatusesFor`/`actionForTransition`) + a transition-specific confirmation dialog, replacing six standalone buttons. `approve` and `mark-paid` now require confirmation (previously one-click). |
+
+**No consumer yet.** Everything above already has a frontend as of this redesign; nothing else on
+`/commerce/orders*` is unconsumed.
 
 ## Deploy Coupling
 
