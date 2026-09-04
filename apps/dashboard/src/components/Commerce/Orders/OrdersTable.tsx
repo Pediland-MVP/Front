@@ -1,0 +1,141 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { memo } from 'react';
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { formatNumber } from '@/utils/formatNumber';
+import { toJalaliDate } from '@/utils/jalali';
+import type { OrderListView } from '@/types/commerceOrders';
+
+import { OrderStatusBadge } from './OrderStatusBadge';
+import { OrderThumbs } from './OrderThumbs';
+import { orderRowFields } from './orderRowFields';
+
+interface OrdersTableProps {
+  orders: OrderListView[];
+  onOpen: (orderId: string) => void;
+}
+
+/**
+ * The seller's work queue, `md` and up. An order is a row of facts compared ACROSS orders --
+ * who, when, how much, paid or not -- and a grid put every fact in a different place on screen.
+ *
+ * `OrderRowCard` renders the same order below `md`. Both derive every value from
+ * `orderRowFields`, which is what stops the two from drifting.
+ */
+const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
+  const t = useTranslations('Commerce.Orders');
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t('table.product')}</TableHead>
+          <TableHead>{t('table.recipient')}</TableHead>
+          <TableHead>{t('table.placedAt')}</TableHead>
+          <TableHead>{t('table.grandTotal')}</TableHead>
+          <TableHead>{t('table.payment')}</TableHead>
+          <TableHead>{t('table.status')}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {orders.map((order) => {
+          const { firstLine, extraLines, itemCount, isPaid, paymentMethodKey } =
+            orderRowFields(order);
+
+          return (
+            <TableRow
+              key={order.orderId}
+              /**
+               * `role="button"` + `tabIndex` + a key handler, not a `<button>` wrapper: a
+               * `<tr>` cannot contain one and still be a table row. The grid card this replaces
+               * was keyboard reachable and that must not regress.
+               */
+              role="button"
+              tabIndex={0}
+              aria-label={t('table.openOrder')}
+              onClick={() => onOpen(order.orderId)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onOpen(order.orderId);
+                }
+              }}
+              className="hover:bg-muted/50 cursor-pointer"
+            >
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <OrderThumbs order={order} />
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-secondary line-clamp-1 text-sm font-medium">
+                      {firstLine?.title}
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {t('card.itemCount', { count: itemCount })}
+                    </span>
+                    {extraLines > 0 && (
+                      <span className="text-muted-foreground text-xs">
+                        {t('card.more', { count: extraLines })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm">{order.recipientName ?? t('card.noName')}</span>
+                  {order.mobile && (
+                    <span className="text-muted-foreground text-xs">{order.mobile}</span>
+                  )}
+                </div>
+              </TableCell>
+
+              <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
+                {toJalaliDate(order.placedAt)}
+              </TableCell>
+
+              <TableCell className="whitespace-nowrap">
+                <span className="text-sm font-semibold">{formatNumber(order.grandTotal)}</span>{' '}
+                <span className="text-muted-foreground text-xs">{t('card.tooman')}</span>
+              </TableCell>
+
+              <TableCell>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs">
+                    {paymentMethodKey
+                      ? t(`paymentMethod.${paymentMethodKey}`)
+                      : order.paymentMethod}
+                  </span>
+                  <span
+                    className={
+                      isPaid
+                        ? 'text-xs text-green-700 dark:text-green-400'
+                        : 'text-muted-foreground text-xs'
+                    }
+                  >
+                    {isPaid ? t('payment.paid') : t('payment.unpaid')}
+                  </span>
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <OrderStatusBadge status={order.status} />
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+};
+
+export const OrdersTable = memo(OrdersTableComponent);
