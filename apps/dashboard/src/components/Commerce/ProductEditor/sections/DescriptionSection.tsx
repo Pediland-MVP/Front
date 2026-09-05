@@ -47,7 +47,10 @@ export const DescriptionSection = ({ step = 2 }: { step?: number }) => {
           aria-invalid={errors.description ? true : undefined}
           aria-label={t('title')}
           placeholder={t('placeholder')}
-          className="bg-card min-h-[170px] w-full resize-y px-3.5 py-3.5 text-sm leading-8 outline-none focus:shadow-[inset_0_0_0_2px_var(--primary)]"
+          // `resize-none`, not just an absent `resize-y`: Tailwind's own preflight sets
+          // `textarea { resize: vertical }` on every textarea, so the grip is the DEFAULT, not
+          // something a class here would add. Only an explicit override removes it.
+          className="bg-card min-h-[170px] w-full resize-none px-3.5 py-3.5 text-sm leading-8 outline-none focus:shadow-[inset_0_0_0_2px_var(--primary)]"
         />
 
         <div

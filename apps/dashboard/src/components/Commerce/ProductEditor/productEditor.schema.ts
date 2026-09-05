@@ -46,7 +46,10 @@ export const posterOf = (item: Pick<EditorMedia, 'type' | 'url' | 'posterUrl'>):
 
 export interface ProductFormValues {
   title: string;
-  /** Markdown. The WYSIWYG surface renders it; markdown stays the stored value. */
+  /**
+   * Plain text, capped at 60 characters — nothing renders or strips markdown here. The only live
+   * consumer is the Instagram DM carousel card's `price — description` subtitle.
+   */
   description: string;
   categoryId: string | null;
   /** Tag NAMES. The backend resolves-or-creates each against the workspace pool. */

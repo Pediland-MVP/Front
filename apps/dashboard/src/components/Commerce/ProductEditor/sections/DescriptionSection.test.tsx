@@ -13,12 +13,20 @@ describe('DescriptionSection', () => {
     expect(screen.queryByTestId('md-bold')).toBeNull();
   });
 
-  it('shows the count against the cap in Persian digits', () => {
+  it('shows the count against the cap in Persian digits, and tracks it as the value changes', () => {
     renderWithForm(<DescriptionSection />);
+    const input = screen.getByTestId('description-input');
 
-    fireEvent.change(screen.getByTestId('description-input'), { target: { value: 'کفش' } });
+    // Starts at zero — proves the count reads the actual value, not a fixed string that would
+    // happen to match one hardcoded assertion.
+    expect(screen.getByTestId('description-count')).toHaveTextContent('۰ / ۶۰');
 
+    fireEvent.change(input, { target: { value: 'کفش' } });
     expect(screen.getByTestId('description-count')).toHaveTextContent('۳ / ۶۰');
+
+    // A second, different-length change: the count must move again, not stick at the first value.
+    fireEvent.change(input, { target: { value: 'ا'.repeat(10) } });
+    expect(screen.getByTestId('description-count')).toHaveTextContent('۱۰ / ۶۰');
   });
 
   it('caps the field at 60 characters via maxLength', () => {
