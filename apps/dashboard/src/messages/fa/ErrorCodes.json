@@ -198,6 +198,7 @@
     "COMMERCE_CUSTOMER_NOT_FOUND": "مشتری مورد نظر پیدا نشد.",
     "COMMERCE_ORDER_NOT_FOUND": "سفارش مورد نظر پیدا نشد.",
     "COMMERCE_ORDER_STATUS_CHANGED": "وضعیت این سفارش تغییر کرده. صفحه به‌روز شد؛ دوباره بررسی کن.",
+    "COMMERCE_ORDER_NOT_TRACKABLE": "برای سفارش تحویل حضوری، لینک پیگیری معنی ندارد.",
     "COMMERCE_OUT_OF_STOCK": "موجودی کافی نیست.",
     "COMMERCE_INSUFFICIENT_STOCK_ON_APPROVAL": "موجودی برای تأیید این سفارش کافی نیست.",
     "COMMERCE_PAYMENT_METHOD_UNAVAILABLE": "این روش پرداخت در دسترس نیست.",

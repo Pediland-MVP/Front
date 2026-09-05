@@ -128,6 +128,42 @@ describe('OrderStatusUpdater', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent(copy.status.processing);
   });
 
+  it('routes processing -> sending through the ship dialog, with a tracking url field', async () => {
+    const onAction = renderUpdater(processingOrder);
+    await selectStatus(copy.status.sending);
+    fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
+
+    expect(onAction).not.toHaveBeenCalled();
+    expect(screen.getByText(copy.dialogs.ship.titlePosted)).toBeInTheDocument();
+    expect(screen.getByTestId('tracking-url')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByTestId('tracking-url'), {
+      target: { value: 'https://tracking.post.ir/abc' },
+    });
+    fireEvent.click(screen.getByTestId('ship-confirm'));
+    await waitFor(() =>
+      expect(onAction).toHaveBeenCalledWith('ship', undefined, 'https://tracking.post.ir/abc'),
+    );
+  });
+
+  it('ships with no tracking url when the field is left blank', async () => {
+    const onAction = renderUpdater(processingOrder);
+    await selectStatus(copy.status.sending);
+    fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
+    fireEvent.click(screen.getByTestId('ship-confirm'));
+
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('ship'));
+  });
+
+  it('hides the tracking url field, and shows pickup wording, when shipping a pickup order', async () => {
+    renderUpdater({ ...processingOrder, shippingKind: 'pickup' });
+    await selectStatus(copy.status.sending);
+    fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
+
+    expect(screen.getByText(copy.dialogs.ship.titlePickup)).toBeInTheDocument();
+    expect(screen.queryByTestId('tracking-url')).toBeNull();
+  });
+
   it('never offers sending for a digital order', async () => {
     renderUpdater({ ...processingOrder, kind: 'digital' });
     fireEvent.click(screen.getByRole('combobox'));

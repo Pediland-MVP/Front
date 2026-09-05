@@ -58,7 +58,11 @@ export function useCommerceOrder(id: string | null) {
     mutate,
     approve: () => run('approve'),
     reject: (reason: string) => run('reject', { reason }),
-    ship: () => run('ship'),
+    // `{ trackingUrl }` is sent only when one was actually typed -- an explicit `{ trackingUrl:
+    // undefined }` body would still be a key the backend has to ignore, and Back's ship route
+    // treats a body's *absence* the same as "no link yet", so there is nothing to gain by sending
+    // the key unset.
+    ship: (trackingUrl?: string) => run('ship', trackingUrl ? { trackingUrl } : undefined),
     complete: () => run('complete'),
     cancel: () => run('cancel', { reason: 'delivery_refused' }),
     markPaid: () => run('mark-paid'),

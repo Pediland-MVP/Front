@@ -18,6 +18,7 @@ import type { CommerceOrderStatus, OrderView } from '@/types/commerceOrders';
 import { CancelOrderDialog } from './dialogs/CancelOrderDialog';
 import { ConfirmActionDialog } from './dialogs/ConfirmActionDialog';
 import { RejectPaymentDialog } from './dialogs/RejectPaymentDialog';
+import { ShipOrderDialog } from './dialogs/ShipOrderDialog';
 import {
   actionForTransition,
   canMarkPaid,
@@ -28,8 +29,13 @@ import {
 interface OrderStatusUpdaterProps {
   order: OrderView;
   /** Identical contract to the `OrderActions` this replaces: resolves `true` when the write
-   *  landed, `false` when it failed and the page has already toasted. */
-  onAction: (name: OrderActionName | 'markPaid', reason?: string) => Promise<boolean>;
+   *  landed, `false` when it failed and the page has already toasted. `trackingUrl` is carried
+   *  only by `ship` -- see `runAction`'s "forward only what was passed" comment. */
+  onAction: (
+    name: OrderActionName | 'markPaid',
+    reason?: string,
+    trackingUrl?: string,
+  ) => Promise<boolean>;
   disabled?: boolean;
 }
 
@@ -68,15 +74,21 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
   const isDisabled = disabled || busy;
   const pendingResolved = draft === order.status ? null : actionForTransition(order.status, draft);
 
-  const runAction = async (name: OrderActionName | 'markPaid', reason?: string) => {
+  const runAction = async (
+    name: OrderActionName | 'markPaid',
+    reason?: string,
+    trackingUrl?: string,
+  ) => {
     setBusy(true);
     try {
-      // Forward `reason` only when the caller actually passed one. `reject` is the only
-      // transition that carries one; every other call site invokes `runAction(name)` with no
-      // second argument, and blindly forwarding `reason` here would still pass an explicit
-      // `undefined` through to `onAction`, changing its call signature from `(name)` to
-      // `(name, undefined)`.
-      return await (reason === undefined ? onAction(name) : onAction(name, reason));
+      // Forward `reason`/`trackingUrl` only when the caller actually passed one. `reject` is the
+      // only transition that carries a `reason`, `ship` the only one that carries a `trackingUrl`
+      // -- every other call site invokes `runAction(name)` with neither, and blindly forwarding
+      // an unset value here would still pass an explicit `undefined` through to `onAction`,
+      // changing its call signature from `(name)` to `(name, undefined)`.
+      if (reason !== undefined) return await onAction(name, reason);
+      if (trackingUrl !== undefined) return await onAction(name, undefined, trackingUrl);
+      return await onAction(name);
     } finally {
       setBusy(false);
     }
@@ -134,9 +146,9 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
       )}
 
       {/*
-        Every dialog below except `reject` closes UNCONDITIONALLY once `runAction` settles, win
-        or lose. None of them hold anything the seller typed -- they are pure confirmations -- so
-        there is nothing a failure would destroy by closing.
+        Every dialog below except `reject` and `ship` closes UNCONDITIONALLY once `runAction`
+        settles, win or lose. None of them hold anything the seller typed -- they are pure
+        confirmations -- so there is nothing a failure would destroy by closing.
         Closing is NOT what makes an already-fired failure toast visible again -- Sonner's
         `Toaster` renders above the Radix dialog overlay, so the toast was never hidden by the
         dialog being open. The real reason to close unconditionally: `OrderDetailPage` revalidates
@@ -146,9 +158,9 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
         corrected select back in front of the seller instead of behind a manual dismiss; the
         `draft` status stays exactly what the seller chose either way (the `useEffect` above only
         resets it when `order.status` itself changes), so the select and the «بروزرسانی» button
-        are right there for another attempt. `RejectPaymentDialog` is the one exception -- it
-        keeps up to 500 characters of buyer-facing text the seller typed, so it alone stays open
-        on failure (see its own docstring).
+        are right there for another attempt. `RejectPaymentDialog` and `ShipOrderDialog` are the
+        two exceptions -- they hold buyer-facing text/a url the seller typed, so they alone stay
+        open on failure (see their own docstrings).
       */}
       <ConfirmActionDialog
         open={pendingAction === 'approve'}
@@ -161,16 +173,21 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
         description={t('dialogs.approve.description')}
         confirmLabel={t('dialogs.approve.confirm')}
       />
-      <ConfirmActionDialog
+      {/*
+        Unlike the `ConfirmActionDialog`s around it, `ship` closes only on success -- it holds a
+        typed tracking url, same reasoning as `RejectPaymentDialog` (see the big comment above):
+        a failed write must not throw away up to 500 characters... here, up to one url the
+        seller may not want to retype.
+      */}
+      <ShipOrderDialog
         open={pendingAction === 'ship'}
         onOpenChange={(open) => setPendingAction(open ? 'ship' : null)}
-        onConfirm={async () => {
-          await runAction('ship');
-          closeDialog();
+        shippingKind={order.shippingKind}
+        onConfirm={async (trackingUrl) => {
+          const ok = await runAction('ship', undefined, trackingUrl);
+          if (ok) closeDialog();
+          return ok;
         }}
-        title={t('dialogs.ship.title')}
-        description={t('dialogs.ship.description')}
-        confirmLabel={t('dialogs.ship.confirm')}
       />
       <ConfirmActionDialog
         open={pendingAction === 'complete'}

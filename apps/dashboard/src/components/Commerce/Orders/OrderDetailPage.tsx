@@ -31,7 +31,9 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const { can } = usePermissions();
 
   /**
-   * Matches `OrderActions`' `onAction` signature exactly: (name, reason?) => Promise<boolean>.
+   * Matches `OrderStatusUpdater`'s `onAction` signature exactly:
+   * (name, reason?, trackingUrl?) => Promise<boolean>. `trackingUrl` is carried only by `ship`,
+   * the same way `reason` is carried only by `reject`.
    *
    * `COMMERCE_ORDER_STATUS_CHANGED` means someone else already acted, or the buyer's DM moved
    * this order underneath the page. Toasting alone would leave stale buttons that fail on every
@@ -40,11 +42,12 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const onAction = async (
     name: OrderActionName | 'markPaid',
     reason?: string,
+    trackingUrl?: string,
   ): Promise<boolean> => {
     const run: Record<OrderActionName | 'markPaid', () => Promise<void>> = {
       approve,
       reject: () => reject(reason ?? ''),
-      ship,
+      ship: () => ship(trackingUrl),
       complete,
       cancel,
       markPaid,
