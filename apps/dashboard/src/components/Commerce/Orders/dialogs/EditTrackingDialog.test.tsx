@@ -77,6 +77,19 @@ describe('EditTrackingDialog', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
+  // M5: same shared `isValidTrackingUrl` as ShipOrderDialog -- a bare host with no TLD parses
+  // fine in `new URL()` but the server's `@IsUrl` requires one, so this must also be rejected here.
+  it('rejects a url whose host has no TLD, even though URL() parses it fine', () => {
+    const onConfirm = renderEdit('https://a.example/1');
+    fireEvent.change(screen.getByTestId('tracking-url'), {
+      target: { value: 'https://localhost:8080/track' },
+    });
+    fireEvent.click(screen.getByTestId('tracking-confirm'));
+
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+  });
+
   it('closes once the write lands', async () => {
     const onOpenChange = vi.fn();
     const onConfirm = vi.fn().mockResolvedValue(true);

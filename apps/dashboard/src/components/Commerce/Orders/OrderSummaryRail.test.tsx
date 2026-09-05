@@ -243,6 +243,28 @@ describe('OrderSummaryRail', () => {
       expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
     });
 
+    // I2: a digital order reaches `completed` via `processing -> completed` without ever passing
+    // through `sending`, and its `shippingKind` is `null` (never `pickup`) -- so without the kind
+    // check the tracking row would show for a downloadable file.
+    it('shows no tracking row for a completed digital order', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{
+              ...detailOrder,
+              status: 'completed',
+              kind: 'digital',
+              shippingKind: null,
+              trackingUrl: null,
+            }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+    });
+
     it('hides the edit affordance without order:manage, but still shows the link', () => {
       mockCan.mockReturnValueOnce(false);
       render(

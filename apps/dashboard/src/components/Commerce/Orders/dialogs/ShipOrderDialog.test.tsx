@@ -84,6 +84,19 @@ describe('ShipOrderDialog', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
+  // M5: `new URL()` alone accepts a bare host with no TLD, but the server's `@IsUrl` requires
+  // one -- without this extra check the dialog would accept a url the backend 400s on.
+  it('rejects a url whose host has no TLD, even though URL() parses it fine', () => {
+    const onConfirm = renderShip('post_express');
+    fireEvent.change(screen.getByTestId('tracking-url'), {
+      target: { value: 'https://localhost:8080/track' },
+    });
+    fireEvent.click(screen.getByTestId('ship-confirm'));
+
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+  });
+
   it('keeps the typed url when the write fails', async () => {
     const onConfirm = renderShip('post_express', false);
     fireEvent.change(screen.getByTestId('tracking-url'), {

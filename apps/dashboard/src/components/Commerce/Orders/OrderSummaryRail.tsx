@@ -52,9 +52,13 @@ export function OrderSummaryRail({
 
   // A parcel exists only once the order has shipped, AND only when it was ever going to be
   // posted at all -- a پیکاپ order is "ready to collect", not "in transit", and has no carrier
-  // link to show or edit.
+  // link to show or edit. A digital order is excluded too (I2): it reaches `completed` via
+  // `processing -> completed` without ever passing through `sending`, and its `shippingKind` is
+  // null (never `pickup`), so both earlier conditions alone would pass for a downloadable file.
   const hasParcel =
-    (order.status === 'sending' || order.status === 'completed') && order.shippingKind !== 'pickup';
+    (order.status === 'sending' || order.status === 'completed') &&
+    order.shippingKind !== 'pickup' &&
+    order.kind !== 'digital';
 
   return (
     <Card className="lg:sticky lg:top-4">

@@ -13,6 +13,7 @@ import {
   DialogTitle,
   Input,
 } from '@/components/ui';
+import { isValidTrackingUrl } from './trackingUrl.util';
 
 interface ShipOrderDialogProps {
   open: boolean;
@@ -34,8 +35,8 @@ interface ShipOrderDialogProps {
  * and there is no parcel a link could point at.
  *
  * Validated here as well as on the backend, because the url is rendered straight into an
- * Instagram DM the buyer taps: `new URL()` alone happily parses `javascript:alert(1)` as valid,
- * so the parsed `protocol` is checked explicitly rather than inferred from a successful parse.
+ * Instagram DM the buyer taps -- see `isValidTrackingUrl` (`trackingUrl.util.ts`, shared with
+ * `EditTrackingDialog`) for what "valid" means here and why it also requires a TLD-bearing host.
  */
 export const ShipOrderDialog = ({
   open,
@@ -69,19 +70,9 @@ export const ShipOrderDialog = ({
   const handleConfirm = async () => {
     const trimmed = url.trim();
 
-    if (trimmed) {
-      // `new URL()` alone accepts `javascript:alert(1)` as a perfectly valid URL, so the protocol
-      // is checked explicitly rather than inferred from a successful parse.
-      let parsed: URL | null = null;
-      try {
-        parsed = new URL(trimmed);
-      } catch {
-        parsed = null;
-      }
-      if (!parsed || (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')) {
-        setError(t('invalidUrl'));
-        return;
-      }
+    if (trimmed && !isValidTrackingUrl(trimmed)) {
+      setError(t('invalidUrl'));
+      return;
     }
 
     setError(null);

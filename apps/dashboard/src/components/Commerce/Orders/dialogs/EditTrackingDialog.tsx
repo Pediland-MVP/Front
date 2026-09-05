@@ -15,6 +15,7 @@ import {
   Input,
   Label,
 } from '@/components/ui';
+import { isValidTrackingUrl } from './trackingUrl.util';
 
 interface EditTrackingDialogProps {
   open: boolean;
@@ -37,11 +38,11 @@ interface EditTrackingDialogProps {
  * Reseeded to OFF every time the dialog opens (see the effect below) -- it must never remember a
  * previous tick.
  *
- * Validated the same way `ShipOrderDialog` validates its field: `new URL()` alone happily parses
- * `javascript:alert(1)` as valid, so the parsed `protocol` is checked explicitly. Unlike `ship`'s
- * field, this one is required -- there is no "no link yet" fallback once a seller has opened this
- * dialog to add or fix one, so a blank/whitespace-only value is rejected the same way an invalid
- * one is.
+ * Validated the same way `ShipOrderDialog` validates its field, via the shared
+ * `isValidTrackingUrl` (`trackingUrl.util.ts`) -- the two dialogs must stay identical. Unlike
+ * `ship`'s field, this one is required -- there is no "no link yet" fallback once a seller has
+ * opened this dialog to add or fix one, so a blank/whitespace-only value is rejected the same way
+ * an invalid one is.
  */
 export const EditTrackingDialog = ({
   open,
@@ -70,18 +71,9 @@ export const EditTrackingDialog = ({
   const handleConfirm = async () => {
     const trimmed = url.trim();
 
-    // `new URL()` alone accepts `javascript:alert(1)` as a perfectly valid URL, so the protocol
-    // is checked explicitly rather than inferred from a successful parse. An empty `trimmed`
-    // leaves `parsed` at `null` and hits the same branch -- there is nothing to save.
-    let parsed: URL | null = null;
-    if (trimmed) {
-      try {
-        parsed = new URL(trimmed);
-      } catch {
-        parsed = null;
-      }
-    }
-    if (!parsed || (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')) {
+    // An empty `trimmed` fails `isValidTrackingUrl` too (its `new URL()` throws on ''), and hits
+    // the same branch -- there is nothing to save.
+    if (!isValidTrackingUrl(trimmed)) {
       setError(t('invalidUrl'));
       return;
     }
