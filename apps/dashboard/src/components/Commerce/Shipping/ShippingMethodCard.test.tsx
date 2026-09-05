@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
@@ -9,7 +9,24 @@ import { newOptionDraft, type ShippingOptionDraft } from '@/utils/commerce/shipp
 
 import { ShippingMethodCard } from './ShippingMethodCard';
 
+// Radix's Select uses pointer-capture APIs jsdom does not implement, and calls scrollIntoView on
+// the item it wants to highlight when opening. Same fix `OrderStatusUpdater.test.tsx` and
+// `SetupInstagramDialog.test.tsx` use. Scoped to this file only.
+beforeAll(() => {
+  Element.prototype.hasPointerCapture = vi.fn(() => false) as never;
+  Element.prototype.setPointerCapture = vi.fn() as never;
+  Element.prototype.releasePointerCapture = vi.fn() as never;
+  Element.prototype.scrollIntoView = vi.fn() as never;
+});
+
 const copy = messages.Commerce.Shipping;
+
+// Opens the kind Radix combobox and picks the named option — same `fireEvent` + `findByRole`
+// drive `OrderStatusUpdater.test.tsx`'s `selectStatus` uses against the identical Select component.
+const selectKind = async (name: string) => {
+  fireEvent.click(screen.getByTestId('kind-select'));
+  fireEvent.click(await screen.findByRole('option', { name }));
+};
 
 const provinces: IProvince[] = [{ id: 2, name: 'هرمزگان', slug: 'hormozgan', tel_prefix: '076' }];
 const cities: ICity[] = [{ id: 20, name: 'کیش', slug: 'kish', provinceId: 2 }];
@@ -257,6 +274,69 @@ describe('ShippingMethodCard — the three settlement modes are exclusive', () =
     renderCard(baseDraft({ settlement, amount: 45000 }));
 
     expect(screen.getByTestId('method-summary')).toHaveTextContent(label);
+  });
+});
+
+describe('ShippingMethodCard — «تحویل حضوری» cannot be پس‌کرایه', () => {
+  // «پس‌کرایه» means the receiver settles the FREIGHT with the CARRIER. A pickup has neither, so
+  // the combination is meaningless -- and until now it was merely hidden downstream rather than
+  // prevented. The backend refuses it too; the radio must not be offerable in the first place.
+  it('does not offer پس‌کرایه on a تحویل حضوری', () => {
+    renderOpenCard(baseDraft({ kind: 'pickup' }));
+
+    expect(screen.getByTestId('settlement-prepaid')).toBeEnabled();
+    expect(screen.getByTestId('settlement-cash_on_delivery')).toBeEnabled();
+    expect(screen.queryByTestId('settlement-freight_collect')).toBeNull();
+  });
+
+  it('still offers all three settlements on a non-pickup kind', () => {
+    renderOpenCard(baseDraft({ kind: 'post_express' }));
+
+    expect(screen.getByTestId('settlement-prepaid')).toBeEnabled();
+    expect(screen.getByTestId('settlement-freight_collect')).toBeEnabled();
+    expect(screen.getByTestId('settlement-cash_on_delivery')).toBeEnabled();
+  });
+
+  // Filtering the radio list alone is not enough: a method already saved as `post_express` +
+  // `freight_collect` would otherwise keep that settlement when switched to `pickup`, and the
+  // now-hidden radio would be submitted unchanged. The kind handler must clear it in the SAME
+  // change.
+  it('drops a stale freight_collect when the kind becomes pickup', async () => {
+    const onChange = renderOpenCard(
+      baseDraft({ kind: 'post_express', settlement: 'freight_collect' }),
+    );
+
+    await selectKind(copy.kinds.pickup);
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'pickup', settlement: 'prepaid' }),
+    );
+  });
+
+  it('keeps a compatible settlement when the kind changes', async () => {
+    const onChange = renderOpenCard(
+      baseDraft({ kind: 'post_express', settlement: 'cash_on_delivery' }),
+    );
+
+    await selectKind(copy.kinds.pickup);
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'pickup', settlement: 'cash_on_delivery' }),
+    );
+  });
+
+  it('tells a pickup merchant they collect at their own counter, not that a courier does', () => {
+    renderOpenCard(baseDraft({ kind: 'pickup', settlement: 'cash_on_delivery' }));
+
+    const note = screen.getByTestId('settlement-note-cash_on_delivery');
+    expect(note).not.toHaveTextContent('مأمور پست');
+    expect(note).toHaveTextContent('حضوری');
+  });
+
+  it('keeps the courier-collects note on a non-pickup', () => {
+    renderOpenCard(baseDraft({ kind: 'post_express', settlement: 'cash_on_delivery' }));
+
+    expect(screen.getByTestId('settlement-note-cash_on_delivery')).toHaveTextContent('مأمور پست');
   });
 });
 

@@ -261,6 +261,7 @@
     "COMMERCE_SHIPPING_OPTION_NOT_FOUND": "روش ارسال مورد نظر پیدا نشد.",
     "COMMERCE_SHIPPING_OPTION_UNAVAILABLE": "روش ارسال انتخاب‌شده دیگر در دسترس نیست. لطفاً روش دیگری انتخاب کنید.",
     "COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED": "روی این روش ارسال نمی‌توان استثنای قیمتی تعریف کرد، چون کرایه را مأمور پست از مشتری می‌گیرد.",
-    "COMMERCE_SHIPPING_OVERRIDE_TARGET": "هر استثنا باید دقیقاً یک مقصد داشته باشد: یا یک شهر، یا یک استان."
+    "COMMERCE_SHIPPING_OVERRIDE_TARGET": "هر استثنا باید دقیقاً یک مقصد داشته باشد: یا یک شهر، یا یک استان.",
+    "COMMERCE_SHIPPING_SETTLEMENT_INVALID": "برای «تحویل حضوری» نمی‌توان «پس‌کرایه» انتخاب کرد."
   }
 }

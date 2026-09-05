@@ -60,6 +60,21 @@ export interface ShippingOptionDraft {
 export const chargesShipping = (draft: Pick<ShippingOptionDraft, 'kind' | 'settlement'>) =>
   draft.kind !== 'pickup' && draft.settlement === 'prepaid';
 
+/**
+ * Settlements a KIND can offer. «پس‌کرایه» means the receiver settles the FREIGHT with the
+ * CARRIER — a پیک/پست has both, a `pickup` («تحویل حضوری») has neither, so the combination is
+ * meaningless there: until now it was merely hidden downstream (the summary line returns the
+ * pickup text before any settlement check, and `chargesShipping` forces `false`) rather than
+ * prevented. The server refuses it too (`COMMERCE_SHIPPING_SETTLEMENT_INVALID`). This is the
+ * single source of truth the editor's radio list, and its own kind-change handler, both read from.
+ */
+export const SETTLEMENTS_BY_KIND = (
+  kind: CommerceShippingKind,
+): readonly CommerceShippingSettlement[] =>
+  kind === 'pickup'
+    ? ['prepaid', 'cash_on_delivery']
+    : ['prepaid', 'freight_collect', 'cash_on_delivery'];
+
 /** Server row → editable draft. */
 export function toDraft(option: CommerceShippingOption): ShippingOptionDraft {
   return {

@@ -19,6 +19,7 @@ import type { IProvince } from '@/types/province';
 import type { CommerceShippingKind, CommerceShippingSettlement } from '@/types/shipping';
 import {
   chargesShipping,
+  SETTLEMENTS_BY_KIND,
   type ShippingOptionDraft,
   type ShippingOverrideDraft,
 } from '@/utils/commerce/shippingDraft';
@@ -43,14 +44,6 @@ const KINDS: CommerceShippingKind[] = [
   'other',
 ];
 
-/** Ordered cheapest-commitment-first for the merchant: prepay, then the two collect-at-the-door
- *  modes. Exactly one applies — see `CommerceShippingSettlement`. */
-const SETTLEMENTS: CommerceShippingSettlement[] = [
-  'prepaid',
-  'freight_collect',
-  'cash_on_delivery',
-];
-
 interface ShippingMethodCardProps {
   draft: ShippingOptionDraft;
   onChange: (patch: Partial<ShippingOptionDraft>) => void;
@@ -71,10 +64,11 @@ interface ShippingMethodCardProps {
  * forms nobody asked for. The header alone answers that: name, carrier, and a summary line
  * carrying the price, the free-shipping threshold and the exception count.
  *
- * `settlement` is a single three-way choice — prepay, پس‌کرایه, or پرداخت در محل — because a
- * method is exactly one of them and never two at once. It is a radio group rather than switches
- * for the same reason: switches would let a merchant turn on two mutually exclusive things and
- * then have the screen quietly pick one.
+ * `settlement` is a single choice — prepay, پس‌کرایه, or پرداخت در محل — because a method is
+ * exactly one of them and never two at once. It is a radio group rather than switches for the
+ * same reason: switches would let a merchant turn on two mutually exclusive things and then have
+ * the screen quietly pick one. A `pickup` («تحویل حضوری») only offers two: پس‌کرایه means settling
+ * the FREIGHT with a CARRIER, and a pickup has neither — see `SETTLEMENTS_BY_KIND`.
  *
  * Only the prepaid mode has a rate the seller charges, so the price, the free-shipping threshold
  * and the per-city exceptions are HIDDEN under the other two rather than left on screen
@@ -209,9 +203,19 @@ export const ShippingMethodCard = ({
               <Select
                 value={draft.kind}
                 disabled={!canEdit}
-                onValueChange={(value) => onChange({ kind: value as CommerceShippingKind })}
+                onValueChange={(value) => {
+                  const kind = value as CommerceShippingKind;
+                  // A settlement the new kind cannot offer (پس‌کرایه on a pickup, currently the
+                  // only case) must not survive the switch: filtering the radio list alone would
+                  // still submit it unchanged, through a radio the merchant can no longer see to
+                  // fix.
+                  const settlement = SETTLEMENTS_BY_KIND(kind).includes(draft.settlement)
+                    ? draft.settlement
+                    : 'prepaid';
+                  onChange({ kind, settlement });
+                }}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-testid="kind-select">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -262,7 +266,7 @@ export const ShippingMethodCard = ({
               }
               className="gap-2"
             >
-              {SETTLEMENTS.map((mode) => (
+              {SETTLEMENTS_BY_KIND(draft.kind).map((mode) => (
                 <label
                   key={mode}
                   htmlFor={`settlement-${draft.key}-${mode}`}
@@ -274,6 +278,7 @@ export const ShippingMethodCard = ({
                   <RadioGroupItem
                     id={`settlement-${draft.key}-${mode}`}
                     value={mode}
+                    data-testid={`settlement-${mode}`}
                     // The wrapping label also holds the explanation paragraph, so without this the
                     // accessible name would be the mode plus a sentence of prose.
                     aria-label={t(`settlements.${mode}`)}
@@ -281,8 +286,21 @@ export const ShippingMethodCard = ({
                   />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span className="text-sm font-semibold">{t(`settlements.${mode}`)}</span>
-                    <span className="text-mut text-xs text-pretty">
-                      {t(`settlementNotes.${mode}`)}
+                    <span
+                      data-testid={`settlement-note-${mode}`}
+                      className="text-mut text-xs text-pretty"
+                    >
+                      {/* «پرداخت در محل» means something different depending on the kind: a
+                          courier collecting at the door vs. the merchant's own counter. There is
+                          no مأمور پست at a counter, so the pickup note is its own key rather than
+                          a shared one that would misdescribe who is collecting. */}
+                      {t(
+                        `settlementNotes.${
+                          mode === 'cash_on_delivery' && draft.kind === 'pickup'
+                            ? 'cash_on_delivery_pickup'
+                            : mode
+                        }`,
+                      )}
                     </span>
                   </span>
                 </label>
