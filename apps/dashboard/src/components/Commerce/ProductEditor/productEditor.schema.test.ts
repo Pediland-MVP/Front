@@ -267,11 +267,17 @@ describe('buildProductEditorSchema — product-level rules', () => {
     expect(result.error!.issues.map((i) => i.path)).toContainEqual(['description']);
   });
 
-  it('rejects a description over 20000 characters', () => {
-    const result = schema.safeParse(form({ description: 'ا'.repeat(20_001) }));
+  it('rejects a description over 60 characters', () => {
+    const result = schema.safeParse(form({ description: 'ا'.repeat(61) }));
 
     expect(result.success).toBe(false);
     expect(result.error!.issues.map((i) => i.path)).toContainEqual(['description']);
+  });
+
+  it('accepts a description at exactly 60 characters', () => {
+    const result = schema.safeParse(form({ description: 'ا'.repeat(60) }));
+
+    expect(result.success).toBe(true);
   });
 
   it('rejects a product with no category', () => {

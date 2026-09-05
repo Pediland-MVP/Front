@@ -59,8 +59,7 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
   /**
    * The last value this component itself wrote. Without it, clearing the input mid-edit reads
    * as "value became null" and flips the switch off under the user's cursor — the field then
-   * disables itself while they are still typing in it. Same one-way arbitration the description
-   * editor uses for its contentEditable.
+   * disables itself while they are still typing in it.
    */
   const lastLocal = useRef<number | null | undefined>(undefined);
 

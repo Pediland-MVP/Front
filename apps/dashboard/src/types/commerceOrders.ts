@@ -60,6 +60,18 @@ export interface OrderView {
   shippingSettlement: string | null;
   paidAt: string | null;
   createDate: string;
+  /**
+   * The four fields Back Task 5 added to `OrderView`. Optional (not just nullable): most existing
+   * fixtures across this folder's tests build an `OrderView` without them, and this task only
+   * needs `trackingUrl` -- the other three are for later tasks (`followUpCode`/`cancelNote` for
+   * the buyer-facing DM copy, `pickupAddress` for freezing the collection point onto the order).
+   */
+  followUpCode?: string | null;
+  /** Set by `ship`, editable afterwards by a later task's `EditTrackingDialog`. `null`/absent
+   *  until a seller has typed one, and always absent for a `pickup` order -- there is no parcel. */
+  trackingUrl?: string | null;
+  cancelNote?: string | null;
+  pickupAddress?: string | null;
 }
 
 /**

@@ -21,7 +21,6 @@ import {
 
 import { discountPercent } from '../variant/variantTree.util';
 import { formatAmount } from '../utils/editorNumber.util';
-import { markdownToPlainText } from '../utils/markdown.util';
 import { posterOf, type EditorMedia, type ProductFormValues } from '../productEditor.schema';
 
 /** Same key `useProductLoad` fills, so this is a shared cache read, not a second fetch. */
@@ -314,7 +313,7 @@ export const PreviewDialog = ({ open, onClose }: { open: boolean; onClose: () =>
               data-testid="preview-description"
               className="text-mut text-sm leading-relaxed whitespace-pre-line"
             >
-              {markdownToPlainText(values.description ?? '') || t('noDescription')}
+              {values.description?.trim() || t('noDescription')}
             </p>
 
             {/* Disabled on purpose — this is a preview, not a storefront. */}

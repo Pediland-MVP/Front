@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 
-const { post } = vi.hoisted(() => ({ post: vi.fn() }));
-vi.mock('@/hooks/swr/api-client', () => ({ default: { post } }));
+const { post, patch } = vi.hoisted(() => ({ post: vi.fn(), patch: vi.fn() }));
+vi.mock('@/hooks/swr/api-client', () => ({ default: { post, patch } }));
 
 import { useCommerceOrder } from './useCommerceOrder';
 import { useCommerceOrders } from './useCommerceOrders';
@@ -44,6 +44,7 @@ describe('useCommerceOrder invalidates the orders list after a write', () => {
 
   beforeEach(() => {
     post.mockReset().mockResolvedValue({ data: {} });
+    patch.mockReset().mockResolvedValue({ data: {} });
     fetcher.mockClear();
   });
 
@@ -92,5 +93,27 @@ describe('useCommerceOrder invalidates the orders list after a write', () => {
       reason: 'delivery_refused',
     });
     expect(post).toHaveBeenNthCalledWith(5, '/commerce/orders/o1/mark-paid', {});
+  });
+
+  /**
+   * `updateTracking` PATCHes (a correction, not a status transition) while every other write
+   * above POSTs -- this pins that it still revalidates both keys the same way the rest do.
+   */
+  it('PATCHes for updateTracking, and still revalidates both keys', async () => {
+    const { result } = mountBoth();
+    await waitFor(() => expect(fetcher).toHaveBeenCalledWith(LIST_KEY));
+    fetcher.mockClear();
+
+    await act(async () => {
+      await result.current.detail.updateTracking('https://tracking.post.ir/abc', true);
+    });
+
+    expect(patch).toHaveBeenCalledWith('/commerce/orders/o1/tracking', {
+      trackingUrl: 'https://tracking.post.ir/abc',
+      notify: true,
+    });
+    expect(post).not.toHaveBeenCalled();
+    await waitFor(() => expect(fetcher).toHaveBeenCalledWith(DETAIL_KEY));
+    await waitFor(() => expect(fetcher).toHaveBeenCalledWith(LIST_KEY));
   });
 });

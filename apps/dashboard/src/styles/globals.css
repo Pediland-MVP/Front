@@ -217,11 +217,6 @@
  *    them. That is a named-area layout. Expressing it in an arbitrary-value class would mean an
  *    unreadable `[grid-template-areas:...]` string plus seven `[grid-area:...]` classes, repeated
  *    on every one of up to 2000 rows, at two breakpoints.
- * 2. `[data-prose]` styles HTML THAT HAS NO CLASSES. The description surface is a
- *    contentEditable whose children are generated at runtime — by `markdownToHtml` on load and
- *    by `document.execCommand` on every toolbar press. Those <h3>/<p>/<ul>/<a>/<strong> elements
- *    never pass through JSX, so there is nothing to hang a utility class on. A descendant
- *    selector is the only hook.
  *
  * `[data-bad]` and `[data-chev]` ride along here because they must beat the `focus:`/`hover:`
  * border utilities sitting on the same element — hence the `!important`.
@@ -305,33 +300,4 @@
 }
 [data-chev][aria-expanded='false'] {
   transform: rotate(-90deg);
-}
-
-/* The WYSIWYG description surface — see reason 2 in the header note. `list-style` is restated
-   because Tailwind's preflight strips it from every <ul>. */
-[data-prose] h3 {
-  margin: 10px 0 4px;
-  font-size: 1rem;
-  font-weight: 700;
-}
-[data-prose] p {
-  margin: 0 0 8px;
-}
-[data-prose] ul {
-  margin: 0 0 8px;
-  padding-inline-start: 20px;
-  list-style: disc;
-}
-[data-prose] li {
-  margin: 0 0 2px;
-}
-[data-prose] a {
-  color: var(--primary);
-  text-decoration: underline;
-}
-[data-prose] strong {
-  font-weight: 800;
-}
-[data-prose] em {
-  font-style: italic;
 }

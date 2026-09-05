@@ -253,7 +253,7 @@ describe('ProductEditorPage', () => {
         screen.getByText(messages.Commerce.Editor.Validation.descriptionRequired),
       ).toBeInTheDocument(),
     );
-    expect(screen.getByTestId('md-surface')).toHaveAttribute('data-bad', 'empty');
+    expect(screen.getByTestId('description-input')).toHaveAttribute('aria-invalid', 'true');
   });
 
   it('shows the required-category message when the schema rejects a null category', async () => {

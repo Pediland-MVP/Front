@@ -175,6 +175,7 @@
     "COMMERCE_COLLECTION_NOT_FOUND": "یک یا چند مجموعه در این فضای کاری پیدا نشد.",
     "COMMERCE_PRODUCT_TITLE_REQUIRED": "عنوان محصول را بنویسید.",
     "COMMERCE_PRODUCT_DESCRIPTION_REQUIRED": "توضیحات محصول را بنویسید.",
+    "COMMERCE_PRODUCT_DESCRIPTION_TOO_LONG": "توضیحات محصول حداکثر ۶۰ کاراکتر است.",
     "COMMERCE_PRODUCT_CATEGORY_REQUIRED": "دسته‌بندی محصول را انتخاب کنید.",
     "COMMERCE_VARIANT_LIMIT": "هر محصول باید بین ۱ تا ۲۰۰۰ تنوع داشته باشد.",
     "COMMERCE_VARIANT_STOCK_REQUIRED": "موجودی هر تنوع را پر کنید، یا آن را بی‌نهایت کنید.",
@@ -197,6 +198,7 @@
     "COMMERCE_CUSTOMER_NOT_FOUND": "مشتری مورد نظر پیدا نشد.",
     "COMMERCE_ORDER_NOT_FOUND": "سفارش مورد نظر پیدا نشد.",
     "COMMERCE_ORDER_STATUS_CHANGED": "وضعیت این سفارش تغییر کرده. صفحه به‌روز شد؛ دوباره بررسی کن.",
+    "COMMERCE_ORDER_NOT_TRACKABLE": "برای سفارش تحویل حضوری، لینک پیگیری معنی ندارد.",
     "COMMERCE_OUT_OF_STOCK": "موجودی کافی نیست.",
     "COMMERCE_INSUFFICIENT_STOCK_ON_APPROVAL": "موجودی برای تأیید این سفارش کافی نیست.",
     "COMMERCE_PAYMENT_METHOD_UNAVAILABLE": "این روش پرداخت در دسترس نیست.",
@@ -259,6 +261,7 @@
     "COMMERCE_SHIPPING_OPTION_NOT_FOUND": "روش ارسال مورد نظر پیدا نشد.",
     "COMMERCE_SHIPPING_OPTION_UNAVAILABLE": "روش ارسال انتخاب‌شده دیگر در دسترس نیست. لطفاً روش دیگری انتخاب کنید.",
     "COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED": "روی این روش ارسال نمی‌توان استثنای قیمتی تعریف کرد، چون کرایه را مأمور پست از مشتری می‌گیرد.",
-    "COMMERCE_SHIPPING_OVERRIDE_TARGET": "هر استثنا باید دقیقاً یک مقصد داشته باشد: یا یک شهر، یا یک استان."
+    "COMMERCE_SHIPPING_OVERRIDE_TARGET": "هر استثنا باید دقیقاً یک مقصد داشته باشد: یا یک شهر، یا یک استان.",
+    "COMMERCE_SHIPPING_SETTLEMENT_INVALID": "برای «تحویل حضوری» نمی‌توان «پس‌کرایه» انتخاب کرد."
   }
 }

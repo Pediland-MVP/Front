@@ -6,6 +6,7 @@ import {
   chargesShipping,
   isOptionDirty,
   newOptionDraft,
+  SETTLEMENTS_BY_KIND,
   toDraft,
   toOverridesPayload,
   toPayload,
@@ -59,6 +60,18 @@ describe('chargesShipping', () => {
     expect(chargesShipping({ kind: 'pickup', settlement: 'prepaid' })).toBe(false);
     expect(chargesShipping({ kind: 'pickup', settlement: 'freight_collect' })).toBe(false);
     expect(chargesShipping({ kind: 'pickup', settlement: 'cash_on_delivery' })).toBe(false);
+  });
+});
+
+describe('SETTLEMENTS_BY_KIND', () => {
+  it('offers all three on every kind but پیک/پست', () => {
+    for (const kind of ['post_express', 'post_registered', 'tipax', 'courier', 'other'] as const) {
+      expect(SETTLEMENTS_BY_KIND(kind)).toEqual(['prepaid', 'freight_collect', 'cash_on_delivery']);
+    }
+  });
+
+  it('drops پس‌کرایه on a تحویل حضوری — a pickup has no carrier to settle freight with', () => {
+    expect(SETTLEMENTS_BY_KIND('pickup')).toEqual(['prepaid', 'cash_on_delivery']);
   });
 });
 

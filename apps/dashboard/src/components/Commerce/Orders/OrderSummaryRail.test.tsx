@@ -1,10 +1,17 @@
 import type { ReactNode } from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
 import type { OrderDetailView } from '@/types/commerceOrders';
+
+// `can` defaults to true -- same mocking convention `OrderStatusUpdater.test.tsx` uses for
+// `usePermissions`.
+const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
+vi.mock('@/hooks/usePermissions', () => ({
+  usePermissions: () => ({ can: mockCan }),
+}));
 
 import { OrderSummaryRail } from './OrderSummaryRail';
 
@@ -147,5 +154,142 @@ describe('OrderSummaryRail', () => {
   it('renders no status-updater slot at all when handed null', () => {
     render(wrap(<OrderSummaryRail order={detailOrder} statusUpdater={null} />));
     expect(screen.queryByTestId('status-updater-slot')).not.toBeInTheDocument();
+  });
+
+  describe('tracking row', () => {
+    it('shows the tracking link once the order is sending', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      const link = screen.getByTestId('tracking-link');
+      expect(link).toHaveAttribute('href', 'https://a.example/1');
+      // The url is merchant-supplied and opens in a new tab; without noopener/noreferrer the
+      // opened page gets a `window.opener` handle back into this dashboard.
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+      expect(link).toHaveAttribute('target', '_blank');
+    });
+
+    it('offers to add a link when a shipped order has none', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'sending', trackingUrl: null }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.getByTestId('tracking-edit')).toHaveTextContent(copy.detail.trackingAdd);
+      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+      expect(screen.getByText(copy.detail.trackingNone)).toBeInTheDocument();
+    });
+
+    it('offers to edit, not add, when a shipped order already has a link', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.getByTestId('tracking-edit')).toHaveTextContent(copy.detail.trackingEdit);
+    });
+
+    it('shows the tracking row on a completed order too', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'completed', trackingUrl: 'https://a.example/1' }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.getByTestId('tracking-link')).toBeInTheDocument();
+    });
+
+    it('shows no tracking row before the order ships', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'processing', trackingUrl: null }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+    });
+
+    it('shows no tracking row for a pickup order, even once it is sending', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{
+              ...detailOrder,
+              status: 'sending',
+              shippingKind: 'pickup',
+              trackingUrl: null,
+            }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+    });
+
+    // I2: a digital order reaches `completed` via `processing -> completed` without ever passing
+    // through `sending`, and its `shippingKind` is `null` (never `pickup`) -- so without the kind
+    // check the tracking row would show for a downloadable file.
+    it('shows no tracking row for a completed digital order', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{
+              ...detailOrder,
+              status: 'completed',
+              kind: 'digital',
+              shippingKind: null,
+              trackingUrl: null,
+            }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+    });
+
+    it('hides the edit affordance without order:manage, but still shows the link', () => {
+      mockCan.mockReturnValueOnce(false);
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
+      expect(screen.getByTestId('tracking-link')).toBeInTheDocument();
+    });
+
+    it('opens the edit dialog pre-filled with the current link when tapped', () => {
+      render(
+        wrap(
+          <OrderSummaryRail
+            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            statusUpdater={null}
+          />,
+        ),
+      );
+      fireEvent.click(screen.getByTestId('tracking-edit'));
+      expect(screen.getByTestId('tracking-url')).toHaveValue('https://a.example/1');
+    });
   });
 });

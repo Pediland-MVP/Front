@@ -70,7 +70,7 @@ const renderDialog = (values: Partial<ProductFormValues> = {}) =>
 
 const withVariants = (): Partial<ProductFormValues> => ({
   title: 'کفش رانینگ',
-  description: '### سبک\nمناسب دویدن',
+  description: 'کفش سبک و راحت برای دویدن روزانه',
   basePrice: 999000,
   baseCompare: null,
   baseStock: 7,
@@ -117,11 +117,12 @@ describe('PreviewDialog', () => {
     );
   });
 
-  it('renders the description as plain text, not markdown', () => {
-    renderDialog(withVariants());
+  it('renders the description exactly as typed, with no markdown processing', () => {
+    // A leading `#` used to be heading syntax the old contentEditable would strip on render.
+    // The field is plain text now, so it is just a character — this proves nothing strips it.
+    renderDialog({ ...withVariants(), description: '# کفش سبک و راحت' });
 
-    expect(screen.getByTestId('preview-description')).toHaveTextContent('سبک');
-    expect(screen.getByTestId('preview-description').textContent).not.toContain('###');
+    expect(screen.getByTestId('preview-description')).toHaveTextContent('# کفش سبک و راحت');
   });
 
   it('shows the stock line from the resolved row', () => {

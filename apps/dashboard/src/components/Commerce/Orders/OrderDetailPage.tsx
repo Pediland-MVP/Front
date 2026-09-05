@@ -25,13 +25,25 @@ interface OrderDetailPageProps {
 export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const t = useTranslations('Commerce.Orders');
   const t_ec = useTranslations('ERROR_CODES');
-  const { order, isLoading, mutate, approve, reject, ship, complete, cancel, markPaid } =
-    useCommerceOrder(orderId);
+  const {
+    order,
+    isLoading,
+    mutate,
+    approve,
+    reject,
+    ship,
+    complete,
+    cancel,
+    markPaid,
+    updateTracking,
+  } = useCommerceOrder(orderId);
   const { cityById } = useShippingDestinations();
   const { can } = usePermissions();
 
   /**
-   * Matches `OrderActions`' `onAction` signature exactly: (name, reason?) => Promise<boolean>.
+   * Matches `OrderStatusUpdater`'s `onAction` signature exactly:
+   * (name, reason?, trackingUrl?) => Promise<boolean>. `trackingUrl` is carried only by `ship`,
+   * the same way `reason` is carried only by `reject`.
    *
    * `COMMERCE_ORDER_STATUS_CHANGED` means someone else already acted, or the buyer's DM moved
    * this order underneath the page. Toasting alone would leave stale buttons that fail on every
@@ -40,11 +52,12 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const onAction = async (
     name: OrderActionName | 'markPaid',
     reason?: string,
+    trackingUrl?: string,
   ): Promise<boolean> => {
     const run: Record<OrderActionName | 'markPaid', () => Promise<void>> = {
       approve,
       reject: () => reject(reason ?? ''),
-      ship,
+      ship: () => ship(trackingUrl),
       complete,
       cancel,
       markPaid,
@@ -77,6 +90,26 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
     }
   };
 
+  /**
+   * `EditTrackingDialog`'s contract is `(trackingUrl, notify) => Promise<boolean>`, not
+   * `onAction`'s `(name, reason?, trackingUrl?)` -- folding it in would need a fake
+   * `OrderActionName` for something that isn't a status transition at all (Back's tracking route
+   * accepts the write while status is `sending` OR `completed`, not one target status). Same
+   * error/toast shape as `onAction` above -- see its comment for why the fallbacks are ordered
+   * the way they are.
+   */
+  const onUpdateTracking = async (trackingUrl: string, notify: boolean): Promise<boolean> => {
+    try {
+      await updateTracking(trackingUrl, notify);
+      return true;
+    } catch (error: any) {
+      const code = error?.response?.data?.code;
+      toast.error(code ? t_ec(code) : error?.response?.data?.message || t('errors.unknown'));
+      if (code === 'COMMERCE_ORDER_STATUS_CHANGED') await mutate();
+      return false;
+    }
+  };
+
   if (isLoading) return <LoaderSpin />;
   if (!order) return <NoDataError />;
 
@@ -98,6 +131,7 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
           <OrderStatusUpdater order={order} onAction={onAction} disabled={isLoading} />
         ) : null
       }
+      onUpdateTracking={onUpdateTracking}
     />
   );
 }
