@@ -71,7 +71,7 @@ const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
               }}
               className="hover:bg-muted/50 cursor-pointer"
             >
-              <TableCell>
+              <TableCell className="h-auto py-3">
                 <div className="flex items-center gap-2">
                   <OrderThumbs order={order} />
                   <div className="flex min-w-0 flex-col gap-0.5">
@@ -108,7 +108,7 @@ const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
                * گیرنده and پرداخت, the two text-heavy columns: a wrapped date or amount reads
                * worse than a slightly taller row, but a wrapped name or payment label does not.
                */}
-              <TableCell className="whitespace-normal">
+              <TableCell className="h-auto py-3 whitespace-normal">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm">{order.recipientName ?? t('card.noName')}</span>
                   {order.mobile && (
@@ -117,16 +117,16 @@ const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
                 </div>
               </TableCell>
 
-              <TableCell className="text-muted-foreground text-xs whitespace-nowrap">
+              <TableCell className="text-muted-foreground h-auto py-3 text-xs whitespace-nowrap">
                 {toJalaliDate(order.placedAt)}
               </TableCell>
 
-              <TableCell className="whitespace-nowrap">
+              <TableCell className="h-auto py-3 whitespace-nowrap">
                 <span className="text-sm font-semibold">{formatNumber(order.grandTotal)}</span>{' '}
                 <span className="text-muted-foreground text-xs">{t('card.tooman')}</span>
               </TableCell>
 
-              <TableCell className="whitespace-normal">
+              <TableCell className="h-auto py-3 whitespace-normal">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-xs">
                     {paymentMethodKey
@@ -145,7 +145,7 @@ const OrdersTableComponent = ({ orders, onOpen }: OrdersTableProps) => {
                 </div>
               </TableCell>
 
-              <TableCell>
+              <TableCell className="h-auto py-3">
                 <OrderStatusBadge status={order.status} />
               </TableCell>
             </TableRow>

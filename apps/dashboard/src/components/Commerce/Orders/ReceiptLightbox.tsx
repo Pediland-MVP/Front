@@ -28,10 +28,20 @@ export function ReceiptLightbox({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="flex max-h-[90vh] max-w-4xl flex-col">
         <DialogTitle className="sr-only">{label}</DialogTitle>
         <DialogDescription className="sr-only">{t('receipts.title')}</DialogDescription>
-        <img src={receipt.url} alt={label} className="w-full" />
+        {/*
+         * `min-h-0` is load-bearing on the flex child: without it the image's natural height
+         * (a portrait receipt screenshot easily runs taller than the viewport) refuses to
+         * shrink below its content size, pushes `DialogContent` past `max-h-[90vh]`, and the
+         * bottom of the receipt -- and the close button below it -- end up off-screen with no
+         * way to scroll to them. This scrolls internally instead, so the dialog itself always
+         * fits.
+         */}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <img src={receipt.url} alt={label} className="w-full" />
+        </div>
         <button
           onClick={onClose}
           className="absolute top-2 right-2 rounded-md bg-white p-2 hover:bg-gray-100"

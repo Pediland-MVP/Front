@@ -290,7 +290,7 @@ export function OrdersListPage() {
      * 40 light rows; the seller-set maximum is 200.
      */
     <>
-      <div className="hidden md:block">
+      <div className="hidden rounded-md border bg-white md:block">
         <OrdersTable
           orders={orders}
           onOpen={(orderId) => router.push(`/products/orders/${orderId}`)}
