@@ -175,6 +175,7 @@
     "COMMERCE_COLLECTION_NOT_FOUND": "یک یا چند مجموعه در این فضای کاری پیدا نشد.",
     "COMMERCE_PRODUCT_TITLE_REQUIRED": "عنوان محصول را بنویسید.",
     "COMMERCE_PRODUCT_DESCRIPTION_REQUIRED": "توضیحات محصول را بنویسید.",
+    "COMMERCE_PRODUCT_DESCRIPTION_TOO_LONG": "توضیحات محصول حداکثر ۶۰ کاراکتر است.",
     "COMMERCE_PRODUCT_CATEGORY_REQUIRED": "دسته‌بندی محصول را انتخاب کنید.",
     "COMMERCE_VARIANT_LIMIT": "هر محصول باید بین ۱ تا ۲۰۰۰ تنوع داشته باشد.",
     "COMMERCE_VARIANT_STOCK_REQUIRED": "موجودی هر تنوع را پر کنید، یا آن را بی‌نهایت کنید.",

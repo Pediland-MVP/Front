@@ -302,7 +302,7 @@ export const buildProductEditorSchema = (t: Translator) => {
       .string()
       .trim()
       .min(1, { message: t('Validation.descriptionRequired') })
-      .max(20_000, { message: t('Validation.descriptionMax') }),
+      .max(60, { message: t('Validation.descriptionMax') }),
     // A product with no category cannot be found in the storefront's own navigation, so this
     // is a data-completeness rule, not a UI preference.
     categoryId: z
