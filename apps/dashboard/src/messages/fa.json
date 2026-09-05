@@ -3050,7 +3050,11 @@
         "itemsTotal": "جمع کالاها",
         "shippingTotal": "هزینه ارسال",
         "grandTotal": "مبلغ کل",
-        "cancelledBecause": "علت لغو"
+        "cancelledBecause": "علت لغو",
+        "trackingLabel": "لینک پیگیری",
+        "trackingNone": "هنوز لینکی ثبت نشده",
+        "trackingEdit": "ویرایش لینک",
+        "trackingAdd": "افزودن لینک"
       },
       "actions": {
         "approve": "تایید پرداخت",
@@ -3104,6 +3108,13 @@
           "title": "ثبت پرداخت",
           "description": "این سفارش پرداخت‌شده علامت می‌خورد. این تغییر برگشت‌پذیر نیست.",
           "confirm": "ثبت پرداخت"
+        },
+        "tracking": {
+          "title": "لینک پیگیری مرسوله",
+          "description": "لینکی که شرکت پست یا باربری برای رهگیری مرسوله داده است.",
+          "invalidUrl": "لینک باید با http یا https شروع شود.",
+          "notifyLabel": "خریدار با پیام دایرکت از تغییر لینک باخبر شود.",
+          "confirm": "ذخیره"
         },
         "cancelAction": "انصراف"
       },

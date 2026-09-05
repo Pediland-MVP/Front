@@ -16,6 +16,9 @@ interface OrderDetailProps {
   cityName: string | null;
   /** The status control. `null` for a viewer without `order:manage`. */
   statusUpdater: ReactNode;
+  /** Forwarded straight through to `OrderSummaryRail` -- see its own prop docstring for why this
+   *  is optional. */
+  onUpdateTracking?: (trackingUrl: string, notify: boolean) => Promise<boolean>;
 }
 
 /**
@@ -28,11 +31,20 @@ interface OrderDetailProps {
  * the sticky rail from being stretched to the detail column's height, which would leave it no
  * room to move as the page scrolls.
  */
-export function OrderDetail({ order, cityName, statusUpdater }: OrderDetailProps) {
+export function OrderDetail({
+  order,
+  cityName,
+  statusUpdater,
+  onUpdateTracking,
+}: OrderDetailProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px] lg:items-start">
       <div className="lg:order-2">
-        <OrderSummaryRail order={order} statusUpdater={statusUpdater} />
+        <OrderSummaryRail
+          order={order}
+          statusUpdater={statusUpdater}
+          onUpdateTracking={onUpdateTracking}
+        />
       </div>
 
       <div className="flex flex-col gap-4 lg:order-1">

@@ -27,8 +27,8 @@ export function useCommerceOrder(id: string | null) {
   );
   const { mutate: globalMutate } = useSWRConfig();
 
-  const run = async (path: string, body?: unknown) => {
-    await api.post(`/commerce/orders/${id}/${path}`, body ?? {});
+  const run = async (path: string, body?: unknown, method: 'post' | 'patch' = 'post') => {
+    await api[method](`/commerce/orders/${id}/${path}`, body ?? {});
     await mutate();
     /**
      * Spec §11: every order mutation revalidates the detail AND invalidates the list. Revalidating
@@ -66,5 +66,9 @@ export function useCommerceOrder(id: string | null) {
     complete: () => run('complete'),
     cancel: () => run('cancel', { reason: 'delivery_refused' }),
     markPaid: () => run('mark-paid'),
+    // PATCH, not POST: this corrects a field on an already-shipped order rather than driving it
+    // through the status state machine, which is what the other five actions do.
+    updateTracking: (trackingUrl: string, notify: boolean) =>
+      run('tracking', { trackingUrl, notify }, 'patch'),
   };
 }

@@ -1,22 +1,34 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { Card, CardContent } from '@/components/ui';
+import { usePermissions } from '@/hooks/usePermissions';
 import { formatNumber } from '@/utils/formatNumber';
 import { toJalaliDateTime } from '@/utils/jalali';
 import type { OrderDetailView } from '@/types/commerceOrders';
 
+import { EditTrackingDialog } from './dialogs/EditTrackingDialog';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { ReceiptStrip } from './ReceiptStrip';
 import { orderRowFields } from './orderRowFields';
+
+// The safe fallback for `onUpdateTracking` when a caller doesn't wire a real write path (every
+// test in this file except the tracking-row describe block, and both of `OrderDetail.test.tsx`'s
+// render sites). Module-scoped so it is one stable function, not a fresh closure per render.
+const noopUpdateTracking = async () => false;
 
 interface OrderSummaryRailProps {
   order: OrderDetailView;
   /** The status control, injected so this component stays pure and its test needs no
    *  permissions mock -- same reason `OrderDetail` has always taken `actions` as a node. */
   statusUpdater: ReactNode;
+  /** Wired by `OrderDetailPage` to `useCommerceOrder`'s `updateTracking`, with the same
+   *  error/toast handling `onAction` uses. Optional, defaulting to a no-op, so every existing
+   *  test here -- and `OrderDetail.test.tsx`'s two render sites -- can keep rendering this
+   *  component without wiring a real write path. */
+  onUpdateTracking?: (trackingUrl: string, notify: boolean) => Promise<boolean>;
 }
 
 /**
@@ -28,9 +40,21 @@ interface OrderSummaryRailProps {
  * the receipt to judge, and the control to act -- pinned on desktop and stacked FIRST on a
  * phone.
  */
-export function OrderSummaryRail({ order, statusUpdater }: OrderSummaryRailProps) {
+export function OrderSummaryRail({
+  order,
+  statusUpdater,
+  onUpdateTracking,
+}: OrderSummaryRailProps) {
   const t = useTranslations('Commerce.Orders');
+  const { can } = usePermissions();
   const { isPaid, paymentMethodKey } = orderRowFields(order);
+  const [trackingOpen, setTrackingOpen] = useState(false);
+
+  // A parcel exists only once the order has shipped, AND only when it was ever going to be
+  // posted at all -- a پیکاپ order is "ready to collect", not "in transit", and has no carrier
+  // link to show or edit.
+  const hasParcel =
+    (order.status === 'sending' || order.status === 'completed') && order.shippingKind !== 'pickup';
 
   return (
     <Card className="lg:sticky lg:top-4">
@@ -79,12 +103,56 @@ export function OrderSummaryRail({ order, statusUpdater }: OrderSummaryRailProps
           <ReceiptStrip receipts={order.receipts} />
         </div>
 
+        {hasParcel && (
+          <div className="flex items-center justify-between gap-2 border-t pt-3">
+            <span className="text-muted-foreground text-xs">{t('detail.trackingLabel')}</span>
+            <div className="flex items-center gap-2">
+              {order.trackingUrl ? (
+                <a
+                  data-testid="tracking-link"
+                  href={order.trackingUrl}
+                  target="_blank"
+                  // The url is merchant-supplied and opens in a new tab -- without
+                  // noopener/noreferrer the opened page gets a `window.opener` handle back into
+                  // this dashboard.
+                  rel="noopener noreferrer"
+                  dir="ltr"
+                  className="text-primary max-w-[140px] truncate text-xs underline"
+                >
+                  {order.trackingUrl}
+                </a>
+              ) : (
+                <span className="text-muted-foreground text-xs">{t('detail.trackingNone')}</span>
+              )}
+              {can('order:manage') && (
+                <button
+                  type="button"
+                  data-testid="tracking-edit"
+                  onClick={() => setTrackingOpen(true)}
+                  className="text-primary shrink-0 text-xs underline"
+                >
+                  {order.trackingUrl ? t('detail.trackingEdit') : t('detail.trackingAdd')}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {statusUpdater && (
           <div data-testid="status-updater-slot" className="border-t pt-3">
             {statusUpdater}
           </div>
         )}
       </CardContent>
+
+      {hasParcel && (
+        <EditTrackingDialog
+          open={trackingOpen}
+          onOpenChange={setTrackingOpen}
+          current={order.trackingUrl ?? null}
+          onConfirm={onUpdateTracking ?? noopUpdateTracking}
+        />
+      )}
     </Card>
   );
 }
