@@ -84,16 +84,23 @@ The mapping layer (`productEditor.mapping.ts`):
 |---|---|
 | `apps/dashboard/src/types/commerce.ts` | Added `finalMessage: string \| null;` to `CommerceProductDetail` (Task 6) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.schema.ts` | Added `kind` and `finalMessage` fields to `ProductFormValues`, zod validators, and param to `buildEmptyProductForm` (Task 7) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.schema.test.ts` | Added tests for `kind` and `finalMessage` validation (Task 7) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.schema.test.ts` | Added 2 describe blocks testing `kind` and `finalMessage` validation (Task 7) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/AttributesSection.test.tsx` | Updated `ProductFormValues` literal in test fixture to include new required fields (Task 7) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/BasePriceSection.test.tsx` | Updated `ProductFormValues` literal in test fixture to include new required fields (Task 7) |
+| `apps/dashboard/src/test/renderWithForm.tsx` | Shared test helper's `ProductFormValues` literal updated to include `kind`/`finalMessage` (Task 7) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.mapping.ts` | Wired `kind`/`finalMessage` through create/update payloads and detail-to-form mapping (Task 8, asymmetric omit-when-blank create vs always-send update) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.tsx` | Added `useSearchParams`, seeded `initialKind` from `?kind=`, passed to form baseline and to editor body; renumbered `STEPS` (Task 9); wired new sections to steps; fixed stale doc-comment |
-| `apps/dashboard/src/components/Commerce/ProductEditor/sections/ProductKindSection.tsx` *(new)* | Two pressable cards (physical / digital) driven by `watch`/`setValue` (Task 10) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/sections/ProductKindSection.test.tsx` *(new)* | Three cases: default-pressed, digital-seed, click-switches-value (Task 10) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.mapping.test.ts` | Added 5 test cases for `kind`/`finalMessage` in mapping (Task 8) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.tsx` | Added `useSearchParams`, seeded `initialKind` from `?kind=`, passed to form baseline and editor body; renumbered `STEPS`; wired new sections; fixed stale doc-comment (Tasks 9–12) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.test.tsx` | Added tests verifying query param seeding and step renumbering (Task 9) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/ProductKindSection.tsx` *(new)* | Two pressable cards (physical / digital) driven by `watch`/`setValue` from form context (Task 10) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/ProductKindSection.test.tsx` *(new)* | Three test cases: default-pressed, digital-seed, click-switches-value (Task 10) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.tsx` *(new)* | Textarea with live character-count hint, `useWatch` for count only (Task 11) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.test.tsx` *(new)* | Full editor suite passing (Task 11) |
-| `apps/dashboard/src/components/Commerce/ProductList/ChooseProductKindDialog.tsx` *(new)* | Two cards (physical / digital); clicking navigates to `/products/add?kind=` (Task 12) |
-| `apps/dashboard/src/components/Commerce/ProductList/ProductListPage.tsx` | Wired "Add product" button to open `ChooseProductKindDialog` (Task 12); removed unused `router`/`useRouter` |
-| `apps/dashboard/src/messages/fa.json` | Four new namespaces: `Commerce.Editor.Kind`, `Commerce.Editor.Validation.finalMessageMax`, `Commerce.Editor.FinalMessage`, `Commerce.List.ChooseKind` (fa.json only, per CLAUDE.md §8) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.test.tsx` *(new)* | Full editor suite tests for final message textarea and character counter (Task 11) |
+| `apps/dashboard/src/components/Commerce/ProductList/ChooseProductKindDialog.tsx` *(new)* | Two pressable cards (physical / digital); clicking navigates to `/products/add?kind=` (Task 12) |
+| `apps/dashboard/src/components/Commerce/ProductList/ChooseProductKindDialog.test.tsx` *(new)* | Tests for dialog appearance, card clicks, and navigation routing (Task 12) |
+| `apps/dashboard/src/components/Commerce/ProductList/ProductListPage.tsx` | Wired "Add product" button to open `ChooseProductKindDialog`; removed unused `router`/`useRouter` (Task 12) |
+| `apps/dashboard/src/components/Commerce/ProductList/ProductListPage.test.tsx` | Updated tests to verify "Add product" button opens dialog instead of navigating directly (Task 12) |
+| `apps/dashboard/src/messages/fa.json` | Four new namespaces: `Commerce.Editor.Kind`, `Commerce.Editor.Validation.finalMessageMax`, `Commerce.Editor.FinalMessage`, `Commerce.List.ChooseKind` (fa.json only, per CLAUDE.md §8; updated across Tasks 10, 11, 12) |
 
 ## Verification
 
