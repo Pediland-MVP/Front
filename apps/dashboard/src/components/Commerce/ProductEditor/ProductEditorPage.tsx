@@ -73,8 +73,8 @@ import { VariantMediaPickerDialog } from './dialogs/VariantMediaPickerDialog';
 
 /**
  * The design's numbered steps, in scroll order. One object rather than hard-coded `step={7}`
- * props, which drift the first time a section is inserted. `finalMessage` has no rendered
- * section yet — reserved for a later "final message" step.
+ * props, which drift the first time a section is inserted. `finalMessage` renders as the last
+ * step, `FinalMessageSection`.
  */
 const STEPS = {
   kind: 1,
