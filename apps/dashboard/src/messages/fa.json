@@ -2489,6 +2489,13 @@
       "Toast": {
         "deleted": "کالای مورد نظر حذف شد."
       },
+      "ChooseKind": {
+        "title": "این کالا چه نوعی است؟",
+        "physicalTitle": "فیزیکی",
+        "physicalDescription": "مثل کیف و کفش و لباس و گجت و...",
+        "digitalTitle": "دیجیتالی",
+        "digitalDescription": "دوره آنلاین، لینک ویدیو و..."
+      },
       "Card": {
         "physical": "فیزیکی",
         "digital": "دیجیتال",
