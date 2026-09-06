@@ -60,6 +60,7 @@ import { BasePriceSection } from './sections/BasePriceSection';
 import { BaseStockSection } from './sections/BaseStockSection';
 import { AttributesSection } from './sections/AttributesSection';
 import { SpecsSection } from './sections/SpecsSection';
+import { FinalMessageSection } from './sections/FinalMessageSection';
 import { VariantSyncProvider, useVariantSyncContext } from './variant/useVariantSync';
 import { VariantsSection } from './variant/VariantsSection';
 import type { VariantMediaItem, VariantMediaTarget } from './variant/VariantLeafRow';
@@ -793,6 +794,8 @@ const ProductEditorBody = ({
           >
             <VariantsSection media={variantMedia} onOpenPicker={setPickerTarget} />
           </EditorSection>
+
+          <FinalMessageSection step={STEPS.finalMessage} />
         </div>
 
         <aside
