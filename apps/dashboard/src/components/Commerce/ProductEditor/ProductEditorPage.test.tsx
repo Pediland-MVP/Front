@@ -17,7 +17,13 @@ vi.mock('swr', () => ({ mutate: vi.fn() }));
 const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => ({ can: mockCan }) }));
 
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
+// `useSearchParams` backs Task 9's `?kind=digital` seed; none of this file's cases visit the
+// editor with that param, so a real (empty) `URLSearchParams` -- `.get('kind')` returning `null`
+// -- is enough to exercise the "missing param defaults to physical" path.
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 const { api } = vi.hoisted(() => ({
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() },

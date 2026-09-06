@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import {
   useForm,
   useFormContext,
@@ -21,6 +22,7 @@ import type {
   CommerceCategory,
   CommerceCollectionListItem,
   CommerceProductDetail,
+  CommerceProductKind,
   CommerceProductMedia,
 } from '@/types/commerce';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
@@ -177,6 +179,12 @@ interface ProductEditorPageProps {
  */
 export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) => {
   const t = useTranslations('Commerce.Editor');
+  // Only meaningful on create -- `ChooseProductKindDialog` put it there. An invalid or missing
+  // value (a bare `/products/add` visit, e.g. a stale bookmark) defaults to physical rather than
+  // failing to load.
+  const searchParams = useSearchParams();
+  const initialKind: CommerceProductKind =
+    mode === 'create' && searchParams.get('kind') === 'digital' ? 'digital' : 'physical';
   const { product, categories, collections, collectionsLoaded, tagPool, isLoading, loadError } =
     useProductLoad(mode, productId);
 
@@ -197,7 +205,7 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
     resolver: zodResolver(
       schema as unknown as Parameters<typeof zodResolver>[0],
     ) as Resolver<ProductFormValues>,
-    defaultValues: buildEmptyProductForm(),
+    defaultValues: buildEmptyProductForm(initialKind),
     // Validating on submit, not on change: with up to 2000 rows × 5 inputs, per-keystroke
     // validation is the one thing that would make the grid feel slow.
     mode: 'onSubmit',
@@ -237,6 +245,7 @@ export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) =
           collections={collections}
           collectionsLoaded={collectionsLoaded}
           tagPool={tagPool}
+          initialKind={initialKind}
         />
       </VariantSyncProvider>
     </Form>
@@ -251,6 +260,7 @@ interface ProductEditorBodyProps {
   collections: CommerceCollectionListItem[];
   collectionsLoaded: boolean;
   tagPool: string[];
+  initialKind: CommerceProductKind;
 }
 
 const ProductEditorBody = ({
@@ -261,6 +271,7 @@ const ProductEditorBody = ({
   collections,
   collectionsLoaded,
   tagPool,
+  initialKind,
 }: ProductEditorBodyProps) => {
   const t = useTranslations('Commerce.Editor');
   const tVariants = useTranslations('Commerce.Editor.Variants');
@@ -306,7 +317,7 @@ const ProductEditorBody = ({
    */
   const seeded = useRef(false);
   const seededMembership = useRef(false);
-  const baseline = useRef<ProductFormValues>(buildEmptyProductForm());
+  const baseline = useRef<ProductFormValues>(buildEmptyProductForm(initialKind));
 
   useEffect(() => {
     if (mode !== 'edit' || !product || seeded.current) return;
