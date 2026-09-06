@@ -29,12 +29,12 @@ import {
 interface OrderStatusUpdaterProps {
   order: OrderView;
   /** Identical contract to the `OrderActions` this replaces: resolves `true` when the write
-   *  landed, `false` when it failed and the page has already toasted. `trackingUrl` is carried
+   *  landed, `false` when it failed and the page has already toasted. `followUpCode` is carried
    *  only by `ship` -- see `runAction`'s "forward only what was passed" comment. */
   onAction: (
     name: OrderActionName | 'markPaid',
     reason?: string,
-    trackingUrl?: string,
+    followUpCode?: string,
   ) => Promise<boolean>;
   disabled?: boolean;
 }
@@ -77,17 +77,17 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
   const runAction = async (
     name: OrderActionName | 'markPaid',
     reason?: string,
-    trackingUrl?: string,
+    followUpCode?: string,
   ) => {
     setBusy(true);
     try {
-      // Forward `reason`/`trackingUrl` only when the caller actually passed one. `reject` is the
-      // only transition that carries a `reason`, `ship` the only one that carries a `trackingUrl`
+      // Forward `reason`/`followUpCode` only when the caller actually passed one. `reject` is the
+      // only transition that carries a `reason`, `ship` the only one that carries a `followUpCode`
       // -- every other call site invokes `runAction(name)` with neither, and blindly forwarding
       // an unset value here would still pass an explicit `undefined` through to `onAction`,
       // changing its call signature from `(name)` to `(name, undefined)`.
       if (reason !== undefined) return await onAction(name, reason);
-      if (trackingUrl !== undefined) return await onAction(name, undefined, trackingUrl);
+      if (followUpCode !== undefined) return await onAction(name, undefined, followUpCode);
       return await onAction(name);
     } finally {
       setBusy(false);
@@ -175,16 +175,15 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
       />
       {/*
         Unlike the `ConfirmActionDialog`s around it, `ship` closes only on success -- it holds a
-        typed tracking url, same reasoning as `RejectPaymentDialog` (see the big comment above):
-        a failed write must not throw away up to 500 characters... here, up to one url the
-        seller may not want to retype.
+        typed follow-up code, same reasoning as `RejectPaymentDialog` (see the big comment above):
+        a failed write must not throw away the code the seller may not want to retype.
       */}
       <ShipOrderDialog
         open={pendingAction === 'ship'}
         onOpenChange={(open) => setPendingAction(open ? 'ship' : null)}
         shippingKind={order.shippingKind}
-        onConfirm={async (trackingUrl) => {
-          const ok = await runAction('ship', undefined, trackingUrl);
+        onConfirm={async (followUpCode) => {
+          const ok = await runAction('ship', undefined, followUpCode);
           if (ok) closeDialog();
           return ok;
         }}

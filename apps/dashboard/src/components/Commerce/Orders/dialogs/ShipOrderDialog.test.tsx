@@ -24,14 +24,14 @@ const renderShip = (shippingKind: string | null, result: boolean = true) => {
 };
 
 describe('ShipOrderDialog', () => {
-  it('offers a tracking url field for a posted order', () => {
+  it('offers a tracking code field for a posted order', () => {
     renderShip('post_express');
-    expect(screen.getByTestId('tracking-url')).toBeInTheDocument();
+    expect(screen.getByTestId('tracking-code')).toBeInTheDocument();
   });
 
-  it('hides the tracking url field for a pickup -- there is no parcel', () => {
+  it('hides the tracking code field for a pickup -- there is no parcel', () => {
     renderShip('pickup');
-    expect(screen.queryByTestId('tracking-url')).toBeNull();
+    expect(screen.queryByTestId('tracking-code')).toBeNull();
   });
 
   it('shows pickup-specific copy instead of "posted" wording', () => {
@@ -40,12 +40,12 @@ describe('ShipOrderDialog', () => {
     expect(screen.getByText(copy.descriptionPickup)).toBeInTheDocument();
   });
 
-  it('tells the seller the tracking link is sent to the buyer as a DM', () => {
+  it('tells the seller the tracking code is sent to the buyer as a DM', () => {
     renderShip('post_express');
-    expect(screen.getByText(copy.urlHint)).toBeInTheDocument();
+    expect(screen.getByText(copy.codeHint)).toBeInTheDocument();
   });
 
-  it('confirms with no url when the field is left blank', async () => {
+  it('confirms with no code when the field is left blank', async () => {
     const onConfirm = renderShip('post_express');
     await act(async () => {
       fireEvent.click(screen.getByTestId('ship-confirm'));
@@ -53,21 +53,34 @@ describe('ShipOrderDialog', () => {
     expect(onConfirm).toHaveBeenCalledWith(undefined);
   });
 
-  it('confirms with the trimmed url when it is valid', async () => {
+  it('confirms with the trimmed code when it is valid', async () => {
     const onConfirm = renderShip('post_express');
-    fireEvent.change(screen.getByTestId('tracking-url'), {
-      target: { value: '  https://tracking.post.ir/abc  ' },
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: '  RA123456785IR  ' },
     });
     await act(async () => {
       fireEvent.click(screen.getByTestId('ship-confirm'));
     });
-    expect(onConfirm).toHaveBeenCalledWith('https://tracking.post.ir/abc');
+    expect(onConfirm).toHaveBeenCalledWith('RA123456785IR');
   });
 
-  it('rejects a url that is not http(s)', () => {
+  it('normalizes Persian digits to English as the seller types (CLAUDE.md §18)', async () => {
     const onConfirm = renderShip('post_express');
-    fireEvent.change(screen.getByTestId('tracking-url'), {
-      target: { value: 'javascript:alert(1)' },
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: '۱۲۳۴۵۶' },
+    });
+    expect(screen.getByTestId('tracking-code')).toHaveValue('123456');
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('ship-confirm'));
+    });
+    expect(onConfirm).toHaveBeenCalledWith('123456');
+  });
+
+  it('rejects a code containing spaces or punctuation', () => {
+    const onConfirm = renderShip('post_express');
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: 'RA 123 456' },
     });
     fireEvent.click(screen.getByTestId('ship-confirm'));
 
@@ -75,21 +88,10 @@ describe('ShipOrderDialog', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
-  it('rejects a malformed url that URL() cannot even parse', () => {
+  it('rejects a code longer than 50 characters', () => {
     const onConfirm = renderShip('post_express');
-    fireEvent.change(screen.getByTestId('tracking-url'), { target: { value: 'not a url' } });
-    fireEvent.click(screen.getByTestId('ship-confirm'));
-
-    expect(onConfirm).not.toHaveBeenCalled();
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-  });
-
-  // M5: `new URL()` alone accepts a bare host with no TLD, but the server's `@IsUrl` requires
-  // one -- without this extra check the dialog would accept a url the backend 400s on.
-  it('rejects a url whose host has no TLD, even though URL() parses it fine', () => {
-    const onConfirm = renderShip('post_express');
-    fireEvent.change(screen.getByTestId('tracking-url'), {
-      target: { value: 'https://localhost:8080/track' },
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: 'A'.repeat(51) },
     });
     fireEvent.click(screen.getByTestId('ship-confirm'));
 
@@ -97,15 +99,26 @@ describe('ShipOrderDialog', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
-  it('keeps the typed url when the write fails', async () => {
+  it('accepts a hyphen inside the code', async () => {
+    const onConfirm = renderShip('post_express');
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: 'RA-123-456' },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('ship-confirm'));
+    });
+    expect(onConfirm).toHaveBeenCalledWith('RA-123-456');
+  });
+
+  it('keeps the typed code when the write fails', async () => {
     const onConfirm = renderShip('post_express', false);
-    fireEvent.change(screen.getByTestId('tracking-url'), {
-      target: { value: 'https://tracking.post.ir/abc' },
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: 'RA123456785IR' },
     });
     await act(async () => {
       fireEvent.click(screen.getByTestId('ship-confirm'));
     });
 
-    expect(screen.getByTestId('tracking-url')).toHaveValue('https://tracking.post.ir/abc');
+    expect(screen.getByTestId('tracking-code')).toHaveValue('RA123456785IR');
   });
 });

@@ -42,7 +42,7 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
 
   /**
    * Matches `OrderStatusUpdater`'s `onAction` signature exactly:
-   * (name, reason?, trackingUrl?) => Promise<boolean>. `trackingUrl` is carried only by `ship`,
+   * (name, reason?, followUpCode?) => Promise<boolean>. `followUpCode` is carried only by `ship`,
    * the same way `reason` is carried only by `reject`.
    *
    * `COMMERCE_ORDER_STATUS_CHANGED` means someone else already acted, or the buyer's DM moved
@@ -52,12 +52,12 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   const onAction = async (
     name: OrderActionName | 'markPaid',
     reason?: string,
-    trackingUrl?: string,
+    followUpCode?: string,
   ): Promise<boolean> => {
     const run: Record<OrderActionName | 'markPaid', () => Promise<void>> = {
       approve,
       reject: () => reject(reason ?? ''),
-      ship: () => ship(trackingUrl),
+      ship: () => ship(followUpCode),
       complete,
       cancel,
       markPaid,
@@ -91,16 +91,16 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   };
 
   /**
-   * `EditTrackingDialog`'s contract is `(trackingUrl, notify) => Promise<boolean>`, not
-   * `onAction`'s `(name, reason?, trackingUrl?)` -- folding it in would need a fake
+   * `EditTrackingDialog`'s contract is `(followUpCode, notify) => Promise<boolean>`, not
+   * `onAction`'s `(name, reason?, followUpCode?)` -- folding it in would need a fake
    * `OrderActionName` for something that isn't a status transition at all (Back's tracking route
    * accepts the write while status is `sending` OR `completed`, not one target status). Same
    * error/toast shape as `onAction` above -- see its comment for why the fallbacks are ordered
    * the way they are.
    */
-  const onUpdateTracking = async (trackingUrl: string, notify: boolean): Promise<boolean> => {
+  const onUpdateTracking = async (followUpCode: string, notify: boolean): Promise<boolean> => {
     try {
-      await updateTracking(trackingUrl, notify);
+      await updateTracking(followUpCode, notify);
       return true;
     } catch (error: any) {
       const code = error?.response?.data?.code;

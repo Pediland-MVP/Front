@@ -128,25 +128,23 @@ describe('OrderStatusUpdater', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent(copy.status.processing);
   });
 
-  it('routes processing -> sending through the ship dialog, with a tracking url field', async () => {
+  it('routes processing -> sending through the ship dialog, with a tracking code field', async () => {
     const onAction = renderUpdater(processingOrder);
     await selectStatus(copy.status.sending);
     fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
 
     expect(onAction).not.toHaveBeenCalled();
     expect(screen.getByText(copy.dialogs.ship.titlePosted)).toBeInTheDocument();
-    expect(screen.getByTestId('tracking-url')).toBeInTheDocument();
+    expect(screen.getByTestId('tracking-code')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByTestId('tracking-url'), {
-      target: { value: 'https://tracking.post.ir/abc' },
+    fireEvent.change(screen.getByTestId('tracking-code'), {
+      target: { value: 'RA123456785IR' },
     });
     fireEvent.click(screen.getByTestId('ship-confirm'));
-    await waitFor(() =>
-      expect(onAction).toHaveBeenCalledWith('ship', undefined, 'https://tracking.post.ir/abc'),
-    );
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('ship', undefined, 'RA123456785IR'));
   });
 
-  it('ships with no tracking url when the field is left blank', async () => {
+  it('ships with no tracking code when the field is left blank', async () => {
     const onAction = renderUpdater(processingOrder);
     await selectStatus(copy.status.sending);
     fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
@@ -155,13 +153,13 @@ describe('OrderStatusUpdater', () => {
     await waitFor(() => expect(onAction).toHaveBeenCalledWith('ship'));
   });
 
-  it('hides the tracking url field, and shows pickup wording, when shipping a pickup order', async () => {
+  it('hides the tracking code field, and shows pickup wording, when shipping a pickup order', async () => {
     renderUpdater({ ...processingOrder, shippingKind: 'pickup' });
     await selectStatus(copy.status.sending);
     fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
 
     expect(screen.getByText(copy.dialogs.ship.titlePickup)).toBeInTheDocument();
-    expect(screen.queryByTestId('tracking-url')).toBeNull();
+    expect(screen.queryByTestId('tracking-code')).toBeNull();
   });
 
   it('never offers sending for a digital order', async () => {

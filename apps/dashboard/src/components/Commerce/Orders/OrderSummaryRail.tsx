@@ -28,7 +28,7 @@ interface OrderSummaryRailProps {
    *  error/toast handling `onAction` uses. Optional, defaulting to a no-op, so every existing
    *  test here -- and `OrderDetail.test.tsx`'s two render sites -- can keep rendering this
    *  component without wiring a real write path. */
-  onUpdateTracking?: (trackingUrl: string, notify: boolean) => Promise<boolean>;
+  onUpdateTracking?: (followUpCode: string, notify: boolean) => Promise<boolean>;
 }
 
 /**
@@ -111,20 +111,18 @@ export function OrderSummaryRail({
           <div className="flex items-center justify-between gap-2 border-t pt-3">
             <span className="text-muted-foreground text-xs">{t('detail.trackingLabel')}</span>
             <div className="flex items-center gap-2">
-              {order.trackingUrl ? (
-                <a
-                  data-testid="tracking-link"
-                  href={order.trackingUrl}
-                  target="_blank"
-                  // The url is merchant-supplied and opens in a new tab -- without
-                  // noopener/noreferrer the opened page gets a `window.opener` handle back into
-                  // this dashboard.
-                  rel="noopener noreferrer"
+              {order.followUpCode ? (
+                // A CODE the seller/buyer copies, never a link to tap -- no <a>, no underline, no
+                // href. Selectable plain text is already "easy to copy" for a desktop admin
+                // panel; see `orderStatus.copy.ts`'s docstring for why the buyer-facing DM goes
+                // further and sends it as its own message with nothing else in it.
+                <span
+                  data-testid="tracking-value"
                   dir="ltr"
-                  className="text-primary max-w-[140px] truncate text-xs underline"
+                  className="max-w-[140px] truncate text-xs"
                 >
-                  {order.trackingUrl}
-                </a>
+                  {order.followUpCode}
+                </span>
               ) : (
                 <span className="text-muted-foreground text-xs">{t('detail.trackingNone')}</span>
               )}
@@ -135,7 +133,7 @@ export function OrderSummaryRail({
                   onClick={() => setTrackingOpen(true)}
                   className="text-primary shrink-0 text-xs underline"
                 >
-                  {order.trackingUrl ? t('detail.trackingEdit') : t('detail.trackingAdd')}
+                  {order.followUpCode ? t('detail.trackingEdit') : t('detail.trackingAdd')}
                 </button>
               )}
             </div>
@@ -153,7 +151,7 @@ export function OrderSummaryRail({
         <EditTrackingDialog
           open={trackingOpen}
           onOpenChange={setTrackingOpen}
-          current={order.trackingUrl ?? null}
+          current={order.followUpCode ?? null}
           onConfirm={onUpdateTracking ?? noopUpdateTracking}
         />
       )}

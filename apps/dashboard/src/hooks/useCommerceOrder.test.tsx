@@ -105,11 +105,11 @@ describe('useCommerceOrder invalidates the orders list after a write', () => {
     fetcher.mockClear();
 
     await act(async () => {
-      await result.current.detail.updateTracking('https://tracking.post.ir/abc', true);
+      await result.current.detail.updateTracking('RA123456785IR', true);
     });
 
     expect(patch).toHaveBeenCalledWith('/commerce/orders/o1/tracking', {
-      trackingUrl: 'https://tracking.post.ir/abc',
+      followUpCode: 'RA123456785IR',
       notify: true,
     });
     expect(post).not.toHaveBeenCalled();

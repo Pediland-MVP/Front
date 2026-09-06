@@ -15,32 +15,32 @@ import {
   Input,
   Label,
 } from '@/components/ui';
-import { isValidTrackingUrl } from './trackingUrl.util';
+import { isValidFollowUpCode, normalizeFollowUpCodeInput } from './followUpCode.util';
 
 interface EditTrackingDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** The link currently on the order, pre-filled so a seller corrects a typo rather than
-   *  retyping. `null` when the order shipped with no link at all -- same dialog, empty field. */
+  /** The code currently on the order, pre-filled so a seller corrects a typo rather than
+   *  retyping. `null` when the order shipped with no code at all -- same dialog, empty field. */
   current: string | null;
   /** Resolves `true` only when the write landed. On `false` the dialog stays open and keeps the
-   *  typed url, same reasoning as `ShipOrderDialog`'s `onConfirm` -- see its docstring. */
-  onConfirm: (trackingUrl: string, notify: boolean) => Promise<boolean>;
+   *  typed code, same reasoning as `ShipOrderDialog`'s `onConfirm` -- see its docstring. */
+  onConfirm: (followUpCode: string, notify: boolean) => Promise<boolean>;
 }
 
 /**
- * Corrects the carrier tracking link on an order that has already shipped. Back allows this while
- * status is `sending` OR `completed` -- a seller may need to fix a link even after delivery.
+ * Corrects the carrier tracking CODE on an order that has already shipped. Back allows this while
+ * status is `sending` OR `completed` -- a seller may need to fix a code even after delivery.
  *
  * `notify` defaults to OFF. Most edits are a seller fixing their own typo seconds after `ship`,
  * and a DM for every keystroke-level correction is noise. It is worth ticking in the two cases
- * that matter: the buyer already received a broken link, or the order shipped with none at all.
+ * that matter: the buyer already received a broken code, or the order shipped with none at all.
  * Reseeded to OFF every time the dialog opens (see the effect below) -- it must never remember a
  * previous tick.
  *
  * Validated the same way `ShipOrderDialog` validates its field, via the shared
- * `isValidTrackingUrl` (`trackingUrl.util.ts`) -- the two dialogs must stay identical. Unlike
- * `ship`'s field, this one is required -- there is no "no link yet" fallback once a seller has
+ * `isValidFollowUpCode` (`followUpCode.util.ts`) -- the two dialogs must stay identical. Unlike
+ * `ship`'s field, this one is required -- there is no "no code yet" fallback once a seller has
  * opened this dialog to add or fix one, so a blank/whitespace-only value is rejected the same way
  * an invalid one is.
  */
@@ -52,29 +52,29 @@ export const EditTrackingDialog = ({
 }: EditTrackingDialogProps) => {
   const t = useTranslations('Commerce.Orders.dialogs.tracking');
   const tDialogs = useTranslations('Commerce.Orders.dialogs');
-  const [url, setUrl] = useState(current ?? '');
+  const [code, setCode] = useState(current ?? '');
   const [notify, setNotify] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // The order can change under the page (another seat, the buyer's DM), and this dialog can be
-  // reopened after a previous edit. Re-seed the url to whatever is on the order NOW, and always
+  // reopened after a previous edit. Re-seed the code to whatever is on the order NOW, and always
   // reseed `notify`/`error` -- see the docstring on why `notify` must never remember a prior tick.
   useEffect(() => {
     if (open) {
-      setUrl(current ?? '');
+      setCode(current ?? '');
       setNotify(false);
       setError(null);
     }
   }, [open, current]);
 
   const handleConfirm = async () => {
-    const trimmed = url.trim();
+    const trimmed = code.trim();
 
-    // An empty `trimmed` fails `isValidTrackingUrl` too (its `new URL()` throws on ''), and hits
+    // An empty `trimmed` fails `isValidFollowUpCode` too (`length > 0` fails on ''), and hits
     // the same branch -- there is nothing to save.
-    if (!isValidTrackingUrl(trimmed)) {
-      setError(t('invalidUrl'));
+    if (!isValidFollowUpCode(trimmed)) {
+      setError(t('invalidCode'));
       return;
     }
 
@@ -98,15 +98,15 @@ export const EditTrackingDialog = ({
 
         <div className="flex flex-col gap-1.5">
           <Input
-            data-testid="tracking-url"
-            value={url}
+            data-testid="tracking-code"
+            value={code}
             onChange={(event) => {
-              setUrl(event.target.value);
+              setCode(normalizeFollowUpCodeInput(event.target.value));
               if (error) setError(null);
             }}
-            placeholder="https://tracking.post.ir/…"
+            placeholder="RA123456785IR"
             dir="ltr"
-            maxLength={500}
+            maxLength={50}
             aria-invalid={error ? true : undefined}
           />
           {error && (

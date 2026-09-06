@@ -58,17 +58,17 @@ export function useCommerceOrder(id: string | null) {
     mutate,
     approve: () => run('approve'),
     reject: (reason: string) => run('reject', { reason }),
-    // `{ trackingUrl }` is sent only when one was actually typed -- an explicit `{ trackingUrl:
+    // `{ followUpCode }` is sent only when one was actually typed -- an explicit `{ followUpCode:
     // undefined }` body would still be a key the backend has to ignore, and Back's ship route
-    // treats a body's *absence* the same as "no link yet", so there is nothing to gain by sending
+    // treats a body's *absence* the same as "no code yet", so there is nothing to gain by sending
     // the key unset.
-    ship: (trackingUrl?: string) => run('ship', trackingUrl ? { trackingUrl } : undefined),
+    ship: (followUpCode?: string) => run('ship', followUpCode ? { followUpCode } : undefined),
     complete: () => run('complete'),
     cancel: () => run('cancel', { reason: 'delivery_refused' }),
     markPaid: () => run('mark-paid'),
     // PATCH, not POST: this corrects a field on an already-shipped order rather than driving it
     // through the status state machine, which is what the other five actions do.
-    updateTracking: (trackingUrl: string, notify: boolean) =>
-      run('tracking', { trackingUrl, notify }, 'patch'),
+    updateTracking: (followUpCode: string, notify: boolean) =>
+      run('tracking', { followUpCode, notify }, 'patch'),
   };
 }

@@ -13,7 +13,7 @@ import {
   DialogTitle,
   Input,
 } from '@/components/ui';
-import { isValidTrackingUrl } from './trackingUrl.util';
+import { isValidFollowUpCode, normalizeFollowUpCodeInput } from './followUpCode.util';
 
 interface ShipOrderDialogProps {
   open: boolean;
@@ -21,22 +21,25 @@ interface ShipOrderDialogProps {
   /** Decides whether there is a parcel to track at all -- a pickup has none. Plain `string | null`
    *  because `OrderView.shippingKind` is (see `OrderBuyerCard`'s guarded-lookup comment for why). */
   shippingKind: string | null;
-  /** Resolves `true` only when the write landed; on `false` this dialog KEEPS the typed url -- see
+  /** Resolves `true` only when the write landed; on `false` this dialog KEEPS the typed code -- see
    *  `RejectPaymentDialog`'s docstring for why losing what the seller typed is the worse failure. */
-  onConfirm: (trackingUrl: string | undefined) => Promise<boolean>;
+  onConfirm: (followUpCode: string | undefined) => Promise<boolean>;
 }
 
 /**
- * Confirms `processing → sending`, and collects the carrier's tracking link on the way.
+ * Confirms `processing → sending`, and collects the post office's/courier's own tracking CODE on
+ * the way.
  *
- * The link is optional: a seller often posts before the carrier has issued a number, and
- * `EditTrackingDialog` (a later task) is how they add one afterwards. The field is hidden
+ * The code is optional: a seller often posts before the carrier has issued one, and
+ * `EditTrackingDialog` (a later task) is how they add it afterwards. The field is hidden
  * entirely for a تحویل حضوری (`pickup`) order -- that order is "ready to collect", not "posted",
- * and there is no parcel a link could point at.
+ * and there is no parcel a code could belong to.
  *
- * Validated here as well as on the backend, because the url is rendered straight into an
- * Instagram DM the buyer taps -- see `isValidTrackingUrl` (`trackingUrl.util.ts`, shared with
- * `EditTrackingDialog`) for what "valid" means here and why it also requires a TLD-bearing host.
+ * Validated here as well as on the backend, because the code is rendered straight into its own
+ * Instagram DM the buyer copies -- see `isValidFollowUpCode` (`followUpCode.util.ts`, shared with
+ * `EditTrackingDialog`) for what "valid" means here. `onChange` runs `normalizeFollowUpCodeInput`
+ * first (CLAUDE.md §18): the code is often mostly numeric, so a Persian-digit keyboard must not
+ * silently produce something the backend rejects.
  */
 export const ShipOrderDialog = ({
   open,
@@ -46,20 +49,20 @@ export const ShipOrderDialog = ({
 }: ShipOrderDialogProps) => {
   const t = useTranslations('Commerce.Orders.dialogs.ship');
   const tCancelAction = useTranslations('Commerce.Orders.dialogs');
-  const [url, setUrl] = useState('');
+  const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isPickup = shippingKind === 'pickup';
 
   const reset = () => {
-    setUrl('');
+    setCode('');
     setError(null);
   };
 
   // Wraps the raw prop: a manual cancel (outline button, Escape, backdrop click) is the seller
   // abandoning what they typed on purpose, so it clears -- unlike a failed `onConfirm`, which
-  // KEEPS the url (see the prop docstring). `OrderStatusUpdater` only flips `open` back to
+  // KEEPS the code (see the prop docstring). `OrderStatusUpdater` only flips `open` back to
   // `false` on success or on this manual path, never on failure, so this is the only place that
   // needs to reset.
   const handleOpenChange = (next: boolean) => {
@@ -68,10 +71,10 @@ export const ShipOrderDialog = ({
   };
 
   const handleConfirm = async () => {
-    const trimmed = url.trim();
+    const trimmed = code.trim();
 
-    if (trimmed && !isValidTrackingUrl(trimmed)) {
-      setError(t('invalidUrl'));
+    if (trimmed && !isValidFollowUpCode(trimmed)) {
+      setError(t('invalidCode'));
       return;
     }
 
@@ -97,20 +100,20 @@ export const ShipOrderDialog = ({
 
         {!isPickup && (
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="ship-tracking-url" className="text-secondary text-xs font-medium">
+            <label htmlFor="ship-tracking-code" className="text-secondary text-xs font-medium">
               {t('label')}
             </label>
             <Input
-              id="ship-tracking-url"
-              data-testid="tracking-url"
-              value={url}
+              id="ship-tracking-code"
+              data-testid="tracking-code"
+              value={code}
               onChange={(event) => {
-                setUrl(event.target.value);
+                setCode(normalizeFollowUpCodeInput(event.target.value));
                 if (error) setError(null);
               }}
-              placeholder="https://tracking.post.ir/…"
+              placeholder="RA123456785IR"
               dir="ltr"
-              maxLength={500}
+              maxLength={50}
               aria-invalid={error ? true : undefined}
             />
             {error ? (
@@ -118,7 +121,7 @@ export const ShipOrderDialog = ({
                 {error}
               </p>
             ) : (
-              <p className="text-muted-foreground text-xs">{t('urlHint')}</p>
+              <p className="text-muted-foreground text-xs">{t('codeHint')}</p>
             )}
           </div>
         )}

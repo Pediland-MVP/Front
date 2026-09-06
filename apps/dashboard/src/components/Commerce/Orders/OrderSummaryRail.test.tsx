@@ -157,42 +157,40 @@ describe('OrderSummaryRail', () => {
   });
 
   describe('tracking row', () => {
-    it('shows the tracking link once the order is sending', () => {
+    it('shows the tracking code as plain text, never as a link, once the order is sending', () => {
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            order={{ ...detailOrder, status: 'sending', followUpCode: 'RA123456785IR' }}
             statusUpdater={null}
           />,
         ),
       );
-      const link = screen.getByTestId('tracking-link');
-      expect(link).toHaveAttribute('href', 'https://a.example/1');
-      // The url is merchant-supplied and opens in a new tab; without noopener/noreferrer the
-      // opened page gets a `window.opener` handle back into this dashboard.
-      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-      expect(link).toHaveAttribute('target', '_blank');
+      const code = screen.getByTestId('tracking-value');
+      expect(code).toHaveTextContent('RA123456785IR');
+      expect(code.tagName).not.toBe('A');
+      expect(code).not.toHaveAttribute('href');
     });
 
-    it('offers to add a link when a shipped order has none', () => {
+    it('offers to add a code when a shipped order has none', () => {
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'sending', trackingUrl: null }}
+            order={{ ...detailOrder, status: 'sending', followUpCode: null }}
             statusUpdater={null}
           />,
         ),
       );
       expect(screen.getByTestId('tracking-edit')).toHaveTextContent(copy.detail.trackingAdd);
-      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-value')).not.toBeInTheDocument();
       expect(screen.getByText(copy.detail.trackingNone)).toBeInTheDocument();
     });
 
-    it('offers to edit, not add, when a shipped order already has a link', () => {
+    it('offers to edit, not add, when a shipped order already has a code', () => {
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            order={{ ...detailOrder, status: 'sending', followUpCode: 'RA123456785IR' }}
             statusUpdater={null}
           />,
         ),
@@ -204,25 +202,25 @@ describe('OrderSummaryRail', () => {
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'completed', trackingUrl: 'https://a.example/1' }}
+            order={{ ...detailOrder, status: 'completed', followUpCode: 'RA123456785IR' }}
             statusUpdater={null}
           />,
         ),
       );
-      expect(screen.getByTestId('tracking-link')).toBeInTheDocument();
+      expect(screen.getByTestId('tracking-value')).toBeInTheDocument();
     });
 
     it('shows no tracking row before the order ships', () => {
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'processing', trackingUrl: null }}
+            order={{ ...detailOrder, status: 'processing', followUpCode: null }}
             statusUpdater={null}
           />,
         ),
       );
       expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-value')).not.toBeInTheDocument();
     });
 
     it('shows no tracking row for a pickup order, even once it is sending', () => {
@@ -233,14 +231,14 @@ describe('OrderSummaryRail', () => {
               ...detailOrder,
               status: 'sending',
               shippingKind: 'pickup',
-              trackingUrl: null,
+              followUpCode: null,
             }}
             statusUpdater={null}
           />,
         ),
       );
       expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-value')).not.toBeInTheDocument();
     });
 
     // I2: a digital order reaches `completed` via `processing -> completed` without ever passing
@@ -255,41 +253,41 @@ describe('OrderSummaryRail', () => {
               status: 'completed',
               kind: 'digital',
               shippingKind: null,
-              trackingUrl: null,
+              followUpCode: null,
             }}
             statusUpdater={null}
           />,
         ),
       );
       expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('tracking-link')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('tracking-value')).not.toBeInTheDocument();
     });
 
-    it('hides the edit affordance without order:manage, but still shows the link', () => {
+    it('hides the edit affordance without order:manage, but still shows the code', () => {
       mockCan.mockReturnValueOnce(false);
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            order={{ ...detailOrder, status: 'sending', followUpCode: 'RA123456785IR' }}
             statusUpdater={null}
           />,
         ),
       );
       expect(screen.queryByTestId('tracking-edit')).not.toBeInTheDocument();
-      expect(screen.getByTestId('tracking-link')).toBeInTheDocument();
+      expect(screen.getByTestId('tracking-value')).toBeInTheDocument();
     });
 
-    it('opens the edit dialog pre-filled with the current link when tapped', () => {
+    it('opens the edit dialog pre-filled with the current code when tapped', () => {
       render(
         wrap(
           <OrderSummaryRail
-            order={{ ...detailOrder, status: 'sending', trackingUrl: 'https://a.example/1' }}
+            order={{ ...detailOrder, status: 'sending', followUpCode: 'RA123456785IR' }}
             statusUpdater={null}
           />,
         ),
       );
       fireEvent.click(screen.getByTestId('tracking-edit'));
-      expect(screen.getByTestId('tracking-url')).toHaveValue('https://a.example/1');
+      expect(screen.getByTestId('tracking-code')).toHaveValue('RA123456785IR');
     });
   });
 });

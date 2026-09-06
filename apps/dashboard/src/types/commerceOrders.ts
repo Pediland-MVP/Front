@@ -63,16 +63,20 @@ export interface OrderView {
   /**
    * The three fields Back Task 5 added to `OrderView`. Optional (not just nullable): most existing
    * fixtures across this folder's tests build an `OrderView` without them, and this task only
-   * needs `trackingUrl` -- the other two are for later tasks (`cancelNote` for the buyer-facing DM
+   * needs `followUpCode` -- the other two are for later tasks (`cancelNote` for the buyer-facing DM
    * copy, `pickupAddress` for freezing the collection point onto the order).
    *
-   * There was a fourth, `followUpCode` -- a 10-character code the buyer typed into the DM to look
-   * their order up. Back replaced the whole mechanism with a «پیگیری وضعیت سفارش» button template
-   * and DROPPED the column, so the field no longer exists on the API response.
+   * There was an EARLIER, unrelated `followUpCode` -- a 10-character code the buyer typed into the
+   * DM to look their order up. Back replaced that whole mechanism with a «پیگیری وضعیت سفارش»
+   * button template and DROPPED the column. `followUpCode` below REUSES that same field name for a
+   * completely different, later meaning: the post office's/courier's own tracking code (was
+   * `trackingUrl`, a carrier URL, until 2026-09-06). The two have nothing to do with each other.
    */
   /** Set by `ship`, editable afterwards by a later task's `EditTrackingDialog`. `null`/absent
-   *  until a seller has typed one, and always absent for a `pickup` order -- there is no parcel. */
-  trackingUrl?: string | null;
+   *  until a seller has typed one, and always absent for a `pickup` order -- there is no parcel.
+   *  A CODE the buyer pastes into the carrier's own tracker, never a URL -- render it as plain,
+   *  easily-copyable text, never as a link. */
+  followUpCode?: string | null;
   cancelNote?: string | null;
   pickupAddress?: string | null;
 }

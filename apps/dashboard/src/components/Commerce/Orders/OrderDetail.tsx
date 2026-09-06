@@ -18,7 +18,7 @@ interface OrderDetailProps {
   statusUpdater: ReactNode;
   /** Forwarded straight through to `OrderSummaryRail` -- see its own prop docstring for why this
    *  is optional. */
-  onUpdateTracking?: (trackingUrl: string, notify: boolean) => Promise<boolean>;
+  onUpdateTracking?: (followUpCode: string, notify: boolean) => Promise<boolean>;
 }
 
 /**
