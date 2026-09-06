@@ -1,7 +1,11 @@
 import type { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
-import type { CommerceOptionStyle, CommerceProductMedia } from '@/types/commerce';
+import type {
+  CommerceOptionStyle,
+  CommerceProductKind,
+  CommerceProductMedia,
+} from '@/types/commerce';
 
 /** Mirrors the backend's `@ArrayMaxSize(3)` on `options` and its per-product variant ceiling. */
 export const MAX_ATTRS = 3;
@@ -52,6 +56,17 @@ export interface ProductFormValues {
    */
   description: string;
   categoryId: string | null;
+  /**
+   * Chosen once via `ChooseProductKindDialog` on create, but stays editable later too
+   * (`ProductKindSection`) -- the backend locks it once the product has an order line
+   * (`COMMERCE_KIND_LOCKED`, surfaced by `useProductSave`).
+   */
+  kind: CommerceProductKind;
+  /**
+   * Sent to the buyer as its own DM when their order completes. Empty string means "no
+   * message" -- same length cap as an automation text-content message (1000 chars).
+   */
+  finalMessage: string;
   /** Tag NAMES. The backend resolves-or-creates each against the workspace pool. */
   tags: string[];
   specs: Array<{ title: string; body: string }>;
@@ -313,6 +328,8 @@ export const buildProductEditorSchema = (t: Translator) => {
       .min(1, { message: t('Validation.categoryRequired') })
       .nullable()
       .refine((value) => value != null, { message: t('Validation.categoryRequired') }),
+    kind: z.enum(['physical', 'digital']),
+    finalMessage: z.string().max(1000, { message: t('Validation.finalMessageMax') }),
     tags: z
       .array(z.string().trim().min(1).max(50))
       .max(MAX_TAGS, { message: t('Validation.tagLimit') }),
@@ -352,10 +369,14 @@ export const buildProductEditorSchema = (t: Translator) => {
  * has one implicit variation that no table renders, and it is the only place its price can live.
  * The backend also rejects a product with zero variants (`COMMERCE_INVALID_SELECTION`).
  */
-export const buildEmptyProductForm = (): ProductFormValues => ({
+export const buildEmptyProductForm = (
+  kind: CommerceProductKind = 'physical',
+): ProductFormValues => ({
   title: '',
   description: '',
   categoryId: null,
+  kind,
+  finalMessage: '',
   tags: [],
   specs: [],
   collectionIds: [],

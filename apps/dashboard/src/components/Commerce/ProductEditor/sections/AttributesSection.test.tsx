@@ -23,6 +23,8 @@ const emptyForm: ProductFormValues = {
   title: '',
   description: '',
   categoryId: null,
+  kind: 'physical',
+  finalMessage: '',
   tags: [],
   specs: [],
   collectionIds: [],
