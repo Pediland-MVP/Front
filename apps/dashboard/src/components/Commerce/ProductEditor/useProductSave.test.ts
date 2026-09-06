@@ -95,6 +95,7 @@ const savedDetail: CommerceProductDetail = {
   categoryId: null,
   needsStockReview: false,
   shippingCost: 0,
+  finalMessage: null,
   createDate: '2026-07-27T00:00:00.000Z',
   updateDate: '2026-07-27T00:00:00.000Z',
   options: [],
