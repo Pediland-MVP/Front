@@ -51,6 +51,7 @@ import { formatCount } from './utils/editorNumber.util';
 
 import { EditorSection } from './ui/EditorSection';
 import { EditorTopBar } from './ui/EditorTopBar';
+import { ProductKindSection } from './sections/ProductKindSection';
 import { TitleSection } from './sections/TitleSection';
 import { DescriptionSection } from './sections/DescriptionSection';
 import { CategorySection } from './sections/CategorySection';
@@ -74,15 +75,17 @@ import { VariantMediaPickerDialog } from './dialogs/VariantMediaPickerDialog';
  * `step={7}` props, which drift the first time a section is inserted.
  */
 const STEPS = {
-  title: 1,
-  description: 2,
-  category: 3,
-  media: 4,
-  basePrice: 5,
-  baseStock: 6,
-  attributes: 7,
-  specs: 8,
-  variants: 9,
+  kind: 1,
+  title: 2,
+  description: 3,
+  category: 4,
+  media: 5,
+  basePrice: 6,
+  baseStock: 7,
+  attributes: 8,
+  specs: 9,
+  variants: 10,
+  finalMessage: 11,
 } as const;
 
 /**
@@ -747,6 +750,7 @@ const ProductEditorBody = ({
           The tall bottom padding leaves room for the floating bulk bar. */}
       <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-start gap-6 pt-5 pb-32 xl:grid-cols-[minmax(0,1fr)_308px]">
         <div className="flex min-w-0 flex-col gap-6">
+          <ProductKindSection step={STEPS.kind} />
           <TitleSection step={STEPS.title} />
           <DescriptionSection step={STEPS.description} />
           <CategorySection
