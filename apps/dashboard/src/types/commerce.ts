@@ -85,6 +85,7 @@ export interface CommerceProductDetail {
   categoryId: string | null;
   needsStockReview: boolean;
   shippingCost: number;
+  finalMessage: string | null;
   createDate: string;
   updateDate: string;
   options: CommerceOptionDetail[];
