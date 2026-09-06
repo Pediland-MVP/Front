@@ -2,6 +2,7 @@ import type {
   CommerceCategory,
   CommerceOptionStyle,
   CommerceProductDetail,
+  CommerceProductKind,
 } from '@/types/commerce';
 import type { ProductFormValues } from './productEditor.schema';
 
@@ -56,26 +57,29 @@ export interface CreateProductPayload {
   title: string;
   description: string;
   status: 'active';
-  kind: 'physical';
+  kind: CommerceProductKind;
   shippingCost: 0;
   categoryId?: string;
   collectionIds: string[];
   tags: string[];
   specs: Array<{ title: string; body: string }>;
+  finalMessage?: string;
   options: OptionPayload[];
   variants: VariantPayload[];
 }
 
 /**
- * The update payload IS the create payload minus the keys this page must not send: `status`,
- * `kind` and `shippingCost` have no control in the design (spec decision 1) and the backend
- * treats a missing key as "leave unchanged"; `collectionIds` is not part of the update DTO at
- * all, because membership is owned by the collection side once the product has an id.
+ * The update payload IS the create payload minus the keys this page must not send: `status` and
+ * `shippingCost` have no control in the design (spec decision 1) and the backend treats a
+ * missing key as "leave unchanged"; `collectionIds` is not part of the update DTO at all, because
+ * membership is owned by the collection side once the product has an id. `kind` DOES have a
+ * control now (`ProductKindSection`), so unlike the other three it is always sent. `finalMessage`
+ * is redeclared as nullable: `null` explicitly clears it, which `undefined` (omitted) cannot do.
  */
 export type UpdateProductPayload = Omit<
   CreateProductPayload,
-  'status' | 'kind' | 'shippingCost' | 'collectionIds'
-> & { cascadeDeleteVariants: true };
+  'status' | 'shippingCost' | 'collectionIds' | 'finalMessage'
+> & { finalMessage: string | null; cascadeDeleteVariants: true };
 
 export interface CategoryTreeNode {
   id: string;
@@ -143,6 +147,8 @@ export const mapDetailToFormValues = (product: CommerceProductDetail): ProductFo
     title: product.title,
     description: product.description ?? '',
     categoryId: product.categoryId ?? null,
+    kind: product.kind,
+    finalMessage: product.finalMessage ?? '',
     // `?? []` on both: a rolling deploy can still answer with a response shaped from before tags
     // and specs existed, and a missing key must load as "none", not crash the editor.
     tags: product.tags ?? [],
@@ -275,10 +281,10 @@ export const buildCreatePayload = (values: ProductFormValues): CreateProductPayl
   return {
     title: values.title.trim(),
     description: values.description,
-    // The design has no status, kind or shipping control (spec decision 1) and create requires
-    // status and kind, so the page commits to the only product it can actually draw.
+    // The design has no status or shipping control (spec decision 1); `kind` DOES have a
+    // control now (`ProductKindSection`), so it comes from the form instead of being hardcoded.
     status: 'active',
-    kind: 'physical',
+    kind: values.kind,
     shippingCost: 0,
     // `categoryId` is validated as a UUID: null would be rejected, so "no category" is the key
     // being absent.
@@ -288,6 +294,7 @@ export const buildCreatePayload = (values: ProductFormValues): CreateProductPayl
     collectionIds: values.collectionIds,
     tags: values.tags,
     specs: values.specs,
+    ...(values.finalMessage.trim() ? { finalMessage: values.finalMessage.trim() } : {}),
     options: buildOptionsPayload(axes),
     variants: buildVariantsPayload(values, axes),
   };
@@ -298,9 +305,14 @@ export const buildUpdatePayload = (values: ProductFormValues): UpdateProductPayl
   return {
     title: values.title.trim(),
     description: values.description,
+    kind: values.kind,
     ...(values.categoryId ? { categoryId: values.categoryId } : {}),
     tags: values.tags,
     specs: values.specs,
+    // Always sent, never omitted: an empty textarea must CLEAR the stored message, and the
+    // backend's own convention (`categoryId`) is that omitting a key means "leave unchanged" --
+    // only an explicit `null` clears.
+    finalMessage: values.finalMessage.trim() === '' ? null : values.finalMessage.trim(),
     options: buildOptionsPayload(axes),
     variants: buildVariantsPayload(values, axes),
     // The editor always sends the complete desired set of options and variants, so any row the

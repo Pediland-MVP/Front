@@ -48,6 +48,7 @@ const detail = (over: Partial<CommerceProductDetail> = {}): CommerceProductDetai
   categoryId: null,
   needsStockReview: false,
   shippingCost: 0,
+  finalMessage: null,
   createDate: '2026-07-01T00:00:00.000Z',
   updateDate: '2026-07-01T00:00:00.000Z',
   options: [],
@@ -84,6 +85,8 @@ const formValues = (over: Partial<ProductFormValues> = {}): ProductFormValues =>
   title: 'کفش',
   description: 'متن',
   categoryId: null,
+  kind: 'physical',
+  finalMessage: '',
   tags: [],
   specs: [],
   collectionIds: [],
@@ -253,6 +256,16 @@ describe('mapDetailToFormValues', () => {
     expect(values.variants[0].mediaIds).toEqual([]);
   });
 
+  it('carries kind and finalMessage through from the detail', () => {
+    const values = mapDetailToFormValues(detail({ kind: 'digital', finalMessage: 'لینک دوره' }));
+    expect(values.kind).toBe('digital');
+    expect(values.finalMessage).toBe('لینک دوره');
+  });
+
+  it('loads a null finalMessage as an empty string, for the textarea', () => {
+    expect(mapDetailToFormValues(detail({ finalMessage: null })).finalMessage).toBe('');
+  });
+
   it('defaults tags and specs to empty lists, for a response from before they existed', () => {
     const legacy = detail();
     delete (legacy as Partial<CommerceProductDetail>).tags;
@@ -374,12 +387,22 @@ describe('valueKeyOf', () => {
 // ---------- buildCreatePayload ----------
 
 describe('buildCreatePayload', () => {
-  it('hardcodes status, kind and shipping cost, because the design has no control for them', () => {
-    const payload = buildCreatePayload(formValues());
+  it('hardcodes status and shipping cost, because the design has no control for them; sends the form kind', () => {
+    const payload = buildCreatePayload(formValues({ kind: 'digital' }));
 
     expect(payload.status).toBe('active');
-    expect(payload.kind).toBe('physical');
+    expect(payload.kind).toBe('digital');
     expect(payload.shippingCost).toBe(0);
+  });
+
+  it('omits finalMessage from the create payload when the field is blank', () => {
+    const payload = buildCreatePayload(formValues({ finalMessage: '   ' }));
+    expect('finalMessage' in payload).toBe(false);
+  });
+
+  it('trims and sends finalMessage when it is set', () => {
+    const payload = buildCreatePayload(formValues({ finalMessage: '  ممنون از خریدت!  ' }));
+    expect(payload.finalMessage).toBe('ممنون از خریدت!');
   });
 
   it('sends the chosen values as positions inside the options it just built', () => {
@@ -442,12 +465,22 @@ describe('buildCreatePayload', () => {
 // ---------- buildUpdatePayload ----------
 
 describe('buildUpdatePayload', () => {
-  it('omits status, kind and shipping cost so the backend leaves them unchanged', () => {
-    const payload = buildUpdatePayload(formValues());
+  it('omits status and shipping cost so the backend leaves them unchanged; always sends kind', () => {
+    const payload = buildUpdatePayload(formValues({ kind: 'digital' }));
 
     expect('status' in payload).toBe(false);
-    expect('kind' in payload).toBe(false);
     expect('shippingCost' in payload).toBe(false);
+    expect(payload.kind).toBe('digital');
+  });
+
+  it('sends finalMessage as null (not omitted) when the field is blank, so a cleared field actually clears', () => {
+    const payload = buildUpdatePayload(formValues({ finalMessage: '  ' }));
+    expect(payload.finalMessage).toBeNull();
+  });
+
+  it('trims and sends finalMessage when it is set', () => {
+    const payload = buildUpdatePayload(formValues({ finalMessage: '  لینک دوره: example.com  ' }));
+    expect(payload.finalMessage).toBe('لینک دوره: example.com');
   });
 
   it('omits collection membership and the media pool, which have their own endpoints', () => {
