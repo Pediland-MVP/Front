@@ -90,12 +90,12 @@ The mapping layer (`productEditor.mapping.ts`):
 | `apps/dashboard/src/test/renderWithForm.tsx` | Shared test helper's `ProductFormValues` literal updated to include `kind`/`finalMessage` (Task 7) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.mapping.ts` | Wired `kind`/`finalMessage` through create/update payloads and detail-to-form mapping (Task 8, asymmetric omit-when-blank create vs always-send update) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/productEditor.mapping.test.ts` | Added 5 test cases for `kind`/`finalMessage` in mapping (Task 8) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.tsx` | Added `useSearchParams`, seeded `initialKind` from `?kind=`, passed to form baseline and editor body; renumbered `STEPS`; wired new sections; fixed stale doc-comment (Tasks 9–12) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.test.tsx` | Added tests verifying query param seeding and step renumbering (Task 9) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.tsx` | Added `useSearchParams`, seeded `initialKind` from `?kind=`, passed to form baseline and editor body; renumbered `STEPS`; wired new sections; fixed stale doc-comment (Tasks 9–12); added `errors.finalMessage → 'finalMessage'` to `firstErrorPath` so an over-limit final message is now focusable on a failed submit, and fixed three stale ۷/۹ step-number comments left over from the `STEPS` renumbering (final-branch-review fix) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/ProductEditorPage.test.tsx` | Added a real test for the `?kind=digital` → seeded-kind integration seam: overrides the `useSearchParams` mock per-test, renders in create mode, and asserts the digital card in `ProductKindSection` is `aria-pressed="true"` (physical `"false"`); added a test that an over-limit `finalMessage` (seeded, not typed) surfaces the schema's length error on a failed submit, proving the new `firstErrorPath` branch actually reaches the field; fixed stale ۷/۹ step-number comments left over from `STEPS` renumbering (final-branch-review fix) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/sections/ProductKindSection.tsx` *(new)* | Two pressable cards (physical / digital) driven by `watch`/`setValue` from form context (Task 10) |
 | `apps/dashboard/src/components/Commerce/ProductEditor/sections/ProductKindSection.test.tsx` *(new)* | Three test cases: default-pressed, digital-seed, click-switches-value (Task 10) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.tsx` *(new)* | Textarea with live character-count hint, `useWatch` for count only (Task 11) |
-| `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.test.tsx` *(new)* | Full editor suite tests for final message textarea and character counter (Task 11) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.tsx` *(new)* | Textarea with live character-count hint, `useWatch` for count only (Task 11); added `maxLength={1000}` on the textarea (matching `DescriptionSection`'s pattern, so an over-limit message can't even be typed) and switched the counter to `e2pNumbers` for Persian digits (final-branch-review fix) |
+| `apps/dashboard/src/components/Commerce/ProductEditor/sections/FinalMessageSection.test.tsx` *(new)* | Full editor suite tests for final message textarea and character counter (Task 11); added tests for the `maxLength={1000}` attribute and the Persian-digit counter (final-branch-review fix) |
 | `apps/dashboard/src/components/Commerce/ProductList/ChooseProductKindDialog.tsx` *(new)* | Two pressable cards (physical / digital); clicking navigates to `/products/add?kind=` (Task 12) |
 | `apps/dashboard/src/components/Commerce/ProductList/ChooseProductKindDialog.test.tsx` *(new)* | Tests for dialog appearance, card clicks, and navigation routing (Task 12) |
 | `apps/dashboard/src/components/Commerce/ProductList/ProductListPage.tsx` | Wired "Add product" button to open `ChooseProductKindDialog`; removed unused `router`/`useRouter` (Task 12) |
@@ -104,22 +104,19 @@ The mapping layer (`productEditor.mapping.ts`):
 
 ## Verification
 
-All test suites from Tasks 6–12 passing throughout:
-
-- **Task 6 (type check):** `pnpm --filter front exec tsc --noEmit` — zero new errors introduced.
-- **Task 7 (schema tests):** `2 describe blocks added (kind, finalMessage validation)` — full suite passing.
-- **Task 8 (mapping tests):** Existing create/update/detail-to-form tests revalidated. All passing.
-- **Task 9 (seed from query):** Verified `initialKind` extraction and form baseline seeding.
-- **Task 10 (ProductKindSection tests):** `3 cases (default, digital-seed, click-switch)` passing.
-- **Task 11 (FinalMessageSection):** Full editor test suite passing, character-count reactive.
-- **Task 12 (ChooseProductKindDialog):** Dialog routing verified (`/products/add?kind=physical|digital`).
-
-**Full editor + ProductList suites:** All existing tests continue to pass; no regressions in
-related commerce components. Pre-existing tsc baseline unaffected.
-
-**Manual verification:** Dialog appearance and routing tested; editor step rendering and
-form value propagation verified; mapping asymmetry (create omits blank, update sends null)
-confirmed in payload inspection.
-
-**Final tsc run:** After the housekeeping fix to `useProductSave.test.ts`, the `finalMessage`
-missing-field error is gone. Pre-existing baseline errors (`Badge children` type, etc.) unchanged.
+- `npx vitest run src/components/Commerce/ProductEditor src/components/Commerce/ProductList
+  src/test` — **249 pass / 19 files**, 4 new across two files:
+  - `ProductEditorPage.test.tsx` (9 → 11): the load-bearing one renders the editor in create mode
+    with `useSearchParams` mocked to `?kind=digital` and asserts the digital card in
+    `ProductKindSection` comes up `aria-pressed="true"` — the one test that exercises the
+    `?kind=digital` → seeded-kind seam this feature's whole justification rests on; every other
+    case in this file uses an empty `URLSearchParams` and only ever proved the physical fallback.
+    The second proves an over-limit `finalMessage` (seeded, not typed) still surfaces the
+    schema's length error on submit — the new `firstErrorPath` branch.
+  - `FinalMessageSection.test.tsx` (3 → 5): the `maxLength={1000}` attribute, and the counter
+    rendering in Persian digits and tracking the live value.
+- `pnpm --filter front exec tsc --noEmit` — 206 errors, identical to the pre-existing baseline;
+  zero in any file this feature touched.
+- **Not yet verified in a browser.** No manual pass has been done against a running backend —
+  the "manual verification" line in an earlier version of this doc was inaccurate and has been
+  removed; see the final-branch-review fix note above.

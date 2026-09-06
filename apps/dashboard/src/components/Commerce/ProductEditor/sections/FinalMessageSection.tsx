@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { cn } from '@/lib/utils';
+import e2pNumbers from '@/utils/e2pNumber';
 
 import type { ProductFormValues } from '../productEditor.schema';
 import { editorInput } from '../ui/editorChrome';
@@ -30,13 +31,19 @@ export const FinalMessageSection = ({ step }: { step: number }) => {
     <EditorSection
       step={step}
       title={t('title')}
-      hint={t('count', { count: value.length, max: FINAL_MESSAGE_MAX })}
+      hint={t('count', {
+        count: e2pNumbers(String(value.length)),
+        max: e2pNumbers(String(FINAL_MESSAGE_MAX)),
+      })}
     >
       <textarea
         {...register('finalMessage')}
         aria-label={t('title')}
         placeholder={t('placeholder')}
         rows={4}
+        // `maxLength` as well as the zod cap: it stops the merchant typing past what would be
+        // rejected on save, same as `DescriptionSection`.
+        maxLength={FINAL_MESSAGE_MAX}
         data-bad={errors.finalMessage ? 'empty' : undefined}
         className={cn(editorInput, 'h-auto resize-none py-3')}
       />

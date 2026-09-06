@@ -40,4 +40,21 @@ describe('FinalMessageSection', () => {
     fireEvent.change(screen.getByLabelText(copy.title), { target: { value: 'لینک دوره' } });
     expect(screen.getByLabelText(copy.title)).toHaveValue('لینک دوره');
   });
+
+  // Same reasoning as `DescriptionSection`: the zod `.max(1000)` cap alone lets a merchant type
+  // past the limit and only find out on save. `maxLength` stops the keystroke instead.
+  it('caps the textarea at 1000 characters via maxLength', () => {
+    render(<Wrapper />);
+    const copy = messages.Commerce.Editor.FinalMessage;
+    expect(screen.getByLabelText(copy.title)).toHaveAttribute('maxLength', '1000');
+  });
+
+  it('shows the count in Persian digits, and tracks it as the value changes', () => {
+    render(<Wrapper />);
+    const copy = messages.Commerce.Editor.FinalMessage;
+    expect(screen.getByText('۰ / ۱۰۰۰')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(copy.title), { target: { value: 'سلام' } });
+    expect(screen.getByText('۴ / ۱۰۰۰')).toBeInTheDocument();
+  });
 });

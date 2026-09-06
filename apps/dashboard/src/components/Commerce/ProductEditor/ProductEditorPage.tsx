@@ -101,7 +101,7 @@ type FocusTarget = { path: FieldPath<ProductFormValues> };
 
 /**
  * The first input a failed submit should land on, walked in the page's own reading order —
- * ۱ عنوان, ۷ ویژگی‌ها, ۸ مشخصات, ۹ تنوع‌ها.
+ * ۲ عنوان, ۸ ویژگی‌ها, ۹ مشخصات, ۱۰ تنوع‌ها, ۱۱ پیام نهایی.
  *
  * Zod issue paths are per-field (`['variants', 3, 'price']`, `['options', 0, 'name']`), which is
  * what makes this possible at all. Anything not listed here has no focusable input to jump to.
@@ -139,6 +139,8 @@ const firstErrorPath = (
           : `variants.${index}.stock`;
     }
   }
+
+  if (errors.finalMessage) return 'finalMessage';
 
   return null;
 };
@@ -178,7 +180,7 @@ interface ProductEditorPageProps {
  * The outer shell: it owns the four reads and the single `useForm`, and nothing else.
  *
  * The body is a separate component because `useVariantSyncContext` can only be read BELOW the
- * provider, and the axis handlers in step ۷ and the grid in step ۹ must share one suppression
+ * provider, and the axis handlers in step ۸ and the grid in step ۱۰ must share one suppression
  * list. Everything the body needs off the form comes from `useFormContext`, so the split costs
  * no prop drilling.
  */
@@ -615,7 +617,7 @@ const ProductEditorBody = ({
   // ---------------------------------------------------------------- variant regeneration
 
   /**
-   * Called by step ۷ after EVERY axis edit — add value, remove value, add axis, remove axis,
+   * Called by step ۸ after EVERY axis edit — add value, remove value, add axis, remove axis,
    * reorder. Deliberately an event handler and not an effect watching `options`: a deletion is
    * itself a change to `variants`, so an effect would regenerate the row the merchant just
    * removed and the delete button would look broken.

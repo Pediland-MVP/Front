@@ -5,9 +5,10 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { CommerceProductDetail, CommerceProductMedia } from '@/types/commerce';
 
 /**
- * The shell's own test. The nine sections, the grid, the rail and the dialogs each have their
+ * The shell's own test. The eleven sections, the grid, the rail and the dialogs each have their
  * own; what is unverified until they are assembled is the WIRING — that the page mounts at all,
- * that an axis edit reaches `syncVariants`, and that the load is seeded exactly once.
+ * that an axis edit reaches `syncVariants`, that the load is seeded exactly once, and that the
+ * `?kind=` query param actually reaches the `kind` step.
  */
 
 const { mockUseSWRImmutable } = vi.hoisted(() => ({ mockUseSWRImmutable: vi.fn() }));
@@ -17,12 +18,16 @@ vi.mock('swr', () => ({ mutate: vi.fn() }));
 const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => ({ can: mockCan }) }));
 
-// `useSearchParams` backs Task 9's `?kind=digital` seed; none of this file's cases visit the
-// editor with that param, so a real (empty) `URLSearchParams` -- `.get('kind')` returning `null`
-// -- is enough to exercise the "missing param defaults to physical" path.
+// `useSearchParams` backs the `?kind=digital` seed. A `vi.fn()`, not a fixed factory, so one test
+// (the digital-seed case below) can override the return value while every other case keeps the
+// default empty `URLSearchParams` -- `.get('kind')` returning `null` -- which exercises the
+// "missing param defaults to physical" path.
+const { mockUseSearchParams } = vi.hoisted(() => ({
+  mockUseSearchParams: vi.fn(() => new URLSearchParams()),
+}));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 const { api } = vi.hoisted(() => ({
@@ -151,7 +156,7 @@ function mediaTileIds() {
     .map((el) => el.getAttribute('data-testid')!.replace('media-tile-', ''));
 }
 
-/** Adds one axis in step ۷ and pushes a comma-separated list of values into it. */
+/** Adds one axis in step ۸ and pushes a comma-separated list of values into it. */
 async function addAxis(name: string, values: string) {
   fireEvent.click(screen.getByText(ATTR.addAttribute));
   fireEvent.change(await screen.findByLabelText(ATTR.namePlaceholder), { target: { value: name } });
@@ -164,10 +169,13 @@ async function addAxis(name: string, values: string) {
 beforeEach(() => {
   vi.clearAllMocks();
   mockCan.mockReset().mockReturnValue(true);
+  // Explicit, not relied on surviving `clearAllMocks`: every case except the one that overrides
+  // it below needs the "no param" default.
+  mockUseSearchParams.mockReturnValue(new URLSearchParams());
 });
 
 describe('ProductEditorPage', () => {
-  it('mounts the whole create shell — top bar, the nine steps and the rail', () => {
+  it('mounts the whole create shell — top bar, the eleven steps and the rail', () => {
     stubReads(undefined);
 
     renderEditor({ mode: 'create' });
@@ -191,6 +199,29 @@ describe('ProductEditorPage', () => {
 
     await waitFor(() =>
       expect(screen.getByLabelText(messages.Commerce.Editor.Title.title)).toHaveValue('کفش ورزشی'),
+    );
+  });
+
+  /**
+   * The one real integration seam this feature adds: a seller lands on `/products/add?kind=
+   * digital` from `ChooseProductKindDialog` and the editor's own `kind` step must already show
+   * digital selected, not physical -- without this, every other case in this file (which all use
+   * the default empty `URLSearchParams`) only ever proves the FALLBACK path.
+   */
+  it('seeds the kind from the `?kind=digital` query param on create', () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('kind=digital'));
+    stubReads(undefined);
+
+    renderEditor({ mode: 'create' });
+
+    const kind = messages.Commerce.Editor.Kind;
+    expect(screen.getByRole('button', { name: kind.digital })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByRole('button', { name: kind.physical })).toHaveAttribute(
+      'aria-pressed',
+      'false',
     );
   });
 
@@ -274,6 +305,30 @@ describe('ProductEditorPage', () => {
       ).toBeInTheDocument(),
     );
     expect(screen.getByTestId('category-path').parentElement).toHaveAttribute('data-bad', 'empty');
+  });
+
+  /**
+   * The textarea's own `maxLength` (final-branch-review fix) stops a merchant TYPING past the
+   * cap, but a product seeded from an over-limit value already on the server -- pre-existing
+   * data, or a future non-UI writer -- still has to fail the schema and be findable. Before this
+   * fix `firstErrorPath` had no `finalMessage` branch, so `Errors.invalid` toasted with nothing
+   * on screen turning red: the merchant could see nothing was wrong.
+   */
+  it('shows the final-message length error when the schema rejects an over-limit message', async () => {
+    stubReads(detail({ finalMessage: 'م'.repeat(1001) }));
+    renderEditor({ mode: 'edit', productId: 'prod-1' });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(messages.Commerce.Editor.Title.title)).toHaveValue('کفش ورزشی'),
+    );
+
+    fireEvent.click(screen.getByTestId('editor-save'));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(messages.Commerce.Editor.Validation.finalMessageMax),
+      ).toBeInTheDocument(),
+    );
   });
 
   describe('media reorder', () => {
