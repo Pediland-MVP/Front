@@ -5,8 +5,10 @@ Related: `knowledge/updates/2026-08-05-r2ImageHosts.update.md` (next/image host 
 ## Problem
 
 Prod core moved its object storage from ArvanCloud to Cloudflare R2 on 2026-07-23, and the two
-Arvan buckets (`befroosh` and `testz`) were later **deleted**. The dashboard still had 11
-hardcoded `*.arvanstorage.ir` media URLs in component code, all returning **404** in production:
+Arvan buckets (`befroosh` and `testz`) were later **deleted**. The dashboard still had 10
+hardcoded `*.arvanstorage.ir` media URLs in component code, all returning **404** in production
+(an 11th `arvanstorage.ir` mention, the `next.config.mjs` allowlist entry, is intentionally kept —
+see below):
 
 | Ref | Old bucket | State |
 |---|---|---|
@@ -22,7 +24,7 @@ automation-wizard hint buttons opened a video player that could never load.
 bucket, so this was a pure URL rewrite. Also dropped the trailing `?versionId=` (an empty
 ArvanCloud versioning artifact that R2 has no use for).
 
-```
+```text
 https://befroosh.s3.ir-thr-at1.arvanstorage.ir/learn%2F<key>-720p.mp4?versionId=   (404)
 https://dl.befroosh.app/learn/<key>-720p.mp4                                      (200)
 ```
