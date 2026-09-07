@@ -1,25 +1,37 @@
 import type { CommerceOrderStatus, OrderView } from '@/types/commerceOrders';
 
-export type OrderActionName = 'approve' | 'reject' | 'ship' | 'complete' | 'cancel';
+export type OrderActionName = 'approve' | 'reject' | 'ship' | 'complete' | 'cancel' | 'revert';
 
 /**
  * MIRRORS Back `apps/core/src/commerce/orders/order.state.ts` -> ORDER_TRANSITIONS.
  * Any change there MUST change here. `orderTransitions.test.ts` guards this side.
  *
- *   approve   awaiting_review          -> processing
- *   reject    awaiting_review          -> cancelled
- *   ship      processing               -> sending
- *   complete  processing | sending     -> completed
- *   cancel    processing | sending     -> cancelled
+ *   approve   awaiting_review | sending | completed | cancelled  -> processing
+ *   reject    awaiting_review                                    -> cancelled
+ *   ship      awaiting_review | processing | completed | cancelled -> sending
+ *   complete  awaiting_review | processing | sending | cancelled -> completed
+ *   cancel    processing | sending | completed                   -> cancelled
+ *   revert    processing | sending | completed | cancelled       -> awaiting_review
  *
- * Offering an action the API will refuse is the failure this table exists to prevent.
+ * Every status can reach every other status (2026-09-07, by product decision). The seller was
+ * previously forced to walk an order through «در حال آماده‌سازی» before it could be marked
+ * «ارسال شده», and no status was reachable at all once the order was `completed` or `cancelled`.
+ *
+ * What stops that being reckless is on the BACKEND, not here: stock now follows the status rather
+ * than the edge (`holdsStock` in `order.state.ts`), so a move into
+ * `processing`/`sending`/`completed` takes stock and a move out of them gives it back, whichever
+ * pair of statuses it joins.
+ *
+ * Offering an action the API will refuse is still the failure this table exists to prevent -- and
+ * with the lists this wide, `cancelled`'s two doors (`reject` vs `cancel`) are the only place a
+ * target maps to more than one action. See `TARGET_BY_ACTION` below.
  */
 export const ACTIONS_BY_STATUS: Record<CommerceOrderStatus, readonly OrderActionName[]> = {
-  awaiting_review: ['approve', 'reject'],
-  processing: ['ship', 'complete', 'cancel'],
-  sending: ['complete', 'cancel'],
-  completed: [],
-  cancelled: [],
+  awaiting_review: ['approve', 'ship', 'complete', 'reject'],
+  processing: ['ship', 'complete', 'cancel', 'revert'],
+  sending: ['approve', 'complete', 'cancel', 'revert'],
+  completed: ['approve', 'ship', 'cancel', 'revert'],
+  cancelled: ['approve', 'ship', 'complete', 'revert'],
 };
 
 /**
@@ -87,17 +99,37 @@ const TARGET_BY_ACTION: Record<OrderActionName, CommerceOrderStatus> = {
   ship: 'sending',
   complete: 'completed',
   cancel: 'cancelled',
+  revert: 'awaiting_review',
 };
+
+/**
+ * The order the select lists targets in: the natural lifecycle, then the two ways out.
+ *
+ * `ACTIONS_BY_STATUS` can no longer supply this. Its rows used to be short and already read in
+ * lifecycle order; now that every row holds four actions whose order is an implementation detail
+ * of the table, deriving the select's order from it would shuffle the list depending on which
+ * status the seller happens to be looking at. Sellers scan this list by position.
+ */
+const TARGET_ORDER: readonly CommerceOrderStatus[] = [
+  'awaiting_review',
+  'processing',
+  'sending',
+  'completed',
+  'cancelled',
+];
 
 /**
  * The statuses this order may legally move to, in the order the select should list them.
  *
  * Derived from `actionsFor`, NOT from `ACTIONS_BY_STATUS` directly, so the digital-order `ship`
  * filter (and the unbreakable retry loop its docstring describes) keeps working with no second
- * rule to maintain.
+ * rule to maintain. Sorted into `TARGET_ORDER` afterwards so the list reads the same on every
+ * order; deduped because `reject` and `cancel` both target `cancelled` (never from the same
+ * status today, but the select must not grow a second «لغو شده» row if that ever changes).
  */
 export function targetStatusesFor(order: OrderView): readonly CommerceOrderStatus[] {
-  return actionsFor(order).map((action) => TARGET_BY_ACTION[action]);
+  const targets = new Set(actionsFor(order).map((action) => TARGET_BY_ACTION[action]));
+  return TARGET_ORDER.filter((status) => targets.has(status));
 }
 
 /**

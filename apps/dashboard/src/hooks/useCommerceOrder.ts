@@ -65,6 +65,10 @@ export function useCommerceOrder(id: string | null) {
     ship: (followUpCode?: string) => run('ship', followUpCode ? { followUpCode } : undefined),
     complete: () => run('complete'),
     cancel: () => run('cancel', { reason: 'delivery_refused' }),
+    // Back to «در انتظار بررسی» from anywhere. No body: unlike `cancel` there is nothing to record
+    // about why -- the order is going back to the state it would have been in had nobody touched
+    // it. Restocks server-side when the order was holding stock (`FulfilmentService.revert`).
+    revert: () => run('revert'),
     markPaid: () => run('mark-paid'),
     // PATCH, not POST: this corrects a field on an already-shipped order rather than driving it
     // through the status state machine, which is what the other five actions do.

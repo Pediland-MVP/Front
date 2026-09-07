@@ -201,6 +201,7 @@
     "COMMERCE_ORDER_NOT_TRACKABLE": "برای سفارش تحویل حضوری، لینک پیگیری معنی ندارد.",
     "COMMERCE_OUT_OF_STOCK": "موجودی کافی نیست.",
     "COMMERCE_INSUFFICIENT_STOCK_ON_APPROVAL": "موجودی برای تأیید این سفارش کافی نیست.",
+    "COMMERCE_INSUFFICIENT_STOCK_FOR_STATUS": "موجودی برای بردن این سفارش به این وضعیت کافی نیست.",
     "COMMERCE_PAYMENT_METHOD_UNAVAILABLE": "این روش پرداخت در دسترس نیست.",
     "COMMERCE_RECEIPT_REQUIRED": "بارگذاری رسید پرداخت الزامی است.",
     "COMMERCE_SUBMIT_BLOCKED": "ثبت سفارش ممکن نیست؛ اطلاعات سفارش کامل نیست.",

@@ -47,21 +47,40 @@ const order = (patch: Partial<OrderView>): OrderView =>
  * in Back -- that is what the cross-reference comments in both files are for.
  */
 describe('ACTIONS_BY_STATUS mirrors Back ORDER_TRANSITIONS', () => {
-  it('offers approve and reject only while awaiting review', () => {
-    expect(ACTIONS_BY_STATUS.awaiting_review).toEqual(['approve', 'reject']);
+  it('offers every other status from awaiting review', () => {
+    expect(ACTIONS_BY_STATUS.awaiting_review).toEqual(['approve', 'ship', 'complete', 'reject']);
   });
 
-  it('offers ship, complete and cancel while processing', () => {
-    expect(ACTIONS_BY_STATUS.processing).toEqual(['ship', 'complete', 'cancel']);
+  it('offers every other status while processing, backwards included', () => {
+    expect(ACTIONS_BY_STATUS.processing).toEqual(['ship', 'complete', 'cancel', 'revert']);
   });
 
-  it('drops ship once sending, because ship only fires from processing', () => {
-    expect(ACTIONS_BY_STATUS.sending).toEqual(['complete', 'cancel']);
+  it('keeps a way back to processing once sending — ship no longer has to come first', () => {
+    expect(ACTIONS_BY_STATUS.sending).toEqual(['approve', 'complete', 'cancel', 'revert']);
   });
 
-  it('offers nothing on the two terminal statuses', () => {
-    expect(ACTIONS_BY_STATUS.completed).toEqual([]);
-    expect(ACTIONS_BY_STATUS.cancelled).toEqual([]);
+  /**
+   * `completed` and `cancelled` used to be dead ends. They are not any more: a seller who marked
+   * an order completed by mistake, or cancelled one that turned out to be fine, has to be able to
+   * put it back. Back restocks or re-takes stock accordingly (`holdsStock`).
+   */
+  it('has no terminal status left — completed and cancelled both move', () => {
+    expect(ACTIONS_BY_STATUS.completed).toEqual(['approve', 'ship', 'cancel', 'revert']);
+    expect(ACTIONS_BY_STATUS.cancelled).toEqual(['approve', 'ship', 'complete', 'revert']);
+  });
+
+  /**
+   * The product rule in one assertion: from any status, every other status is offered. This is
+   * what the seller asked for, and it is the property most likely to be broken by a well-meant
+   * edit to one row of the table above.
+   */
+  it('reaches every other status from every status', () => {
+    const ALL = ['awaiting_review', 'processing', 'sending', 'completed', 'cancelled'] as const;
+    for (const from of ALL) {
+      expect([...targetStatusesFor(order({ status: from }))].sort()).toEqual(
+        ALL.filter((s) => s !== from).sort(),
+      );
+    }
   });
 });
 
@@ -102,19 +121,24 @@ describe('markPaid is gated on paidAt, and on status only for cancelled', () => 
 });
 
 describe('hasAnyAction', () => {
-  it('is true for a completed unpaid order, whose only action is markPaid', () => {
-    expect(actionsFor(order({ status: 'completed' }))).toEqual([]);
+  it('is true for a completed unpaid order — status moves AND markPaid', () => {
+    expect(actionsFor(order({ status: 'completed' })).length).toBeGreaterThan(0);
     expect(hasAnyAction(order({ status: 'completed', paidAt: null }))).toBe(true);
   });
 
-  it('is false once a completed order is also settled -- nothing legal is left', () => {
+  /**
+   * Used to be false: a settled completed order had nothing left to do. Now every status can be
+   * corrected, so the action bar is always worth rendering. `OrderDetailPage` uses this to decide
+   * whether the summary rail gets a status slot at all.
+   */
+  it('is true for a settled completed order, because the status can still be corrected', () => {
     expect(hasAnyAction(order({ status: 'completed', paidAt: '2026-09-02T11:00:00.000Z' }))).toBe(
-      false,
+      true,
     );
   });
 
-  it('is false for a cancelled order in every case', () => {
-    expect(hasAnyAction(order({ status: 'cancelled', paidAt: null }))).toBe(false);
+  it('is true for a cancelled order, which can now be reopened', () => {
+    expect(hasAnyAction(order({ status: 'cancelled', paidAt: null }))).toBe(true);
   });
 });
 
@@ -124,6 +148,7 @@ describe('actionsFor', () => {
       'ship',
       'complete',
       'cancel',
+      'revert',
     ]);
   });
 
@@ -136,6 +161,7 @@ describe('actionsFor', () => {
     expect(actionsFor(order({ status: 'processing', kind: 'digital' }))).toEqual([
       'complete',
       'cancel',
+      'revert',
     ]);
   });
 
@@ -144,22 +170,48 @@ describe('actionsFor', () => {
       'ship',
       'complete',
       'cancel',
+      'revert',
     ]);
+  });
+
+  /**
+   * The one rule the widening did NOT relax, and the seller named it explicitly: a digital order
+   * can reach every status EXCEPT «ارسال شده». Checked from all four sources, because `ship` is now
+   * offered from all four and the filter has to survive each.
+   */
+  it('never offers ship for a digital order, from any status', () => {
+    for (const status of ['awaiting_review', 'processing', 'completed', 'cancelled'] as const) {
+      expect(actionsFor(order({ status, kind: 'digital' }))).not.toContain('ship');
+    }
   });
 });
 
 describe('targetStatusesFor', () => {
   const order = (over: Partial<OrderView>): OrderView => ({ ...baseOrder, ...over });
 
-  it('offers approve and reject targets from awaiting_review', () => {
+  /**
+   * Listed in lifecycle order, NOT in the order the actions happen to sit in `ACTIONS_BY_STATUS`.
+   * Sellers scan this select by position, so the same status must appear in the same place
+   * whichever order they opened.
+   */
+  it('lists targets in lifecycle order, whatever order the actions are in', () => {
     expect(targetStatusesFor(order({ status: 'awaiting_review' }))).toEqual([
       'processing',
+      'sending',
+      'completed',
+      'cancelled',
+    ]);
+    expect(targetStatusesFor(order({ status: 'sending' }))).toEqual([
+      'awaiting_review',
+      'processing',
+      'completed',
       'cancelled',
     ]);
   });
 
-  it('offers ship, complete and cancel targets from processing', () => {
+  it('offers every forward and backward target from processing', () => {
     expect(targetStatusesFor(order({ status: 'processing' }))).toEqual([
+      'awaiting_review',
       'sending',
       'completed',
       'cancelled',
@@ -168,14 +220,32 @@ describe('targetStatusesFor', () => {
 
   it('never offers sending for a digital order, which can never be shipped', () => {
     expect(targetStatusesFor(order({ status: 'processing', kind: 'digital' }))).toEqual([
+      'awaiting_review',
       'completed',
       'cancelled',
     ]);
   });
 
-  it('offers nothing on a terminal order', () => {
-    expect(targetStatusesFor(order({ status: 'completed' }))).toEqual([]);
-    expect(targetStatusesFor(order({ status: 'cancelled' }))).toEqual([]);
+  it('still offers targets on a completed or cancelled order', () => {
+    expect(targetStatusesFor(order({ status: 'completed' }))).toEqual([
+      'awaiting_review',
+      'processing',
+      'sending',
+      'cancelled',
+    ]);
+    expect(targetStatusesFor(order({ status: 'cancelled' }))).toEqual([
+      'awaiting_review',
+      'processing',
+      'sending',
+      'completed',
+    ]);
+  });
+
+  it('never lists a status twice, even though two actions target cancelled', () => {
+    for (const status of ['awaiting_review', 'processing', 'sending', 'completed'] as const) {
+      const targets = targetStatusesFor(order({ status }));
+      expect(new Set(targets).size).toBe(targets.length);
+    }
   });
 });
 
@@ -193,9 +263,26 @@ describe('actionForTransition', () => {
     expect(actionForTransition('sending', 'completed')).toBe('complete');
   });
 
-  it('returns null for a transition the state machine does not have', () => {
-    expect(actionForTransition('awaiting_review', 'completed')).toBeNull();
-    expect(actionForTransition('completed', 'processing')).toBeNull();
-    expect(actionForTransition('processing', 'processing')).toBeNull();
+  it('maps the backward transitions the widening introduced', () => {
+    expect(actionForTransition('awaiting_review', 'completed')).toBe('complete');
+    expect(actionForTransition('completed', 'processing')).toBe('approve');
+    expect(actionForTransition('cancelled', 'sending')).toBe('ship');
+    expect(actionForTransition('completed', 'awaiting_review')).toBe('revert');
+    expect(actionForTransition('cancelled', 'awaiting_review')).toBe('revert');
+  });
+
+  /**
+   * `from === to` is the ONLY null left, and it is what the «بروزرسانی» button is disabled on.
+   * Before the widening this function also returned null for edges the machine lacked; there are
+   * none now, so a non-null answer for every distinct pair is itself the coverage assertion.
+   */
+  it('returns null only when nothing would change', () => {
+    const ALL = ['awaiting_review', 'processing', 'sending', 'completed', 'cancelled'] as const;
+    for (const from of ALL) {
+      expect(actionForTransition(from, from)).toBeNull();
+      for (const to of ALL.filter((s) => s !== from)) {
+        expect(actionForTransition(from, to)).not.toBeNull();
+      }
+    }
   });
 });

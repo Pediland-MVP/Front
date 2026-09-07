@@ -70,6 +70,10 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
   if (!can('order:manage')) return null;
 
   const targets = targetStatusesFor(order);
+  // Defensive since 2026-09-07: every status now reaches every other, so no order is terminal in
+  // practice. The branch stays because it is the only thing stopping a select with nothing in it
+  // if the transition table is ever narrowed again -- an empty Radix select renders a trigger the
+  // seller can open onto nothing.
   const isTerminal = targets.length === 0;
   const isDisabled = disabled || busy;
   const pendingResolved = draft === order.status ? null : actionForTransition(order.status, draft);
@@ -215,6 +219,24 @@ export function OrderStatusUpdater({ order, onAction, disabled }: OrderStatusUpd
           await runAction('cancel');
           closeDialog();
         }}
+      />
+      {/*
+        «برگشت به بررسی». Its own confirmation rather than a shared one because it is the only
+        BACKWARD move the seller has, and the consequence differs by where the order is now: from
+        `processing`/`sending`/`completed` the backend restocks every line (the order stops owing
+        stock), while from `cancelled` nothing moves. The description says so rather than promising
+        one outcome, since this dialog is reached from all four.
+      */}
+      <ConfirmActionDialog
+        open={pendingAction === 'revert'}
+        onOpenChange={(open) => setPendingAction(open ? 'revert' : null)}
+        onConfirm={async () => {
+          await runAction('revert');
+          closeDialog();
+        }}
+        title={t('dialogs.revert.title')}
+        description={t('dialogs.revert.description')}
+        confirmLabel={t('dialogs.revert.confirm')}
       />
       <ConfirmActionDialog
         open={markPaidOpen}

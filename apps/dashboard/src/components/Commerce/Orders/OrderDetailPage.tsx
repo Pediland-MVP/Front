@@ -34,6 +34,7 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
     ship,
     complete,
     cancel,
+    revert,
     markPaid,
     updateTracking,
   } = useCommerceOrder(orderId);
@@ -60,6 +61,7 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
       ship: () => ship(followUpCode),
       complete,
       cancel,
+      revert,
       markPaid,
     };
     try {

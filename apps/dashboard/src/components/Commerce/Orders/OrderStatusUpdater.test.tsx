@@ -168,10 +168,48 @@ describe('OrderStatusUpdater', () => {
     expect(screen.queryByRole('option', { name: copy.status.sending })).toBeNull();
   });
 
-  it('disables the select and explains why on a terminal order', () => {
+  /**
+   * `completed` was a terminal status until 2026-09-07. It is not any more -- a seller who marked
+   * an order completed by mistake has to be able to put it back -- so the select stays enabled and
+   * the «this order is closed» line never renders. The terminal branch survives in the component
+   * only as a guard against an empty select if the table is ever narrowed again.
+   */
+  it('keeps the select usable on a completed order, which is no longer a dead end', () => {
     renderUpdater({ ...awaitingOrder, status: 'completed' });
-    expect(screen.getByRole('combobox')).toBeDisabled();
-    expect(screen.getByText(copy.statusUpdate.terminal)).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).not.toBeDisabled();
+    expect(screen.queryByText(copy.statusUpdate.terminal)).toBeNull();
+  });
+
+  it('offers every other status on a cancelled order, so a mistaken cancel can be undone', () => {
+    renderUpdater({ ...awaitingOrder, status: 'cancelled' });
+    fireEvent.click(screen.getByRole('combobox'));
+    for (const key of ['awaiting_review', 'processing', 'sending', 'completed'] as const) {
+      expect(screen.getByRole('option', { name: copy.status[key] })).toBeInTheDocument();
+    }
+  });
+
+  // The backward move needs its own confirmation: it is the only one that can restock, and the
+  // copy has to say so before the seller commits.
+  it('confirms before reverting, then fires the revert action', async () => {
+    const onAction = renderUpdater({ ...awaitingOrder, status: 'processing' });
+
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByRole('option', { name: copy.status.awaiting_review }));
+    fireEvent.click(screen.getByRole('button', { name: copy.statusUpdate.submit }));
+
+    expect(onAction).not.toHaveBeenCalled();
+    expect(screen.getByText(copy.dialogs.revert.description)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: copy.dialogs.revert.confirm }));
+    await waitFor(() => expect(onAction).toHaveBeenCalledWith('revert'));
+  });
+
+  // The seller's one explicit exception: any status for physical and digital, except «ارسال شده»
+  // for digital. Checked on `cancelled`, a source `ship` is now offered from.
+  it('never offers sending for a digital order, even from cancelled', () => {
+    renderUpdater({ ...awaitingOrder, status: 'cancelled', kind: 'digital' });
+    fireEvent.click(screen.getByRole('combobox'));
+    expect(screen.queryByRole('option', { name: copy.status.sending })).toBeNull();
   });
 
   it('confirms before marking paid, because there is no un-mark endpoint', async () => {

@@ -183,9 +183,15 @@ describe('OrderDetailPage action bar visibility', () => {
     expect(screen.queryByTestId('status-updater-slot')).not.toBeInTheDocument();
   });
 
-  it('passes no status control when the order has no legal action left', () => {
+  /**
+   * Used to assert the OPPOSITE: a settled completed order was a dead end and got no slot. Since
+   * 2026-09-07 every status can be corrected to any other, so `hasAnyAction` is true even here and
+   * the slot must appear. The `can('order:manage')` branch above is now the only thing that
+   * removes it.
+   */
+  it('still passes a status control for a settled completed order, which can now be corrected', () => {
     setup(vi.fn(), { status: 'completed', paidAt: '2026-09-02T12:00:00.000Z' });
-    expect(screen.queryByTestId('status-updater-slot')).not.toBeInTheDocument();
+    expect(screen.getByTestId('status-updater-slot')).toBeInTheDocument();
   });
 
   /**
