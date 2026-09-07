@@ -6,29 +6,28 @@ export const WizardVideoLinks = {
     },
     Hints: {
       Conditions: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FCondition.MOV',
+        video: 'https://dl.befroosh.app/site/hints/Condition.mp4',
       },
       Triggers: {
-        video:
-          'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FDirect-or-Comment.hint.MOV',
+        video: 'https://dl.befroosh.app/site/hints/Direct-or-Comment.hint.mp4',
       },
       Contents: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FContents.hint.MOV',
+        video: 'https://dl.befroosh.app/site/hints/Contents.hint.mp4',
       },
       CommentTrigger: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FComments.hint.MOV',
+        video: 'https://dl.befroosh.app/site/hints/Comments.hint.mp4',
       },
       CommentReplies: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FComments.hint.MOV',
+        video: 'https://dl.befroosh.app/site/hints/Comments.hint.mp4',
       },
       Reminders: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FReminders.MOV',
+        video: 'https://dl.befroosh.app/site/hints/Reminders.mp4',
       },
       JustFollowers: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FJustFollowers.MOV',
+        video: 'https://dl.befroosh.app/site/hints/JustFollowers.mp4',
       },
       CommentConsent: {
-        video: 'https://testz.s3.ir-thr-at1.arvanstorage.ir/site%2Fhints%2FCommentConsent.hint.MOV',
+        video: 'https://dl.befroosh.app/site/hints/CommentConsent.hint.mp4',
       },
     },
   },
