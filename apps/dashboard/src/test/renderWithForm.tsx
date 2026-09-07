@@ -25,6 +25,7 @@ const emptyForm: ProductFormValues = {
   basePrice: null,
   baseCompare: null,
   baseStock: null,
+  baseInfinite: false,
   options: [],
   variants: [],
 };

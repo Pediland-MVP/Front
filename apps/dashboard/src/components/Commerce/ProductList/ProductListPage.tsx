@@ -9,6 +9,7 @@ import { CommerceProductListItem, CommerceProductStatus, PaginatedResult } from 
 import { AxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
@@ -26,7 +27,6 @@ import { DeleteConfirmationDialog } from '@/components/Global/DeleteConfirmation
 import { NoDataError } from '@/components/Global/NoDataError';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
 import { CommerceProductCard } from './CommerceProductCard';
-import { ChooseProductKindDialog } from './ChooseProductKindDialog';
 import { CircleFadingPlusIcon, CreditCardIcon } from 'lucide-react';
 
 const STATUS_FILTERS: { value: CommerceProductStatus | undefined; labelKey: string }[] = [
@@ -39,6 +39,7 @@ const STATUS_FILTERS: { value: CommerceProductStatus | undefined; labelKey: stri
 export const ProductListPage = () => {
   const t = useTranslations('Commerce.List');
   const t_ec = useTranslations('ERROR_CODES');
+  const router = useRouter();
   const { can } = usePermissions();
   const hasViewPermission = can('product:view');
   const canCreate = can('product:create');
@@ -52,7 +53,6 @@ export const ProductListPage = () => {
   const [limit, setLimit] = useState<number>(21);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-  const [isChooseKindOpen, setIsChooseKindOpen] = useState(false);
 
   const setButtons = useHeaderFeatures((s) => s.setButtons);
   const clearButtons = useHeaderFeatures((s) => s.clearButtons);
@@ -163,7 +163,7 @@ export const ProductListPage = () => {
             type="button"
             size="md"
             disabled={error || !hasCardToCard}
-            onClick={() => setIsChooseKindOpen(true)}
+            onClick={() => router.push('/products/add')}
           >
             {t('add')}
             <CircleFadingPlusIcon />
@@ -171,7 +171,7 @@ export const ProductListPage = () => {
         )}
       </>
     ),
-    [isSearchVisible, canCreate, error, t, hasCardToCard],
+    [isSearchVisible, canCreate, error, t, hasCardToCard, router],
   );
 
   const HeaderTools = useMemo(
@@ -209,7 +209,6 @@ export const ProductListPage = () => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
       />
-      <ChooseProductKindDialog open={isChooseKindOpen} onOpenChange={setIsChooseKindOpen} />
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {STATUS_FILTERS.map((filter) => (

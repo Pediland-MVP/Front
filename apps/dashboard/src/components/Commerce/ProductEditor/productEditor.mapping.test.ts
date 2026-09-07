@@ -94,6 +94,7 @@ const formValues = (over: Partial<ProductFormValues> = {}): ProductFormValues =>
   basePrice: null,
   baseCompare: null,
   baseStock: null,
+  baseInfinite: false,
   options: [],
   variants: [],
   ...over,

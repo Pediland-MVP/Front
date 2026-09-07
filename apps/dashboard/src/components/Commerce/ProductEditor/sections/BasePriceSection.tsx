@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useController, useFormContext, useWatch } from 'react-hook-form';
 
@@ -15,11 +14,7 @@ import { editorInput } from '../ui/editorChrome';
 import { EditorSection } from '../ui/EditorSection';
 
 /**
- * Step ۵ — the base price.
- *
- * These two numbers are SEEDS, never persisted on their own: they fill in a newly generated
- * variation's price. Once real variations exist the seed has nothing left to seed, and editing it
- * would silently do nothing — so the card locks instead of lying.
+ * Step ۶ — the price.
  *
  * "Real variations" means there is at least one variant row AND at least one axis that actually
  * HAS values. `variants.length > 0` alone is not enough: a product with no option axes still
@@ -29,10 +24,22 @@ import { EditorSection } from '../ui/EditorSection';
  * an empty axis, which generates no combination at all, so the card would grey out while the
  * single implicit row it edits is still the only thing there. Only an axis with values can
  * multiply into rows, which is exactly the set `axesOfValues` keeps at payload time.
+ *
+ * UNLOCKED, these numbers ARE the product's price — they are written into `variants[0]` directly.
+ * They used to be written only to `basePrice`/`baseCompare`, which `useVariantSync` reads when it
+ * GENERATES rows; for a product that never got an axis nothing ever generated, so the price typed
+ * here went nowhere and Save failed pointing at the one-row grid below instead.
+ *
+ * The seeds are still written alongside, because they are what survives the first axis added: the
+ * implicit row carries no option values, so `donorOf` never matches it and the rows generated in
+ * its place fall back to the seeds.
+ *
+ * LOCKED (the product has real variations), the seeds are all that is left to show — per-variant
+ * prices live in the grid, and the hint says so.
  */
-export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
+export const BasePriceSection = ({ step = 6 }: { step?: number }) => {
   const t = useTranslations('Commerce.Editor.BasePrice');
-  const { control } = useFormContext<ProductFormValues>();
+  const { control, setValue } = useFormContext<ProductFormValues>();
   const selectOnFocus = useSelectOnFocus();
 
   const variants = useWatch({ control, name: 'variants' }) ?? [];
@@ -40,41 +47,39 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
   const liveAxes = options.filter((option) => (option.values?.length ?? 0) > 0).length;
   const locked = variants.length > 0 && liveAxes > 0;
 
-  const { field: price } = useController({ control, name: 'basePrice' });
-  const { field: compare } = useController({ control, name: 'baseCompare' });
+  const { field: seedPrice } = useController({ control, name: 'basePrice' });
+  const { field: seedCompare } = useController({ control, name: 'baseCompare' });
+
+  // Read from the row while it is the product, so a value typed in the grid (or loaded from the
+  // server) shows here too and the two are never out of step.
+  const rowPrice = useWatch({ control, name: 'variants.0.price' });
+  const rowCompare = useWatch({ control, name: 'variants.0.compare' });
+  const rowHasDiscount = useWatch({ control, name: 'variants.0.hasDiscount' });
+
+  const priceValue = locked ? seedPrice.value : (rowPrice ?? null);
+  const compareValue = locked ? seedCompare.value : (rowCompare ?? null);
 
   /**
-   * Whether the product is on sale. This is UI state, NOT form data — the backend has no such
-   * flag, it infers "on sale" from `comparePrice` being present at all. Adding a field to
-   * `ProductFormValues` for it would mean carrying something every payload builder has to
-   * remember to strip.
-   *
-   * The switch has to follow the form value in, because the value arrives from places the user
-   * never touched: in edit mode the product loads AFTER this mounts and resets the form, and
-   * Revert does the same. Seeding `useState` once would leave a product that has a compare
-   * price rendering with the switch off and the field greyed out over its own data.
+   * Whether the product is on sale. Unlocked this is the ROW's stored `hasDiscount` flag, which
+   * exists precisely so "the merchant just cleared the field" is not confused with "there is no
+   * discount" — reading `compare != null` instead made the input disable itself mid-keystroke.
+   * Locked, the card is `pointer-events-none` and this is display only, so the value it carries
+   * answers the question on its own.
    */
-  const [onSale, setOnSale] = useState(compare.value != null);
+  const onSale = locked ? seedCompare.value != null : Boolean(rowHasDiscount);
 
-  /**
-   * The last value this component itself wrote. Without it, clearing the input mid-edit reads
-   * as "value became null" and flips the switch off under the user's cursor — the field then
-   * disables itself while they are still typing in it.
-   */
-  const lastLocal = useRef<number | null | undefined>(undefined);
-
-  useEffect(() => {
-    if (compare.value === lastLocal.current) return; // our own edit — leave the switch alone
-    setOnSale(compare.value != null);
-  }, [compare.value]);
+  const writePrice = (next: number | null) => {
+    seedPrice.onChange(next);
+    if (!locked) setValue('variants.0.price', next, { shouldDirty: true });
+  };
 
   const writeCompare = (next: number | null) => {
-    lastLocal.current = next;
-    compare.onChange(next);
+    seedCompare.onChange(next);
+    if (!locked) setValue('variants.0.compare', next, { shouldDirty: true });
   };
 
   const toggleSale = (next: boolean) => {
-    setOnSale(next);
+    if (!locked) setValue('variants.0.hasDiscount', next, { shouldDirty: true });
     // Turning it off must clear the value, not just hide it: a stale compare price left in the
     // form would still be sent on save and the product would stay discounted.
     if (!next) writeCompare(null);
@@ -83,7 +88,7 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
   // Mirrors `CHK_commerce_variant_compare_gt_price`: equal is as wrong as lower. Only meaningful
   // while the sale is on — a disabled, null field can never be in violation.
   const compareBad =
-    onSale && price.value != null && compare.value != null && compare.value <= price.value;
+    onSale && priceValue != null && compareValue != null && compareValue <= priceValue;
 
   return (
     <EditorSection
@@ -125,9 +130,9 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
               placeholder={t('pricePlaceholder')}
               {...selectOnFocus}
               onInput={onInputP2EHandler}
-              value={formatAmount(price.value)}
-              onChange={(e) => price.onChange(parseAmount(e.target.value))}
-              onBlur={price.onBlur}
+              value={formatAmount(priceValue)}
+              onChange={(e) => writePrice(parseAmount(e.target.value))}
+              onBlur={seedPrice.onBlur}
               className={cn(editorInput, 'h-[42px] ps-3 pe-16 text-base font-bold')}
             />
             <span className="text-mut pointer-events-none absolute end-3 top-3 text-xs">
@@ -146,16 +151,16 @@ export const BasePriceSection = ({ step = 5 }: { step?: number }) => {
               type="text"
               inputMode="numeric"
               // Locked (the product has real variations) OR simply not on sale. Both mean the
-              // seed is not editable, and a disabled input is also skipped by tab order.
+              // field is not editable, and a disabled input is also skipped by tab order.
               disabled={locked || !onSale}
               aria-label={t('compare')}
               placeholder={onSale ? t('comparePlaceholder') : t('noDiscount')}
               data-bad={compareBad ? 'zero' : undefined}
               {...selectOnFocus}
               onInput={onInputP2EHandler}
-              value={formatAmount(compare.value)}
+              value={formatAmount(compareValue)}
               onChange={(e) => writeCompare(parseAmount(e.target.value))}
-              onBlur={compare.onBlur}
+              onBlur={seedCompare.onBlur}
               className={cn(
                 editorInput,
                 'text-mut h-[42px] ps-3 pe-16 text-base font-semibold',

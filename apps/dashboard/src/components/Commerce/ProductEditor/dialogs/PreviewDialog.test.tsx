@@ -74,6 +74,7 @@ const withVariants = (): Partial<ProductFormValues> => ({
   basePrice: 999000,
   baseCompare: null,
   baseStock: 7,
+  baseInfinite: false,
   options: [colourAxis],
   variants: [
     variant(['c1'], { price: 100000 }),

@@ -57,9 +57,8 @@ export interface ProductFormValues {
   description: string;
   categoryId: string | null;
   /**
-   * Chosen once via `ChooseProductKindDialog` on create, but stays editable later too
-   * (`ProductKindSection`) -- the backend locks it once the product has an order line
-   * (`COMMERCE_KIND_LOCKED`, surfaced by `useProductSave`).
+   * Defaults to physical on create and is chosen in `ProductKindSection` -- the backend locks it
+   * once the product has an order line (`COMMERCE_KIND_LOCKED`, surfaced by `useProductSave`).
    */
   kind: CommerceProductKind;
   /**
@@ -81,12 +80,18 @@ export interface ProductFormValues {
   media: EditorMedia[];
 
   /**
-   * Editor-only seeds, never persisted. `basePrice`/`baseCompare` seed EVERY generated variant;
-   * `baseStock` seeds only the FIRST, because a stock count is a quantity, not a template.
+   * Editor-only seeds, never persisted. `basePrice`/`baseCompare`/`baseInfinite` seed EVERY
+   * generated variant; `baseStock` seeds only the FIRST, because a stock count is a quantity, not
+   * a template (∞ is a tracking MODE, which is why it is not held to the same rule).
+   *
+   * These are seeds ONLY while the product has a live axis. With no axes there is nothing to seed
+   * — the product's one implicit variation IS the product — so steps ۶ and ۷ write straight into
+   * `variants[0]` as well, and keep these in step so the value survives the first axis added.
    */
   basePrice: number | null;
   baseCompare: number | null;
   baseStock: number | null;
+  baseInfinite: boolean;
 
   options: Array<{
     /** Absent = created this session; the backend mints the real id on save. */
@@ -356,6 +361,7 @@ export const buildProductEditorSchema = (t: Translator) => {
     basePrice: z.number().int().nonnegative().nullable(),
     baseCompare: z.number().int().nonnegative().nullable(),
     baseStock: z.number().int().nonnegative().nullable(),
+    baseInfinite: z.boolean(),
     options: z.array(optionSchema).max(MAX_ATTRS, { message: t('Validation.attrLimit') }),
     variants: z
       .array(variantSchema)
@@ -384,6 +390,7 @@ export const buildEmptyProductForm = (
   basePrice: null,
   baseCompare: null,
   baseStock: null,
+  baseInfinite: false,
   options: [],
   variants: [
     {

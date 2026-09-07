@@ -259,9 +259,14 @@ export const useVariantSync = (): VariantSync => {
           // Follows the base seed: if step ۵ has the discount switched on, every row it seeds
           // starts open too, so the merchant is not made to re-enable it row by row.
           hasDiscount: values.baseCompare != null,
-          // baseStock seeds the first row ever generated and nothing else.
-          stock: !hadRows && position === 0 ? (values.baseStock ?? null) : null,
-          infinite: false,
+          // baseStock seeds the first row ever generated and nothing else — and only when the
+          // seed is a COUNT at all: an ∞ base has no number to hand down, exactly as a row
+          // switched to ∞ drops its own count (`VariantLeafRow`).
+          stock:
+            !values.baseInfinite && !hadRows && position === 0 ? (values.baseStock ?? null) : null,
+          // Unlike the count, this goes to EVERY row it seeds: ∞ is a tracking MODE, not a
+          // quantity — the same rule the donor branch below already follows.
+          infinite: values.baseInfinite ?? false,
           mediaIds: [],
         });
       }

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
 import {
   useForm,
   useFormContext,
@@ -186,12 +185,9 @@ interface ProductEditorPageProps {
  */
 export const ProductEditorPage = ({ mode, productId }: ProductEditorPageProps) => {
   const t = useTranslations('Commerce.Editor');
-  // Only meaningful on create -- `ChooseProductKindDialog` put it there. An invalid or missing
-  // value (a bare `/products/add` visit, e.g. a stale bookmark) defaults to physical rather than
-  // failing to load.
-  const searchParams = useSearchParams();
-  const initialKind: CommerceProductKind =
-    mode === 'create' && searchParams.get('kind') === 'digital' ? 'digital' : 'physical';
+  // «افزودن محصول» goes straight here, so nothing picks a kind before the editor mounts: every
+  // new product starts physical and step ۱ (`ProductKindSection`) is where it is chosen.
+  const initialKind: CommerceProductKind = 'physical';
   const { product, categories, collections, collectionsLoaded, tagPool, isLoading, loadError } =
     useProductLoad(mode, productId);
 

@@ -168,6 +168,7 @@ export const mapDetailToFormValues = (product: CommerceProductDetail): ProductFo
     basePrice: null,
     baseCompare: null,
     baseStock: null,
+    baseInfinite: false,
     options,
     variants: [...product.variants].sort(byPosition).map((variant) => ({
       id: variant.id,

@@ -15,8 +15,9 @@ const KIND_OPTIONS: Array<{ value: ProductFormValues['kind']; Icon: LucideIcon }
 ];
 
 /**
- * Step ۱ — physical vs digital. Chosen once via `ChooseProductKindDialog` on create, but the
- * backend allows changing it later too (`ProductService.updateProduct`) -- until the product has
+ * Step ۱ — physical vs digital. The ONLY place a kind is ever picked: «افزودن محصول» opens the
+ * editor directly, so a new product arrives here already defaulted to physical. The backend
+ * allows changing it later too (`ProductService.updateProduct`) -- until the product has
  * its first order line, at which point it answers `COMMERCE_KIND_LOCKED` and `useProductSave`
  * already turns that into `Errors.kindLocked`. No "locked" state is computed here on purpose:
  * `CommerceProductDetail` carries no such flag, so the switch always renders enabled and the

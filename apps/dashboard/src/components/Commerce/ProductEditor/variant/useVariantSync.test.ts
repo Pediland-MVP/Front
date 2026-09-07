@@ -56,6 +56,7 @@ const defaults = (over: Partial<ProductFormValues> = {}): ProductFormValues =>
     basePrice: null,
     baseCompare: null,
     baseStock: null,
+    baseInfinite: false,
     options: [],
     variants: [],
     ...over,
@@ -99,6 +100,7 @@ describe('syncVariants — generation', () => {
         basePrice: 420000,
         baseCompare: 480000,
         baseStock: 7,
+        baseInfinite: false,
       }),
     );
 
@@ -329,6 +331,7 @@ describe('syncVariants — removing an axis keeps the numbers', () => {
         basePrice: null,
         baseCompare: null,
         baseStock: null,
+        baseInfinite: false,
         variants: [
           row(['red', 's'], { id: 'v1', price: 100, compare: 150, stock: 5, mediaIds: ['m-1'] }),
           row(['red', 'm'], { id: 'v2', price: 110, compare: 160, stock: 6 }),

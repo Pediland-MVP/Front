@@ -98,6 +98,7 @@ const renderGrid = (over: Partial<ProductFormValues>) => {
         basePrice: null,
         baseCompare: null,
         baseStock: null,
+        baseInfinite: false,
         options: [],
         variants: [],
         ...over,

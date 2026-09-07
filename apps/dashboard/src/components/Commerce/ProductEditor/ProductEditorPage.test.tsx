@@ -7,8 +7,7 @@ import type { CommerceProductDetail, CommerceProductMedia } from '@/types/commer
 /**
  * The shell's own test. The eleven sections, the grid, the rail and the dialogs each have their
  * own; what is unverified until they are assembled is the WIRING — that the page mounts at all,
- * that an axis edit reaches `syncVariants`, that the load is seeded exactly once, and that the
- * `?kind=` query param actually reaches the `kind` step.
+ * that an axis edit reaches `syncVariants`, and that the load is seeded exactly once.
  */
 
 const { mockUseSWRImmutable } = vi.hoisted(() => ({ mockUseSWRImmutable: vi.fn() }));
@@ -18,16 +17,8 @@ vi.mock('swr', () => ({ mutate: vi.fn() }));
 const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => ({ can: mockCan }) }));
 
-// `useSearchParams` backs the `?kind=digital` seed. A `vi.fn()`, not a fixed factory, so one test
-// (the digital-seed case below) can override the return value while every other case keeps the
-// default empty `URLSearchParams` -- `.get('kind')` returning `null` -- which exercises the
-// "missing param defaults to physical" path.
-const { mockUseSearchParams } = vi.hoisted(() => ({
-  mockUseSearchParams: vi.fn(() => new URLSearchParams()),
-}));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
-  useSearchParams: () => mockUseSearchParams(),
 }));
 
 const { api } = vi.hoisted(() => ({
@@ -171,7 +162,6 @@ beforeEach(() => {
   mockCan.mockReset().mockReturnValue(true);
   // Explicit, not relied on surviving `clearAllMocks`: every case except the one that overrides
   // it below needs the "no param" default.
-  mockUseSearchParams.mockReturnValue(new URLSearchParams());
 });
 
 describe('ProductEditorPage', () => {
@@ -199,29 +189,6 @@ describe('ProductEditorPage', () => {
 
     await waitFor(() =>
       expect(screen.getByLabelText(messages.Commerce.Editor.Title.title)).toHaveValue('کفش ورزشی'),
-    );
-  });
-
-  /**
-   * The one real integration seam this feature adds: a seller lands on `/products/add?kind=
-   * digital` from `ChooseProductKindDialog` and the editor's own `kind` step must already show
-   * digital selected, not physical -- without this, every other case in this file (which all use
-   * the default empty `URLSearchParams`) only ever proves the FALLBACK path.
-   */
-  it('seeds the kind from the `?kind=digital` query param on create', () => {
-    mockUseSearchParams.mockReturnValue(new URLSearchParams('kind=digital'));
-    stubReads(undefined);
-
-    renderEditor({ mode: 'create' });
-
-    const kind = messages.Commerce.Editor.Kind;
-    expect(screen.getByRole('button', { name: kind.digital })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-    expect(screen.getByRole('button', { name: kind.physical })).toHaveAttribute(
-      'aria-pressed',
-      'false',
     );
   });
 

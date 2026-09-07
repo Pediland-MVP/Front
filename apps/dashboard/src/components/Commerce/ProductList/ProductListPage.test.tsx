@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import { CommerceProductListItem } from '@/types/commerce';
@@ -267,7 +267,12 @@ describe('ProductListPage', () => {
     expect(screen.getByText(messages.Commerce.List.add).closest('button')).not.toBeDisabled();
   });
 
-  it('opens the kind-choice dialog instead of navigating directly when Add is clicked', () => {
+  /**
+   * Add used to open a physical/digital chooser first. That dialog is gone: the kind is picked
+   * inside the editor (step ۱), so Add goes straight there and asks nothing on the way — with no
+   * `?kind=` on the url, because nothing reads one any more.
+   */
+  it('navigates straight to the editor when Add is clicked', () => {
     mockCan.mockImplementation((slug: string) => slug === 'product:create');
     mockUseSWRImmutable.mockReturnValue(listData(buildItem()));
 
@@ -275,25 +280,8 @@ describe('ProductListPage', () => {
     renderHeaderButtons();
     fireEvent.click(screen.getByText(messages.Commerce.List.add));
 
-    // `Card.physical`'s status badge ("فیزیکی") reads identically to
-    // `ChooseKind.physicalTitle`, and the underlying product card is still in the tree
-    // behind the dialog — scope the query to the dialog itself to disambiguate.
-    const dialog = within(screen.getByRole('dialog'));
-    expect(dialog.getByText(messages.Commerce.List.ChooseKind.physicalTitle)).toBeInTheDocument();
-    expect(push).not.toHaveBeenCalled();
-  });
-
-  it('navigates to the digital editor once a kind is picked from the dialog', () => {
-    mockCan.mockImplementation((slug: string) => slug === 'product:create');
-    mockUseSWRImmutable.mockReturnValue(listData(buildItem()));
-
-    renderPage();
-    renderHeaderButtons();
-    fireEvent.click(screen.getByText(messages.Commerce.List.add));
-    const dialog = within(screen.getByRole('dialog'));
-    fireEvent.click(dialog.getByText(messages.Commerce.List.ChooseKind.digitalTitle));
-
-    expect(push).toHaveBeenCalledWith('/products/add?kind=digital');
+    expect(push).toHaveBeenCalledWith('/products/add');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows the card-to-card notice and locks the grid when the viewer can create but has no card-to-card method', () => {
