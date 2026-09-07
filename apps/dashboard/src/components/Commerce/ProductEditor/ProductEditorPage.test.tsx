@@ -275,6 +275,46 @@ describe('ProductEditorPage', () => {
   });
 
   /**
+   * Reported by the user: setting an offer on a variation "sometimes gives me an error without
+   * explanation". `compareInvalid` blocks the save, but the toast was the fixed «چند مورد کامل
+   * نیست. موردهای قرمز را درست کنید.» — a sentence that names a colour and nothing else — and the
+   * only wrong cell was tinted AMBER, which `globals.css` defines as the soft-warning tone. So the
+   * merchant was told to fix red cells while no red cell existed.
+   *
+   * Two assertions, because the bug had two halves: the toast must carry the schema's own reason,
+   * and the cell must wear the colour that toast used to name.
+   */
+  it('says WHY the save failed when an offer is not above the sale price', async () => {
+    // Complete in every OTHER respect: `firstError` walks the page in reading order, so a blank
+    // description or category would win and this would prove nothing about the offer.
+    stubReads(detail({ description: 'کفش ورزشی راحت', categoryId: 'cat-1' }));
+    renderEditor({ mode: 'edit', productId: 'prod-1' });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(messages.Commerce.Editor.Title.title)).toHaveValue('کفش ورزشی'),
+    );
+
+    // The loaded product's single row is «محصول بدون ویژگی», priced at ۲۵۰٬۰۰۰.
+    const name = VARIANTS.soloLabel;
+    fireEvent.click(screen.getByLabelText(VARIANTS.hasDiscountAria.replace('{name}', name)));
+    // An offer BELOW the sale price — the exact mistake that produced the unexplained error.
+    fireEvent.input(screen.getByLabelText(VARIANTS.compareAria.replace('{name}', name)), {
+      target: { value: '۱۰۰۰۰۰' },
+    });
+
+    fireEvent.click(screen.getByTestId('editor-save'));
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(messages.Commerce.Editor.Validation.compareInvalid),
+    );
+    expect(toast.error).not.toHaveBeenCalledWith(messages.Commerce.Editor.Errors.invalid);
+    expect(screen.getByLabelText(VARIANTS.compareAria.replace('{name}', name))).toHaveAttribute(
+      'data-bad',
+      'empty',
+    );
+  });
+
+  /**
    * The textarea's own `maxLength` (final-branch-review fix) stops a merchant TYPING past the
    * cap, but a product seeded from an over-limit value already on the server -- pre-existing
    * data, or a future non-UI writer -- still has to fail the schema and be findable. Before this

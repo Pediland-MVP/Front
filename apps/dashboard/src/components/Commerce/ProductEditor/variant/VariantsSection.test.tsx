@@ -328,3 +328,70 @@ describe('VariantsSection — per-row discount', () => {
     expect(screen.getByLabelText('قیمت بدون تخفیف آبی، S')).toBeDisabled();
   });
 });
+
+/**
+ * Reported by the user: "it also didn't split the price when I'm typing it".
+ *
+ * These cells are UNCONTROLLED (`register`, so 2000 rows stay responsive), and
+ * `onInputP2EHandler` strips every non-digit from the DOM value on each keystroke — separators
+ * included. Nothing put them back until `onBlur`, so the number grew as a bare digit string while
+ * being typed and only "split" once the merchant left the cell. The base price card next to it
+ * IS controlled and formats on every keystroke, so the two read as different products.
+ */
+describe('VariantsSection — live number formatting', () => {
+  const priceCell = (name: string) =>
+    screen.getByLabelText(T.priceAria.replace('{name}', name)) as HTMLInputElement;
+
+  it('splits the price with separators while the merchant is still typing', () => {
+    renderGrid(ONE_AXIS);
+    const cell = priceCell('قرمز');
+
+    fireEvent.input(cell, { target: { value: '۴۲۰۰۰۰' } });
+
+    expect(cell.value).toBe((420000).toLocaleString('fa-IR'));
+  });
+
+  it('converts Persian digits and still stores a plain English number', () => {
+    const grid = renderGrid(ONE_AXIS);
+    const cell = priceCell('قرمز');
+
+    fireEvent.input(cell, { target: { value: '۹۹۹۰۰' } });
+
+    expect(cell.value).toBe((99900).toLocaleString('fa-IR'));
+    expect(grid.prices()[0]).toBe(99900);
+  });
+
+  it('keeps an emptied cell empty rather than formatting it to zero', () => {
+    renderGrid(ONE_AXIS);
+    const cell = priceCell('قرمز');
+
+    fireEvent.input(cell, { target: { value: '' } });
+
+    expect(cell.value).toBe('');
+  });
+});
+
+/**
+ * Also reported: setting an offer on one variation "sometimes gives me an error without
+ * explanation". `compareInvalid` (compare not above price) BLOCKS the save, but the cell was
+ * tinted `zero` — which `globals.css` defines as the soft-warning amber — while the failure toast
+ * tells the merchant «موردهای قرمز را درست کنید» (fix the RED ones). They were sent looking for a
+ * red cell that never existed.
+ */
+describe('VariantsSection — a blocking cell error reads as blocking', () => {
+  it('tints a compare error red, the colour the failure toast names', () => {
+    const grid = renderGrid(ONE_AXIS);
+
+    act(() => {
+      grid.form().setError('variants.0.compare', {
+        type: 'custom',
+        message: messages.Commerce.Editor.Validation.compareInvalid,
+      });
+    });
+
+    expect(screen.getByLabelText(T.compareAria.replace('{name}', 'قرمز'))).toHaveAttribute(
+      'data-bad',
+      'empty',
+    );
+  });
+});

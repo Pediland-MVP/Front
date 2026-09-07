@@ -98,50 +98,80 @@ const STEPS = {
  */
 type FocusTarget = { path: FieldPath<ProductFormValues> };
 
-/**
- * The first input a failed submit should land on, walked in the page's own reading order —
- * ۲ عنوان, ۸ ویژگی‌ها, ۹ مشخصات, ۱۰ تنوع‌ها, ۱۱ پیام نهایی.
- *
- * Zod issue paths are per-field (`['variants', 3, 'price']`, `['options', 0, 'name']`), which is
- * what makes this possible at all. Anything not listed here has no focusable input to jump to.
- */
-const firstErrorPath = (
-  errors: FieldErrors<ProductFormValues>,
-): FieldPath<ProductFormValues> | null => {
-  if (errors.title) return 'title';
-  if (errors.description) return 'description';
-  if (errors.categoryId) return 'categoryId';
+/** One field error as react-hook-form stores it — only the message is read here. */
+type ErrorNode = { message?: unknown } | undefined;
 
-  const options = errors.options as Array<{ name?: unknown } | undefined> | undefined;
+const messageOf = (node: ErrorNode): string | null =>
+  typeof node?.message === 'string' && node.message ? node.message : null;
+
+/**
+ * Where a failed submit should jump, AND why it failed.
+ *
+ * The reason is returned alongside the path because the toast used to be the fixed «چند مورد کامل
+ * نیست. موردهای قرمز را درست کنید.» — which names a colour and nothing else. A merchant who set an
+ * offer below the sale price got that sentence and no way to learn what was actually wrong.
+ * Every issue in this schema already carries a translated message; this surfaces the first one.
+ *
+ * Walked in the page's own reading order — ۲ عنوان, ۸ ویژگی‌ها, ۹ مشخصات, ۱۰ تنوع‌ها, ۱۱ پیام نهایی.
+ * Zod issue paths are per-field (`['variants', 3, 'price']`, `['options', 0, 'name']`), which is
+ * what makes this possible at all.
+ */
+type FirstError = { path: FieldPath<ProductFormValues> | null; message: string | null };
+
+/** The variant fields this design actually draws a cell for — the only focusable ones. */
+const VARIANT_CELL_FIELDS = ['price', 'compare', 'stock'] as const;
+
+const firstError = (errors: FieldErrors<ProductFormValues>): FirstError => {
+  if (errors.title) return { path: 'title', message: messageOf(errors.title) };
+  if (errors.description) return { path: 'description', message: messageOf(errors.description) };
+  if (errors.categoryId) return { path: 'categoryId', message: messageOf(errors.categoryId) };
+
+  const options = errors.options as Array<{ name?: ErrorNode } | undefined> | undefined;
   if (Array.isArray(options)) {
     const index = options.findIndex((option) => !!option?.name);
-    if (index >= 0) return `options.${index}.name`;
-  }
-
-  const specs = errors.specs as Array<{ title?: unknown; body?: unknown } | undefined> | undefined;
-  if (Array.isArray(specs)) {
-    const index = specs.findIndex((spec) => !!spec?.title || !!spec?.body);
-    if (index >= 0) return specs[index]?.title ? `specs.${index}.title` : `specs.${index}.body`;
-  }
-
-  const rows = errors.variants as
-    | Array<{ price?: unknown; compare?: unknown; stock?: unknown } | undefined>
-    | undefined;
-  if (Array.isArray(rows)) {
-    const index = rows.findIndex((row) => !!row);
     if (index >= 0) {
-      const row = rows[index];
-      return row?.price
-        ? `variants.${index}.price`
-        : row?.compare
-          ? `variants.${index}.compare`
-          : `variants.${index}.stock`;
+      return { path: `options.${index}.name`, message: messageOf(options[index]?.name) };
     }
   }
 
-  if (errors.finalMessage) return 'finalMessage';
+  const specs = errors.specs as
+    | Array<{ title?: ErrorNode; body?: ErrorNode } | undefined>
+    | undefined;
+  if (Array.isArray(specs)) {
+    const index = specs.findIndex((spec) => !!spec?.title || !!spec?.body);
+    if (index >= 0) {
+      const spec = specs[index];
+      return spec?.title
+        ? { path: `specs.${index}.title`, message: messageOf(spec.title) }
+        : { path: `specs.${index}.body`, message: messageOf(spec?.body) };
+    }
+  }
 
-  return null;
+  const rows = errors.variants as Array<Record<string, ErrorNode> | undefined> | undefined;
+  if (Array.isArray(rows)) {
+    const index = rows.findIndex((row) => !!row);
+    if (index >= 0) {
+      const row = rows[index] ?? {};
+      const field = VARIANT_CELL_FIELDS.find((candidate) => !!row[candidate]);
+      /**
+       * `null` path rather than a fallback to `stock`, which is what this used to do. A row can
+       * also fail on `saleStartsAt`/`saleEndsAt` — pre-existing sale-window data, for which this
+       * design draws no control at all — and the old fallback then put the cursor in a stock cell
+       * with nothing wrong in it. Now nothing is focused and the message carries the explanation.
+       */
+      const failing = field ? row[field] : Object.values(row).find((node) => !!node);
+      return {
+        path: field ? `variants.${index}.${field}` : null,
+        message: messageOf(failing),
+      };
+    }
+  }
+
+  if (errors.finalMessage) {
+    return { path: 'finalMessage', message: messageOf(errors.finalMessage) };
+  }
+
+  return { path: null, message: null };
 };
 
 const byPosition = (a: { position: number }, b: { position: number }): number =>
@@ -668,8 +698,10 @@ const ProductEditorBody = ({
 
   const onInvalid = useCallback(
     (errors: FieldErrors<ProductFormValues>) => {
-      toast.error(t('Errors.invalid'));
-      const path = firstErrorPath(errors);
+      const { path, message } = firstError(errors);
+      // The schema's own translated reason beats «موردهای قرمز را درست کنید», which only ever
+      // named a colour. The generic line stays as the fallback for an issue with no message.
+      toast.error(message || t('Errors.invalid'));
       if (path) setFocusTarget({ path });
     },
     [t],

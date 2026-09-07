@@ -3,12 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { useFormContext, useFormState } from 'react-hook-form';
 
-// NAMED import: the DEFAULT export of this module is `p2eNumbers` (a string→string cleaner),
-// the named `onInputP2EHandler` is the event handler this cell needs (CLAUDE.md §18).
-import { onInputP2EHandler } from '@/utils/p2eNumber';
-
 import type { ProductFormValues } from '../productEditor.schema';
-import { formatAmount, parseAmount } from '../utils/editorNumber.util';
+import { formatAmount, formatAmountInPlace, parseAmount } from '../utils/editorNumber.util';
 
 export type VariantCellField = 'price' | 'compare' | 'stock';
 
@@ -62,14 +58,21 @@ export function VariantNumberCell({
 
   // Name-scoped: this cell re-renders on ITS OWN error appearing, not on any other row's.
   const { errors } = useFormState({ control, name });
-  const hasError = Boolean(errors?.variants?.[index]?.[field]);
-  // A zod issue tints with the tone that field's failure means. `compare` is the ONLY field whose
-  // issue always fires while the value is PRESENT and wrong (`compareInvalid`, not above price),
-  // so it is the only amber one. `stock` fails only for being missing (`stockRequired`) — 0 is a
-  // valid count and never trips it — so it is red; it used to fall into the amber branch by
-  // accident. `price` is red because a blank price is by far its common failure, even though it
-  // also carries `salePriceInvalid`/`amountMax` issues raised on a value that is present.
-  const shown: VariantCellTone = hasError ? (field === 'compare' ? 'zero' : 'empty') : tone;
+  const cellError = errors?.variants?.[index]?.[field];
+  const hasError = Boolean(cellError);
+  /**
+   * A real zod issue is ALWAYS red, `compare` included.
+   *
+   * `compare` used to tint amber here, on the reasoning that its failure fires while the value is
+   * present rather than missing. But `globals.css` defines amber (`zero`) as the *soft warning*
+   * tone, and the failure toast tells the merchant «موردهای قرمز را درست کنید» — fix the RED ones.
+   * `compareInvalid` blocks the save outright, so a merchant who set an offer below the price was
+   * sent hunting for a red cell that did not exist. Severity has to match the toast that names it.
+   *
+   * The amber `tone` prop survives for what it is actually for: the LIVE hint, before any submit
+   * has turned the same condition into a blocking error.
+   */
+  const shown: VariantCellTone = hasError ? 'empty' : tone;
 
   const registration = register(name, { setValueAs: (raw) => parseAmount(String(raw ?? '')) });
 
@@ -105,12 +108,18 @@ export function VariantNumberCell({
       data-bad={shown || undefined}
       aria-invalid={hasError || undefined}
       aria-label={ariaLabel}
+      // The grid has no room for a message line under 2000 rows, so the reason rides on the cell
+      // itself. Without it the only thing a failing cell ever said was its colour.
+      title={(cellError?.message as string | undefined) || undefined}
       placeholder={placeholder}
       className={
         className ??
         'bg-card border-ln focus:border-primary h-[34px] w-full min-w-0 rounded-md border px-2 text-xs font-bold outline-none disabled:opacity-60'
       }
-      onInput={onInputP2EHandler}
+      // Does `onInputP2EHandler`'s job (Persian digits → English, non-digits dropped) and then
+      // puts the thousand separators back, so the number splits AS IT IS TYPED rather than only
+      // on blur. Still runs before react-hook-form's `onChange` (CLAUDE.md §18).
+      onInput={(event) => formatAmountInPlace(event.currentTarget)}
       onFocus={(event) => {
         focusValueRef.current = value;
         event.target.select();

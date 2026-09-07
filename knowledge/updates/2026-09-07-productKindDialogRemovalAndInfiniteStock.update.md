@@ -1,4 +1,4 @@
-# Product kind dialog removal + unlimited stock — 2026-09-07
+# Product kind dialog removal, unlimited stock, and two variation-grid bugs — 2026-09-07
 
 Supersedes the "Add product" half of
 [`2026-09-06-digitalProductsFinalMessage.update.md`](./2026-09-06-digitalProductsFinalMessage.update.md)
@@ -92,3 +92,70 @@ untouched.
   the 12 new `BaseStockSection` tests and the rewritten `BasePriceSection` suite. The
   `CancelOrderDialog` `act(...)` stderr warning is pre-existing and unrelated.
 - Not manually smoke-tested in a browser.
+
+---
+
+# Follow-up: two variation-grid bugs (same day, same branch)
+
+Both reported by the user after clicking through the deployed test build. Neither was introduced
+by the work above — both are pre-existing behaviour in the variations grid (step ۱۰).
+
+## Problem A — "sometimes gives me an error without explanation"
+
+Setting an offer (٪) on a variation and saving produced the fixed toast
+«چند مورد کامل نیست. موردهای قرمز را درست کنید.» and nothing the merchant could act on.
+
+Two separate causes, both needed for the symptom:
+
+1. **The blocking error was painted as a soft warning.** `VariantNumberCell` tinted a `compare`
+   issue `zero`, on the reasoning that its failure fires while the value is PRESENT rather than
+   missing. But `globals.css` defines the tones by SEVERITY, and says so in its own comment:
+   `empty` = red = "blocks Save outright", `zero` = amber = "a soft warning". `compareInvalid`
+   blocks the save. So the toast said "fix the RED ones" while the only wrong cell was amber —
+   the merchant was sent hunting for a colour that was not on screen.
+
+2. **The reason was never shown anywhere.** Every issue in this schema carries a translated
+   message (`compareInvalid` = «قیمت بدون تخفیف باید بیشتر از قیمت فروش باشد.»), but the grid
+   renders no message line — a failing cell only ever changed colour — and `onInvalid` threw the
+   message away, toasting a fixed string that names a colour and nothing else.
+
+"Sometimes" is the giveaway: it fires only when the offer is at or below the sale price.
+
+A third defect found while tracing, same family: `firstErrorPath`'s variants branch ended in a
+bare `variants.<index>.stock` fallback, so a row failing on `saleStartsAt`/`saleEndsAt`
+(pre-existing sale-window data — this design draws no control for either) put the cursor in a
+stock cell with nothing wrong in it.
+
+## Problem B — "it also didn't split the price when I'm typing it"
+
+The grid's number cells are UNCONTROLLED (`register`) — that is what keeps 2000 rows responsive —
+so nothing re-renders them while typing, and `onInputP2EHandler` strips every non-digit from the
+DOM value on each keystroke, separators included. Nothing put them back until `onBlur`. The number
+therefore grew as a bare digit string and only "split" once the merchant left the cell, while the
+base price card beside it (controlled, `value={formatAmount(...)}`) split on every keystroke.
+
+## Solution
+
+| File | Change |
+|---|---|
+| `utils/editorNumber.util.ts` | New `formatAmountInPlace(element)`: does `onInputP2EHandler`'s job and writes the formatted value straight back to the input, restoring the caret **by digit count, not character index** — counting characters drifts by one per separator inserted and walks the caret backwards through the number as it grows |
+| `variant/VariantNumberCell.tsx` | `onInput` uses `formatAmountInPlace`; a real zod issue now always tints `empty` (red), `compare` included, with the amber `tone` prop left to its real job — the live hint before any submit; the message rides on the cell's `title` so a failing cell says something besides its colour |
+| `ProductEditorPage.tsx` | `firstErrorPath` → `firstError`, returning `{ path, message }`; `onInvalid` toasts the schema's own reason and falls back to `Errors.invalid` only when an issue carries no message; the variants branch returns a `null` path instead of a bogus `stock` one when the failing field has no cell |
+
+No i18n change — every message this now surfaces already existed and was simply never displayed.
+
+## Verification
+
+- Both problems reproduced as **failing tests first**, then fixed:
+  `expected '420000' to be '۴۲۰٬۰۰۰'` for the separators, and `data-bad` amber instead of red for
+  the offer error.
+- `vitest run src/components/Commerce` — **45 files, 530 tests** (was 518; +12). New: 7
+  `formatAmountInPlace` unit tests covering caret placement mid-number, at the start and past a
+  freshly inserted separator; 3 grid live-formatting tests; 1 tone test; 1 end-to-end
+  `ProductEditorPage` test asserting the toast carries `compareInvalid` and NOT `Errors.invalid`,
+  with the cell red.
+- `tsc --noEmit` clean on every touched file (165 pre-existing `src/` errors unchanged);
+  eslint 0 errors.
+- Caret behaviour is covered by unit tests against a real `<input>`, but **has not been typed into
+  by a human** — worth one pass in a browser.
+
