@@ -15,6 +15,8 @@ export type ReferralCode = {
   max: number | null;
   maxUsage: number;
   createDate: string;
+  // Distinct users who signed up with this code (ReferralUser is 1:1 with User).
+  userCount: number;
   user: {
     id: string;
     firstname: string;
@@ -95,6 +97,12 @@ export const makeColumns = ({
     accessorKey: 'maxUsage',
     header: 'حداکثر استفاده',
     meta: { isNumeric: true },
+  },
+  {
+    accessorKey: 'userCount',
+    header: ({ column }) => <ColumnHeader column={column} title="تعداد کاربران" />,
+    meta: { isNumeric: true },
+    cell: ({ row }) => <span>{(row.getValue('userCount') as number) ?? 0}</span>,
   },
   {
     id: 'userName',

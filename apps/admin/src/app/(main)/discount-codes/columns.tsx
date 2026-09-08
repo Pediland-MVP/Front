@@ -18,6 +18,10 @@ export type DiscountCode = {
   description: string | null;
   createDate: string;
   planDurations: { id: number; name: string }[];
+  // Distinct users who redeemed this code at least once.
+  userCount: number;
+  // Total redemption rows - can exceed userCount when maxUsagePerUser > 1.
+  usageCount: number;
 };
 
 const typeLabel: Record<string, string> = {
@@ -82,6 +86,18 @@ export function columns({ onToggle, isToggling }: ColumnActions): ColumnDef<Disc
       header: 'سقف کل استفاده',
       meta: { isNumeric: true },
       cell: ({ row }) => <span>{row.getValue('maxUsageTotal') ?? 'نامحدود'}</span>,
+    },
+    {
+      accessorKey: 'userCount',
+      header: ({ column }) => <ColumnHeader column={column} title="تعداد کاربران" />,
+      meta: { isNumeric: true },
+      cell: ({ row }) => <span>{(row.getValue('userCount') as number) ?? 0}</span>,
+    },
+    {
+      accessorKey: 'usageCount',
+      header: ({ column }) => <ColumnHeader column={column} title="تعداد استفاده" />,
+      meta: { isNumeric: true },
+      cell: ({ row }) => <span>{(row.getValue('usageCount') as number) ?? 0}</span>,
     },
     {
       accessorKey: 'validUntil',
