@@ -76,16 +76,29 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
     open && stateValue ? `${API_URL}/cities?provinceId=${stateValue}` : null,
   );
 
+  // Every time the target account (or the dialog's open state) changes, drop
+  // whatever was in the form for the PREVIOUS account. Without this, switching
+  // from account A (has an address) to account B while B's fetch is still in
+  // flight — or edit-then-reopen the same account — leaves A's values (or the
+  // abandoned edit) visible and submittable onto B.
   useEffect(() => {
-    const a = data?.data;
-    if (!a) return;
+    form.reset({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  useEffect(() => {
+    if (data === undefined) return; // still loading (or no key yet) — leave the blanked form as-is
+    // `data.data` is `null`, not `undefined`, for an account with no saved address —
+    // that is a real "loaded, and empty" state and must reset to blanks, not be
+    // mistaken for "still loading" (which would leave a previous account's values on screen).
+    const a = data.data;
     form.reset({
-      state: a.city?.province ? String(a.city.province.id) : undefined,
-      cityId: a.city ? String(a.city.id) : undefined,
-      address: a.address ?? '',
-      postalcode: a.postalcode ?? '',
-      phone: a.phone ?? '',
-      shippingMethod: a.shippingMethod ?? '',
+      state: a?.city?.province ? String(a.city.province.id) : undefined,
+      cityId: a?.city ? String(a.city.id) : undefined,
+      address: a?.address ?? '',
+      postalcode: a?.postalcode ?? '',
+      phone: a?.phone ?? '',
+      shippingMethod: a?.shippingMethod ?? '',
     });
   }, [data]);
 
@@ -138,6 +151,7 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                     }}
                     value={field.value}
                     dir="rtl"
+                    disabled={!canManage}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -167,6 +181,7 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                     onValueChange={(val) => val && field.onChange(val)}
                     value={field.value}
                     dir="rtl"
+                    disabled={!canManage}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -193,7 +208,7 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                 <FormItem className="col-span-2">
                   <FormLabel>{t('address')}</FormLabel>
                   <FormControl>
-                    <Textarea rows={2} {...field} />
+                    <Textarea rows={2} disabled={!canManage} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -209,7 +224,13 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                   <FormControl>
                     {/* text + inputMode, never type="number": the browser blanks
                         Persian digits before onInputP2EHandler can convert them. */}
-                    <Input type="text" inputMode="numeric" onInput={onInputP2EHandler} {...field} />
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      onInput={onInputP2EHandler}
+                      disabled={!canManage}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.postalcode && t('postalcodeInvalid')}
@@ -225,7 +246,13 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                 <FormItem>
                   <FormLabel>{t('phone')}</FormLabel>
                   <FormControl>
-                    <Input type="text" inputMode="numeric" onInput={onInputP2EHandler} {...field} />
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      onInput={onInputP2EHandler}
+                      disabled={!canManage}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -239,7 +266,11 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                 <FormItem className="col-span-2">
                   <FormLabel>{t('shippingMethod')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('shippingMethodPlaceholder')} {...field} />
+                    <Input
+                      placeholder={t('shippingMethodPlaceholder')}
+                      disabled={!canManage}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

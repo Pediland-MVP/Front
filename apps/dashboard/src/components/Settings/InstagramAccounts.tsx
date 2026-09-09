@@ -258,7 +258,11 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
                 variant="ghost"
                 type="button"
                 size="sm"
-                disabled={!canManage}
+                // Not gated on canManage: instagram:view must still be able to OPEN this
+                // dialog to read the sender address — a disabled native <button> never
+                // fires onClick, so gating here would make it unopenable, not read-only.
+                // ShopAddressDialog itself disables every field and the save button for
+                // a non-canManage user, which is where the actual read-only gate belongs.
                 onClick={() => setShopAddressTarget(instagram.id)}
               >
                 <MapPinIcon className="text-secondary" />
