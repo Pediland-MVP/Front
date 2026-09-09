@@ -38,7 +38,7 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
     markPaid,
     updateTracking,
   } = useCommerceOrder(orderId);
-  const { cityById } = useShippingDestinations();
+  const { cityById, provinceById } = useShippingDestinations();
   const { can } = usePermissions();
 
   /**
@@ -124,10 +124,18 @@ export function OrderDetailPage({ orderId }: OrderDetailPageProps) {
    */
   const showActions = can('order:manage') && hasAnyAction(order);
 
+  // Resolved once and reused for both `cityName` and `provinceName` -- `ICity.provinceId` is
+  // what turns a city id into a province id (see `useShippingDestinations`' own docstring for
+  // why the whole city/province tables are fetched client-side rather than a per-order lookup).
+  const buyerCity = order.cityId ? cityById.get(order.cityId) : undefined;
+  const cityName = buyerCity?.name ?? null;
+  const provinceName = buyerCity ? (provinceById.get(buyerCity.provinceId)?.name ?? null) : null;
+
   return (
     <OrderDetail
       order={order}
-      cityName={order.cityId ? (cityById.get(order.cityId)?.name ?? null) : null}
+      cityName={cityName}
+      provinceName={provinceName}
       statusUpdater={
         showActions ? (
           <OrderStatusUpdater order={order} onAction={onAction} disabled={isLoading} />

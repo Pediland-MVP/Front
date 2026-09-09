@@ -1,12 +1,18 @@
 import type { ReactNode } from 'react';
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/messages/fa.json';
 import type { OrderDetailView } from '@/types/commerceOrders';
 
 import { OrderDetail } from './OrderDetail';
+import { printDocument } from './print/printDocument';
+
+// `printDocument` drives a real iframe/window.print() -- entirely out of scope for a render
+// test, and Task 7's own suite already covers what the builders it wraps produce. Mocked so
+// these tests only assert it was CALLED, per the task brief.
+vi.mock('./print/printDocument', () => ({ printDocument: vi.fn(() => Promise.resolve()) }));
 
 const copy = messages.Commerce.Orders;
 const shippingCopy = messages.Commerce.Shipping;
@@ -64,8 +70,21 @@ const base: OrderDetailView = {
   shop: null,
 };
 
-const renderDetail = (order: OrderDetailView, cityName: string | null) => {
-  render(wrap(<OrderDetail order={order} cityName={cityName} statusUpdater={null} />));
+const renderDetail = (
+  order: OrderDetailView,
+  cityName: string | null,
+  provinceName: string | null = null,
+) => {
+  render(
+    wrap(
+      <OrderDetail
+        order={order}
+        cityName={cityName}
+        provinceName={provinceName}
+        statusUpdater={null}
+      />,
+    ),
+  );
 };
 
 describe('OrderDetail', () => {
@@ -185,7 +204,14 @@ describe('OrderDetail', () => {
 
   it('puts the decision rail before the detail columns in the DOM, so it is first on a phone', () => {
     render(
-      wrap(<OrderDetail order={base} cityName="تهران" statusUpdater={<button>UPDATER</button>} />),
+      wrap(
+        <OrderDetail
+          order={base}
+          cityName="تهران"
+          provinceName={null}
+          statusUpdater={<button>UPDATER</button>}
+        />,
+      ),
     );
     const rail = screen.getByRole('button', { name: 'UPDATER' });
     const items = screen.getByText(copy.detail.items);
@@ -193,7 +219,50 @@ describe('OrderDetail', () => {
   });
 
   it('renders no status control when handed none', () => {
-    render(wrap(<OrderDetail order={base} cityName="تهران" statusUpdater={null} />));
+    render(
+      wrap(<OrderDetail order={base} cityName="تهران" provinceName={null} statusUpdater={null} />),
+    );
     expect(screen.queryByRole('button', { name: 'UPDATER' })).toBeNull();
+  });
+
+  describe('print buttons', () => {
+    beforeEach(() => {
+      vi.mocked(printDocument).mockClear();
+    });
+
+    it('enables the label button for a physical order and calls printDocument with html when clicked', () => {
+      renderDetail({ ...base, kind: 'physical', receipts: [] }, 'تهران', 'تهران');
+      const button = screen.getByRole('button', { name: copy.detail.printLabel });
+      expect(button).not.toBeDisabled();
+      fireEvent.click(button);
+      expect(printDocument).toHaveBeenCalledTimes(1);
+      expect(printDocument).toHaveBeenCalledWith(expect.any(String));
+    });
+
+    it('disables the label button for a digital order, with a title explaining why', () => {
+      renderDetail({ ...base, kind: 'digital', receipts: [] }, null, null);
+      const button = screen.getByRole('button', { name: copy.detail.printLabel });
+      expect(button).toBeDisabled();
+      expect(button).toHaveAttribute('title', copy.detail.printLabelDigitalDisabled);
+    });
+
+    it('never disables the invoice button, even for a digital order, and calls printDocument when clicked', () => {
+      renderDetail({ ...base, kind: 'digital', receipts: [] }, null, null);
+      const button = screen.getByRole('button', { name: copy.detail.printInvoice });
+      expect(button).not.toBeDisabled();
+      fireEvent.click(button);
+      expect(printDocument).toHaveBeenCalledTimes(1);
+      expect(printDocument).toHaveBeenCalledWith(expect.any(String));
+    });
+
+    // No page-level permission gate lives inside this component -- the order detail page is
+    // already unreachable without `order:view` (the API is the enforcement point, see
+    // `OrderDetail`'s own comment above the print row). Both buttons must render whenever the
+    // component renders, with no `statusUpdater`/permissions wiring required.
+    it('renders both print buttons with no permission gate of its own', () => {
+      renderDetail({ ...base, receipts: [] }, null, null);
+      expect(screen.getByRole('button', { name: copy.detail.printLabel })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: copy.detail.printInvoice })).toBeInTheDocument();
+    });
   });
 });

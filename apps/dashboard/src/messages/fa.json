@@ -3072,7 +3072,10 @@
         "trackingLabel": "کد رهگیری",
         "trackingNone": "هنوز کدی ثبت نشده",
         "trackingEdit": "ویرایش کد",
-        "trackingAdd": "افزودن کد"
+        "trackingAdd": "افزودن کد",
+        "printLabel": "پرینت برچسب",
+        "printInvoice": "پرینت فاکتور",
+        "printLabelDigitalDisabled": "سفارش دیجیتال ارسال ندارد"
       },
       "actions": {
         "approve": "تایید پرداخت",
