@@ -174,8 +174,18 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                       if (!val) return;
                       field.onChange(val);
                       // The old city belongs to the old province; keeping it would
-                      // submit a city that contradicts the province shown.
-                      form.setValue('cityId', undefined);
+                      // submit a city that contradicts the province shown. `''`, not
+                      // `undefined` -- same reason as the data-driven reset effect
+                      // above: cityId is a manually-controlled Select
+                      // (`value={field.value ?? ''}`), and `setValue(name, undefined)`
+                      // does not reliably notify a Controller-bound field's own
+                      // render (the actually-submitted value did clear correctly even
+                      // without this fix, confirmed by inspecting the PUT payload in
+                      // a repro test -- this was a real but purely VISUAL staleness,
+                      // not a wrong-data-gets-saved bug). `shouldValidate: false`
+                      // matches this repo's existing convention for a live "clear
+                      // this field" setValue (see TeamManager.tsx's inviteType toggle).
+                      form.setValue('cityId', '', { shouldValidate: false });
                     }}
                     value={field.value ?? ''}
                     dir="rtl"

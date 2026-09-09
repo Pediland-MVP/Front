@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import faMessages from '@/messages/fa.json';
 import errorCodes from '@/messages/fa/ErrorCodes.json';
@@ -52,9 +52,31 @@ vi.mock('@/components/ui/select', () => ({
 // — distinct from a key present with `data: null`, which is what a real account with no
 // saved address returns.
 let swrResponses: Record<string, any> = {};
+
+// Static provinces/cities fixtures for the province -> city cascade. Matched by
+// substring, not by the exact key string, because the key is built from
+// `process.env.NEXT_PUBLIC_BACK_API_URL` (whatever that resolves to under vitest,
+// possibly unset) + a fixed suffix -- the component's own key-building logic isn't
+// under test here, only that a real <option> exists for whichever province/city id a
+// test needs jsdom's native <select> to actually accept via fireEvent.change (a native
+// select silently refuses to select a value with no matching <option>, unlike the
+// `data-value` attribute the other tests read directly off the `value` prop).
+const PROVINCES = [
+  { id: 1, name: 'استان آ' },
+  { id: 2, name: 'استان ب' },
+];
+const CITIES_BY_PROVINCE: Record<string, { id: number; name: string }[]> = {
+  '1': [{ id: 5, name: 'شهر آ' }],
+  '2': [{ id: 6, name: 'شهر ب' }],
+};
 vi.mock('swr/immutable', () => ({
-  default: (key: string | null) =>
-    key ? (swrResponses[key] ?? { data: undefined }) : { data: undefined },
+  default: (key: string | null) => {
+    if (!key) return { data: undefined };
+    if (key.includes('/cities/provinces')) return { data: PROVINCES };
+    const provinceIdMatch = key.match(/provinceId=(\d+)/);
+    if (provinceIdMatch) return { data: CITIES_BY_PROVINCE[provinceIdMatch[1]] ?? [] };
+    return swrResponses[key] ?? { data: undefined };
+  },
 }));
 
 import { ShopAddressDialog } from './ShopAddressDialog';
@@ -272,6 +294,45 @@ describe('ShopAddressDialog', () => {
     expect(selects).toHaveLength(2);
     expect(selects[0]).not.toBeDisabled();
     expect(selects[1]).not.toBeDisabled();
+  });
+
+  it('clears the stale cityId (visually AND in the submitted payload) when the user picks a different province in one open dialog session', async () => {
+    // Same bug MECHANISM as the account-switch reset bug above, but a different code
+    // path: NOT switching accounts -- one dialog session, one already-loaded saved
+    // address with a real city, and the user picks a different province by hand. The
+    // province Select's onValueChange calls `form.setValue('cityId', undefined)` to
+    // drop the now-stale city -- the same "explicit undefined on a manually-controlled
+    // Select" shape already shown to not reliably clear a Controller-bound field.
+    mockShopAddress('ig-a', {
+      id: 'sa-a',
+      address: 'آدرس',
+      postalcode: '1111111111',
+      phone: '09111111111',
+      shippingMethod: null,
+      city: { id: 5, name: 'شهر آ', province: { id: 1, name: 'استان آ' } },
+    });
+    renderDialog('ig-a');
+
+    const selects = () => document.body.querySelectorAll('select');
+    await waitFor(() => expect(selects()[0]).toHaveAttribute('data-value', '1'));
+    expect(selects()[1]).toHaveAttribute('data-value', '5');
+
+    // The user picks a DIFFERENT province by hand -- not an account switch.
+    fireEvent.change(selects()[0], { target: { value: '2' } });
+    await waitFor(() => expect(selects()[0]).toHaveAttribute('data-value', '2'));
+
+    // (a) Visual: the city Select must not keep showing account A's now-stale city.
+    expect(selects()[1]).toHaveAttribute('data-value', '');
+
+    // (b) Data: what actually gets submitted must not carry the stale city either --
+    // a city that belongs to the OLD province must never be saved alongside the NEW
+    // province. Trigger a real save and inspect the PUT payload directly, rather than
+    // trusting the visual assertion above to stand in for it.
+    screen.getByText(copy.save).closest('button')!.click();
+
+    await waitFor(() => expect(putMock).toHaveBeenCalled());
+    const [, body] = putMock.mock.calls[0];
+    expect(body.cityId).toBeUndefined();
   });
 
   it('saves successfully and shows a success toast', async () => {
