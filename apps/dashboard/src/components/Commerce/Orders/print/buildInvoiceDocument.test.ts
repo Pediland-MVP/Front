@@ -191,6 +191,20 @@ describe('buildInvoiceDocument', () => {
     expect(html).toContain('۷۶۰,۰۰۰');
   });
 
+  it('digits() converts to Persian digits before escaping, so an apostrophe in a digits field never renders as corrupted-entity garbage', () => {
+    // shop.phone is free text (@MaxLength(20) only, no format restriction) -- a seller could
+    // type an apostrophe in there. Escaping FIRST (esc(v) then toPersianDigits) would turn the
+    // `'` into the entity `&#39;`, then mangle its ASCII digits 3/9 into `&#۳۹;`, which no longer
+    // parses as an HTML entity and prints as literal garbage instead of an apostrophe.
+    const withApostrophe = {
+      ...order,
+      shop: { ...order.shop!, phone: "021-2842'3842" },
+    };
+    const html = buildInvoiceDocument(withApostrophe, LABELS, WHEN, 'یزد', 'یزد');
+    expect(html).not.toContain('&#۳۹;');
+    expect(html).toContain('۰۲۱-۲۸۴۲&#39;۳۸۴۲');
+  });
+
   it('escapes HTML in a product title', () => {
     const nasty = {
       ...order,
@@ -222,6 +236,26 @@ describe('buildInvoiceDocument', () => {
     const bothMissing = { ...order, shippingTitle: null, shop: null };
     const html = buildInvoiceDocument(bothMissing, LABELS, WHEN, 'یزد', 'یزد');
     expect(html).toContain('روش ارسال</b>پست');
+  });
+
+  it('wires an onerror fallback on the seller logo <img>, so an expired Instagram profile picture URL never leaves a broken-image icon on the invoice', () => {
+    const withPicture = {
+      ...order,
+      shop: { ...order.shop!, profilePictureUrl: 'https://cdn.example/pic.jpg' },
+    };
+    const html = buildInvoiceDocument(withPicture, LABELS, WHEN, 'یزد', 'یزد');
+    // The fallback letter <div> is present but hidden, right after the <img>, and the <img>'s
+    // onerror hides itself and reveals that exact next sibling -- not merely "some onerror".
+    expect(html).toContain(
+      '<img src="https://cdn.example/pic.jpg" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="fallback" style="display:none">ت</div>',
+    );
+  });
+
+  it('renders only the fallback letter (no <img> at all) when there is no profilePictureUrl to begin with', () => {
+    // The default fixture already has profilePictureUrl: null.
+    const html = buildInvoiceDocument(order, LABELS, WHEN, 'یزد', 'یزد');
+    expect(html).not.toContain('<img');
+    expect(html).toContain('<div class="fallback">ت</div>');
   });
 
   it('still produces a document, with blank seller lines, when order.shop is null', () => {

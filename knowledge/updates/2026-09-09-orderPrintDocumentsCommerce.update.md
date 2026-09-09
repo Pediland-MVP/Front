@@ -58,9 +58,12 @@ already used for the other four (registered-input) fields.
    was ever stored with a city inconsistent with its province. Still fixed, since a user staring at
    a wrong city on screen has no way to tell it isn't what would be saved.
 
-Bug 1 was first found (and correctly left unfixed, as a documented `it.skip` repro) by Task 11's
+Bug 1 was first found (and correctly left unfixed, as a documented repro test with a
+"known defect, not fixed here" docstring — no `it.skip`, the test ran and failed) by Task 11's
 test gap-fill pass, since that task's scope was tests-only. Bug 2 was found afterward while writing
-the TDD repro for bug 1's fix.
+the TDD repro for bug 1's fix. Once the fix landed, the repro test's name/docstring were rewritten
+into a regression test (see `ShopAddressDialog.test.tsx`) rather than left describing a defect that
+no longer exists.
 
 ## Changes
 
@@ -104,8 +107,12 @@ already covers — this doc is Front-only file list.
 - `pnpm exec vitest run src/components/Commerce/Orders src/components/Settings src/utils` — all
   touched suites passing (label/invoice builders, `OrderDetail`, `OrderDetailPage`,
   `ShopAddressDialog`, `toPersianDigits`/`numberToPersianWords`).
-- `pnpm exec tsc --noEmit` — zero new errors in any touched file; pre-existing app-wide baseline
-  unchanged.
+- `pnpm exec tsc --noEmit` on `apps/dashboard`: **206 → 207**. The one new error is
+  `ShopAddressDialog.tsx(62,60)`, a `zodResolver`/`ZodType` argument-type mismatch — the accepted
+  pre-existing `@hookform/resolvers` zod version-skew class, not a new bug class. 21 other files
+  already carry the identical error, including every other Settings form (`ProfileForm`,
+  `TeamManager`, `WorkspaceForm`, `PasswordTab`, `ChoosePlan`, `DiscountCode`) plus
+  `CheckoutPage`, `excelExportSessions`, and others across `app/(Auth)`/`app/(Console)`.
 - **Not clicked through in a browser.** No one has opened the print preview or the print dialog
   itself against a real order, and the printed A5/A4 layout has not been checked against an actual
   printer or PDF export.

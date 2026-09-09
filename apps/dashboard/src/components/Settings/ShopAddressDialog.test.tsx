@@ -165,36 +165,35 @@ describe('ShopAddressDialog', () => {
     await waitFor(() => expect(screen.getByLabelText(copy.address)).toHaveValue(''));
     expect(screen.getByLabelText(copy.postalCode)).toHaveValue('');
     expect(screen.getByLabelText(copy.phone)).toHaveValue('');
-    // NOTE: this is where a symmetric "the selects blank out too" assertion would go, matching
-    // the address/postalCode/phone checks right above. It is deliberately NOT here -- see the
-    // skipped repro test directly below, which documents a real defect this task found: the
-    // state/cityId Selects do NOT reset in this exact scenario. Per the task-11 brief ("tests
-    // only", "do not fix it yourself" for any found production bug), this is reported in the
-    // task-11 report rather than silently patched or silently asserted as correct.
+    // NOTE: this test doesn't assert on the state/cityId Selects for this exact switch -- that
+    // assertion lives in the next test below, which covers this same "no saved city" scenario
+    // as a full regression test for a previously-real cross-account leak bug (now fixed; see
+    // that test's docstring for the fix background).
   });
 
   /**
-   * KNOWN PRODUCTION DEFECT -- found while gap-filling this suite (Task 11), not fixed here
-   * per that task's "tests only, report don't fix" instruction. Reported in task-11-report.md.
+   * Regression test for a real cross-account-leak bug (found while gap-filling this suite,
+   * Task 11) that IS now fixed -- see `ShopAddressDialog.tsx`'s account-switch reset effect.
    *
    * Switching FROM an account that has a saved city TO an account with NO saved city
    * (`data.data.city === null`, the exact "account B never saved an address" shape the test
-   * right above this one already covers for address/postalCode/phone) does NOT blank the
-   * `state`/`cityId` Selects: they keep showing account A's province/city. This is the same
-   * "cross-account leak" bug class this whole file exists to catch -- here it prints the
-   * WRONG sender province/city on account B's shipping label/invoice.
+   * right above this one already covers for address/postalCode/phone) used to NOT blank the
+   * `state`/`cityId` Selects: they kept showing account A's province/city. This was the same
+   * "cross-account leak" bug class this whole file exists to catch -- an unfixed instance would
+   * have printed the WRONG sender province/city on account B's shipping label/invoice.
    *
-   * Root cause sketch (not confirmed further, out of scope for a tests-only pass):
-   * `ShopAddressDialog.tsx`'s second `useEffect` calls
+   * Root cause: `ShopAddressDialog.tsx`'s second `useEffect` called
    * `form.reset({ state: a?.city?.province ? ... : undefined, cityId: a?.city ? ... : undefined, ... })`.
    * The plain string fields in that same call (`address`, `postalcode`, `phone`,
-   * `shippingMethod`, all using `?? ''`) DO reset correctly in this exact run (proved by the
+   * `shippingMethod`, all using `?? ''`) DID reset correctly in this exact run (proved by the
    * test above, in the SAME account-switch) -- only the two fields reset to `undefined`
-   * (`state`, `cityId`) get stuck. That points at `reset()` with an explicit `undefined` for a
-   * Select-bound field (`value={field.value ?? ''}`, not a spread `{...field}` registration
-   * like the text inputs use) rather than at the effect not re-running at all.
+   * (`state`, `cityId`) got stuck. react-hook-form's `reset()`/`setValue()` do not reliably
+   * clear a manually-controlled `Controller`-bound Select's DISPLAYED value when given an
+   * explicit `undefined` -- the Select falls back to a value frozen at mount, unlike a plain
+   * registered `<input>`, which handles `undefined` fine. Fixed by resetting to `''` instead of
+   * `undefined`, matching the pattern already used for the other four fields.
    */
-  it('does not blank the state/cityId Selects when switching to an account with no saved city', async () => {
+  it('blanks the state/cityId Selects when switching to an account with no saved city', async () => {
     mockShopAddress('ig-a', {
       id: 'sa-a',
       address: 'خیابان آزادی، پلاک ۱',
@@ -212,8 +211,8 @@ describe('ShopAddressDialog', () => {
     rerenderDialog(rerender, 'ig-b');
 
     await waitFor(() => expect(screen.getByLabelText(copy.address)).toHaveValue(''));
-    // Reproduces the defect: as of this writing, these two assertions FAIL -- the selects stay
-    // at account A's '1'/'5' instead of blanking to ''.
+    // Guards the fix described in the docstring above: the selects must blank to '' instead of
+    // staying stuck at account A's '1'/'5'.
     await waitFor(() => expect(selects()[0]).toHaveAttribute('data-value', ''));
     expect(selects()[1]).toHaveAttribute('data-value', '');
   });

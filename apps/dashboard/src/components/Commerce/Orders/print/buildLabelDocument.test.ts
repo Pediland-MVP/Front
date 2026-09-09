@@ -101,6 +101,22 @@ describe('buildLabelDocument', () => {
     expect(html).toContain('روش ارسال:&nbsp;</span> پست پیشتاز');
   });
 
+  it('wires an onerror fallback on the sender logo <img>, so an expired Instagram profile picture URL never leaves a broken-image icon on the parcel', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // The fallback letter <div> is present but hidden, right after the <img>, and the <img>'s
+    // onerror hides itself and reveals that exact next sibling -- not merely "some onerror".
+    expect(html).toContain(
+      '<img src="https://cdn.example/pic.jpg" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="fallback" style="display:none">ت</div>',
+    );
+  });
+
+  it('renders only the fallback letter (no <img> at all) when there is no profilePictureUrl to begin with', () => {
+    const noPicture = { ...order, shop: { ...order.shop!, profilePictureUrl: null } };
+    const html = buildLabelDocument(noPicture, LABELS, 'یزد', 'یزد');
+    expect(html).not.toContain('<img');
+    expect(html).toContain('<div class="fallback">ت</div>');
+  });
+
   it('still produces a document, with blank sender lines, when order.shop is null', () => {
     const noShop = { ...order, shop: null };
     const html = buildLabelDocument(noShop, LABELS, 'یزد', 'یزد');
@@ -120,6 +136,20 @@ describe('buildLabelDocument', () => {
     const html = buildLabelDocument(nasty, LABELS, 'یزد', 'یزد');
     expect(html).not.toContain('<script>');
     expect(html).toContain('&lt;script&gt;');
+  });
+
+  it('digits() converts to Persian digits before escaping, so an apostrophe in a digits field never renders as corrupted-entity garbage', () => {
+    // shop.phone is free text (@MaxLength(20) only, no format restriction) -- a seller could
+    // type an apostrophe in there. Escaping FIRST (esc(v) then toPersianDigits) would turn the
+    // `'` into the entity `&#39;`, then mangle its ASCII digits 3/9 into `&#۳۹;`, which no longer
+    // parses as an HTML entity and prints as literal garbage instead of an apostrophe.
+    const withApostrophe = {
+      ...order,
+      shop: { ...order.shop!, phone: "021-2842'3842" },
+    };
+    const html = buildLabelDocument(withApostrophe, LABELS, 'یزد', 'یزد');
+    expect(html).not.toContain('&#۳۹;');
+    expect(html).toContain('۰۲۱-۲۸۴۲&#39;۳۸۴۲');
   });
 
   // Task 4 (Back repo) review flagged its own instagram-name-fallback test as only covering

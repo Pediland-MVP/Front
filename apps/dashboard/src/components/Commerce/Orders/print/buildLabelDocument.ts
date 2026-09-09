@@ -63,12 +63,18 @@ export function buildLabelDocument(
   const senderHandle = shop?.instagramUsername ?? '';
   const fallbackLetter = (senderName || senderHandle).charAt(0);
 
+  // The fallback <div> is always in the DOM alongside the <img>, hidden by inline style, so a
+  // profile picture URL that fails to load AFTER the initial render (e.g. an expired Meta CDN
+  // URL) can swap to it via onerror -- never leaving a broken-image icon on the printed parcel.
   const logo = shop?.profilePictureUrl
-    ? `<img src="${esc(shop.profilePictureUrl)}" alt="">`
+    ? `<img src="${esc(shop.profilePictureUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fallback" style="display:none">${esc(fallbackLetter)}</div>`
     : `<div class="fallback">${esc(fallbackLetter)}</div>`;
 
   const receiverName = order.recipientName ?? '';
-  const digits = (v: unknown) => (v ? toPersianDigits(esc(v)) : '');
+  // Convert digits FIRST, then escape -- escaping first turns a literal `'` into the entity
+  // `&#39;` (ASCII digits 3 and 9), which a subsequent digit-conversion pass would mangle into
+  // the non-parsing `&#۳۹;`. `esc(toPersianDigits(...))` never re-touches its own escaped output.
+  const digits = (v: unknown) => (v ? esc(toPersianDigits(String(v))) : '');
 
   // Print the ACTUAL shipping method this order was placed with, falling back to the
   // shop's configured default only when the order itself carries none.

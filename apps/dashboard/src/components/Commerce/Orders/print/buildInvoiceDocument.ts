@@ -13,6 +13,9 @@ const INVOICE_CSS = `
   .inv-head h3 { margin: 0; font-size: 5mm; font-weight: 700; }
   .co { display: flex; align-items: center; gap: 2.5mm; }
   .co img { width: 11mm; height: 11mm; border-radius: 50%; object-fit: cover; }
+  .co .fallback { width: 11mm; height: 11mm; border-radius: 50%; background: #f2f2f4;
+                  border: 0.35mm solid #c9c9c9; display: flex; align-items: center;
+                  justify-content: center; font-size: 4mm; font-weight: 800; }
   .co-txt { display: flex; flex-direction: column; line-height: 1.4; text-align: left; }
   .co-txt b { font-size: 3.6mm; }
   .co-txt span { font-size: 2.8mm; color: #5c5c5c; direction: ltr; }
@@ -89,9 +92,18 @@ export function buildInvoiceDocument(
   const sellerName = shop?.instagramName ?? '';
   const sellerHandle = shop?.instagramUsername ?? '';
   const buyerName = order.recipientName ?? '';
-  const digits = (v: unknown) => (v ? toPersianDigits(esc(v)) : '');
+  // Convert digits FIRST, then escape -- escaping first turns a literal `'` into the entity
+  // `&#39;` (ASCII digits 3 and 9), which a subsequent digit-conversion pass would mangle into
+  // the non-parsing `&#۳۹;`. `esc(toPersianDigits(...))` never re-touches its own escaped output.
+  const digits = (v: unknown) => (v ? esc(toPersianDigits(String(v))) : '');
 
-  const logo = shop?.profilePictureUrl ? `<img src="${esc(shop.profilePictureUrl)}" alt="">` : '';
+  const fallbackLetter = (sellerName || sellerHandle).charAt(0);
+  // The fallback <div> is always in the DOM alongside the <img>, hidden by inline style, so a
+  // profile picture URL that fails to load AFTER the initial render (e.g. an expired Meta CDN
+  // URL) can swap to it via onerror -- never leaving a broken-image icon on the printed invoice.
+  const logo = shop?.profilePictureUrl
+    ? `<img src="${esc(shop.profilePictureUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fallback" style="display:none">${esc(fallbackLetter)}</div>`
+    : `<div class="fallback">${esc(fallbackLetter)}</div>`;
 
   const joinAddress = (
     province: string | null | undefined,
