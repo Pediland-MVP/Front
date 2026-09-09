@@ -148,6 +148,10 @@ export interface CommerceStockMovement {
   createDate: string;
 }
 
+export interface CommerceStoreSettings {
+  defaultFinalMessage: string | null;
+}
+
 export interface PaginatedResult<T> {
   items: T;
   meta: {

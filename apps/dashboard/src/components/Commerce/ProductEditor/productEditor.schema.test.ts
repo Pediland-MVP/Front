@@ -376,15 +376,17 @@ describe('buildProductEditorSchema — product-level rules', () => {
 describe('buildProductEditorSchema — kind and final message', () => {
   it('accepts either kind', () => {
     expect(schema.safeParse(form({ kind: 'physical' })).success).toBe(true);
-    expect(schema.safeParse(form({ kind: 'digital' })).success).toBe(true);
+    expect(schema.safeParse(form({ kind: 'digital', finalMessage: 'لینک دانلود' })).success).toBe(
+      true,
+    );
   });
 
   it('rejects a kind outside the physical/digital enum', () => {
     expect(schema.safeParse(form({ kind: 'something-else' as never })).success).toBe(false);
   });
 
-  it('accepts an empty final message -- no completion DM is a valid choice', () => {
-    expect(schema.safeParse(form({ finalMessage: '' })).success).toBe(true);
+  it('accepts an empty final message on a physical product -- no completion DM is a valid choice', () => {
+    expect(schema.safeParse(form({ kind: 'physical', finalMessage: '' })).success).toBe(true);
   });
 
   it('accepts a final message up to 1000 characters', () => {
@@ -393,6 +395,25 @@ describe('buildProductEditorSchema — kind and final message', () => {
 
   it('rejects a final message over 1000 characters', () => {
     expect(schema.safeParse(form({ finalMessage: 'م'.repeat(1001) })).success).toBe(false);
+  });
+
+  it('rejects a digital product with no final message -- there is no default to fall back to', () => {
+    const result = schema.safeParse(form({ kind: 'digital', finalMessage: '' }));
+
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    const issue = result.error.issues.find((i) => i.path.join('.') === 'finalMessage');
+    expect(issue?.message).toBe('Validation.finalMessageRequiredDigital');
+  });
+
+  it('rejects a digital product with a whitespace-only final message', () => {
+    expect(schema.safeParse(form({ kind: 'digital', finalMessage: '   ' })).success).toBe(false);
+  });
+
+  it('accepts a digital product with a final message', () => {
+    expect(schema.safeParse(form({ kind: 'digital', finalMessage: 'لینک دانلود' })).success).toBe(
+      true,
+    );
   });
 });
 

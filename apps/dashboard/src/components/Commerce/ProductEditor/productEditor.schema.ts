@@ -315,59 +315,72 @@ export const buildProductEditorSchema = (t: Translator) => {
       }
     });
 
-  return z.object({
-    title: z
-      .string()
-      .trim()
-      .min(1, { message: t('Validation.titleRequired') })
-      .max(255, { message: t('Validation.titleMax') }),
-    description: z
-      .string()
-      .trim()
-      .min(1, { message: t('Validation.descriptionRequired') })
-      .max(60, { message: t('Validation.descriptionMax') }),
-    // A product with no category cannot be found in the storefront's own navigation, so this
-    // is a data-completeness rule, not a UI preference.
-    categoryId: z
-      .string()
-      .min(1, { message: t('Validation.categoryRequired') })
-      .nullable()
-      .refine((value) => value != null, { message: t('Validation.categoryRequired') }),
-    kind: z.enum(['physical', 'digital']),
-    finalMessage: z.string().max(1000, { message: t('Validation.finalMessageMax') }),
-    tags: z
-      .array(z.string().trim().min(1).max(50))
-      .max(MAX_TAGS, { message: t('Validation.tagLimit') }),
-    specs: z
-      .array(
-        z.object({
-          title: z
-            .string()
-            .trim()
-            .min(1, { message: t('Validation.specTitleRequired') })
-            .max(100, { message: t('Validation.specTitleMax') }),
-          body: z
-            .string()
-            .trim()
-            .min(1, { message: t('Validation.specBodyRequired') })
-            .max(500, { message: t('Validation.specBodyMax') }),
-        }),
-      )
-      .max(MAX_SPECS),
-    collectionIds: z.array(z.string()),
-    // Not validated beyond its shape: the pool is server state mirrored into the form, and a
-    // pending tile is only ever produced by the file picker.
-    media: z.array(z.custom<EditorMedia>()),
-    basePrice: z.number().int().nonnegative().nullable(),
-    baseCompare: z.number().int().nonnegative().nullable(),
-    baseStock: z.number().int().nonnegative().nullable(),
-    baseInfinite: z.boolean(),
-    options: z.array(optionSchema).max(MAX_ATTRS, { message: t('Validation.attrLimit') }),
-    variants: z
-      .array(variantSchema)
-      .min(1, { message: t('Validation.variantRequired') })
-      .max(MAX_VARIANTS, { message: t('Validation.variantLimit') }),
-  });
+  return z
+    .object({
+      title: z
+        .string()
+        .trim()
+        .min(1, { message: t('Validation.titleRequired') })
+        .max(255, { message: t('Validation.titleMax') }),
+      description: z
+        .string()
+        .trim()
+        .min(1, { message: t('Validation.descriptionRequired') })
+        .max(60, { message: t('Validation.descriptionMax') }),
+      // A product with no category cannot be found in the storefront's own navigation, so this
+      // is a data-completeness rule, not a UI preference.
+      categoryId: z
+        .string()
+        .min(1, { message: t('Validation.categoryRequired') })
+        .nullable()
+        .refine((value) => value != null, { message: t('Validation.categoryRequired') }),
+      kind: z.enum(['physical', 'digital']),
+      finalMessage: z.string().max(1000, { message: t('Validation.finalMessageMax') }),
+      tags: z
+        .array(z.string().trim().min(1).max(50))
+        .max(MAX_TAGS, { message: t('Validation.tagLimit') }),
+      specs: z
+        .array(
+          z.object({
+            title: z
+              .string()
+              .trim()
+              .min(1, { message: t('Validation.specTitleRequired') })
+              .max(100, { message: t('Validation.specTitleMax') }),
+            body: z
+              .string()
+              .trim()
+              .min(1, { message: t('Validation.specBodyRequired') })
+              .max(500, { message: t('Validation.specBodyMax') }),
+          }),
+        )
+        .max(MAX_SPECS),
+      collectionIds: z.array(z.string()),
+      // Not validated beyond its shape: the pool is server state mirrored into the form, and a
+      // pending tile is only ever produced by the file picker.
+      media: z.array(z.custom<EditorMedia>()),
+      basePrice: z.number().int().nonnegative().nullable(),
+      baseCompare: z.number().int().nonnegative().nullable(),
+      baseStock: z.number().int().nonnegative().nullable(),
+      baseInfinite: z.boolean(),
+      options: z.array(optionSchema).max(MAX_ATTRS, { message: t('Validation.attrLimit') }),
+      variants: z
+        .array(variantSchema)
+        .min(1, { message: t('Validation.variantRequired') })
+        .max(MAX_VARIANTS, { message: t('Validation.variantLimit') }),
+    })
+    .superRefine((values, ctx) => {
+      // Mirrors the backend's `@ValidateIf` on `CreateCommerceProductDto.finalMessage`: a DIGITAL
+      // product has no store-wide default to fall back to (see `useStoreSettings`), so the merchant
+      // must write it themselves. A PHYSICAL product stays optional -- blank is a valid choice.
+      if (values.kind === 'digital' && values.finalMessage.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['finalMessage'],
+          message: t('Validation.finalMessageRequiredDigital'),
+        });
+      }
+    });
 };
 
 /**

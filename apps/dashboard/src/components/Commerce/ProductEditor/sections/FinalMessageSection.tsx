@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 
@@ -15,10 +16,19 @@ const FINAL_MESSAGE_MAX = 1000;
 /**
  * Last step, for both kinds -- a plain-text DM sent to the buyer the moment their order is
  * marked completed (`Back`'s `dmBuyerNotify.queue.ts`). A digital seller's course link, a
- * physical seller's thank-you note, or nothing at all. Same length cap as an automation
- * text-content message.
+ * physical seller's thank-you note, or nothing at all (physical only -- digital has no default,
+ * see below). Same length cap as an automation text-content message.
  */
-export const FinalMessageSection = ({ step }: { step: number }) => {
+export const FinalMessageSection = ({
+  step,
+  showDefaultHint,
+}: {
+  step: number;
+  /** True in CREATE mode, PHYSICAL kind, when the workspace has a store-settings default -- the
+   * field the merchant is looking at was prefilled from it (`ProductEditorPage`'s seeding effect),
+   * not typed by them, so a plain "hi" `t('hint')` would be misleading about where it came from. */
+  showDefaultHint?: boolean;
+}) => {
   const t = useTranslations('Commerce.Editor.FinalMessage');
   const {
     register,
@@ -26,6 +36,23 @@ export const FinalMessageSection = ({ step }: { step: number }) => {
     formState: { errors },
   } = useFormContext<ProductFormValues>();
   const value = useWatch({ control, name: 'finalMessage' });
+  const kind = useWatch({ control, name: 'kind' });
+
+  const note = errors.finalMessage?.message ? (
+    errors.finalMessage.message
+  ) : kind === 'digital' ? (
+    t('digitalRequiredHint')
+  ) : showDefaultHint ? (
+    <>
+      {t('defaultPrefillHint')}{' '}
+      <Link href="/products/settings" className="text-primary underline">
+        {t('defaultPrefillHintLink')}
+      </Link>
+      .
+    </>
+  ) : (
+    t('hint')
+  );
 
   return (
     <EditorSection
@@ -47,9 +74,7 @@ export const FinalMessageSection = ({ step }: { step: number }) => {
         data-bad={errors.finalMessage ? 'empty' : undefined}
         className={cn(editorInput, 'h-auto resize-none py-3')}
       />
-      <p className={cn('mt-2 text-xs', errors.finalMessage ? 'text-dtext' : 'text-mut')}>
-        {errors.finalMessage?.message ?? t('hint')}
-      </p>
+      <p className={cn('mt-2 text-xs', errors.finalMessage ? 'text-dtext' : 'text-mut')}>{note}</p>
     </EditorSection>
   );
 };
