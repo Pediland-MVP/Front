@@ -18,7 +18,6 @@ import { buildInvoiceDocument } from '@/components/Orders/print/buildInvoiceDocu
 import { buildLabelDocument } from '@/components/Orders/print/buildLabelDocument';
 import { printDocument } from '@/components/Orders/print/printDocument';
 import api from '@/hooks/swr/api-client';
-import { usePermissions } from '@/hooks/usePermissions';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import { ORDER_STATUS, type OrderNamespace } from '@/types/order/order.namespace';
 import { useGetOrderPrices } from '@/utils/getOrderPrices';
@@ -90,7 +89,6 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   const t = useTranslations('Orders.OrderDetails');
   const t_ec = useTranslations('ERROR_CODES');
   const t_print = useTranslations('Orders.Print');
-  const { can } = usePermissions();
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -295,38 +293,32 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
               <CardTitle>{t('orderStatusTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {can('order:view') && (
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="flex-1"
-                    disabled={!order.orderShipping}
-                    title={!order.orderShipping ? t('noShippingAddress') : undefined}
-                    onClick={() => printDocument(buildLabelDocument(order, printLabels))}
-                  >
-                    <PrinterIcon className="size-4" />
-                    {t('printLabel')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() =>
-                      printDocument(
-                        buildInvoiceDocument(
-                          order,
-                          printLabels,
-                          toJalaliDateTime(order.createDate),
-                        ),
-                      )
-                    }
-                  >
-                    <PrinterIcon className="size-4" />
-                    {t('printInvoice')}
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  disabled={!order.orderShipping}
+                  title={!order.orderShipping ? t('noShippingAddress') : undefined}
+                  onClick={() => printDocument(buildLabelDocument(order, printLabels))}
+                >
+                  <PrinterIcon className="size-4" />
+                  {t('printLabel')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() =>
+                    printDocument(
+                      buildInvoiceDocument(order, printLabels, toJalaliDateTime(order.createDate)),
+                    )
+                  }
+                >
+                  <PrinterIcon className="size-4" />
+                  {t('printInvoice')}
+                </Button>
+              </div>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <Controller
                   name="status"
