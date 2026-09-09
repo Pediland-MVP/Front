@@ -144,9 +144,13 @@ export function TestEventDialog({ open, onOpenChange, endpointId }: TestEventDia
   );
   const types = typesData?.data?.types ?? [];
 
+  // `/users/lookup`, NOT `/users`: the latter defaults to panelMode 'pro', which aggregates
+  // lead / session / order / subscription stats for every matching user and only paginates
+  // afterwards — seconds of work to fill a dropdown that shows a name and a mobile number.
+  // The lookup route returns exactly the four fields UserOption declares.
   const { data: usersData, isLoading: usersLoading } = useSWR<{ items: UserOption[] }>(
     open
-      ? `/users?limit=20&page=1${debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ''}`
+      ? `/users/lookup?limit=20&page=1${debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : ''}`
       : null,
   );
   // Memoized: it feeds a useMemo dep list, and a fresh `[]` each render would thrash it.
