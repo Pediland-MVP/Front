@@ -85,6 +85,10 @@ const generateData = (
           url: '/products/shipping',
         },
         {
+          title: t('productsStoreSettings'),
+          url: '/products/settings',
+        },
+        {
           title: t('productsOrders'),
           url: '/products/orders',
         },

@@ -8,14 +8,20 @@ import { buildEmptyProductForm, type ProductFormValues } from '../productEditor.
 
 import { FinalMessageSection } from './FinalMessageSection';
 
-const Wrapper = ({ initial }: { initial?: Partial<ProductFormValues> }) => {
+const Wrapper = ({
+  initial,
+  showDefaultHint,
+}: {
+  initial?: Partial<ProductFormValues>;
+  showDefaultHint?: boolean;
+}) => {
   const form = useForm<ProductFormValues>({
     defaultValues: { ...buildEmptyProductForm(), ...initial },
   });
   return (
     <NextIntlClientProvider locale="fa" messages={messages}>
       <FormProvider {...form}>
-        <FinalMessageSection step={11} />
+        <FinalMessageSection step={11} showDefaultHint={showDefaultHint} />
       </FormProvider>
     </NextIntlClientProvider>
   );
@@ -56,5 +62,27 @@ describe('FinalMessageSection', () => {
 
     fireEvent.change(screen.getByLabelText(copy.title), { target: { value: 'سلام' } });
     expect(screen.getByText('۴ / ۱۰۰۰')).toBeInTheDocument();
+  });
+
+  it('shows the plain hint by default for a physical product with no store default', () => {
+    render(<Wrapper />);
+    const copy = messages.Commerce.Editor.FinalMessage;
+    expect(screen.getByText(copy.hint)).toBeInTheDocument();
+  });
+
+  it('shows the default-prefill hint with a settings link when the field was prefilled', () => {
+    render(<Wrapper initial={{ finalMessage: 'ممنون از خرید' }} showDefaultHint />);
+    const copy = messages.Commerce.Editor.FinalMessage;
+    expect(screen.getByText(copy.defaultPrefillHint, { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: copy.defaultPrefillHintLink })).toHaveAttribute(
+      'href',
+      '/products/settings',
+    );
+  });
+
+  it('shows the digital-required hint for a digital product, even when showDefaultHint is true', () => {
+    render(<Wrapper initial={{ kind: 'digital' }} showDefaultHint />);
+    const copy = messages.Commerce.Editor.FinalMessage;
+    expect(screen.getByText(copy.digitalRequiredHint)).toBeInTheDocument();
   });
 });

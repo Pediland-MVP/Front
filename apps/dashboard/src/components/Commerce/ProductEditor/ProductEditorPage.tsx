@@ -17,6 +17,7 @@ import { mutate } from 'swr';
 
 import api from '@/hooks/swr/api-client';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useStoreSettings } from '@/hooks/useStoreSettings';
 import type {
   CommerceCategory,
   CommerceCollectionListItem,
@@ -385,6 +386,27 @@ const ProductEditorBody = ({
     setValue('collectionIds', ids, { shouldDirty: false });
     seededMembership.current = true;
   }, [collectionsLoaded, membershipOf, mode, product, setValue]);
+
+  /**
+   * Prefills `finalMessage` from the workspace's store-settings default, CREATE mode only -- an
+   * existing product already has its own value, seeded above by `seedFrom`. Only settled once
+   * (`isLoading` false, even when the workspace has no default yet) so a slow request cannot
+   * overwrite what the merchant already typed on step ۱۱ while waiting for it, and only onto a
+   * still-blank PHYSICAL product: a DIGITAL one has no default to apply (`FinalMessageSection`),
+   * and a merchant who raced ahead and switched kind or typed something of their own wins.
+   */
+  const storeSettingsSeeded = useRef(false);
+  const { settings: storeSettings, isLoading: storeSettingsLoading } = useStoreSettings(
+    mode === 'create',
+  );
+  useEffect(() => {
+    if (mode !== 'create' || storeSettingsSeeded.current || storeSettingsLoading) return;
+    storeSettingsSeeded.current = true;
+    const defaultMessage = storeSettings?.defaultFinalMessage;
+    if (!defaultMessage) return;
+    if (getValues('kind') !== 'physical' || getValues('finalMessage') !== '') return;
+    setValue('finalMessage', defaultMessage, { shouldDirty: false });
+  }, [getValues, mode, setValue, storeSettings, storeSettingsLoading]);
 
   // ---------------------------------------------------------------- media pool
 
@@ -825,7 +847,10 @@ const ProductEditorBody = ({
             <VariantsSection media={variantMedia} onOpenPicker={setPickerTarget} />
           </EditorSection>
 
-          <FinalMessageSection step={STEPS.finalMessage} />
+          <FinalMessageSection
+            step={STEPS.finalMessage}
+            showDefaultHint={mode === 'create' && !!storeSettings?.defaultFinalMessage}
+          />
         </div>
 
         <aside

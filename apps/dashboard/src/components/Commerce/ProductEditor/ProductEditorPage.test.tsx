@@ -17,6 +17,21 @@ vi.mock('swr', () => ({ mutate: vi.fn() }));
 const { mockCan } = vi.hoisted(() => ({ mockCan: vi.fn().mockReturnValue(true) }));
 vi.mock('@/hooks/usePermissions', () => ({ usePermissions: () => ({ can: mockCan }) }));
 
+// Store settings uses plain `useSWR` (not `swr/immutable`), which the bare `swr` mock above does
+// not provide a default export for -- mocked at the hook level instead, same convention
+// `ShippingSettings.test.tsx` uses for `useShippingOptions`. Defaults to "no default set / not
+// loading" so every test not about the prefill behaves as if the workspace has none.
+const { mockUseStoreSettings } = vi.hoisted(() => ({
+  mockUseStoreSettings: vi.fn(() => ({
+    settings: null,
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    save: vi.fn(),
+  })),
+}));
+vi.mock('@/hooks/useStoreSettings', () => ({ useStoreSettings: () => mockUseStoreSettings() }));
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
@@ -162,6 +177,13 @@ beforeEach(() => {
   mockCan.mockReset().mockReturnValue(true);
   // Explicit, not relied on surviving `clearAllMocks`: every case except the one that overrides
   // it below needs the "no param" default.
+  mockUseStoreSettings.mockReset().mockReturnValue({
+    settings: null,
+    isLoading: false,
+    error: undefined,
+    mutate: vi.fn(),
+    save: vi.fn(),
+  });
 });
 
 describe('ProductEditorPage', () => {
@@ -404,5 +426,70 @@ describe('ProductEditorPage', () => {
       await waitFor(() => expect(mediaTileIds()).toEqual(['media-1', 'media-2']));
       expect(toast.error).toHaveBeenCalledWith(messages.Commerce.Editor.Media.reorderError);
     });
+  });
+});
+
+describe('ProductEditorPage — store settings default prefill', () => {
+  const FINAL_MESSAGE = messages.Commerce.Editor.FinalMessage;
+
+  it('prefills a new physical product from the workspace default, with the prefill hint', async () => {
+    mockUseStoreSettings.mockReturnValue({
+      settings: { defaultFinalMessage: 'ممنون از خرید شما' },
+      isLoading: false,
+      error: undefined,
+      mutate: vi.fn(),
+      save: vi.fn(),
+    });
+    stubReads(undefined);
+
+    renderEditor({ mode: 'create' });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(FINAL_MESSAGE.title)).toHaveValue('ممنون از خرید شما'),
+    );
+    expect(
+      screen.getByText(FINAL_MESSAGE.defaultPrefillHint, { exact: false }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not prefill while the store settings are still loading', () => {
+    mockUseStoreSettings.mockReturnValue({
+      settings: null,
+      isLoading: true,
+      error: undefined,
+      mutate: vi.fn(),
+      save: vi.fn(),
+    });
+    stubReads(undefined);
+
+    renderEditor({ mode: 'create' });
+
+    expect(screen.getByLabelText(FINAL_MESSAGE.title)).toHaveValue('');
+  });
+
+  it('leaves a blank final message blank when the workspace has no default', () => {
+    stubReads(undefined);
+
+    renderEditor({ mode: 'create' });
+
+    expect(screen.getByLabelText(FINAL_MESSAGE.title)).toHaveValue('');
+    expect(screen.getByText(FINAL_MESSAGE.hint)).toBeInTheDocument();
+  });
+
+  it('does not prefill an existing product being edited, even with a workspace default', async () => {
+    mockUseStoreSettings.mockReturnValue({
+      settings: { defaultFinalMessage: 'پیش‌فرض فروشگاه' },
+      isLoading: false,
+      error: undefined,
+      mutate: vi.fn(),
+      save: vi.fn(),
+    });
+    stubReads(detail({ finalMessage: 'پیام خود همین محصول' }));
+
+    renderEditor({ mode: 'edit', productId: 'prod-1' });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(FINAL_MESSAGE.title)).toHaveValue('پیام خود همین محصول'),
+    );
   });
 });
