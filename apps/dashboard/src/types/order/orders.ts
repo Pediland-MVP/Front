@@ -1,3 +1,4 @@
+import type { IShopAddress } from '@/types/instagram/shopAddress';
 import { ORDER_PAYMENT_METHODS } from './order.enum';
 import { ORDER_STATUS } from './order.namespace';
 export interface IOrders {
@@ -23,10 +24,20 @@ interface Item {
   instagramId: string;
   secret: string;
   productFieldValues?: ProductFieldValue[];
+  transactions?: {
+    id: string;
+    status: 'pending' | 'success' | 'cancelled' | 'failed';
+    refId: string | null;
+    createDate: string;
+  }[];
 }
 
 interface Instagram {
   id: string;
+  name: string | null;
+  username: string | null;
+  profilePictureUrl: string | null;
+  shopAddress: IShopAddress | null;
 }
 
 interface OrdersLead {
