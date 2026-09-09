@@ -172,7 +172,7 @@ describe('ShopAddressDialog', () => {
    * Select-bound field (`value={field.value ?? ''}`, not a spread `{...field}` registration
    * like the text inputs use) rather than at the effect not re-running at all.
    */
-  it.skip('BUG (unfixed, tests-only pass): does not blank the state/cityId Selects when switching to an account with no saved city', async () => {
+  it('does not blank the state/cityId Selects when switching to an account with no saved city', async () => {
     mockShopAddress('ig-a', {
       id: 'sa-a',
       address: 'خیابان آزادی، پلاک ۱',

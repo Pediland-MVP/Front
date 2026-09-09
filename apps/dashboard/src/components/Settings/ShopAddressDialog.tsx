@@ -98,8 +98,18 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
     // screen and risk saving them onto this account).
     const a = data.data;
     form.reset({
-      state: a?.city?.province ? String(a.city.province.id) : undefined,
-      cityId: a?.city ? String(a.city.id) : undefined,
+      // `''`, not `undefined` — `state`/`cityId` are manually-controlled Selects
+      // (`value={field.value ?? ''}`), not plain registered `<input>`s like the four
+      // fields below. `reset()` with an explicit `undefined` for a field that
+      // previously held a real value does not reliably clear it on a
+      // manually-controlled field the way it does on a registered one: switching from
+      // an account with a saved city to one with none left the Selects stuck showing
+      // the previous account's province/city (a real cross-account leak, caught by a
+      // repro test in ShopAddressDialog.test.tsx). `''` matches the pattern already
+      // used for address/postalcode/phone/shippingMethod and is what the Selects'
+      // `?? ''` fallback already treats as "no selection".
+      state: a?.city?.province ? String(a.city.province.id) : '',
+      cityId: a?.city ? String(a.city.id) : '',
       address: a?.address ?? '',
       postalcode: a?.postalcode ?? '',
       phone: a?.phone ?? '',
